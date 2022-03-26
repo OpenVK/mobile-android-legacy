@@ -15,7 +15,7 @@
         <LinearLayout
             android:id="@+id/titlebar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/bg_actionbar">
 
             <ImageButton
@@ -65,6 +65,14 @@
                         android:textColor="@color/api_v8_ll_title_color" />
 
                 </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/new_post_btn"
+                    android:layout_width="96dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:src="@drawable/ic_ab_write" />
 
             </LinearLayout>
 

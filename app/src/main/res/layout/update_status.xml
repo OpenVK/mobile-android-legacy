@@ -6,6 +6,72 @@
     android:background="#ffffff"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:id="@+id/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_actionbar">
+
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@drawable/ic_ab_back_holo_dark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/title_back_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titlebar_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="App subtitle"
+                    android:textColor="@color/api_v8_ll_subtitle_color"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/titlebar_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="App title"
+                    android:textColor="@color/api_v8_ll_title_color" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/send_post_btn"
+                android:layout_width="96dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/ic_ab_done" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
     <ScrollView
         android:id="@+id/newpost_scroll"
         android:layout_width="fill_parent"
@@ -66,18 +132,11 @@
             android:textColor="#b1b2b5" />
 
         <ImageView
-            android:id="@+id/newpost_twitter_icon"
+            android:id="@+id/newpost_tg_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dip"
-            android:src="@drawable/ic_newpost_twitter" />
-
-        <ImageView
-            android:id="@+id/newpost_fb_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="3dip"
-            android:src="@drawable/ic_newpost_fb" />
+            android:src="@drawable/ic_newpost_tg" />
 
     </LinearLayout>
 
