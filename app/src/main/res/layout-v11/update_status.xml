@@ -6,72 +6,6 @@
     android:background="#ffffff"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/titlebar"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/bg_actionbar">
-
-        <ImageButton
-            android:id="@+id/menuButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:src="@drawable/ic_ab_back_holo_dark" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/title_back_btn"
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/titlebar_subtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="App subtitle"
-                    android:textColor="@color/api_v8_ll_subtitle_color"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/titlebar_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="App title"
-                    android:textColor="@color/api_v8_ll_title_color" />
-
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/send_post_btn"
-                android:layout_width="96dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@null"
-                android:src="@drawable/ic_ab_done" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
     <ScrollView
         android:id="@+id/newpost_scroll"
         android:layout_width="fill_parent"
@@ -86,7 +20,7 @@
             android:orientation="vertical" >
 
             <EditText
-                android:id="@+id/status_text_edit"
+                android:id="@+id/status_text_edit2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -97,10 +31,9 @@
                 android:singleLine="false"></EditText>
 
             <View
-                android:id="@+id/newpost_attachments"
+                android:id="@+id/newpost_attachments2"
                 android:layout_width="match_parent"
                 android:layout_height="80dp" />
-
         </LinearLayout>
     </ScrollView>
 
@@ -150,10 +83,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:gravity="center"
+        android:layout_height="48dip"
         android:paddingLeft="12dip"
-        android:paddingRight="12dip">
+        android:paddingRight="12dip"
+        android:gravity="center" >
 
         <ImageView
             android:id="@+id/newpost_btn_location"
@@ -162,7 +95,6 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_location" />
-
         <ImageView
             android:id="@+id/newpost_btn_mention"
             android:layout_width="wrap_content"
@@ -170,7 +102,6 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_mention" />
-
         <ImageView
             android:id="@+id/newpost_btn_photo"
             android:layout_width="wrap_content"
@@ -178,7 +109,6 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_photo" />
-
         <ImageView
             android:id="@+id/newpost_btn_attach"
             android:layout_width="wrap_content"
@@ -186,7 +116,6 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_attach" />
-
         <ImageView
             android:id="@+id/newpost_btn_settings"
             android:layout_width="wrap_content"
