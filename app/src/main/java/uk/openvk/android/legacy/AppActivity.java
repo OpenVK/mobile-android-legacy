@@ -381,7 +381,7 @@ public class AppActivity extends Activity {
             });
             about_dlg = builder.create();
             about_dlg.show();
-        } else if(id == R.id.sendpost) {
+        } else if(id == R.id.newpost) {
             openNewPostActivity();
         } else if(id == R.id.main_menu_exit) {
             finish();
@@ -769,6 +769,7 @@ public class AppActivity extends Activity {
                                     Log.e("OpenVK Legacy", "Invalid API token");
                                     SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("instance", 0).edit();
                                     editor.putString("auth_token", "");
+                                    editor.putInt("user_id", 0);
                                     editor.commit();
                                     Intent intent = new Intent(AppActivity.this, AuthenticationActivity.class);
                                     startActivity(intent);
@@ -809,6 +810,9 @@ public class AppActivity extends Activity {
                             } else if(send_request.startsWith("/method/Account.getProfileInfo")) {
                                 SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
                                 TextView profile_name = slidingMenuLayout.findViewById(R.id.profile_name);
+                                SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("instance", 0).edit();
+                                editor.putInt("user_id", json_response.getJSONObject("response").getInt("id"));
+                                editor.commit();
                                 profile_name.setText(json_response.getJSONObject("response").getString("first_name") + " " + json_response.getJSONObject("response").getString("last_name"));
                                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
@@ -960,6 +964,9 @@ public class AppActivity extends Activity {
                         json_response_user = json_response;
                         author = json_response_user.getJSONArray("response").getJSONObject(news_item_index_2).getString("first_name")
                                 + " " + json_response_user.getJSONArray("response").getJSONObject(news_item_index_2).getString("last_name");
+                        newsListItemArray.add(news_item_index_2, new NewsListItem(author, ((JSONObject) newsfeed.get(news_item_index_2))
+                                .getInt("date"), null, ((JSONObject) newsfeed.get(news_item_index_2)).getString("text"), newsItemCountersInfoArray.get(news_item_index_2),null, null,
+                                getApplicationContext()));
                         LinearLayout progress_ll = findViewById(R.id.news_progressll);
                         progress_ll.setVisibility(View.GONE);
                         news_listview = newsLinearLayout.findViewById(R.id.news_listview);
@@ -979,7 +986,7 @@ public class AppActivity extends Activity {
                     }
                 }
                 try {
-                    if(connection_status == false) {
+                    if(connection_status == false && post_group_ids_sb.toString().length() > 0) {
                         Log.d("OpenVK Legacy", "Group IDs:" + post_group_ids_sb.toString());
                         send_request = ("/method/Groups.getById?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&group_ids=" + post_group_ids_sb.toString());
                         new Thread(new socketThread()).start();
@@ -994,7 +1001,7 @@ public class AppActivity extends Activity {
                         try {
                             json_response_group = json_response;
                             author = json_response_group.getJSONArray("response").getJSONObject(news_item_index_4).getString("name");
-                                    newsListItemArray.add(groupPostInfoArray.get(news_item_index_4).postId, new NewsListItem(author, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId))
+                            newsListItemArray.add(groupPostInfoArray.get(news_item_index_4).postId, new NewsListItem(author, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId))
                                             .getInt("date"), null, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId)).getString("text"), newsItemCountersInfoArray.get(groupPostInfoArray.get(news_item_index_4).postId),null, null,
                                             getApplicationContext()));
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);

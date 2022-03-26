@@ -97,6 +97,15 @@ public class MainSettingsActivity extends PreferenceActivity {
                     return false;
                 }
             });
+            Preference debug_menu = findPreference("debug_menu");
+            debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                    startActivity(intent);
+                    return false;
+                }
+            });
         }
     }
 }
