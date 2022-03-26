@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/send_to_friend" android:id="@+id/photo_send" android:icon="@android:drawable/ic_menu_send"/>
+    <item android:title="@string/save" android:id="@+id/photo_save" android:icon="@android:drawable/ic_menu_save"/>
+	<item android:title="@string/delete" android:id="@+id/photo_delete" android:icon="@android:drawable/ic_menu_delete"/>
+</menu>

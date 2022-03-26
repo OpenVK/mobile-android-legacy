@@ -1,0 +1,1 @@
+This is empty folder, but it is required to build the APK file

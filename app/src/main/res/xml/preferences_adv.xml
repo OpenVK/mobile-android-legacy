@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+				<CheckBoxPreference android:title="@string/sett_force_tablet_ui" android:summary="@string/sett_app_restart_required"
+					android:key="forceTabletUI" android:defaultValue="false" />
+				<CheckBoxPreference android:title="@string/sett_send_by_enter" android:summary="@string/sett_send_by_enter_summary"
+					android:key="sendByEnter" android:defaultValue="false" />
+
+				<CheckBoxPreference android:title="@string/sett_compress_photos" android:key="compressPhotos"
+					android:defaultValue="true"/>
+				<!--CheckBoxPreference android:title="@string/sett_load_images"
+					android:summary="@string/sett_load_images_summary" android:key="loadImages"
+					android:defaultValue="true" /-->
+				<CheckBoxPreference android:title="@string/sett_big_images_mobile" android:summary="@string/sett_big_images_mobile_summary"
+					android:key="bigImagesMobile" android:defaultValue="true" />
+				
+				<CheckBoxPreference android:title="@string/sett_alt_video_output" android:summary="@string/sett_alt_video_output_summary"
+					android:key="forceVideoSurface" android:defaultValue="false" />
+			    
+				<PreferenceCategory android:title="@string/sett_cache">
+				    <Preference android:title="@string/sett_clear_img_cache"
+						android:summary="" android:key="clearImageCache"/>
+				    <!--ListPreference android:entries="@array/sett_img_cache_location"
+						android:entryValues="@array/sett_cache_location_v" android:title="@string/sett_cache_location"
+						android:dialogTitle="@string/sett_cache_location" android:key="imgCacheLocation"
+						android:defaultValue="internal" /-->
+				</PreferenceCategory>
+				<PreferenceCategory android:title="@string/sett_audio_cache">
+					<CheckBoxPreference android:title="@string/enable"
+						android:key="enableAudioCache" android:defaultValue="true" />
+					<Preference android:title="@string/sett_clear_audio_cache"
+						android:summary="" android:key="clearAudioCache"/>
+				</PreferenceCategory>
+			</PreferenceScreen>

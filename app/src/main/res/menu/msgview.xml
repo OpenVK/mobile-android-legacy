@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  	<!--item android:id="@+id/forward" android:title="@string/msg_forward" android:icon="@drawable/ic_menu_send"></item-->
+    <item android:id="@+id/delete" android:title="@string/delete" android:icon="@android:drawable/ic_menu_delete"></item>
+</menu>

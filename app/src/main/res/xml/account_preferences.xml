@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <Preference android:title="@string/welcome_title3">
+  	<intent android:action="uk.openvk.android.legacy.SYNC_SETTINGS"/>
+  </Preference> 
+</PreferenceScreen>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <EditTextPreference android:title="Домен API" android:key="apiHost" android:defaultValue="api.vk.com"/>
+    
+    <CheckBoxPreference android:title="Логирование API" android:key="__dbg_api"
+			android:defaultValue="false"/>
+    
+    
+    <Preference android:title="Запись логов в файл"
+			android:summary="До полного перезапуска приложения" android:key="logToFile"/>
+    
+    <Preference android:title="Завершить процесс" android:key="terminate"/>
+    <Preference android:title="Тест уведомления о ДР" android:key="bdayTest"/>
+
+</PreferenceScreen>
