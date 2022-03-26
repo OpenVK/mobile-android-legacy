@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:state_selected="true">
+    	<layer-list>
+    		<item>
+    			<shape>
+    				<solid android:color="#663e9fe0"/>
+    			</shape>
+    		</item>
+    		<item android:drawable="@drawable/profile_selector_selected"/>
+    	</layer-list>
+    </item>
+    <item android:state_pressed="true">
+    	<shape>
+    		<solid android:color="#663e9fe0"/>
+    	</shape>
+    </item>
+    <item android:drawable="@drawable/profile_selector_selected" 
+    		android:state_selected="true"/>
+	<item android:drawable="@drawable/profile_selector_up"/>
+</selector>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:enterFadeDuration="200" android:exitFadeDuration="300">
+    <item android:drawable="@drawable/ic_emoji_bell_selected"
+          android:state_selected="true" />
+    <item android:drawable="@drawable/ic_emoji_bell_up" />
+</selector>

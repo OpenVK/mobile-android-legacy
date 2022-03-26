@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">  
+	<item android:left="@dimen/list_side_padding" android:right="@dimen/list_side_padding" android:bottom="60dip">
+		<shape>
+    		<solid android:color="#19FFFFFF"/>  
+    	</shape>
+	</item>
+	<item android:drawable="@drawable/highlight"/>
+</layer-list>  

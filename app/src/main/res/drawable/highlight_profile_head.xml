@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="300">
+    <item android:state_pressed="true">
+    	<shape>
+    		<solid android:color="#668cd5fa"/>
+    		<corners android:radius="2dip"/>
+    	</shape>
+    </item>
+</selector>
