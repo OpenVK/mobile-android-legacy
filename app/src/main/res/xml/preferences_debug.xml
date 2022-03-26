@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-    <EditTextPreference android:title="Домен API" android:key="apiHost" android:defaultValue="api.vk.com"/>
-    
-    <CheckBoxPreference android:title="Логирование API" android:key="__dbg_api"
-			android:defaultValue="false"/>
-    
-    
-    <Preference android:title="Запись логов в файл"
-			android:summary="До полного перезапуска приложения" android:key="logToFile"/>
-    
-    <Preference android:title="Завершить процесс" android:key="terminate"/>
-    <Preference android:title="Тест уведомления о ДР" android:key="bdayTest"/>
+
+    <EditTextPreference
+        android:defaultValue="openvk.uk"
+        android:key="apiHost"
+        android:title="@string/instance" />
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:enabled="false"
+        android:key="__dbg_api"
+        android:title="@string/api_logging" />
+
+
+    <Preference
+        android:id="@+id/logToFile"
+        android:key="logToFile"
+        android:title="@string/write_logs_to_file" />
+
+    <Preference
+        android:key="terminate"
+        android:title="@string/terminate" />
+    <Preference
+        android:duplicateParentState="false"
+        android:enabled="false"
+        android:key="bdayTest"
+        android:title="Тест уведомления о ДР"
+        android:visibility="gone" />
 
 </PreferenceScreen>

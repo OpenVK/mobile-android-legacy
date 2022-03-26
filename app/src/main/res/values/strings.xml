@@ -1098,4 +1098,15 @@
 	<string name="twofactor_hint">2FA code</string>
 	<string name="not_implemented">Not implemented yet.</string>
 	<string name="please_wait_network">Wait for the load to finish and try again.</string>
+	<string name="posting_error">An error occurred while posting. Please try again later.</string>
+	<string name="posted_successfully">Post published.</string>
+	<string name="debug_menu">Debug menu</string>
+	<string name="api_logging">API logging</string>
+	<string name="write_logs_to_file">Write logs to file</string>
+	<string name="terminate">Terminate process</string>
+	<string name="dnd_mode">DND mode</string>
+	<string name="saved_logs_successfully">Log saved to Device Memory/%1$s</string>
+	<string name="allow_permisssion_in_storage_title">Permissions required</string>
+	<string name="allow_permisssion_in_storage">To save data to the Device Memory, application needs special permissions.\n\nOpen the \"About application\" system settings section?</string>
+	<string name="open_btn">Оpen</string>
 </resources>

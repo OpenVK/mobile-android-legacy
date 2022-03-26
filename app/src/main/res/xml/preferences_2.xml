@@ -40,6 +40,9 @@
 
 
 	<PreferenceCategory android:title="@string/sett_other">
+		<Preference
+			android:key="debug_menu"
+			android:title="@string/debug_menu" />
 		<Preference android:title="@string/menu_about" android:key="about" />
 
 	</PreferenceCategory>
