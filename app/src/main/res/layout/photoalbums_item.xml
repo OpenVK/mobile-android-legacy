@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical" >
+
+    <ImageView
+        android:id="@+id/album_thumb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        />
+
+    <LinearLayout
+        android:gravity="bottom"
+        android:layout_height="90dip"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:padding="12dip"
+        >
+	    <TextView
+	        android:id="@+id/album_title"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:duplicateParentState="true"
+	        android:ellipsize="end"
+	        android:maxLines="2"
+	        android:text="Album Title"
+	        android:textColor="#FFF"
+	        android:shadowRadius="7"
+	        android:shadowColor="#000000"
+	        android:textSize="20dip" >
+	    </TextView>
+	
+	    <TextView
+	        android:id="@+id/album_qty"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="9000 photos"
+	        android:textColor="#CFFF"
+	        android:textSize="17dip" >
+	    </TextView>
+    </LinearLayout>
+
+</FrameLayout>

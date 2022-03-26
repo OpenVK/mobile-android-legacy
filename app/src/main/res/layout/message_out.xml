@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="right|bottom"
+    android:paddingTop="4dip"
+    android:paddingBottom="4dip"
+    android:orientation="horizontal" >
+
+    <ProgressBar
+        android:id="@+id/msg_progress"
+        android:layout_marginRight="12dip"
+        android:layout_marginLeft="5dip"
+        android:layout_width="30dip"
+        android:layout_height="30dip" />
+
+    <ImageView
+        android:id="@+id/msg_failed"
+        android:layout_width="40dip"
+        android:layout_marginRight="7dip"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_msg_error_up" />
+
+    <TextView
+        android:id="@+id/msg_time"
+        android:layout_width="40dip"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dip"
+        android:layout_marginRight="7dip"
+        android:textSize="13dip"
+        android:gravity="center_vertical|right"
+        android:textColor="#9faab7"
+        android:shadowDy="1"
+        android:shadowColor="#FFF"
+        android:shadowRadius="0.000001"
+        android:textStyle="italic"
+        android:text="TextView" />
+
+    <LinearLayout
+        android:id="@+id/msg_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_msg_out_full"
+        android:layout_marginRight="3dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/msg_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="7dip"
+            android:paddingRight="7dip"
+            android:paddingTop="2dip"
+            android:paddingBottom="2dip"
+            android:textSize="16dip"
+            android:textColor="#000"
+            android:text="TextView" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dip"
+            android:id="@+id/msg_attachments">
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

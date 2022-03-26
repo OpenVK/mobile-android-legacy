@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="left|bottom"
+    android:orientation="horizontal"
+    android:paddingBottom="4dip"
+    android:paddingTop="4dip" >
+
+    <ImageView
+        android:id="@+id/msg_sender_photo"
+        android:layout_width="33dip"
+        android:layout_height="33dip"
+        android:layout_marginBottom="2dip"
+        android:layout_marginLeft="8dip"
+        android:src="@drawable/photo_loading" />
+
+    <RelativeLayout
+        android:id="@+id/msg_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dip"
+        android:layout_marginRight="50dip"
+        android:background="@drawable/bg_msg_in_full"
+        android:gravity="left" >
+
+        <include layout="@layout/message_fwd_include"  android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/msg_time"
+        android:layout_width="50dip"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dip"
+        android:layout_marginLeft="-44dip"
+        android:gravity="left"
+        android:shadowColor="#FFF"
+        android:shadowDy="1"
+        android:shadowRadius="0.000001"
+        android:text="22:22"
+        android:textColor="#9faab7"
+        android:textStyle="italic"
+        android:textSize="13dip" />
+    
+
+</LinearLayout>

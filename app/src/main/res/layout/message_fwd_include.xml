@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <RelativeLayout
+        android:id="@+id/msg_fwd_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/msg_fwd_level"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/msg_fwd_photo"
+            android:layout_width="42dip"
+            android:layout_height="42dip"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/photo_loading" />
+
+        <TextView
+            android:id="@+id/msg_fwd_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="1dip"
+            android:layout_toRightOf="@+id/msg_fwd_photo"
+            android:text="User Name"
+            android:textColor="#000"
+            android:textSize="16dip" />
+
+        <TextView
+            android:id="@+id/msg_fwd_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/msg_fwd_name"
+            android:layout_marginLeft="10dip"
+            android:layout_toRightOf="@+id/msg_fwd_photo"
+            android:text="today at 12:34"
+            android:textColor="@color/hint"
+            android:textSize="16dip" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/msg_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/msg_fwd_wrap"
+        android:layout_toRightOf="@+id/msg_fwd_level"
+        android:paddingBottom="2dip"
+        android:paddingLeft="2dip"
+        android:paddingRight="7dip"
+        android:paddingTop="2dip"
+        android:text="TextViewf"
+        android:textColor="#000"
+        android:textSize="16dip" />
+
+    <LinearLayout
+        android:id="@+id/msg_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-10dip"
+        android:layout_toRightOf="@+id/msg_fwd_level"
+        android:layout_below="@+id/msg_text"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <View
+        android:id="@+id/msg_fwd_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/msg_attachments"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="3dip"
+        android:layout_alignParentTop="true" />
+
+</merge>

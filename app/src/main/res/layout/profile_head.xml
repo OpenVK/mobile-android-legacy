@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#313743"
+    android:clickable="true" >
+
+    <View
+        android:id="@+id/profile_head_highlight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/profile_activity"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dip"
+        android:background="@drawable/highlight_profile_head" />
+
+    <ImageView
+        android:id="@+id/profile_expand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="12dip"
+        android:layout_marginTop="53dip"
+        android:src="@drawable/ic_profile_expand" />
+
+    <TextView
+        android:id="@+id/profile_last_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/profile_name"
+        android:layout_below="@+id/profile_name"
+        android:layout_marginTop="-2dip"
+        android:layout_toRightOf="@+id/profile_photo_wrap"
+        android:singleLine="true"
+        android:text="last seen 32 mar 2012"
+        android:textColor="#bebfc0"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="10dip"
+        android:textSize="15dip" />
+
+    <TextView
+        android:id="@+id/profile_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/profile_photo_wrap"
+        android:layout_below="@+id/profile_last_seen"
+        android:layout_marginBottom="-12dip"
+        android:layout_marginTop="5dip"
+        android:layout_toLeftOf="@+id/profile_expand"
+        android:layout_toRightOf="@+id/profile_photo_wrap"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:lines="2"
+        android:paddingBottom="12dip"
+        android:text="Status status status"
+        android:textColor="#d8d8d9"
+        android:textSize="15dip" />
+
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/profile_expand"
+        android:layout_toRightOf="@+id/profile_photo_wrap"
+        android:paddingTop="8dip"
+        android:text="User Name"
+        android:textColor="#FFF"
+        android:textSize="20dip" />
+
+
+    <FrameLayout
+        android:id="@+id/profile_photo_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foreground="@drawable/profile_photo_highlight"
+        android:background="@drawable/profile_photo_shadow"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="12dip"
+        android:layout_marginLeft="12dip"
+        android:layout_marginRight="12dip"
+        android:layout_marginTop="12dip" >
+
+        <ImageView
+            android:id="@+id/profile_photo"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:src="@drawable/photo_loading_black" />
+    </FrameLayout>
+</RelativeLayout>

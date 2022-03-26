@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFF"
+    android:fadingEdge="none"
+    android:fillViewport="true" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/photo_image"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:minHeight="50dip"
+            android:src="#000" >
+        </ImageView>
+
+        <EditText
+            android:id="@+id/photo_descr"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="@string/photo_descr"
+            android:textColorHint="#dedede"
+            android:gravity="top|left"
+            android:padding="12dip"
+            android:textSize="18dip" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/photo_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/multi_photos_hint"
+            android:textColor="@color/hint" />
+    </LinearLayout>
+
+</ScrollView>

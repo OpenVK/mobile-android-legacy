@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:gravity="bottom"
+    android:orientation="horizontal" >
+
+    <EditText
+        android:id="@+id/writebar_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/writebar_send"
+        android:layout_toRightOf="@+id/writebar_attach"
+        android:layout_weight="1"
+        android:background="@null"
+        android:ems="10"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLines="4"
+        android:minHeight="48dip"
+        android:paddingBottom="8dip"
+        android:paddingTop="8dip" 
+        android:paddingRight="8dip" 
+        android:paddingLeft="13dip" 
+        android:textSize="18dip"
+        android:layout_marginLeft="1dip"
+        android:textColorHint="#dedede"
+        android:hint="@string/msg_hint"/>
+
+    <Button
+        android:id="@+id/writebar_send"
+        style="@style/BlueButton"
+        android:layout_width="71dip"
+        android:layout_height="39dip"
+        android:layout_alignBottom="@+id/writebar_edit"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="4dip"
+        android:layout_marginBottom="4dip"
+        android:text="@string/send_b" />
+
+    <ImageView
+        android:id="@+id/writebar_attach"
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:layout_alignBottom="@+id/writebar_edit"
+        android:layout_alignParentLeft="true"
+        android:clickable="true"
+        android:padding="8dip"
+        android:scaleType="center"
+        android:src="@drawable/ic_msg_attach" />
+
+    <View
+        android:id="@+id/writebar_line"
+        android:layout_width="1dip"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/writebar_attach"
+        android:layout_alignTop="@+id/writebar_attach"
+        android:background="#dedede"
+        android:layout_marginTop="8dip"
+        android:layout_marginBottom="8dip"
+        android:layout_toRightOf="@+id/writebar_attach" />
+
+</RelativeLayout>
