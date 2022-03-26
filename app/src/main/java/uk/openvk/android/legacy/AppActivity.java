@@ -1,18 +1,12 @@
 package uk.openvk.android.legacy;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -21,17 +15,14 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -46,12 +37,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -259,6 +248,13 @@ public class AppActivity extends Activity {
             final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
             popup_menu = new PopupWindow(menu_container, 200, ViewGroup.LayoutParams.WRAP_CONTENT);
             final ImageButton title_menu_btn = findViewById(R.id.title_menu_btn);
+            final ImageButton new_post_btn = findViewById(R.id.new_post_btn);
+            new_post_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openNewPostActivity();
+                }
+            });
             List<String> itemsArray = new ArrayList<String>();
             ArrayList<SimpleListItem> itemsList = new ArrayList<SimpleListItem>();
             final SimpleListAdapter itemsAdapter;
@@ -345,7 +341,7 @@ public class AppActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.newsfeed, menu);
         return true;
     }
 
@@ -385,6 +381,8 @@ public class AppActivity extends Activity {
             });
             about_dlg = builder.create();
             about_dlg.show();
+        } else if(id == R.id.sendpost) {
+            openNewPostActivity();
         } else if(id == R.id.main_menu_exit) {
             finish();
             System.exit(0);
@@ -393,6 +391,11 @@ public class AppActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openNewPostActivity() {
+        Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
+        startActivity(intent);
     }
 
     public void showMainSettings() {
@@ -589,8 +592,8 @@ public class AppActivity extends Activity {
                 httpConnection.setRequestProperty("Host", server);
                 httpConnection.setRequestProperty("Accept","application/json");
                 httpConnection.setRequestProperty("Accept-Charset", "UTF-8");
-                httpConnection.setConnectTimeout(30000);
-                httpConnection.setReadTimeout(30000);
+                httpConnection.setConnectTimeout(240000);
+                httpConnection.setReadTimeout(240000);
                 httpConnection.setDoInput(true);
                 httpConnection.setDoOutput(true);
                 httpConnection.connect();
@@ -648,14 +651,17 @@ public class AppActivity extends Activity {
                 connectionErrorString = "SocketTimeoutException";
                 state = "timeout";
                 updateUITask.run();
+                Log.e("OpenVK Legacy", ex.getMessage());
             } catch(UnknownHostException ex) {
                 connectionErrorString = "UnknownHostException";
                 state = "no_connection";
                 updateUITask.run();
+                Log.e("OpenVK Legacy", ex.getMessage());
             } catch(SocketException ex) {
                 connectionErrorString = "UnknownHostException";
                 state = "no_connection";
                 updateUITask.run();
+                Log.e("OpenVK Legacy", ex.getMessage());
             } catch(NullPointerException ex) {
                 ex.printStackTrace();
             } catch(ProtocolException ex) {
@@ -679,8 +685,8 @@ public class AppActivity extends Activity {
                 httpsConnection.setRequestProperty("Host", server);
                 httpsConnection.setRequestProperty("Accept","application/json");
                 httpsConnection.setRequestProperty("Accept-Charset", "UTF-8");
-                httpsConnection.setConnectTimeout(30000);
-                httpsConnection.setReadTimeout(30000);
+                httpsConnection.setConnectTimeout(60000);
+                httpsConnection.setReadTimeout(60000);
                 httpsConnection.setDoInput(true);
                 httpsConnection.setDoOutput(true);
                 httpsConnection.connect();
