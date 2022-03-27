@@ -123,11 +123,27 @@ public class AppActivity extends Activity {
             auth_token = (String) savedInstanceState.getSerializable("auth_token");
         }
 
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
+        server = sharedPreferences.getString("server", "");
+
         Uri uri = getIntent().getData();
         if (uri!=null){
             String path = uri.toString();
-            Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+            if(sharedPreferences.getString("auth_token", "").length() == 0) {
+                finish();
+                return;
+            } else {
+                Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+            }
         }
+
+        if(sharedPreferences.getString("auth_token", "").length() == 0) {
+            Intent intent = new Intent(AppActivity.this, AuthenticationActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         newsLinearLayout = findViewById(R.id.news_layout);
         final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
         TextView profile_name = slidingMenuLayout.findViewById(R.id.profile_name);
@@ -233,8 +249,6 @@ public class AppActivity extends Activity {
             news_listview = newsLinearLayout.findViewById(R.id.news_listview);
             news_listview.setVisibility(View.GONE);
         }
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
-        server = sharedPreferences.getString("server", "");
         if(auth_token != null) {
             Log.i("OpenVK Legacy", "About instance:\r\n\r\nServer: " + server + "\r\nAuth token length: " + auth_token.length());
         } else {

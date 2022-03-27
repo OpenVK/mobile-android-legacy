@@ -30,6 +30,22 @@ public class DebugMenuActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_debug);
+
+        Preference apiHost = findPreference("apiHost");
+        apiHost.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if(getApplicationContext().getSharedPreferences("instance", 0).getString("server", "").length() > 0) {
+                    Toast.makeText(getApplicationContext(), "API Instance: " + getApplicationContext().getSharedPreferences("instance", 0).getString("server", ""),
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "API Instance: (empty, default: openvk.uk)",
+                            Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+        });
+
         Preference logToFile = (Preference) findPreference("logToFile");
         logToFile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -120,6 +136,17 @@ public class DebugMenuActivity extends PreferenceActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                return false;
+            }
+        });
+
+        Preference terminate_process = findPreference("terminate");
+        terminate_process.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                moveTaskToBack(true);
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(1);
                 return false;
             }
         });

@@ -70,7 +70,7 @@ public class MainSettingsActivity extends PreferenceActivity {
             logout_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    AlertDialog about_dlg;
+                    AlertDialog logout_dlg;
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainSettingsActivity.this);
                     builder.setMessage(R.string.log_out_warning);
                     builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -78,6 +78,7 @@ public class MainSettingsActivity extends PreferenceActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("instance", 0).edit();
                             editor.putString("auth_token", "");
+                            editor.putString("server", "");
                             editor.commit();
                             Intent authActivity = new Intent(getApplicationContext(), this.getClass());
                             int pendingIntentId = 1;
@@ -92,20 +93,20 @@ public class MainSettingsActivity extends PreferenceActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                         }
                     });
-                    about_dlg = builder.create();
-                    about_dlg.show();
-                    return false;
-                }
-            });
-            Preference debug_menu = findPreference("debug_menu");
-            debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
-                    startActivity(intent);
+                    logout_dlg = builder.create();
+                    logout_dlg.show();
                     return false;
                 }
             });
         }
+        Preference debug_menu = findPreference("debug_menu");
+        debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
     }
 }
