@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <EditTextPreference
-        android:defaultValue="openvk.uk"
+    <Preference
         android:key="apiHost"
         android:title="@string/instance" />
-
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:enabled="false"
-        android:key="__dbg_api"
-        android:title="@string/api_logging" />
 
 
     <Preference
@@ -21,11 +14,5 @@
     <Preference
         android:key="terminate"
         android:title="@string/terminate" />
-    <Preference
-        android:duplicateParentState="false"
-        android:enabled="false"
-        android:key="bdayTest"
-        android:title="Тест уведомления о ДР"
-        android:visibility="gone" />
 
 </PreferenceScreen>
