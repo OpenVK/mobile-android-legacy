@@ -349,6 +349,7 @@ public class AuthenticationActivity extends Activity {
                                         }
                                     });
                                     twofactor_dlg = builder.create();
+                                    twofactor_dlg.setCancelable(false);
                                     if(!AuthenticationActivity.this.isFinishing()) twofactor_dlg.show();
                                 } else if(json_login.getInt("error_code") == 3) {
                                     connectionDialog.cancel();

@@ -113,8 +113,12 @@ public class NewPostActivity extends Activity {
                 socketThread = new Thread(new socketThread());
                 sslSocketThread = new Thread(new sslSocketThread());
                 try {
+                    connectionDialog = new ProgressDialog(this);
+                    connectionDialog.setMessage(getString(R.string.loading));
+                    connectionDialog.setCancelable(false);
+                    connectionDialog.show();
                     EditText statusEditText = findViewById(R.id.status_text_edit2);
-                    send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + statusEditText.getText());
+                    send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                     socketThread.start();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -309,9 +313,14 @@ public class NewPostActivity extends Activity {
                 public void run() {
                     if(state == "getting_response") {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
+                        connectionDialog.cancel();
                         finish();
                     } else if(state == "something_went_wrong") {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
+                    } else if(state == "creating_ssl_connection") {
+                        socketThread = new Thread(new socketThread());
+                        sslSocketThread = new Thread(new sslSocketThread());
+                        sslSocketThread.start();
                     }
                 }
             });

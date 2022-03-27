@@ -962,11 +962,16 @@ public class AppActivity extends Activity {
                 for (int news_item_index_2 = 0; news_item_index_2 < news_item_count; news_item_index_2++) {
                     try {
                         json_response_user = json_response;
+                        if(newsfeed.getJSONObject(news_item_index_2).getInt("owner_id") > 0) {
                         author = json_response_user.getJSONArray("response").getJSONObject(news_item_index_2).getString("first_name")
                                 + " " + json_response_user.getJSONArray("response").getJSONObject(news_item_index_2).getString("last_name");
-                        newsListItemArray.add(news_item_index_2, new NewsListItem(author, ((JSONObject) newsfeed.get(news_item_index_2))
+                            newsListItemArray.add(new NewsListItem(author, ((JSONObject) newsfeed.get(news_item_index_2))
                                 .getInt("date"), null, ((JSONObject) newsfeed.get(news_item_index_2)).getString("text"), newsItemCountersInfoArray.get(news_item_index_2),null, null,
                                 getApplicationContext()));
+                        } else {
+                            post_group_ids_sb.append("," + -newsfeed.getJSONObject(news_item_index_2).getInt("owner_id"));
+                            groupPostInfoArray.add(new GroupPostInfo(news_item_index_2, -newsfeed.getJSONObject(news_item_index_2).getInt("owner_id")));
+                        }
                         LinearLayout progress_ll = findViewById(R.id.news_progressll);
                         progress_ll.setVisibility(View.GONE);
                         news_listview = newsLinearLayout.findViewById(R.id.news_listview);
@@ -977,18 +982,10 @@ public class AppActivity extends Activity {
                         Log.d("JSON Parser", npe.getMessage());
                     }
                 }
-                for (int news_item_index_3 = 0; news_item_index_3 < groupPostInfoArray.size(); news_item_index_3++) {
-                    if (news_item_index_3 > 0) {
-                        post_group_ids_sb.append("," + groupPostInfoArray.get(news_item_index_3).postAuthorId);
-                    } else {
-                        post_group_ids_sb = new StringBuilder();
-                        post_group_ids_sb.append("" + groupPostInfoArray.get(news_item_index_3).postAuthorId);
-                    }
-                }
                 try {
+                    Log.d("OpenVK Legacy", "Group IDs: [" + post_group_ids_sb.toString() + "]");
                     if(connection_status == false && post_group_ids_sb.toString().length() > 0) {
-                        Log.d("OpenVK Legacy", "Group IDs:" + post_group_ids_sb.toString());
-                        send_request = ("/method/Groups.getById?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&group_ids=" + post_group_ids_sb.toString());
+                        send_request = ("/method/Groups.getById?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&group_ids=" + post_group_ids_sb.toString().substring(1));
                         new Thread(new socketThread()).start();
                     } else {
                         Log.d("OpenVK Legacy", "Already connected!");
