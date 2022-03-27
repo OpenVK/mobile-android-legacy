@@ -557,7 +557,15 @@ public class AppActivity extends Activity {
                 newsLinearLayout.setVisibility(View.VISIBLE);
                 openSlidingMenu();
                     try {
+                        groupPostInfoArray = new ArrayList<GroupPostInfo>();
                         newsListItemArray = new ArrayList<NewsListItem>();
+                        newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
+                        newsfeed = new JSONArray();
+                        json_response_group = new JSONObject();
+                        json_response_user = new JSONObject();
+                        post_group_ids_sb = new StringBuilder();
+                        post_author_ids_sb = new StringBuilder();
+                        post_author_ids = new ArrayList<Integer>();
                         socketThread = new Thread(new socketThread());
                         send_request = ("/method/Account.getProfileInfo?access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
                         socketThread.start();
