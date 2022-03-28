@@ -1109,4 +1109,5 @@
 	<string name="allow_permisssion_in_storage_title">Permissions required</string>
 	<string name="allow_permisssion_in_storage">To save data to the Device Memory, application needs special permissions.\n\nOpen the \"About application\" system settings section?</string>
 	<string name="open_btn">Оpen</string>
+	<string name="birthday">Birthday</string>
 </resources>

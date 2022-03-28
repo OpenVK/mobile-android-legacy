@@ -1157,4 +1157,16 @@
     <string name="twofactor_hint">Код 2FA</string>
     <string name="not_implemented">Поки що не реалiзовано.</string>
     <string name="please_wait_network">Дочекайтеся закiчення завантаження i повторiть спробу.</string>
+    <string name="posting_error">При надсиланні запису сталася помилка. Повторіть спробу пізніше.</string>
+    <string name="posted_successfully">Запись опублікована.</string>
+    <string name="debug_menu">Меню налагодження</string>
+    <string name="api_logging">Журналування API</string>
+    <string name="write_logs_to_file">Запис журналу у файл</string>
+    <string name="terminate">Завершити процес</string>
+    <string name="dnd_mode">Режим \"Не турбувати\"</string>
+    <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s</string>
+    <string name="allow_permisssion_in_storage_title">Потрібні дозволи</string>
+    <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про програму\"?</string>
+    <string name="open_btn">Відкрити</string>
+    <string name="birthday">День народження</string>
 </resources>

@@ -12,7 +12,12 @@
         android:layout_alignBottom="@+id/profile_activity"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_margin="8dip"
+        android:layout_marginStart="8dip"
+        android:layout_marginLeft="8dip"
+        android:layout_marginTop="8dip"
+        android:layout_marginEnd="8dip"
+        android:layout_marginRight="8dip"
+        android:layout_marginBottom="8dip"
         android:background="@drawable/highlight_profile_head" />
 
     <ImageView

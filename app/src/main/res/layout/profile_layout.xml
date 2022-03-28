@@ -22,22 +22,35 @@
                 <uk.openvk.android.legacy.ProfileHeader
                     android:id="@+id/profile_header"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#313743">
+                    android:layout_height="wrap_content">
 
                 </uk.openvk.android.legacy.ProfileHeader>
 
+                <uk.openvk.android.legacy.AboutProfileLinearLayout
+                    android:id="@+id/about_profile_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                </uk.openvk.android.legacy.AboutProfileLinearLayout>
+
                 <Button
-                    android:id="@+id/send_direct_msg"
+                    android:id="@+id/send_direct_msg2"
                     style="@style/BlueButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="4dp"
                     android:text="@string/message" />
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
@@ -75,6 +88,7 @@
             </LinearLayout>
 
             <TabHost
+                android:id="@+id/profile_tabhost"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -82,11 +96,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-
-                    <TabWidget
-                        android:id="@android:id/tabs"
-                        android:layout_width="match_parent"
-                        android:layout_height="32dp" />
 
                     <FrameLayout
                         android:id="@android:id/tabcontent"
@@ -120,6 +129,12 @@
                         </LinearLayout>
 
                     </FrameLayout>
+
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:tabStripEnabled="false"/>
 
                 </LinearLayout>
             </TabHost>

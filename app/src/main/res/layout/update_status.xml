@@ -13,7 +13,7 @@
         android:background="@drawable/bg_actionbar">
 
         <ImageButton
-            android:id="@+id/menuButton"
+            android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@null"
@@ -24,13 +24,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/title_back_btn"
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark" />
 
             <LinearLayout
                 android:layout_width="match_parent"
