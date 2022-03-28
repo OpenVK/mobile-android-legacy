@@ -200,6 +200,15 @@ public class OvkAPIWrapper {
             bundle.putString("Error_message", connectionErrorString);
             msg.setData(bundle);
             AuthenticationActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            Message msg = handler.obtainMessage(NewPostActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            bundle.putString("Error_message", connectionErrorString);
+            msg.setData(bundle);
+            NewPostActivity.handler.sendMessage(msg);
         }
     }
 
