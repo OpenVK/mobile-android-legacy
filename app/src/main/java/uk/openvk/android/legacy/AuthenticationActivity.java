@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -58,6 +61,12 @@ public class AuthenticationActivity extends Activity {
     public SharedPreferences global_sharedPreferences;
     public boolean two_factor_required;
     public int two_factor_code_integer;
+    public String url_addr;
+    public String method;
+    public OvkAPIWrapper ovkAPIWrapper;
+    public static Handler handler;
+    public String send_request;
+    public static final int UPDATE_UI = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +76,23 @@ public class AuthenticationActivity extends Activity {
         json_login = new JSONObject();
         sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        socketThread = new Thread(new socketThread());
-        sslSocketThread = new Thread(new sslSocketThread());
-
+        handler = new Handler() {
+            public void handleMessage(Message msg) {
+                final int what = msg.what;
+                switch(what) {
+                    case UPDATE_UI:
+                        state = msg.getData().getString("State");
+                        send_request = msg.getData().getString("API_method");
+                        try {
+                            json_login = new JSONObject(msg.getData().getString("JSON_response"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        connectionErrorString = msg.getData().getString("Error_message");
+                        updateUITask.run();
+                }
+            }
+        };
         if(!sharedPreferences.contains("auth_token") || !sharedPreferences.contains("server") || sharedPreferences.getString("auth_token", "").length() == 0 || sharedPreferences.getString("server", "").length() == 0) {
             setContentView(R.layout.auth);
             initKeyboardListener();
@@ -88,12 +111,15 @@ public class AuthenticationActivity extends Activity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    if(socketThread.getState() == Thread.State.RUNNABLE) {
-                        socketThread.start();
-                    } else {
-                        socketThread = new Thread(new socketThread());
-                        sslSocketThread = new Thread(new sslSocketThread());
-                        socketThread.start();
+                    ovkAPIWrapper = new OvkAPIWrapper(AuthenticationActivity.this, server, null, json_login, true);
+                    if(server.startsWith("http://")) {
+                        server = server.replace("http://", "");
+                    }
+                    try {
+                        method = "username=" + URLEncoder.encode(email, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&grant_type=" + URLEncoder.encode("password", "UTF-8");
+                        ovkAPIWrapper.sendMethod("token", method);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -154,157 +180,6 @@ public class AuthenticationActivity extends Activity {
         });
     }
 
-    class socketThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                Log.d("OpenVK Legacy", "Connecting to " + server + "...");
-                String url_addr = new String();
-                if(!server.startsWith("http://")) {
-                    url_addr = "http://" + server + "/token?username=" + email + "&password=" + password + "&grant_type=password";
-                } else {
-                    server = server.replace("http://", "");
-                    url_addr = "http://" + server + "/token?username=" + URLEncoder.encode(email, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&grant_type=" + URLEncoder.encode("password", "UTF-8");
-                }
-                URL url = new URL(url_addr);
-                httpConnection = (HttpURLConnection) url.openConnection();
-                httpConnection.setRequestMethod("GET");
-                httpConnection.setRequestProperty("Host", server);
-                httpConnection.setRequestProperty("Accept","application/json");
-                httpConnection.setRequestProperty("Accept-Charset", "UTF-8");
-                httpConnection.setConnectTimeout(30000);
-                httpConnection.setReadTimeout(30000);
-                httpConnection.connect();
-                BufferedReader in;
-                int status = httpConnection.getResponseCode();
-                Log.d("OpenVK Legacy", "Connected!");
-                String response = new String();
-                Log.d("OpenVK","Response code: " + status);
-                if(status == 200) {
-                    in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), "utf-8"));
-                    while ((response = in.readLine()) != null) {
-                        if (response.length() > 0) {
-                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                            response_sb.append(response).append("\n");
-                        }
-                    }
-                    json_login = new JSONObject(response_sb.toString());
-                    connectionDialog.cancel();
-                    in.close();
-                    response_sb = new StringBuilder();
-                    state = "getting_response";
-                    updateUITask.run();
-                } else if(status == 301) {
-                    if(global_sharedPreferences.getBoolean("useHTTPS", true) == true) {
-                        Log.d("OpenVK", "Creating SSL connection...");
-                        state = "creating_ssl_connection";
-                    } else {
-                        state = "no_connection";
-                    }
-                    updateUITask.run();
-                } else {
-                    in = new BufferedReader(new InputStreamReader(httpConnection.getErrorStream()));
-                    while ((response = in.readLine()) != null) {
-                        response_sb.append(response).append("\n");
-                    }
-                    Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                    json_login = new JSONObject(response_sb.toString());
-                    in.close();
-                    response_sb = new StringBuilder();
-                    state = "getting_response";
-                    updateUITask.run();
-                }
-            } catch(JSONException ex) {
-                ex.printStackTrace();
-                connectionErrorString = getResources().getString(R.string.unable_to_parse_error);
-                state = "no_connection";
-                updateUITask.run();
-            } catch(SocketTimeoutException ex) {
-                ex.printStackTrace();
-                connectionErrorString = "SocketTimeoutException";
-                state = "timeout";
-                updateUITask.run();
-            } catch(Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    class sslSocketThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                Log.d("OpenVK Legacy", "Connecting to " + server + "... (Secured)");
-                String url_addr = new String();
-                if(!server.startsWith("http://") || !server.startsWith("https://")) {
-                    url_addr = "https://" + server + "/token?username=" + email + "&password=" + password + "&grant_type=password";
-                } else {
-                    server = server.replace("https://", "").replace("http://", "");
-                    url_addr = "https://" + server + "/token?username=" + URLEncoder.encode(email, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&grant_type=" + URLEncoder.encode("password", "UTF-8");
-                }
-                if(two_factor_required == true)
-                {
-                    url_addr = url_addr + "&code=" + two_factor_code_integer;
-                }
-                two_factor_required = false;
-                URL url = new URL(url_addr);
-                httpsConnection = (HttpsURLConnection) url.openConnection();
-                httpsConnection.setRequestMethod("GET");
-                httpsConnection.setRequestProperty("Host", server);
-                httpsConnection.setRequestProperty("Accept","application/json");
-                httpsConnection.setRequestProperty("Accept-Charset", "UTF-8");
-                httpsConnection.setConnectTimeout(30000);
-                httpsConnection.setReadTimeout(30000);
-                httpsConnection.connect();
-                BufferedReader in;
-                int status = httpsConnection.getResponseCode();
-                Log.d("OpenVK Legacy", "Connected!");
-                String response = new String();
-                Log.d("OpenVK","Response code: " + status);
-                if(status == 200) {
-                    in = new BufferedReader(new InputStreamReader(httpsConnection.getInputStream(), "utf-8"));
-                    while ((response = in.readLine()) != null) {
-                        if (response.length() > 0) {
-                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                            response_sb.append(response).append("\n");
-                        }
-                    }
-                    json_login = new JSONObject(response_sb.toString());
-                    connectionDialog.cancel();
-                    in.close();
-                    response_sb = new StringBuilder();
-                    state = "getting_response";
-                    updateUITask.run();
-                } else if(status == 301) {
-
-                } else {
-                    in = new BufferedReader(new InputStreamReader(httpsConnection.getErrorStream()));
-                    while ((response = in.readLine()) != null) {
-                        response_sb.append(response).append("\n");
-                    }
-                    Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                    json_login = new JSONObject(response_sb.toString());
-                    in.close();
-                    response_sb = new StringBuilder();
-                    state = "getting_response";
-                    updateUITask.run();
-                }
-            } catch(SSLProtocolException ex) {
-                ex.printStackTrace();
-                connectionErrorString = "SSLProtocolException";
-                state = "no_connection";
-                updateUITask.run();
-            } catch(JSONException ex) {
-                ex.printStackTrace();
-                connectionErrorString = getResources().getString(R.string.unable_to_parse_error);
-                state = "no_connection";
-                updateUITask.run();
-            } catch(Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
     class UpdateUITask extends TimerTask {
         @Override
         public void run() {
@@ -312,7 +187,6 @@ public class AuthenticationActivity extends Activity {
                 @Override
                 public void run() {
                     if(state == "getting_response") {
-                        httpConnection.disconnect();
                         try {
                             if(json_login.has("error_code")) {
                                 if (json_login.getInt("error_code") == 28 && json_login.getString("error_msg").equals("Invalid username or password")) {
@@ -430,8 +304,12 @@ public class AuthenticationActivity extends Activity {
 
     private void twoFactorLogin(String two_factor_code) {
         two_factor_required = true;
-        two_factor_code_integer = Integer.valueOf(two_factor_code);
-        sslSocketThread = new Thread(new sslSocketThread());
-        new Thread(new socketThread()).start();
+        try {
+            two_factor_code_integer = Integer.valueOf(two_factor_code);
+            method = "username=" + URLEncoder.encode(email, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&grant_type=" + URLEncoder.encode("password", "UTF-8") + "&code=" + two_factor_code;
+            ovkAPIWrapper.sendMethod("token", method);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

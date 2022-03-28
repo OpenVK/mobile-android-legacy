@@ -3,6 +3,7 @@ package uk.openvk.android.legacy;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -80,7 +81,7 @@ public class NewPostActivity extends Activity {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             final TextView titlebar_title = findViewById(R.id.titlebar_title);
             titlebar_title.setText(getResources().getString(R.string.new_status));
-            final ImageButton back_btn = findViewById(R.id.title_back_btn);
+            final ImageButton back_btn = findViewById(R.id.backButton);
             back_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -91,6 +92,27 @@ public class NewPostActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     onBackPressed();
+                }
+            });
+            ImageButton send_btn = findViewById(R.id.send_post_btn);
+            send_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(connection_status == false) {
+                        socketThread = new Thread(new socketThread());
+                        sslSocketThread = new Thread(new sslSocketThread());
+                        try {
+                            connectionDialog = new ProgressDialog(NewPostActivity.this);
+                            connectionDialog.setMessage(getString(R.string.loading));
+                            connectionDialog.setCancelable(false);
+                            connectionDialog.show();
+                            EditText statusEditText = findViewById(R.id.status_text_edit);
+                            send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
+                            socketThread.start();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             });
         }
