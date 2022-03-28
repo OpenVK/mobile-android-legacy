@@ -870,6 +870,7 @@ public class AppActivity extends Activity {
                                 String status = "";
                                 if(json_response.getJSONArray("response").getJSONObject(0).has("status")) {
                                     status = json_response.getJSONArray("response").getJSONObject(0).getString("status");
+                                    ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setVisibility(View.VISIBLE);
                                 }
                                 ((TextView) profileHeader.findViewById(R.id.profile_activity)).setText(status);
                                 ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setText(status);
