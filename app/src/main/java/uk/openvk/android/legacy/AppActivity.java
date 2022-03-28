@@ -867,8 +867,12 @@ public class AppActivity extends Activity {
                                     }
                                 }
                                 ((TextView) profileHeader.findViewById(R.id.profile_name)).setText(json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name"));
-                                ((TextView) profileHeader.findViewById(R.id.profile_activity)).setText(json_response.getJSONArray("response").getJSONObject(0).getString("status"));
-                                ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setText(json_response.getJSONArray("response").getJSONObject(0).getString("status"));
+                                String status = "";
+                                if(json_response.getJSONArray("response").getJSONObject(0).has("status")) {
+                                    status = json_response.getJSONArray("response").getJSONObject(0).getString("status");
+                                }
+                                ((TextView) profileHeader.findViewById(R.id.profile_activity)).setText(status);
+                                ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setText(status);
                                 String last_seen_time = new SimpleDateFormat("HH:mm").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
                                 String last_seen_date = new SimpleDateFormat("dd MMMM yyyy").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
                                 if (json_response.getJSONArray("response").getJSONObject(0).getInt("online") == 0) {
