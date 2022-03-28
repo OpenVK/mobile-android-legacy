@@ -98,7 +98,10 @@ public class NewPostActivity extends Activity {
             send_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(connection_status == false) {
+                    EditText statusEditText = findViewById(R.id.status_text_edit);
+                    if(statusEditText.getText().toString() == "") {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
+                    }else if(connection_status == false) {
                         socketThread = new Thread(new socketThread());
                         sslSocketThread = new Thread(new sslSocketThread());
                         try {
@@ -106,7 +109,6 @@ public class NewPostActivity extends Activity {
                             connectionDialog.setMessage(getString(R.string.loading));
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
-                            EditText statusEditText = findViewById(R.id.status_text_edit);
                             send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                             socketThread.start();
                         } catch (UnsupportedEncodingException e) {
@@ -131,7 +133,10 @@ public class NewPostActivity extends Activity {
         if(item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if(item.getItemId() == R.id.sendpost) {
-            if(connection_status == false) {
+            EditText statusEditText = findViewById(R.id.status_text_edit2);
+            if(statusEditText.getText().toString().length() == 0) {
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
+            }else if(connection_status == false) {
                 socketThread = new Thread(new socketThread());
                 sslSocketThread = new Thread(new sslSocketThread());
                 try {
@@ -139,7 +144,6 @@ public class NewPostActivity extends Activity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    EditText statusEditText = findViewById(R.id.status_text_edit2);
                     send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                     socketThread.start();
                 } catch (UnsupportedEncodingException e) {

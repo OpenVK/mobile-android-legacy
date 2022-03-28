@@ -1169,4 +1169,5 @@
     <string name="allow_permisssion_in_storage">Для сохранения данных в память устройства приложению нужны специальные разрешения.\n\nОткрыть раздел системных настроек \"О приложении\"?</string>
     <string name="open_btn">Открыть</string>
     <string name="birthday">День рождения</string>
+    <string name="post_fail_empty">Извини, но мы не можем запостить пустое сообщение</string>
 </resources>
