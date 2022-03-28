@@ -63,7 +63,7 @@
     <string name="cancel">Скасувати</string>
     <string name="ok">OK</string>
     
-    <string name="about_text"><![CDATA[<b>ВКонтакте для Android</b><br/><small>Версія %1$s (збірка %2$d)</small><br/><br/><small>Розробник: <a href=\"openvk://profile/tretdm\">Дмитрiй Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорій Клюшніков</a></small>]]></string>
+    <string name="about_text"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версія %1$s (збірка %2$d)</small><br/><br/><small>Розробник: <a href=\"openvk://profile/tretdm\">Дмитро Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорій Клюшніков</a></small>]]></string>
 
     <string-array name="like_menu">
 	    <item>Не подобається</item>
