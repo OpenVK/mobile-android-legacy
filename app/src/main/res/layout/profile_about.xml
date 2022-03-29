@@ -25,6 +25,7 @@
             android:paddingTop="14dp"
             android:paddingRight="18dp"
             android:paddingBottom="14dp"
+            android:singleLine="false"
             android:visibility="gone" />
 
         <LinearLayout
