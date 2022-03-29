@@ -168,8 +168,6 @@ public class AppActivity extends Activity {
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
         server = sharedPreferences.getString("server", "");
 
-        openVK_API = new OvkAPIWrapper(AppActivity.this, server, auth_token, json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
-
         Uri uri = getIntent().getData();
 
         newsLinearLayout = findViewById(R.id.news_layout);
@@ -181,6 +179,8 @@ public class AppActivity extends Activity {
                 finish();
                 return;
             }
+
+            openVK_API = new OvkAPIWrapper(AppActivity.this, server, sharedPreferences.getString("auth_token", ""), json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
 
             if(path.startsWith("openvk://profile/")) {
                 String args = path.substring("openvk://profile/".length());
@@ -196,7 +196,10 @@ public class AppActivity extends Activity {
                     getActionBar().setTitle(R.string.profile);
                 }
             }
+        } else {
+            openVK_API = new OvkAPIWrapper(AppActivity.this, server, auth_token, json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
         }
+
 
 
         if(sharedPreferences.getString("auth_token", "").length() == 0) {
