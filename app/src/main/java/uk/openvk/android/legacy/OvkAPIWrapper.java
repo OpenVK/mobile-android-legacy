@@ -120,13 +120,19 @@ public class OvkAPIWrapper {
                     while ((response = in.readLine()) != null) {
                         sleep(20);
                         if (response.length() > 0) {
-                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
                             response_sb.append(response).append("\n");
                         }
                     }
                     jsonResponseString = response_sb.toString();
                     jsonResponse = new JSONObject(response_sb.toString());
                     response_sb = new StringBuilder();
+                    if(response_sb.toString().contains("\"password")) {
+                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"password")) + " | CONFIDENTIAL]");
+                    } else if(response_sb.toString().contains("\"token")) {
+                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"token")) + " | CONFIDENTIAL]");
+                    } else {
+                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString());
+                    }
                     httpConnection.getInputStream().close();
                     inputStream_isClosed = true;
                     isConnected = false;
@@ -150,7 +156,13 @@ public class OvkAPIWrapper {
                             response_sb.append(response).append("\n");
                         }
                         jsonResponseString = response_sb.toString();
-                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                        if(response_sb.toString().contains("\"password")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"password")) + " | CONFIDENTIAL]");
+                        } else if(response_sb.toString().contains("\"token")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"token")) + " | CONFIDENTIAL]");
+                        } else {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString());
+                        }
                         jsonResponse = new JSONObject(response_sb.toString());
                         response_sb = new StringBuilder();
                         httpConnection.getErrorStream().close();
@@ -227,8 +239,15 @@ public class OvkAPIWrapper {
                         sleep(20);
                         if (response.length() > 0) {
                             response_sb.append(response).append("\n");
-                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
                         }
+                    }
+
+                    if(response_sb.toString().contains("\"password")) {
+                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"password")) + " | CONFIDENTIAL]");
+                    } else if(response_sb.toString().contains("\"token")) {
+                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"token")) + " | CONFIDENTIAL]");
+                    } else {
+                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString());
                     }
                     jsonResponseString = response_sb.toString();
                     jsonResponse = new JSONObject(response_sb.toString());
@@ -248,7 +267,13 @@ public class OvkAPIWrapper {
                             response_sb.append(response).append("\n");
                         }
                         jsonResponseString = response_sb.toString();
-                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                        if(response_sb.toString().contains("\"password")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"password")) + " | CONFIDENTIAL]");
+                        } else if(response_sb.toString().contains("\"token")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"token")) + " | CONFIDENTIAL]");
+                        } else {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString());
+                        }
                         jsonResponse = new JSONObject(response_sb.toString());
                         response_sb = new StringBuilder();
                         httpsConnection.getErrorStream().close();
