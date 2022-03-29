@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
@@ -108,12 +109,13 @@ public class AppActivity extends Activity {
     public String raw_mime_format;
     InputStream in_raw;
     public ArrayList<NewsItemCountersInfo> newsItemCountersInfoArray;
-    public ArrayList<Drawable> attachments_photo;
+    public ArrayList<Bitmap> attachments_photo;
     public TabHost tabHost;
     public boolean about_profile_opened;
     public String birthday;
     public static Handler handler;
     public static final int UPDATE_UI = 0;
+    public static final int GET_PICTURE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +134,8 @@ public class AppActivity extends Activity {
             auth_token = (String) savedInstanceState.getSerializable("auth_token");
         }
 
+        attachments_photo = new ArrayList<Bitmap>();
+
         handler = new Handler() {
             public void handleMessage(Message msg) {
                 final int what = msg.what;
@@ -139,6 +143,17 @@ public class AppActivity extends Activity {
                     case UPDATE_UI:
                         state = msg.getData().getString("State");
                         send_request = msg.getData().getString("API_method");
+                        try {
+                            json_response = new JSONObject(msg.getData().getString("JSON_response"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
+                        updateUITask.run();
+                        break;
+                    case GET_PICTURE:
+                        state = msg.getData().getString("State");
+                        attachments_photo.add((Bitmap) msg.getData().getParcelable("Parcelable"));
                         try {
                             json_response = new JSONObject(msg.getData().getString("JSON_response"));
                         } catch (JSONException e) {
@@ -309,12 +324,18 @@ public class AppActivity extends Activity {
         attachments = new JSONArray();
         newsListItemArray = new ArrayList<NewsListItem>();
         groupPostInfoArray = new ArrayList<GroupPostInfo>();
-        attachments_photo = new ArrayList<Drawable>();
         newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
         server_2 = new String();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getActionBar().setIcon(R.drawable.ic_left_menu);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (uri != null) {
+                    String path = uri.toString();
+                    if (path.startsWith("openvk://profile/")) {
+                        getActionBar().setIcon(R.drawable.ic_ab_app);
+                    }
+                } else {
+                    getActionBar().setIcon(R.drawable.ic_left_menu);
+                }
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -389,8 +410,7 @@ public class AppActivity extends Activity {
         final LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.VISIBLE);
         if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
-            news_listview = newsLinearLayout.findViewById(R.id.news_listview);
-            news_listview.setVisibility(View.GONE);
+            newsLinearLayout.setVisibility(View.GONE);
         } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
             profileLayout.setVisibility(View.GONE);
         }
@@ -941,7 +961,7 @@ public class AppActivity extends Activity {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout5)).setVisibility(View.GONE);
 
                                 } else {
-                                    ((TextView) aboutProfile_ll.findViewById(R.id.movies_label2)).setText(
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.books_label2)).setText(
                                             json_response.getJSONArray("response").getJSONObject(0).getString("books")
                                     );
                                 }
@@ -1065,6 +1085,8 @@ public class AppActivity extends Activity {
                         }
                     } catch (JSONException jEx) {
                         jEx.printStackTrace();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 }
                 try {
@@ -1089,9 +1111,6 @@ public class AppActivity extends Activity {
                             post_group_ids_sb.append("," + -newsfeed.getJSONObject(news_item_index_2).getInt("owner_id"));
                             groupPostInfoArray.add(new GroupPostInfo(news_item_index_2, -newsfeed.getJSONObject(news_item_index_2).getInt("owner_id")));
                         }
-                        LinearLayout progress_ll = findViewById(R.id.news_progressll);
-                        progress_ll.setVisibility(View.GONE);
-                        newsLinearLayout.setVisibility(View.VISIBLE);
                         news_item_index++;
                     } catch (JSONException e) {
                     } catch (NullPointerException npe) {
@@ -1117,10 +1136,6 @@ public class AppActivity extends Activity {
                             newsListItemArray.add(groupPostInfoArray.get(news_item_index_4).postId, new NewsListItem(author, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId))
                                             .getInt("date"), null, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId)).getString("text"), newsItemCountersInfoArray.get(groupPostInfoArray.get(news_item_index_4).postId),null, null,
                                             getApplicationContext()));
-                            LinearLayout progress_ll = findViewById(R.id.news_progressll);
-                            progress_ll.setVisibility(View.GONE);
-                            news_listview = newsLinearLayout.findViewById(R.id.news_listview);
-                            news_listview.setVisibility(View.VISIBLE);
                             news_item_index++;
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1135,6 +1150,8 @@ public class AppActivity extends Activity {
         newsListAdapter = new NewsListAdapter(this, newsListItemArray);
         news_listview = newsLinearLayout.findViewById(R.id.news_listview);
         news_listview.setAdapter(newsListAdapter);
-
+        LinearLayout progress_ll = findViewById(R.id.news_progressll);
+        progress_ll.setVisibility(View.GONE);
+        newsLinearLayout.setVisibility(View.VISIBLE);
         }
 }

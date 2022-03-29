@@ -17,6 +17,7 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -40,6 +41,14 @@ public class MainSettingsActivity extends PreferenceActivity {
                 return false;
             }
         });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                getActionBar().setHomeButtonEnabled(true);
+            }
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         Preference about_preference = findPreference("about");
         about_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -108,5 +117,20 @@ public class MainSettingsActivity extends PreferenceActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == android.R.id.home) {
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

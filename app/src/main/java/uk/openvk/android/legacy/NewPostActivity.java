@@ -71,6 +71,12 @@ public class NewPostActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.update_status);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                getActionBar().setHomeButtonEnabled(true);
+            }
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         inputStream_isClosed = new Boolean(false);
         server = getApplicationContext().getSharedPreferences("instance", 0).getString("server", "");
