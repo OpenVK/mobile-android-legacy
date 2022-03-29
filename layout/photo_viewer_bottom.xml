@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/photo_viewer_descr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="3"
+        android:shadowColor="#000"
+        android:shadowDy="1"
+        android:shadowRadius="3"
+        android:text="TextView"
+        android:textColor="#FFF"
+        android:textSize="15dip" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="47dip"
+        android:background="@drawable/photo_viewer_bttom" >
+
+        <FrameLayout
+            android:id="@+id/photo_viewer_likes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/highlight"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/photo_viewer_likes_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/ic_photoview_like"
+                android:drawablePadding="5dip"
+                android:gravity="center"
+                android:text="123"
+                android:textColor="#FFF"
+                android:textSize="18dip" />
+
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/photo_viewer_comments"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/highlight"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/photo_viewer_comments_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/ic_photoview_comment"
+                android:drawablePadding="5dip"
+                android:gravity="center"
+                android:text="123"
+                android:textColor="#FFF"
+                android:textSize="18dip" />
+
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/photo_viewer_tags"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/highlight"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/photo_viewer_tags_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/ic_photoview_tag"
+                android:drawablePadding="5dip"
+                android:gravity="center"
+                android:text="123"
+                android:textColor="#FFF"
+                android:textSize="18dip" />
+
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>

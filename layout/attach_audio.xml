@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/attach_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/attach_audio_play" />
+
+    <TextView
+        android:id="@+id/attach_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/attach_icon"
+        android:layout_marginLeft="12dip"
+        android:layout_toRightOf="@+id/attach_icon"
+        android:layout_alignParentRight="true"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textSize="17dip" />
+
+    <TextView
+        android:id="@+id/attach_duration"
+        android:layout_width="35dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/attach_title"
+        android:layout_marginTop="-4dip"
+        android:textColor="@color/hint"
+        android:singleLine="true"
+        android:text="1:23"
+        android:layout_marginRight="5dip"
+        android:textSize="15dip" />
+    
+    <TextView
+        android:id="@+id/attach_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/attach_title"
+        android:layout_below="@+id/attach_title"
+        android:singleLine="true"
+        android:text="TextView"
+        android:layout_marginTop="-4dip"
+        android:textSize="15dip"
+        android:ellipsize="marquee"
+        android:textColor="@color/hint"
+        android:layout_alignParentRight="true"
+        />
+
+    <SeekBar
+        android:focusable="false"
+        android:id="@+id/attach_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/attach_subtitle"
+        android:layout_alignParentRight="true"
+        android:max="1000"
+        android:maxHeight="3dip"
+        android:minHeight="3dip"
+        android:thumbOffset="11dip"
+        android:paddingLeft="11dip"
+        android:paddingRight="11dip"
+        android:layout_marginTop="-9dip"
+        android:layout_marginLeft="-11dip"
+        android:layout_marginRight="-11dip"
+        android:layout_below="@+id/attach_subtitle"
+        android:visibility="invisible"
+        android:progressDrawable="@drawable/progress_audio_attach"
+        android:thumb="@drawable/audio_slider" />
+
+</LinearLayout >

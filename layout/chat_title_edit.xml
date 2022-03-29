@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/chat_edit_stitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/chat_edit_title"
+        android:textAllCaps="true"
+        android:text="@string/chat_title"
+        android:textSize="18dip"
+        android:paddingLeft="20dip"
+        android:paddingTop="8dip"
+        android:textColor="#898989"
+        android:shadowColor="#FFF"
+        android:shadowDy="1"
+        android:shadowRadius="0.000000001"/>
+
+    <ImageView
+        android:id="@+id/chat_edit_photo"
+        android:layout_width="92dip"
+        android:layout_height="86dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_post"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_chat_multi" />
+
+    <EditText
+        android:id="@+id/chat_edit_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@+id/chat_edit_stitle"
+        android:layout_toLeftOf="@+id/chat_edit_photo"
+        android:background="@drawable/bg_post"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="@string/enter_chat_title"
+        android:singleLine="true"
+        android:textColor="#000"
+        android:textSize="19dip" >
+
+    </EditText>
+
+</RelativeLayout>

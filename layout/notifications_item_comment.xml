@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/nc_user_photo"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="10dip"
+        android:src="@drawable/photo_loading"/>
+    
+    <ImageView
+        android:id="@+id/nc_post_photo"
+        android:layout_width="67dip"
+        android:layout_height="67dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="8dip"
+        android:layout_marginLeft="0dip"
+        android:layout_marginRight="8dip"
+        android:layout_marginTop="7dip"
+        android:src="@drawable/photo_loading_black" 
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/nc_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="7dip"
+        android:layout_marginTop="5dip"
+        android:layout_toRightOf="@+id/nc_user_photo"
+        android:text="TextView"
+        android:textColor="#000"
+        android:textSize="17dip"
+        android:ellipsize="marquee" android:layout_toLeftOf="@+id/nc_post_photo" android:singleLine="true"/>
+
+    <TextView
+        android:id="@+id/nc_comment_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nc_user_name"
+        android:layout_below="@+id/nc_user_name"
+        android:layout_marginTop="3dip"
+        android:text="TextView"
+        android:textSize="15dip"
+        android:textColor="#000" android:layout_toLeftOf="@+id/nc_post_photo" android:layout_marginRight="7dip"/>
+
+    <TextView
+        android:id="@+id/nc_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nc_comment_text"
+        android:layout_below="@+id/nc_comment_text"
+        android:text="TextView"
+        android:textColor="#a6a6a6"
+        android:textSize="15dip" android:ellipsize="marquee" android:layout_marginRight="7dip" android:singleLine="true" android:layout_toLeftOf="@+id/nc_post_photo" android:duplicateParentState="true"/>
+
+
+    <TextView
+        android:id="@+id/nc_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nc_info"
+        android:layout_below="@+id/nc_info"
+        android:text="TextView"
+        android:textColor="@color/link"
+        android:textSize="15dip" android:ellipsize="marquee" android:layout_marginRight="7dip" android:singleLine="true" android:layout_toLeftOf="@+id/nc_post_photo" android:duplicateParentState="true"/>
+
+    <View
+        android:id="@+id/padder"
+        android:layout_width="wrap_content"
+        android:layout_height="7dip"
+        android:layout_alignLeft="@+id/nc_link"
+        android:layout_below="@+id/nc_link"/>
+    
+    <View
+        android:id="@+id/qwe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@+id/padder"
+        android:background="@drawable/highlight"/>
+
+</RelativeLayout>

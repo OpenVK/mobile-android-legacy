@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/highlight"
+    android:gravity="center_vertical" >
+
+    <ImageView
+        android:id="@+id/flist_item_photo"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_marginRight="5dip"
+        android:src="@drawable/photo_loading"
+        android:visibility="visible" android:layout_centerVertical="true" android:scaleType="centerCrop">
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/flist_item_online"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/flist_item_text"
+        android:layout_marginLeft="5dip"
+        android:src="@drawable/ic_online" >
+    </ImageView>
+
+    <TextView
+        android:id="@+id/flist_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dip"
+        android:layout_toRightOf="@+id/flist_item_photo"
+        android:duplicateParentState="false"
+        android:textSize="17dip"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="@color/main_text" />
+
+    <ImageView
+        android:id="@+id/flist_item_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/checkbox_off" />
+
+</RelativeLayout>

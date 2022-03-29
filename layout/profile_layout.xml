@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/profile_ext_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#313743"
+                android:orientation="vertical">
+
+                <uk.openvk.android.legacy.ProfileHeader
+                    android:id="@+id/profile_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </uk.openvk.android.legacy.ProfileHeader>
+
+                <uk.openvk.android.legacy.AboutProfileLinearLayout
+                    android:id="@+id/about_profile_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                </uk.openvk.android.legacy.AboutProfileLinearLayout>
+
+                <Button
+                    android:id="@+id/send_direct_msg2"
+                    style="@style/BlueButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/message" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <uk.openvk.android.legacy.ProfileCounterLayout
+                        android:id="@+id/photos_counter"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.ProfileCounterLayout>
+
+                    <uk.openvk.android.legacy.ProfileCounterLayout
+                        android:id="@+id/friends_counter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.ProfileCounterLayout>
+
+                    <uk.openvk.android.legacy.ProfileCounterLayout
+                        android:id="@+id/mutual_counter"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.ProfileCounterLayout>
+                </TableRow>
+
+            </LinearLayout>
+
+            <TabHost
+                android:id="@+id/profile_tabhost"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:id="@android:id/tabcontent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:id="@+id/all_posts_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <uk.openvk.android.legacy.NewsLinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                            </uk.openvk.android.legacy.NewsLinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/owners_posts_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <uk.openvk.android.legacy.NewsLinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                            </uk.openvk.android.legacy.NewsLinearLayout>
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:tabStripEnabled="false"/>
+
+                </LinearLayout>
+            </TabHost>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

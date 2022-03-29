@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_padding" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_audio_player" >
+
+        <ImageView
+            android:id="@+id/w_player_cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <FrameLayout
+            android:id="@+id/w_player_p_wrap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="25dip" >
+
+            <ImageView
+                android:id="@+id/w_player_placeholder"
+                android:layout_width="320dip"
+                android:layout_height="320dip"
+                android:layout_gravity="bottom|center_horizontal|clip_vertical"
+                android:scaleType="centerCrop"
+                android:src="@drawable/aplayer_cover_placeholder" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/w_player_btns"
+            android:layout_width="fill_parent"
+            android:layout_height="52dip"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:paddingBottom="10dip"
+            android:background="#bb000000"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/w_player_shuffle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/highlight"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
+                android:scaleType="center"
+                android:src="@drawable/ic_audio_shuffle" />
+
+            <ImageView
+                android:id="@+id/w_player_prev"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dip"
+                android:layout_weight="1"
+                android:background="@drawable/highlight"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
+                android:scaleType="center"
+                android:src="@drawable/ic_awidget_prev" />
+
+            <ImageView
+                android:id="@+id/w_player_play_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_weight="1"
+                android:background="@drawable/highlight"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
+                android:scaleType="center"
+                android:src="@drawable/ic_awidget_play" />
+
+            <ImageView
+                android:id="@+id/w_player_next"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dip"
+                android:layout_weight="1"
+                android:background="@drawable/highlight"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
+                android:scaleType="center"
+                android:src="@drawable/ic_awidget_next" />
+
+            <ImageView
+                android:id="@+id/w_player_repeat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/highlight"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
+                android:scaleType="center"
+                android:src="@drawable/ic_audio_repeat" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/w_player_clickbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/w_player_btns"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="80dip"
+                android:layout_gravity="bottom"
+                android:src="@drawable/widget_player_gradient" />
+
+            <TextView
+                android:id="@+id/w_player_inactive_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/audio_widget_inactive"
+                android:textColor="#FFF"
+            	android:fontFamily="sans-serif-light"
+            	android:layout_marginLeft="10dip"
+            	android:layout_marginRight="10dip"
+                android:textSize="17dip" />
+
+        </FrameLayout>
+        
+        <TextView
+            android:id="@+id/w_player_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/w_player_btns"
+            android:layout_alignParentLeft="true"
+            android:fontFamily="sans-serif-light"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:text=""
+            android:textColor="#CFFF"
+            android:textSize="17dip" />
+
+        <TextView
+            android:id="@+id/w_player_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/w_player_artist"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="10dip"
+            android:fontFamily="sans-serif-light"
+            android:gravity="left"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#FFF"
+            android:textSize="28dip" />
+
+
+    </RelativeLayout>
+
+</FrameLayout>
