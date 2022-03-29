@@ -349,7 +349,9 @@ public class AppActivity extends Activity {
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 if(connection_status == false) {
                     newsLinearLayout.setVisibility(View.GONE);
-                    profileLayout.setVisibility(View.VISIBLE);
+                    profileLayout.setVisibility(View.GONE);
+                    LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                    progress_ll.setVisibility(View.VISIBLE);
                     try {
                         openVK_API.sendMethod("Account.getProfileInfo", "");
                     } catch (Exception e) {
@@ -369,7 +371,11 @@ public class AppActivity extends Activity {
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 if(connection_status == false) {
                     newsLinearLayout.setVisibility(View.GONE);
-                    profileLayout.setVisibility(View.VISIBLE);
+                    profileLayout.setVisibility(View.GONE);
+                    LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                    progress_ll.setVisibility(View.VISIBLE);
+                    LinearLayout error_ll = findViewById(R.id.error_ll);
+                    error_ll.setVisibility(View.GONE);
                     try {
                         openVK_API.sendMethod("Account.getProfileInfo", "");
                     } catch (Exception e) {
@@ -709,7 +715,11 @@ public class AppActivity extends Activity {
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 profileLayout.setVisibility(View.GONE);
                 NewsLinearLayout newsLinearLayout = findViewById(R.id.news_layout);
-                newsLinearLayout.setVisibility(View.VISIBLE);
+                newsLinearLayout.setVisibility(View.GONE);
+                LinearLayout error_ll = findViewById(R.id.error_ll);
+                error_ll.setVisibility(View.GONE);
+                LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                progress_ll.setVisibility(View.VISIBLE);
                 openSlidingMenu();
                     try {
                         groupPostInfoArray = new ArrayList<GroupPostInfo>();
@@ -897,7 +907,7 @@ public class AppActivity extends Activity {
                                 if(json_response.getJSONArray("response").getJSONObject(0).isNull("interests") == true) {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout)).setVisibility(View.GONE);
                                 } else {
-                                    ((TextView) ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout)).findViewById(R.id.interests_label2)).setText(
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.interests_label2)).setText(
                                             json_response.getJSONArray("response").getJSONObject(0).getString("interests")
                                     );
                                 }
@@ -905,7 +915,7 @@ public class AppActivity extends Activity {
                                 if(json_response.getJSONArray("response").getJSONObject(0).isNull("music") == true) {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout2)).setVisibility(View.GONE);
                                 } else {
-                                    ((TextView) ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout2)).findViewById(R.id.music_label2)).setText(
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.music_label2)).setText(
                                             json_response.getJSONArray("response").getJSONObject(0).getString("music")
                                     );
                                 }
@@ -913,7 +923,7 @@ public class AppActivity extends Activity {
                                 if(json_response.getJSONArray("response").getJSONObject(0).isNull("movies") == true) {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout3)).setVisibility(View.GONE);
                                 } else {
-                                    ((TextView) ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout3)).findViewById(R.id.music_label2)).setText(
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.music_label2)).setText(
                                             json_response.getJSONArray("response").getJSONObject(0).getString("music")
                                     );
                                 }
@@ -922,7 +932,7 @@ public class AppActivity extends Activity {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout4)).setVisibility(View.GONE);
 
                                 } else {
-                                    ((TextView) ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout4)).findViewById(R.id.movies_label2)).setText(
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.movies_label2)).setText(
                                             json_response.getJSONArray("response").getJSONObject(0).getString("tv")
                                     );
                                 }
@@ -931,7 +941,7 @@ public class AppActivity extends Activity {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout5)).setVisibility(View.GONE);
 
                                 } else {
-                                    ((TextView) ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout5)).findViewById(R.id.movies_label2)).setText(
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.movies_label2)).setText(
                                             json_response.getJSONArray("response").getJSONObject(0).getString("books")
                                     );
                                 }
@@ -997,6 +1007,8 @@ public class AppActivity extends Activity {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                            ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+                            profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
                         }
@@ -1004,6 +1016,8 @@ public class AppActivity extends Activity {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                            ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+                            profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
                         }
@@ -1011,6 +1025,8 @@ public class AppActivity extends Activity {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                            ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+                            profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
                         }
@@ -1075,8 +1091,7 @@ public class AppActivity extends Activity {
                         }
                         LinearLayout progress_ll = findViewById(R.id.news_progressll);
                         progress_ll.setVisibility(View.GONE);
-                        news_listview = newsLinearLayout.findViewById(R.id.news_listview);
-                        news_listview.setVisibility(View.VISIBLE);
+                        newsLinearLayout.setVisibility(View.VISIBLE);
                         news_item_index++;
                     } catch (JSONException e) {
                     } catch (NullPointerException npe) {
