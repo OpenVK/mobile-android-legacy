@@ -58,10 +58,5 @@
             android:label="@string/debug_menu"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
-        <activity
-            android:name=".FriendsActivity"
-            android:label="@string/friends_of_user"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
-        </activity>
     </application>
 </manifest>

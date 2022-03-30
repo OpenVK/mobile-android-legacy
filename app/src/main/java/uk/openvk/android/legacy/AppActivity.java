@@ -83,6 +83,7 @@ public class AppActivity extends Activity {
     public StringBuilder post_author_ids_sb;
     public StringBuilder post_group_ids_sb;
     public NewsLinearLayout newsLinearLayout;
+    public FriendsLinearLayout friendsLinearLayout;
     public boolean sliding_animated;
     public boolean menu_is_closed;
     public boolean connection_status;
@@ -95,6 +96,8 @@ public class AppActivity extends Activity {
     public static final int UPDATE_UI = 0;
     public static final int GET_PICTURE = 1;
     public int current_user_id = 0;
+    public ArrayList<FriendsListItem> friendsListItemArray;
+    public FriendsListAdapter friendsListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +154,7 @@ public class AppActivity extends Activity {
 
         newsLinearLayout = findViewById(R.id.news_layout);
         ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+        friendsLinearLayout = findViewById(R.id.friends_layout);
 
         if (uri!=null){
             String path = uri.toString();
@@ -307,6 +311,7 @@ public class AppActivity extends Activity {
         newsListItemArray = new ArrayList<NewsListItem>();
         groupPostInfoArray = new ArrayList<GroupPostInfo>();
         newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
+        friendsListItemArray = new ArrayList<FriendsListItem>();
         server_2 = new String();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -567,7 +572,7 @@ public class AppActivity extends Activity {
     }
 
     public void showFriends(int user_id) {
-        Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AppActivity.class);
         intent.putExtra("user_id", user_id);
         startActivity(intent);
     }
@@ -715,7 +720,28 @@ public class AppActivity extends Activity {
 
     public void onSlidingMenuItemClicked(int position) {
         if(position == 0) {
-            showFriends(current_user_id);
+            if(connection_status == false) {
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                editor.putString("currentLayout", "FriendsLayout");
+                editor.commit();
+                ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+                profileLayout.setVisibility(View.GONE);
+                NewsLinearLayout newsLinearLayout = findViewById(R.id.news_layout);
+                newsLinearLayout.setVisibility(View.GONE);
+                LinearLayout error_ll = findViewById(R.id.error_ll);
+                friendsLinearLayout.setVisibility(View.GONE);
+                error_ll.setVisibility(View.GONE);
+                LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                progress_ll.setVisibility(View.VISIBLE);
+                try {
+                    openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
+            }
         } else if(position == 5) {
             if(connection_status == false) {
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -728,6 +754,7 @@ public class AppActivity extends Activity {
                 newsLinearLayout.setVisibility(View.GONE);
                 LinearLayout error_ll = findViewById(R.id.error_ll);
                 error_ll.setVisibility(View.GONE);
+                friendsLinearLayout.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
                 openSlidingMenu();
@@ -845,9 +872,9 @@ public class AppActivity extends Activity {
                                     }
                                 } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
                                     Uri uri = getIntent().getData();
-                                    if (uri!=null) {
+                                    if (uri != null) {
                                         String args = uri.toString().substring("openvk://profile/".length());
-                                        if(connection_status == false) {
+                                        if (connection_status == false) {
                                             try {
                                                 openVK_API.sendMethod("Users.search", "q=" + URLEncoder.encode(args, "UTF-8"));
                                             } catch (UnsupportedEncodingException e) {
@@ -855,13 +882,21 @@ public class AppActivity extends Activity {
                                             }
                                         }
                                     } else {
-                                        if(connection_status == false) {
+                                        if (connection_status == false) {
                                             try {
                                                 profile_id = json_response.getJSONObject("response").getInt("id");
                                                 openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getInt("id") + "&fields=last_seen,status,sex,interests,music,movies,city,books");
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
+                                        }
+                                    }
+                                } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                                    if(connection_status == false) {
+                                        try {
+                                            openVK_API.sendMethod("Friends.get", "user_id=" + current_user_id + "&count=" + 50);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
                                     }
                                 }
@@ -1007,6 +1042,8 @@ public class AppActivity extends Activity {
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                 ProfileCounterLayout friends_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.friends_counter);
                                 ((TextView) friends_counter.findViewById(R.id.profile_counter_value)).setText("" + json_response.getJSONObject("response").getInt("count"));
+                            } else if(send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                                loadFriends();
                             }
 
                         } catch (JSONException e) {
@@ -1021,6 +1058,7 @@ public class AppActivity extends Activity {
                             ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                             profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
+                            friendsLinearLayout.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
                         }
                     } else if(state == "timeout") {
@@ -1030,6 +1068,7 @@ public class AppActivity extends Activity {
                             ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                             profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
+                            friendsLinearLayout.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
                         }
                     } else if(state == "no_connection") {
@@ -1039,6 +1078,7 @@ public class AppActivity extends Activity {
                             ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                             profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
+                            friendsLinearLayout.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
                         }
                     }
@@ -1144,5 +1184,32 @@ public class AppActivity extends Activity {
         LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.GONE);
         newsLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    void loadFriends() {
+        Log.d("TEST", "TEST!");
+        int friendsCount = 0; // zero rn
+        try {
+            friendsCount = json_response.getJSONObject("response").getJSONArray("items").length(); // we will use count of items this time bc we still don't have infinity loading or smth like that
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        if(friendsCount > 0)
+        {
+            if (send_request.startsWith("/method/Friends.get")) {
+                for (int i = 0; i < friendsCount; i++) {
+                    try {
+                        JSONObject item = (JSONObject) json_response.getJSONObject("response").getJSONArray("items").get(i);
+                        friendsListItemArray.add(new FriendsListItem(item.getInt("id"), item.getString("first_name") + " " + item.getString("last_name"), null, item.getInt("online")));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            ListView friendsList = (ListView) findViewById(R.id.friends_listview);
+            friendsListAdapter = new FriendsListAdapter(this, friendsListItemArray);
+            friendsList.setAdapter(friendsListAdapter);
+            friendsLinearLayout.setVisibility(View.VISIBLE);
+        }
+    }
 }

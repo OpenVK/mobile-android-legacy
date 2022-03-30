@@ -9,41 +9,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/friends_progress"
+        <ListView
+            android:id="@+id/friends_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:baselineAligned="false"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/progressBar2"
-                style="@style/ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/friends_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:dividerHeight="1dp"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
             android:visibility="visible">
 
-            <ListView
-                android:id="@+id/friends_listview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:divider="@null"
-                android:dividerHeight="1pt"
-                android:footerDividersEnabled="false"
-                android:headerDividersEnabled="false"
-                android:theme="@style/NewsItemTransparentBackground"
-                android:visibility="visible">
+        </ListView>
 
-            </ListView>
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
