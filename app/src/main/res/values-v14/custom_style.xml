@@ -21,8 +21,6 @@
 
     <style name="ActionBarStyle" parent="android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@drawable/bg_actionbar</item>
-        <item name="android:titleTextStyle">@style/ActionBarTitleStyle</item>
-        <item name="android:subtitleTextStyle">@style/ActionBarSubtitleStyle</item>
         <item name="android:icon">@drawable/ic_ab_app</item>
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
         <!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
