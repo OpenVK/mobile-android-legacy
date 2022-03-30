@@ -9,8 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,17 +43,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,27 +53,20 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import static java.lang.Thread.sleep;
-
 public class AppActivity extends Activity {
     public String auth_token;
     public TextView titlebar_title;
     public String server;
     public String server_2;
-    public String raw_address;
     public String state;
     public OvkAPIWrapper openVK_API;
     public UpdateUITask updateUITask;
-    public ProgressDialog connectionDialog;
     public StringBuilder response_sb;
     public JSONObject json_response;
     public JSONObject json_response_user;
     public JSONObject json_response_group;
     public JSONArray newsfeed;
     public JSONArray attachments;
-    public String connectionErrorString;
     public boolean creating_another_activity;
     public PopupWindow popup_menu;
     public ArrayList<NewsListItem> newsListItemArray;
@@ -91,8 +74,6 @@ public class AppActivity extends Activity {
     public ArrayList<GroupPostInfo> groupPostInfoArray;
     public NewsListAdapter newsListAdapter;
     public int postAuthorId;
-    public Thread socketThread;
-    public Thread sslSocketThread;
     public String send_request;
     public ListView news_listview;
     public int news_item_count;
@@ -106,16 +87,14 @@ public class AppActivity extends Activity {
     public boolean menu_is_closed;
     public boolean connection_status;
     public int profile_id;
-    public String raw_mime_format;
-    InputStream in_raw;
     public ArrayList<NewsItemCountersInfo> newsItemCountersInfoArray;
     public ArrayList<Bitmap> attachments_photo;
     public TabHost tabHost;
     public boolean about_profile_opened;
-    public String birthday;
     public static Handler handler;
     public static final int UPDATE_UI = 0;
     public static final int GET_PICTURE = 1;
+    public int current_user_id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -587,6 +566,12 @@ public class AppActivity extends Activity {
         startActivity(intent);
     }
 
+    public void showFriends(int user_id) {
+        Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
+        intent.putExtra("user_id", user_id);
+        startActivity(intent);
+    }
+
     public void onSimpleListItemClicked(int position) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             if(position == 0) {
@@ -729,7 +714,9 @@ public class AppActivity extends Activity {
     }
 
     public void onSlidingMenuItemClicked(int position) {
-        if(position == 5) {
+        if(position == 0) {
+            showFriends(current_user_id);
+        } else if(position == 5) {
             if(connection_status == false) {
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
@@ -831,6 +818,7 @@ public class AppActivity extends Activity {
                                 editor.putInt("user_id", json_response.getJSONObject("response").getInt("id"));
                                 editor.commit();
                                 profile_name.setText(json_response.getJSONObject("response").getString("first_name") + " " + json_response.getJSONObject("response").getString("last_name"));
+                                current_user_id = json_response.getJSONObject("response").getInt("id");
                                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                 ((TextView) profileHeader.findViewById(R.id.profile_name)).setText(json_response.getJSONObject("response").getString("first_name") + " " + json_response.getJSONObject("response").getString("last_name"));
