@@ -63,8 +63,8 @@ public class FriendsActivity extends Activity {
         if(connection_status == false) {
             try {
                 openVK_API.sendMethod("Friends.get", "user_id=" + getIntent().getExtras().getInt("user_id") + "&count=" + 50);
-                findViewById(R.id.friends_list).setVisibility(View.GONE);
-                findViewById(R.id.friends_progress).setVisibility(View.VISIBLE);
+                findViewById(R.id.friends_layout).setVisibility(View.GONE);
+                findViewById(R.id.news_progressll).setVisibility(View.VISIBLE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -111,8 +111,8 @@ public class FriendsActivity extends Activity {
             ListView friendsList = (ListView) findViewById(R.id.friends_listview);
             friendsListAdapter = new FriendsListAdapter(this, friendsListItemArray);
             friendsList.setAdapter(friendsListAdapter);
-            findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
-            findViewById(R.id.friends_progress).setVisibility(View.GONE);
+            findViewById(R.id.friends_layout).setVisibility(View.VISIBLE);
+            findViewById(R.id.news_progressll).setVisibility(View.GONE);
         }
     }
 

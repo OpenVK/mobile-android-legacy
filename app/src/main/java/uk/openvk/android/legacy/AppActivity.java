@@ -7,8 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,7 +20,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AlignmentSpan;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -885,7 +895,7 @@ public class AppActivity extends Activity {
                                         if (connection_status == false) {
                                             try {
                                                 profile_id = json_response.getJSONObject("response").getInt("id");
-                                                openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getInt("id") + "&fields=last_seen,status,sex,interests,music,movies,city,books");
+                                                openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getInt("id") + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
@@ -922,7 +932,13 @@ public class AppActivity extends Activity {
                                         ex.printStackTrace();
                                     }
                                 }
-                                ((TextView) profileHeader.findViewById(R.id.profile_name)).setText(json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name"));
+                                String name = json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name") + "  ";
+                                SpannableStringBuilder sb = new SpannableStringBuilder(name);
+                                if(json_response.getJSONArray("response").getJSONObject(0).getInt("verified") == 1) {
+                                    ImageSpan imageSpan = new ImageSpan(getApplicationContext(), R.drawable.ic_verified, DynamicDrawableSpan.ALIGN_BASELINE);
+                                    sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                }
+                                ((TextView) profileHeader.findViewById(R.id.profile_name)).setText(sb);
                                 String status = "";
                                 if(json_response.getJSONArray("response").getJSONObject(0).has("status")) {
                                     status = json_response.getJSONArray("response").getJSONObject(0).getString("status");
@@ -1022,7 +1038,7 @@ public class AppActivity extends Activity {
                             } else if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
                                 try {
                                     send_request = ("/method/Users.get");
-                                    openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getInt("id")  + "&fields=last_seen,status,sex,interests,music,movies,city,books");
+                                    openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getInt("id")  + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
                                 } catch (Exception e) {
                                     try {
                                         if (json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getString("id").equals("")) {
