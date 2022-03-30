@@ -47,34 +47,11 @@ import javax.net.ssl.HttpsURLConnection;
 import static java.lang.Thread.sleep;
 
 public class NewsLinearLayout extends LinearLayout {
-    public String auth_token;
     public TextView titlebar_title;
-    public HttpURLConnection httpConnection;
-    public HttpsURLConnection httpsConnection;
-    public String server;
     public String state;
-    public ProgressDialog connectionDialog;
-    public StringBuilder response_sb;
-    public JSONObject json_response;
-    public JSONObject json_response_user;
     public JSONArray newsfeed;
-    public String connectionErrorString;
-    public boolean creating_another_activity;
-    public PopupWindow popup_menu;
-    public ArrayList<NewsListItem> newsListItemArray;
-    public NewsListAdapter newsListAdapter;
-    public int postAuthorId;
-    public Thread socketThread;
-    public Thread sslSocketThread;
     public String send_request;
-    public ListView news_listview;
-    public int news_item_count;
-    public int news_item_index;
-    public Boolean inputStream_isClosed;
     public SharedPreferences global_sharedPreferences;
-    public ArrayList<Integer> post_author_ids;
-    public StringBuilder post_author_ids_sb;
-    public StringBuilder post_group_ids_sb;
 
     public NewsLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);

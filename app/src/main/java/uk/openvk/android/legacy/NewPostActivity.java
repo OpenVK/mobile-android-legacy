@@ -40,13 +40,7 @@ import javax.net.ssl.HttpsURLConnection;
 import static java.lang.Thread.sleep;
 
 public class NewPostActivity extends Activity {
-    public HttpURLConnection httpConnection;
-    public HttpsURLConnection httpsConnection;
-    public HttpURLConnection httpRawConnection;
-    public HttpsURLConnection httpsRawConnection;
     public String server;
-    public String server_2;
-    public String raw_address;
     public String state;
     public String auth_token;
     private UpdateUITask updateUITask;
@@ -57,8 +51,6 @@ public class NewPostActivity extends Activity {
     public JSONArray attachments;
     public String connectionErrorString;
     public boolean connection_status;
-    public Thread socketThread;
-    public Thread sslSocketThread;
     public String send_request;
     public Boolean inputStream_isClosed;
     public SharedPreferences global_sharedPreferences;
@@ -128,7 +120,6 @@ public class NewPostActivity extends Activity {
                             connectionDialog.setMessage(getString(R.string.loading));
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
-                            send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                             openVK_API.sendMethod("Wall.post", "owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -161,7 +152,6 @@ public class NewPostActivity extends Activity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    send_request = ("/method/Wall.post?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                     openVK_API.sendMethod("Wall.post", "owner_id=" + owner_id + "&message=" + URLEncoder.encode(statusEditText.getText().toString(), "utf-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

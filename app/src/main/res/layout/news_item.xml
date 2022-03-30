@@ -319,6 +319,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="8dip"
+            android:clickable="true"
             android:drawableLeft="@drawable/ic_post_btn_like"
             android:drawablePadding="10dip"
             android:duplicateParentState="false"
