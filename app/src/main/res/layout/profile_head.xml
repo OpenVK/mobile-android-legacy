@@ -72,6 +72,7 @@
         android:layout_toLeftOf="@+id/profile_expand"
         android:layout_toRightOf="@+id/profile_photo_wrap"
         android:paddingTop="8dip"
+        android:singleLine="true"
         android:text="User Name"
         android:textColor="#FFF"
         android:textSize="20dip" />
