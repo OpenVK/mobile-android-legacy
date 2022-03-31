@@ -65,6 +65,12 @@
 
         </LinearLayout>
 
+        <uk.openvk.android.legacy.ProfileLayout
+            android:id="@+id/profile_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"></uk.openvk.android.legacy.ProfileLayout>
+
         <uk.openvk.android.legacy.NewsLinearLayout
             android:id="@+id/news_layout"
             android:layout_width="match_parent"
@@ -75,12 +81,13 @@
 
         </uk.openvk.android.legacy.NewsLinearLayout>
 
-        <uk.openvk.android.legacy.ProfileLayout
+        <uk.openvk.android.legacy.FriendsLinearLayout
+            android:id="@+id/friends_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:id="@+id/profile_layout">
-        </uk.openvk.android.legacy.ProfileLayout>
+            android:visibility="gone">
+
+        </uk.openvk.android.legacy.FriendsLinearLayout>
 
         <uk.openvk.android.legacy.SlidingMenuLayout
             android:id="@+id/sliding_menu_layout"
