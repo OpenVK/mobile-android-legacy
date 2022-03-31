@@ -7,7 +7,7 @@ import android.view.View;
 
 public class Application extends android.app.Application {
     public String version;
-    public int build_number = 33;
+    public int build_number = 34;
 
     @Override
     public void onCreate() {
@@ -35,6 +35,9 @@ public class Application extends android.app.Application {
             sharedPrefsEditor.putString("currentLayout", "NewsLinearLayout");
             sharedPrefsEditor.commit();
         }
+        SharedPreferences.Editor sharedPrefsEditor = global_prefs.edit();
+        sharedPrefsEditor.putString("previousLayout", "");
+        sharedPrefsEditor.commit();
     }
 
 }

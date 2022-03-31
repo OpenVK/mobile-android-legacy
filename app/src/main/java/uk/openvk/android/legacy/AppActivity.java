@@ -97,6 +97,7 @@ public class AppActivity extends Activity {
     public StringBuilder post_group_ids_sb;
     public NewsLinearLayout newsLinearLayout;
     public FriendsLinearLayout friendsLinearLayout;
+    public ProfileLayout profileLayout;
     public boolean sliding_animated;
     public boolean menu_is_closed;
     public boolean connection_status;
@@ -119,6 +120,9 @@ public class AppActivity extends Activity {
         setContentView(R.layout.app_layout);
         address_intent = getIntent();
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+        sharedPrefsEditor.putString("previousLayout", "");
+        sharedPrefsEditor.commit();
         menu_is_closed = true;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -166,7 +170,7 @@ public class AppActivity extends Activity {
         server = sharedPreferences.getString("server", "");
 
         newsLinearLayout = findViewById(R.id.news_layout);
-        ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+        profileLayout = findViewById(R.id.profile_layout);
         friendsLinearLayout = findViewById(R.id.friends_layout);
 
         final Uri uri = address_intent.getData();
@@ -390,8 +394,10 @@ public class AppActivity extends Activity {
         ((LinearLayout) slidingMenuLayout.findViewById(R.id.profile_menu_ll)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                editor.commit();
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
                 editor.putString("currentLayout", "ProfileLayout");
                 editor.commit();
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
@@ -423,6 +429,8 @@ public class AppActivity extends Activity {
             public void onClick(View view) {
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                editor.commit();
                 editor.putString("currentLayout", "ProfileLayout");
                 editor.commit();
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
@@ -796,6 +804,9 @@ public class AppActivity extends Activity {
     public void onSlidingMenuItemClicked(int position) {
         if(position == 0) {
             if(connection_status == false) {
+                SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+                sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                sharedPrefsEditor.commit();
                 address_intent = getIntent();
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
@@ -827,6 +838,9 @@ public class AppActivity extends Activity {
             }
         } else if(position == 5) {
             if(connection_status == false) {
+                SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+                sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                sharedPrefsEditor.commit();
                 address_intent = getIntent();
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
@@ -1155,9 +1169,6 @@ public class AppActivity extends Activity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                profileLayout.setVisibility(View.VISIBLE);
-                                LinearLayout progress_ll = findViewById(R.id.news_progressll);
-                                progress_ll.setVisibility(View.GONE);
                             } else if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
                                 try {
                                     send_request = ("/method/Users.get");
@@ -1199,6 +1210,9 @@ public class AppActivity extends Activity {
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                 ProfileCounterLayout friends_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.friends_counter);
                                 ((TextView) friends_counter.findViewById(R.id.profile_counter_value)).setText("" + json_response.getJSONObject("response").getInt("count"));
+                                profileLayout.setVisibility(View.VISIBLE);
+                                LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                                progress_ll.setVisibility(View.GONE);
                             } else if(send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
                                 loadFriends();
                             }
@@ -1217,6 +1231,9 @@ public class AppActivity extends Activity {
                             progress_ll.setVisibility(View.GONE);
                             friendsLinearLayout.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
+                            SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                            editor.putString("previousLayout", "");
+                            editor.commit();
                         }
                     } else if(state == "timeout") {
                         if(creating_another_activity == false) {
@@ -1227,6 +1244,9 @@ public class AppActivity extends Activity {
                             progress_ll.setVisibility(View.GONE);
                             friendsLinearLayout.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
+                            SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                            editor.putString("previousLayout", "");
+                            editor.commit();
                         }
                     } else if(state == "no_connection") {
                         if(creating_another_activity == false) {
@@ -1237,6 +1257,9 @@ public class AppActivity extends Activity {
                             progress_ll.setVisibility(View.GONE);
                             friendsLinearLayout.setVisibility(View.GONE);
                             error_ll.setVisibility(View.VISIBLE);
+                            SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                            editor.putString("previousLayout", "");
+                            editor.commit();
                         }
                     }
                 }
@@ -1348,6 +1371,37 @@ public class AppActivity extends Activity {
     }
 
     @Override
+    public void onBackPressed() {
+        if(global_sharedPreferences.getString("previousLayout", "").equals("NewsLinearLayout")) {
+            newsLinearLayout.setVisibility(View.VISIBLE);
+            profileLayout.setVisibility(View.GONE);
+            friendsLinearLayout.setVisibility(View.GONE);
+            SharedPreferences.Editor editor = global_sharedPreferences.edit();
+            editor.putString("currentLayout", "NewsLinearLayout");
+            editor.commit();
+        } else if(global_sharedPreferences.getString("previousLayout", "").equals("ProfileLayout")) {
+            newsLinearLayout.setVisibility(View.GONE);
+            profileLayout.setVisibility(View.VISIBLE);
+            friendsLinearLayout.setVisibility(View.GONE);
+            SharedPreferences.Editor editor = global_sharedPreferences.edit();
+            editor.putString("currentLayout", "ProfileLayout");
+            editor.commit();
+        } else if(global_sharedPreferences.getString("previousLayout", "").equals("FriendsLayout")) {
+            newsLinearLayout.setVisibility(View.GONE);
+            profileLayout.setVisibility(View.GONE);
+            friendsLinearLayout.setVisibility(View.VISIBLE);
+            SharedPreferences.Editor editor = global_sharedPreferences.edit();
+            editor.putString("currentLayout", "FriendsLayout");
+            editor.commit();
+        } else {
+            finish();
+        }
+        SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+        sharedPrefsEditor.putString("previousLayout", "");
+        sharedPrefsEditor.commit();
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         if(intent.getAction() == Intent.ACTION_VIEW) {
             address_intent = intent;
@@ -1393,6 +1447,9 @@ public class AppActivity extends Activity {
                 openVK_API = new OvkAPIWrapper(AppActivity.this, server, sharedPreferences.getString("auth_token", ""), json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
 
                 if (path.startsWith("openvk://profile/")) {
+                    SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+                    sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                    sharedPrefsEditor.commit();
                     String args = path.substring("openvk://profile/".length());
                     global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
                     auth_token = sharedPreferences.getString("auth_token", "");
@@ -1400,6 +1457,9 @@ public class AppActivity extends Activity {
                     editor.putString("currentLayout", "ProfileLayout");
                     editor.commit();
                 } else if (path.startsWith("openvk://friends/")) {
+                    SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+                    sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                    sharedPrefsEditor.commit();
                     String args = path.substring("openvk://friends/".length());
                     global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
                     auth_token = sharedPreferences.getString("auth_token", "");
