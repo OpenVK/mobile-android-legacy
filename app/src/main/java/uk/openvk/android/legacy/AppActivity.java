@@ -390,6 +390,7 @@ public class AppActivity extends Activity {
                 if(connection_status == false) {
                     newsLinearLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.GONE);
+                    friendsLinearLayout.setVisibility(View.GONE);
                     LinearLayout progress_ll = findViewById(R.id.news_progressll);
                     progress_ll.setVisibility(View.VISIBLE);
                     LinearLayout error_ll = findViewById(R.id.error_ll);
@@ -740,6 +741,7 @@ public class AppActivity extends Activity {
                 NewsLinearLayout newsLinearLayout = findViewById(R.id.news_layout);
                 newsLinearLayout.setVisibility(View.GONE);
                 LinearLayout error_ll = findViewById(R.id.error_ll);
+                friendsLinearLayout = findViewById(R.id.friends_layout);
                 friendsLinearLayout.setVisibility(View.GONE);
                 error_ll.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
