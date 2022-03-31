@@ -624,7 +624,9 @@ public class AppActivity extends Activity {
 
 
     public void hideSelectedItemBackground(int position) {
+        news_listview = findViewById(R.id.news_listview);
         news_listview.setBackgroundColor(getResources().getColor(R.color.transparent));
+        ((ListView) friendsLinearLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void openSlidingMenu() {
@@ -746,6 +748,7 @@ public class AppActivity extends Activity {
                 error_ll.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
+                openSlidingMenu();
                 try {
                     openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {

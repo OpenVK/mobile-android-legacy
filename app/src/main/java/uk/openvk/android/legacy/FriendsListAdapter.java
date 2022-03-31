@@ -61,6 +61,13 @@ public class FriendsListAdapter extends BaseAdapter {
             ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
         }
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((AppActivity) ctx).hideSelectedItemBackground(position);
+            }
+        });
+
         /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
