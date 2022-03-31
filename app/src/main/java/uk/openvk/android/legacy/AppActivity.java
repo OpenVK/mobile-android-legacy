@@ -964,8 +964,6 @@ public class AppActivity extends Activity {
                                 current_user_id = json_response.getJSONObject("response").getInt("id");
                                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
-                                ((TextView) profileHeader.findViewById(R.id.profile_name)).setText(json_response.getJSONObject("response").getString("first_name") + " " + json_response.getJSONObject("response").getString("last_name"));
-                                ((TextView) profileHeader.findViewById(R.id.profile_activity)).setText(json_response.getJSONObject("response").getString("status"));
                                 View view = tabHost.getTabWidget().getChildAt(1);
                                 if(view != null && tabHost.getTabWidget().getTabCount() > 1) {
                                     ((TextView) view.findViewById(android.R.id.title)).setText(getResources().getString(R.string.wall_owners_posts, json_response.getJSONObject("response").getString("first_name")));
@@ -1413,7 +1411,7 @@ public class AppActivity extends Activity {
                 getActionBar().setTitle(getResources().getString(R.string.friends));
             } else {
                 titlebar_title = findViewById(R.id.titlebar_title);
-                titlebar_title.setText(getResources().getString(R.string.profile));
+                titlebar_title.setText(getResources().getString(R.string.friends));
             }
         } else {
             finish();
@@ -1478,6 +1476,12 @@ public class AppActivity extends Activity {
                     SharedPreferences.Editor editor = global_sharedPreferences.edit();
                     editor.putString("currentLayout", "ProfileLayout");
                     editor.commit();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        getActionBar().setTitle(getResources().getString(R.string.profile));
+                    } else {
+                        titlebar_title = findViewById(R.id.titlebar_title);
+                        titlebar_title.setText(getResources().getString(R.string.profile));
+                    }
                 } else if (path.startsWith("openvk://friends/")) {
                     SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
                     sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
@@ -1531,6 +1535,12 @@ public class AppActivity extends Activity {
             LinearLayout progress_ll = findViewById(R.id.news_progressll);
             progress_ll.setVisibility(View.GONE);
             friendsLinearLayout.setVisibility(View.VISIBLE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActionBar().setTitle(getResources().getString(R.string.friends));
+            } else {
+                titlebar_title = findViewById(R.id.titlebar_title);
+                titlebar_title.setText(getResources().getString(R.string.friends));
+            }
         }
     }
 }

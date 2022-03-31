@@ -68,6 +68,13 @@ public class FriendsListAdapter extends BaseAdapter {
                 ((AppActivity) ctx).showProfile(position);
             }
         });
+        ((TextView) view.findViewById(R.id.flist_item_text)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                        ((AppActivity) ctx).hideSelectedItemBackground(position);
+                        ((AppActivity) ctx).showProfile(position);
+            }
+        });
 
         /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
             @Override
