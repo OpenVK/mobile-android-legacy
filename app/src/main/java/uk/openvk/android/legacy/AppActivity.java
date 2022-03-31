@@ -460,9 +460,11 @@ public class AppActivity extends Activity {
         post_author_ids = new ArrayList<Integer>();
         final LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.VISIBLE);
+
         if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
             newsLinearLayout.setVisibility(View.GONE);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.newsfeed));
             } else {
                 getActionBar().setTitle(getResources().getString(R.string.newsfeed));
@@ -470,6 +472,7 @@ public class AppActivity extends Activity {
         } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
             profileLayout.setVisibility(View.GONE);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.profile));
             } else {
                 getActionBar().setTitle(getResources().getString(R.string.profile));
@@ -477,6 +480,7 @@ public class AppActivity extends Activity {
         } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
             friendsLinearLayout.setVisibility(View.GONE);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.friends));
             } else {
                 getActionBar().setTitle(getResources().getString(R.string.friends));
@@ -1379,6 +1383,12 @@ public class AppActivity extends Activity {
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
             editor.putString("currentLayout", "NewsLinearLayout");
             editor.commit();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+            } else {
+                titlebar_title = findViewById(R.id.titlebar_title);
+                titlebar_title.setText(getResources().getString(R.string.newsfeed));
+            }
         } else if(global_sharedPreferences.getString("previousLayout", "").equals("ProfileLayout")) {
             newsLinearLayout.setVisibility(View.GONE);
             profileLayout.setVisibility(View.VISIBLE);
@@ -1386,6 +1396,12 @@ public class AppActivity extends Activity {
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
             editor.putString("currentLayout", "ProfileLayout");
             editor.commit();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActionBar().setTitle(getResources().getString(R.string.profile));
+            } else {
+                titlebar_title = findViewById(R.id.titlebar_title);
+                titlebar_title.setText(getResources().getString(R.string.profile));
+            }
         } else if(global_sharedPreferences.getString("previousLayout", "").equals("FriendsLayout")) {
             newsLinearLayout.setVisibility(View.GONE);
             profileLayout.setVisibility(View.GONE);
@@ -1393,6 +1409,12 @@ public class AppActivity extends Activity {
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
             editor.putString("currentLayout", "FriendsLayout");
             editor.commit();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActionBar().setTitle(getResources().getString(R.string.friends));
+            } else {
+                titlebar_title = findViewById(R.id.titlebar_title);
+                titlebar_title.setText(getResources().getString(R.string.profile));
+            }
         } else {
             finish();
         }
