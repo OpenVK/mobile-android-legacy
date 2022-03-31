@@ -1205,7 +1205,7 @@ public class AppActivity extends Activity {
     }
 
     void loadFriends() {
-        Log.d("TEST", "TEST!");
+        friendsListItemArray.clear();
         int friendsCount = 0; // zero rn
         try {
             friendsCount = json_response.getJSONObject("response").getJSONArray("items").length(); // we will use count of items this time bc we still don't have infinity loading or smth like that
@@ -1227,6 +1227,8 @@ public class AppActivity extends Activity {
             ListView friendsList = (ListView) findViewById(R.id.friends_listview);
             friendsListAdapter = new FriendsListAdapter(this, friendsListItemArray);
             friendsList.setAdapter(friendsListAdapter);
+            LinearLayout progress_ll = findViewById(R.id.news_progressll);
+            progress_ll.setVisibility(View.GONE);
             friendsLinearLayout.setVisibility(View.VISIBLE);
         }
     }
