@@ -65,6 +65,7 @@ public class FriendsListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 ((AppActivity) ctx).hideSelectedItemBackground(position);
+                ((AppActivity) ctx).showProfile(position);
             }
         });
 

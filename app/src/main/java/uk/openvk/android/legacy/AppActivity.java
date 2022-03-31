@@ -1,8 +1,11 @@
 package uk.openvk.android.legacy;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -108,11 +111,13 @@ public class AppActivity extends Activity {
     public int current_user_id = 0;
     public ArrayList<FriendsListItem> friendsListItemArray;
     public FriendsListAdapter friendsListAdapter;
+    public Intent address_intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_layout);
+        address_intent = getIntent();
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         menu_is_closed = true;
         if (savedInstanceState == null) {
@@ -160,11 +165,11 @@ public class AppActivity extends Activity {
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
         server = sharedPreferences.getString("server", "");
 
-        Uri uri = getIntent().getData();
-
         newsLinearLayout = findViewById(R.id.news_layout);
         ProfileLayout profileLayout = findViewById(R.id.profile_layout);
         friendsLinearLayout = findViewById(R.id.friends_layout);
+
+        final Uri uri = address_intent.getData();
 
         if (uri!=null){
             String path = uri.toString();
@@ -188,6 +193,19 @@ public class AppActivity extends Activity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     getActionBar().setTitle(R.string.profile);
                 }
+            } else if(path.startsWith("openvk://friends/")) {
+                String args = path.substring("openvk://friends/".length());
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                auth_token = sharedPreferences.getString("auth_token", "");
+                SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                editor.putString("currentLayout", "FriendsLayout");
+                editor.commit();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setIcon(R.drawable.icon);
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    getActionBar().setTitle(R.string.friends);
+                }
             }
         } else {
             openVK_API = new OvkAPIWrapper(AppActivity.this, server, auth_token, json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
@@ -202,6 +220,19 @@ public class AppActivity extends Activity {
             return;
         }
 
+        final ProfileCounterLayout friends_counter = profileLayout.findViewById(R.id.friends_counter);
+        friends_counter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = new String();
+                url = "openvk://friends/id" + profile_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                startActivity(i);
+            }
+        });
+
         final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -215,6 +246,7 @@ public class AppActivity extends Activity {
                     ((EditText) slidingMenuLayout.findViewById(R.id.sliding_menu_search).findViewById(R.id.left_quick_search_btn)).setText("");
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
                     startActivity(i);
                     return true;
                 }
@@ -244,7 +276,6 @@ public class AppActivity extends Activity {
         ProfileCounterLayout photos_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.photos_counter);
         ((TextView) photos_counter.findViewById(R.id.profile_counter_value)).setText("0");
         ((TextView) photos_counter.findViewById(R.id.profile_counter_title)).setText(getResources().getStringArray(R.array.profile_photos)[2]);
-        ProfileCounterLayout friends_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.friends_counter);
         ((TextView) friends_counter.findViewById(R.id.profile_counter_value)).setText("0");
         ((TextView) friends_counter.findViewById(R.id.profile_counter_title)).setText(getResources().getStringArray(R.array.profile_friends)[2]);
         ProfileCounterLayout mutual_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.mutual_counter);
@@ -344,7 +375,6 @@ public class AppActivity extends Activity {
                     if(uri != null) {
                         String path = uri.toString();
                         if(path.startsWith("openvk://profile/")) {
-                            onBackPressed();
                         }
                     } else {
                         openSlidingMenu();
@@ -366,14 +396,23 @@ public class AppActivity extends Activity {
                 editor.commit();
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 if(connection_status == false) {
+                    address_intent = getIntent();
                     newsLinearLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.GONE);
+                    friendsLinearLayout.setVisibility(View.GONE);
                     LinearLayout progress_ll = findViewById(R.id.news_progressll);
                     progress_ll.setVisibility(View.VISIBLE);
+                    LinearLayout error_ll = findViewById(R.id.error_ll);
+                    error_ll.setVisibility(View.GONE);
                     try {
                         openVK_API.sendMethod("Account.getProfileInfo", "");
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        titlebar_title.setText(getResources().getString(R.string.profile));
+                    } else {
+                        getActionBar().setTitle(getResources().getString(R.string.profile));
                     }
                 }
                 openSlidingMenu();
@@ -388,6 +427,7 @@ public class AppActivity extends Activity {
                 editor.commit();
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 if(connection_status == false) {
+                    address_intent = getIntent();
                     newsLinearLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.GONE);
                     friendsLinearLayout.setVisibility(View.GONE);
@@ -400,6 +440,11 @@ public class AppActivity extends Activity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        titlebar_title.setText(getResources().getString(R.string.profile));
+                    } else {
+                        getActionBar().setTitle(getResources().getString(R.string.profile));
+                    }
                 }
                 openSlidingMenu();
             }
@@ -409,8 +454,25 @@ public class AppActivity extends Activity {
         progress_ll.setVisibility(View.VISIBLE);
         if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
             newsLinearLayout.setVisibility(View.GONE);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                titlebar_title.setText(getResources().getString(R.string.newsfeed));
+            } else {
+                getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+            }
         } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
             profileLayout.setVisibility(View.GONE);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                titlebar_title.setText(getResources().getString(R.string.profile));
+            } else {
+                getActionBar().setTitle(getResources().getString(R.string.profile));
+            }
+        } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+            friendsLinearLayout.setVisibility(View.GONE);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                titlebar_title.setText(getResources().getString(R.string.friends));
+            } else {
+                getActionBar().setTitle(getResources().getString(R.string.friends));
+            }
         }
         if(auth_token != null) {
             Log.i("OpenVK Legacy", "About instance:\r\n\r\nServer: " + server + "\r\nAuth token length: " + auth_token.length());
@@ -562,7 +624,7 @@ public class AppActivity extends Activity {
             if(uri != null) {
                 String path = uri.toString();
                 if(path.startsWith("openvk://profile/")) {
-                    onBackPressed();
+                    finish();
                 }
             } else {
                 openSlidingMenu();
@@ -734,6 +796,7 @@ public class AppActivity extends Activity {
     public void onSlidingMenuItemClicked(int position) {
         if(position == 0) {
             if(connection_status == false) {
+                address_intent = getIntent();
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
                 editor.putString("currentLayout", "FriendsLayout");
@@ -754,11 +817,17 @@ public class AppActivity extends Activity {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    titlebar_title.setText(getResources().getString(R.string.friends));
+                } else {
+                    getActionBar().setTitle(getResources().getString(R.string.friends));
+                }
             } else {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 5) {
             if(connection_status == false) {
+                address_intent = getIntent();
                 global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
                 editor.putString("currentLayout", "NewsLinearLayout");
@@ -773,6 +842,11 @@ public class AppActivity extends Activity {
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
                 openSlidingMenu();
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    titlebar_title.setText(getResources().getString(R.string.newsfeed));
+                } else {
+                    getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+                }
                     try {
                         groupPostInfoArray = new ArrayList<GroupPostInfo>();
                         newsListItemArray = new ArrayList<NewsListItem>();
@@ -799,6 +873,15 @@ public class AppActivity extends Activity {
         }  else {
             Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void showProfile(int position) {
+        String url = "openvk://profile/" + "id" + friendsListItemArray.get(position).id;
+        Log.d("OpenVK Legacy", "Item ID: " + position + " | User ID: " + friendsListItemArray.get(position).id);
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+        startActivity(i);
     }
 
 
@@ -886,14 +969,22 @@ public class AppActivity extends Activity {
                                         }
                                     }
                                 } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
-                                    Uri uri = getIntent().getData();
+                                    Uri uri = address_intent.getData();
                                     if (uri != null) {
                                         String args = uri.toString().substring("openvk://profile/".length());
                                         if (connection_status == false) {
-                                            try {
-                                                openVK_API.sendMethod("Users.search", "q=" + URLEncoder.encode(args, "UTF-8"));
-                                            } catch (UnsupportedEncodingException e) {
-                                                e.printStackTrace();
+                                            if(args.startsWith("id")) {
+                                                try {
+                                                    openVK_API.sendMethod("Users.get", "user_ids=" + URLEncoder.encode(args.substring(2), "UTF-8") + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
+                                                } catch (UnsupportedEncodingException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            } else {
+                                                try {
+                                                    openVK_API.sendMethod("Users.search", "q=" + URLEncoder.encode(args, "UTF-8"));
+                                                } catch (UnsupportedEncodingException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         }
                                     } else {
@@ -907,11 +998,31 @@ public class AppActivity extends Activity {
                                         }
                                     }
                                 } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
-                                    if(connection_status == false) {
-                                        try {
-                                            openVK_API.sendMethod("Friends.get", "user_id=" + current_user_id + "&count=" + 50);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                    Uri uri = address_intent.getData();
+                                    if (uri != null) {
+                                        if(uri.toString().startsWith("openvk://friends/")) {
+                                            String args = uri.toString().substring("openvk://friends/".length());
+                                            if (connection_status == false) {
+                                                if (args.startsWith("id")) {
+                                                    try {
+                                                        Log.d("OpenVK Legacy", "Loading friends by user ID: " + args.substring(2) + "...");
+                                                        openVK_API.sendMethod("Friends.get", "user_id=" + URLEncoder.encode(args.substring(2), "UTF-8"));
+                                                    } catch (UnsupportedEncodingException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                } else {
+                                                    try {
+                                                        Log.d("OpenVK Legacy", "Loading friends by username: " + args + "...");
+                                                        openVK_API.sendMethod("Users.search", "q=" + URLEncoder.encode(args, "UTF-8"));
+                                                    } catch (UnsupportedEncodingException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        if(json_response.getJSONObject("response").getInt("id") > 0) {
+                                            openVK_API.sendMethod("Friends.get", "user_id=" + json_response.getJSONObject("response").getInt("id"));
                                         }
                                     }
                                 }
@@ -938,6 +1049,14 @@ public class AppActivity extends Activity {
                                     }
                                 }
                                 String name = json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name") + "  ";
+                                if(tabHost.getTabWidget().getTabCount() > 1) {
+                                    View view = tabHost.getTabWidget().getChildAt(1);
+                                    if (view != null) {
+                                        TextView title = view.findViewById(android.R.id.title);
+                                        title.setText(getResources().getString(R.string.wall_owners_posts, json_response.getJSONArray("response").getJSONObject(0).getString("first_name")));
+                                    }
+                                }
+
                                 SpannableStringBuilder sb = new SpannableStringBuilder(name);
                                 if(json_response.getJSONArray("response").getJSONObject(0).getInt("verified") == 1) {
                                     ImageSpan imageSpan = new ImageSpan(getApplicationContext(), R.drawable.ic_verified, DynamicDrawableSpan.ALIGN_BASELINE);
@@ -1032,7 +1151,6 @@ public class AppActivity extends Activity {
                                 );
 
                                 try {
-                                    Log.d("OpenVK Legacy", "Friends.get (Profile ID: " + profile_id + ")");
                                     openVK_API.sendMethod("Friends.get", "user_id=" + profile_id);
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -1044,6 +1162,24 @@ public class AppActivity extends Activity {
                                 try {
                                     send_request = ("/method/Users.get");
                                     openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getInt("id")  + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
+                                } catch (Exception e) {
+                                    try {
+                                        if (json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getString("id").equals("")) {
+                                            LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                                            progress_ll.setVisibility(View.GONE);
+                                            LinearLayout error_ll = findViewById(R.id.error_ll);
+                                            error_ll.setVisibility(View.VISIBLE);
+                                            ((TextView) error_ll.findViewById(R.id.error_text2)).setText(R.string.page_not_found);
+                                            return;
+                                        }
+                                    } catch(Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            } if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                                try {
+                                    send_request = ("/method/Friends.get");
+                                    openVK_API.sendMethod("Friends.get", "user_id=" + json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getInt("id")  + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
                                 } catch (Exception e) {
                                     try {
                                         if (json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getString("id").equals("")) {
@@ -1199,16 +1335,96 @@ public class AppActivity extends Activity {
 
                 }
         }
+        Log.d("OpenVK Legacy", "Done!");
         newsListAdapter = new NewsListAdapter(this, newsListItemArray);
         news_listview = newsLinearLayout.findViewById(R.id.news_listview);
         news_listview.setAdapter(newsListAdapter);
         LinearLayout progress_ll = findViewById(R.id.news_progressll);
+        ProfileLayout profile_ll = findViewById(R.id.profile_layout);
+        friendsLinearLayout.setVisibility(View.GONE);
+        profile_ll.setVisibility(View.GONE);
         progress_ll.setVisibility(View.GONE);
         newsLinearLayout.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if(intent.getAction() == Intent.ACTION_VIEW) {
+            address_intent = intent;
+
+            Uri uri = intent.getData();
+
+            ProfileLayout profile_ll = findViewById(R.id.profile_layout);
+
+            final LinearLayout progress_ll = findViewById(R.id.news_progressll);
+            progress_ll.setVisibility(View.VISIBLE);
+            if (global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
+                newsLinearLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    titlebar_title.setText(getResources().getString(R.string.newsfeed));
+                } else {
+                    getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+                }
+            } else if (global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                profile_ll.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    titlebar_title.setText(getResources().getString(R.string.profile));
+                } else {
+                    getActionBar().setTitle(getResources().getString(R.string.profile));
+                }
+            } else if (global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                friendsLinearLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    titlebar_title.setText(getResources().getString(R.string.friends));
+                } else {
+                    getActionBar().setTitle(getResources().getString(R.string.friends));
+                }
+            }
+
+            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
+
+            if (uri != null) {
+                String path = uri.toString();
+                if (sharedPreferences.getString("auth_token", "").length() == 0) {
+                    finish();
+                    return;
+                }
+
+                openVK_API = new OvkAPIWrapper(AppActivity.this, server, sharedPreferences.getString("auth_token", ""), json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
+
+                if (path.startsWith("openvk://profile/")) {
+                    String args = path.substring("openvk://profile/".length());
+                    global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                    auth_token = sharedPreferences.getString("auth_token", "");
+                    SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                    editor.putString("currentLayout", "ProfileLayout");
+                    editor.commit();
+                } else if (path.startsWith("openvk://friends/")) {
+                    String args = path.substring("openvk://friends/".length());
+                    global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                    auth_token = sharedPreferences.getString("auth_token", "");
+                    SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                    editor.putString("currentLayout", "FriendsLayout");
+                    editor.commit();
+                }
+                try {
+                    openVK_API.sendMethod("Account.getProfileInfo", "");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (menu_is_closed == false) {
+                openSlidingMenu();
+            }
+        }
+
+        super.onNewIntent(intent);
+    }
+
     void loadFriends() {
         friendsListItemArray.clear();
+        Log.d("OpenVK Legacy", "Clearing friends list...");
         int friendsCount = 0; // zero rn
         try {
             friendsCount = json_response.getJSONObject("response").getJSONArray("items").length(); // we will use count of items this time bc we still don't have infinity loading or smth like that

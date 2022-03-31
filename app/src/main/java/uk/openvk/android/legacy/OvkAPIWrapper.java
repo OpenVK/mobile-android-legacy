@@ -172,6 +172,8 @@ public class OvkAPIWrapper {
                     connectionErrorString = ((AppActivity) ctx).getResources().getString(R.string.unable_to_parse_error);
                 } else if(ctx.getClass().getSimpleName().equals("AuthenticationActivity")) {
                     connectionErrorString = ((AuthenticationActivity) ctx).getResources().getString(R.string.unable_to_parse_error);
+                } else if(ctx.getClass().getSimpleName().equals("AppIntentActivity")) {
+                    connectionErrorString = ((AuthenticationActivity) ctx).getResources().getString(R.string.unable_to_parse_error);
                 }
                 state = "no_connection";
                 sendMessageToParent();
@@ -289,7 +291,8 @@ public class OvkAPIWrapper {
                 sendMessageToParent();
             } catch(NullPointerException ex) {
                 ex.printStackTrace();
-                isConnected = true;
+                state = "no_connection";
+                sendMessageToParent();
             } catch(Exception ex) {
                 ex.printStackTrace();
                 isConnected = true;
