@@ -4,7 +4,10 @@
     android:layout_height="wrap_content"
     android:background="@drawable/highlight"
     android:gravity="center_vertical"
-    android:padding="8dp">
+    android:paddingLeft="8dp"
+    android:paddingTop="1dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="1dp">
 
     <ImageView
         android:id="@+id/flist_item_photo"

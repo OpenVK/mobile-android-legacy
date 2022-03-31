@@ -13,6 +13,8 @@
             android:id="@+id/friends_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:divider="@null"
             android:dividerHeight="1dp"
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false"
