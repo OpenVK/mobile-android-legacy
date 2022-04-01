@@ -1296,6 +1296,9 @@ public class AppActivity extends Activity {
                         } else {
                             post_group_ids_sb.append(postAuthorId);
                         }
+                        if(((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
+                            loadPhotos(news_item_index);
+                        }
                     } catch (JSONException jEx) {
                         jEx.printStackTrace();
                     } catch (Exception ex) {
@@ -1370,6 +1373,34 @@ public class AppActivity extends Activity {
         profile_ll.setVisibility(View.GONE);
         progress_ll.setVisibility(View.GONE);
         newsLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void loadPhotos(int pos) {
+        try {
+                attachments = ((JSONObject) newsfeed.get(pos)).getJSONArray("attachments");
+                int attachments_length = attachments.length();
+                Log.d("OpenVK Legacy", "Downloading photos...");
+                for (int i = 0; i < attachments_length; i++) {
+                    if(((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                        String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                getJSONObject(0).getString("url");
+                        if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                            if (url.startsWith("https://")) {
+                                openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1));
+                            } else {
+                                openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1));
+                            }
+                        }
+                    } else {
+                        Log.e("OpenVK Legacy", "No attachments");
+                    }
+                }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
