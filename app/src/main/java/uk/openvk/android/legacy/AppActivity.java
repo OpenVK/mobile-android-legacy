@@ -1416,7 +1416,7 @@ public class AppActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if(menu_is_closed == true) {
+        if(menu_is_closed == false) {
             openSlidingMenu();
         } else {
             finish();
