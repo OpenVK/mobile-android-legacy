@@ -101,7 +101,14 @@ public class NewPostActivity extends Activity {
             final TextView titlebar_title = findViewById(R.id.titlebar_title);
             titlebar_title.setText(getResources().getString(R.string.new_status));
             final ImageButton back_btn = findViewById(R.id.backButton);
+            final ImageButton ovk_btn = findViewById(R.id.ovkButton);
             back_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+            ovk_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     onBackPressed();

@@ -35,8 +35,14 @@
             android:label="@string/app_name"
             android:icon="@drawable/ic_left_menu"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
-            android:launchMode="singleInstance">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+        </activity>
+        <activity
+            android:name=".AppIntentActivity"
+            android:label="@string/app_name"
+            android:icon="@drawable/ic_left_menu"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"></action>
                 <category android:name="android.intent.category.DEFAULT"></category>

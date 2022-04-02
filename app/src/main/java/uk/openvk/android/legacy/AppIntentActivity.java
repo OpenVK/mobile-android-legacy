@@ -1,21 +1,13 @@
 package uk.openvk.android.legacy;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,11 +15,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.AlignmentSpan;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.Log;
@@ -51,12 +41,10 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -66,7 +54,7 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class AppActivity extends Activity {
+public class AppIntentActivity extends Activity {
     public String auth_token;
     public TextView titlebar_title;
     public String server;
@@ -117,7 +105,7 @@ public class AppActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.app_layout);
+        setContentView(R.layout.app_intent_layout);
         address_intent = getIntent();
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
@@ -173,12 +161,6 @@ public class AppActivity extends Activity {
         profileLayout = findViewById(R.id.profile_layout);
         friendsLinearLayout = findViewById(R.id.friends_layout);
 
-        if(getIntent().getData() == null && global_sharedPreferences.getBoolean("refreshOnOpen", true) == true) {
-            SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "NewsLinearLayout");
-            editor.commit();
-        }
-
         if(auth_token == null) {
             auth_token = sharedPreferences.getString("auth_token", "");
         }
@@ -192,14 +174,14 @@ public class AppActivity extends Activity {
                 return;
             }
 
-            openVK_API = new OvkAPIWrapper(AppActivity.this, server, sharedPreferences.getString("auth_token", ""), json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
+            openVK_API = new OvkAPIWrapper(AppIntentActivity.this, server, sharedPreferences.getString("auth_token", ""), json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
 
             if(path.startsWith("openvk://profile/")) {
                 String args = path.substring("openvk://profile/".length());
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppIntentActivity.this);
                 auth_token = sharedPreferences.getString("auth_token", "");
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("currentLayout", "ProfileLayout");
+                editor.putString("intentLayout", "ProfileLayout");
                 editor.commit();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     getActionBar().setIcon(R.drawable.icon);
@@ -209,10 +191,10 @@ public class AppActivity extends Activity {
                 }
             } else if(path.startsWith("openvk://friends/")) {
                 String args = path.substring("openvk://friends/".length());
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppIntentActivity.this);
                 auth_token = sharedPreferences.getString("auth_token", "");
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("currentLayout", "FriendsLayout");
+                editor.putString("intentLayout", "FriendsLayout");
                 editor.commit();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     getActionBar().setIcon(R.drawable.icon);
@@ -222,12 +204,12 @@ public class AppActivity extends Activity {
                 }
             }
         } else {
-            openVK_API = new OvkAPIWrapper(AppActivity.this, server, auth_token, json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
+            openVK_API = new OvkAPIWrapper(AppIntentActivity.this, server, auth_token, json_response, global_sharedPreferences.getBoolean("useHTTPS", true));
         }
 
 
         if(sharedPreferences.getString("auth_token", "").length() == 0) {
-            Intent intent = new Intent(AppActivity.this, AuthenticationActivity.class);
+            Intent intent = new Intent(AppIntentActivity.this, AuthenticationActivity.class);
             startActivity(intent);
             finish();
             return;
@@ -372,9 +354,7 @@ public class AppActivity extends Activity {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 if (uri != null) {
                     String path = uri.toString();
-                    if (path.startsWith("openvk://profile/")) {
-                        getActionBar().setIcon(R.drawable.ic_ab_app);
-                    }
+                    getActionBar().setIcon(R.drawable.ic_ab_app);
                 } else {
                     getActionBar().setIcon(R.drawable.ic_left_menu);
                 }
@@ -382,16 +362,21 @@ public class AppActivity extends Activity {
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
-            ((ImageButton) findViewById(R.id.menuButton)).setOnClickListener(new View.OnClickListener() {
+            ((ImageButton) findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri uri = getIntent().getData();
                     if(uri != null) {
-                        String path = uri.toString();
-                        if(path.startsWith("openvk://profile/")) {
-                        }
-                    } else {
-                        openSlidingMenu();
+                        finish();
+                    }
+                }
+            });
+            ((ImageButton) findViewById(R.id.ovkButton)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri uri = getIntent().getData();
+                    if(uri != null) {
+                        finish();
                     }
                 }
             });
@@ -405,10 +390,10 @@ public class AppActivity extends Activity {
             @Override
             public void onClick(View view) {
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                editor.putString("previousLayout", global_sharedPreferences.getString("intentLayout", ""));
                 editor.commit();
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
-                editor.putString("currentLayout", "ProfileLayout");
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppIntentActivity.this);
+                editor.putString("intentLayout", "ProfileLayout");
                 editor.commit();
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 if(connection_status == false) {
@@ -431,17 +416,16 @@ public class AppActivity extends Activity {
                         getActionBar().setTitle(getResources().getString(R.string.profile));
                     }
                 }
-                openSlidingMenu();
             }
         });
         ((TextView) slidingMenuLayout.findViewById(R.id.profile_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppIntentActivity.this);
                 SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                editor.putString("previousLayout", global_sharedPreferences.getString("intentLayout", ""));
                 editor.commit();
-                editor.putString("currentLayout", "ProfileLayout");
+                editor.putString("intentLayout", "ProfileLayout");
                 editor.commit();
                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                 if(connection_status == false) {
@@ -464,14 +448,13 @@ public class AppActivity extends Activity {
                         getActionBar().setTitle(getResources().getString(R.string.profile));
                     }
                 }
-                openSlidingMenu();
             }
         });
         post_author_ids = new ArrayList<Integer>();
         final LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.VISIBLE);
 
-        if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
+        if(global_sharedPreferences.getString("intentLayout", "").equals("NewsLinearLayout")) {
             newsLinearLayout.setVisibility(View.GONE);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 titlebar_title = findViewById(R.id.titlebar_title);
@@ -479,7 +462,7 @@ public class AppActivity extends Activity {
             } else {
                 getActionBar().setTitle(getResources().getString(R.string.newsfeed));
             }
-        } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+        } else if(global_sharedPreferences.getString("intentLayout", "").equals("ProfileLayout")) {
             profileLayout.setVisibility(View.GONE);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 titlebar_title = findViewById(R.id.titlebar_title);
@@ -487,7 +470,7 @@ public class AppActivity extends Activity {
             } else {
                 getActionBar().setTitle(getResources().getString(R.string.profile));
             }
-        } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+        } else if(global_sharedPreferences.getString("intentLayout", "").equals("FriendsLayout")) {
             friendsLinearLayout.setVisibility(View.GONE);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 titlebar_title = findViewById(R.id.titlebar_title);
@@ -514,31 +497,6 @@ public class AppActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     openNewPostActivity();
-                }
-            });
-            List<String> itemsArray = new ArrayList<String>();
-            ArrayList<SimpleListItem> itemsList = new ArrayList<SimpleListItem>();
-            final SimpleListAdapter itemsAdapter;
-            itemsList = new ArrayList<SimpleListItem>();
-            itemsAdapter = new SimpleListAdapter(this, itemsList);
-            itemsList.clear();
-            for (int i = 0; i < 3; i++) {
-                itemsList.add(new SimpleListItem(getResources().getStringArray(R.array.popup_menu_api_v8)[i]));
-            }
-            final ListView menu_list = (ListView) menu_container.findViewById(R.id.popup_menulist);
-            title_menu_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(popup_menu.isShowing()) {
-                        popup_menu.dismiss();
-                    } else {
-                        menu_list.setAdapter(itemsAdapter);
-                        if(creating_another_activity == false) {
-                            popup_menu.showAtLocation(title_menu_btn, Gravity.TOP | Gravity.RIGHT, 0, 100);
-                        } else {
-                            popup_menu.dismiss();
-                        }
-                    }
                 }
             });
         }
@@ -614,11 +572,9 @@ public class AppActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.main_menu_settings) {
-            showMainSettings();
-        } else if(id == R.id.main_menu_about) {
+        if(id == R.id.main_menu_about) {
             AlertDialog about_dlg;
-            AlertDialog.Builder builder = new AlertDialog.Builder(AppActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(AppIntentActivity.this);
             View about_view = getLayoutInflater().inflate(R.layout.about_application_layout, null, false);
             TextView about_text = about_view.findViewById(R.id.about_text);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -642,15 +598,7 @@ public class AppActivity extends Activity {
             finish();
             System.exit(0);
         } else if(id == android.R.id.home) {
-            Uri uri = getIntent().getData();
-            if(uri != null) {
-                String path = uri.toString();
-                if(path.startsWith("openvk://profile/")) {
-                    finish();
-                }
-            } else {
-                openSlidingMenu();
-            }
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -661,13 +609,8 @@ public class AppActivity extends Activity {
         startActivity(intent);
     }
 
-    public void showMainSettings() {
-        Intent intent = new Intent(getApplicationContext(), MainSettingsActivity.class);
-        startActivity(intent);
-    }
-
     public void showFriends(int user_id) {
-        Intent intent = new Intent(getApplicationContext(), AppActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AppIntentActivity.class);
         intent.putExtra("user_id", user_id);
         startActivity(intent);
     }
@@ -677,11 +620,10 @@ public class AppActivity extends Activity {
             if(position == 0) {
                 creating_another_activity = true;
                 popup_menu.dismiss();
-                showMainSettings();
             } else if(position == 1) {
                 popup_menu.dismiss();
                 AlertDialog about_dlg;
-                AlertDialog.Builder builder = new AlertDialog.Builder(AppActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(AppIntentActivity.this);
                 View about_view = getLayoutInflater().inflate(R.layout.about_application_layout, null, false);
                 TextView about_text = about_view.findViewById(R.id.about_text);
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -705,202 +647,10 @@ public class AppActivity extends Activity {
         }
     }
 
-
-
     public void hideSelectedItemBackground(int position) {
         news_listview = findViewById(R.id.news_listview);
         news_listview.setBackgroundColor(getResources().getColor(R.color.transparent));
         ((ListView) friendsLinearLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
-    }
-
-    public void openSlidingMenu() {
-        if(menu_is_closed == true) {
-            menu_is_closed = false;
-            final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
-            TranslateAnimation animate = new TranslateAnimation(
-                    -(300 * getResources().getDisplayMetrics().scaledDensity),                 // fromXDelta
-                    0,                 // toXDelta
-                    0,  // fromYDelta
-                    0);                // toYDelta
-            animate.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-            animate.setDuration(200);
-            animate.setFillAfter(true);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                animate.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                        lp.setMargins(0, 0, 0, 0);
-                        slidingMenuLayout.setLayoutParams(lp);
-                        sliding_animated = false;
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        sliding_animated = true;
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                sliding_animated = false;
-                slidingMenuLayout.startAnimation(animate);
-            } else {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                lp.setMargins(0, 0, 0, 0);
-                slidingMenuLayout.setLayoutParams(lp);
-            }
-            slidingMenuLayout.setVisibility(View.VISIBLE);
-
-        } else {
-            menu_is_closed = true;
-            final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
-            TranslateAnimation animate = new TranslateAnimation(
-                    0,                 // fromXDelta
-                    -(300 * getResources().getDisplayMetrics().scaledDensity),                 // toXDelta
-                    0,  // fromYDelta
-                    0);                  // toYDelta
-            animate.setDuration(200);
-            animate.setFillAfter(true);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                animate.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                        sliding_animated = false;
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                        lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
-                        slidingMenuLayout.setLayoutParams(lp);
-                        sliding_animated = true;
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                slidingMenuLayout.startAnimation(animate);
-            } else {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
-                slidingMenuLayout.setLayoutParams(lp);
-            }
-        }
-    }
-
-    public boolean getAnimationState() {
-        return sliding_animated;
-    }
-
-    public boolean getSlidingMenuState() {
-        return menu_is_closed;
-    }
-
-    public void onSlidingMenuItemClicked(int position) {
-        if(position == 0) {
-            if(connection_status == false) {
-                SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
-                sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
-                sharedPrefsEditor.commit();
-                address_intent = getIntent();
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("currentLayout", "FriendsLayout");
-                editor.commit();
-                ProfileLayout profileLayout = findViewById(R.id.profile_layout);
-                profileLayout.setVisibility(View.GONE);
-                NewsLinearLayout newsLinearLayout = findViewById(R.id.news_layout);
-                newsLinearLayout.setVisibility(View.GONE);
-                LinearLayout error_ll = findViewById(R.id.error_ll);
-                friendsLinearLayout = findViewById(R.id.friends_layout);
-                friendsLinearLayout.setVisibility(View.GONE);
-                error_ll.setVisibility(View.GONE);
-                LinearLayout progress_ll = findViewById(R.id.news_progressll);
-                progress_ll.setVisibility(View.VISIBLE);
-                openSlidingMenu();
-                try {
-                    openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    titlebar_title.setText(getResources().getString(R.string.friends));
-                } else {
-                    getActionBar().setTitle(getResources().getString(R.string.friends));
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
-            }
-        } else if(position == 5) {
-            if(connection_status == false) {
-                SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
-                sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
-                sharedPrefsEditor.commit();
-                address_intent = getIntent();
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("currentLayout", "NewsLinearLayout");
-                editor.commit();
-                ProfileLayout profileLayout = findViewById(R.id.profile_layout);
-                profileLayout.setVisibility(View.GONE);
-                NewsLinearLayout newsLinearLayout = findViewById(R.id.news_layout);
-                newsLinearLayout.setVisibility(View.GONE);
-                LinearLayout error_ll = findViewById(R.id.error_ll);
-                error_ll.setVisibility(View.GONE);
-                friendsLinearLayout.setVisibility(View.GONE);
-                LinearLayout progress_ll = findViewById(R.id.news_progressll);
-                progress_ll.setVisibility(View.VISIBLE);
-                openSlidingMenu();
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    titlebar_title.setText(getResources().getString(R.string.newsfeed));
-                } else {
-                    getActionBar().setTitle(getResources().getString(R.string.newsfeed));
-                }
-                    try {
-                        groupPostInfoArray = new ArrayList<GroupPostInfo>();
-                        newsListItemArray = new ArrayList<NewsListItem>();
-                        newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
-                        newsfeed = new JSONArray();
-                        json_response_group = new JSONObject();
-                        json_response_user = new JSONObject();
-                        post_group_ids_sb = new StringBuilder();
-                        post_author_ids_sb = new StringBuilder();
-                        post_author_ids = new ArrayList<Integer>();
-                        openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
-            }
-        } else if(position == 8) {
-            creating_another_activity = true;
-            if(popup_menu != null) {
-                popup_menu.dismiss();
-            }
-            showMainSettings();
-        }  else {
-            Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
-        }
     }
 
     public void showProfile(int position) {
@@ -929,12 +679,12 @@ public class AppActivity extends Activity {
                                     editor.putString("auth_token", "");
                                     editor.putInt("user_id", 0);
                                     editor.commit();
-                                    Intent intent = new Intent(AppActivity.this, AuthenticationActivity.class);
+                                    Intent intent = new Intent(AppIntentActivity.this, AuthenticationActivity.class);
                                     startActivity(intent);
                                     finish();
                                 } else if (json_response.getInt("error_code") == 3) {
                                     AlertDialog outdated_api_dlg;
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AppActivity.this);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(AppIntentActivity.this);
                                     builder.setTitle(R.string.deprecated_openvk_api_error_title);
                                     builder.setMessage(R.string.deprecated_openvk_api_error);
                                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -952,7 +702,7 @@ public class AppActivity extends Activity {
                                     }
                                 } else if (json_response.getInt("error_code") == 28) {
                                     AlertDialog wrong_userdata_dlg;
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AppActivity.this);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(AppIntentActivity.this);
                                     builder.setTitle(R.string.auth_error_title);
                                     builder.setMessage(R.string.auth_error);
                                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -987,7 +737,7 @@ public class AppActivity extends Activity {
                                 } else {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.birthdate_ll)).setVisibility(View.GONE);
                                 }
-                                if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
+                                if(global_sharedPreferences.getString("intentLayout", "").equals("NewsLinearLayout")) {
                                     if(connection_status == false) {
                                         try {
                                             openVK_API.sendMethod("Newsfeed.get", "count=" + 50);
@@ -995,7 +745,7 @@ public class AppActivity extends Activity {
                                             e.printStackTrace();
                                         }
                                     }
-                                } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                                } else if(global_sharedPreferences.getString("intentLayout", "").equals("ProfileLayout")) {
                                     Uri uri = address_intent.getData();
                                     if (uri != null) {
                                         String args = uri.toString().substring("openvk://profile/".length());
@@ -1024,7 +774,7 @@ public class AppActivity extends Activity {
                                             }
                                         }
                                     }
-                                } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                                } else if(global_sharedPreferences.getString("intentLayout", "").equals("FriendsLayout")) {
                                     Uri uri = address_intent.getData();
                                     if (uri != null) {
                                         if(uri.toString().startsWith("openvk://friends/")) {
@@ -1053,9 +803,9 @@ public class AppActivity extends Activity {
                                         }
                                     }
                                 }
-                            } else if((send_request.startsWith("/method/Newsfeed.get") || send_request.startsWith("/method/Users.get") || send_request.startsWith("/method/Groups.get")) && global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
+                            } else if((send_request.startsWith("/method/Newsfeed.get") || send_request.startsWith("/method/Users.get") || send_request.startsWith("/method/Groups.get")) && global_sharedPreferences.getString("intentLayout", "").equals("NewsLinearLayout")) {
                                 appendNewsItem();
-                            } else if((send_request.startsWith("/method/Newsfeed.get") || send_request.startsWith("/method/Users.get")) && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                            } else if((send_request.startsWith("/method/Newsfeed.get") || send_request.startsWith("/method/Users.get")) && global_sharedPreferences.getString("intentLayout", "").equals("ProfileLayout")) {
                                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                 final AboutProfileLinearLayout aboutProfile_ll = findViewById(R.id.about_profile_layout);
@@ -1182,7 +932,7 @@ public class AppActivity extends Activity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            } else if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                            } else if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("intentLayout", "").equals("ProfileLayout")) {
                                 try {
                                     send_request = ("/method/Users.get");
                                     openVK_API.sendMethod("Users.get", "user_ids=" + json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getInt("id")  + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
@@ -1200,7 +950,7 @@ public class AppActivity extends Activity {
                                         ex.printStackTrace();
                                     }
                                 }
-                            } if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                            } if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("intentLayout", "").equals("FriendsLayout")) {
                                 try {
                                     send_request = ("/method/Friends.get");
                                     openVK_API.sendMethod("Friends.get", "user_id=" + json_response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getInt("id")  + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
@@ -1218,7 +968,7 @@ public class AppActivity extends Activity {
                                         ex.printStackTrace();
                                     }
                                 }
-                            } else if((send_request.startsWith("/method/Friends.get")) && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                            } else if((send_request.startsWith("/method/Friends.get")) && global_sharedPreferences.getString("intentLayout", "").equals("ProfileLayout")) {
                                 ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                 ProfileCounterLayout friends_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.friends_counter);
@@ -1226,7 +976,7 @@ public class AppActivity extends Activity {
                                 profileLayout.setVisibility(View.VISIBLE);
                                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                                 progress_ll.setVisibility(View.GONE);
-                            } else if(send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
+                            } else if(send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("intentLayout", "").equals("FriendsLayout")) {
                                 loadFriends();
                             }
 
@@ -1421,7 +1171,7 @@ public class AppActivity extends Activity {
             profileLayout.setVisibility(View.GONE);
             friendsLinearLayout.setVisibility(View.GONE);
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "NewsLinearLayout");
+            editor.putString("intentLayout", "NewsLinearLayout");
             editor.commit();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 getActionBar().setTitle(getResources().getString(R.string.newsfeed));
@@ -1434,7 +1184,7 @@ public class AppActivity extends Activity {
             profileLayout.setVisibility(View.VISIBLE);
             friendsLinearLayout.setVisibility(View.GONE);
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "ProfileLayout");
+            editor.putString("intentLayout", "ProfileLayout");
             editor.commit();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 getActionBar().setTitle(getResources().getString(R.string.profile));
@@ -1447,7 +1197,7 @@ public class AppActivity extends Activity {
             profileLayout.setVisibility(View.GONE);
             friendsLinearLayout.setVisibility(View.VISIBLE);
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "FriendsLayout");
+            editor.putString("intentLayout", "FriendsLayout");
             editor.commit();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 getActionBar().setTitle(getResources().getString(R.string.friends));

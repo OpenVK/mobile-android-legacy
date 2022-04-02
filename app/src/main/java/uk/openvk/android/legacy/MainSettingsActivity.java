@@ -18,14 +18,17 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class MainSettingsActivity extends PreferenceActivity {
+    public boolean isQuiting;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isQuiting = false;
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
         if(sharedPreferences.getString("auth_token", "").length() > 0) {
             addPreferencesFromResource(R.xml.preferences);
@@ -62,11 +65,13 @@ public class MainSettingsActivity extends PreferenceActivity {
                 } else {
                     about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
                 }
+                isQuiting = true;
                 about_text.setMovementMethod(LinkMovementMethod.getInstance());
                 builder.setView(about_view);
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        isQuiting = false;
                     }
                 });
                 about_dlg = builder.create();

@@ -298,6 +298,14 @@ public class OvkAPIWrapper {
             bundle.putString("JSON_response", "" + jsonResponseString);
             msg.setData(bundle);
             AppActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("AppIntentActivity")) {
+            Message msg = handler.obtainMessage(AppIntentActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            msg.setData(bundle);
+            AppIntentActivity.handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("AuthenticationActivity")) {
             Message msg = handler.obtainMessage(AuthenticationActivity.UPDATE_UI);
             Bundle bundle = new Bundle();
@@ -493,11 +501,11 @@ public class OvkAPIWrapper {
                         jsonResponseString = response_sb.toString();
                         Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
                         response_sb = new StringBuilder();
-                        httpsRawConnection.getErrorStream().close();
                         isConnected = false;
                         inputStream_isClosed = true;
                         state = "getting_response";
                         sendRawMessageToParent(httpRawConnection.getErrorStream());
+                        httpsRawConnection.getErrorStream().close();
                     }
                 }
             } catch(SocketTimeoutException ex) {
