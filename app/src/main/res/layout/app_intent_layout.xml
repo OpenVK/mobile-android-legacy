@@ -18,13 +18,6 @@
             android:layout_height="50dp"
             android:background="@drawable/bg_actionbar">
 
-            <ImageButton
-                android:id="@+id/menuButton"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:src="@drawable/ic_left_menu" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -32,11 +25,20 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/title_menu_btn"
-                    android:layout_width="0dp"
+                    android:id="@+id/backButton"
+                    android:layout_width="10dp"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark" />
+                    android:paddingLeft="2dp"
+                    android:src="@drawable/ic_ab_back_holo_dark" />
+
+                <ImageButton
+                    android:id="@+id/ovkButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:background="@null"
+                    android:src="@drawable/ic_ab_app" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

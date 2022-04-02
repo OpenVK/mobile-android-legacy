@@ -14,10 +14,19 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
+            android:layout_width="10dp"
             android:layout_height="match_parent"
             android:background="@null"
+            android:paddingLeft="2dp"
             android:src="@drawable/ic_ab_back_holo_dark" />
+
+        <ImageButton
+            android:id="@+id/ovkButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp"
+            android:background="@null"
+            android:src="@drawable/ic_ab_app" />
 
         <LinearLayout
             android:layout_width="match_parent"
