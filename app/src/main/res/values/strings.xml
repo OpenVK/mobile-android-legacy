@@ -1111,4 +1111,5 @@
 	<string name="open_btn">Оpen</string>
 	<string name="birthday">Birthday</string>
 	<string name="post_fail_empty">Sorry, but we can\'t post your empty message</string>
+	<string name="on_wall">%1$s on %2$s\'s wall</string>
 </resources>
