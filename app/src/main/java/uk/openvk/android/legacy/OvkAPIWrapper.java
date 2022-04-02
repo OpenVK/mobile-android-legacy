@@ -230,11 +230,11 @@ public class OvkAPIWrapper {
                 if(status == 200) {
                     in = new BufferedReader(new InputStreamReader(httpsConnection.getInputStream(), "utf-8"));
                     while ((response = in.readLine()) != null) {
-                        sleep(20);
                         if (response.length() > 0) {
                             response_sb.append(response).append("\n");
                             Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
                         }
+                        sleep(20);
                     }
                     jsonResponseString = response_sb.toString();
                     jsonResponse = new JSONObject(response_sb.toString());

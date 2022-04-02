@@ -60,6 +60,17 @@ public class NewsListAdapter extends BaseAdapter {
         }
 
         NewsListItem item = getNewsListItem(position);
+        if(item.counters.isLiked == true) {
+            ((TextView) view.findViewById(R.id.post_likes)).setSelected(true);
+        } else {
+            ((TextView) view.findViewById(R.id.post_likes)).setSelected(false);
+        }
+
+        if(item.counters.isReposted == true) {
+            ((TextView) view.findViewById(R.id.post_reposts)).setSelected(true);
+        } else {
+            ((TextView) view.findViewById(R.id.post_reposts)).setSelected(false);
+        }
         ((TextView) view.findViewById(R.id.poster_name_view)).setText(item.name);
         //((TextView) view.findViewById(R.id.post_retweet_name)).setText(((RepostInfo) item.repost).name);
         //((TextView) view.findViewById(R.id.post_retweet_time)).setText(((RepostInfo) item.repost).time);
@@ -105,6 +116,13 @@ public class NewsListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.post_likes)).setText("" + item.counters.likes);
         ((TextView) view.findViewById(R.id.post_comments)).setText("" + item.counters.comments);
         ((TextView) view.findViewById(R.id.post_reposts)).setText("" + item.counters.reposts);
+
+        ((TextView) view.findViewById(R.id.post_likes)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((AppActivity) ctx).addLike(position, "post", view);
+            }
+        });
 
         return view;
     }

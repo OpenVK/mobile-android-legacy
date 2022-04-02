@@ -87,13 +87,16 @@ public class AppActivity extends Activity {
     public ArrayList<GroupPostInfo> groupPostInfoArray;
     public NewsListAdapter newsListAdapter;
     public int postAuthorId;
+    public int postOwnerId;
     public String send_request;
     public ListView news_listview;
     public int news_item_count;
     public int news_item_index;
     public SharedPreferences global_sharedPreferences;
+    public ArrayList<Integer> post_owners_ids;
     public ArrayList<Integer> post_author_ids;
     public StringBuilder post_author_ids_sb;
+    public StringBuilder post_owners_ids_sb;
     public StringBuilder post_group_ids_sb;
     public NewsLinearLayout newsLinearLayout;
     public FriendsLinearLayout friendsLinearLayout;
@@ -112,7 +115,13 @@ public class AppActivity extends Activity {
     public int current_user_id = 0;
     public ArrayList<FriendsListItem> friendsListItemArray;
     public FriendsListAdapter friendsListAdapter;
+    public ArrayList<UserPostInfo> userPostInfoArray;
     public Intent address_intent;
+    public String action;
+    public int post_id;
+    public int owner_id;
+    public int newsfeed_id;
+    public View news_item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -360,7 +369,9 @@ public class AppActivity extends Activity {
         slidingMenuItemArray = new ArrayList<SlidingMenuItem>();
         response_sb = new StringBuilder();
         post_author_ids_sb = new StringBuilder();
+        post_owners_ids_sb = new StringBuilder();
         post_group_ids_sb = new StringBuilder();
+        post_owners_ids = new ArrayList<Integer>();
         json_response_user = new JSONObject();
         json_response_group = new JSONObject();
         attachments = new JSONArray();
@@ -368,6 +379,7 @@ public class AppActivity extends Activity {
         groupPostInfoArray = new ArrayList<GroupPostInfo>();
         newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
         friendsListItemArray = new ArrayList<FriendsListItem>();
+        userPostInfoArray = new ArrayList<UserPostInfo>();
         server_2 = new String();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -913,6 +925,22 @@ public class AppActivity extends Activity {
         startActivity(i);
     }
 
+    public void addLike(int position, String type, View view) {
+        SharedPreferences sharedPreferences = getSharedPreferences("instance", 0);
+        if(connection_status == false) {
+            send_request = ("/method/Likes.isLiked");
+            action = "add_like";
+            post_id = newsListItemArray.get(position).post_id;
+            owner_id = newsListItemArray.get(position).owner_id;
+            openVK_API.sendMethod("Likes.isLiked", "owner_id=" + owner_id + "&user_id=" + sharedPreferences.getInt("user_id", 0) +
+                     "&item_id=" + post_id + "&type=" + type);
+            newsfeed_id = position;
+            news_item = view;
+        } else {
+            Log.d("OpenVK Legacy", "Already connected!");
+        }
+    }
+
 
     class UpdateUITask extends TimerTask {
         @Override
@@ -990,7 +1018,7 @@ public class AppActivity extends Activity {
                                 if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
                                     if(connection_status == false) {
                                         try {
-                                            openVK_API.sendMethod("Newsfeed.get", "count=" + 50);
+                                            openVK_API.sendMethod("Newsfeed.get", "count=" + 50 + "&extended=1");
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -1228,8 +1256,34 @@ public class AppActivity extends Activity {
                                 progress_ll.setVisibility(View.GONE);
                             } else if(send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
                                 loadFriends();
+                            } else if(send_request.startsWith("/method/Likes.isLiked") && action.equals("add_like") && global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
+                                if(json_response.getJSONObject("response").getInt("liked") == 0) {
+                                    try {
+                                        send_request = ("/method/Likes.add");
+                                        openVK_API.sendMethod("Likes.add", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                        NewsListItem current_item = newsListItemArray.get(newsfeed_id);
+                                        current_item.counters.likes = current_item.counters.likes + 1;
+                                        current_item.counters.isLiked = true;
+                                        newsListItemArray.set(newsfeed_id, current_item);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else if(json_response.getJSONObject("response").getInt("liked") == 1) {
+                                    try {
+                                        send_request = ("/method/Likes.remove");
+                                        openVK_API.sendMethod("Likes.remove", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                        NewsListItem current_item = newsListItemArray.get(newsfeed_id);
+                                        current_item.counters.likes = current_item.counters.likes - 1;
+                                        current_item.counters.isLiked = false;
+                                        newsListItemArray.set(newsfeed_id, current_item);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
-
+                            newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
+                            news_listview = newsLinearLayout.findViewById(R.id.news_listview);
+                            news_listview.setAdapter(newsListAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (Exception e) {
@@ -1296,18 +1350,69 @@ public class AppActivity extends Activity {
                 for (int news_item_index = 0; news_item_index < news_item_count; news_item_index++) {
                     try {
                         newsfeed = ((JSONArray) json_response.getJSONObject("response").getJSONArray("items"));
-                        postAuthorId = ((JSONObject) newsfeed.get(news_item_index)).getInt("owner_id");
-                        newsItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
-                                getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count")));
-                        post_author_ids.add(new Integer(postAuthorId));
-                        if (news_item_index == 0) {
-                            post_author_ids_sb.append(postAuthorId);
-                        } else if (news_item_index > 0) {
-                            post_author_ids_sb.append("," + postAuthorId);
+                        postOwnerId = ((JSONObject) newsfeed.get(news_item_index)).getInt("owner_id");
+                        postAuthorId = ((JSONObject) newsfeed.get(news_item_index)).getInt("from_id");
+                        if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("user_likes") == 0) {
+                            if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("user_reposted") == 0) {
+                                newsItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), false, false));
+                            } else {
+                                newsItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), false, true));
+                            }
                         } else {
-                            post_group_ids_sb.append(postAuthorId);
+                            if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("user_reposted") == 0) {
+                                newsItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), true, false));
+                            } else {
+                                newsItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), true, true));
+                            }
                         }
-                        if(((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
+                        newsListItemArray.add(new NewsListItem("(Unknown)", ((JSONObject) newsfeed.get(news_item_index))
+                                .getInt("date"), null, ((JSONObject) newsfeed.get(news_item_index)).getString("text"), newsItemCountersInfoArray.get(news_item_index), null, null,
+                                newsfeed.getJSONObject(news_item_index).getInt("owner_id"), newsfeed.getJSONObject(news_item_index).getInt("id"), getApplicationContext()));
+                        NewsListItem item = newsListItemArray.get(news_item_index);
+                        if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") < 0 && json_response.getJSONObject("response").isNull("groups") == false) {
+                            for (int groups_index = 0; groups_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).length(); groups_index++) {
+                                if (-newsfeed.getJSONObject(news_item_index).getInt("owner_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                        getJSONObject(groups_index).getInt("id")) {
+                                    item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                            getJSONObject(groups_index).getString("name");
+                                    newsListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        } else if(json_response.getJSONObject("response").isNull("profiles") == false) {
+                            for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                                if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getInt("id")) {
+                                    item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("last_name");
+                                    newsListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        }
+                        if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") != newsfeed.getJSONObject(news_item_index).getInt("from_id") && newsfeed.getJSONObject(news_item_index).getInt("from_id") > 0) {
+                            for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                                if (newsfeed.getJSONObject(news_item_index).getInt("from_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getInt("id")) {
+                                    item.name = getResources().getString(R.string.on_wall, ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("last_name"), item.name);
+                                    newsListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        }
+
+                        if (news_item_index == 0) {
+                            post_owners_ids_sb.append(postOwnerId);
+                        } else if (news_item_index > 0) {
+                            post_owners_ids_sb.append("," + postOwnerId);
+                        } else {
+                            post_owners_ids_sb.append(postOwnerId);
+                        }
+                        if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
                             // loadPhotos(news_item_index); > does not work with openvk.uk instance (401 code returned)
                         }
                     } catch (JSONException jEx) {
@@ -1316,63 +1421,7 @@ public class AppActivity extends Activity {
                         ex.printStackTrace();
                     }
                 }
-                try {
-                    if(connection_status == false) {
-                        send_request = ("/method/Users.get");
-                        openVK_API.sendMethod("Users.get", "user_ids=" + post_author_ids_sb.toString());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (send_request.startsWith("/method/Users.get")) {
-                for (int news_item_index_2 = 0; news_item_index_2 < news_item_count; news_item_index_2++) {
-                    try {
-                        json_response_user = json_response;
-                        if(newsfeed.getJSONObject(news_item_index_2).getInt("owner_id") > 0) {
-                        author = json_response_user.getJSONArray("response").getJSONObject(news_item_index_2).getString("first_name")
-                                + " " + json_response_user.getJSONArray("response").getJSONObject(news_item_index_2).getString("last_name");
-                            newsListItemArray.add(new NewsListItem(author, ((JSONObject) newsfeed.get(news_item_index_2))
-                                .getInt("date"), null, ((JSONObject) newsfeed.get(news_item_index_2)).getString("text"), newsItemCountersInfoArray.get(news_item_index_2),null, null,
-                                getApplicationContext()));
-                        } else {
-                            post_group_ids_sb.append("," + -newsfeed.getJSONObject(news_item_index_2).getInt("owner_id"));
-                            groupPostInfoArray.add(new GroupPostInfo(news_item_index_2, -newsfeed.getJSONObject(news_item_index_2).getInt("owner_id")));
-                        }
-                        news_item_index++;
-                    } catch (JSONException e) {
-                    } catch (NullPointerException npe) {
-                        Log.d("JSON Parser", npe.getMessage());
-                    }
-                }
-                try {
-                    Log.d("OpenVK Legacy", "Group IDs: [" + post_group_ids_sb.toString() + "]");
-                    if(connection_status == false && post_group_ids_sb.toString().length() > 0) {
-                        send_request = ("/method/Groups.getById?access_token=" + URLEncoder.encode(auth_token, "UTF-8") + "&group_ids=" + post_group_ids_sb.toString().substring(1));
-                        openVK_API.sendMethod("Groups.getById", "group_ids=" + post_group_ids_sb.toString().substring(1));
-                    } else {
-                        Log.d("OpenVK Legacy", "Already connected!");
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            } else if (send_request.startsWith("/method/Groups.getById")) {
-                    for (int news_item_index_4 = 0; news_item_index_4 < groupPostInfoArray.size(); news_item_index_4++) {
-                        try {
-                            json_response_group = json_response;
-                            author = json_response_group.getJSONArray("response").getJSONObject(news_item_index_4).getString("name");
-                            newsListItemArray.add(groupPostInfoArray.get(news_item_index_4).postId, new NewsListItem(author, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId))
-                                            .getInt("date"), null, ((JSONObject) newsfeed.get(groupPostInfoArray.get(news_item_index_4).postId)).getString("text"), newsItemCountersInfoArray.get(groupPostInfoArray.get(news_item_index_4).postId),null, null,
-                                            getApplicationContext()));
-                            news_item_index++;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (NullPointerException npe) {
-                            Log.d("JSON Parser", npe.getMessage());
-                        }
-                    }
-                } else {
-
-                }
+            }
         }
         Log.d("OpenVK Legacy", "Done!");
         newsListAdapter = new NewsListAdapter(this, newsListItemArray);
