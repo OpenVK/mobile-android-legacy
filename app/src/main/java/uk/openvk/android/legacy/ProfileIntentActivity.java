@@ -366,7 +366,7 @@ public class ProfileIntentActivity extends Activity {
                 if (path.startsWith("openvk://profile/id")) {
                     openVK_API.sendMethod("Users.get", "user_ids=" + path.substring(("openvk://profile/id").length()) + "&fields=last_seen,status,sex,interests,music,movies,city,books,verified");
                 } else {
-                    openVK_API.sendMethod("Users.search", "q=" + path.substring("openvk://profile".length()));
+                    openVK_API.sendMethod("Users.search", "q=" + path.substring("openvk://profile".length() + 1));
                 }
             }
         } catch (Exception e) {
