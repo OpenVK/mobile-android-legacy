@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Layout;
@@ -1283,7 +1284,9 @@ public class AppActivity extends Activity {
                             }
                             newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
                             news_listview = newsLinearLayout.findViewById(R.id.news_listview);
+                            Parcelable state = news_listview.onSaveInstanceState();
                             news_listview.setAdapter(newsListAdapter);
+                            news_listview.onRestoreInstanceState(state);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (Exception e) {
