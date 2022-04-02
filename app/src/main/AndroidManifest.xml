@@ -38,7 +38,7 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
         <activity
-            android:name=".AppIntentActivity"
+            android:name=".ProfileIntentActivity"
             android:label="@string/app_name"
             android:icon="@drawable/ic_left_menu"
             android:exported="true"
@@ -48,6 +48,17 @@
                 <category android:name="android.intent.category.DEFAULT"></category>
 
                 <data android:scheme="openvk" android:host="profile"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FriendsIntentActivity"
+            android:label="@string/app_name"
+            android:icon="@drawable/ic_left_menu"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
                 <data android:scheme="openvk" android:host="friends"/>
             </intent-filter>
         </activity>
