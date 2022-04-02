@@ -260,6 +260,7 @@ public class AppActivity extends Activity {
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                    i.putExtra("fromLayout", global_sharedPreferences.getString("currentLayout", ""));
                     startActivity(i);
                     return true;
                 }
@@ -907,9 +908,8 @@ public class AppActivity extends Activity {
         String url = "openvk://profile/" + "id" + friendsListItemArray.get(position).id;
         Log.d("OpenVK Legacy", "Item ID: " + position + " | User ID: " + friendsListItemArray.get(position).id);
         Intent i = new Intent(Intent.ACTION_VIEW);
-        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        i.addFlags(Intent.FLAG_FROM_BACKGROUND);
         i.setData(Uri.parse(url));
+        i.putExtra("fromLayout", global_sharedPreferences.getString("currentLayout", ""));
         startActivity(i);
     }
 
@@ -1416,45 +1416,8 @@ public class AppActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if(global_sharedPreferences.getString("previousLayout", "").equals("NewsLinearLayout")) {
-            newsLinearLayout.setVisibility(View.VISIBLE);
-            profileLayout.setVisibility(View.GONE);
-            friendsLinearLayout.setVisibility(View.GONE);
-            SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "NewsLinearLayout");
-            editor.commit();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                getActionBar().setTitle(getResources().getString(R.string.newsfeed));
-            } else {
-                titlebar_title = findViewById(R.id.titlebar_title);
-                titlebar_title.setText(getResources().getString(R.string.newsfeed));
-            }
-        } else if(global_sharedPreferences.getString("previousLayout", "").equals("ProfileLayout")) {
-            newsLinearLayout.setVisibility(View.GONE);
-            profileLayout.setVisibility(View.VISIBLE);
-            friendsLinearLayout.setVisibility(View.GONE);
-            SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "ProfileLayout");
-            editor.commit();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                getActionBar().setTitle(getResources().getString(R.string.profile));
-            } else {
-                titlebar_title = findViewById(R.id.titlebar_title);
-                titlebar_title.setText(getResources().getString(R.string.profile));
-            }
-        } else if(global_sharedPreferences.getString("previousLayout", "").equals("FriendsLayout")) {
-            newsLinearLayout.setVisibility(View.GONE);
-            profileLayout.setVisibility(View.GONE);
-            friendsLinearLayout.setVisibility(View.VISIBLE);
-            SharedPreferences.Editor editor = global_sharedPreferences.edit();
-            editor.putString("currentLayout", "FriendsLayout");
-            editor.commit();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                getActionBar().setTitle(getResources().getString(R.string.friends));
-            } else {
-                titlebar_title = findViewById(R.id.titlebar_title);
-                titlebar_title.setText(getResources().getString(R.string.friends));
-            }
+        if(menu_is_closed == true) {
+            openSlidingMenu();
         } else {
             finish();
         }

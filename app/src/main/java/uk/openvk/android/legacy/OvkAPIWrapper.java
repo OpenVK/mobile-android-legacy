@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.util.Base64;
 import android.util.Log;
-import android.webkit.WebView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -298,14 +296,22 @@ public class OvkAPIWrapper {
             bundle.putString("JSON_response", "" + jsonResponseString);
             msg.setData(bundle);
             AppActivity.handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppIntentActivity")) {
-            Message msg = handler.obtainMessage(AppIntentActivity.UPDATE_UI);
+        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            Message msg = handler.obtainMessage(FriendsIntentActivity.UPDATE_UI);
             Bundle bundle = new Bundle();
             bundle.putString("State", state);
             bundle.putString("API_method", "/method/" + api_method);
             bundle.putString("JSON_response", "" + jsonResponseString);
             msg.setData(bundle);
-            AppIntentActivity.handler.sendMessage(msg);
+            FriendsIntentActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            Message msg = handler.obtainMessage(ProfileIntentActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            msg.setData(bundle);
+            ProfileIntentActivity.handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("AuthenticationActivity")) {
             Message msg = handler.obtainMessage(AuthenticationActivity.UPDATE_UI);
             Bundle bundle = new Bundle();

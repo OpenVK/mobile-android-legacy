@@ -1,15 +1,12 @@
 package uk.openvk.android.legacy;
 
 import android.content.Context;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -67,9 +64,9 @@ public class FriendsListAdapter extends BaseAdapter {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
                     ((AppActivity) ctx).hideSelectedItemBackground(position);
                     ((AppActivity) ctx).showProfile(position);
-                } else if(ctx.getClass().getSimpleName().equals("AppIntentActivity")) {
-                    ((AppIntentActivity) ctx).hideSelectedItemBackground(position);
-                    ((AppIntentActivity) ctx).showProfile(position);
+                } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                    ((FriendsIntentActivity) ctx).hideSelectedItemBackground(position);
+                    ((FriendsIntentActivity) ctx).showProfile(position);
                 }
             }
         });
