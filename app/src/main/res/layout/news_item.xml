@@ -95,16 +95,13 @@
 
         <ImageView
             android:id="@+id/post_options_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="32dp"
             android:layout_alignTop="@+id/poster_name_view"
             android:layout_alignBottom="@+id/poster_name_view"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="-10dip"
-            android:paddingLeft="13dip"
-            android:paddingTop="10dip"
-            android:paddingRight="13dip"
-            android:paddingBottom="10dip"
+            android:layout_marginTop="8dip"
+            android:layout_marginRight="4dip"
             android:src="@drawable/ic_card_menu" />
 
     </LinearLayout>

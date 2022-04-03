@@ -12,7 +12,8 @@
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/twofactor_text" />
+        android:text="@string/twofactor_text"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/two_factor_code"
