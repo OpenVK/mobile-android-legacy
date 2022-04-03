@@ -1171,4 +1171,12 @@
     <string name="birthday">День рождения</string>
     <string name="post_fail_empty">Извини, но мы не можем запостить пустое сообщение</string>
     <string name="on_wall">%1$s на стене %2$s</string>
+    <string name="debug_incompatibillity_error">Требуется Android 4.1 или выше</string>
+    <string name="about_instance">Об инстанции</string>
+    <string name="server_address">Сервер:</string>
+    <string name="connection_type">Тип соединения:</string>
+    <string name="secured_connection">"Защищённое (HTTPS) "</string>
+    <string name="default_connection">Обычное (HTTP)</string>
+    <string name="instance_version">Версия инстанции:</string>
+    <string name="connection_error">Ошибка подключения</string>
 </resources>

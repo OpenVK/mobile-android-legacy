@@ -1171,4 +1171,12 @@
     <string name="birthday">День народження</string>
     <string name="post_fail_empty">Вибач, але ми не можемо запостити порожнє повідомлення</string>
     <string name="on_wall">%1$s на стiнi %2$s</string>
+    <string name="debug_incompatibillity_error">Потрібен Android 4.1 або вище</string>
+    <string name="about_instance">Про iнстанцiю</string>
+    <string name="server_address">Сервер:</string>
+    <string name="connection_type">Тип з\'єднання:</string>
+    <string name="secured_connection">"Захищене (HTTPS) "</string>
+    <string name="default_connection">Звичайне (HTTP)</string>
+    <string name="instance_version">Версiя iнстанцiї:</string>
+    <string name="connection_error">Помилка пiдключення</string>
 </resources>

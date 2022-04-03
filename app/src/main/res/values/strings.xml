@@ -1112,4 +1112,12 @@
 	<string name="birthday">Birthday</string>
 	<string name="post_fail_empty">Sorry, but we can\'t post your empty message</string>
 	<string name="on_wall">%1$s on %2$s\'s wall</string>
+	<string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>
+	<string name="about_instance">About instance</string>
+	<string name="server_address">Server:</string>
+	<string name="connection_type">Connection type</string>
+	<string name="secured_connection">Secured (HTTPS)</string>
+	<string name="default_connection">Default (HTTP)</string>
+	<string name="instance_version">Instance version:</string>
+	<string name="connection_error">Connection error</string>
 </resources>
