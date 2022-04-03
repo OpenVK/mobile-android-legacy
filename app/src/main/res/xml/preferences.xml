@@ -94,6 +94,9 @@
 			android:id="@+id/debug_menu"
 			android:key="debug_menu"
 			android:title="@string/debug_menu" />
+		<Preference
+			android:key="about_instance"
+			android:title="@string/about_instance" />
 		<Preference android:title="@string/menu_about" android:key="about" />
 
 	</PreferenceCategory>
