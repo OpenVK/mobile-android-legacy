@@ -84,6 +84,7 @@ public class AppActivity extends Activity {
     public boolean creating_another_activity;
     public PopupWindow popup_menu;
     public ArrayList<NewsListItem> newsListItemArray;
+    public ArrayList<NewsListItem> wallListItemArray;
     public ArrayList<SlidingMenuItem> slidingMenuItemArray;
     public ArrayList<GroupPostInfo> groupPostInfoArray;
     public NewsListAdapter newsListAdapter;
@@ -107,6 +108,7 @@ public class AppActivity extends Activity {
     public boolean connection_status;
     public int profile_id;
     public ArrayList<NewsItemCountersInfo> newsItemCountersInfoArray;
+    public ArrayList<NewsItemCountersInfo> wallItemCountersInfoArray;
     public ArrayList<Bitmap> attachments_photo;
     public TabHost tabHost;
     public boolean about_profile_opened;
@@ -154,10 +156,12 @@ public class AppActivity extends Activity {
                     case UPDATE_UI:
                         state = msg.getData().getString("State");
                         send_request = msg.getData().getString("API_method");
-                        try {
-                            json_response = new JSONObject(msg.getData().getString("JSON_response"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        if(state != "no_connection" && state != "timeout") {
+                            try {
+                                json_response = new JSONObject(msg.getData().getString("JSON_response"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                         Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
                         updateUITask.run();
@@ -377,8 +381,10 @@ public class AppActivity extends Activity {
         json_response_group = new JSONObject();
         attachments = new JSONArray();
         newsListItemArray = new ArrayList<NewsListItem>();
+        wallListItemArray = new ArrayList<NewsListItem>();
         groupPostInfoArray = new ArrayList<GroupPostInfo>();
         newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
+        wallItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
         friendsListItemArray = new ArrayList<FriendsListItem>();
         userPostInfoArray = new ArrayList<UserPostInfo>();
         server_2 = new String();
@@ -929,14 +935,25 @@ public class AppActivity extends Activity {
     public void addLike(int position, String type, View view) {
         SharedPreferences sharedPreferences = getSharedPreferences("instance", 0);
         if(connection_status == false) {
-            send_request = ("/method/Likes.isLiked");
-            action = "add_like";
-            post_id = newsListItemArray.get(position).post_id;
-            owner_id = newsListItemArray.get(position).owner_id;
-            openVK_API.sendMethod("Likes.isLiked", "owner_id=" + owner_id + "&user_id=" + sharedPreferences.getInt("user_id", 0) +
-                     "&item_id=" + post_id + "&type=" + type);
-            newsfeed_id = position;
-            news_item = view;
+            if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
+                send_request = ("/method/Likes.isLiked");
+                action = "add_like";
+                post_id = newsListItemArray.get(position).post_id;
+                owner_id = newsListItemArray.get(position).owner_id;
+                newsfeed_id = position;
+                openVK_API.sendMethod("Likes.isLiked", "owner_id=" + owner_id + "&user_id=" + sharedPreferences.getInt("user_id", 0) +
+                        "&item_id=" + post_id + "&type=" + type);
+                news_item = view;
+            } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                send_request = ("/method/Likes.isLiked");
+                action = "add_like";
+                post_id = wallListItemArray.get(position).post_id;
+                owner_id = wallListItemArray.get(position).owner_id;
+                newsfeed_id = position;
+                openVK_API.sendMethod("Likes.isLiked", "owner_id=" + owner_id + "&user_id=" + sharedPreferences.getInt("user_id", 0) +
+                        "&item_id=" + post_id + "&type=" + type);
+                news_item = view;
+            }
         } else {
             Log.d("OpenVK Legacy", "Already connected!");
         }
@@ -1019,7 +1036,7 @@ public class AppActivity extends Activity {
                                 if(global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
                                     if(connection_status == false) {
                                         try {
-                                            openVK_API.sendMethod("Newsfeed.get", "count=" + 50 + "&extended=1");
+                                            openVK_API.sendMethod("Newsfeed.get", "count=" + 100 + "&extended=1");
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -1211,6 +1228,7 @@ public class AppActivity extends Activity {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
+
                             } else if((send_request.startsWith("/method/Users.search")) && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
                                 try {
                                     send_request = ("/method/Users.get");
@@ -1255,8 +1273,15 @@ public class AppActivity extends Activity {
                                 profileLayout.setVisibility(View.VISIBLE);
                                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                                 progress_ll.setVisibility(View.GONE);
+                                try {
+                                    openVK_API.sendMethod("Wall.get", "owner_id=" + profile_id + "&extended=1&count=100");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             } else if(send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
                                 loadFriends();
+                            } else if(send_request.startsWith("/method/Wall.get") && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                                appendWallItem();
                             } else if(send_request.startsWith("/method/Likes.isLiked") && action.equals("add_like") && global_sharedPreferences.getString("currentLayout", "").equals("NewsLinearLayout")) {
                                 if(json_response.getJSONObject("response").getInt("liked") == 0) {
                                     try {
@@ -1281,12 +1306,46 @@ public class AppActivity extends Activity {
                                         e.printStackTrace();
                                     }
                                 }
+                                newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
+                                news_listview = newsLinearLayout.findViewById(R.id.news_listview);
+                                Parcelable state = news_listview.onSaveInstanceState();
+                                news_listview.setAdapter(newsListAdapter);
+                                news_listview.onRestoreInstanceState(state);
+                            } else if(send_request.startsWith("/method/Likes.isLiked") && action.equals("add_like") && global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
+                                if (json_response.getJSONObject("response").getInt("liked") == 0) {
+                                    try {
+                                        send_request = ("/method/Likes.add");
+                                        openVK_API.sendMethod("Likes.add", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                        NewsListItem current_item = wallListItemArray.get(newsfeed_id);
+                                        current_item.counters.likes = current_item.counters.likes + 1;
+                                        current_item.counters.isLiked = true;
+                                        wallListItemArray.set(newsfeed_id, current_item);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else if (json_response.getJSONObject("response").getInt("liked") == 1) {
+                                    try {
+                                        send_request = ("/method/Likes.remove");
+                                        openVK_API.sendMethod("Likes.remove", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                        NewsListItem current_item = wallListItemArray.get(newsfeed_id);
+                                        current_item.counters.likes = current_item.counters.likes - 1;
+                                        current_item.counters.isLiked = false;
+                                        wallListItemArray.set(newsfeed_id, current_item);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                NewsListAdapter wall_adapter = new NewsListAdapter(AppActivity.this, wallListItemArray);
+                                View view = tabHost.getTabContentView().getChildAt(0);
+                                WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
+                                ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+                                Parcelable state = news_listview.onSaveInstanceState();
+                                posts_lv.setAdapter(wall_adapter);
+                                LinearLayout.LayoutParams layoutParams;
+                                layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
+                                int listviewHeight = -1;
+                                posts_lv.onRestoreInstanceState(state);
                             }
-                            newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
-                            news_listview = newsLinearLayout.findViewById(R.id.news_listview);
-                            Parcelable state = news_listview.onSaveInstanceState();
-                            news_listview.setAdapter(newsListAdapter);
-                            news_listview.onRestoreInstanceState(state);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (Exception e) {
@@ -1436,6 +1495,119 @@ public class AppActivity extends Activity {
         profile_ll.setVisibility(View.GONE);
         progress_ll.setVisibility(View.GONE);
         newsLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void appendWallItem() {
+        wallListItemArray.clear();
+        wallItemCountersInfoArray.clear();
+        try {
+            if (send_request.startsWith("/method/Wall.get")) {
+                news_item_count = json_response.getJSONObject("response").getJSONArray("items").length();
+                if(news_item_count > 100) {
+                    news_item_count = 100;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("OpenVK Legacy", "Wall posts count: " + news_item_count + "\r\nJSON output: " + json_response.toString());
+        if (news_item_count > 0) {
+            String author = new String();
+            if (send_request.startsWith("/method/Wall.get")) {
+                for (int news_item_index = 0; news_item_index < news_item_count; news_item_index++) {
+                    try {
+                        newsfeed = ((JSONArray) json_response.getJSONObject("response").getJSONArray("items"));
+                        postOwnerId = ((JSONObject) newsfeed.get(news_item_index)).getInt("owner_id");
+                        postAuthorId = ((JSONObject) newsfeed.get(news_item_index)).getInt("from_id");
+                        if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("user_likes") == 0) {
+                            if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("user_reposted") == 0) {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), false, false));
+                            } else {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), false, true));
+                            }
+                        } else {
+                            if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("user_reposted") == 0) {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), true, false));
+                            } else {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), true, true));
+                            }
+                        }
+                        wallListItemArray.add(new NewsListItem("(Unknown)", ((JSONObject) newsfeed.get(news_item_index))
+                                .getInt("date"), null, ((JSONObject) newsfeed.get(news_item_index)).getString("text"), wallItemCountersInfoArray.get(news_item_index), null, null,
+                                newsfeed.getJSONObject(news_item_index).getInt("owner_id"), newsfeed.getJSONObject(news_item_index).getInt("id"), getApplicationContext()));
+                        NewsListItem item = wallListItemArray.get(news_item_index);
+                        if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") < 0 && json_response.getJSONObject("response").isNull("groups") == false) {
+                            for (int groups_index = 0; groups_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).length(); groups_index++) {
+                                if (-newsfeed.getJSONObject(news_item_index).getInt("owner_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                        getJSONObject(groups_index).getInt("id")) {
+                                    item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                            getJSONObject(groups_index).getString("name");
+                                    wallListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        } else if(json_response.getJSONObject("response").isNull("profiles") == false) {
+                            for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                                if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getInt("id")) {
+                                    item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("last_name");
+                                    wallListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        }
+                        if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") != newsfeed.getJSONObject(news_item_index).getInt("from_id") && newsfeed.getJSONObject(news_item_index).getInt("from_id") > 0) {
+                            for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                                if (newsfeed.getJSONObject(news_item_index).getInt("from_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getInt("id")) {
+                                    item.name = getResources().getString(R.string.on_wall, ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("last_name"), item.name);
+                                    wallListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        }
+
+                        if (news_item_index == 0) {
+                            post_owners_ids_sb.append(postOwnerId);
+                        } else if (news_item_index > 0) {
+                            post_owners_ids_sb.append("," + postOwnerId);
+                        } else {
+                            post_owners_ids_sb.append(postOwnerId);
+                        }
+                        if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
+                            // loadPhotos(news_item_index); > does not work with openvk.uk instance (401 code returned)
+                        }
+                    } catch (JSONException jEx) {
+                        jEx.printStackTrace();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        Log.d("OpenVK Legacy", "Done!");
+        NewsListAdapter all_posts_adapter = new NewsListAdapter(this, wallListItemArray);
+        View view = tabHost.getTabContentView().getChildAt(0);
+        WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
+        ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+        posts_lv.setAdapter(all_posts_adapter);
+        LinearLayout.LayoutParams layoutParams;
+        layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
+        int listviewHeight = -1;
+        Log.d("LayoutParams", "Height: " + layoutParams.height + "px");
+        for(int items_index = 0; items_index < all_posts_adapter.getCount(); items_index++) {
+            View view_from_adapter = all_posts_adapter.getView(items_index, null, posts_lv);
+            view_from_adapter.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            listviewHeight += view_from_adapter.getMeasuredHeight();
+        }
+        layoutParams.height = listviewHeight + (int)(80 * getResources().getDisplayMetrics().scaledDensity);
+        posts_ll.setLayoutParams(layoutParams);
     }
 
     private void loadPhotos(int pos) {

@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -67,8 +68,10 @@ public class ProfileIntentActivity extends Activity {
     public ArrayList<NewsListItem> newsListItemArray;
     public ArrayList<SlidingMenuItem> slidingMenuItemArray;
     public ArrayList<GroupPostInfo> groupPostInfoArray;
+    public ArrayList<NewsListItem> wallListItemArray;
     public NewsListAdapter newsListAdapter;
     public int postAuthorId;
+    public int postOwnerId;
     public String send_request;
     public ListView news_listview;
     public int news_item_count;
@@ -77,25 +80,30 @@ public class ProfileIntentActivity extends Activity {
     public ArrayList<Integer> post_author_ids;
     public StringBuilder post_author_ids_sb;
     public StringBuilder post_group_ids_sb;
+    public StringBuilder post_owners_ids_sb;
     public NewsLinearLayout newsLinearLayout;
     public FriendsLinearLayout friendsLinearLayout;
     public ProfileLayout profileLayout;
     public boolean sliding_animated;
     public boolean menu_is_closed;
-    public boolean connection_status;
     public int profile_id;
     public ArrayList<NewsItemCountersInfo> newsItemCountersInfoArray;
+    public ArrayList<NewsItemCountersInfo> wallItemCountersInfoArray;
     public ArrayList<Bitmap> attachments_photo;
     public TabHost tabHost;
     public boolean about_profile_opened;
     public static Handler handler;
     public static final int UPDATE_UI = 0;
     public static final int GET_PICTURE = 1;
-    public int current_user_id = 0;
     public ArrayList<FriendsListItem> friendsListItemArray;
     public FriendsListAdapter friendsListAdapter;
     public Intent address_intent;
     public String fromLayout;
+    public String action;
+    public int post_id;
+    public int owner_id;
+    public int newsfeed_id;
+    public View news_item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +141,7 @@ public class ProfileIntentActivity extends Activity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nClass name" + FriendsIntentActivity.class.getSimpleName() + "\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
+                        Log.d("OpenVK Legacy", "Getting handle message!\r\nClass name: " + ProfileIntentActivity.class.getSimpleName() + "\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
                         updateUITask.run();
                         break;
                     case GET_PICTURE:
@@ -301,7 +309,13 @@ public class ProfileIntentActivity extends Activity {
         json_response_group = new JSONObject();
         attachments = new JSONArray();
         newsItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
+        wallItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
         friendsListItemArray = new ArrayList<FriendsListItem>();
+        wallListItemArray = new ArrayList<NewsListItem>();
+        post_owners_ids_sb = new StringBuilder();
+        post_author_ids_sb = new StringBuilder();
+        post_group_ids_sb = new StringBuilder();
+        post_author_ids = new ArrayList<Integer>();
         server_2 = new String();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -476,9 +490,10 @@ public class ProfileIntentActivity extends Activity {
     }
 
     public void hideSelectedItemBackground(int position) {
-        news_listview = findViewById(R.id.news_listview);
-        news_listview.setBackgroundColor(getResources().getColor(R.color.transparent));
-        ((ListView) friendsLinearLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
+        View view = tabHost.getTabContentView().getChildAt(0);
+        WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
+        ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+        posts_lv.setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void showProfile(int position) {
@@ -490,6 +505,18 @@ public class ProfileIntentActivity extends Activity {
         i.addFlags(Intent.FLAG_FROM_BACKGROUND);
         i.setData(Uri.parse(url));
         startActivity(i);
+    }
+
+    public void addLike(int position, String type, View view) {
+        SharedPreferences sharedPreferences = getSharedPreferences("instance", 0);
+        send_request = ("/method/Likes.isLiked");
+        action = "add_like";
+        post_id = wallListItemArray.get(position).post_id;
+        owner_id = wallListItemArray.get(position).owner_id;
+        newsfeed_id = position;
+        openVK_API.sendMethod("Likes.isLiked", "owner_id=" + owner_id + "&user_id=" + sharedPreferences.getInt("user_id", 0) +
+                "&item_id=" + post_id + "&type=" + type);
+        news_item = view;
     }
 
 
@@ -564,13 +591,13 @@ public class ProfileIntentActivity extends Activity {
                                             ex.printStackTrace();
                                         }
                                     }
-                                } else if((send_request.startsWith("/method/Users.get"))) {
+                                } else if ((send_request.startsWith("/method/Users.get"))) {
                                     ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                                     ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                     final AboutProfileLinearLayout aboutProfile_ll = findViewById(R.id.about_profile_layout);
                                     try {
                                         profile_id = json_response.getJSONArray("response").getJSONObject(0).getInt("id");
-                                    } catch(Exception ex) {
+                                    } catch (Exception ex) {
                                         try {
                                             if (json_response.getJSONArray("response").getJSONObject(0).getString("id").equals("")) {
                                                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
@@ -580,12 +607,12 @@ public class ProfileIntentActivity extends Activity {
                                                 ((TextView) error_ll.findViewById(R.id.error_text2)).setText(R.string.page_not_found);
                                                 return;
                                             }
-                                        } catch(Exception ex2) {
+                                        } catch (Exception ex2) {
                                             ex.printStackTrace();
                                         }
                                     }
                                     String name = json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name") + "  ";
-                                    if(tabHost.getTabWidget().getTabCount() > 1) {
+                                    if (tabHost.getTabWidget().getTabCount() > 1) {
                                         View view = tabHost.getTabWidget().getChildAt(1);
                                         if (view != null) {
                                             TextView title = view.findViewById(android.R.id.title);
@@ -594,43 +621,39 @@ public class ProfileIntentActivity extends Activity {
                                     }
 
                                     SpannableStringBuilder sb = new SpannableStringBuilder(name);
-                                    if(json_response.getJSONArray("response").getJSONObject(0).getInt("verified") == 1) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).getInt("verified") == 1) {
                                         ImageSpan imageSpan = new ImageSpan(getApplicationContext(), R.drawable.ic_verified, DynamicDrawableSpan.ALIGN_BASELINE);
                                         sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                     }
                                     ((TextView) profileHeader.findViewById(R.id.profile_name)).setText(sb);
                                     String status = "";
-                                    if(json_response.getJSONArray("response").getJSONObject(0).has("status")) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).has("status")) {
                                         status = json_response.getJSONArray("response").getJSONObject(0).getString("status");
                                         ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setVisibility(View.VISIBLE);
                                     }
                                     ((TextView) profileHeader.findViewById(R.id.profile_activity)).setText(status);
                                     ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setText(status);
-                                    if(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").has("time")) {
-                                        String last_seen_time = new SimpleDateFormat("HH:mm").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
-                                        String last_seen_date = new SimpleDateFormat("dd MMMM yyyy").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
-                                        if (json_response.getJSONArray("response").getJSONObject(0).getInt("online") == 0) {
-                                            if ((TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time")) - System.currentTimeMillis()) < 86400000) {
-                                                if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
-                                                    ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, getResources().getString(R.string.date_at) + " " + last_seen_time));
-                                                } else {
-                                                    ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_at) + " " + last_seen_time));
-                                                }
+                                    String last_seen_time = new SimpleDateFormat("HH:mm").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
+                                    String last_seen_date = new SimpleDateFormat("dd MMMM yyyy").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
+                                    if (json_response.getJSONArray("response").getJSONObject(0).getInt("online") == 0) {
+                                        if ((TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time")) - System.currentTimeMillis()) < 86400000) {
+                                            if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, getResources().getString(R.string.date_at) + " " + last_seen_time));
                                             } else {
-                                                if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
-                                                    ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, last_seen_date));
-                                                } else {
-                                                    ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, last_seen_date));
-                                                }
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_at) + " " + last_seen_time));
                                             }
                                         } else {
-                                            ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
+                                            if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, last_seen_date));
+                                            } else {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, last_seen_date));
+                                            }
                                         }
                                     } else {
-                                        ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText("");
+                                        ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
                                     }
 
-                                    if(json_response.getJSONArray("response").getJSONObject(0).isNull("interests") == true) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).isNull("interests") == true) {
                                         ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout)).setVisibility(View.GONE);
                                     } else {
                                         ((TextView) aboutProfile_ll.findViewById(R.id.interests_label2)).setText(
@@ -638,7 +661,7 @@ public class ProfileIntentActivity extends Activity {
                                         );
                                     }
 
-                                    if(json_response.getJSONArray("response").getJSONObject(0).isNull("music") == true) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).isNull("music") == true) {
                                         ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout2)).setVisibility(View.GONE);
                                     } else {
                                         ((TextView) aboutProfile_ll.findViewById(R.id.music_label2)).setText(
@@ -646,7 +669,7 @@ public class ProfileIntentActivity extends Activity {
                                         );
                                     }
 
-                                    if(json_response.getJSONArray("response").getJSONObject(0).isNull("movies") == true) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).isNull("movies") == true) {
                                         ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout3)).setVisibility(View.GONE);
                                     } else {
                                         ((TextView) aboutProfile_ll.findViewById(R.id.music_label2)).setText(
@@ -654,7 +677,7 @@ public class ProfileIntentActivity extends Activity {
                                         );
                                     }
 
-                                    if(json_response.getJSONArray("response").getJSONObject(0).isNull("tv") == true) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).isNull("tv") == true) {
                                         ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout4)).setVisibility(View.GONE);
 
                                     } else {
@@ -663,7 +686,7 @@ public class ProfileIntentActivity extends Activity {
                                         );
                                     }
 
-                                    if(json_response.getJSONArray("response").getJSONObject(0).isNull("books") == true) {
+                                    if (json_response.getJSONArray("response").getJSONObject(0).isNull("books") == true) {
                                         ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout5)).setVisibility(View.GONE);
 
                                     } else {
@@ -675,9 +698,8 @@ public class ProfileIntentActivity extends Activity {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout6)).setVisibility(View.GONE);
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout7)).setVisibility(View.GONE);
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.city_layout)).setVisibility(View.GONE);
-                                    ((LinearLayout) aboutProfile_ll.findViewById(R.id.birthdate_ll)).setVisibility(View.GONE);
 
-                                    if(json_response.getJSONArray("response").getJSONObject(0).isNull("interests") == true &&
+                                    if (json_response.getJSONArray("response").getJSONObject(0).isNull("interests") == true &&
                                             json_response.getJSONArray("response").getJSONObject(0).isNull("music") == true &&
                                             json_response.getJSONArray("response").getJSONObject(0).isNull("movies") == true &&
                                             json_response.getJSONArray("response").getJSONObject(0).isNull("tv") == true &&
@@ -704,8 +726,47 @@ public class ProfileIntentActivity extends Activity {
                                     profileLayout.setVisibility(View.VISIBLE);
                                     LinearLayout progress_ll = findViewById(R.id.news_progressll);
                                     progress_ll.setVisibility(View.GONE);
-                                } else if (send_request.startsWith("/method/Friends.get") && global_sharedPreferences.getString("intentLayout", "").equals("FriendsLayout")) {
-                                    loadFriends();
+                                    try {
+                                        openVK_API.sendMethod("Wall.get", "owner_id=" + profile_id + "&extended=1&count=100");
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else if (send_request.startsWith("/method/Wall.get")) {
+                                    appendWallItem();
+                                } else if (send_request.startsWith("/method/Likes.isLiked") && action.equals("add_like")) {
+                                    if (json_response.getJSONObject("response").getInt("liked") == 0) {
+                                        try {
+                                            send_request = ("/method/Likes.add");
+                                            openVK_API.sendMethod("Likes.add", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                            NewsListItem current_item = wallListItemArray.get(newsfeed_id);
+                                            current_item.counters.likes = current_item.counters.likes + 1;
+                                            current_item.counters.isLiked = true;
+                                            wallListItemArray.set(newsfeed_id, current_item);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    } else if (json_response.getJSONObject("response").getInt("liked") == 1) {
+                                        try {
+                                            send_request = ("/method/Likes.remove");
+                                            openVK_API.sendMethod("Likes.remove", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                            NewsListItem current_item = wallListItemArray.get(newsfeed_id);
+                                            current_item.counters.likes = current_item.counters.likes - 1;
+                                            current_item.counters.isLiked = false;
+                                            wallListItemArray.set(newsfeed_id, current_item);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    NewsListAdapter wall_adapter = new NewsListAdapter(ProfileIntentActivity.this, wallListItemArray);
+                                    View view = tabHost.getTabContentView().getChildAt(0);
+                                    WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
+                                    ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+                                    Parcelable state = posts_lv.onSaveInstanceState();
+                                    posts_lv.setAdapter(wall_adapter);
+                                    LinearLayout.LayoutParams layoutParams;
+                                    layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
+                                    int listviewHeight = -1;
+                                    posts_lv.onRestoreInstanceState(state);
                                 }
                             }
                         } catch (Exception ex) {
@@ -839,6 +900,120 @@ public class ProfileIntentActivity extends Activity {
                 titlebar_title.setText(getResources().getString(R.string.friends));
             }
         }
+    }
+
+    private void appendWallItem() {
+        wallListItemArray.clear();
+        wallItemCountersInfoArray.clear();
+        try {
+            if (send_request.startsWith("/method/Wall.get")) {
+                news_item_count = json_response.getJSONObject("response").getJSONArray("items").length();
+                if(news_item_count > 100) {
+                    news_item_count = 100;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("OpenVK Legacy", "Wall posts count: " + news_item_count + "\r\nJSON output: " + json_response.toString());
+        if (news_item_count > 0) {
+            String author = new String();
+            if (send_request.startsWith("/method/Wall.get")) {
+                for (int news_item_index = 0; news_item_index < news_item_count; news_item_index++) {
+                    try {
+                        newsfeed = ((JSONArray) json_response.getJSONObject("response").getJSONArray("items"));
+                        postOwnerId = ((JSONObject) newsfeed.get(news_item_index)).getInt("owner_id");
+                        postAuthorId = ((JSONObject) newsfeed.get(news_item_index)).getInt("from_id");
+                        if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("user_likes") == 0) {
+                            if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("user_reposted") == 0) {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), false, false));
+                            } else {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), false, true));
+                            }
+                        } else {
+                            if (((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("user_reposted") == 0) {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), true, false));
+                            } else {
+                                wallItemCountersInfoArray.add(new NewsItemCountersInfo(((JSONObject) newsfeed.get(news_item_index)).getJSONObject("likes").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).
+                                        getJSONObject("comments").getInt("count"), ((JSONObject) newsfeed.get(news_item_index)).getJSONObject("reposts").getInt("count"), true, true));
+                            }
+                        }
+                        wallListItemArray.add(new NewsListItem("(Unknown)", ((JSONObject) newsfeed.get(news_item_index))
+                                .getInt("date"), null, ((JSONObject) newsfeed.get(news_item_index)).getString("text"), wallItemCountersInfoArray.get(news_item_index), null, null,
+                                newsfeed.getJSONObject(news_item_index).getInt("owner_id"), newsfeed.getJSONObject(news_item_index).getInt("id"), getApplicationContext()));
+                        NewsListItem item = wallListItemArray.get(news_item_index);
+                        if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") < 0 && json_response.getJSONObject("response").isNull("groups") == false) {
+                            for (int groups_index = 0; groups_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).length(); groups_index++) {
+                                if (-newsfeed.getJSONObject(news_item_index).getInt("owner_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                        getJSONObject(groups_index).getInt("id")) {
+                                    item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                            getJSONObject(groups_index).getString("name");
+                                    wallListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        } else if(json_response.getJSONObject("response").isNull("profiles") == false) {
+                            for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                                if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getInt("id")) {
+                                    item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("last_name");
+                                    wallListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        }
+                        if (newsfeed.getJSONObject(news_item_index).getInt("owner_id") != newsfeed.getJSONObject(news_item_index).getInt("from_id") && newsfeed.getJSONObject(news_item_index).getInt("from_id") > 0) {
+                            for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                                if (newsfeed.getJSONObject(news_item_index).getInt("from_id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getInt("id")) {
+                                    item.name = getResources().getString(R.string.on_wall, ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                            getJSONObject(users_index).getString("last_name"), item.name);
+                                    wallListItemArray.set(news_item_index, item);
+                                }
+                            }
+                        }
+
+                        if (news_item_index == 0) {
+                            post_owners_ids_sb.append(postOwnerId);
+                        } else if (news_item_index > 0) {
+                            post_owners_ids_sb.append("," + postOwnerId);
+                        } else {
+                            post_owners_ids_sb.append(postOwnerId);
+                        }
+                        if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
+                            // loadPhotos(news_item_index); > does not work with openvk.uk instance (401 code returned)
+                        }
+                    } catch (JSONException jEx) {
+                        jEx.printStackTrace();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        Log.d("OpenVK Legacy", "Done!");
+        NewsListAdapter all_posts_adapter = new NewsListAdapter(this, wallListItemArray);
+        View view = tabHost.getTabContentView().getChildAt(0);
+        WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
+        ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+        posts_lv.setAdapter(all_posts_adapter);
+        LinearLayout.LayoutParams layoutParams;
+        layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
+        int listviewHeight = -1;
+        for(int items_index = 0; items_index < all_posts_adapter.getCount(); items_index++) {
+            View view_from_adapter = all_posts_adapter.getView(items_index, null, posts_lv);
+            view_from_adapter.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            listviewHeight += view_from_adapter.getMeasuredHeight();
+        }
+
+        layoutParams.height = (int)(listviewHeight + (80 * getResources().getDisplayMetrics().scaledDensity));
+        Log.d("LayoutParams", "Height: " + layoutParams.height + "px");
+        posts_ll.setLayoutParams(layoutParams);
     }
 }
 

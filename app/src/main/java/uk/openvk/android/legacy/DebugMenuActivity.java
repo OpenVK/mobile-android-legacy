@@ -42,22 +42,11 @@ public class DebugMenuActivity extends PreferenceActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        Preference apiHost = findPreference("apiHost");
-        apiHost.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if(getApplicationContext().getSharedPreferences("instance", 0).getString("server", "").length() > 0) {
-                    Toast.makeText(getApplicationContext(), "API Instance: " + getApplicationContext().getSharedPreferences("instance", 0).getString("server", ""),
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "API Instance: (empty, default: openvk.uk)",
-                            Toast.LENGTH_LONG).show();
-                }
-                return false;
-            }
-        });
-
         Preference logToFile = (Preference) findPreference("logToFile");
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            logToFile.setEnabled(false);
+            logToFile.setSummary(getResources().getString(R.string.debug_incompatibillity_error));
+        }
         logToFile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {

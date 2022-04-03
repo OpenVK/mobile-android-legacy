@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.graphics.fonts.FontFamily;
 import android.os.Handler;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -109,7 +111,11 @@ public class NewsListAdapter extends BaseAdapter {
         news_item_ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((AppActivity) ctx).hideSelectedItemBackground(position);
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) ctx).hideSelectedItemBackground(position);
+                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                    ((ProfileIntentActivity) ctx).hideSelectedItemBackground(position);
+                }
             }
         });
 
@@ -120,7 +126,11 @@ public class NewsListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.post_likes)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((AppActivity) ctx).addLike(position, "post", view);
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) ctx).addLike(position, "post", view);
+                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                    ((ProfileIntentActivity) ctx).addLike(position, "post", view);
+                }
             }
         });
 

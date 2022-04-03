@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -24,6 +25,8 @@ import java.net.UnknownHostException;
 import java.util.TimerTask;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLProtocolException;
 
 import static java.lang.Thread.sleep;
 
@@ -36,6 +39,7 @@ public class OvkAPIWrapper {
     public String send_request;
     public boolean isConnected;
     public String state;
+    public String arguments;
     public final static String CONNECTION_STATE = new String();
     public final static String API_METHOD = new String();
     public final static String JSON_RESPONSE = new String();
@@ -48,6 +52,7 @@ public class OvkAPIWrapper {
     public Thread sslSocketThread;
     public Thread socketRawThread;
     public Thread sslRawSocketThread;
+    public boolean isSecured;
 
     public HttpURLConnection httpConnection;
     public HttpsURLConnection httpsConnection;
@@ -80,10 +85,15 @@ public class OvkAPIWrapper {
     public void sendMethod(String method, String args) {
         api_method = method;
         if(token == null) {
-            send_request = "/token?" + args;
+            if(method.startsWith("Ovk.")) {
+                send_request = "/method/" + method;
+            } else {
+                send_request = "/token?" + args;
+            }
         } else {
             send_request = "/method/" + method + "?access_token=" + token + "&" + args;
         }
+        arguments = args;
         new Thread(new socketThread()).start();
     }
 
@@ -93,11 +103,24 @@ public class OvkAPIWrapper {
         new Thread(new socketRawThread()).start();
     }
 
+    public void isSecured() {
+        send_request = "/";
+        new Thread(new CheckingConnection()).start();
+    }
+
     class socketThread implements Runnable {
         @Override
         public void run() {
             try {
-                Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nMethod: " + api_method);
+                if(api_method.length() > 0) {
+                    if(arguments != null && arguments.length() > 0) {
+                        Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nMethod: " + api_method + "\r\nArguments: " + arguments);
+                    } else {
+                        Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nMethod: " + api_method + "\r\nArguments: (without arguments)");
+                    }
+                } else {
+                    Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nGetting token...");
+                }
                 String url_addr = new String();
                 url_addr = "http://" + server + send_request;
                 URL url = new URL(url_addr);
@@ -107,8 +130,8 @@ public class OvkAPIWrapper {
                 httpConnection.setRequestProperty("Host", server);
                 httpConnection.setRequestProperty("Accept","application/json");
                 httpConnection.setRequestProperty("Accept-Charset", "UTF-8");
-                httpConnection.setConnectTimeout(240000);
-                httpConnection.setReadTimeout(240000);
+                httpConnection.setConnectTimeout(60000);
+                httpConnection.setReadTimeout(60000);
                 httpConnection.setDoInput(true);
                 httpConnection.setDoOutput(true);
                 httpConnection.connect();
@@ -119,7 +142,7 @@ public class OvkAPIWrapper {
                 status = httpConnection.getResponseCode();
                 Log.d("OpenVK Legacy", "Connected!");
                 String response = new String();
-                Log.d("OpenVK","Response code: " + status);
+                Log.d("OpenVK Legacy","Response code: " + status);
                 if(status == 200) {
                     in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), "utf-8"));
                     while ((response = in.readLine()) != null) {
@@ -226,7 +249,7 @@ public class OvkAPIWrapper {
                 status = httpsConnection.getResponseCode();
                 Log.d("OpenVK Legacy", "Connected!");
                 String response = new String();
-                Log.d("OpenVK","Response code: " + status);
+                Log.d("OpenVK Legacy","Response code: " + status);
                 if(status == 200) {
                     in = new BufferedReader(new InputStreamReader(httpsConnection.getInputStream(), "utf-8"));
                     while ((response = in.readLine()) != null) {
@@ -280,6 +303,17 @@ public class OvkAPIWrapper {
                 ex.printStackTrace();
                 state = "no_connection";
                 sendMessageToParent();
+            } catch(SSLException ex) {
+                ex.printStackTrace();
+                connectionErrorString = "SSLException";
+                state = "no_connection";
+                sendMessageToParent();
+            } catch (SocketException ex) {
+                ex.printStackTrace();
+                isConnected = true;
+            } catch(IOException ex) {
+                ex.printStackTrace();
+                isConnected = true;
             } catch(Exception ex) {
                 ex.printStackTrace();
                 isConnected = true;
@@ -330,6 +364,15 @@ public class OvkAPIWrapper {
             bundle.putString("Error_message", connectionErrorString);
             msg.setData(bundle);
             NewPostActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            Message msg = handler.obtainMessage(MainSettingsActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            bundle.putString("Error_message", connectionErrorString);
+            msg.setData(bundle);
+            MainSettingsActivity.handler.sendMessage(msg);
         }
     }
 
@@ -525,7 +568,7 @@ public class OvkAPIWrapper {
                 sendMessageToParent();
                 Log.e("OpenVK Legacy", ex.getMessage());
             } catch(SocketException ex) {
-                connectionErrorString = "UnknownHostException";
+                connectionErrorString = "SocketException";
                 state = "no_connection";
                 sendMessageToParent();
                 Log.e("OpenVK Legacy", ex.getMessage());
@@ -573,6 +616,97 @@ public class OvkAPIWrapper {
                 socketRawThread = new Thread(new socketRawThread());
                 sslRawSocketThread = new Thread(new sslRawSocketThread());
                 sslRawSocketThread.start();
+            }
+        }
+    }
+
+    class CheckingConnection implements Runnable {
+        @Override
+        public void run() {
+            try {
+                Log.d("OpenVK Legacy", "Connecting to " + server + "...");
+                String url_addr = new String();
+                url_addr = "http://" + server + "/";
+                URL url = new URL(url_addr);
+                HttpURLConnection httpRawConnection = (HttpURLConnection) url.openConnection();
+                isConnected = true;
+                httpRawConnection.setRequestMethod("GET");
+                httpRawConnection.setRequestProperty("Host", server);
+                httpRawConnection.setRequestProperty("User-Agent", System.getProperty("http.agent"));
+                httpRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
+                httpRawConnection.setRequestProperty("Authorization", "Basic");
+                httpRawConnection.setRequestProperty("Connection", "keep-alive");
+                httpRawConnection.setConnectTimeout(240000);
+                httpRawConnection.setReadTimeout(240000);
+                httpRawConnection.setDoInput(true);
+                httpRawConnection.setDoOutput(true);
+                httpRawConnection.connect();
+                isConnected = true;
+                int status = -1;
+                inputStream_isClosed = false;
+                status = httpRawConnection.getResponseCode();
+                if(status == 301) {
+                    isSecured = true;
+                } else {
+                    isSecured = false;
+                }
+                state = "checking_connection";
+                sendTestMessageToParent();
+            } catch(SocketTimeoutException ex) {
+                connectionErrorString = "SocketTimeoutException";
+                state = "timeout";
+                sendTestMessageToParent();
+                Log.e("OpenVK Legacy", ex.getMessage());
+            } catch(UnknownHostException ex) {
+                connectionErrorString = "UnknownHostException";
+                state = "no_connection";
+                sendTestMessageToParent();
+                Log.e("OpenVK Legacy", ex.getMessage());
+            } catch(SocketException ex) {
+                connectionErrorString = "SocketException";
+                state = "no_connection";
+                sendTestMessageToParent();
+                Log.e("OpenVK Legacy", ex.getMessage());
+            } catch(NullPointerException ex) {
+                ex.printStackTrace();
+            } catch(ProtocolException ex) {
+                ex.printStackTrace();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void sendTestMessageToParent() {
+        if(state.equals("checking_connection")) {
+            if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                Message msg = handler.obtainMessage(MainSettingsActivity.GET_CONNECTION_TYPE);
+                Bundle bundle = new Bundle();
+                bundle.putString("State", state);
+                bundle.putString("Server", server);
+                bundle.putBoolean("IsSecured", isSecured);
+                msg.setData(bundle);
+                MainSettingsActivity.handler.sendMessage(msg);
+            }
+        } else if(state.equals("no_connection")) {
+            if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                Message msg = handler.obtainMessage(MainSettingsActivity.GET_CONNECTION_TYPE);
+                Bundle bundle = new Bundle();
+                bundle.putString("State", state);
+                bundle.putString("Server", server);
+                bundle.putBoolean("IsSecured", isSecured);
+                msg.setData(bundle);
+                MainSettingsActivity.handler.sendMessage(msg);
+            }
+        } else if(state.equals("timeout")) {
+            if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                Message msg = handler.obtainMessage(MainSettingsActivity.GET_CONNECTION_TYPE);
+                Bundle bundle = new Bundle();
+                bundle.putString("State", state);
+                bundle.putString("Server", server);
+                bundle.putBoolean("IsSecured", isSecured);
+                msg.setData(bundle);
+                MainSettingsActivity.handler.sendMessage(msg);
             }
         }
     }
