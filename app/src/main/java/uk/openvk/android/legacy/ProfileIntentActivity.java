@@ -810,7 +810,9 @@ public class ProfileIntentActivity extends Activity {
                             ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                             profileLayout.setVisibility(View.GONE);
                             progress_ll.setVisibility(View.GONE);
-                            friendsLinearLayout.setVisibility(View.GONE);
+                            if(friendsLinearLayout != null) {
+                                friendsLinearLayout.setVisibility(View.GONE);
+                            }
                             error_ll.setVisibility(View.VISIBLE);
                             SharedPreferences.Editor editor = global_sharedPreferences.edit();
                             editor.putString("previousLayout", "");
