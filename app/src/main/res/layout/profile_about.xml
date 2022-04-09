@@ -20,7 +20,7 @@
             android:background="@android:drawable/editbox_background"
             android:ems="10"
             android:focusable="false"
-            android:inputType="textPersonName"
+            android:inputType="textMultiLine|textPersonName"
             android:paddingLeft="18dp"
             android:paddingTop="14dp"
             android:paddingRight="18dp"
