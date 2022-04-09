@@ -959,6 +959,17 @@ public class AppActivity extends Activity {
         }
     }
 
+    public void getOwnerProfile(NewsListItem item) {
+        if(item != null) {
+            String url = "openvk://profile/id" + item.owner_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+            i.putExtra("fromLayout", global_sharedPreferences.getString("currentLayout", ""));
+            startActivity(i);
+        }
+    }
+
 
     class UpdateUITask extends TimerTask {
         @Override
@@ -1026,7 +1037,7 @@ public class AppActivity extends Activity {
                                     ((TextView) view.findViewById(android.R.id.title)).setText(getResources().getString(R.string.wall_owners_posts, json_response.getJSONObject("response").getString("first_name")));
                                 }
                                 final AboutProfileLinearLayout aboutProfile_ll = findViewById(R.id.about_profile_layout);
-                                if(json_response.getJSONObject("response").getInt("bdate_visibility") > 0) {
+                                if(json_response.getJSONObject("response").has("bdate_visibility") && json_response.getJSONObject("response").getInt("bdate_visibility") > 0) {
                                     ((TextView) aboutProfile_ll.findViewById(R.id.birthday_label2)).setText(json_response.getJSONObject("response").getString("bdate").split(".")[0] +
                                             getResources().getStringArray(Integer.valueOf(json_response.getJSONObject("response").getString("bdate").split(".")[1]) - 1) +
                                             json_response.getJSONObject("response").getString("bdate").split(".")[2]);
@@ -1182,8 +1193,8 @@ public class AppActivity extends Activity {
                                 if(json_response.getJSONArray("response").getJSONObject(0).isNull("movies") == true) {
                                     ((LinearLayout) aboutProfile_ll.findViewById(R.id.interests_layout3)).setVisibility(View.GONE);
                                 } else {
-                                    ((TextView) aboutProfile_ll.findViewById(R.id.music_label2)).setText(
-                                            json_response.getJSONArray("response").getJSONObject(0).getString("music")
+                                    ((TextView) aboutProfile_ll.findViewById(R.id.movies_label2)).setText(
+                                            json_response.getJSONArray("response").getJSONObject(0).getString("movies")
                                     );
                                 }
 
@@ -1270,9 +1281,6 @@ public class AppActivity extends Activity {
                                 ProfileHeader profileHeader = profileLayout.findViewById(R.id.profile_header);
                                 ProfileCounterLayout friends_counter = ((LinearLayout) profileLayout.findViewById(R.id.profile_ext_header)).findViewById(R.id.friends_counter);
                                 ((TextView) friends_counter.findViewById(R.id.profile_counter_value)).setText("" + json_response.getJSONObject("response").getInt("count"));
-                                profileLayout.setVisibility(View.VISIBLE);
-                                LinearLayout progress_ll = findViewById(R.id.news_progressll);
-                                progress_ll.setVisibility(View.GONE);
                                 try {
                                     openVK_API.sendMethod("Wall.get", "owner_id=" + profile_id + "&extended=1&count=100");
                                 } catch (Exception e) {
@@ -1503,8 +1511,8 @@ public class AppActivity extends Activity {
         try {
             if (send_request.startsWith("/method/Wall.get")) {
                 news_item_count = json_response.getJSONObject("response").getJSONArray("items").length();
-                if(news_item_count > 100) {
-                    news_item_count = 100;
+                if(news_item_count > 50) {
+                    news_item_count = 50;
                 }
             }
         } catch (JSONException e) {
@@ -1608,6 +1616,9 @@ public class AppActivity extends Activity {
         }
         layoutParams.height = listviewHeight + (int)(80 * getResources().getDisplayMetrics().scaledDensity);
         posts_ll.setLayoutParams(layoutParams);
+        profileLayout.setVisibility(View.VISIBLE);
+        LinearLayout progress_ll = findViewById(R.id.news_progressll);
+        progress_ll.setVisibility(View.GONE);
     }
 
     private void loadPhotos(int pos) {

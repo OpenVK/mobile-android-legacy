@@ -14,6 +14,8 @@ import android.preference.PreferenceActivity;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,12 +36,36 @@ public class DebugMenuActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_debug);
+        setContentView(R.layout.custom_preferences_layout);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+        }  else {
+            TextView titlebar_title = findViewById(R.id.titlebar_title);
+            titlebar_title.setText(R.string.debug_menu);
+            final ImageButton back_btn = findViewById(R.id.backButton);
+            final ImageButton ovk_btn = findViewById(R.id.ovkButton);
+            back_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+            ovk_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+            titlebar_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
         }
 
         Preference logToFile = (Preference) findPreference("logToFile");

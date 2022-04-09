@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -87,6 +88,7 @@ public class MainSettingsActivity extends PreferenceActivity {
         } else {
             addPreferencesFromResource(R.xml.preferences_2);
         }
+        setContentView(R.layout.custom_preferences_layout);
         final CheckBoxPreference https_connection = (CheckBoxPreference) findPreference("useHTTPS");
         https_connection.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -102,6 +104,29 @@ public class MainSettingsActivity extends PreferenceActivity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            TextView titlebar_title = findViewById(R.id.titlebar_title);
+            titlebar_title.setText(R.string.menu_settings);
+            final ImageButton back_btn = findViewById(R.id.backButton);
+            final ImageButton ovk_btn = findViewById(R.id.ovkButton);
+            back_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+            ovk_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+            titlebar_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
         }
 
         Preference about_preference = findPreference("about");

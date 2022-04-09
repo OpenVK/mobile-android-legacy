@@ -61,7 +61,7 @@ public class NewsListAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.news_item, parent, false);
         }
 
-        NewsListItem item = getNewsListItem(position);
+        final NewsListItem item = getNewsListItem(position);
         if(item.counters.isLiked == true) {
             ((TextView) view.findViewById(R.id.post_likes)).setSelected(true);
         } else {
@@ -130,6 +130,14 @@ public class NewsListAdapter extends BaseAdapter {
                     ((AppActivity) ctx).addLike(position, "post", view);
                 } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
                     ((ProfileIntentActivity) ctx).addLike(position, "post", view);
+                }
+            }
+        });
+        poster_ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(item.owner_id > 0 && ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) ctx).getOwnerProfile(item);
                 }
             }
         });
