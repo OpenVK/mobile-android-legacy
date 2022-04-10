@@ -1180,7 +1180,7 @@
     <string name="instance_version">Версiя iнстанцiї:</string>
     <string name="connection_error">Помилка пiдключення</string>
     <string-array name="newsfeed_actionbar_items">
-        <item>Subscriptions</item>
-        <item>All news</item>
+        <item>Передплати</item>
+        <item>Всi новини</item>
     </string-array>
 </resources>
