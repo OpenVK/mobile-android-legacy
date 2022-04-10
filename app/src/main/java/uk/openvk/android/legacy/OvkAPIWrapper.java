@@ -373,6 +373,15 @@ public class OvkAPIWrapper {
             bundle.putString("Error_message", connectionErrorString);
             msg.setData(bundle);
             MainSettingsActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("SearchActivity")) {
+            Message msg = handler.obtainMessage(SearchActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            bundle.putString("Error_message", connectionErrorString);
+            msg.setData(bundle);
+            SearchActivity.handler.sendMessage(msg);
         }
     }
 

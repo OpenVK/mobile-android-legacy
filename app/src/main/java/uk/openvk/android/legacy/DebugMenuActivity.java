@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,7 +44,7 @@ public class DebugMenuActivity extends PreferenceActivity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
-        }  else {
+        } else {
             TextView titlebar_title = findViewById(R.id.titlebar_title);
             titlebar_title.setText(R.string.debug_menu);
             final ImageButton back_btn = findViewById(R.id.backButton);
@@ -112,12 +113,11 @@ public class DebugMenuActivity extends PreferenceActivity {
                             } catch(Exception e) {
                                 Log.e("OpenVK Legacy", "Could not save log to file: " + e.getMessage());
                                 e.printStackTrace();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    AlertDialog dialog;
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
-                                    builder.setTitle(getResources().getString(R.string.allow_permisssion_in_storage_title));
-                                    builder.setMessage(getResources().getString(R.string.allow_permisssion_in_storage));
-                                    builder.setPositiveButton(getResources().getString(R.string.open_btn), new DialogInterface.OnClickListener() {
+                                AlertDialog dialog;
+                                AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
+                                builder.setTitle(getResources().getString(R.string.allow_permisssion_in_storage_title));
+                                builder.setMessage(getResources().getString(R.string.allow_permisssion_in_storage));
+                                builder.setPositiveButton(getResources().getString(R.string.open_btn), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -125,16 +125,15 @@ public class DebugMenuActivity extends PreferenceActivity {
                                             intent.setData(uri);
                                             startActivity(intent);
                                         }
-                                    });
-                                    builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                });
+                                builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             return;
                                         }
-                                    });
-                                    dialog = builder.create();
-                                    dialog.show();
-                                }
+                                });
+                                dialog = builder.create();
+                                dialog.show();
                             }
                         } else {
                             try {

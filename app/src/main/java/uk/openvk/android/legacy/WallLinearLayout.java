@@ -20,7 +20,7 @@ public class WallLinearLayout extends LinearLayout {
     public WallLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.news_layout, null);
+                R.layout.wall_layout, null);
 
         this.addView(view);
     }

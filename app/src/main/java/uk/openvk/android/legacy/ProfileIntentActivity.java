@@ -1008,19 +1008,6 @@ public class ProfileIntentActivity extends Activity {
         WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
         ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
         posts_lv.setAdapter(all_posts_adapter);
-        LinearLayout.LayoutParams layoutParams;
-        layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
-        int listviewHeight = -1;
-        for(int items_index = 0; items_index < all_posts_adapter.getCount(); items_index++) {
-            View view_from_adapter = all_posts_adapter.getView(items_index, null, posts_lv);
-            view_from_adapter.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            listviewHeight += view_from_adapter.getMeasuredHeight();
-        }
-
-        layoutParams.height = (int)(listviewHeight + (80 * getResources().getDisplayMetrics().scaledDensity));
-        Log.d("LayoutParams", "Height: " + layoutParams.height + "px");
-        posts_ll.setLayoutParams(layoutParams);
         profileLayout.setVisibility(View.VISIBLE);
         LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.GONE);

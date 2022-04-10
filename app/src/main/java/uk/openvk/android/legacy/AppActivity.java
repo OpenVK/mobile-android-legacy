@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -34,20 +35,27 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +67,8 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -86,6 +96,7 @@ public class AppActivity extends Activity {
     public ArrayList<NewsListItem> newsListItemArray;
     public ArrayList<NewsListItem> wallListItemArray;
     public ArrayList<SlidingMenuItem> slidingMenuItemArray;
+    public ArrayList<SimpleListItem> spinnerActionBarArray;
     public ArrayList<GroupPostInfo> groupPostInfoArray;
     public NewsListAdapter newsListAdapter;
     public int postAuthorId;
@@ -125,6 +136,7 @@ public class AppActivity extends Activity {
     public int owner_id;
     public int newsfeed_id;
     public View news_item;
+    public boolean selected_all_news;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,7 +231,15 @@ public class AppActivity extends Activity {
                     getActionBar().setIcon(R.drawable.icon);
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    getActionBar().setTitle(R.string.profile);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setTitle(getResources().getString(R.string.profile));
+                        getActionBar().setDisplayShowCustomEnabled(false);
+                        getActionBar().setDisplayShowTitleEnabled(true);
+                    } else {
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.profile));
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                        ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                    }
                 }
             } else if(path.startsWith("openvk://friends/")) {
                 String args = path.substring("openvk://friends/".length());
@@ -232,7 +252,15 @@ public class AppActivity extends Activity {
                     getActionBar().setIcon(R.drawable.icon);
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    getActionBar().setTitle(R.string.friends);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setTitle(getResources().getString(R.string.friends));
+                        getActionBar().setDisplayShowCustomEnabled(false);
+                        getActionBar().setDisplayShowTitleEnabled(true);
+                    } else {
+                        ((TextView) (getActionBar().getCustomView()).findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.friends));
+                        ((TextView) (getActionBar().getCustomView()).findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                        ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                    }
                 }
             }
         } else {
@@ -261,27 +289,6 @@ public class AppActivity extends Activity {
         });
 
         final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-        ((EditText) slidingMenuLayout.findViewById(R.id.sliding_menu_search).findViewById(R.id.left_quick_search_btn)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // TODO Auto-generated method stub
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String url = "openvk://profile/" + ((EditText) slidingMenuLayout.findViewById(R.id.sliding_menu_search).findViewById(R.id.left_quick_search_btn)).getText().toString();
-                    ((EditText) slidingMenuLayout.findViewById(R.id.sliding_menu_search).findViewById(R.id.left_quick_search_btn)).setText("");
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-                    i.putExtra("fromLayout", global_sharedPreferences.getString("currentLayout", ""));
-                    startActivity(i);
-                    return true;
-                }
-
-                return false;
-            }
-        });
 
         TextView profile_name = slidingMenuLayout.findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
@@ -372,6 +379,7 @@ public class AppActivity extends Activity {
         sliding_animated = true;
         json_response = new JSONObject();
         slidingMenuItemArray = new ArrayList<SlidingMenuItem>();
+        spinnerActionBarArray = new ArrayList<SimpleListItem>();
         response_sb = new StringBuilder();
         post_author_ids_sb = new StringBuilder();
         post_owners_ids_sb = new StringBuilder();
@@ -389,6 +397,8 @@ public class AppActivity extends Activity {
         userPostInfoArray = new ArrayList<UserPostInfo>();
         server_2 = "";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            View actionBarView = LayoutInflater.from(this).inflate(R.layout.custom_actionbar_layout, null);
+            getActionBar().setCustomView(actionBarView);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 if (uri != null) {
                     String path = uri.toString();
@@ -399,8 +409,29 @@ public class AppActivity extends Activity {
                     getActionBar().setIcon(R.drawable.ic_left_menu);
                 }
                 getActionBar().setHomeButtonEnabled(true);
+                getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+            } else {
+                Window window = getWindow();
+                View v = window.getDecorView();
+                int resId = getResources().getIdentifier("action_bar_container", "id", "android");
+                View actionBar = v.findViewById(resId);
+                if(actionBar != null) {
+                    ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, 50, Gravity.CENTER_VERTICAL);
+                }
+                LinearLayout custom_home_ll = (getActionBar().getCustomView().findViewById(R.id.custom_home_ll));
+                custom_home_ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openSlidingMenu();
+                    }
+                });
+                getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            Spinner spinner = (getActionBar().getCustomView().findViewById(R.id.spinner));
+            createNewsActionBarSpinner();
+            SpinnerAdapter spinnerAdapter = new ActionBarSpinnerAdapter(AppActivity.this, spinnerActionBarArray, Color.BLACK, Color.WHITE, "news_spinner");
+            spinner.setAdapter(spinnerAdapter);
         } else {
             ((ImageButton) findViewById(R.id.menuButton)).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -448,7 +479,15 @@ public class AppActivity extends Activity {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         titlebar_title.setText(getResources().getString(R.string.profile));
                     } else {
-                        getActionBar().setTitle(getResources().getString(R.string.profile));
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            getActionBar().setTitle(getResources().getString(R.string.profile));
+                            getActionBar().setDisplayShowCustomEnabled(false);
+                            getActionBar().setDisplayShowTitleEnabled(true);
+                        } else {
+                            ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.profile));
+                            ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                            ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                        }
                     }
                 }
                 openSlidingMenu();
@@ -481,7 +520,15 @@ public class AppActivity extends Activity {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         titlebar_title.setText(getResources().getString(R.string.profile));
                     } else {
-                        getActionBar().setTitle(getResources().getString(R.string.profile));
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            getActionBar().setDisplayShowCustomEnabled(false);
+                            getActionBar().setDisplayShowTitleEnabled(true);
+                            getActionBar().setTitle(getResources().getString(R.string.profile));
+                        } else {
+                            ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.profile));
+                            ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                            ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                        }
                     }
                 }
                 openSlidingMenu();
@@ -497,7 +544,15 @@ public class AppActivity extends Activity {
                 titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.newsfeed));
             } else {
-                getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+                    getActionBar().setDisplayShowCustomEnabled(true);
+                    getActionBar().setDisplayShowTitleEnabled(false);
+                } else {
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.newsfeed));
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.GONE);
+                    ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.VISIBLE);
+                }
             }
         } else if(global_sharedPreferences.getString("currentLayout", "").equals("ProfileLayout")) {
             profileLayout.setVisibility(View.GONE);
@@ -505,7 +560,15 @@ public class AppActivity extends Activity {
                 titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.profile));
             } else {
-                getActionBar().setTitle(getResources().getString(R.string.profile));
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setTitle(getResources().getString(R.string.profile));
+                    getActionBar().setDisplayShowCustomEnabled(false);
+                    getActionBar().setDisplayShowTitleEnabled(true);
+                } else {
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.profile));
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                    ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                }
             }
         } else if(global_sharedPreferences.getString("currentLayout", "").equals("FriendsLayout")) {
             friendsLinearLayout.setVisibility(View.GONE);
@@ -513,7 +576,15 @@ public class AppActivity extends Activity {
                 titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.friends));
             } else {
-                getActionBar().setTitle(getResources().getString(R.string.friends));
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setTitle(getResources().getString(R.string.friends));
+                    getActionBar().setDisplayShowCustomEnabled(false);
+                    getActionBar().setDisplayShowTitleEnabled(true);
+                } else {
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.friends));
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                    ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                }
             }
         }
         if(auth_token != null) {
@@ -586,7 +657,23 @@ public class AppActivity extends Activity {
         profile_name_tv.setTextColor(Color.WHITE);
     }
 
+    private void createNewsActionBarSpinner() {
+        if(spinnerActionBarArray != null) {
+            for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
+                spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(R.array.newsfeed_actionbar_items)[spinner_action_bar_index]));
+            }
+        }
+    }
+
     private void createSlidingMenu() {
+        final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
+        ((Button) ((SlidingMenuSearch) slidingMenuLayout.findViewById(R.id.sliding_menu_search)).findViewById(R.id.left_quick_search_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+                startActivity(intent);
+            }
+        });
         if(slidingMenuItemArray != null) {
             for (int slider_menu_item_index = 0; slider_menu_item_index < getResources().getStringArray(R.array.leftmenu).length; slider_menu_item_index++) {
                 if (slider_menu_item_index == 0) {
@@ -704,11 +791,7 @@ public class AppActivity extends Activity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(AppActivity.this);
                 View about_view = getLayoutInflater().inflate(R.layout.about_application_layout, null, false);
                 TextView about_text = about_view.findViewById(R.id.about_text);
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
-                } else {
-                    about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
-                }
+                about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
                 about_text.setMovementMethod(LinkMovementMethod.getInstance());
                 builder.setView(about_view);
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -865,7 +948,15 @@ public class AppActivity extends Activity {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     titlebar_title.setText(getResources().getString(R.string.friends));
                 } else {
-                    getActionBar().setTitle(getResources().getString(R.string.friends));
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setDisplayShowCustomEnabled(false);
+                        getActionBar().setDisplayShowTitleEnabled(true);
+                        getActionBar().setTitle(getResources().getString(R.string.friends));
+                    } else {
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(getResources().getString(R.string.friends));
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                        ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                    }
                 }
             } else {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
@@ -893,7 +984,15 @@ public class AppActivity extends Activity {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     titlebar_title.setText(getResources().getString(R.string.newsfeed));
                 } else {
-                    getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setTitle(getResources().getString(R.string.newsfeed));
+                        getActionBar().setDisplayShowCustomEnabled(true);
+                        getActionBar().setDisplayShowTitleEnabled(false);
+                    } else {
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.newsfeed));
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.GONE);
+                        ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.VISIBLE);
+                    }
                 }
                     try {
                         groupPostInfoArray = new ArrayList<GroupPostInfo>();
@@ -967,6 +1066,21 @@ public class AppActivity extends Activity {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
             i.putExtra("fromLayout", global_sharedPreferences.getString("currentLayout", ""));
             startActivity(i);
+        }
+    }
+
+    public void selectNewsSpinnerItem(int position) {
+        Spinner spinner = (Spinner) (getActionBar().getCustomView().findViewById(R.id.spinner));
+        if (spinner != null) {
+            try {
+                spinner.setSelection(position);
+                Method method = Spinner.class.getDeclaredMethod("onDetachedFromWindow");
+                method.setAccessible(true);
+                method.invoke(spinner);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1604,18 +1718,6 @@ public class AppActivity extends Activity {
         WallLinearLayout posts_ll = view.findViewById(R.id.all_posts_wll);
         ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
         posts_lv.setAdapter(all_posts_adapter);
-        LinearLayout.LayoutParams layoutParams;
-        layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
-        int listviewHeight = -1;
-        Log.d("LayoutParams", "Height: " + layoutParams.height + "px");
-        for(int items_index = 0; items_index < all_posts_adapter.getCount(); items_index++) {
-            View view_from_adapter = all_posts_adapter.getView(items_index, null, posts_lv);
-            view_from_adapter.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            listviewHeight += view_from_adapter.getMeasuredHeight();
-        }
-        layoutParams.height = listviewHeight + (int)(80 * getResources().getDisplayMetrics().scaledDensity);
-        posts_ll.setLayoutParams(layoutParams);
         profileLayout.setVisibility(View.VISIBLE);
         LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.GONE);
@@ -1689,7 +1791,15 @@ public class AppActivity extends Activity {
             progress_ll.setVisibility(View.GONE);
             friendsLinearLayout.setVisibility(View.VISIBLE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                getActionBar().setTitle(getResources().getString(R.string.friends));
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setTitle(getResources().getString(R.string.friends));
+                    getActionBar().setDisplayShowCustomEnabled(false);
+                    getActionBar().setDisplayShowTitleEnabled(true);
+                } else {
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(AppActivity.this.getResources().getString(R.string.profile));
+                    ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                    ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                }
             } else {
                 titlebar_title = findViewById(R.id.titlebar_title);
                 titlebar_title.setText(getResources().getString(R.string.friends));
