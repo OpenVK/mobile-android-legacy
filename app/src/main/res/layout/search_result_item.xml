@@ -4,23 +4,21 @@
     android:layout_height="wrap_content"
     android:background="@drawable/highlight"
     android:gravity="center_vertical"
-    android:paddingLeft="8dp"
     android:paddingTop="3dp"
     android:paddingRight="8dp"
     android:paddingBottom="3dp">
 
     <ImageView
-        android:id="@+id/flist_item_photo"
+        android:id="@+id/sr_list_item_photo"
         android:layout_width="60dip"
         android:layout_height="60dip"
-        android:layout_centerVertical="true"
         android:layout_marginRight="5dip"
         android:scaleType="centerCrop"
         android:src="@drawable/photo_loading"
         android:visibility="visible"></ImageView>
 
     <ImageView
-        android:id="@+id/flist_item_online"
+        android:id="@+id/sr_list_item_online"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -28,19 +26,33 @@
         android:layout_marginRight="10dip"
         android:src="@drawable/ic_online"></ImageView>
 
-    <TextView
-        android:id="@+id/flist_item_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dip"
-        android:layout_toLeftOf="@+id/flist_item_online"
-        android:layout_toRightOf="@+id/flist_item_photo"
-        android:duplicateParentState="false"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="TextView"
-        android:textColor="@color/main_text"
-        android:textSize="17dip" />
+        android:layout_toLeftOf="@+id/sr_list_item_online"
+        android:layout_toRightOf="@+id/sr_list_item_photo"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/sr_list_item_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="false"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="Title"
+            android:textColor="@color/main_text"
+            android:textSize="17dip" />
+
+        <TextView
+            android:id="@+id/sr_list_item_subtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:text="Subtitle"
+            android:textColor="#6a6a6a" />
+    </LinearLayout>
 
 </RelativeLayout>

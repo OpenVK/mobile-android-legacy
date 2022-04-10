@@ -11,13 +11,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/community_ll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/community_category_ll"
@@ -47,13 +50,15 @@
                         android:background="@color/holo_blue_dark" />
                 </LinearLayout>
 
-                <ListView
+                <uk.openvk.android.legacy.FullListView
                     android:id="@+id/community_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginTop="3dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:divider="@null" />
 
             </LinearLayout>
 
@@ -61,7 +66,10 @@
                 android:id="@+id/people_ll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/people_category_ll"
@@ -91,13 +99,15 @@
                         android:background="@color/holo_blue_dark" />
                 </LinearLayout>
 
-                <ListView
+                <uk.openvk.android.legacy.FullListView
                     android:id="@+id/people_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginTop="3dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"
+                    android:divider="@null" />
 
             </LinearLayout>
 

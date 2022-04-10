@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <EditText
+    <Button
         android:id="@+id/left_quick_search_btn"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,7 +17,6 @@
         android:drawablePadding="8dip"
         android:gravity="center_vertical"
         android:hint="@string/search"
-        android:imeOptions="actionSearch"
         android:orientation="horizontal"
         android:paddingLeft="8dip"
         android:singleLine="true"

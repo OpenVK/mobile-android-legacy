@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/action_bar_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/app_title"
+        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
+        android:layout_width="match_parent"
+        android:layout_height="22dp"
+        android:text="Title"
+        android:textColor="@color/window_bg_black"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/item_title"
+        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:gravity="center_vertical"
+        android:text="Item title"
+        android:textColor="@color/window_bg_black"
+        android:textSize="12sp" />
+</LinearLayout>
