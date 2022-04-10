@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- Standard orientation constant. -->
+    <attr name="orientation">
+        <!-- Defines an horizontal widget. -->
+        <enum name="horizontal" value="0" />
+        <!-- Defines a vertical widget. -->
+        <enum name="vertical" value="1" />
+    </attr>
+
+<!-- SlidingDrawer specific attributes. These attributes are used to configure
+         a SlidingDrawer from XML. -->
+    <declare-styleable name="SlidingDrawer">
+        <!-- Identifier for the child that represents the drawer's handle. -->
+        <attr name="handle" format="reference" />
+        <!-- Identifier for the child that represents the drawer's content. -->
+        <attr name="content" format="reference" />
+        <!-- Orientation of the SlidingDrawer. -->
+        <attr name="orientation" />
+        <!-- Extra offset for the handle at the bottom of the SlidingDrawer. -->
+        <attr name="bottomOffset" format="dimension"  />
+        <!-- Extra offset for the handle at the top of the SlidingDrawer. -->
+        <attr name="topOffset" format="dimension"  />
+        <!-- Indicates whether the drawer can be opened/closed by a single tap
+             on the handle.  (If false, the user must drag or fling, or click
+             using the trackball, to open/close the drawer.)  Default is true. -->
+        <attr name="allowSingleTap" format="boolean" />
+        <!-- Indicates whether the drawer should be opened/closed with an animation
+             when the user clicks the handle. Default is true. -->
+        <attr name="animateOnClick" format="boolean" />
+    </declare-styleable>
+    
+    <declare-styleable name="RoundedImageView">
+        <attr name="cornerRadius" format="dimension"/>
+    </declare-styleable>
+    
+    <declare-styleable name="StateShadowTextView">
+        <attr name="shadowNormal" format="string"/>
+        <attr name="shadowPressed" format="string"/>
+        <attr name="shadowSelected" format="string"/>
+        <attr name="shadowDisabled" format="string"/>
+    </declare-styleable>
+    
+    <declare-styleable name="OverlayImageView">
+        <attr name="overlay" format="reference"/>
+    </declare-styleable>
+    
+    <declare-styleable name="OverlayTextView">
+        <attr name="overlayDrawable" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="PagerSlidingTabStrip">
+        <attr name="indicatorColor" format="color" />
+        <attr name="underlineColor" format="color" />
+        <attr name="dividerColor" format="color" />
+        <attr name="indicatorHeight" format="dimension" />
+        <attr name="underlineHeight" format="dimension" />
+        <attr name="dividerPadding" format="dimension" />
+        <attr name="tabPaddingLeftRight" format="dimension" />
+        <attr name="scrollOffset" format="dimension" />
+        <attr name="tabBackground" format="reference" />
+        <attr name="shouldExpand" format="boolean" />
+        <attr name="textAllCaps" format="boolean" />
+    </declare-styleable>
+
+</resources>

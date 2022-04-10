@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string-array name="sett_friends_order_v">
+		<item>firstname</item>
+		<item>lastname</item>
+		<item>hints</item>
+	</string-array>
+	<string-array name="sett_update_interval_v">
+		<item>30000</item>
+		<item>45000</item>
+		<item>60000</item>
+		<item>120000</item>
+		<item>180000</item>
+		<item>300000</item>
+		<item>600000</item>
+		<item>900000</item>
+		<item>1800000</item>
+		<item>3600000</item>
+		<item>7200000</item>
+		<item>-1</item>
+	</string-array>
+	<string-array name="sett_cache_location_v">
+		<item>internal</item>
+		<item>sd</item>
+	</string-array>
+</resources>

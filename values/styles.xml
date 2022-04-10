@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="blueButton2_text">
+    	<item name="android:shadowColor">#FF4a8dce</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-1</item>
+        <item name="android:shadowRadius">0.00000001</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">#FFF</item>
+        <item name="android:textSize">13dip</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BlueButton" parent="android:Widget.Button">
+        <item name="android:textColor">#FFF</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">0.0000001</item>
+        <item name="android:shadowColor">#19000000</item>
+        <item name="android:textSize">16dip</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@drawable/btn_light_blue</item>
+    </style>
+    
+    <style name="TransparentTheme" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="NewsItemTransparentBackground">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:listSelector">@color/transparent</item>
+    </style>
+</resources>
