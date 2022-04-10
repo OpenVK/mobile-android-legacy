@@ -77,5 +77,10 @@
             android:label="@string/debug_menu"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:label="@string/search_global"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+        </activity>
     </application>
 </manifest>
