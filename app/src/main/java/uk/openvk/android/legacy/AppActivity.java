@@ -251,7 +251,7 @@ public class AppActivity extends Activity {
         friends_counter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = new String();
+                String url;
                 url = "openvk://friends/id" + profile_id;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
@@ -387,7 +387,7 @@ public class AppActivity extends Activity {
         wallItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
         friendsListItemArray = new ArrayList<FriendsListItem>();
         userPostInfoArray = new ArrayList<UserPostInfo>();
-        server_2 = new String();
+        server_2 = "";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 if (uri != null) {
@@ -977,7 +977,7 @@ public class AppActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(state == "getting_response") {
+                    if(state.equals("getting_response")) {
                         try {
                             if(json_response.has("error_code")) {
                                 if (json_response.getInt("error_code") == 5 && json_response.getString("error_msg").startsWith("User authorization failed")) {
@@ -1359,7 +1359,7 @@ public class AppActivity extends Activity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else if(state == "connection_lost") {
+                    } else if(state.equals("connection_lost")) {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);
@@ -1372,7 +1372,7 @@ public class AppActivity extends Activity {
                             editor.putString("previousLayout", "");
                             editor.commit();
                         }
-                    } else if(state == "timeout") {
+                    } else if(state.equals("timeout")) {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);
@@ -1385,7 +1385,7 @@ public class AppActivity extends Activity {
                             editor.putString("previousLayout", "");
                             editor.commit();
                         }
-                    } else if(state == "no_connection") {
+                    } else if(state.equals("no_connection")) {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
                             LinearLayout progress_ll = findViewById(R.id.news_progressll);
@@ -1415,7 +1415,7 @@ public class AppActivity extends Activity {
         }
         Log.d("OpenVK Legacy", "News count: " + news_item_count + "\r\nJSON output: " + json_response.toString());
         if (news_item_count > 0) {
-            String author = new String();
+            String author;
             if (send_request.startsWith("/method/Newsfeed.get")) {
                 for (int news_item_index = 0; news_item_index < news_item_count; news_item_index++) {
                     try {
@@ -1520,7 +1520,7 @@ public class AppActivity extends Activity {
         }
         Log.d("OpenVK Legacy", "Wall posts count: " + news_item_count + "\r\nJSON output: " + json_response.toString());
         if (news_item_count > 0) {
-            String author = new String();
+            String author;
             if (send_request.startsWith("/method/Wall.get")) {
                 for (int news_item_index = 0; news_item_index < news_item_count; news_item_index++) {
                     try {

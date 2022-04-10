@@ -50,7 +50,7 @@ public class FriendsActivity extends Activity {
         }
 
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        inputStream_isClosed = new Boolean(false);
+        inputStream_isClosed = false;
         server = getApplicationContext().getSharedPreferences("instance", 0).getString("server", "");
         auth_token = getApplicationContext().getSharedPreferences("instance", 0).getString("auth_token", "");
         owner_id = getApplicationContext().getSharedPreferences("instance", 0).getInt("user_id", 0);
@@ -122,7 +122,7 @@ public class FriendsActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                if(state == "getting_response") {
+                if(state.equals("getting_response")) {
                     try {
                         if(json_response.has("error_code")) {
                             if (json_response.getInt("error_code") == 5 && json_response.getString("error_msg").startsWith("User authorization failed")) {

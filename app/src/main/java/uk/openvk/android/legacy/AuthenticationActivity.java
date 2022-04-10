@@ -187,7 +187,7 @@ public class AuthenticationActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(state == "getting_response") {
+                    if(state.equals("getting_response")) {
                         try {
                             if(json_login.has("error_code")) {
                                 if (json_login.getInt("error_code") == 28 && json_login.getString("error_msg").equals("Invalid username or password")) {
@@ -256,7 +256,7 @@ public class AuthenticationActivity extends Activity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    } else if(state == "connection_lost") {
+                    } else if(state.equals("connection_lost")) {
                         AlertDialog error_dlg;
                         AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
                         builder.setTitle(R.string.auth_error_title);
@@ -269,7 +269,7 @@ public class AuthenticationActivity extends Activity {
                         error_dlg = builder.create();
                         error_dlg.show();
                         connectionDialog.cancel();
-                    } else if(state == "timeout") {
+                    } else if(state.equals("timeout")) {
                         AlertDialog error_dlg;
                         AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
                         builder.setTitle(R.string.auth_error_title);
@@ -282,7 +282,7 @@ public class AuthenticationActivity extends Activity {
                         error_dlg = builder.create();
                         if(!AuthenticationActivity.this.isFinishing()) error_dlg.show();
                         connectionDialog.cancel();
-                    } else if(state == "no_connection") {
+                    } else if(state.equals("no_connection")) {
                         connectionDialog.cancel();
                         AlertDialog error_dlg;
                         AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
@@ -295,7 +295,7 @@ public class AuthenticationActivity extends Activity {
                         });
                         error_dlg = builder.create();
                         if(!AuthenticationActivity.this.isFinishing()) error_dlg.show();
-                    } else if(state == "creating_ssl_connection") {
+                    } else if(state.equals("creating_ssl_connection")) {
                         sslSocketThread.start();
                     }
                 }

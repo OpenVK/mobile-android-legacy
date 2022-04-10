@@ -72,7 +72,7 @@ public class OvkAPIWrapper {
     public OvkAPIWrapper(Context context, String instance, String access_token, JSONObject json, boolean allowSecureConnection) {
         ctx = context;
         server = instance;
-        inputStream_isClosed = new Boolean(true);
+        inputStream_isClosed = true;
         response_sb = new StringBuilder();
         allowHTTPS = allowSecureConnection;
         token = access_token;
@@ -121,7 +121,7 @@ public class OvkAPIWrapper {
                 } else {
                     Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nGetting token...");
                 }
-                String url_addr = new String();
+                String url_addr;
                 url_addr = "http://" + server + send_request;
                 URL url = new URL(url_addr);
                 httpConnection = (HttpURLConnection) url.openConnection();
@@ -141,7 +141,7 @@ public class OvkAPIWrapper {
                 inputStream_isClosed = false;
                 status = httpConnection.getResponseCode();
                 Log.d("OpenVK Legacy", "Connected!");
-                String response = new String();
+                String response;
                 Log.d("OpenVK Legacy","Response code: " + status);
                 if(status == 200) {
                     in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), "utf-8"));
@@ -229,7 +229,7 @@ public class OvkAPIWrapper {
         public void run() {
             try {
                 Log.d("OpenVK Legacy", "Connecting to " + server + "... (Secured)");
-                String url_addr = new String();
+                String url_addr;
                 url_addr = "https://" + server + send_request;
                 URL url = new URL(url_addr);
                 httpsConnection = (HttpsURLConnection) url.openConnection();
@@ -248,7 +248,7 @@ public class OvkAPIWrapper {
                 inputStream_isClosed = false;
                 status = httpsConnection.getResponseCode();
                 Log.d("OpenVK Legacy", "Connected!");
-                String response = new String();
+                String response;
                 Log.d("OpenVK Legacy","Response code: " + status);
                 if(status == 200) {
                     in = new BufferedReader(new InputStreamReader(httpsConnection.getInputStream(), "utf-8"));
@@ -381,7 +381,7 @@ public class OvkAPIWrapper {
         public void run() {
             try {
                 Log.d("OpenVK Legacy", "Connecting to " + raw_server + "...\r\nRAW address: " + raw_addr);
-                String url_addr = new String();
+                String url_addr;
                 url_addr = "http://" + raw_server + "/" + raw_addr;
                 URL url = new URL(url_addr);
                 HttpURLConnection httpRawConnection = (HttpURLConnection) url.openConnection();
@@ -484,7 +484,7 @@ public class OvkAPIWrapper {
             try {
                 sleep(1000);
                 Log.d("OpenVK Legacy", "Connecting to " + raw_server + "... (Secured)\r\nRAW address: " + raw_addr);
-                String url_addr = new String();
+                String url_addr;
                 url_addr = "https://" + raw_server + "/" + raw_addr;
                 URL url = new URL(url_addr);
                 HttpURLConnection httpsRawConnection = (HttpsURLConnection) url.openConnection();
@@ -601,7 +601,7 @@ public class OvkAPIWrapper {
     class switchToHTTPS extends TimerTask {
         @Override
         public void run() {
-            if(state == "creating_ssl_connection") {
+            if(state.equals("creating_ssl_connection")) {
                 socketThread = new Thread(new socketThread());
                 sslSocketThread = new Thread(new sslSocketThread());
                 sslSocketThread.start();
@@ -612,7 +612,7 @@ public class OvkAPIWrapper {
     class switchRawToHTTPS extends TimerTask {
         @Override
         public void run() {
-            if(state == "creating_ssl_connection") {
+            if(state.equals("creating_ssl_connection")) {
                 socketRawThread = new Thread(new socketRawThread());
                 sslRawSocketThread = new Thread(new sslRawSocketThread());
                 sslRawSocketThread.start();
@@ -625,7 +625,7 @@ public class OvkAPIWrapper {
         public void run() {
             try {
                 Log.d("OpenVK Legacy", "Connecting to " + server + "...");
-                String url_addr = new String();
+                String url_addr;
                 url_addr = "http://" + server + "/";
                 URL url = new URL(url_addr);
                 HttpURLConnection httpRawConnection = (HttpURLConnection) url.openConnection();

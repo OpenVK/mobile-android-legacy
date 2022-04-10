@@ -70,7 +70,7 @@ public class NewPostActivity extends Activity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
         global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        inputStream_isClosed = new Boolean(false);
+        inputStream_isClosed = false;
         server = getApplicationContext().getSharedPreferences("instance", 0).getString("server", "");
         auth_token = getApplicationContext().getSharedPreferences("instance", 0).getString("auth_token", "");
         owner_id = getApplicationContext().getSharedPreferences("instance", 0).getInt("user_id", 0);
@@ -180,14 +180,14 @@ public class NewPostActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(state == "getting_response") {
+                    if(state.equals("getting_response")) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
                         connectionDialog.cancel();
                         finish();
-                    } else if(state == "no_connection") {
+                    } else if(state.equals("no_connection")) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
                         connectionDialog.cancel();
-                    } else if(state == "timeout") {
+                    } else if(state.equals("timeout")) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
                         connectionDialog.cancel();
                     }

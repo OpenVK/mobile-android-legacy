@@ -272,7 +272,7 @@ public class MainSettingsActivity extends PreferenceActivity {
                 @Override
                 public void run() {
                     if(isFinishing() == false) {
-                        if (state == "checking_connection") {
+                        if (state.equals("checking_connection")) {
                             TextView connection_type_tv = about_instance_view.findViewById(R.id.connection_type_label2);
                             try {
                                 if (isSecured == true) {
@@ -284,14 +284,14 @@ public class MainSettingsActivity extends PreferenceActivity {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                        } else if (state == "getting_response") {
+                        } else if (state.equals("getting_response")) {
                             TextView openvk_version_tv = about_instance_view.findViewById(R.id.instance_version_label2);
                             try {
                                 openvk_version_tv.setText("OpenVK " + json_response.getString("response"));
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                        } else if (state == "no_connection") {
+                        } else if (state.equals("no_connection")) {
                             TextView connection_type_tv = about_instance_view.findViewById(R.id.connection_type_label2);
                             try {
                                 connection_type_tv.setText(getResources().getString(R.string.connection_error));
@@ -299,7 +299,7 @@ public class MainSettingsActivity extends PreferenceActivity {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                        } else if (state == "timeout") {
+                        } else if (state.equals("timeout")) {
                             TextView connection_type_tv = about_instance_view.findViewById(R.id.connection_type_label2);
                             try {
                                 connection_type_tv.setText(getResources().getString(R.string.connection_error));
