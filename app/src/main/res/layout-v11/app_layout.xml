@@ -77,7 +77,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="0dp"
-            android:layout_marginLeft="0dp">
+            android:layout_marginLeft="0dp"
+            android:background="#e3e4e6">
 
         </uk.openvk.android.legacy.NewsLinearLayout>
 
