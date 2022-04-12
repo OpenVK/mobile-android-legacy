@@ -1,21 +1,34 @@
 package uk.openvk.android.legacy;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.SocketException;
@@ -47,17 +60,12 @@ public class OvkAPIWrapper {
     public Boolean inputStream_isClosed;
 
     public TimerTask HTTPtoHTTPS;
-    public TimerTask rawHTTPtoHTTPS;
     public Thread socketThread;
     public Thread sslSocketThread;
-    public Thread socketRawThread;
-    public Thread sslRawSocketThread;
     public boolean isSecured;
 
     public HttpURLConnection httpConnection;
     public HttpsURLConnection httpsConnection;
-    public HttpURLConnection httpRawConnection;
-    public HttpsURLConnection httpsRawConnection;
 
     public StringBuilder response_sb;
     public String jsonResponseString;
@@ -68,6 +76,10 @@ public class OvkAPIWrapper {
     public String raw_addr;
     public String raw_server;
     public InputStreamReader raw_in;
+    public String file_name;
+    public int elementsId;
+    public String from_control;
+    public String raw_url;
 
     public OvkAPIWrapper(Context context, String instance, String access_token, JSONObject json, boolean allowSecureConnection) {
         ctx = context;
@@ -75,9 +87,8 @@ public class OvkAPIWrapper {
         inputStream_isClosed = true;
         response_sb = new StringBuilder();
         allowHTTPS = allowSecureConnection;
-        token = access_token;
         HTTPtoHTTPS = new switchToHTTPS();
-        rawHTTPtoHTTPS = new switchRawToHTTPS();
+        token = access_token;
         handler = new Handler();
         connectionErrorString = "";
     }
@@ -97,10 +108,14 @@ public class OvkAPIWrapper {
         new Thread(new socketThread()).start();
     }
 
-    public void downloadRaw(String server, String address) {
+    public void downloadRaw(String server, String address, String filename, int id, String from) {
         raw_addr = address;
         raw_server = server;
-        new Thread(new socketRawThread()).start();
+        file_name = filename;
+        raw_url = server + "/" + address;
+        HttpRawDownloader httpRawDownloader = new HttpRawDownloader();
+        httpRawDownloader.setParameters(id, from);
+        httpRawDownloader.execute(raw_url, file_name);
     }
 
     public void isSecured() {
@@ -192,17 +207,23 @@ public class OvkAPIWrapper {
                 connectionErrorString = "SocketTimeoutException";
                 state = "timeout";
                 sendMessageToParent();
+                if(ex.getMessage() != null)
                 Log.e("OpenVK Legacy", ex.getMessage());
+                else Log.e("OpenVK Legacy", connectionErrorString);
             } catch(UnknownHostException ex) {
                 connectionErrorString = "UnknownHostException";
                 state = "no_connection";
                 sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
+                if(ex.getMessage() != null)
+                    Log.e("OpenVK Legacy", ex.getMessage());
+                else Log.e("OpenVK Legacy", connectionErrorString);
             } catch(SocketException ex) {
                 connectionErrorString = "UnknownHostException";
                 state = "no_connection";
                 sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
+                if(ex.getMessage() != null)
+                    Log.e("OpenVK Legacy", ex.getMessage());
+                else Log.e("OpenVK Legacy", connectionErrorString);
             } catch(NullPointerException ex) {
                 ex.printStackTrace();
             } catch(ProtocolException ex) {
@@ -217,7 +238,9 @@ public class OvkAPIWrapper {
                 }
                 state = "no_connection";
                 sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
+                if(ex.getMessage() != null)
+                    Log.e("OpenVK Legacy", ex.getMessage());
+                else Log.e("OpenVK Legacy", connectionErrorString);
             } catch(Exception ex) {
                 ex.printStackTrace();
             }
@@ -385,246 +408,202 @@ public class OvkAPIWrapper {
         }
     }
 
-    class socketRawThread implements Runnable {
+    private class HttpRawDownloader extends AsyncTask<String, String, String> {
+        public int responseCode = 0;
+        public String url_addr;
+        public String downloaded_file_path;
+        public long total = 0;
+        public int elements_id = 0;
+        public String from_control;
+
         @Override
-        public void run() {
+        protected String doInBackground(String... _url) {
+            int count;
+            Log.d("OpenVK Legacy", "Downloading " + _url[0] + "...");
             try {
-                Log.d("OpenVK Legacy", "Connecting to " + raw_server + "...\r\nRAW address: " + raw_addr);
-                String url_addr;
-                url_addr = "http://" + raw_server + "/" + raw_addr;
-                URL url = new URL(url_addr);
-                HttpURLConnection httpRawConnection = (HttpURLConnection) url.openConnection();
-                isConnected = true;
-                httpRawConnection.setRequestMethod("GET");
-                httpRawConnection.setRequestProperty("Host", raw_server);
-                httpRawConnection.setRequestProperty("User-Agent", System.getProperty("http.agent"));
-                httpRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
-                httpRawConnection.setRequestProperty("Authorization", "Basic");
-                httpRawConnection.setRequestProperty("Connection", "keep-alive");
-                httpRawConnection.setConnectTimeout(240000);
-                httpRawConnection.setReadTimeout(240000);
-                httpRawConnection.setDoInput(true);
-                httpRawConnection.setDoOutput(true);
-                httpRawConnection.connect();
-                isConnected = true;
-                int status = -1;
-                inputStream_isClosed = false;
-                status = httpRawConnection.getResponseCode();
-                Log.d("OpenVK Legacy", "Connected!");
-                int bytes = 0;
-                int bytes_count = 0;
-                Log.d("OpenVK","Response code: " + status);
-                Log.d("OpenVK Legacy", "Response content: " + httpRawConnection.getHeaderFields().toString());
-                if(status == 200) {
-                    raw_in = new InputStreamReader(httpRawConnection.getInputStream(), "utf-8");
-                    while ((bytes = raw_in.read()) != -1) {
-                        bytes_count++;
-                        if(bytes_count == 1) {
-                            Log.d("OpenVK Legacy", "Downloading...");
+                    url_addr = _url[0];
+                    URL url = new URL("http://" + _url[0]);
+                    HttpURLConnection httpRawConnection = (HttpURLConnection) url.openConnection();
+                    httpRawConnection.setRequestMethod("GET");
+                    httpRawConnection.setRequestProperty("Host", _url[0].split("/")[0]);
+                    httpRawConnection.setRequestProperty("User-Agent", System.getProperty("http.agent"));
+                    httpRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
+                    httpRawConnection.setRequestProperty("Authorization", "Basic");
+                    httpRawConnection.setRequestProperty("Connection", "keep-alive");
+                    httpRawConnection.setConnectTimeout(240000);
+                    httpRawConnection.setReadTimeout(240000);
+                    httpRawConnection.connect();
+                    responseCode = httpRawConnection.getResponseCode();
+                    Log.d("OpenVK Legacy", "Response code: " + responseCode);
+                    if (responseCode == 200) {
+                        String contentType = httpRawConnection.getContentType();
+                        int contentLength = httpRawConnection.getContentLength();
+                        InputStream input = new BufferedInputStream(url.openStream());
+                        OutputStream output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
+                        try {
+                            File directory = new File(ctx.getCacheDir().getAbsolutePath(), "photos");
+                            if (!directory.exists()) {
+                                directory.mkdirs();
+                            }
+                            if (contentType.equals("image/jpeg")) {
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg");
+                            } else if (contentType.equals("image/png")) {
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png");
+                            } else if (!new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).exists()) {
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1];
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
+                            } else {
+                                Log.w("OpenVK Legacy", "Downloaded \"" + _url[1] + "\" file already exists in cache.");
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                    }
-                    Log.d("OpenVK Legacy", "Downloaded " + bytes_count + " bytes!");
-                    response_sb = new StringBuilder();
-                    httpRawConnection.getInputStream().close();
-                    inputStream_isClosed = true;
-                    isConnected = false;
-                    if(httpRawConnection.getContentType().equals("image/jpeg") || httpRawConnection.getContentType().equals("image/png")) {
-                        state = "getting_picture";
-                    } else {
-                        state = "getting_raw";
-                    }
-                    sendMessageToParent();
-                    Log.e("OpenVK Legacy", "InputStream closed");
-                } else if(status == 301) {
-                    if(allowHTTPS == true) {
+
+                        byte data[] = new byte[1024];
+
+                        while ((count = input.read(data)) != -1) {
+                            total += count;
+                            output.write(data, 0, count);
+                        }
+
+                        output.flush();
+                        output.close();
+                        input.close();
+                    } else if(responseCode == 301) {
                         Log.d("OpenVK Legacy", "Creating SSL connection...");
-                        state = "creating_ssl_connection";
-                        rawHTTPtoHTTPS.run();
-                    } else {
-                        connectionErrorString = "HTTPS required";
-                        state = "no_connection";
-                        sendMessageToParent();
                     }
-                } else {
-                    if (httpRawConnection.getErrorStream() != null) {
-                        String response;
-                        BufferedReader in = new BufferedReader(new InputStreamReader(httpRawConnection.getErrorStream()));
-                        while ((response = in.readLine()) != null) {
-                            response_sb.append(response).append("\n");
-                        }
-                        jsonResponseString = response_sb.toString();
-                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                        response_sb = new StringBuilder();
-                        httpRawConnection.getErrorStream().close();
-                        isConnected = false;
-                        inputStream_isClosed = true;
-                        state = "getting_response";
-                        sendRawMessageToParent(httpRawConnection.getErrorStream());
-                    }
-                }
-            } catch(SocketTimeoutException ex) {
-                connectionErrorString = "SocketTimeoutException";
-                state = "timeout";
-                sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
-            } catch(UnknownHostException ex) {
-                connectionErrorString = "UnknownHostException";
-                state = "no_connection";
-                sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
-            } catch(SocketException ex) {
-                connectionErrorString = "UnknownHostException";
-                state = "no_connection";
-                sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
-            } catch(NullPointerException ex) {
-                ex.printStackTrace();
-            } catch(ProtocolException ex) {
-                ex.printStackTrace();
-            } catch(Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(responseCode == 301 && allowHTTPS == true) {
+                HttpsRawDownloader httpsRawDownloader = new HttpsRawDownloader();
+                httpsRawDownloader.execute(raw_url, file_name);
+                httpsRawDownloader.setParameters(elements_id, from_control);
+            } else if(responseCode == 200) {
+                state = "getting_picture";
+                Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
+                sendRawMessageToParent(downloaded_file_path, elements_id, from_control);
+                total = 0;
+            }
+        }
+
+        public void setParameters(int id, String from) {
+            elements_id = id;
+            from_control = from;
         }
     }
 
-    class sslRawSocketThread implements Runnable {
+    private class HttpsRawDownloader extends AsyncTask<String, String, String> {
+        public int responseCode = 0;
+        public String url_addr;
+        public String downloaded_file_path;
+        public long total;
+        public int elements_id = 0;
+        public String from_control;
+
         @Override
-        public void run() {
+        protected String doInBackground(String... _url) {
+            int count;
+            Log.d("OpenVK Legacy", "Downloading " + _url[0] + "... (Secured)");
             try {
-                sleep(1000);
-                Log.d("OpenVK Legacy", "Connecting to " + raw_server + "... (Secured)\r\nRAW address: " + raw_addr);
-                String url_addr;
-                url_addr = "https://" + raw_server + "/" + raw_addr;
-                URL url = new URL(url_addr);
-                HttpURLConnection httpsRawConnection = (HttpsURLConnection) url.openConnection();
-                isConnected = true;
-                httpsRawConnection.setRequestMethod("GET");
-                httpsRawConnection.setRequestProperty("Host", raw_server);
-                httpsRawConnection.setRequestProperty("User-Agent", System.getProperty("http.agent"));
-                httpsRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
-                httpsRawConnection.setRequestProperty("Authorization", "Basic");
-                httpsRawConnection.setRequestProperty("Connection", "keep-alive");
-                httpsRawConnection.setConnectTimeout(240000);
-                httpsRawConnection.setReadTimeout(240000);
-                httpsRawConnection.setDoInput(true);
-                httpsRawConnection.setDoOutput(true);
-                httpsRawConnection.connect();
-                isConnected = true;
-                int status = -1;
-                inputStream_isClosed = false;
-                status = httpsRawConnection.getResponseCode();
-                Log.d("OpenVK Legacy", "Connected!");
-                int bytes = 0;
-                int bytes_count = 0;
-                Log.d("OpenVK","Response code: " + status);
-                Log.d("OpenVK Legacy", "Response content: " + httpsRawConnection.getHeaderFields().toString());
-                if(status == 200) {
-                    raw_in = new InputStreamReader(httpsRawConnection.getInputStream(), "utf-8");
-                    while ((bytes = raw_in.read()) != -1) {
-                        sleep(20);
-                        bytes_count++;
-                        if(bytes_count == 1) {
-                            Log.d("OpenVK Legacy", "Downloading...");
+                    elementsId = elements_id;
+                    url_addr = _url[0];
+                    URL url = new URL("https://" + _url[0]);
+                    HttpsURLConnection httpsRawConnection = (HttpsURLConnection) url.openConnection();
+                    httpsRawConnection.setRequestMethod("GET");
+                    httpsRawConnection.setRequestProperty("Host", _url[0].split("/")[0]);
+                    httpsRawConnection.setRequestProperty("User-Agent", System.getProperty("http.agent"));
+                    httpsRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
+                    httpsRawConnection.setRequestProperty("Authorization", "Basic");
+                    httpsRawConnection.setRequestProperty("Connection", "keep-alive");
+                    httpsRawConnection.setConnectTimeout(60000);
+                    httpsRawConnection.setReadTimeout(60000);
+                    httpsRawConnection.connect();
+                    responseCode = httpsRawConnection.getResponseCode();
+                    Log.d("OpenVK Legacy", "Response code: " + responseCode);
+                    if (responseCode == 200) {
+                        String contentType = httpsRawConnection.getContentType();
+                        int contentLength = httpsRawConnection.getContentLength();
+                        InputStream input = new BufferedInputStream(url.openStream());
+                        OutputStream output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
+                        try {
+                            File directory = new File(ctx.getCacheDir().getAbsolutePath(), "photos");
+                            if (!directory.exists()) {
+                                directory.mkdirs();
+                            }
+                            if (contentType.equals("image/jpeg")) {
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg");
+                            } else if (contentType.equals("image/png")) {
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png");
+                            } else if (!new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).exists()) {
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1];
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
+                            } else {
+                                Log.w("OpenVK Legacy", "Downloaded \"" + _url[1] + "\" file already exists in cache.");
+                            }
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                    }
-                    Log.d("OpenVK Legacy", "Downloaded! " + bytes_count + " bytes");
-                    response_sb = new StringBuilder();
-                    inputStream_isClosed = true;
-                    isConnected = false;
-                    if(httpsRawConnection.getContentType().equals("image/jpeg") || httpRawConnection.getContentType().equals("image/png")) {
-                        state = "getting_picture";
-                    } else {
-                        state = "getting_raw";
-                    }
-                    sendRawMessageToParent(httpsRawConnection.getInputStream());
-                    httpsRawConnection.getInputStream().close();
-                    Log.e("OpenVK Legacy", "InputStream closed");
-                } else if(status == 301) {
-                    if(allowHTTPS == true) {
-                        Log.d("OpenVK Legacy", "Creating SSL connection...");
-                        state = "creating_ssl_connection";
-                        HTTPtoHTTPS.run();
-                    } else {
-                        connectionErrorString = "HTTPS required";
-                        state = "no_connection";
-                        sendMessageToParent();
-                    }
-                } else {
-                    if (httpsRawConnection.getErrorStream() != null) {
-                        String response;
-                        BufferedReader in = new BufferedReader(new InputStreamReader(httpsRawConnection.getErrorStream()));
-                        while ((response = in.readLine()) != null) {
-                            response_sb.append(response).append("\n");
+
+                        byte data[] = new byte[1024];
+
+                        while ((count = input.read(data)) != -1) {
+                            total += count;
+                            output.write(data, 0, count);
                         }
-                        jsonResponseString = response_sb.toString();
-                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                        response_sb = new StringBuilder();
-                        isConnected = false;
-                        inputStream_isClosed = true;
-                        state = "getting_response";
-                        sendRawMessageToParent(httpRawConnection.getErrorStream());
-                        httpsRawConnection.getErrorStream().close();
+
+                        output.flush();
+                        output.close();
+                        input.close();
+                    } else if (responseCode == 301) {
+
                     }
-                }
-            } catch(SocketTimeoutException ex) {
-                connectionErrorString = "SocketTimeoutException";
-                state = "timeout";
-                sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
-            } catch(UnknownHostException ex) {
-                connectionErrorString = "UnknownHostException";
-                state = "no_connection";
-                sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
-            } catch(SocketException ex) {
-                connectionErrorString = "SocketException";
-                state = "no_connection";
-                sendMessageToParent();
-                Log.e("OpenVK Legacy", ex.getMessage());
-            } catch(NullPointerException ex) {
-                ex.printStackTrace();
-            } catch(ProtocolException ex) {
-                ex.printStackTrace();
-            } catch(Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(responseCode == 200) {
+                state = "getting_picture";
+                sendRawMessageToParent(downloaded_file_path, elements_id, from_control);
+                Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
+                total = 0;
+            }
+        }
+
+        public void setParameters(int id, String from) {
+            elements_id = id;
+            from_control = from;
         }
     }
 
-    private void sendRawMessageToParent(InputStream in) {
+    private void sendRawMessageToParent(String downloaded_file_path, int id, String from) {
         if(state.equals("getting_picture")) {
             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
                 Message msg = handler.obtainMessage(AppActivity.GET_PICTURE);
-                Bitmap bitmap = BitmapFactory.decodeStream(in);
                 Bundle bundle = new Bundle();
                 bundle.putString("State", state);
                 bundle.putString("Server", raw_server);
-                bundle.putString("RAW_address", raw_addr);
-                bundle.putParcelable("Picture", (Parcelable) bitmap);
+                bundle.putString("Downloaded_file", downloaded_file_path);
+                bundle.putInt("Elements_ID", id);
+                bundle.putString("From", from);
                 msg.setData(bundle);
                 AppActivity.handler.sendMessage(msg);
-            }
-        }
-    }
-
-    class switchToHTTPS extends TimerTask {
-        @Override
-        public void run() {
-            if(state.equals("creating_ssl_connection")) {
-                socketThread = new Thread(new socketThread());
-                sslSocketThread = new Thread(new sslSocketThread());
-                sslSocketThread.start();
-            }
-        }
-    }
-
-    class switchRawToHTTPS extends TimerTask {
-        @Override
-        public void run() {
-            if(state.equals("creating_ssl_connection")) {
-                socketRawThread = new Thread(new socketRawThread());
-                sslRawSocketThread = new Thread(new sslRawSocketThread());
-                sslRawSocketThread.start();
             }
         }
     }
@@ -645,8 +624,8 @@ public class OvkAPIWrapper {
                 httpRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
                 httpRawConnection.setRequestProperty("Authorization", "Basic");
                 httpRawConnection.setRequestProperty("Connection", "keep-alive");
-                httpRawConnection.setConnectTimeout(240000);
-                httpRawConnection.setReadTimeout(240000);
+                httpRawConnection.setConnectTimeout(60000);
+                httpRawConnection.setReadTimeout(60000);
                 httpRawConnection.setDoInput(true);
                 httpRawConnection.setDoOutput(true);
                 httpRawConnection.connect();
@@ -686,6 +665,7 @@ public class OvkAPIWrapper {
         }
     }
 
+
     private void sendTestMessageToParent() {
         if(state.equals("checking_connection")) {
             if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
@@ -716,6 +696,17 @@ public class OvkAPIWrapper {
                 bundle.putBoolean("IsSecured", isSecured);
                 msg.setData(bundle);
                 MainSettingsActivity.handler.sendMessage(msg);
+            }
+        }
+    }
+
+    class switchToHTTPS extends TimerTask {
+        @Override
+        public void run() {
+            if(state.equals("creating_ssl_connection")) {
+                socketThread = new Thread(new socketThread());
+                sslSocketThread = new Thread(new sslSocketThread());
+                sslSocketThread.start();
             }
         }
     }

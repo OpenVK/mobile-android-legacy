@@ -137,6 +137,9 @@ public class AppActivity extends Activity {
     public int newsfeed_id;
     public View news_item;
     public boolean selected_all_news;
+    public int photo_id;
+    public String from;
+    public String photo_addr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,13 +183,10 @@ public class AppActivity extends Activity {
                         break;
                     case GET_PICTURE:
                         state = msg.getData().getString("State");
-                        attachments_photo.add((Bitmap) msg.getData().getParcelable("Parcelable"));
-                        try {
-                            json_response = new JSONObject(msg.getData().getString("JSON_response"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
+                        photo_addr = msg.getData().getString("Downloaded_file");
+                        post_id = msg.getData().getInt("Elements_ID");
+                        from = msg.getData().getString("from");
+                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nDownloaded picture!");
                         updateUITask.run();
                 }
             }
@@ -1473,6 +1473,22 @@ public class AppActivity extends Activity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    } else if(state.equals("getting_picture")) {
+                        try {
+                            NewsListItem newsListItem = newsListItemArray.get(post_id);
+                            if(newsListItem.repost == null) {
+                                newsListItem.photo = photo_addr;
+                                Log.d("OpenVK Legacy", "Photo address: " + photo_addr);
+                                newsListItemArray.set(post_id, newsListItem);
+                                newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
+                                news_listview = newsLinearLayout.findViewById(R.id.news_listview);
+                                Parcelable state = news_listview.onSaveInstanceState();
+                                news_listview.setAdapter(newsListAdapter);
+                                news_listview.onRestoreInstanceState(state);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     } else if(state.equals("connection_lost")) {
                         if(creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
@@ -1597,7 +1613,8 @@ public class AppActivity extends Activity {
                             post_owners_ids_sb.append(postOwnerId);
                         }
                         if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
-                            // loadPhotos(news_item_index); > does not work with openvk.uk instance (401 code returned)
+                            loadPhotos(news_item_index);
+                            attachments_photo.clear();
                         }
                     } catch (JSONException jEx) {
                         jEx.printStackTrace();
@@ -1638,6 +1655,7 @@ public class AppActivity extends Activity {
             if (send_request.startsWith("/method/Wall.get")) {
                 for (int news_item_index = 0; news_item_index < news_item_count; news_item_index++) {
                     try {
+                        post_id = news_item_index;
                         newsfeed = ((JSONArray) json_response.getJSONObject("response").getJSONArray("items"));
                         postOwnerId = ((JSONObject) newsfeed.get(news_item_index)).getInt("owner_id");
                         postAuthorId = ((JSONObject) newsfeed.get(news_item_index)).getInt("from_id");
@@ -1702,7 +1720,7 @@ public class AppActivity extends Activity {
                             post_owners_ids_sb.append(postOwnerId);
                         }
                         if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
-                            // loadPhotos(news_item_index); > does not work with openvk.uk instance (401 code returned)
+                            loadPhotos(news_item_index);
                         }
                     } catch (JSONException jEx) {
                         jEx.printStackTrace();
@@ -1725,27 +1743,26 @@ public class AppActivity extends Activity {
 
     private void loadPhotos(int pos) {
         try {
+            if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                post_id = pos;
                 attachments = ((JSONObject) newsfeed.get(pos)).getJSONArray("attachments");
                 int attachments_length = attachments.length();
-                Log.d("OpenVK Legacy", "Downloading photos...");
                 for (int i = 0; i < attachments_length; i++) {
-                    if(((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                    if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
                         String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
                                 getJSONObject(0).getString("url");
                         if (attachments.getJSONObject(i).getString("type").equals("photo")) {
                             if (url.startsWith("https://")) {
                                 openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
-                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1));
+                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
                             } else {
                                 openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
-                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1));
+                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
                             }
                         }
-                    } else {
-                        Log.e("OpenVK Legacy", "No attachments");
                     }
                 }
-
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
