@@ -5,7 +5,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#e3e4e6">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -101,6 +102,7 @@
                         android:id="@android:id/tabs"
                         android:layout_width="match_parent"
                         android:layout_height="32dp"
+                        android:background="@android:color/white"
                         android:tabStripEnabled="false" />
 
                     <FrameLayout
@@ -117,7 +119,8 @@
                             <uk.openvk.android.legacy.WallLinearLayout
                                 android:id="@+id/all_posts_wll"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="6dp">
 
                             </uk.openvk.android.legacy.WallLinearLayout>
                         </LinearLayout>
@@ -131,7 +134,8 @@
                             <uk.openvk.android.legacy.WallLinearLayout
                                 android:id="@+id/owners_posts_wll"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="6dp">
 
                             </uk.openvk.android.legacy.WallLinearLayout>
                         </LinearLayout>

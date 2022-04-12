@@ -243,6 +243,16 @@
         android:textColorLink="#2B587A"
         android:textSize="14dip"></TextView>
 
+    <ImageView
+        android:id="@+id/post_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginBottom="10dip"
+        android:adjustViewBounds="true"
+        android:src="@null" />
+
     <View
         android:id="@+id/post_divider"
         android:layout_width="wrap_content"
@@ -252,12 +262,6 @@
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"
         android:background="#e5e5e5" />
-
-    <ImageView
-        android:id="@+id/post_photo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@null" />
 
     <LinearLayout
         android:layout_width="match_parent"

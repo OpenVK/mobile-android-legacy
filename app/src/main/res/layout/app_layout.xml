@@ -141,7 +141,8 @@
             <uk.openvk.android.legacy.NewsLinearLayout
                 android:id="@+id/news_layout"
                 android:layout_width="466dp"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="#e3e4e6">
 
             </uk.openvk.android.legacy.NewsLinearLayout>
 
