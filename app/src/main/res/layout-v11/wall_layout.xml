@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.openvk.android.legacy.FullListView
+    <uk.openvk.android.legacy.layouts.FullListView
         android:id="@+id/news_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,5 +12,5 @@
         android:theme="@style/NewsItemTransparentBackground"
         android:visibility="visible">
 
-    </uk.openvk.android.legacy.FullListView>
+    </uk.openvk.android.legacy.layouts.FullListView>
 </LinearLayout>

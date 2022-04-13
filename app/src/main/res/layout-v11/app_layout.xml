@@ -65,13 +65,13 @@
 
         </LinearLayout>
 
-        <uk.openvk.android.legacy.ProfileLayout
+        <uk.openvk.android.legacy.layouts.ProfileLayout
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"></uk.openvk.android.legacy.ProfileLayout>
+            android:visibility="gone"></uk.openvk.android.legacy.layouts.ProfileLayout>
 
-        <uk.openvk.android.legacy.NewsLinearLayout
+        <uk.openvk.android.legacy.layouts.NewsLayout
             android:id="@+id/news_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -80,17 +80,17 @@
             android:layout_marginLeft="0dp"
             android:background="#e3e4e6">
 
-        </uk.openvk.android.legacy.NewsLinearLayout>
+        </uk.openvk.android.legacy.layouts.NewsLayout>
 
-        <uk.openvk.android.legacy.FriendsLinearLayout
+        <uk.openvk.android.legacy.layouts.FriendsLayout
             android:id="@+id/friends_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone">
 
-        </uk.openvk.android.legacy.FriendsLinearLayout>
+        </uk.openvk.android.legacy.layouts.FriendsLayout>
 
-        <uk.openvk.android.legacy.SlidingMenuLayout
+        <uk.openvk.android.legacy.layouts.SlidingMenuLayout
             android:id="@+id/sliding_menu_layout"
             android:layout_width="300dp"
             android:layout_height="match_parent"
@@ -98,7 +98,7 @@
             android:theme="@style/SlidingMenu"
             android:visibility="gone">
 
-        </uk.openvk.android.legacy.SlidingMenuLayout>
+        </uk.openvk.android.legacy.layouts.SlidingMenuLayout>
     </RelativeLayout>
 
 </FrameLayout>

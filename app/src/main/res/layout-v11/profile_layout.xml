@@ -20,21 +20,21 @@
                 android:background="#313743"
                 android:orientation="vertical">
 
-                <uk.openvk.android.legacy.ProfileHeader
+                <uk.openvk.android.legacy.layouts.ProfileHeader
                     android:id="@+id/profile_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                </uk.openvk.android.legacy.ProfileHeader>
+                </uk.openvk.android.legacy.layouts.ProfileHeader>
 
-                <uk.openvk.android.legacy.AboutProfileLinearLayout
+                <uk.openvk.android.legacy.layouts.AboutProfileLayout
                     android:id="@+id/about_profile_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
                     android:visibility="gone">
 
-                </uk.openvk.android.legacy.AboutProfileLinearLayout>
+                </uk.openvk.android.legacy.layouts.AboutProfileLayout>
 
                 <Button
                     android:id="@+id/send_direct_msg"
@@ -59,31 +59,31 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <uk.openvk.android.legacy.ProfileCounterLayout
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
                         android:id="@+id/photos_counter"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1">
 
-                    </uk.openvk.android.legacy.ProfileCounterLayout>
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
 
-                    <uk.openvk.android.legacy.ProfileCounterLayout
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
                         android:id="@+id/friends_counter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1">
 
-                    </uk.openvk.android.legacy.ProfileCounterLayout>
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
 
-                    <uk.openvk.android.legacy.ProfileCounterLayout
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
                         android:id="@+id/mutual_counter"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                    </uk.openvk.android.legacy.ProfileCounterLayout>
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
                 </TableRow>
 
             </LinearLayout>
@@ -115,14 +115,14 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <uk.openvk.android.legacy.WallLinearLayout
+                            <uk.openvk.android.legacy.layouts.WallLayout
                                 android:id="@+id/all_posts_wll"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="#e3e4e6"
                                 android:paddingBottom="6dp">
 
-                            </uk.openvk.android.legacy.WallLinearLayout>
+                            </uk.openvk.android.legacy.layouts.WallLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -131,14 +131,14 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical">
 
-                            <uk.openvk.android.legacy.WallLinearLayout
+                            <uk.openvk.android.legacy.layouts.WallLayout
                                 android:id="@+id/owners_posts_wll"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="#e3e4e6"
                                 android:paddingBottom="6dp">
 
-                            </uk.openvk.android.legacy.WallLinearLayout>
+                            </uk.openvk.android.legacy.layouts.WallLayout>
                         </LinearLayout>
 
                     </FrameLayout>
