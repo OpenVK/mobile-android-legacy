@@ -1,34 +1,27 @@
 package uk.openvk.android.legacy;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.SocketException;
@@ -39,7 +32,6 @@ import java.util.TimerTask;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLProtocolException;
 
 import static java.lang.Thread.sleep;
 
@@ -490,7 +482,31 @@ public class OvkAPIWrapper {
             } else if(responseCode == 200) {
                 state = "getting_picture";
                 Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
-                sendRawMessageToParent(downloaded_file_path, elements_id, from_control);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                if(bitmap != null) {
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    float scaleWidth = 0;
+                    float scaleHeight = 0;
+                    if(width > 1280 && height > 1280) {
+                        if(height>width){
+                            scaleWidth = ((float) 960) / width;
+                            scaleHeight = ((float) 1280) / height;
+                        }
+
+                        if(width>height){
+                            scaleWidth = ((float) 1280) / width;
+                            scaleHeight = ((float) 960) / height;
+                        }
+
+                        Matrix matrix = new Matrix();
+                        matrix.postScale(scaleWidth, scaleHeight);
+                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                    }
+                }
+                sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
                 total = 0;
             }
         }
@@ -580,7 +596,31 @@ public class OvkAPIWrapper {
             super.onPostExecute(s);
             if(responseCode == 200) {
                 state = "getting_picture";
-                sendRawMessageToParent(downloaded_file_path, elements_id, from_control);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                if(bitmap != null) {
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    float scaleWidth = 0;
+                    float scaleHeight = 0;
+                    if(width > 1280 && height > 1280) {
+                        if(height>width){
+                            scaleWidth = ((float) 960) / width;
+                            scaleHeight = ((float) 1280) / height;
+                        }
+
+                        if(width>height){
+                            scaleWidth = ((float) 1280) / width;
+                            scaleHeight = ((float) 960) / height;
+                        }
+
+                        Matrix matrix = new Matrix();
+                        matrix.postScale(scaleWidth, scaleHeight);
+                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                    }
+                }
+                sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
                 Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
                 total = 0;
             }
@@ -592,15 +632,15 @@ public class OvkAPIWrapper {
         }
     }
 
-    private void sendRawMessageToParent(String downloaded_file_path, int id, String from) {
+    private void sendRawMessageToParent(String downloaded_file_path, int id, String from, Bitmap bitmap) {
         if(state.equals("getting_picture")) {
             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
                 Message msg = handler.obtainMessage(AppActivity.GET_PICTURE);
                 Bundle bundle = new Bundle();
                 bundle.putString("State", state);
                 bundle.putString("Server", raw_server);
-                bundle.putString("Downloaded_file", downloaded_file_path);
-                bundle.putInt("Elements_ID", id);
+                bundle.putParcelable("Picture", (Parcelable) bitmap);
+                bundle.putInt("ID", id);
                 bundle.putString("From", from);
                 msg.setData(bundle);
                 AppActivity.handler.sendMessage(msg);

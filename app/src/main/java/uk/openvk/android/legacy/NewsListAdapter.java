@@ -81,32 +81,8 @@ public class NewsListAdapter extends BaseAdapter {
         //((TextView) view.findViewById(R.id.post_retweet_time)).setText(((RepostInfo) item.repost).time);
         ((TextView) view.findViewById(R.id.post_info_view)).setText(item.info);
 
-        if(item.photo != null && item.photo.length() > 0) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(item.photo, options);
-            if(bitmap != null) {
-                int width = bitmap.getWidth();
-                int height = bitmap.getHeight();
-                float scaleWidth = 0;
-                float scaleHeight = 0;
-                if(width > 1280 && height > 1280) {
-                    if(height>width){
-                        scaleWidth = ((float) 960) / width;
-                        scaleHeight = ((float) 1280) / height;
-                    }
-
-                    if(width>height){
-                        scaleWidth = ((float) 1280) / width;
-                        scaleHeight = ((float) 960) / height;
-                    }
-
-                    Matrix matrix = new Matrix();
-                    matrix.postScale(scaleWidth, scaleHeight);
-                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
-                }
-            }
-            ((ImageView) view.findViewById(R.id.post_photo)).setImageBitmap(bitmap);
+        if(item.getPhoto() != null) {
+            ((ImageView) view.findViewById(R.id.post_photo)).setImageBitmap(item.getPhoto());
             ((ImageView) view.findViewById(R.id.post_photo)).setVisibility(View.VISIBLE);
         } else {
             ((ImageView) view.findViewById(R.id.post_photo)).setVisibility(View.GONE);
@@ -115,7 +91,7 @@ public class NewsListAdapter extends BaseAdapter {
         if(item.text.length() > 0) {
             ((TextView) view.findViewById(R.id.post_view)).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.post_view)).setText(Html.fromHtml(item.text));
-        } else if((item.photo == null || item.photo.length() == 0) && item.text.length() == 0) {
+        } else if((item.photo == null) && item.text.length() == 0) {
             ((TextView) view.findViewById(R.id.post_view)).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.post_view)).setText(Html.fromHtml("<i>" + ctx.getResources().getString(R.string.not_implemented) + "</i>"));
         } else {

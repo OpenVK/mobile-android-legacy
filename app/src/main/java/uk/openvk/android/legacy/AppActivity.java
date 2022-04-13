@@ -135,11 +135,13 @@ public class AppActivity extends Activity {
     public int post_id;
     public int owner_id;
     public int newsfeed_id;
+    public int newsfeed_picpost_id;
     public View news_item;
     public boolean selected_all_news;
     public int photo_id;
     public String from;
     public String photo_addr;
+    public Bitmap photo_bmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,9 +185,9 @@ public class AppActivity extends Activity {
                         break;
                     case GET_PICTURE:
                         state = msg.getData().getString("State");
-                        photo_addr = msg.getData().getString("Downloaded_file");
-                        post_id = msg.getData().getInt("Elements_ID");
                         from = msg.getData().getString("from");
+                        photo_bmp = (Bitmap) msg.getData().getParcelable("Picture");
+                        newsfeed_picpost_id = msg.getData().getInt("ID");
                         Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nDownloaded picture!");
                         updateUITask.run();
                 }
@@ -1070,17 +1072,20 @@ public class AppActivity extends Activity {
     }
 
     public void selectNewsSpinnerItem(int position) {
-        Spinner spinner = (Spinner) (getActionBar().getCustomView().findViewById(R.id.spinner));
-        if (spinner != null) {
-            try {
-                spinner.setSelection(position);
-                Method method = Spinner.class.getDeclaredMethod("onDetachedFromWindow");
-                method.setAccessible(true);
-                method.invoke(spinner);
-            } catch (Exception e) {
-                e.printStackTrace();
+        Spinner spinner = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            spinner = (Spinner) (getActionBar().getCustomView().findViewById(R.id.spinner));
+            if (spinner != null) {
+                try {
+                    spinner.setSelection(position);
+                    Method method = Spinner.class.getDeclaredMethod("onDetachedFromWindow");
+                    method.setAccessible(true);
+                    method.invoke(spinner);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
             }
-            Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1475,11 +1480,11 @@ public class AppActivity extends Activity {
                         }
                     } else if(state.equals("getting_picture")) {
                         try {
-                            NewsListItem newsListItem = newsListItemArray.get(post_id);
+                            NewsListItem newsListItem = newsListItemArray.get(newsfeed_picpost_id);
                             if(newsListItem.repost == null) {
-                                newsListItem.photo = photo_addr;
-                                Log.d("OpenVK Legacy", "Photo address: " + photo_addr);
-                                newsListItemArray.set(post_id, newsListItem);
+                                newsListItem.photo = photo_bmp;
+                                Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + newsListItemArray.size());
+                                newsListItemArray.set(newsfeed_picpost_id, newsListItem);
                                 newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
                                 news_listview = newsLinearLayout.findViewById(R.id.news_listview);
                                 Parcelable state = news_listview.onSaveInstanceState();
