@@ -19,7 +19,7 @@
         android:requestLegacyExternalStorage="true"
         tools:targetApi="q">
         <activity
-            android:name=".AuthenticationActivity"
+            android:name=".activities.AuthenticationActivity"
             android:label="@string/app_name"
             android:exported="true"
             android:theme="@style/BaseStyle.NoActionBar"
@@ -31,14 +31,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AppActivity"
+            android:name=".activities.AppActivity"
             android:label="@string/app_name"
             android:icon="@drawable/ic_left_menu"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
         <activity
-            android:name=".ProfileIntentActivity"
+            android:name=".activities.ProfileIntentActivity"
             android:label="@string/app_name"
             android:icon="@drawable/ic_left_menu"
             android:exported="true"
@@ -51,7 +51,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FriendsIntentActivity"
+            android:name=".activities.FriendsIntentActivity"
             android:label="@string/app_name"
             android:icon="@drawable/ic_left_menu"
             android:exported="true"
@@ -63,22 +63,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainSettingsActivity"
+            android:name=".activities.MainSettingsActivity"
             android:label="@string/menu_settings"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
         <activity
-            android:name=".NewPostActivity"
+            android:name=".activities.NewPostActivity"
             android:label="@string/new_status"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
         <activity
-            android:name=".DebugMenuActivity"
+            android:name=".activities.DebugMenuActivity"
             android:label="@string/debug_menu"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".activities.SearchActivity"
             android:label="@string/search_global"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
