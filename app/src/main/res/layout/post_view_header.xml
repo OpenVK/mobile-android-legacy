@@ -129,7 +129,7 @@
 
     </RelativeLayout>
 
-    <uk.openvk.android.legacy.ExTextView
+    <uk.openvk.android.legacy.layouts.ExTextView
         android:id="@+id/wall_view_post"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -142,7 +142,7 @@
         android:textColorLink="#2B587A"
         android:textSize="14dip" />
 
-    <uk.openvk.android.legacy.ui.LinearLayout
+    <uk.openvk.android.legacy.layouts.ui.LinearLayout
         android:id="@+id/wall_view_attach"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
         android:layout_marginRight="5dip"
         android:orientation="vertical"
         android:visibility="gone" >
-    </uk.openvk.android.legacy.ui.LinearLayout>
+    </uk.openvk.android.legacy.layouts.ui.LinearLayout>
 
     <LinearLayout
         android:id="@+id/wall_view_nlikesw"

@@ -155,7 +155,7 @@
 			android:layout_toRightOf="@id/user_photo" android:layout_below="@id/post_attach_container"
     -->
 
-    <uk.openvk.android.legacy.ui.OverlayTextView
+    <uk.openvk.android.legacy.layouts.ui.OverlayTextView
         android:id="@+id/post_comments"
         android:layout_width="wrap_content"
         android:layout_height="35dip"
@@ -174,7 +174,7 @@
         android:textColor="#999"
         android:textSize="16dip" />
 
-    <uk.openvk.android.legacy.ui.OverlayTextView
+    <uk.openvk.android.legacy.layouts.ui.OverlayTextView
         android:id="@+id/post_likes"
         android:layout_width="wrap_content"
         android:layout_height="35dip"

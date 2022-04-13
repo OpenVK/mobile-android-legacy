@@ -50,7 +50,7 @@
                         android:background="@color/holo_blue_dark" />
                 </LinearLayout>
 
-                <uk.openvk.android.legacy.FullListView
+                <uk.openvk.android.legacy.layouts.FullListView
                     android:id="@+id/community_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                         android:background="@color/holo_blue_dark" />
                 </LinearLayout>
 
-                <uk.openvk.android.legacy.FullListView
+                <uk.openvk.android.legacy.layouts.FullListView
                     android:id="@+id/people_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
