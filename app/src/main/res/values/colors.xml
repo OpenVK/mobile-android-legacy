@@ -6,4 +6,5 @@
     <color name="api_v8_ll_title_color">#ffffff</color>
     <color name="api_v8_ll_subtitle_color">#88ffffff</color>
     <color name="holo_blue_dark">#ff33b5e5</color>
+    <color name="timestamp_color">#6f6f6f</color>
 </resources>
