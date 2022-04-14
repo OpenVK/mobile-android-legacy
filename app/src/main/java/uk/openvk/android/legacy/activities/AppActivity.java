@@ -69,6 +69,7 @@ import uk.openvk.android.legacy.items.NewsItemCountersInfo;
 import uk.openvk.android.legacy.items.UserPostInfo;
 import uk.openvk.android.legacy.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
+import uk.openvk.android.legacy.layouts.ConversationsLayout;
 import uk.openvk.android.legacy.layouts.NewsLayout;
 import uk.openvk.android.legacy.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.layouts.ProfileHeader;
@@ -77,10 +78,12 @@ import uk.openvk.android.legacy.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.layouts.SlidingMenuSearch;
 import uk.openvk.android.legacy.layouts.WallLayout;
 import uk.openvk.android.legacy.list_adapters.ActionBarSpinnerAdapter;
+import uk.openvk.android.legacy.list_adapters.ConversationsListAdapter;
 import uk.openvk.android.legacy.list_adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.list_adapters.NewsListAdapter;
 import uk.openvk.android.legacy.list_adapters.SimpleListAdapter;
 import uk.openvk.android.legacy.list_adapters.SlidingMenuAdapter;
+import uk.openvk.android.legacy.list_items.ConversationsListItem;
 import uk.openvk.android.legacy.list_items.FriendsListItem;
 import uk.openvk.android.legacy.list_items.NewsListItem;
 import uk.openvk.android.legacy.list_items.SimpleListItem;
@@ -99,12 +102,14 @@ public class AppActivity extends Activity {
     public JSONObject json_response_user;
     public JSONObject json_response_group;
     public JSONArray newsfeed;
+    public JSONArray conversations;
     public JSONArray attachments;
     public boolean creating_another_activity;
     public PopupWindow popup_menu;
     public ArrayList<NewsListItem> newsListItemArray;
     public ArrayList<NewsListItem> wallListItemArray;
     public ArrayList<SlidingMenuItem> slidingMenuItemArray;
+    public ArrayList<ConversationsListItem> dmConvListItemArray;
     public ArrayList<SimpleListItem> spinnerActionBarArray;
     public ArrayList<GroupPostInfo> groupPostInfoArray;
     public NewsListAdapter newsListAdapter;
@@ -113,7 +118,7 @@ public class AppActivity extends Activity {
     public String send_request;
     public ListView news_listview;
     public int news_item_count;
-    public int news_item_index;
+    public int conv_item_count;
     public SharedPreferences global_sharedPreferences;
     public ArrayList<Integer> post_owners_ids;
     public ArrayList<Integer> post_author_ids;
@@ -123,6 +128,7 @@ public class AppActivity extends Activity {
     public NewsLayout newsLayout;
     public FriendsLayout friendsLayout;
     public ProfileLayout profileLayout;
+    public ConversationsLayout messagesLayout;
     public boolean sliding_animated;
     public boolean menu_is_closed;
     public boolean connection_status;
@@ -146,10 +152,7 @@ public class AppActivity extends Activity {
     public int newsfeed_id;
     public int newsfeed_picpost_id;
     public View news_item;
-    public boolean selected_all_news;
-    public int photo_id;
     public String from;
-    public String photo_addr;
     public Bitmap photo_bmp;
 
     @Override
@@ -209,6 +212,7 @@ public class AppActivity extends Activity {
         newsLayout = findViewById(R.id.news_layout);
         profileLayout = findViewById(R.id.profile_layout);
         friendsLayout = findViewById(R.id.friends_layout);
+        messagesLayout = findViewById(R.id.messages_layout);
 
         if(getIntent().getData() == null && global_sharedPreferences.getBoolean("refreshOnOpen", true) == true) {
             SharedPreferences.Editor editor = global_sharedPreferences.edit();
@@ -406,6 +410,7 @@ public class AppActivity extends Activity {
         wallItemCountersInfoArray = new ArrayList<NewsItemCountersInfo>();
         friendsListItemArray = new ArrayList<FriendsListItem>();
         userPostInfoArray = new ArrayList<UserPostInfo>();
+        dmConvListItemArray = new ArrayList<ConversationsListItem>();
         server_2 = "";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             View actionBarView = LayoutInflater.from(this).inflate(R.layout.custom_actionbar_layout, null);
@@ -444,6 +449,7 @@ public class AppActivity extends Activity {
             SpinnerAdapter spinnerAdapter = new ActionBarSpinnerAdapter(AppActivity.this, spinnerActionBarArray, Color.BLACK, Color.WHITE, "news_spinner");
             spinner.setAdapter(spinnerAdapter);
         } else {
+            ((ListView) newsLayout.findViewById(R.id.news_listview)).setCacheColorHint(Color.parseColor("#e3e4e6"));
             ((ImageButton) findViewById(R.id.menuButton)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -519,6 +525,7 @@ public class AppActivity extends Activity {
                     newsLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.GONE);
                     friendsLayout.setVisibility(View.GONE);
+                    messagesLayout.setVisibility(View.GONE);
                     LinearLayout progress_ll = findViewById(R.id.news_progressll);
                     progress_ll.setVisibility(View.VISIBLE);
                     LinearLayout error_ll = findViewById(R.id.error_ll);
@@ -947,6 +954,7 @@ public class AppActivity extends Activity {
                 LinearLayout error_ll = findViewById(R.id.error_ll);
                 friendsLayout = findViewById(R.id.friends_layout);
                 friendsLayout.setVisibility(View.GONE);
+                messagesLayout.setVisibility(View.GONE);
                 error_ll.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
@@ -972,6 +980,47 @@ public class AppActivity extends Activity {
             } else {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
+        } else if(position == 3) {
+            if(connection_status == false) {
+                SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
+                sharedPrefsEditor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                sharedPrefsEditor.commit();
+                address_intent = getIntent();
+                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                editor.putString("currentLayout", "MessagesLayout");
+                editor.commit();
+                ProfileLayout profileLayout = findViewById(R.id.profile_layout);
+                profileLayout.setVisibility(View.GONE);
+                NewsLayout newsLayout = findViewById(R.id.news_layout);
+                newsLayout.setVisibility(View.GONE);
+                LinearLayout error_ll = findViewById(R.id.error_ll);
+                messagesLayout.setVisibility(View.GONE);
+                error_ll.setVisibility(View.GONE);
+                LinearLayout progress_ll = findViewById(R.id.news_progressll);
+                progress_ll.setVisibility(View.VISIBLE);
+                openSlidingMenu();
+                try {
+                    openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    titlebar_title.setText(getResources().getString(R.string.messages));
+                } else {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setDisplayShowCustomEnabled(false);
+                        getActionBar().setDisplayShowTitleEnabled(true);
+                        getActionBar().setTitle(getResources().getString(R.string.messages));
+                    } else {
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setText(getResources().getString(R.string.messages));
+                        ((TextView) getActionBar().getCustomView().findViewById(R.id.app_title)).setVisibility(View.VISIBLE);
+                        ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
+            }
         } else if(position == 5) {
             if(connection_status == false) {
                 SharedPreferences.Editor sharedPrefsEditor = global_sharedPreferences.edit();
@@ -989,6 +1038,7 @@ public class AppActivity extends Activity {
                 LinearLayout error_ll = findViewById(R.id.error_ll);
                 error_ll.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                messagesLayout.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
                 openSlidingMenu();
@@ -1096,6 +1146,14 @@ public class AppActivity extends Activity {
                 Toast.makeText(AppActivity.this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void getConversation(int position) {
+        Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
+        intent.putExtra("peer_id", dmConvListItemArray.get(position).peer_id);
+        intent.putExtra("conv_title", dmConvListItemArray.get(position).title);
+        intent.putExtra("online", dmConvListItemArray.get(position).online);
+        startActivity(intent);
     }
 
 
@@ -1235,6 +1293,14 @@ public class AppActivity extends Activity {
                                     } else {
                                         if(json_response.getJSONObject("response").getInt("id") > 0) {
                                             openVK_API.sendMethod("Friends.get", "user_id=" + json_response.getJSONObject("response").getInt("id"));
+                                        }
+                                    }
+                                } else if(global_sharedPreferences.getString("currentLayout", "").equals("MessagesLayout")) {
+                                    if(connection_status == false) {
+                                        try {
+                                            openVK_API.sendMethod("Messages.getConversations", "extended=1");
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
                                     }
                                 }
@@ -1481,6 +1547,8 @@ public class AppActivity extends Activity {
                                 layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
                                 int listviewHeight = -1;
                                 posts_lv.onRestoreInstanceState(state);
+                            } else if(send_request.startsWith("/method/Messages.getConversations") && global_sharedPreferences.getString("currentLayout", "").equals("MessagesLayout")) {
+                                loadConversations();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1546,6 +1614,57 @@ public class AppActivity extends Activity {
                 }
             });
         }
+    }
+
+    public void loadConversations() {
+        dmConvListItemArray.clear();
+        try {
+            conv_item_count = json_response.getJSONObject("response").getJSONArray("items").length();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(conv_item_count > 0) {
+            for(int conv_item_index = 0; conv_item_index < conv_item_count; conv_item_index++) {
+                try {
+                    conversations = ((JSONArray) json_response.getJSONObject("response").getJSONArray("items"));
+                    dmConvListItemArray.add(new ConversationsListItem("(Unknown)", null, null, conversations.getJSONObject(conv_item_index)
+                            .getJSONObject("last_message").getString("text"), conversations.getJSONObject(conv_item_index).getJSONObject("conversation").getJSONObject("peer").getInt("id"),
+                            0));
+                    ConversationsListItem conversationItem = dmConvListItemArray.get(conv_item_index);
+                    if (conversations.getJSONObject(conv_item_index).getJSONObject("conversation").getJSONObject("peer").getInt("id") < 0 && json_response.getJSONObject("response").isNull("groups") == false) {
+                        for (int groups_index = 0; groups_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).length(); groups_index++) {
+                            if (conversations.getJSONObject(conv_item_count).getJSONObject("peer").getInt("id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                    getJSONObject(groups_index).getInt("id")) {
+                                conversationItem.title = ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
+                                        getJSONObject(groups_index).getString("name");
+                                dmConvListItemArray.set(groups_index, conversationItem);
+                            }
+                        }
+                    } else if(json_response.getJSONObject("response").isNull("profiles") == false) {
+                        for (int users_index = 0; users_index < ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).length(); users_index++) {
+                            if (conversations.getJSONObject(conv_item_index).getJSONObject("conversation").getJSONObject("peer").getInt("id") == ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                    getJSONObject(users_index).getInt("id")) {
+                                conversationItem.title = ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
+                                        getJSONObject(users_index).getString("last_name");
+                                conversationItem.online = conversations.getJSONObject(conv_item_index).getJSONObject("response").getJSONArray("profiles")
+                                .getJSONObject(users_index).getInt("online");
+                                dmConvListItemArray.set(users_index, conversationItem);
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        Log.d("OpenVK Legacy", "Done!");
+        ConversationsListAdapter conversationsListAdapter = new ConversationsListAdapter(AppActivity.this, dmConvListItemArray);
+        ((ListView) messagesLayout.findViewById(R.id.conversations_listview)).setAdapter(conversationsListAdapter);
+        messagesLayout.setVisibility(View.VISIBLE);
+        LinearLayout progress_ll = findViewById(R.id.news_progressll);
+        progress_ll.setVisibility(View.GONE);
     }
 
     public void appendNewsItem() {
@@ -1647,6 +1766,7 @@ public class AppActivity extends Activity {
         friendsLayout.setVisibility(View.GONE);
         profile_ll.setVisibility(View.GONE);
         progress_ll.setVisibility(View.GONE);
+        messagesLayout.setVisibility(View.GONE);
         newsLayout.setVisibility(View.VISIBLE);
     }
 

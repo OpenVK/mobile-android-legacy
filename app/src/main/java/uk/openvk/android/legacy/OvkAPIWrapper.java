@@ -35,6 +35,7 @@ import javax.net.ssl.SSLException;
 
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthenticationActivity;
+import uk.openvk.android.legacy.activities.ConversationActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.activities.MainSettingsActivity;
 import uk.openvk.android.legacy.activities.NewPostActivity;
@@ -127,7 +128,13 @@ public class OvkAPIWrapper {
         @Override
         public void run() {
             try {
-                if(api_method.length() > 0) {
+                if(api_method.equals("Account.getProfileInfo")) {
+                    if(arguments != null && arguments.length() > 0) {
+                        Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nMethod: " + api_method + "\r\nArguments: [CONFIDENTIAL]" );
+                    } else {
+                        Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nMethod: " + api_method + "\r\nArguments: (without arguments)");
+                    }
+                } else if(api_method.length() > 0) {
                     if(arguments != null && arguments.length() > 0) {
                         Log.d("OpenVK Legacy", "Connecting to " + server + "...\r\nMethod: " + api_method + "\r\nArguments: " + arguments);
                     } else {
@@ -163,7 +170,13 @@ public class OvkAPIWrapper {
                     while ((response = in.readLine()) != null) {
                         sleep(20);
                         if (response.length() > 0) {
-                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                            if(response.contains("access_token")) {
+                                Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response.substring(0, response.indexOf("access_token") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                            } else if(response.contains("password")) {
+                                Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response.substring(0, response.indexOf("password") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                            } else {
+                                Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response + "]");
+                            }
                             response_sb.append(response).append("\n");
                         }
                     }
@@ -193,7 +206,13 @@ public class OvkAPIWrapper {
                             response_sb.append(response).append("\n");
                         }
                         jsonResponseString = response_sb.toString();
-                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                        if(response_sb.toString().contains("\"access_token\"")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"access_token\"") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                        } else if(response_sb.toString().contains("\"password\"")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"password\"") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                        } else {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                        }
                         jsonResponse = new JSONObject(response_sb.toString());
                         response_sb = new StringBuilder();
                         httpConnection.getErrorStream().close();
@@ -276,11 +295,17 @@ public class OvkAPIWrapper {
                 if(status == 200) {
                     in = new BufferedReader(new InputStreamReader(httpsConnection.getInputStream(), "utf-8"));
                     while ((response = in.readLine()) != null) {
-                        if (response.length() > 0) {
-                            response_sb.append(response).append("\n");
-                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
-                        }
                         sleep(20);
+                        if (response.length() > 0) {
+                            if(response.contains("\"access_token\"")) {
+                                Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response.substring(0, response.indexOf("\"access_token\"") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                            } else if(response.contains("\"password\"")) {
+                                Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response.substring(0, response.indexOf("\"password\"") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                            } else {
+                                Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response + "]");
+                            }
+                            response_sb.append(response).append("\n");
+                        }
                     }
                     jsonResponseString = response_sb.toString();
                     jsonResponse = new JSONObject(response_sb.toString());
@@ -300,7 +325,13 @@ public class OvkAPIWrapper {
                             response_sb.append(response).append("\n");
                         }
                         jsonResponseString = response_sb.toString();
-                        Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                        if(response_sb.toString().contains("\"access_token\"")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"access_token\"") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                        } else if(response_sb.toString().contains("\"password\"")) {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString().substring(0, response_sb.toString().indexOf("\"password\"") + "\"access_token\"".length()) + "... | CONFIDENTIAL]");
+                        } else {
+                            Log.d("OpenVK Legacy", "Getting response from " + server + ": [" + response_sb.toString() + "]");
+                        }
                         jsonResponse = new JSONObject(response_sb.toString());
                         response_sb = new StringBuilder();
                         httpsConnection.getErrorStream().close();
@@ -405,6 +436,15 @@ public class OvkAPIWrapper {
             bundle.putString("Error_message", connectionErrorString);
             msg.setData(bundle);
             SearchActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            Message msg = handler.obtainMessage(SearchActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            bundle.putString("Error_message", connectionErrorString);
+            msg.setData(bundle);
+            ConversationActivity.handler.sendMessage(msg);
         }
     }
 
@@ -492,30 +532,34 @@ public class OvkAPIWrapper {
                 Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
-                if(bitmap != null) {
-                    int width = bitmap.getWidth();
-                    int height = bitmap.getHeight();
-                    float scaleWidth = 0;
-                    float scaleHeight = 0;
-                    if(width > 1280 && height > 1280) {
-                        if(height>width){
-                            scaleWidth = ((float) 960) / width;
-                            scaleHeight = ((float) 1280) / height;
-                        }
+                try {
+                    Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                    if (bitmap != null) {
+                        int width = bitmap.getWidth();
+                        int height = bitmap.getHeight();
+                        float scaleWidth = 0;
+                        float scaleHeight = 0;
+                        if (width > 1280 && height > 1280) {
+                            if (height > width) {
+                                scaleWidth = ((float) 960) / width;
+                                scaleHeight = ((float) 1280) / height;
+                            }
 
-                        if(width>height){
-                            scaleWidth = ((float) 1280) / width;
-                            scaleHeight = ((float) 960) / height;
-                        }
+                            if (width > height) {
+                                scaleWidth = ((float) 1280) / width;
+                                scaleHeight = ((float) 960) / height;
+                            }
 
-                        Matrix matrix = new Matrix();
-                        matrix.postScale(scaleWidth, scaleHeight);
-                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                            Matrix matrix = new Matrix();
+                            matrix.postScale(scaleWidth, scaleHeight);
+                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                        }
                     }
+                    sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
+                    total = 0;
+                } catch (OutOfMemoryError outOfMemoryError) {
+                    outOfMemoryError.printStackTrace();
                 }
-                sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
-                total = 0;
             }
         }
 

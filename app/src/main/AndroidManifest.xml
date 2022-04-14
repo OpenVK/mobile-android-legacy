@@ -82,5 +82,10 @@
             android:label="@string/search_global"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
+        <activity
+            android:name=".activities.ConversationActivity"
+            android:label="@string/messages"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+        </activity>
     </application>
 </manifest>
