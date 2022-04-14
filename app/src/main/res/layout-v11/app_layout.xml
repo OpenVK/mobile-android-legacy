@@ -90,6 +90,15 @@
 
         </uk.openvk.android.legacy.layouts.FriendsLayout>
 
+        <uk.openvk.android.legacy.layouts.ConversationsLayout
+            android:id="@+id/messages_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:visibility="gone">
+
+        </uk.openvk.android.legacy.layouts.ConversationsLayout>
+
         <uk.openvk.android.legacy.layouts.SlidingMenuLayout
             android:id="@+id/sliding_menu_layout"
             android:layout_width="300dp"
