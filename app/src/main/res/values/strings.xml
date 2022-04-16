@@ -1124,4 +1124,5 @@
 		<item>Subscriptions</item>
 		<item>All news</item>
 	</string-array>
+	<string name="err_picture_not_enough_memory_text">Not enough memory for image processing. Close all unused applications and try again.</string>
 </resources>

@@ -1183,4 +1183,5 @@
         <item>Подписки</item>
         <item>Все новости</item>
     </string-array>
+    <string name="err_picture_not_enough_memory_text">Недостаточно памяти для обработки изображений. Закройте все неиспользуемые приложения и повторите попытку.</string>
 </resources>
