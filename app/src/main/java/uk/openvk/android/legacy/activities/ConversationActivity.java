@@ -11,7 +11,6 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -23,13 +22,13 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.TimerTask;
 
 import uk.openvk.android.legacy.OvkAPIWrapper;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.layouts.ConversationPanel;
-import uk.openvk.android.legacy.list_adapters.ConversationsListAdapter;
 import uk.openvk.android.legacy.list_adapters.MessagesListAdapter;
 import uk.openvk.android.legacy.list_items.MessagesListItem;
 
@@ -50,8 +49,10 @@ public class ConversationActivity extends Activity {
     public int peer_online;
     public JSONObject json_response;
     public ArrayList<MessagesListItem> messagesListArray;
+    public MessagesListAdapter messagesListAdapter;
     public UpdateUITask updateUITask;
     public OvkAPIWrapper openVK_API;
+    public String lastSendedMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,16 +152,18 @@ public class ConversationActivity extends Activity {
 
         final ConversationPanel conversationPanel = findViewById(R.id.conversation_panel);
         final Button send_btn = conversationPanel.findViewById(R.id.send_btn);
+        send_btn.setEnabled(false);
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    openVK_API.sendMethod("Messages.send", "peer_id=" + peer_id + "&message=" + ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString());
+                    openVK_API.sendMethod("Messages.send", "peer_id=" + peer_id + "&message=" + URLEncoder.encode(((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString(), "UTF-8"));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                messagesListArray.add(new MessagesListItem(false, false, 0, ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString()));
-                MessagesListAdapter messagesListAdapter = new MessagesListAdapter(ConversationActivity.this, messagesListArray);
+                lastSendedMsg = ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
+                messagesListArray.add(new MessagesListItem(false, false, (int)(System.currentTimeMillis() / 1000), lastSendedMsg, ConversationActivity.this));
+                messagesListAdapter = new MessagesListAdapter(ConversationActivity.this, messagesListArray);
                 ListView messagesListView = findViewById(R.id.conversation_msgs_listview);
                 messagesListView.setAdapter(messagesListAdapter);
                 ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
@@ -202,6 +205,22 @@ public class ConversationActivity extends Activity {
                     if (state.equals("getting_response")) {
                         if(send_request.equals("/method/Messages.getHistory")) {
                             loadChatHistory();
+                        } else if (send_request.equals("/method/Messages.send")) {
+                            try {
+                                if (json_response.has("error_code")) {
+                                        for(int message_index = 0; message_index < messagesListArray.size(); message_index++) {
+                                            if(messagesListArray.get(message_index).text.equals(lastSendedMsg)) {
+                                                MessagesListItem messagesListItem = messagesListArray.get(message_index);
+                                                messagesListItem.isError = true;
+                                                messagesListArray.set(message_index, messagesListItem);
+                                                messagesListAdapter = new MessagesListAdapter(ConversationActivity.this, messagesListArray);
+                                                ((ListView) findViewById(R.id.conversation_msgs_listview)).setAdapter(messagesListAdapter);
+                                            }
+                                        }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -222,10 +241,11 @@ public class ConversationActivity extends Activity {
                     } else {
                         isIncoming = false;
                     }
-                    messagesListArray.add(new MessagesListItem(isIncoming, false, json_response.getJSONObject("response").getJSONArray("items").getJSONObject(message_index).getInt("date"), json_response.getJSONObject("response").getJSONArray("items").getJSONObject(message_index).getString("text")));
+                    messagesListArray.add(new MessagesListItem(isIncoming, false, json_response.getJSONObject("response").getJSONArray("items").getJSONObject(message_index).getInt("date"),
+                            json_response.getJSONObject("response").getJSONArray("items").getJSONObject(message_index).getString("text"), ConversationActivity.this));
                 }
             }
-            MessagesListAdapter messagesListAdapter = new MessagesListAdapter(ConversationActivity.this, messagesListArray);
+            messagesListAdapter = new MessagesListAdapter(ConversationActivity.this, messagesListArray);
             ListView messagesListView = findViewById(R.id.conversation_msgs_listview);
             messagesListView.setAdapter(messagesListAdapter);
         } catch (JSONException e) {

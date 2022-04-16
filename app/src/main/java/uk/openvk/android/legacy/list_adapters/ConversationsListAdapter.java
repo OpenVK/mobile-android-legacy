@@ -58,6 +58,7 @@ public class ConversationsListAdapter extends BaseAdapter {
 
         ConversationsListItem item = getConversationItem(position);
         ((TextView) view.findViewById(R.id.conversation_title)).setText(item.title);
+        ((TextView) view.findViewById(R.id.conversation_time)).setText(item.lastMsgTimestamp);
         if(item.lastMsgText.length() > 0) {
             ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.conversation_text)).setText(item.lastMsgText);

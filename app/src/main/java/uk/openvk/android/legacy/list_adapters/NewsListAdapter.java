@@ -100,8 +100,35 @@ public class NewsListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if (((AppActivity) ctx).menu_is_closed == false) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    }
+                }
                 return super.onTouch(v, event);
+            }
+        });
+
+        ((ImageView) view.findViewById(R.id.post_photo)).setOnTouchListener(new SwipeListener(ctx) {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if (((AppActivity) ctx).menu_is_closed == false) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    }
+                }
+                return super.onTouch(v, event);
+            }
+        });
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if (((AppActivity) ctx).menu_is_closed == false) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    }
+                }
             }
         });
 
@@ -120,6 +147,9 @@ public class NewsListAdapter extends BaseAdapter {
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
                     ((AppActivity) ctx).hideSelectedItemBackground(position);
+                    if(((AppActivity) ctx).menu_is_closed == false) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    }
                 } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
                     ((ProfileIntentActivity) ctx).hideSelectedItemBackground(position);
                 }
@@ -134,7 +164,11 @@ public class NewsListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).addLike(position, "post", view);
+                    if(((AppActivity) ctx).menu_is_closed == false) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    } else {
+                        ((AppActivity) ctx).addLike(position, "post", view);
+                    }
                 } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
                     ((ProfileIntentActivity) ctx).addLike(position, "post", view);
                 }
@@ -144,12 +178,20 @@ public class NewsListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 if(item.owner_id > 0 && ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).getOwnerProfile(item);
+                    if(((AppActivity) ctx).menu_is_closed == false) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    } else {
+                        ((AppActivity) ctx).getOwnerProfile(item);
+                    }
                 }
             }
         });
 
         return view;
+    }
+
+    public void setArray(ArrayList<NewsListItem> array) {
+        objects = array;
     }
 
     public class ViewHolder {

@@ -51,6 +51,7 @@ import uk.openvk.android.legacy.OvkAPIWrapper;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.items.GroupPostInfo;
 import uk.openvk.android.legacy.items.NewsItemCountersInfo;
+import uk.openvk.android.legacy.items.ProfileItem;
 import uk.openvk.android.legacy.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
 import uk.openvk.android.legacy.layouts.NewsLayout;
@@ -106,6 +107,7 @@ public class ProfileIntentActivity extends Activity {
     public ArrayList<NewsItemCountersInfo> newsItemCountersInfoArray;
     public ArrayList<NewsItemCountersInfo> wallItemCountersInfoArray;
     public ArrayList<Bitmap> attachments_photo;
+    public ProfileItem profileItem;
     public TabHost tabHost;
     public boolean about_profile_opened;
     public static Handler handler;
@@ -178,6 +180,13 @@ public class ProfileIntentActivity extends Activity {
         server = sharedPreferences.getString("server", "");
 
         profileLayout = findViewById(R.id.profile_layout);
+
+        profileLayout.findViewById(R.id.send_direct_msg).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getConversationFromProfile();
+            }
+        });
 
         if(auth_token == null) {
             auth_token = sharedPreferences.getString("auth_token", "");
@@ -473,6 +482,16 @@ public class ProfileIntentActivity extends Activity {
         startActivity(intent);
     }
 
+    public void getConversationFromProfile() {
+        if(profileItem != null) {
+            Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
+            intent.putExtra("peer_id", profileItem.id);
+            intent.putExtra("conv_title", profileItem.name);
+            intent.putExtra("online", profileItem.online);
+            startActivity(intent);
+        }
+    }
+
     public void onSimpleListItemClicked(int position) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             if(position == 0) {
@@ -627,6 +646,7 @@ public class ProfileIntentActivity extends Activity {
                                             ex.printStackTrace();
                                         }
                                     }
+                                    profileItem = new ProfileItem(json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name"), profile_id, json_response.getJSONArray("response").getJSONObject(0).getInt("online"));
                                     String name = json_response.getJSONArray("response").getJSONObject(0).getString("first_name") + " " + json_response.getJSONArray("response").getJSONObject(0).getString("last_name") + "  ";
                                     if (tabHost.getTabWidget().getTabCount() > 1) {
                                         View view = tabHost.getTabWidget().getChildAt(1);

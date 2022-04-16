@@ -44,21 +44,8 @@ public class SwipeListener implements View.OnTouchListener {
                 float angle;
                 angle = (float) Math.toDegrees(Math.atan2(e1.getY() - e2.getY(), e2.getX() - e1.getX()));
                 Log.d("Swipe", "Angle: " + angle);
-
-                if (angle >= 125 && angle <= 180 && ((AppActivity) ctx).getSlidingMenuState() == false) {
-                    //right to left swipe
-                    if(((AppActivity) ctx).getAnimationState() == true) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    }
-                    return super.onScroll(e1, e2, distanceX, distanceY);
-                }
-
-                if (angle >= -10 && angle <= 45 && ((AppActivity) ctx).getSlidingMenuState() == true) {
-                    //right to left swipe
-                    if(((AppActivity) ctx).getAnimationState() == true ) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    }
-                    return super.onScroll(e1, e2, distanceX, distanceY);
+                if(((AppActivity) ctx).menu_is_closed == false) {
+                    ((AppActivity) ctx).openSlidingMenu();
                 }
             } catch(Exception ex) {
 
@@ -73,15 +60,17 @@ public class SwipeListener implements View.OnTouchListener {
                 angle = (float) Math.toDegrees(Math.atan2(e1.getY() - e2.getY(), e2.getX() - e1.getX()));
                 Log.d("Swipe", "Angle: " + angle);
 
-                if (angle >= 135 && angle < 180) {
+                if ((angle >= 125 && angle <= 180) || (angle >= -170)) {
                     //right to left swipe
-                    ((AppActivity) ctx).openSlidingMenu();
+                    if(((AppActivity) ctx).getAnimationState() == true) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    }
                     return super.onFling(e1, e2, velocityX, velocityY);
-                }
-
-                if (angle >= -135 && angle < -180) {
+                } else if (angle >= -10 && angle <= 45) {
                     //right to left swipe
-                    ((AppActivity) ctx).openSlidingMenu();
+                    if(((AppActivity) ctx).getAnimationState() == true ) {
+                        ((AppActivity) ctx).openSlidingMenu();
+                    }
                     return super.onFling(e1, e2, velocityX, velocityY);
                 }
             } catch(Exception ex) {

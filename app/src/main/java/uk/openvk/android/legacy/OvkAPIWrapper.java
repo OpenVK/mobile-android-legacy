@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,6 +147,7 @@ public class OvkAPIWrapper {
                 String url_addr;
                 url_addr = "http://" + server + send_request;
                 URL url = new URL(url_addr);
+                HttpURLConnection httpConnection;
                 httpConnection = (HttpURLConnection) url.openConnection();
                 isConnected = true;
                 httpConnection.setRequestMethod("GET");
@@ -274,6 +276,7 @@ public class OvkAPIWrapper {
                 String url_addr;
                 url_addr = "https://" + server + send_request;
                 URL url = new URL(url_addr);
+                HttpsURLConnection httpsConnection;
                 httpsConnection = (HttpsURLConnection) url.openConnection();
                 httpsConnection.setRequestMethod("GET");
                 httpsConnection.setRequestProperty("Host", server);
@@ -455,6 +458,7 @@ public class OvkAPIWrapper {
         public long total = 0;
         public int elements_id = 0;
         public String from_control;
+        public String contentType;
 
         @Override
         protected String doInBackground(String... _url) {
@@ -470,13 +474,13 @@ public class OvkAPIWrapper {
                     httpRawConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*");
                     httpRawConnection.setRequestProperty("Authorization", "Basic");
                     httpRawConnection.setRequestProperty("Connection", "keep-alive");
-                    httpRawConnection.setConnectTimeout(240000);
-                    httpRawConnection.setReadTimeout(240000);
+                    httpRawConnection.setConnectTimeout(60000);
+                    httpRawConnection.setReadTimeout(60000);
                     httpRawConnection.connect();
                     responseCode = httpRawConnection.getResponseCode();
                     Log.d("OpenVK Legacy", "Response code: " + responseCode);
                     if (responseCode == 200) {
-                        String contentType = httpRawConnection.getContentType();
+                        contentType = httpRawConnection.getContentType();
                         int contentLength = httpRawConnection.getContentLength();
                         InputStream input = new BufferedInputStream(url.openStream());
                         OutputStream output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
@@ -491,11 +495,9 @@ public class OvkAPIWrapper {
                             } else if (contentType.equals("image/png")) {
                                 downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png";
                                 output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png");
-                            } else if (!new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).exists()) {
+                            } else {
                                 downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1];
                                 output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
-                            } else {
-                                Log.w("OpenVK Legacy", "Downloaded \"" + _url[1] + "\" file already exists in cache.");
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -503,12 +505,47 @@ public class OvkAPIWrapper {
 
                         byte data[] = new byte[1024];
 
-                        while ((count = input.read(data)) != -1) {
-                            total += count;
-                            output.write(data, 0, count);
+                        if(contentType.equals("image/jpeg") && !new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg").exists()) {
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                        } else if(contentType.equals("image/png") && !new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png").exists()) {
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                        } else if(!new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).exists()) {
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                        } else {
+                            if(contentType.equals("image/jpeg") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg").length()) {
+                                while ((count = input.read(data)) != -1) {
+                                    total += count;
+                                    output.write(data, 0, count);
+                                }
+                                output.flush();
+                            } else if(contentType.equals("image/jpeg") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png").length()) {
+                                while ((count = input.read(data)) != -1) {
+                                    total += count;
+                                    output.write(data, 0, count);
+                                }
+                                output.flush();
+                            } else if(contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).length()) {
+                                while ((count = input.read(data)) != -1) {
+                                    total += count;
+                                    output.write(data, 0, count);
+                                }
+                                output.flush();
+                            } else {
+                                Log.w("OpenVK Legacy", "Downloaded \"" + _url[1] + "\" file already exists in cache.");
+                            }
                         }
-
-                        output.flush();
                         output.close();
                         input.close();
                     } else if(responseCode == 301) {
@@ -528,37 +565,43 @@ public class OvkAPIWrapper {
                 httpsRawDownloader.execute(raw_url, file_name);
                 httpsRawDownloader.setParameters(elements_id, from_control);
             } else if(responseCode == 200) {
-                state = "getting_picture";
                 Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                try {
-                    Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
-                    if (bitmap != null) {
-                        int width = bitmap.getWidth();
-                        int height = bitmap.getHeight();
-                        float scaleWidth = 0;
-                        float scaleHeight = 0;
-                        if (width > 1280 && height > 1280) {
-                            if (height > width) {
-                                scaleWidth = ((float) 960) / width;
-                                scaleHeight = ((float) 1280) / height;
-                            }
+                if(contentType.equals("image/jpeg") || contentType.equals("image/png")) {
+                    state = "getting_picture";
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    try {
+                        Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                        if (bitmap != null) {
+                            int width = bitmap.getWidth();
+                            int height = bitmap.getHeight();
+                            float scaleWidth = 0;
+                            float scaleHeight = 0;
+                            if (width > 1280 && height > 1280) {
+                                if (height > width) {
+                                    scaleWidth = ((float) 960) / width;
+                                    scaleHeight = ((float) 1280) / height;
+                                }
 
-                            if (width > height) {
-                                scaleWidth = ((float) 1280) / width;
-                                scaleHeight = ((float) 960) / height;
-                            }
+                                if (width > height) {
+                                    scaleWidth = ((float) 1280) / width;
+                                    scaleHeight = ((float) 960) / height;
+                                }
 
-                            Matrix matrix = new Matrix();
-                            matrix.postScale(scaleWidth, scaleHeight);
-                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                                Matrix matrix = new Matrix();
+                                matrix.postScale(scaleWidth, scaleHeight);
+                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                            }
                         }
+                        sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
+                        total = 0;
+                    } catch (OutOfMemoryError outOfMemoryError) {
+                        outOfMemoryError.printStackTrace();
+                        state = "raw_error";
+                        Toast.makeText(ctx, ctx.getResources().getString(R.string.err_picture_not_enough_memory_text), Toast.LENGTH_LONG).show();
+                    } catch (Exception ex) {
+
                     }
-                    sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
-                    total = 0;
-                } catch (OutOfMemoryError outOfMemoryError) {
-                    outOfMemoryError.printStackTrace();
                 }
             }
         }
@@ -613,25 +656,57 @@ public class OvkAPIWrapper {
                             } else if (contentType.equals("image/png")) {
                                 downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png";
                                 output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png");
-                            } else if (!new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).exists()) {
+                            } else {
                                 downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1];
                                 output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
-                            } else {
-                                Log.w("OpenVK Legacy", "Downloaded \"" + _url[1] + "\" file already exists in cache.");
                             }
-
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
 
                         byte data[] = new byte[1024];
 
-                        while ((count = input.read(data)) != -1) {
-                            total += count;
-                            output.write(data, 0, count);
+                        if(contentType.equals("image/jpeg") && !new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg").exists()) {
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                        } else if(contentType.equals("image/png") && !new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png").exists()) {
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                        } else if(!new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).exists()) {
+                            while ((count = input.read(data)) != -1) {
+                                total += count;
+                                output.write(data, 0, count);
+                            }
+                            output.flush();
+                        } else {
+                            if(contentType.equals("image/jpeg") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg").length()) {
+                                while ((count = input.read(data)) != -1) {
+                                    total += count;
+                                    output.write(data, 0, count);
+                                }
+                                output.flush();
+                            } else if(contentType.equals("image/jpeg") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png").length()) {
+                                while ((count = input.read(data)) != -1) {
+                                    total += count;
+                                    output.write(data, 0, count);
+                                }
+                                output.flush();
+                            } else if(contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]).length()) {
+                                while ((count = input.read(data)) != -1) {
+                                    total += count;
+                                    output.write(data, 0, count);
+                                }
+                                output.flush();
+                            } else {
+                                Log.w("OpenVK Legacy", "Downloaded \"" + _url[1] + "\" file already exists in cache.");
+                            }
                         }
-
-                        output.flush();
                         output.close();
                         input.close();
                     } else if (responseCode == 301) {

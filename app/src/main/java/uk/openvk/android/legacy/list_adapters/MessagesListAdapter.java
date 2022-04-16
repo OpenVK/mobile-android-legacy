@@ -12,11 +12,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.ConversationActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.layouts.IncomingMessageLayout;
+import uk.openvk.android.legacy.layouts.MessagesDateSeparator;
+import uk.openvk.android.legacy.layouts.OutcomingMessageLayout;
 import uk.openvk.android.legacy.list_items.FriendsListItem;
 import uk.openvk.android.legacy.list_items.MessagesListItem;
 import uk.openvk.android.legacy.listeners.SwipeListener;
@@ -58,23 +63,55 @@ public class MessagesListAdapter extends BaseAdapter {
         MessagesListItem item = getMessagesListItem(position);
         View view = convertView;
         if (view == null) {
+            view = inflater.inflate(R.layout.message_item, parent, false);
+            view.findViewById(R.id.incoming_msg).setVisibility(View.GONE);
+            Date startOfDay = new Date(TimeUnit.SECONDS.toMillis(item.timestamp_int));
+            startOfDay.setHours(0);
+            startOfDay.setMinutes(0);
+            startOfDay.setSeconds(0);
+            Date prev_startOfDay = null;
+            if(position > 0) {
+                prev_startOfDay = new Date(TimeUnit.SECONDS.toMillis(getMessagesListItem(position - 1).timestamp_int));
+                prev_startOfDay.setHours(0);
+                prev_startOfDay.setMinutes(0);
+                prev_startOfDay.setSeconds(0);
+            }
+            if(prev_startOfDay != null)
+            Log.d("StartOfDay", "Comparision result: " + startOfDay.compareTo(prev_startOfDay));
+            ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
             if(item.isIncoming) {
-                Log.d("OpenVK Legacy", "Boolean: " + item.isIncoming);
-                view = inflater.inflate(R.layout.message_in, parent, false);
+                ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
+                ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
             } else {
-                view = inflater.inflate(R.layout.message_out, parent, false);
+                ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.GONE);
+                ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.VISIBLE);
             }
         }
 
-        if(((ImageView) view.findViewById(R.id.msg_failed)) != null) {
-            ((ImageView) view.findViewById(R.id.msg_failed)).setVisibility(View.GONE);
+        if(!item.isError) {
+            ((ImageView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_failed)).setVisibility(View.GONE);
         }
 
-        if((ProgressBar) view.findViewById(R.id.msg_progress) != null) {
-            ((ProgressBar) view.findViewById(R.id.msg_progress)).setVisibility(View.GONE);
+        ((ProgressBar) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.GONE);
+
+        if(item.text.length() > 12) {
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+        } else {
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
         }
 
-        ((TextView) view.findViewById(R.id.msg_text)).setText(item.text);
+        ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+        ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
+        ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
+        ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+        ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
+        ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
 
         view.setOnTouchListener(new SwipeListener(ctx) {
             @Override
@@ -93,6 +130,10 @@ public class MessagesListAdapter extends BaseAdapter {
         });
 
         return view;
+    }
+
+    public void setArray(ArrayList<MessagesListItem> array) {
+        objects = array;
     }
 
     public class ViewHolder {
