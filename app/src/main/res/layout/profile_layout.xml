@@ -37,7 +37,7 @@
                 </uk.openvk.android.legacy.layouts.AboutProfileLayout>
 
                 <Button
-                    android:id="@+id/send_direct_msg2"
+                    android:id="@+id/send_direct_msg"
                     style="@style/BlueButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
