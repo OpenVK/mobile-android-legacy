@@ -761,12 +761,6 @@ public class OvkAPIWrapper {
                         Matrix matrix = new Matrix();
                         matrix.postScale(scaleWidth, scaleHeight);
                         cropped_bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
-                        bitmap.recycle();
-                        bitmap = null;
-                    } else {
-                        cropped_bitmap = bitmap;
-                        bitmap.recycle();
-                        bitmap = null;
                     }
                 }
                 sendRawMessageToParent(downloaded_file_path, elements_id, from_control, cropped_bitmap);
