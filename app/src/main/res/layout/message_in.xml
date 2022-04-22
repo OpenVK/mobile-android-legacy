@@ -35,14 +35,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <uk.openvk.android.legacy.layouts.TightTextView
                     android:id="@+id/msg_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:paddingLeft="7dip"
                     android:paddingTop="2dip"
-                    android:paddingRight="2dip"
+                    android:paddingRight="4dip"
                     android:paddingBottom="2dip"
                     android:text="TextViewf"
                     android:textColor="#000"
@@ -52,7 +52,7 @@
                     android:id="@+id/msg_time_right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center|right"
+                    android:layout_gravity="bottom|right"
                     android:gravity="left"
                     android:paddingLeft="4dip"
                     android:paddingRight="4dip"

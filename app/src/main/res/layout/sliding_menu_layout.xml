@@ -55,6 +55,7 @@
         android:layout_marginRight="0dp"
         android:divider="@android:drawable/divider_horizontal_textfield"
         android:entries="@array/leftmenu"
+        android:fitsSystemWindows="true"
         android:theme="@style/SlidingMenu">
 
     </ListView>

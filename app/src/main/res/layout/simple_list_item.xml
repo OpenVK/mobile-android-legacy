@@ -15,4 +15,5 @@
         android:text="Item title"
         android:textColor="@color/window_bg_black"
         android:textSize="16sp" />
+
 </LinearLayout>
