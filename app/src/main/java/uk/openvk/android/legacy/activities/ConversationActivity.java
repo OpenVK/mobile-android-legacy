@@ -3,6 +3,8 @@ package uk.openvk.android.legacy.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,10 +15,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -75,6 +81,8 @@ public class ConversationActivity extends Activity {
             peer_online = savedInstanceState.getInt("online");
         }
 
+        //initKeyboardListener();
+
         auth_token = getSharedPreferences("instance", 0).getString("auth_token", "");
 
         messagesListArray = new ArrayList<MessagesListItem>();
@@ -89,6 +97,9 @@ public class ConversationActivity extends Activity {
             getActionBar().setTitle(conv_title);
             if(peer_online > 0) {
                 getActionBar().setSubtitle(R.string.online);
+            }
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                resizeTranslucentLayout();
             }
         } else {
             final TextView titlebar_title = findViewById(R.id.titlebar_title);
@@ -191,6 +202,14 @@ public class ConversationActivity extends Activity {
         });
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
+    }
+
     public void hideSelectedItemBackground(int position) {
         ListView messages_listview = findViewById(R.id.conversation_msgs_listview);
         messages_listview.setBackgroundColor(getResources().getColor(R.color.transparent));
@@ -225,6 +244,28 @@ public class ConversationActivity extends Activity {
                     }
                 }
             });
+        }
+    }
+
+    private void resizeTranslucentLayout() {
+        try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            int actionbar_height = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            if (statusbar_height > 0) {
+                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height) + actionbar_height;
+            }
+            statusbarView.setLayoutParams(ll_layoutParams);
+        } catch (Exception ex) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            statusbarView.setVisibility(View.GONE);
+            ex.printStackTrace();
         }
     }
 

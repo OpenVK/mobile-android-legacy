@@ -459,6 +459,7 @@ public class OvkAPIWrapper {
         public int elements_id = 0;
         public String from_control;
         public String contentType;
+        public Bitmap bitmap;
 
         @Override
         protected String doInBackground(String... _url) {
@@ -569,9 +570,17 @@ public class OvkAPIWrapper {
                 if(contentType.equals("image/jpeg") || contentType.equals("image/png")) {
                     state = "getting_picture";
                     BitmapFactory.Options options = new BitmapFactory.Options();
+                    final Runtime runtime = Runtime.getRuntime();
+                    final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                    final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                    final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    if(maxHeapSizeInMB < 256) {
+                        options.inSampleSize = 3;
+                    }
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     try {
-                        Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                        bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
                         if (bitmap != null) {
                             int width = bitmap.getWidth();
                             int height = bitmap.getHeight();
@@ -598,7 +607,6 @@ public class OvkAPIWrapper {
                     } catch (OutOfMemoryError outOfMemoryError) {
                         outOfMemoryError.printStackTrace();
                         state = "raw_error";
-                        Toast.makeText(ctx, ctx.getResources().getString(R.string.err_picture_not_enough_memory_text), Toast.LENGTH_LONG).show();
                     } catch (Exception ex) {
 
                     }
@@ -724,8 +732,16 @@ public class OvkAPIWrapper {
             if(responseCode == 200) {
                 state = "getting_picture";
                 BitmapFactory.Options options = new BitmapFactory.Options();
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                if(maxHeapSizeInMB < 256) {
+                    options.inSampleSize = 2;
+                }
                 Bitmap bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                Bitmap cropped_bitmap = null;
                 if(bitmap != null) {
                     int width = bitmap.getWidth();
                     int height = bitmap.getHeight();
@@ -744,10 +760,16 @@ public class OvkAPIWrapper {
 
                         Matrix matrix = new Matrix();
                         matrix.postScale(scaleWidth, scaleHeight);
-                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                        cropped_bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+                        bitmap.recycle();
+                        bitmap = null;
+                    } else {
+                        cropped_bitmap = bitmap;
+                        bitmap.recycle();
+                        bitmap = null;
                     }
                 }
-                sendRawMessageToParent(downloaded_file_path, elements_id, from_control, bitmap);
+                sendRawMessageToParent(downloaded_file_path, elements_id, from_control, cropped_bitmap);
                 Log.d("OpenVK Legacy", "Downloaded " + total + " bytes!");
                 total = 0;
             }
@@ -876,5 +898,9 @@ public class OvkAPIWrapper {
                 sslSocketThread.start();
             }
         }
+    }
+
+    public boolean getConnectionState() {
+        return isConnected;
     }
 }

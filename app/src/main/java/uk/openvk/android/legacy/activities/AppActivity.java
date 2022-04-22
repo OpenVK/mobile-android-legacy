@@ -6,8 +6,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +25,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.util.Config;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,12 +34,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -179,7 +186,10 @@ public class AppActivity extends Activity {
         } else {
             auth_token = (String) savedInstanceState.getSerializable("auth_token");
         }
-
+        Window window = getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
         attachments_photo = new ArrayList<Bitmap>();
 
         handler = new Handler() {
@@ -439,7 +449,6 @@ public class AppActivity extends Activity {
                 getActionBar().setHomeButtonEnabled(true);
                 getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
             } else {
-                Window window = getWindow();
                 View v = window.getDecorView();
                 int resId = getResources().getIdentifier("action_bar_container", "id", "android");
                 View actionBar = v.findViewById(resId);
@@ -477,29 +486,28 @@ public class AppActivity extends Activity {
             });
         }
         createSlidingMenu();
-        SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuItemArray);
-        ((ListView) slidingMenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
         ((ListView) slidingMenuLayout.findViewById(R.id.menu_view)).setBackgroundColor(getResources().getColor(R.color.transparent));
         ((ListView) slidingMenuLayout.findViewById(R.id.menu_view)).setCacheColorHint(getResources().getColor(R.color.transparent));
         ((LinearLayout) slidingMenuLayout.findViewById(R.id.profile_menu_ll)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    MenuItem create_post = activity_menu.findItem(R.id.newpost);
-                    create_post.setVisible(true);
-                }
-                SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
-                editor.commit();
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
-                editor.putString("currentLayout", "ProfileLayout");
-                editor.commit();
-                ProfileLayout profileLayout = findViewById(R.id.profile_layout);
-                if(connection_status == false) {
+                if(openVK_API.getConnectionState() == false) {
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        MenuItem create_post = activity_menu.findItem(R.id.newpost);
+                        create_post.setVisible(true);
+                    }
+                    SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                    editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                    editor.commit();
+                    global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                    editor.putString("currentLayout", "ProfileLayout");
+                    editor.commit();
+                    ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                     address_intent = getIntent();
                     newsLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.GONE);
                     friendsLayout.setVisibility(View.GONE);
+                    messagesLayout.setVisibility(View.GONE);
                     LinearLayout progress_ll = findViewById(R.id.news_progressll);
                     progress_ll.setVisibility(View.VISIBLE);
                     LinearLayout error_ll = findViewById(R.id.error_ll);
@@ -522,25 +530,27 @@ public class AppActivity extends Activity {
                             ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
                         }
                     }
+                    openSlidingMenu();
+                } else {
+                    Toast.makeText(AppActivity.this, getResources().getString(R.string.please_wait_network), Toast.LENGTH_LONG).show();
                 }
-                openSlidingMenu();
             }
         });
         ((TextView) slidingMenuLayout.findViewById(R.id.profile_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
-                    MenuItem create_post = activity_menu.findItem(R.id.newpost);
-                    create_post.setVisible(true);
-                }
-                global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
-                SharedPreferences.Editor editor = global_sharedPreferences.edit();
-                editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
-                editor.commit();
-                editor.putString("currentLayout", "ProfileLayout");
-                editor.commit();
-                ProfileLayout profileLayout = findViewById(R.id.profile_layout);
-                if(connection_status == false) {
+                if(openVK_API.getConnectionState() == false) {
+                    if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+                        MenuItem create_post = activity_menu.findItem(R.id.newpost);
+                        create_post.setVisible(true);
+                    }
+                    global_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AppActivity.this);
+                    SharedPreferences.Editor editor = global_sharedPreferences.edit();
+                    editor.putString("previousLayout", global_sharedPreferences.getString("currentLayout", ""));
+                    editor.commit();
+                    editor.putString("currentLayout", "ProfileLayout");
+                    editor.commit();
+                    ProfileLayout profileLayout = findViewById(R.id.profile_layout);
                     address_intent = getIntent();
                     newsLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.GONE);
@@ -568,8 +578,10 @@ public class AppActivity extends Activity {
                             ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
                         }
                     }
+                    openSlidingMenu();
+                } else {
+                    Toast.makeText(AppActivity.this, getResources().getString(R.string.please_wait_network), Toast.LENGTH_LONG).show();
                 }
-                openSlidingMenu();
             }
         });
         post_author_ids = new ArrayList<Integer>();
@@ -695,6 +707,53 @@ public class AppActivity extends Activity {
         profile_name_tv.setTextColor(Color.WHITE);
     }
 
+    private void initKeyboardListener() {
+        final int MIN_KEYBOARD_HEIGHT_PX = 150;
+        final View decorView = getWindow().getDecorView();
+        decorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            private final Rect windowVisibleDisplayFrame = new Rect();
+            private int lastVisibleDecorViewHeight;
+
+            @Override
+            public void onGlobalLayout() {
+                decorView.getWindowVisibleDisplayFrame(windowVisibleDisplayFrame);
+                final int visibleDecorViewHeight = windowVisibleDisplayFrame.height();
+
+                if (lastVisibleDecorViewHeight != 0) {
+                    ImageView auth_logo = findViewById(R.id.auth_logo);
+                    if (lastVisibleDecorViewHeight > visibleDecorViewHeight + MIN_KEYBOARD_HEIGHT_PX) {
+                        auth_logo.setVisibility(View.GONE);
+                    } else if (lastVisibleDecorViewHeight + MIN_KEYBOARD_HEIGHT_PX < visibleDecorViewHeight) {
+                        auth_logo.setVisibility(View.VISIBLE);
+                    }
+                }
+                lastVisibleDecorViewHeight = visibleDecorViewHeight;
+            }
+        });
+    }
+
+    private void resizeTranslucentLayout() {
+        try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            int actionbar_height = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            if (statusbar_height > 0) {
+                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height) + actionbar_height;
+            }
+            statusbarView.setLayoutParams(ll_layoutParams);
+        } catch (Exception ex) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            statusbarView.setVisibility(View.GONE);
+            ex.printStackTrace();
+        }
+    }
+
     private void createNewsActionBarSpinner() {
         if(spinnerActionBarArray != null) {
             for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
@@ -734,6 +793,8 @@ public class AppActivity extends Activity {
                     slidingMenuItemArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_settings)));
                 }
             }
+            SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuItemArray);
+            ((ListView) slidingMenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
         }
     }
 
@@ -750,6 +811,14 @@ public class AppActivity extends Activity {
     protected void onResume() {
         creating_another_activity = false;
         super.onResume();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
     }
 
     @Override
@@ -949,7 +1018,7 @@ public class AppActivity extends Activity {
 
     public void onSlidingMenuItemClicked(int position) {
         if(position == 0) {
-            if(connection_status == false) {
+            if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
                     create_post.setVisible(false);
@@ -996,7 +1065,7 @@ public class AppActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 3) {
-            if(connection_status == false) {
+            if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
                     create_post.setVisible(false);
@@ -1014,6 +1083,7 @@ public class AppActivity extends Activity {
                 NewsLayout newsLayout = findViewById(R.id.news_layout);
                 newsLayout.setVisibility(View.GONE);
                 LinearLayout error_ll = findViewById(R.id.error_ll);
+                friendsLayout.setVisibility(View.GONE);
                 messagesLayout.setVisibility(View.GONE);
                 error_ll.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
@@ -1041,7 +1111,7 @@ public class AppActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 5) {
-            if(connection_status == false) {
+            if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
                     create_post.setVisible(true);
@@ -1173,10 +1243,14 @@ public class AppActivity extends Activity {
 
     public void getConversation(int position) {
         Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
-        intent.putExtra("peer_id", dmConvListItemArray.get(position).peer_id);
-        intent.putExtra("conv_title", dmConvListItemArray.get(position).title);
-        intent.putExtra("online", dmConvListItemArray.get(position).online);
-        startActivity(intent);
+        try {
+            intent.putExtra("peer_id", dmConvListItemArray.get(position).peer_id);
+            intent.putExtra("conv_title", dmConvListItemArray.get(position).title);
+            intent.putExtra("online", dmConvListItemArray.get(position).online);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void getConversationFromProfile() {
@@ -1382,24 +1456,28 @@ public class AppActivity extends Activity {
                                 }
                                 ((TextView) profileHeader.findViewById(R.id.profile_activity)).setText(status);
                                 ((EditText) aboutProfile_ll.findViewById(R.id.status_editor)).setText(status);
-                                String last_seen_time = new SimpleDateFormat("HH:mm").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
-                                String last_seen_date = new SimpleDateFormat("dd MMMM yyyy").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
-                                if (json_response.getJSONArray("response").getJSONObject(0).getInt("online") == 0) {
-                                    if ((TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time")) - System.currentTimeMillis()) < 86400000) {
-                                        if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
-                                            ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, getResources().getString(R.string.date_at) + " " + last_seen_time));
+                                if(json_response.getJSONArray("response").getJSONObject(0).has("last_seen")) {
+                                    String last_seen_time = new SimpleDateFormat("HH:mm").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
+                                    String last_seen_date = new SimpleDateFormat("dd MMMM yyyy").format(new Date(TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time"))));
+                                    if (json_response.getJSONArray("response").getJSONObject(0).getInt("online") == 0) {
+                                        if ((TimeUnit.SECONDS.toMillis(json_response.getJSONArray("response").getJSONObject(0).getJSONObject("last_seen").getInt("time")) - System.currentTimeMillis()) < 86400000) {
+                                            if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, getResources().getString(R.string.date_at) + " " + last_seen_time));
+                                            } else {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_at) + " " + last_seen_time));
+                                            }
                                         } else {
-                                            ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_at) + " " + last_seen_time));
+                                            if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, last_seen_date));
+                                            } else {
+                                                ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, last_seen_date));
+                                            }
                                         }
                                     } else {
-                                        if (json_response.getJSONArray("response").getJSONObject(0).getInt("sex") == 1) {
-                                            ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, last_seen_date));
-                                        } else {
-                                            ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, last_seen_date));
-                                        }
+                                        ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
                                     }
                                 } else {
-                                    ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
+                                    ((TextView) profileHeader.findViewById(R.id.profile_last_seen)).setVisibility(View.GONE);
                                 }
 
                                 if(json_response.getJSONArray("response").getJSONObject(0).isNull("interests") == true) {

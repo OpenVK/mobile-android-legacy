@@ -64,28 +64,29 @@ public class MessagesListAdapter extends BaseAdapter {
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.message_item, parent, false);
-            view.findViewById(R.id.incoming_msg).setVisibility(View.GONE);
-            Date startOfDay = new Date(TimeUnit.SECONDS.toMillis(item.timestamp_int));
-            startOfDay.setHours(0);
-            startOfDay.setMinutes(0);
-            startOfDay.setSeconds(0);
-            Date prev_startOfDay = null;
-            if(position > 0) {
-                prev_startOfDay = new Date(TimeUnit.SECONDS.toMillis(getMessagesListItem(position - 1).timestamp_int));
-                prev_startOfDay.setHours(0);
-                prev_startOfDay.setMinutes(0);
-                prev_startOfDay.setSeconds(0);
-            }
-            if(prev_startOfDay != null)
+        }
+
+        view.findViewById(R.id.incoming_msg).setVisibility(View.GONE);
+        Date startOfDay = new Date(TimeUnit.SECONDS.toMillis(item.timestamp_int));
+        startOfDay.setHours(0);
+        startOfDay.setMinutes(0);
+        startOfDay.setSeconds(0);
+        Date prev_startOfDay = null;
+        if(position > 0) {
+            prev_startOfDay = new Date(TimeUnit.SECONDS.toMillis(getMessagesListItem(position - 1).timestamp_int));
+            prev_startOfDay.setHours(0);
+            prev_startOfDay.setMinutes(0);
+            prev_startOfDay.setSeconds(0);
+        }
+        if(prev_startOfDay != null)
             Log.d("StartOfDay", "Comparision result: " + startOfDay.compareTo(prev_startOfDay));
-            ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
-            if(item.isIncoming) {
-                ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
-                ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
-            } else {
-                ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.GONE);
-                ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.VISIBLE);
-            }
+        ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
+        if(item.isIncoming) {
+            ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
+            ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
+        } else {
+            ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.GONE);
+            ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.VISIBLE);
         }
 
         if(!item.isError) {
@@ -95,23 +96,32 @@ public class MessagesListAdapter extends BaseAdapter {
         ((ProgressBar) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.GONE);
 
         if(item.text.length() > 12) {
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+            if(item.isIncoming) {
+                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
+                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+            } else {
+                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
+                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+            }
         } else {
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
+            if(item.isIncoming) {
+                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
+            } else {
+                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
+            }
         }
 
-        ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
-        ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
-        ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
-        ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
-        ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
-        ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
+        if(item.isIncoming) {
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
+            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
+        } else {
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
+            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
+        }
 
         view.setOnTouchListener(new SwipeListener(ctx) {
             @Override

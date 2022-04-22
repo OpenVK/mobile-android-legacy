@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +17,11 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.layouts.ProfileLayout;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
@@ -64,6 +72,10 @@ public class DebugMenuActivity extends PreferenceActivity {
                     onBackPressed();
                 }
             });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
         }
 
         Preference logToFile = (Preference) findPreference("logToFile");
@@ -234,6 +246,28 @@ public class DebugMenuActivity extends PreferenceActivity {
 
     }
 
+    private void resizeTranslucentLayout() {
+        try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            int actionbar_height = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            if (statusbar_height > 0) {
+                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height) + actionbar_height;
+            }
+            statusbarView.setLayoutParams(ll_layoutParams);
+        } catch (Exception ex) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            statusbarView.setVisibility(View.GONE);
+            ex.printStackTrace();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -247,5 +281,13 @@ public class DebugMenuActivity extends PreferenceActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
     }
 }

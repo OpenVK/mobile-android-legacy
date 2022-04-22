@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.os.Trace;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -27,11 +30,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -342,6 +348,9 @@ public class ProfileIntentActivity extends Activity {
         post_group_ids_sb = new StringBuilder();
         post_author_ids = new ArrayList<Integer>();
         server_2 = new String();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 if (uri != null) {
@@ -451,6 +460,28 @@ public class ProfileIntentActivity extends Activity {
         super.onResume();
     }
 
+    private void resizeTranslucentLayout() {
+        try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            int actionbar_height = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            if (statusbar_height > 0) {
+                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height) + actionbar_height;
+            }
+            statusbarView.setLayoutParams(ll_layoutParams);
+        } catch (Exception ex) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            statusbarView.setVisibility(View.GONE);
+            ex.printStackTrace();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -469,6 +500,14 @@ public class ProfileIntentActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
     }
 
     public void openNewPostActivity() {

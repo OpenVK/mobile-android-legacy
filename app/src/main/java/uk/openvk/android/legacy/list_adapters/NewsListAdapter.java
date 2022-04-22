@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -77,12 +79,15 @@ public class NewsListAdapter extends BaseAdapter {
         //((TextView) view.findViewById(R.id.post_retweet_time)).setText(((RepostInfo) item.repost).time);
         ((TextView) view.findViewById(R.id.post_info_view)).setText(item.info);
 
-        if(item.getPhoto() != null) {
-            ((ImageView) view.findViewById(R.id.post_photo)).setImageBitmap(item.getPhoto());
+        Bitmap item_photo = item.getPhoto();
+
+        if(item_photo != null) {
+            ((ImageView) view.findViewById(R.id.post_photo)).setImageBitmap(item_photo);
             ((ImageView) view.findViewById(R.id.post_photo)).setVisibility(View.VISIBLE);
         } else {
             ((ImageView) view.findViewById(R.id.post_photo)).setVisibility(View.GONE);
         }
+
 
         if(item.text.length() > 0) {
             ((TextView) view.findViewById(R.id.post_view)).setVisibility(View.VISIBLE);

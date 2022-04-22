@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -20,10 +22,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -41,6 +46,7 @@ import uk.openvk.android.legacy.items.NewsItemCountersInfo;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
 import uk.openvk.android.legacy.layouts.NewsLayout;
 import uk.openvk.android.legacy.layouts.ProfileLayout;
+import uk.openvk.android.legacy.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.list_adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.list_items.FriendsListItem;
 
@@ -196,6 +202,9 @@ public class FriendsIntentActivity extends Activity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                resizeTranslucentLayout();
+            }
         } else {
             ((ImageButton) findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -279,6 +288,28 @@ public class FriendsIntentActivity extends Activity {
         });
     }
 
+    private void resizeTranslucentLayout() {
+        try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            int actionbar_height = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            if (statusbar_height > 0) {
+                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height) + actionbar_height;
+            }
+            statusbarView.setLayoutParams(ll_layoutParams);
+        } catch (Exception ex) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            statusbarView.setVisibility(View.GONE);
+            ex.printStackTrace();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -291,6 +322,14 @@ public class FriendsIntentActivity extends Activity {
     protected void onResume() {
         creating_another_activity = false;
         super.onResume();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resizeTranslucentLayout();
+        }
     }
 
     @Override
