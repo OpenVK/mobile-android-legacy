@@ -53,6 +53,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         android:entries="@array/leftmenu"
+        android:fitsSystemWindows="false"
         android:theme="@style/SlidingMenu">
 
     </ListView>

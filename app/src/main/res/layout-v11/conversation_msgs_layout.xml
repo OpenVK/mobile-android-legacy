@@ -3,33 +3,42 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/msgs_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/conversation_msgs_listview"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:divider="@null"
-            android:stackFromBottom="true">
+            android:layout_weight="1">
 
-        </ListView>
+            <ListView
+                android:id="@+id/conversation_msgs_listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:divider="@null"
+                android:stackFromBottom="true">
 
-        <View
-            android:id="@+id/divider"
+            </ListView>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/bottom_shadow" />
+
+        </RelativeLayout>
+
+        <uk.openvk.android.legacy.layouts.ConversationPanel
+            android:id="@+id/conversation_panel"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/bottom_shadow" />
+            android:layout_height="wrap_content" />
 
-    </RelativeLayout>
-
-    <uk.openvk.android.legacy.layouts.ConversationPanel
-        android:id="@+id/conversation_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    </LinearLayout>
 
 </LinearLayout>
