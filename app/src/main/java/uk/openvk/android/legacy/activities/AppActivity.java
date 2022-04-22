@@ -26,6 +26,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.Config;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -705,31 +706,6 @@ public class AppActivity extends Activity {
         });
         TextView profile_name_tv = slidingMenuLayout.findViewById(R.id.profile_name);
         profile_name_tv.setTextColor(Color.WHITE);
-    }
-
-    private void initKeyboardListener() {
-        final int MIN_KEYBOARD_HEIGHT_PX = 150;
-        final View decorView = getWindow().getDecorView();
-        decorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private final Rect windowVisibleDisplayFrame = new Rect();
-            private int lastVisibleDecorViewHeight;
-
-            @Override
-            public void onGlobalLayout() {
-                decorView.getWindowVisibleDisplayFrame(windowVisibleDisplayFrame);
-                final int visibleDecorViewHeight = windowVisibleDisplayFrame.height();
-
-                if (lastVisibleDecorViewHeight != 0) {
-                    ImageView auth_logo = findViewById(R.id.auth_logo);
-                    if (lastVisibleDecorViewHeight > visibleDecorViewHeight + MIN_KEYBOARD_HEIGHT_PX) {
-                        auth_logo.setVisibility(View.GONE);
-                    } else if (lastVisibleDecorViewHeight + MIN_KEYBOARD_HEIGHT_PX < visibleDecorViewHeight) {
-                        auth_logo.setVisibility(View.VISIBLE);
-                    }
-                }
-                lastVisibleDecorViewHeight = visibleDecorViewHeight;
-            }
-        });
     }
 
     private void resizeTranslucentLayout() {

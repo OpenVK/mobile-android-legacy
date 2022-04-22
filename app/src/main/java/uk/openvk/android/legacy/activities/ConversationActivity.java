@@ -6,20 +6,25 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -81,7 +86,7 @@ public class ConversationActivity extends Activity {
             peer_online = savedInstanceState.getInt("online");
         }
 
-        //initKeyboardListener();
+        initKeyboardListener();
 
         auth_token = getSharedPreferences("instance", 0).getString("auth_token", "");
 
@@ -208,6 +213,44 @@ public class ConversationActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             resizeTranslucentLayout();
         }
+    }
+
+    private void initKeyboardListener() {
+        final int MIN_KEYBOARD_HEIGHT_PX = 150;
+        final View decorView = getWindow().getDecorView();
+        decorView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            private final Rect windowVisibleDisplayFrame = new Rect();
+            private int prevKeyboardHeight;
+
+            @Override
+            public void onGlobalLayout() {
+                decorView.getWindowVisibleDisplayFrame(windowVisibleDisplayFrame);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    int navigation_height = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+                    final int visibleViewHeight = decorView.getHeight();
+                    int visibleKeyboardHeight = 0;
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)  {
+                        visibleKeyboardHeight = visibleViewHeight - windowVisibleDisplayFrame.bottom;
+                    } else {
+                        visibleKeyboardHeight = visibleViewHeight - windowVisibleDisplayFrame.bottom;
+                    }
+                    View statusbarView = findViewById(R.id.statusbarView);
+                    LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+                    if (visibleKeyboardHeight > 0) {
+                        LinearLayout conv_ll = findViewById(R.id.msgs_layout);
+                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) conv_ll.getLayoutParams();
+                        layoutParams.setMargins(0, 0, 0, visibleKeyboardHeight);
+                        conv_ll.setLayoutParams(layoutParams);
+                    } else {
+                        LinearLayout conv_ll = findViewById(R.id.msgs_layout);
+                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) conv_ll.getLayoutParams();
+                        layoutParams.setMargins(0, 0, 0, 0);
+                        conv_ll.setLayoutParams(layoutParams);
+                    }
+                    prevKeyboardHeight = visibleKeyboardHeight;
+                }
+            }
+        });
     }
 
     public void hideSelectedItemBackground(int position) {
