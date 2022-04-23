@@ -2,210 +2,95 @@ package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Build;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.activities.AppActivity;
-import uk.openvk.android.legacy.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.list_items.NewsListItem;
-import uk.openvk.android.legacy.listeners.SwipeListener;
 
-public class NewsListAdapter extends BaseAdapter {
-    Context ctx;
-    LayoutInflater inflater;
-    ArrayList<NewsListItem> objects;
-    public boolean opened_sliding_menu;
+public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
-    public NewsListAdapter(Context context, ArrayList<NewsListItem> items) {
+    private ArrayList<NewsListItem> items = new ArrayList<>();
+    private Context ctx;
+
+    public NewsListAdapter(Context context, ArrayList<NewsListItem> posts) {
         ctx = context;
-        objects = items;
-        inflater = (LayoutInflater) ctx
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-
-    @Override
-    public int getCount() {
-        return objects.size();
+        items = posts;
     }
 
     @Override
-    public Object getItem(int position) {
-        return objects.get(position);
+    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new Holder(LayoutInflater.from(ctx).inflate(R.layout.news_item, parent, false));
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public void onBindViewHolder(Holder holder, int position) {
+        holder.bind(position);
     }
 
-    NewsListItem getNewsListItem(int position) {
-        return ((NewsListItem) getItem(position));
+    public NewsListItem getItem(int position) {
+       return items.get(position);
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.news_item, parent, false);
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public class Holder extends RecyclerView.ViewHolder {
+
+        public final TextView poster_name;
+        public final TextView post_info;
+        public final TextView post_text;
+        public final ImageView post_photo;
+        public final TextView likes_counter;
+        public final TextView reposts_counter;
+        public final TextView comments_counter;
+
+        public Holder(View view) {
+            super(view);
+            this.poster_name = view.findViewById(R.id.poster_name_view);
+            this.post_info = view.findViewById(R.id.post_info_view);
+            this.post_text = view.findViewById(R.id.post_view);
+            this.post_photo = view.findViewById(R.id.post_photo);
+            this.likes_counter = view.findViewById(R.id.post_likes);
+            this.reposts_counter = view.findViewById(R.id.post_reposts);
+            this.comments_counter = view.findViewById(R.id.post_comments);
         }
 
-        final NewsListItem item = getNewsListItem(position);
-        if(item.counters.isLiked == true) {
-            ((TextView) view.findViewById(R.id.post_likes)).setSelected(true);
-        } else {
-            ((TextView) view.findViewById(R.id.post_likes)).setSelected(false);
+        void bind(int position) {
+            NewsListItem item = getItem(position);
+            poster_name.setText(item.name);
+            post_info.setText(item.info);
+            if(item.text.length() > 0) {
+                post_text.setVisibility(View.VISIBLE);
+                post_text.setText(Html.fromHtml(item.text));
+                post_text.setMovementMethod(LinkMovementMethod.getInstance());
+            } else {
+                post_text.setVisibility(View.GONE);
+            }
+            likes_counter.setText("" + item.counters.likes);
+            reposts_counter.setText("" + item.counters.reposts);
+            comments_counter.setText("" + item.counters.comments);
+            Bitmap item_photo = item.getPhoto();
+            if(item_photo != null) {
+                post_photo.setImageBitmap(item_photo);
+                post_photo.setVisibility(View.VISIBLE);
+            } else {
+                post_photo.setVisibility(View.GONE);
+            }
         }
-
-        if(item.counters.isReposted == true) {
-            ((TextView) view.findViewById(R.id.post_reposts)).setSelected(true);
-        } else {
-            ((TextView) view.findViewById(R.id.post_reposts)).setSelected(false);
-        }
-        ((TextView) view.findViewById(R.id.poster_name_view)).setText(item.name);
-        //((TextView) view.findViewById(R.id.post_retweet_name)).setText(((RepostInfo) item.repost).name);
-        //((TextView) view.findViewById(R.id.post_retweet_time)).setText(((RepostInfo) item.repost).time);
-        ((TextView) view.findViewById(R.id.post_info_view)).setText(item.info);
-
-        Bitmap item_photo = item.getPhoto();
-
-        if(item_photo != null) {
-            ((ImageView) view.findViewById(R.id.post_photo)).setImageBitmap(item_photo);
-            ((ImageView) view.findViewById(R.id.post_photo)).setVisibility(View.VISIBLE);
-        } else {
-            ((ImageView) view.findViewById(R.id.post_photo)).setVisibility(View.GONE);
-        }
-
-
-        if(item.text.length() > 0) {
-            ((TextView) view.findViewById(R.id.post_view)).setVisibility(View.VISIBLE);
-            ((TextView) view.findViewById(R.id.post_view)).setText(Html.fromHtml(item.text));
-        } else if((item.photo == null) && item.text.length() == 0) {
-            ((TextView) view.findViewById(R.id.post_view)).setVisibility(View.VISIBLE);
-            ((TextView) view.findViewById(R.id.post_view)).setText(Html.fromHtml("<i>" + ctx.getResources().getString(R.string.not_implemented) + "</i>"));
-        } else {
-            ((TextView) view.findViewById(R.id.post_view)).setVisibility(View.GONE);
-        }
-        ((TextView) view.findViewById(R.id.post_view)).setMovementMethod(LinkMovementMethod.getInstance());
-
-//        ((TextView) view.findViewById(R.id.post_retweet_time)).setText(((RepostInfo) item.repost).time);
-
-        ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    if (((AppActivity) ctx).menu_is_closed == false) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    }
-                }
-                return super.onTouch(v, event);
-            }
-        });
-
-        ((ImageView) view.findViewById(R.id.post_photo)).setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    if (((AppActivity) ctx).menu_is_closed == false) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    }
-                }
-                return super.onTouch(v, event);
-            }
-        });
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    if (((AppActivity) ctx).menu_is_closed == false) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    }
-                }
-            }
-        });
-
-        view.setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return super.onTouch(v, event);
-            }
-        });
-
-        final LinearLayout news_item_ll = view.findViewById(R.id.news_item_ll);
-        final LinearLayout poster_ll = view.findViewById(R.id.poster_ll);
-        news_item_ll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).hideSelectedItemBackground(position);
-                    if(((AppActivity) ctx).menu_is_closed == false) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    }
-                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                    ((ProfileIntentActivity) ctx).hideSelectedItemBackground(position);
-                }
-            }
-        });
-
-        ((TextView) view.findViewById(R.id.post_likes)).setText("" + item.counters.likes);
-        ((TextView) view.findViewById(R.id.post_comments)).setText("" + item.counters.comments);
-        ((TextView) view.findViewById(R.id.post_reposts)).setText("" + item.counters.reposts);
-
-        ((TextView) view.findViewById(R.id.post_likes)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    if(((AppActivity) ctx).menu_is_closed == false) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    } else {
-                        ((AppActivity) ctx).addLike(position, "post", view);
-                    }
-                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                    ((ProfileIntentActivity) ctx).addLike(position, "post", view);
-                }
-            }
-        });
-        poster_ll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(item.owner_id > 0 && ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    if(((AppActivity) ctx).menu_is_closed == false) {
-                        ((AppActivity) ctx).openSlidingMenu();
-                    } else {
-                        ((AppActivity) ctx).getOwnerProfile(item);
-                    }
-                }
-            }
-        });
-
-        return view;
     }
 
     public void setArray(ArrayList<NewsListItem> array) {
-        objects = array;
+        items = array;
     }
-
-    public class ViewHolder {
-        public TextView item_name;
-        public TextView item_info;
-        public TextView item_text;
-        public TextView item_likes_counters;
-        public TextView item_comments_counters;
-        public TextView item_reposts_counters;
-    }
-
 }

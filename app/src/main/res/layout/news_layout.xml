@@ -10,75 +10,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/error_ll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/error_icon2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_warning_light" />
-
-            <TextView
-                android:id="@+id/error_text2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dip"
-                android:gravity="center"
-                android:text="@string/err_text"
-                android:textColor="#a3a3a3"
-                android:textSize="16dip" />
-
-            <TextView
-                android:id="@+id/error_button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_btn_link"
-                android:paddingLeft="10dip"
-                android:paddingTop="3dip"
-                android:paddingRight="10dip"
-                android:paddingBottom="3dip"
-                android:text="@string/err_try_again"
-                android:textColor="@color/btn_link"
-                android:textSize="22dip"
-                android:textStyle="italic" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/news_progressll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <ListView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/news_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/window_bg_transparent"
-            android:divider="@null"
-            android:footerDividersEnabled="false"
-            android:headerDividersEnabled="false"
+            android:persistentDrawingCache="all"
             android:theme="@style/NewsItemTransparentBackground"
-            android:visibility="visible">
+            android:visibility="visible"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager">>
 
-        </ListView>
+        </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
 

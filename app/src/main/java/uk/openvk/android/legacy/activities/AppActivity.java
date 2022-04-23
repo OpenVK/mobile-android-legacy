@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -127,7 +128,7 @@ public class AppActivity extends Activity {
     public int postAuthorId;
     public int postOwnerId;
     public String send_request;
-    public ListView news_listview;
+    public RecyclerView news_listview;
     public int news_item_count;
     public int conv_item_count;
     public SharedPreferences global_sharedPreferences;
@@ -472,7 +473,6 @@ public class AppActivity extends Activity {
             SpinnerAdapter spinnerAdapter = new ActionBarSpinnerAdapter(AppActivity.this, spinnerActionBarArray, Color.BLACK, Color.WHITE, "news_spinner");
             spinner.setAdapter(spinnerAdapter);
         } else {
-            ((ListView) newsLayout.findViewById(R.id.news_listview)).setCacheColorHint(Color.parseColor("#e3e4e6"));
             ((ImageButton) findViewById(R.id.menuButton)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1004,6 +1004,15 @@ public class AppActivity extends Activity {
     public void onSlidingMenuItemClicked(int position) {
         if(position == 0) {
             if(openVK_API.getConnectionState() == false) {
+                for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
+                    try {
+                        newsListItemArray.get(news_item_index).photo.recycle();
+                        newsListItemArray.get(news_item_index).photo = null;
+                    } catch (Exception ex) {
+
+                    }
+                }
+                newsListItemArray.clear();
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
                     create_post.setVisible(false);
@@ -1050,6 +1059,15 @@ public class AppActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 3) {
+            for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
+                try {
+                    newsListItemArray.get(news_item_index).photo.recycle();
+                    newsListItemArray.get(news_item_index).photo = null;
+                } catch (Exception ex) {
+
+                }
+            }
+            newsListItemArray.clear();
             if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
@@ -1096,6 +1114,15 @@ public class AppActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 5) {
+            for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
+                try {
+                    newsListItemArray.get(news_item_index).photo.recycle();
+                    newsListItemArray.get(news_item_index).photo = null;
+                } catch (Exception ex) {
+
+                }
+            }
+            newsListItemArray.clear();
             if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
@@ -1636,13 +1663,11 @@ public class AppActivity extends Activity {
                                 NewsListAdapter wall_adapter = new NewsListAdapter(AppActivity.this, wallListItemArray);
                                 View view = tabHost.getTabContentView().getChildAt(0);
                                 WallLayout posts_ll = view.findViewById(R.id.all_posts_wll);
-                                ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
-                                Parcelable state = news_listview.onSaveInstanceState();
+                                RecyclerView posts_lv = posts_ll.findViewById(R.id.news_listview);
                                 posts_lv.setAdapter(wall_adapter);
                                 LinearLayout.LayoutParams layoutParams;
                                 layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
                                 int listviewHeight = -1;
-                                posts_lv.onRestoreInstanceState(state);
                             } else if(send_request.startsWith("/method/Messages.getConversations") && global_sharedPreferences.getString("currentLayout", "").equals("MessagesLayout")) {
                                 loadConversations();
                             }
@@ -1678,7 +1703,7 @@ public class AppActivity extends Activity {
                                         Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + wallListItemArray.size());
                                         wallListItemArray.set(newsfeed_picpost_id, newsListItem);
                                         WallLayout wall_layout = profileLayout.findViewById(R.id.all_posts_wll);
-                                        FullListView wall_listview = wall_layout.findViewById(R.id.news_listview);
+                                        RecyclerView wall_listview = wall_layout.findViewById(R.id.news_listview);
                                         NewsListAdapter wallListAdapter = new NewsListAdapter(AppActivity.this, wallListItemArray);
                                         wall_listview.setAdapter(wallListAdapter);
                                     }
@@ -1997,7 +2022,7 @@ public class AppActivity extends Activity {
         NewsListAdapter all_posts_adapter = new NewsListAdapter(this, wallListItemArray);
         View view = tabHost.getTabContentView().getChildAt(0);
         WallLayout posts_ll = view.findViewById(R.id.all_posts_wll);
-        ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+        RecyclerView posts_lv = posts_ll.findViewById(R.id.news_listview);
         posts_lv.setAdapter(all_posts_adapter);
         profileLayout.setVisibility(View.VISIBLE);
         LinearLayout progress_ll = findViewById(R.id.news_progressll);

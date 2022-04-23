@@ -575,9 +575,18 @@ public class OvkAPIWrapper {
                     final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
                     final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    BitmapFactory.Options options2 = new BitmapFactory.Options();
+                    if(maxHeapSizeInMB <= 256) {
+                        options2.inPreferredConfig = Bitmap.Config.RGB_565;
+                        options2.inSampleSize = 2;
+                    }
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     try {
-                        bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                        if(maxHeapSizeInMB <= 256) {
+                            bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options2);
+                        } else {
+                            bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                        }
                         if (bitmap != null) {
                             int width = bitmap.getWidth();
                             int height = bitmap.getHeight();
@@ -730,14 +739,26 @@ public class OvkAPIWrapper {
                     if(contentType.equals("image/jpeg") || contentType.equals("image/png")) {
                         state = "getting_picture";
                         BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
                         final Runtime runtime = Runtime.getRuntime();
                         final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
                         final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
                         final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        BitmapFactory.Options options2 = new BitmapFactory.Options();
+                        final int REQUIRED_SIZE = 240;
+
+                        if(maxHeapSizeInMB <= 256) {
+                            options2.inPreferredConfig = Bitmap.Config.RGB_565;
+                            options2.inSampleSize = 2;
+                        }
+
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                         try {
-                            bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                            if(maxHeapSizeInMB <= 256) {
+                                bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options2);
+                            } else {
+                                bitmap = (Bitmap) BitmapFactory.decodeFile(downloaded_file_path, options);
+                            }
                             if (bitmap != null) {
                                 int width = bitmap.getWidth();
                                 int height = bitmap.getHeight();

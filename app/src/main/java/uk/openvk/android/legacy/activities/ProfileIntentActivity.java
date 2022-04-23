@@ -18,6 +18,7 @@ import android.os.Message;
 import android.os.Parcelable;
 import android.os.Trace;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -841,13 +842,11 @@ public class ProfileIntentActivity extends Activity {
                                     NewsListAdapter wall_adapter = new NewsListAdapter(ProfileIntentActivity.this, wallListItemArray);
                                     View view = tabHost.getTabContentView().getChildAt(0);
                                     WallLayout posts_ll = view.findViewById(R.id.all_posts_wll);
-                                    ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
-                                    Parcelable state = posts_lv.onSaveInstanceState();
+                                    RecyclerView posts_lv = posts_ll.findViewById(R.id.news_listview);
                                     posts_lv.setAdapter(wall_adapter);
                                     LinearLayout.LayoutParams layoutParams;
                                     layoutParams = (LinearLayout.LayoutParams) posts_ll.getLayoutParams();
                                     int listviewHeight = -1;
-                                    posts_lv.onRestoreInstanceState(state);
                                 }
                             }
                         } catch (Exception ex) {
@@ -862,7 +861,7 @@ public class ProfileIntentActivity extends Activity {
                                     Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + wallListItemArray.size());
                                     wallListItemArray.set(newsfeed_picpost_id, newsListItem);
                                     WallLayout wall_layout = profileLayout.findViewById(R.id.all_posts_wll);
-                                    FullListView wall_listview = wall_layout.findViewById(R.id.news_listview);
+                                    RecyclerView wall_listview = wall_layout.findViewById(R.id.news_listview);
                                     NewsListAdapter wallListAdapter = new NewsListAdapter(ProfileIntentActivity.this, wallListItemArray);
                                     wall_listview.setAdapter(wallListAdapter);
                                 }
@@ -1099,7 +1098,7 @@ public class ProfileIntentActivity extends Activity {
         NewsListAdapter all_posts_adapter = new NewsListAdapter(this, wallListItemArray);
         View view = tabHost.getTabContentView().getChildAt(0);
         WallLayout posts_ll = view.findViewById(R.id.all_posts_wll);
-        ListView posts_lv = posts_ll.findViewById(R.id.news_listview);
+        RecyclerView posts_lv = posts_ll.findViewById(R.id.news_listview);
         posts_lv.setAdapter(all_posts_adapter);
         profileLayout.setVisibility(View.VISIBLE);
         LinearLayout progress_ll = findViewById(R.id.news_progressll);
