@@ -60,6 +60,7 @@ import uk.openvk.android.legacy.items.NewsItemCountersInfo;
 import uk.openvk.android.legacy.items.ProfileItem;
 import uk.openvk.android.legacy.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
+import uk.openvk.android.legacy.layouts.FullListView;
 import uk.openvk.android.legacy.layouts.NewsLayout;
 import uk.openvk.android.legacy.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.layouts.ProfileHeader;
@@ -128,6 +129,9 @@ public class ProfileIntentActivity extends Activity {
     public int owner_id;
     public int newsfeed_id;
     public View news_item;
+    public String from;
+    public Bitmap photo_bmp;
+    public int newsfeed_picpost_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,13 +174,10 @@ public class ProfileIntentActivity extends Activity {
                         break;
                     case GET_PICTURE:
                         state = msg.getData().getString("State");
-                        attachments_photo.add((Bitmap) msg.getData().getParcelable("Parcelable"));
-                        try {
-                            json_response = new JSONObject(msg.getData().getString("JSON_response"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
+                        from = msg.getData().getString("From");
+                        photo_bmp = (Bitmap) msg.getData().getParcelable("Picture");
+                        newsfeed_picpost_id = msg.getData().getInt("ID");
+                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nDownloaded picture!");
                         updateUITask.run();
                 }
             }
@@ -852,6 +853,23 @@ public class ProfileIntentActivity extends Activity {
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
+                    } else if(state.equals("getting_picture")) {
+                        try {
+                            if(wallListItemArray.size() > newsfeed_picpost_id) {
+                                NewsListItem newsListItem = wallListItemArray.get(newsfeed_picpost_id);
+                                if (newsListItem.repost == null) {
+                                    newsListItem.photo = photo_bmp;
+                                    Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + wallListItemArray.size());
+                                    wallListItemArray.set(newsfeed_picpost_id, newsListItem);
+                                    WallLayout wall_layout = profileLayout.findViewById(R.id.all_posts_wll);
+                                    FullListView wall_listview = wall_layout.findViewById(R.id.news_listview);
+                                    NewsListAdapter wallListAdapter = new NewsListAdapter(ProfileIntentActivity.this, wallListItemArray);
+                                    wall_listview.setAdapter(wallListAdapter);
+                                }
+                            }
+                        } catch(Exception ex) {
+                            ex.printStackTrace();
+                        }
                     } else if (state.equals("connection_lost")) {
                         if (creating_another_activity == false) {
                             LinearLayout error_ll = findViewById(R.id.error_ll);
@@ -1067,7 +1085,7 @@ public class ProfileIntentActivity extends Activity {
                             post_owners_ids_sb.append(postOwnerId);
                         }
                         if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
-                            // loadPhotos(news_item_index); > does not work with openvk.uk instance (401 code returned)
+                            loadWallPhotos(news_item_index);
                         }
                     } catch (JSONException jEx) {
                         jEx.printStackTrace();
@@ -1086,6 +1104,33 @@ public class ProfileIntentActivity extends Activity {
         profileLayout.setVisibility(View.VISIBLE);
         LinearLayout progress_ll = findViewById(R.id.news_progressll);
         progress_ll.setVisibility(View.GONE);
+    }
+
+    private void loadWallPhotos(int pos) {
+        try {
+            if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                post_id = pos;
+                attachments = ((JSONObject) newsfeed.get(pos)).getJSONArray("attachments");
+                int attachments_length = attachments.length();
+                for (int i = 0; i < attachments_length; i++) {
+                    if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                        String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                getJSONObject(0).getString("url");
+                        if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                            if (url.startsWith("https://")) {
+                                openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                            } else {
+                                openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
 

@@ -16,10 +16,15 @@ import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,6 +69,8 @@ public class ConversationActivity extends Activity {
     public UpdateUITask updateUITask;
     public OvkAPIWrapper openVK_API;
     public String lastSendedMsg;
+    public int visibleKeyboardHeight;
+    public boolean hasNavBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,27 +232,15 @@ public class ConversationActivity extends Activity {
             @Override
             public void onGlobalLayout() {
                 decorView.getWindowVisibleDisplayFrame(windowVisibleDisplayFrame);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    int navigation_height = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+                    final int navigation_height = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
                     final int visibleViewHeight = decorView.getHeight();
-                    int visibleKeyboardHeight = 0;
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)  {
-                        visibleKeyboardHeight = visibleViewHeight - windowVisibleDisplayFrame.bottom;
+                    int id = getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && hasNavBar) {
+                        visibleKeyboardHeight = visibleViewHeight - windowVisibleDisplayFrame.bottom - getResources().getDimensionPixelSize(navigation_height);
                     } else {
                         visibleKeyboardHeight = visibleViewHeight - windowVisibleDisplayFrame.bottom;
-                    }
-                    View statusbarView = findViewById(R.id.statusbarView);
-                    LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
-                    if (visibleKeyboardHeight > 0) {
-                        LinearLayout conv_ll = findViewById(R.id.msgs_layout);
-                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) conv_ll.getLayoutParams();
-                        layoutParams.setMargins(0, 0, 0, visibleKeyboardHeight);
-                        conv_ll.setLayoutParams(layoutParams);
-                    } else {
-                        LinearLayout conv_ll = findViewById(R.id.msgs_layout);
-                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) conv_ll.getLayoutParams();
-                        layoutParams.setMargins(0, 0, 0, 0);
-                        conv_ll.setLayoutParams(layoutParams);
                     }
                     prevKeyboardHeight = visibleKeyboardHeight;
                 }
@@ -294,7 +289,7 @@ public class ConversationActivity extends Activity {
         try {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             View statusbarView = findViewById(R.id.statusbarView);
-            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
+            RelativeLayout.LayoutParams ll_layoutParams = (RelativeLayout.LayoutParams) statusbarView.getLayoutParams();
             int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
             final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
                     new int[]{android.R.attr.actionBarSize});

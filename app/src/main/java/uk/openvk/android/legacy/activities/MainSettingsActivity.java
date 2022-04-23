@@ -146,10 +146,21 @@ public class MainSettingsActivity extends PreferenceActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainSettingsActivity.this);
                 View about_view = getLayoutInflater().inflate(R.layout.about_application_layout, null, false);
                 TextView about_text = about_view.findViewById(R.id.about_text);
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
+                if(getSharedPreferences("instance", 0).getString("server", "").equals("openvk.uk") || getSharedPreferences("instance", 0).getString("server", "").equals("openvk.co")
+                        || getSharedPreferences("instance", 0).getString("server", "").equals("openvk.su")) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
+                    } else {
+                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                    }
                 } else {
-                    about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text_lollipop, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text_froyo, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                    } else {
+                        about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text_froyo, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
+                    }
                 }
                 isQuiting = true;
                 about_text.setMovementMethod(LinkMovementMethod.getInstance());

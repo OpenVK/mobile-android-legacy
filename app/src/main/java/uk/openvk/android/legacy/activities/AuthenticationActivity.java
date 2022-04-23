@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,11 +17,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,6 +94,9 @@ public class AuthenticationActivity extends Activity {
         };
         if(!sharedPreferences.contains("auth_token") || !sharedPreferences.contains("server") || sharedPreferences.getString("auth_token", "").length() == 0 || sharedPreferences.getString("server", "").length() == 0) {
             setContentView(R.layout.auth);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                resizeTranslucentLayout();
+            }
             initKeyboardListener();
             Button auth_btn = findViewById(R.id.auth_btn);
             auth_btn.setOnClickListener(new View.OnClickListener() {
@@ -173,6 +180,27 @@ public class AuthenticationActivity extends Activity {
                 lastVisibleDecorViewHeight = visibleDecorViewHeight;
             }
         });
+    }
+
+    private void resizeTranslucentLayout() {
+        try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            RelativeLayout.LayoutParams ll_layoutParams = (RelativeLayout.LayoutParams) statusbarView.getLayoutParams();
+            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            styledAttributes.recycle();
+            if (statusbar_height > 0) {
+                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height);
+            }
+            statusbarView.setLayoutParams(ll_layoutParams);
+        } catch (Exception ex) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            View statusbarView = findViewById(R.id.statusbarView);
+            statusbarView.setVisibility(View.GONE);
+            ex.printStackTrace();
+        }
     }
 
     class UpdateUITask extends TimerTask {

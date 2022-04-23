@@ -7,7 +7,7 @@ import android.view.View;
 
 public class Application extends android.app.Application {
     public String version;
-    public int build_number = 53;
+    public int build_number = 54;
 
     @Override
     public void onCreate() {

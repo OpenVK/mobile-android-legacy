@@ -79,6 +79,7 @@ import uk.openvk.android.legacy.items.UserPostInfo;
 import uk.openvk.android.legacy.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
 import uk.openvk.android.legacy.layouts.ConversationsLayout;
+import uk.openvk.android.legacy.layouts.FullListView;
 import uk.openvk.android.legacy.layouts.NewsLayout;
 import uk.openvk.android.legacy.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.layouts.ProfileHeader;
@@ -212,7 +213,7 @@ public class AppActivity extends Activity {
                         break;
                     case GET_PICTURE:
                         state = msg.getData().getString("State");
-                        from = msg.getData().getString("from");
+                        from = msg.getData().getString("From");
                         photo_bmp = (Bitmap) msg.getData().getParcelable("Picture");
                         newsfeed_picpost_id = msg.getData().getInt("ID");
                         Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nDownloaded picture!");
@@ -732,6 +733,7 @@ public class AppActivity extends Activity {
 
     private void createNewsActionBarSpinner() {
         if(spinnerActionBarArray != null) {
+            spinnerActionBarArray.clear();
             for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
                 spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(R.array.newsfeed_actionbar_items)[spinner_action_bar_index]));
             }
@@ -794,6 +796,13 @@ public class AppActivity extends Activity {
         super.onConfigurationChanged(newConfig);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             resizeTranslucentLayout();
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            Spinner spinner = (getActionBar().getCustomView().findViewById(R.id.spinner));
+            int selection_index = spinner.getSelectedItemPosition();
+            SpinnerAdapter spinnerAdapter = new ActionBarSpinnerAdapter(AppActivity.this, spinnerActionBarArray, Color.BLACK, Color.WHITE, "news_spinner");
+            spinner.setAdapter(spinnerAdapter);
+            spinner.setSelection(selection_index, false);
         }
     }
 
@@ -1644,19 +1653,34 @@ public class AppActivity extends Activity {
                         }
                     } else if(state.equals("getting_picture")) {
                         try {
-                            if(newsListItemArray.size() > newsfeed_picpost_id) {
-                                NewsListItem newsListItem = newsListItemArray.get(newsfeed_picpost_id);
-                                if (newsListItem.repost == null) {
-                                    newsListItem.photo = photo_bmp;
-                                    Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + newsListItemArray.size());
-                                    newsListItemArray.set(newsfeed_picpost_id, newsListItem);
-                                    news_listview = newsLayout.findViewById(R.id.news_listview);
-                                    if (newsListAdapter != null) {
-                                        newsListAdapter.setArray(newsListItemArray);
-                                        newsListAdapter.notifyDataSetChanged();
-                                    } else {
-                                        newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
-                                        news_listview.setAdapter(newsListAdapter);
+                            if (from.equals("newsfeed")) {
+                                if(newsListItemArray.size() > newsfeed_picpost_id) {
+                                    NewsListItem newsListItem = newsListItemArray.get(newsfeed_picpost_id);
+                                    if (newsListItem.repost == null) {
+                                        newsListItem.photo = photo_bmp;
+                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + newsListItemArray.size());
+                                        newsListItemArray.set(newsfeed_picpost_id, newsListItem);
+                                        news_listview = newsLayout.findViewById(R.id.news_listview);
+                                        if (newsListAdapter != null) {
+                                            newsListAdapter.setArray(newsListItemArray);
+                                            newsListAdapter.notifyDataSetChanged();
+                                        } else {
+                                            newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
+                                            news_listview.setAdapter(newsListAdapter);
+                                        }
+                                    }
+                                }
+                            } else {
+                                if(wallListItemArray.size() > newsfeed_picpost_id) {
+                                    NewsListItem newsListItem = wallListItemArray.get(newsfeed_picpost_id);
+                                    if (newsListItem.repost == null) {
+                                        newsListItem.photo = photo_bmp;
+                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + wallListItemArray.size());
+                                        wallListItemArray.set(newsfeed_picpost_id, newsListItem);
+                                        WallLayout wall_layout = profileLayout.findViewById(R.id.all_posts_wll);
+                                        FullListView wall_listview = wall_layout.findViewById(R.id.news_listview);
+                                        NewsListAdapter wallListAdapter = new NewsListAdapter(AppActivity.this, wallListItemArray);
+                                        wall_listview.setAdapter(wallListAdapter);
                                     }
                                 }
                             }
@@ -1851,7 +1875,7 @@ public class AppActivity extends Activity {
                             post_owners_ids_sb.append(postOwnerId);
                         }
                         if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
-                            loadPhotos(news_item_index);
+                            loadNewsPhotos(news_item_index);
                             attachments_photo.clear();
                         }
                     } catch (JSONException jEx) {
@@ -1959,7 +1983,7 @@ public class AppActivity extends Activity {
                             post_owners_ids_sb.append(postOwnerId);
                         }
                         if (((JSONObject) newsfeed.get(news_item_index)).isNull("attachments") == false) {
-                            loadPhotos(news_item_index);
+                            loadWallPhotos(news_item_index);
                         }
                     } catch (JSONException jEx) {
                         jEx.printStackTrace();
@@ -1980,7 +2004,7 @@ public class AppActivity extends Activity {
         progress_ll.setVisibility(View.GONE);
     }
 
-    private void loadPhotos(int pos) {
+    private void loadNewsPhotos(int pos) {
         try {
             if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
                 post_id = pos;
@@ -1997,6 +2021,33 @@ public class AppActivity extends Activity {
                             } else {
                                 openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
                                         url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadWallPhotos(int pos) {
+        try {
+            if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                post_id = pos;
+                attachments = ((JSONObject) newsfeed.get(pos)).getJSONArray("attachments");
+                int attachments_length = attachments.length();
+                for (int i = 0; i < attachments_length; i++) {
+                    if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                        String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                getJSONObject(0).getString("url");
+                        if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                            if (url.startsWith("https://")) {
+                                openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                            } else {
+                                openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
                             }
                         }
                     }

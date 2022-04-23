@@ -2,10 +2,14 @@ package uk.openvk.android.legacy.list_adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -58,6 +62,23 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
             SimpleListItem item = getListItem(position);
             TextView item_name = view.findViewById(R.id.item_title);
             item_name.setText(item.name);
+        }
+        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+            DisplayMetrics dm = new DisplayMetrics();
+            ((AppActivity) ctx).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+            double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+            double screenInches = Math.sqrt(x + y);
+            if (ctx.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && screenInches < 7) {
+                TextView item_name = view.findViewById(R.id.item_title);
+                LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
+                ll_layoutParams.setMargins(0, -6, 0, 0);
+                item_name.setLayoutParams(ll_layoutParams);
+                TextView app_title = view.findViewById(R.id.app_title);
+                ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
+                ll_layoutParams.setMargins(0, -8, 0, 0);
+                item_name.setLayoutParams(ll_layoutParams);
+            }
         }
 
         SimpleListItem item = getListItem(position);
