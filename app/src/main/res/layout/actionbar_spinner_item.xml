@@ -3,23 +3,27 @@
     android:id="@+id/action_bar_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingRight="6dp">
 
     <TextView
         android:id="@+id/app_title"
-        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
         android:layout_width="match_parent"
-        android:layout_height="22dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="-2dp"
+        android:singleLine="true"
         android:text="Title"
         android:textColor="@color/window_bg_black"
         android:textSize="18sp" />
 
     <TextView
         android:id="@+id/item_title"
-        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="-2dp"
         android:background="@null"
         android:gravity="center_vertical"
         android:text="Item title"
