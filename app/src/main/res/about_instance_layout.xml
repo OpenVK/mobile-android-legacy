@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/server_addr_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/server_addr_label"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/server_address"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/server_addr_label2"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="openvk.uk" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/connection_type_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/connection_type_label"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/connection_type"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/connection_type_label2"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Connection type" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/instance_version_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/instance_version_label"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/instance_version"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/instance_version_label2"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="OpenVK instance version" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

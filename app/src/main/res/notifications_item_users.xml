@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:vk="http://schemas.android.com/apk/res/uk.openvk.android.legacy"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+
+    <TextView
+        android:id="@+id/nc_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="7dip"
+        android:layout_marginTop="8dip"
+        android:ellipsize="marquee"
+        android:text="TextView"
+        android:textColor="#000"
+        android:textSize="17dip"
+        android:layout_alignParentLeft="true" android:layout_marginLeft="70dip" android:layout_toLeftOf="@+id/nc_post_photo" android:singleLine="true"/>
+
+	<ImageView
+        android:id="@+id/nc_post_photo"
+        android:layout_width="67dip"
+        android:layout_height="67dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="0dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="10dip"
+        android:src="@drawable/photo_loading_black" 
+        android:scaleType="centerCrop"/>
+    
+    <LinearLayout
+        android:id="@+id/nc_user_images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nc_user_name"
+        android:layout_alignRight="@+id/nc_user_name"
+        android:layout_below="@+id/nc_user_name"
+        android:layout_marginTop="6dip" android:layout_toLeftOf="@+id/nc_post_photo">
+	</LinearLayout>
+
+    <TextView
+        android:id="@+id/nc_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nc_user_images"
+        android:layout_below="@+id/nc_user_images"
+        android:text="TextView"
+        android:textColor="#a6a6a6"
+        android:textSize="15dip" android:ellipsize="marquee" android:layout_marginRight="7dip" android:singleLine="true" android:layout_marginTop="3dip" android:layout_toLeftOf="@+id/nc_post_photo" android:duplicateParentState="true"/>
+
+
+    <TextView
+        android:id="@+id/nc_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nc_info"
+        android:layout_below="@+id/nc_info"
+        android:text="TextView"
+        android:textColor="@color/link"
+        android:textSize="15dip" android:ellipsize="marquee" android:layout_marginRight="7dip" android:singleLine="true" android:layout_toLeftOf="@+id/nc_post_photo" android:duplicateParentState="true"/>
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="wrap_content"
+        android:layout_height="7dip"
+        android:layout_alignLeft="@+id/nc_link"
+        android:layout_below="@+id/nc_link"/>
+
+    <ImageView
+        android:id="@+id/nc_action_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/nc_user_name"
+        android:layout_toLeftOf="@+id/nc_user_images"
+        android:src="@drawable/ic_replies_like" android:layout_marginTop="4dip" android:layout_marginRight="8dip"/>
+
+</RelativeLayout>

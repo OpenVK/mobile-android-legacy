@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/error_ll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/error_icon2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_warning_light" />
+
+            <TextView
+                android:id="@+id/error_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dip"
+                android:gravity="center"
+                android:text="@string/err_text"
+                android:textColor="#a3a3a3"
+                android:textSize="16dip" />
+
+            <TextView
+                android:id="@+id/error_button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_btn_link"
+                android:paddingLeft="10dip"
+                android:paddingTop="3dip"
+                android:paddingRight="10dip"
+                android:paddingBottom="3dip"
+                android:text="@string/err_try_again"
+                android:textColor="@color/btn_link"
+                android:textSize="22dip"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/news_progressll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/news_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/window_bg_transparent"
+            android:divider="@null"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:theme="@style/NewsItemTransparentBackground"
+            android:visibility="visible">
+
+        </ListView>
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sliding="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/titlebar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_actionbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:paddingLeft="2dp"
+                    android:src="@drawable/ic_ab_back_holo_dark" />
+
+                <ImageButton
+                    android:id="@+id/ovkButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:background="@null"
+                    android:src="@drawable/ic_ab_app" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titlebar_subtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="App subtitle"
+                        android:textColor="@color/api_v8_ll_subtitle_color"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/titlebar_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="App title"
+                        android:textColor="@color/api_v8_ll_title_color" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/new_post_btn"
+                    android:layout_width="52dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:src="@drawable/ic_ab_write" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/news_progressll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/error_ll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/error_icon2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_warning_light" />
+
+                <TextView
+                    android:id="@+id/error_text2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dip"
+                    android:gravity="center"
+                    android:text="@string/err_text"
+                    android:textColor="#a3a3a3"
+                    android:textSize="16dip" />
+
+                <TextView
+                    android:id="@+id/error_button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_btn_link"
+                    android:paddingLeft="10dip"
+                    android:paddingTop="3dip"
+                    android:paddingRight="10dip"
+                    android:paddingBottom="3dip"
+                    android:text="@string/err_try_again"
+                    android:textColor="@color/btn_link"
+                    android:textSize="22dip"
+                    android:textStyle="italic" />
+
+            </LinearLayout>
+
+            <uk.openvk.android.legacy.layouts.NewsLayout
+                android:id="@+id/news_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </uk.openvk.android.legacy.layouts.NewsLayout>
+
+            <uk.openvk.android.legacy.layouts.ProfileLayout
+                android:id="@+id/profile_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+            </uk.openvk.android.legacy.layouts.ProfileLayout>
+
+            <uk.openvk.android.legacy.layouts.FriendsLayout
+                android:id="@+id/friends_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+            </uk.openvk.android.legacy.layouts.FriendsLayout>
+
+            <uk.openvk.android.legacy.layouts.SlidingMenuLayout
+                android:id="@+id/sliding_menu_layout"
+                android:layout_width="256dp"
+                android:layout_height="match_parent"
+                android:background="#1c1d22"
+                android:theme="@style/SlidingMenu"
+                android:visibility="gone">
+
+            </uk.openvk.android.legacy.layouts.SlidingMenuLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

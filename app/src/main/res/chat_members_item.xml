@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="@drawable/bg_post_comments_mid">
+
+    <ImageView
+        android:id="@+id/chat_member_photo"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="8dip"
+        android:layout_marginLeft="8dip"
+        android:layout_marginRight="8dip"
+        android:src="@drawable/photo_loading" />
+
+    <TextView
+        android:id="@+id/chat_member_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/chat_member_photo"
+        android:layout_toLeftOf="@+id/chat_member_remove"
+        android:layout_toRightOf="@+id/chat_member_photo"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="#000"
+        android:textSize="19dip" />
+
+    <TextView
+        android:id="@+id/chat_member_inv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/chat_member_photo"
+        android:layout_alignRight="@+id/chat_member_name"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginBottom="-8dip"
+        android:layout_toRightOf="@+id/chat_member_photo"
+        android:paddingBottom="8dip"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="@color/hint"
+        android:textSize="16dip" />
+
+    <ImageView
+        android:id="@+id/chat_member_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/chat_member_photo"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/chat_member_photo"
+        android:layout_marginTop="-8dip"
+        android:layout_marginBottom="-8dip"
+        android:background="@drawable/highlight"
+        android:padding="15dip"
+        android:scaleType="center"
+        android:src="@drawable/ic_list_remove" />
+
+    <View
+        android:id="@+id/view1"
+        android:background="@drawable/highlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/chat_member_inv"
+        android:layout_alignParentTop="true" />
+
+</RelativeLayout>

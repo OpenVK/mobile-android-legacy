@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/list_side_padding"
+    android:paddingRight="@dimen/list_side_padding"
+    android:orientation="horizontal">
+
+    <View android:id="@+id/user_profile_btn" android:layout_width="match_parent" android:layout_height="61dip" android:background="@drawable/photo_list_name_btn" android:layout_marginLeft="@dimen/list_side_padding_neg" android:layout_marginRight="@dimen/list_side_padding_neg"></View>
+    
+    <ImageView
+        android:id="@+id/user_photo"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="5dip"
+        android:layout_marginBottom="5dip"
+        android:src="@drawable/photo_loading" >
+    </ImageView>
+    
+    <!--
+        LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="vertical"
+		android:duplicateParentState="true" android:layout_marginRight="7dip" android:layout_marginBottom="7dip" android:layout_marginTop="4dip"
+    -->
+
+    <TextView
+        android:id="@+id/poster_name_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:paddingTop="3.5dip"
+        android:paddingLeft="12dip"
+        android:layout_toRightOf="@id/user_photo"
+        android:layout_alignParentTop="true"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="Poster Name"
+        android:textColor="#FFF"
+        android:textSize="17dip" >
+    </TextView>
+    
+    <TextView
+        android:id="@+id/post_info_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/user_photo"
+        android:layout_below="@+id/poster_name_view"
+        android:layout_toRightOf="@+id/user_photo"
+        android:gravity="left"
+        android:paddingLeft="12dip"
+        android:text="post date"
+        android:textColor="#9fff"
+        android:textSize="15dip" />
+
+    <!--
+            LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:id="@+id/post_retweet"
+			android:gravity="center_vertical" android:visibility="gone"
+			android:duplicateParentState="true"
+    -->
+
+    <!--ImageView
+        android:id="@+id/post_retweet_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/post_retweet_text"
+        android:layout_marginTop="3dip"
+        android:layout_alignParentLeft="true"
+        android:duplicateParentState="true"
+        android:paddingLeft="1dip"
+        android:paddingRight="3dip"
+        android:paddingTop="1dip"
+        android:src="@drawable/ic_retweet"
+        android:visibility="visible" >
+    </ImageView-->
+    <!-- /LinearLayout -->
+
+    <TextView
+        android:id="@+id/post_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/user_photo"
+        android:layout_marginRight="8dip"
+        android:layout_marginTop="3dip"
+        android:duplicateParentState="true"
+        android:linksClickable="false"
+        android:text="post text"
+        android:textColor="@color/main_text"
+        android:textColorHighlight="#802B587A"
+        android:textColorLink="#2B587A"
+        android:visibility="gone"
+        android:textSize="14.5dip" >
+
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/post_attach_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_view"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="1dip"
+        android:layout_centerHorizontal="true"
+        android:duplicateParentState="true"
+        android:visibility="gone" />
+    <!--
+        LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:id="@+id/post_attach_info"
+			android:visibility="gone" android:gravity="center_vertical"
+			android:layout_marginTop="3dip"
+			android:duplicateParentState="true">
+			<ImageView android:src="@null" android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:duplicateParentState="true"
+				android:id="@+id/post_attach_icon"></ImageView>
+			<TextView android:textColorHighlight="#802B587A"
+				android:text="TextView" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/post_attach_view"
+				android:linksClickable="true" android:textColor="@color/hint"
+				android:textColorLink="#2B587A" android:singleLine="true"
+				android:ellipsize="marquee" android:layout_marginLeft="3dip"
+				android:duplicateParentState="true"></TextView>
+		</LinearLayout
+    -->
+    <!--
+            LinearLayout android:layout_height="wrap_content"
+			android:id="@+id/linearLayout1" android:layout_width="fill_parent"
+			android:layout_marginTop="5dip"
+			android:duplicateParentState="true" android:gravity="center_vertical"
+			android:layout_toRightOf="@id/user_photo" android:layout_below="@id/post_attach_container"
+    -->
+    <!-- /LinearLayout -->
+    <!-- /LinearLayout -->
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="wrap_content"
+        android:layout_height="5dip"
+        android:layout_alignLeft="@+id/post_info_view"
+        android:layout_below="@id/post_attach_container" />
+
+</LinearLayout>

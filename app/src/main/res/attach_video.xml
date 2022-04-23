@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_att_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="false" >
+
+    <ImageView
+        android:id="@+id/video_preview"
+        android:layout_width="160dip"
+        android:layout_height="120dip"
+        android:background="#000"
+        android:scaleType="fitCenter" android:layout_weight="1"/>
+
+    <ImageView
+        android:id="@+id/video_play_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:duplicateParentState="true"
+        android:src="@drawable/ic_video_ov_play" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="right" >
+
+        <TextView
+            android:id="@+id/attach_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#66000000"
+            android:padding="7dip"
+            android:text="TextView"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:textColor="#FFF" />
+
+        <TextView
+            android:id="@+id/attach_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#66000000"
+            android:padding="7dip"
+            android:text="TextView"
+            android:singleLine="true"
+            android:textColor="#BFffffff" />
+
+    </LinearLayout>
+
+</LinearLayout>

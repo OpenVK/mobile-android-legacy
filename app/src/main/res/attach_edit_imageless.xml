@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dip"
+    android:layout_height="80dip"
+    android:background="@drawable/attach_holder" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="3dip"
+        android:layout_marginRight="3dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/attach_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12dip"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/attach_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView"
+            android:textColor="#FFFFFF"
+            android:textSize="12dip"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/attach_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/attach_title"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="TextView"
+            android:textColor="#FFFFFF"
+            android:textSize="12dip" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/attach_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:paddingBottom="6dip"
+        android:paddingLeft="6dip"
+        android:paddingRight="4dip"
+        android:paddingTop="3dip"
+        android:src="@drawable/ic_attach_remove" />
+
+</RelativeLayout>
