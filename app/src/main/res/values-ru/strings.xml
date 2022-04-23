@@ -65,6 +65,8 @@
     <string name="ok">OK</string>
     
     <string name="about_text"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версия %1$s (сборка %2$d)</small><br/><br/><small>Разработчик: <a href=\"openvk://profile/tretdm\">Дмитрий Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорий Клюшников</a></small>]]></string>
+    <string name="about_text_froyo"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версия %1$s (сборка %2$d)</small><br/><br/><small>Разработчик: <a href=\"http://openvk.co/tretdm\">Дмитрий Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорий Клюшников</a></small>]]></string>
+    <string name="about_text_lollipop"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версия %1$s (сборка %2$d)</small><br/><br/><small>Разработчик: <a href=\"https://openvk.uk/tretdm\">Дмитрий Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорий Клюшников</a></small>]]></string>
 
     <string-array name="like_menu">
 	    <item>Не нравится</item>

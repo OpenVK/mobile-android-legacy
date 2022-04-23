@@ -16,6 +16,7 @@
 	<string-array name="instances_list">
 		<item>openvk.uk</item>
 		<item>openvk.su</item>
+		<item>openvk.co</item>
 		<item>social.fetbuk.ru</item>
 	</string-array>
 	<string-array name="popup_menu_api_v8">
@@ -66,6 +67,8 @@
 	<string name="cancel">Cancel</string>
 	<string name="ok">OK</string>
 	<string name="about_text"><![CDATA[<b>OpenVK Legacy for Android</b>\n<small>Version %1$s (build %2$d)</small>\n\n<small>Developed by <a href=\"openvk://profile/tretdm\">Dmitry Tretyakov</a><br/>Designed by <a href=\"https://grishka.me\">Gregory Klyushnikov</a></small>]]></string>
+	<string name="about_text_froyo"><![CDATA[<b>OpenVK Legacy for Android</b>\n<small>Version %1$s (build %2$d)</small>\n\n<small>Developed by <a href=\"http://openvk.co/tretdm\">Dmitry Tretyakov</a><br/>Designed by <a href=\"https://grishka.me\">Gregory Klyushnikov</a></small>]]></string>
+	<string name="about_text_lollipop"><![CDATA[<b>OpenVK Legacy for Android</b>\n<small>Version %1$s (build %2$d)</small>\n\n<small>Developed by <a href=\"https://openvk.uk/tretdm\">Dmitry Tretyakov</a><br/>Designed by <a href=\"https://grishka.me\">Gregory Klyushnikov</a></small>]]></string>
 	<string-array name="like_menu">
 		<item>Unlike</item>
 		<item>Share with friends</item>
