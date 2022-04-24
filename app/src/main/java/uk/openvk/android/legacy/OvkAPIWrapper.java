@@ -576,10 +576,6 @@ public class OvkAPIWrapper {
                     final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     BitmapFactory.Options options2 = new BitmapFactory.Options();
-                    if(maxHeapSizeInMB <= 256) {
-                        options2.inPreferredConfig = Bitmap.Config.RGB_565;
-                        options2.inSampleSize = 2;
-                    }
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     try {
                         if(maxHeapSizeInMB <= 256) {
@@ -746,11 +742,6 @@ public class OvkAPIWrapper {
                         final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
                         BitmapFactory.Options options2 = new BitmapFactory.Options();
                         final int REQUIRED_SIZE = 240;
-
-                        if(maxHeapSizeInMB <= 256) {
-                            options2.inPreferredConfig = Bitmap.Config.RGB_565;
-                            options2.inSampleSize = 2;
-                        }
 
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                         try {

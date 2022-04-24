@@ -493,6 +493,15 @@ public class AppActivity extends Activity {
         ((LinearLayout) slidingMenuLayout.findViewById(R.id.profile_menu_ll)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
+                    try {
+                        newsListItemArray.get(news_item_index).photo.recycle();
+                        newsListItemArray.get(news_item_index).photo = null;
+                    } catch (Exception ex) {
+
+                    }
+                }
+                newsListItemArray.clear();
                 if(openVK_API.getConnectionState() == false) {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         MenuItem create_post = activity_menu.findItem(R.id.newpost);
@@ -541,6 +550,15 @@ public class AppActivity extends Activity {
         ((TextView) slidingMenuLayout.findViewById(R.id.profile_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
+                    try {
+                        newsListItemArray.get(news_item_index).photo.recycle();
+                        newsListItemArray.get(news_item_index).photo = null;
+                    } catch (Exception ex) {
+
+                    }
+                }
+                newsListItemArray.clear();
                 if(openVK_API.getConnectionState() == false) {
                     if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
                         MenuItem create_post = activity_menu.findItem(R.id.newpost);
@@ -1630,8 +1648,7 @@ public class AppActivity extends Activity {
                                 }
                                 news_listview = newsLayout.findViewById(R.id.news_listview);
                                 if(newsListAdapter != null) {
-                                    newsListAdapter.setArray(newsListItemArray);
-                                    newsListAdapter.notifyDataSetChanged();
+                                    newsListAdapter.notifyItemChanged(newsfeed_id);
                                 } else {
                                     newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
                                     news_listview.setAdapter(newsListAdapter);
@@ -1687,8 +1704,7 @@ public class AppActivity extends Activity {
                                         newsListItemArray.set(newsfeed_picpost_id, newsListItem);
                                         news_listview = newsLayout.findViewById(R.id.news_listview);
                                         if (newsListAdapter != null) {
-                                            newsListAdapter.setArray(newsListItemArray);
-                                            newsListAdapter.notifyDataSetChanged();
+                                            newsListAdapter.notifyItemChanged(newsfeed_picpost_id);
                                         } else {
                                             newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
                                             news_listview.setAdapter(newsListAdapter);
@@ -2032,20 +2048,38 @@ public class AppActivity extends Activity {
     private void loadNewsPhotos(int pos) {
         try {
             if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
                 post_id = pos;
                 attachments = ((JSONObject) newsfeed.get(pos)).getJSONArray("attachments");
                 int attachments_length = attachments.length();
                 for (int i = 0; i < attachments_length; i++) {
                     if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
-                        String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
-                                getJSONObject(0).getString("url");
-                        if (attachments.getJSONObject(i).getString("type").equals("photo")) {
-                            if (url.startsWith("https://")) {
-                                openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
-                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
-                            } else {
-                                openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
-                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
+                        if (availHeapSizeInMB >= 192 || attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() < 3) {
+                            String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                    getJSONObject(0).getString("url");
+                            if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                                if (url.startsWith("https://")) {
+                                    openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                            url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
+                                } else {
+                                    openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                            url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
+                                }
+                            }
+                        } else if(attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() >= 3) {
+                            String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                    getJSONObject(2).getString("url");
+                            if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                                if (url.startsWith("https://")) {
+                                    openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                            url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
+                                } else {
+                                    openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                            url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
+                                }
                             }
                         }
                     }

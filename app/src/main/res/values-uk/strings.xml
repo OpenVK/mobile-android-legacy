@@ -1186,4 +1186,5 @@
         <item>Всi новини</item>
     </string-array>
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
+    <string name="reason">Причина: %1$s</string>
 </resources>

@@ -25,7 +25,6 @@
                 android:id="@+id/error_ll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="false"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -34,26 +33,34 @@
                     android:id="@+id/error_icon2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fitsSystemWindows="false"
                     android:src="@drawable/ic_warning_light" />
 
                 <TextView
                     android:id="@+id/error_text2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="12dip"
-                    android:fitsSystemWindows="false"
+                    android:layout_marginLeft="12dip"
+                    android:layout_marginTop="12dip"
+                    android:layout_marginRight="12dip"
                     android:gravity="center"
                     android:text="@string/err_text"
                     android:textColor="#a3a3a3"
                     android:textSize="16dip" />
 
                 <TextView
+                    android:id="@+id/reason_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dip"
+                    android:gravity="center_horizontal"
+                    android:text="@string/reason"
+                    android:textColor="#a3a3a3" />
+
+                <TextView
                     android:id="@+id/error_button2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_btn_link"
-                    android:fitsSystemWindows="false"
                     android:paddingLeft="10dip"
                     android:paddingTop="3dip"
                     android:paddingRight="10dip"
