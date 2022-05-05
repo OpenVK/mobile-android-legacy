@@ -1,5 +1,8 @@
 package uk.openvk.android.legacy.activities;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,7 +44,10 @@ import javax.net.ssl.HttpsURLConnection;
 import uk.openvk.android.legacy.OvkAPIWrapper;
 import uk.openvk.android.legacy.R;
 
-public class AuthenticationActivity extends Activity {
+public class AuthenticationActivity extends AccountAuthenticatorActivity {
+    public static final String ARG_ACCOUNT_TYPE = "";
+    public static final String ARG_AUTH_TYPE = "";
+    public static final String ARG_IS_ADDING_NEW_ACCOUNT = "";
     public String server;
     public String email;
     public String password;
@@ -66,10 +72,10 @@ public class AuthenticationActivity extends Activity {
     public static Handler handler;
     public String send_request;
     public static final int UPDATE_UI = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("OpenVK Legacy", "Opening auth activity...");
         updateUITask = new UpdateUITask();
         response_sb = new StringBuilder();
         json_login = new JSONObject();
@@ -92,7 +98,7 @@ public class AuthenticationActivity extends Activity {
                 }
             }
         };
-        if(!sharedPreferences.contains("auth_token") || !sharedPreferences.contains("server") || sharedPreferences.getString("auth_token", "").length() == 0 || sharedPreferences.getString("server", "").length() == 0) {
+        if(getIntent().getExtras() == null && (!sharedPreferences.contains("auth_token") || !sharedPreferences.contains("server") || sharedPreferences.getString("auth_token", "").length() == 0 || sharedPreferences.getString("server", "").length() == 0)) {
             setContentView(R.layout.auth);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 resizeTranslucentLayout();
@@ -182,6 +188,8 @@ public class AuthenticationActivity extends Activity {
         });
     }
 
+
+
     private void resizeTranslucentLayout() {
         try {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -270,9 +278,14 @@ public class AuthenticationActivity extends Activity {
                                 sharedPrefsEditor.putString("server", server);
                                 sharedPrefsEditor.commit();
                                 Context context = getApplicationContext();
-                                Intent intent = new Intent(context, AppActivity.class);
-                                intent.putExtra("auth_token", sharedPreferences.getString("auth_token", ""));
-                                startActivity(intent);
+                                AccountManager accountManager = AccountManager.get(AuthenticationActivity.this);
+                                Account account = new Account("OpenVK (" + email + ")","uk.openvk.android.legacy.account");
+                                boolean success = accountManager.addAccountExplicitly(account,"password",null);
+                                if (getIntent().getExtras() == null) {
+                                    Intent intent = new Intent(context, AppActivity.class);
+                                    intent.putExtra("auth_token", sharedPreferences.getString("auth_token", ""));
+                                    startActivity(intent);
+                                }
                                 finish();
                             }
                         } catch (JSONException e) {

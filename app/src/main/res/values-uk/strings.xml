@@ -687,6 +687,7 @@
 	<string name="album_unnamed">Без назви</string>
 	<string name="sett_cache">Кеш зображень</string>
 	<string name="sett_clear_img_cache">Очистити</string>
+    <string name="img_cache_cleared">Кеш очищен!</string>
 	<string name="sett_cache_location">Розташування</string>
 	<string-array name="sett_img_cache_location">
     	<item>Память пристрою</item>

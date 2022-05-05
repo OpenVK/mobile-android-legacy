@@ -396,8 +396,6 @@ public class FriendsIntentActivity extends Activity {
     }
 
     public void hideSelectedItemBackground(int position) {
-        news_listview = findViewById(R.id.news_listview);
-        news_listview.setBackgroundColor(getResources().getColor(R.color.transparent));
         ((ListView) friendsLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 

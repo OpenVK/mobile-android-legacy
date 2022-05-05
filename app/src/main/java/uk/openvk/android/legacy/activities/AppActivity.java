@@ -10,14 +10,12 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -26,8 +24,6 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
-import android.util.Config;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,7 +32,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -44,7 +39,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -80,7 +74,6 @@ import uk.openvk.android.legacy.items.UserPostInfo;
 import uk.openvk.android.legacy.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
 import uk.openvk.android.legacy.layouts.ConversationsLayout;
-import uk.openvk.android.legacy.layouts.FullListView;
 import uk.openvk.android.legacy.layouts.NewsLayout;
 import uk.openvk.android.legacy.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.layouts.ProfileHeader;
@@ -209,15 +202,18 @@ public class AppActivity extends Activity {
                                 e.printStackTrace();
                             }
                         }
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
+                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nFrom: " + from + "\r\nAPI method: " + send_request);
                         updateUITask.run();
                         break;
                     case GET_PICTURE:
                         state = msg.getData().getString("State");
                         from = msg.getData().getString("From");
+                        if(photo_bmp != null && photo_bmp.isRecycled() == true) {
+                            photo_bmp = null;
+                        }
                         photo_bmp = (Bitmap) msg.getData().getParcelable("Picture");
                         newsfeed_picpost_id = msg.getData().getInt("ID");
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nDownloaded picture!");
+                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nFrom: " + from + "\r\nDownloaded picture!");
                         updateUITask.run();
                 }
             }
@@ -1700,7 +1696,7 @@ public class AppActivity extends Activity {
                                     NewsListItem newsListItem = newsListItemArray.get(newsfeed_picpost_id);
                                     if (newsListItem.repost == null) {
                                         newsListItem.photo = photo_bmp;
-                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + newsListItemArray.size());
+                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nNews count: " + newsListItemArray.size());
                                         newsListItemArray.set(newsfeed_picpost_id, newsListItem);
                                         news_listview = newsLayout.findViewById(R.id.news_listview);
                                         if (newsListAdapter != null) {
@@ -1716,7 +1712,7 @@ public class AppActivity extends Activity {
                                     NewsListItem newsListItem = wallListItemArray.get(newsfeed_picpost_id);
                                     if (newsListItem.repost == null) {
                                         newsListItem.photo = photo_bmp;
-                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nCount: " + wallListItemArray.size());
+                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nWall count: " + wallListItemArray.size());
                                         wallListItemArray.set(newsfeed_picpost_id, newsListItem);
                                         WallLayout wall_layout = profileLayout.findViewById(R.id.all_posts_wll);
                                         RecyclerView wall_listview = wall_layout.findViewById(R.id.news_listview);
@@ -2093,20 +2089,64 @@ public class AppActivity extends Activity {
     private void loadWallPhotos(int pos) {
         try {
             if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
                 post_id = pos;
                 attachments = ((JSONObject) newsfeed.get(pos)).getJSONArray("attachments");
                 int attachments_length = attachments.length();
                 for (int i = 0; i < attachments_length; i++) {
                     if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
-                        String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
-                                getJSONObject(0).getString("url");
-                        if (attachments.getJSONObject(i).getString("type").equals("photo")) {
-                            if (url.startsWith("https://")) {
-                                openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
-                                        url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
-                            } else {
-                                openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
-                                        url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                        if(attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() >= 9) {
+                            if (availHeapSizeInMB < 192) {
+                                String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                        getJSONObject(4).getString("url");
+                                if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                                    if (url.startsWith("https://")) {
+                                        openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                                url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                    } else {
+                                        openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                                url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                    }
+                                }
+                            } else if (availHeapSizeInMB >= 192) {
+                                String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                        getJSONObject(8).getString("url");
+                                if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                                    if (url.startsWith("https://")) {
+                                        openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                                url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                    } else {
+                                        openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                                url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                    }
+                                }
+                            }
+                        } else if(attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() == 5) {
+                            String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                    getJSONObject(4).getString("url");
+                            if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                                if (url.startsWith("https://")) {
+                                    openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                            url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                } else {
+                                    openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                            url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                }
+                            }
+                        } else if(attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() < 5) {
+                            String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
+                                    getJSONObject(0).getString("url");
+                            if (attachments.getJSONObject(i).getString("type").equals("photo")) {
+                                if (url.startsWith("https://")) {
+                                    openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                                            url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                } else {
+                                    openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                            url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "wall_cache_" + post_id, post_id, "wall");
+                                }
                             }
                         }
                     }

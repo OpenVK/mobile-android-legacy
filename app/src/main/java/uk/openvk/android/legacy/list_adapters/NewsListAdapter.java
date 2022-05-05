@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -25,6 +26,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
 
     private ArrayList<NewsListItem> items = new ArrayList<>();
     private Context ctx;
+    public LruCache memCache;
 
     public NewsListAdapter(Context context, ArrayList<NewsListItem> posts) {
         ctx = context;
@@ -39,6 +41,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
     @Override
     public void onBindViewHolder(Holder holder, int position) {
         holder.bind(position);
+    }
+
+    @Override
+    public void onViewRecycled(Holder holder) {
+        super.onViewRecycled(holder);
+        holder.post_photo.setImageBitmap(null);
+        holder.post_photo.setVisibility(View.GONE);
     }
 
     public NewsListItem getItem(int position) {

@@ -657,6 +657,7 @@
 	<string name="album_unnamed">Unnamed</string>
 	<string name="sett_cache">Image cache</string>
 	<string name="sett_clear_img_cache">Clear</string>
+	<string name="img_cache_cleared">Cache cleared!</string>
 	<string name="sett_cache_location">Location</string>
 	<string-array name="sett_img_cache_location">
     	<item>Device memory</item>
