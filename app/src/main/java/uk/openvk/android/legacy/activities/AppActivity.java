@@ -208,9 +208,6 @@ public class AppActivity extends Activity {
                     case GET_PICTURE:
                         state = msg.getData().getString("State");
                         from = msg.getData().getString("From");
-                        if(photo_bmp != null && photo_bmp.isRecycled() == true) {
-                            photo_bmp = null;
-                        }
                         photo_bmp = (Bitmap) msg.getData().getParcelable("Picture");
                         newsfeed_picpost_id = msg.getData().getInt("ID");
                         Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nFrom: " + from + "\r\nDownloaded picture!");
@@ -489,14 +486,6 @@ public class AppActivity extends Activity {
         ((LinearLayout) slidingMenuLayout.findViewById(R.id.profile_menu_ll)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
-                    try {
-                        newsListItemArray.get(news_item_index).photo.recycle();
-                        newsListItemArray.get(news_item_index).photo = null;
-                    } catch (Exception ex) {
-
-                    }
-                }
                 newsListItemArray.clear();
                 if(openVK_API.getConnectionState() == false) {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -546,14 +535,6 @@ public class AppActivity extends Activity {
         ((TextView) slidingMenuLayout.findViewById(R.id.profile_name)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
-                    try {
-                        newsListItemArray.get(news_item_index).photo.recycle();
-                        newsListItemArray.get(news_item_index).photo = null;
-                    } catch (Exception ex) {
-
-                    }
-                }
                 newsListItemArray.clear();
                 if(openVK_API.getConnectionState() == false) {
                     if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
@@ -1018,14 +999,6 @@ public class AppActivity extends Activity {
     public void onSlidingMenuItemClicked(int position) {
         if(position == 0) {
             if(openVK_API.getConnectionState() == false) {
-                for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
-                    try {
-                        newsListItemArray.get(news_item_index).photo.recycle();
-                        newsListItemArray.get(news_item_index).photo = null;
-                    } catch (Exception ex) {
-
-                    }
-                }
                 newsListItemArray.clear();
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     MenuItem create_post = activity_menu.findItem(R.id.newpost);
@@ -1073,14 +1046,6 @@ public class AppActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 3) {
-            for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
-                try {
-                    newsListItemArray.get(news_item_index).photo.recycle();
-                    newsListItemArray.get(news_item_index).photo = null;
-                } catch (Exception ex) {
-
-                }
-            }
             newsListItemArray.clear();
             if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -1128,14 +1093,6 @@ public class AppActivity extends Activity {
                 Toast.makeText(getApplicationContext(), R.string.please_wait_network, Toast.LENGTH_LONG).show();
             }
         } else if(position == 5) {
-            for (int news_item_index = 0; news_item_index < newsListItemArray.size(); news_item_index++) {
-                try {
-                    newsListItemArray.get(news_item_index).photo.recycle();
-                    newsListItemArray.get(news_item_index).photo = null;
-                } catch (Exception ex) {
-
-                }
-            }
             newsListItemArray.clear();
             if(openVK_API.getConnectionState() == false) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

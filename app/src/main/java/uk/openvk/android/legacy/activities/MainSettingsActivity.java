@@ -212,14 +212,16 @@ public class MainSettingsActivity extends PreferenceActivity {
         }
 
         Preference advanced_settings = findPreference("advanced");
-        advanced_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getApplicationContext(), AdvancedSettingsActivity.class);
-                startActivity(intent);
-                return false;
-            }
-        });
+        if(advanced_settings != null) {
+            advanced_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(getApplicationContext(), AdvancedSettingsActivity.class);
+                    startActivity(intent);
+                    return false;
+                }
+            });
+        }
 
         Preference debug_menu = findPreference("debug_menu");
         debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
