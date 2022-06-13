@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -78,9 +79,18 @@ public class MessagesListAdapter extends BaseAdapter {
             prev_startOfDay.setMinutes(0);
             prev_startOfDay.setSeconds(0);
         }
-        if(prev_startOfDay != null)
-            Log.d("StartOfDay", "Comparision result: " + startOfDay.compareTo(prev_startOfDay));
-        ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
+        if(prev_startOfDay != null) {
+            Log.d("StartOfDay", "Comparision result: " + startOfDay.compareTo(prev_startOfDay) + " d.");
+            if (startOfDay.compareTo(prev_startOfDay) <= 0) {
+                ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
+            } else {
+                ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
+                ((TextView) ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
+            }
+        } else {
+            ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
+            ((TextView) ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
+        }
         if(item.isIncoming) {
             ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
             ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);

@@ -11,8 +11,6 @@ android {
         targetSdkVersion 32
         versionCode 3
         versionName '3.0.4-notreleased'
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -28,6 +26,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:recyclerview-v7:24.0.0-alpha2'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:recyclerview-v7:24.0.0'
 
 }

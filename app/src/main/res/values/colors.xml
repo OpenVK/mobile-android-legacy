@@ -8,4 +8,5 @@
     <color name="holo_blue_dark">#ff33b5e5</color>
     <color name="timestamp_color">#6f6f6f</color>
     <color name="transparent_statusbar_color">#3b597b</color>
+    <color name="timestamp_block">#99000000</color>
 </resources>

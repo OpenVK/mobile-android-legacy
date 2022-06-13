@@ -13,6 +13,7 @@
     <string name="msg_hint">Ваше повідомлення</string>
     <string name="menu_settings">Налаштуваня</string>
     <string name="menu_about">Про програму</string>
+    <string name="instances_list_title">Список інстанцій</string>
     <string-array name="popup_menu_api_v8">
         <item>Налаштуваня</item>
         <item>Про програму</item>
@@ -1188,4 +1189,5 @@
     </string-array>
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %1$s</string>
+    <string name="official_state">Офіційна інстанція OpenVK</string>
 </resources>

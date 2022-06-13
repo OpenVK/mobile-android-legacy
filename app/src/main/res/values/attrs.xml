@@ -64,4 +64,9 @@
         <attr name="textAllCaps" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="EditTextAction">
+        <attr name="text" format="string" />
+        <attr name="textHint" format="string" />
+    </declare-styleable>
+
 </resources>

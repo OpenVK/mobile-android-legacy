@@ -57,19 +57,12 @@ public class OvkAPIWrapper {
     public boolean isConnected;
     public String state;
     public String arguments;
-    public final static String CONNECTION_STATE = new String();
-    public final static String API_METHOD = new String();
-    public final static String JSON_RESPONSE = new String();
-    public TimerTask updUI;
     public Boolean inputStream_isClosed;
 
     public TimerTask HTTPtoHTTPS;
     public Thread socketThread;
     public Thread sslSocketThread;
     public boolean isSecured;
-
-    public HttpURLConnection httpConnection;
-    public HttpsURLConnection httpsConnection;
 
     public StringBuilder response_sb;
     public String jsonResponseString;
@@ -79,10 +72,7 @@ public class OvkAPIWrapper {
     public Handler handler;
     public String raw_addr;
     public String raw_server;
-    public InputStreamReader raw_in;
     public String file_name;
-    public int elementsId;
-    public String from_control;
     public String raw_url;
     public LruCache memCache;
 

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
+import uk.openvk.android.legacy.activities.AuthenticationActivity;
 import uk.openvk.android.legacy.list_items.SimpleListItem;
 
 public class SimpleListAdapter extends BaseAdapter {
@@ -58,7 +59,11 @@ public class SimpleListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.item_title)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((AppActivity) ctx).onSimpleListItemClicked(position);
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) ctx).onSimpleListItemClicked(position);
+                } else if(ctx.getClass().getSimpleName().equals("AuthenticationActivity")) {
+                    ((AuthenticationActivity) ctx).clickInstancesItem(position);
+                }
             }
         });
         return view;

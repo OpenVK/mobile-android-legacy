@@ -3,7 +3,6 @@ package uk.openvk.android.legacy.activities;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,8 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,14 +32,17 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.TimerTask;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import uk.openvk.android.legacy.OvkAPIWrapper;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.layouts.EditTextAction;
+import uk.openvk.android.legacy.list_adapters.InstancesListAdapter;
+import uk.openvk.android.legacy.list_adapters.SimpleListAdapter;
+import uk.openvk.android.legacy.list_items.InstancesListItem;
 
 public class AuthenticationActivity extends AccountAuthenticatorActivity {
     public static final String ARG_ACCOUNT_TYPE = "";
@@ -55,6 +55,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
     public String state;
     public UpdateUITask updateUITask;
     public ProgressDialog connectionDialog;
+    public AlertDialog alertDialog;
     public StringBuilder response_sb;
     public JSONObject json_login;
     public String connectionErrorString;
@@ -104,12 +105,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                 resizeTranslucentLayout();
             }
             initKeyboardListener();
+            EditTextAction instance_edit = findViewById(R.id.instance_name);
             Button auth_btn = findViewById(R.id.auth_btn);
             auth_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AutoCompleteTextView instance_edit = findViewById(R.id.instance_name);
-                    server = instance_edit.getText().toString();
+                    server = instance_edit.getText();
                     EditText email_edit = findViewById(R.id.auth_login);
                     email = email_edit.getText().toString();
                     EditText password_edit = findViewById(R.id.auth_pass);
@@ -140,18 +141,47 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                     startActivity(intent);
                 }
             });
-            final AutoCompleteTextView instance_edit = findViewById(R.id.instance_name);
-            String[] instances = getResources().getStringArray(R.array.instances_list);
-            List<String> instancesList = Arrays.asList(instances);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    this, android.R.layout.simple_dropdown_item_1line, instancesList);
-            instance_edit.setAdapter(adapter);
+            instance_edit.setActionClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showInstancesDialog();
+                }
+            });
         } else {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, AppActivity.class);
             intent.putExtra("auth_token", sharedPreferences.getString("auth_token", ""));
             startActivity(intent);
             finish();
+        }
+    }
+
+    private void showInstancesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
+        ArrayList<InstancesListItem> instances_list = new ArrayList<>();
+        for(int instances_index = 0; instances_index < getResources().getStringArray(R.array.official_instances_list).length; instances_index++) {
+            instances_list.add(new InstancesListItem(getResources().getStringArray(R.array.official_instances_list)[instances_index], true, true));
+        }
+        for(int instances_index = 0; instances_index < getResources().getStringArray(R.array.instances_list).length; instances_index++) {
+            instances_list.add(new InstancesListItem(getResources().getStringArray(R.array.instances_list)[instances_index], false, true));
+        }
+        InstancesListAdapter instancesAdapter = new InstancesListAdapter(AuthenticationActivity.this, instances_list);
+        builder.setTitle(getResources().getString(R.string.instances_list_title));
+        builder.setSingleChoiceItems(instancesAdapter, -1, null);
+        alertDialog = builder.create();
+        alertDialog.show();
+
+    }
+
+    public void clickInstancesItem(int position) {
+        EditTextAction instance_edit = findViewById(R.id.instance_name);
+        if(position >= getResources().getStringArray(R.array.official_instances_list).length) {
+            instance_edit.setText(getResources().getStringArray(R.array.instances_list)[position - 3]);
+        } else {
+            instance_edit.setText(getResources().getStringArray(R.array.official_instances_list)[position]);
+        }
+        if(alertDialog != null) {
+            alertDialog.cancel();
         }
     }
 

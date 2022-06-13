@@ -20,10 +20,6 @@ public class MessagesListItem {
         text = _text;
         timestamp_int = _timestamp;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(_timestamp));
-        if((System.currentTimeMillis() - (_timestamp * 1000)) < 86400000) {
-            timestamp = new SimpleDateFormat("HH:mm").format(dt);
-        } else {
-            timestamp = new SimpleDateFormat("dd.MM HH:mm").format(dt);
-        }
+        timestamp = new SimpleDateFormat("HH:mm").format(dt);
     }
 }
