@@ -24,7 +24,8 @@
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:src="@drawable/ic_left_menu" />
+                android:src="@drawable/ic_left_menu"
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,7 +74,8 @@
                     android:layout_width="52dp"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:src="@drawable/ic_ab_write" />
+                    android:src="@drawable/ic_ab_write"
+                    tools:ignore="SpeakableTextPresentCheck" />
 
             </LinearLayout>
 

@@ -1693,6 +1693,8 @@ public class AppActivity extends Activity {
                             SharedPreferences.Editor editor = global_sharedPreferences.edit();
                             editor.putString("previousLayout", "");
                             editor.commit();
+                            TextView reason_text = findViewById(R.id.reason_text);
+                            reason_text.setText(getResources().getText(R.string.reason, "Connection lost"));
                         }
                     } else if(state.equals("timeout")) {
                         if(creating_another_activity == false) {
@@ -1706,6 +1708,8 @@ public class AppActivity extends Activity {
                             SharedPreferences.Editor editor = global_sharedPreferences.edit();
                             editor.putString("previousLayout", "");
                             editor.commit();
+                            TextView reason_text = findViewById(R.id.reason_text);
+                            reason_text.setText(getResources().getText(R.string.reason, "Connection timeout"));
                         }
                     } else if(state.equals("no_connection")) {
                         if(creating_another_activity == false) {
@@ -1719,6 +1723,8 @@ public class AppActivity extends Activity {
                             SharedPreferences.Editor editor = global_sharedPreferences.edit();
                             editor.putString("previousLayout", "");
                             editor.commit();
+                            TextView reason_text = findViewById(R.id.reason_text);
+                            reason_text.setText(getResources().getText(R.string.reason, "No connection"));
                         }
                     }
                 }

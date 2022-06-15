@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,9 +25,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -106,6 +109,31 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
             }
             initKeyboardListener();
             EditTextAction instance_edit = findViewById(R.id.instance_name);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                instance_edit.setText(getResources().getText(R.string.default_instance));
+            } else {
+                instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
+            }
+            TextView forgot_btn = findViewById(R.id.forgot_btn);
+            forgot_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = "http://" + instance_edit.getText() + "/restore";
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    startActivity(i);
+                }
+            });
+            TextView reg_btn = findViewById(R.id.reg_btn);
+            reg_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = "http://" + instance_edit.getText() + "/reg";
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    startActivity(i);
+                }
+            });
             Button auth_btn = findViewById(R.id.auth_btn);
             auth_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -168,6 +196,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
         InstancesListAdapter instancesAdapter = new InstancesListAdapter(AuthenticationActivity.this, instances_list);
         builder.setTitle(getResources().getString(R.string.instances_list_title));
         builder.setSingleChoiceItems(instancesAdapter, -1, null);
+        builder.setNegativeButton(R.string.close, null);
         alertDialog = builder.create();
         alertDialog.show();
 
