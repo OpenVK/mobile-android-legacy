@@ -18,7 +18,7 @@
             android:persistentDrawingCache="all"
             android:theme="@style/NewsItemTransparentBackground"
             android:visibility="visible"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager">>
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager">
 
         </android.support.v7.widget.RecyclerView>
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/newpost_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -40,7 +41,8 @@
                     android:gravity="top"
                     android:inputType="textCapSentences|textMultiLine"
                     android:padding="7dip"
-                    android:singleLine="false"></EditText>
+                    android:singleLine="false"
+                    tools:ignore="SpeakableTextPresentCheck"></EditText>
 
                 <View
                     android:id="@+id/newpost_attachments2"

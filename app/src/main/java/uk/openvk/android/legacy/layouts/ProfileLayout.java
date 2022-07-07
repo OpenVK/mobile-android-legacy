@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import uk.openvk.android.legacy.R;
 
@@ -15,5 +16,9 @@ public class ProfileLayout extends LinearLayout {
                 R.layout.profile_layout, null);
 
         this.addView(view);
+
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
+        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+        view.setLayoutParams(layoutParams);
     }
 }

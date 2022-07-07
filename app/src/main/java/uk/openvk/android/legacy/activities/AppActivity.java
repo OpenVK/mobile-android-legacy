@@ -24,6 +24,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -526,7 +527,11 @@ public class AppActivity extends Activity {
                             ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
                         }
                     }
-                    openSlidingMenu();
+                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                    float screenWidth = dm.widthPixels / dm.density;
+                    if(screenWidth < 600) {
+                        openSlidingMenu();
+                    }
                 } else {
                     Toast.makeText(AppActivity.this, getResources().getString(R.string.please_wait_network), Toast.LENGTH_LONG).show();
                 }
@@ -905,49 +910,52 @@ public class AppActivity extends Activity {
     }
 
     public void openSlidingMenu() {
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        float screenWidth = dm.widthPixels / dm.density;
         final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
-        if(sliding_animated == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (menu_is_closed == true) {
-                menu_is_closed = false;
-                TranslateAnimation animate = new TranslateAnimation(
-                        -(300 * getResources().getDisplayMetrics().scaledDensity),                 // fromXDelta
-                        0,                 // toXDelta
-                        0,  // fromYDelta
-                        0);                // toYDelta
-                animate.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                        sliding_animated = false;
-                        slidingMenuLayout.setVisibility(View.VISIBLE);
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                        lp.setMargins(0, 0, 0, 0);
-                        slidingMenuLayout.setLayoutParams(lp);
-                        sliding_animated = false;
-                    }
+        if(screenWidth < 600) {
+            if (sliding_animated == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (menu_is_closed == true) {
+                    menu_is_closed = false;
+                    TranslateAnimation animate = new TranslateAnimation(
+                            -(300 * getResources().getDisplayMetrics().scaledDensity),                 // fromXDelta
+                            0,                 // toXDelta
+                            0,  // fromYDelta
+                            0);                // toYDelta
+                    animate.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            sliding_animated = false;
+                            slidingMenuLayout.setVisibility(View.VISIBLE);
+                            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                            lp.setMargins(0, 0, 0, 0);
+                            slidingMenuLayout.setLayoutParams(lp);
+                            sliding_animated = false;
+                        }
 
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        sliding_animated = true;
-                    }
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            sliding_animated = true;
+                        }
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
 
-                    }
-                });
-                animate.setDuration(200);
-                animate.setFillAfter(true);
+                        }
+                    });
+                    animate.setDuration(200);
+                    animate.setFillAfter(true);
                     sliding_animated = false;
                     slidingMenuLayout.startAnimation(animate);
-            } else {
-                menu_is_closed = true;
-                TranslateAnimation animate = new TranslateAnimation(
-                        0,                 // fromXDelta
-                        -(300 * getResources().getDisplayMetrics().scaledDensity),                 // toXDelta
-                        0,  // fromYDelta
-                        0);                  // toYDelta
-                animate.setDuration(200);
-                animate.setFillAfter(true);
+                } else {
+                    menu_is_closed = true;
+                    TranslateAnimation animate = new TranslateAnimation(
+                            0,                 // fromXDelta
+                            -(300 * getResources().getDisplayMetrics().scaledDensity),                 // toXDelta
+                            0,  // fromYDelta
+                            0);                  // toYDelta
+                    animate.setDuration(200);
+                    animate.setFillAfter(true);
                     animate.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
@@ -968,20 +976,29 @@ public class AppActivity extends Activity {
                         }
                     });
                     slidingMenuLayout.startAnimation(animate);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Log.e("OpenVK Legacy", "Sliding menu animation doesn't ended.");
+            } else {
+                if (menu_is_closed == true) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                    lp.setMargins(0, 0, 0, 0);
+                    slidingMenuLayout.setLayoutParams(lp);
+                    slidingMenuLayout.setVisibility(View.VISIBLE);
+                    menu_is_closed = false;
+                } else {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                    lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
+                    slidingMenuLayout.setLayoutParams(lp);
+                    slidingMenuLayout.setVisibility(View.GONE);
+                    menu_is_closed = true;
+                }
             }
-        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Log.e("OpenVK Legacy", "Sliding menu animation doesn't ended.");
         } else {
-            if(menu_is_closed == true) {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                lp.setMargins(0, 0, 0, 0);
-                slidingMenuLayout.setLayoutParams(lp);
+            if (menu_is_closed == true) {
                 slidingMenuLayout.setVisibility(View.VISIBLE);
                 menu_is_closed = false;
             } else {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
-                slidingMenuLayout.setLayoutParams(lp);
                 slidingMenuLayout.setVisibility(View.GONE);
                 menu_is_closed = true;
             }
@@ -1023,7 +1040,11 @@ public class AppActivity extends Activity {
                 error_ll.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
-                openSlidingMenu();
+                DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                float screenWidth = dm.widthPixels / dm.density;
+                if(screenWidth < 600) {
+                    openSlidingMenu();
+                }
                 try {
                     openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
@@ -1070,7 +1091,11 @@ public class AppActivity extends Activity {
                 error_ll.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
-                openSlidingMenu();
+                DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                float screenWidth = dm.widthPixels / dm.density;
+                if(screenWidth < 600) {
+                    openSlidingMenu();
+                }
                 try {
                     openVK_API.sendMethod("Account.getProfileInfo", "access_token=" + URLEncoder.encode(auth_token, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
@@ -1117,7 +1142,11 @@ public class AppActivity extends Activity {
                 messagesLayout.setVisibility(View.GONE);
                 LinearLayout progress_ll = findViewById(R.id.news_progressll);
                 progress_ll.setVisibility(View.VISIBLE);
-                openSlidingMenu();
+                DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                float screenWidth = dm.widthPixels / dm.density;
+                if(screenWidth < 600) {
+                    openSlidingMenu();
+                }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     titlebar_title.setText(getResources().getString(R.string.newsfeed));
                 } else {

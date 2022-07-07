@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#e3e4e6">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/profile_ext_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#313743"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <uk.openvk.android.legacy.layouts.ProfileHeader
+                        android:id="@+id/profile_header"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.layouts.ProfileHeader>
+
+                    <ImageButton
+                        android:id="@+id/send_direct_msg"
+                        android:layout_width="40dp"
+                        android:layout_height="38dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/btn_light_blue"
+                        android:src="@drawable/ic_ab_send"
+                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                </LinearLayout>
+
+                <uk.openvk.android.legacy.layouts.AboutProfileLayout
+                    android:id="@+id/about_profile_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                </uk.openvk.android.legacy.layouts.AboutProfileLayout>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                        android:id="@+id/photos_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                        android:id="@+id/friends_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                        android:id="@+id/mutual_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+                </TableRow>
+
+            </LinearLayout>
+
+            <TabHost
+                android:id="@+id/profile_tabhost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:background="@android:color/white"
+                        android:tabStripEnabled="false" />
+
+                    <FrameLayout
+                        android:id="@android:id/tabcontent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/all_posts_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <uk.openvk.android.legacy.layouts.WallLayout
+                                android:id="@+id/all_posts_wll"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="6dp">
+
+                            </uk.openvk.android.legacy.layouts.WallLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/owners_posts_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <uk.openvk.android.legacy.layouts.WallLayout
+                                android:id="@+id/owners_posts_wll"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="6dp">
+
+                            </uk.openvk.android.legacy.layouts.WallLayout>
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                </LinearLayout>
+            </TabHost>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

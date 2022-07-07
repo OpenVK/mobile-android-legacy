@@ -6,6 +6,7 @@ import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.list_items.NewsListItem;
 import uk.openvk.android.legacy.listeners.SwipeListener;
 
@@ -118,9 +120,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             post_text.setOnTouchListener(new SwipeListener(ctx) {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        if (((AppActivity) ctx).menu_is_closed == false) {
-                            ((AppActivity) ctx).openSlidingMenu();
+                    DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
+                    float screenWidth = dm.widthPixels / dm.density;
+                    if(screenWidth < 600) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            if (((AppActivity) ctx).menu_is_closed == false) {
+                                ((AppActivity) ctx).openSlidingMenu();
+                            }
                         }
                     }
                     return super.onTouch(v, event);
@@ -129,9 +135,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             post_photo.setOnTouchListener(new SwipeListener(ctx) {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        if (((AppActivity) ctx).menu_is_closed == false) {
-                            ((AppActivity) ctx).openSlidingMenu();
+                    DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
+                    float screenWidth = dm.widthPixels / dm.density;
+                    if(screenWidth < 600) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            if (((AppActivity) ctx).menu_is_closed == false) {
+                                ((AppActivity) ctx).openSlidingMenu();
+                            }
                         }
                     }
                     return super.onTouch(v, event);
@@ -140,9 +150,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        if (((AppActivity) ctx).menu_is_closed == false) {
-                            ((AppActivity) ctx).openSlidingMenu();
+                    DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
+                    float screenWidth = dm.widthPixels / dm.density;
+                    if(screenWidth < 600) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            if (((AppActivity) ctx).menu_is_closed == false) {
+                                ((AppActivity) ctx).openSlidingMenu();
+                            }
                         }
                     }
                 }

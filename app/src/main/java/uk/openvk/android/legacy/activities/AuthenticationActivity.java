@@ -108,7 +108,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                 resizeTranslucentLayout();
             }
             initKeyboardListener();
-            EditTextAction instance_edit = findViewById(R.id.instance_name);
+            final EditTextAction instance_edit = findViewById(R.id.instance_name);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 instance_edit.setText(getResources().getText(R.string.default_instance));
             } else {
