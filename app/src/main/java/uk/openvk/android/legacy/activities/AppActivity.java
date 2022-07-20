@@ -527,9 +527,12 @@ public class AppActivity extends Activity {
                             ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
                         }
                     }
-                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-                    float screenWidth = dm.widthPixels / dm.density;
-                    if(screenWidth < 600) {
+                    DisplayMetrics dm = getResources().getDisplayMetrics();
+                    double density = dm.density * 160;
+                    double x = Math.pow(dm.widthPixels / density, 2);
+                    double y = Math.pow(dm.heightPixels / density, 2);
+                    double screenInches = Math.sqrt(x + y);
+                    if(screenInches < 8) {
                         openSlidingMenu();
                     }
                 } else {
@@ -913,7 +916,11 @@ public class AppActivity extends Activity {
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         float screenWidth = dm.widthPixels / dm.density;
         final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
-        if(screenWidth < 600) {
+        double density = dm.density * 160;
+        double x = Math.pow(dm.widthPixels / density, 2);
+        double y = Math.pow(dm.heightPixels / density, 2);
+        double screenInches = Math.sqrt(x + y);
+        if(screenInches < 8) {
             if (sliding_animated == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 if (menu_is_closed == true) {
                     menu_is_closed = false;

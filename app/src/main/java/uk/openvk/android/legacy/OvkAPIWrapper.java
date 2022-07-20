@@ -112,7 +112,7 @@ public class OvkAPIWrapper {
             if(method.startsWith("Ovk.")) {
                 send_request = "/method/" + method;
             } else {
-                send_request = "/token?" + args;
+                send_request = "/token?" + args + "&2fa_supported=1";
             }
         } else {
             send_request = "/method/" + method + "?access_token=" + token + "&" + args;

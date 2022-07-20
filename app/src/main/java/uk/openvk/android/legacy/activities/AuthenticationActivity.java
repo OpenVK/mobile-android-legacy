@@ -292,29 +292,6 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                                     });
                                     wrong_userdata_dlg = builder.create();
                                     if(!AuthenticationActivity.this.isFinishing()) wrong_userdata_dlg.show();
-                                } if (json_login.getInt("error_code") == 28 && json_login.getString("error_msg").equals("Invalid 2FA code")) {
-                                    connectionDialog.cancel();
-                                    AlertDialog twofactor_dlg;
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
-                                    View twofactor_view = getLayoutInflater().inflate(R.layout.twofactor_auth, null, false);
-                                    builder.setTitle(R.string.auth);
-                                    builder.setView(twofactor_view);
-                                    final EditText two_factor_code = twofactor_view.findViewById(R.id.two_factor_code);
-                                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            twoFactorLogin(two_factor_code.getText().toString());
-                                        }
-                                    });
-                                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            two_factor_required = false;
-                                        }
-                                    });
-                                    twofactor_dlg = builder.create();
-                                    twofactor_dlg.setCancelable(false);
-                                    if(!AuthenticationActivity.this.isFinishing()) twofactor_dlg.show();
                                 } else if(json_login.getInt("error_code") == 3) {
                                     connectionDialog.cancel();
                                     AlertDialog wrong_userdata_dlg;
@@ -329,6 +306,29 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                                     wrong_userdata_dlg = builder.create();
                                     if(!AuthenticationActivity.this.isFinishing()) wrong_userdata_dlg.show();
                                 }
+                            } else if (json_login.has("error") && json_login.getString("error").equals("need_validation")) {
+                                connectionDialog.cancel();
+                                AlertDialog twofactor_dlg;
+                                AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
+                                View twofactor_view = getLayoutInflater().inflate(R.layout.twofactor_auth, null, false);
+                                builder.setTitle(R.string.auth);
+                                builder.setView(twofactor_view);
+                                final EditText two_factor_code = twofactor_view.findViewById(R.id.two_factor_code);
+                                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        twoFactorLogin(two_factor_code.getText().toString());
+                                    }
+                                });
+                                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        two_factor_required = false;
+                                    }
+                                });
+                                twofactor_dlg = builder.create();
+                                twofactor_dlg.setCancelable(false);
+                                if(!AuthenticationActivity.this.isFinishing()) twofactor_dlg.show();
                             } else if(json_login.has("access_token")) {
                                 connectionDialog.cancel();
                                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
