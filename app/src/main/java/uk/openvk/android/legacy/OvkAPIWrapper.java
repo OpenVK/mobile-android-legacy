@@ -174,7 +174,13 @@ public class OvkAPIWrapper {
                 BufferedReader in;
                 int status = -1;
                 inputStream_isClosed = false;
-                status = httpConnection.getResponseCode();
+                try {
+                    status = httpConnection.getResponseCode();
+                } catch (Exception ex) {
+                    if(httpConnection != null) {
+                        status = httpConnection.getResponseCode();
+                    }
+                }
                 Log.d("OpenVK Legacy", "Connected!");
                 String response;
                 Log.d("OpenVK Legacy","Response code: " + status);
@@ -275,6 +281,10 @@ public class OvkAPIWrapper {
                 else Log.e("OpenVK Legacy", connectionErrorString);
             } catch(Exception ex) {
                 ex.printStackTrace();
+                state = "no_connection";
+                sendMessageToParent();
+                if(ex.getMessage() != null)
+                    Log.e("OpenVK Legacy", ex.getMessage());
             }
         }
     }
@@ -489,7 +499,14 @@ public class OvkAPIWrapper {
                     httpRawConnection.setConnectTimeout(60000);
                     httpRawConnection.setReadTimeout(60000);
                     httpRawConnection.connect();
-                    responseCode = httpRawConnection.getResponseCode();
+                    try {
+                        responseCode = httpRawConnection.getResponseCode();
+                    } catch(Exception ex) {
+                        if(httpRawConnection != null) {
+                            responseCode = httpRawConnection.getResponseCode();
+                        }
+                    }
+
                     Log.d("OpenVK Legacy", "Response code: " + responseCode);
                     if (responseCode == 200) {
                         contentType = httpRawConnection.getContentType();

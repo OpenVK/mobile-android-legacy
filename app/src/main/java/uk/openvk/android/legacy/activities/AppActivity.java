@@ -1746,7 +1746,7 @@ public class AppActivity extends Activity {
                             editor.putString("previousLayout", "");
                             editor.commit();
                             TextView reason_text = findViewById(R.id.reason_text);
-                            reason_text.setText(getResources().getText(R.string.reason, "Connection lost"));
+                            reason_text.setText(getResources().getString(R.string.reason, "Connection lost"));
                         }
                     } else if(state.equals("timeout")) {
                         if(creating_another_activity == false) {
@@ -1761,7 +1761,7 @@ public class AppActivity extends Activity {
                             editor.putString("previousLayout", "");
                             editor.commit();
                             TextView reason_text = findViewById(R.id.reason_text);
-                            reason_text.setText(getResources().getText(R.string.reason, "Connection timeout"));
+                            reason_text.setText(getResources().getString(R.string.reason, "Connection timeout"));
                         }
                     } else if(state.equals("no_connection")) {
                         if(creating_another_activity == false) {
@@ -1776,7 +1776,7 @@ public class AppActivity extends Activity {
                             editor.putString("previousLayout", "");
                             editor.commit();
                             TextView reason_text = findViewById(R.id.reason_text);
-                            reason_text.setText(getResources().getText(R.string.reason, "No connection"));
+                            reason_text.setText(getResources().getString(R.string.reason, "No connection"));
                         }
                     }
                 }
@@ -1917,6 +1917,7 @@ public class AppActivity extends Activity {
                                     item.name = getResources().getString(R.string.on_wall, ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
                                             getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
                                             getJSONObject(users_index).getString("last_name"), item.name);
+                                    loadNewsAvatars(news_item_index, json_response.getJSONObject("response").getJSONArray("profiles").getJSONObject(users_index).getString("photo_50"), "user");
                                     newsListItemArray.set(news_item_index, item);
                                 }
                             }
