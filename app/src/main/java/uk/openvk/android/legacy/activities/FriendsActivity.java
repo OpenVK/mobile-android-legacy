@@ -142,8 +142,8 @@ public class FriendsActivity extends Activity {
                             } else if (json_response.getInt("error_code") == 3) {
                                 AlertDialog outdated_api_dlg;
                                 AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
-                                builder.setTitle(R.string.deprecated_openvk_api_error_title);
-                                builder.setMessage(R.string.deprecated_openvk_api_error);
+                                builder.setTitle(R.string.incompatible_openvk_api_title);
+                                builder.setMessage(R.string.incompatible_openvk_api);
                                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {

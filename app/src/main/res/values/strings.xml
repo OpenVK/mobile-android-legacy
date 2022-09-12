@@ -1100,8 +1100,8 @@
 	<string name="save_to_album">Save to album</string>
 	<string name="add_photo_from_album">Choose from album</string>
 	<string name="saved_to_album">This photo has been saved to \"Saved photos\".</string>
-	<string name="deprecated_openvk_api_error_title">Outdated OpenVK API version</string>
-	<string name="deprecated_openvk_api_error">Most likely, this instance uses an outdated version of the OpenVK API, which does not implement the necessary functions. Contact your system administrator to resolve the issue.</string>
+	<string name="incompatible_openvk_api_title">Incompatible OpenVK API version</string>
+	<string name="incompatible_openvk_api">Most likely, this instance uses an incompatible version of the OpenVK API, in which the necessary functions are not implemented or deprecated. Contact your system administrator or application developer to resolve the issue.</string>
 	<string name="unable_to_parse_error">Unable to parse response from server</string>
 	<string name="twofactor_text">You have two-factor authentication enabled. To login, paste the code received in the application.</string>
 	<string name="twofactor_hint">2FA code</string>

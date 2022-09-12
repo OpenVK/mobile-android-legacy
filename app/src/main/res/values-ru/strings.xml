@@ -406,7 +406,7 @@
     <string name="friend_deleted_m">%s был удалён из Вашего списка друзей</string>
     <string name="friend_deleted_f">%s была удалена из Вашего списка друзей</string>
     <string name="auth_error_network">Не удалось войти из-за проблем с интернет-соединением. Проверьте подключение к сети и повторите попытку.</string>
-    <string name="no_friend_requests">Новых заявок нет  </string>
+    <string name="no_friend_requests">Новых заявок нет</string>
     
     <string name="search_global">Глобальный поиск</string>
     <string name="important_friends">Важные</string>
@@ -1154,8 +1154,8 @@
     <string name="widget_news">OpenVK - новости</string>
     <string name="friend_deleted">%s убран из вашего списка друзей</string>
 
-    <string name="deprecated_openvk_api_error_title">Устаревшая версия OpenVK API</string>
-    <string name="deprecated_openvk_api_error">Скорее всего, в этой инстанции используется устаревшая версия OpenVK API, в котором не реализованы необходимые функции. Для решения проблемы обратитесь за системным администратором.</string>
+    <string name="incompatible_openvk_api_title">Несовместимая версия OpenVK API</string>
+    <string name="incompatible_openvk_api">Скорее всего, в этой инстанции используется несовместимая версия OpenVK API, в котором не реализованы или устарели необходимые функции. Для решения проблемы обратитесь к системным администратором или разработчику приложения.</string>
     <string name="unable_to_parse_error">Невозможно обработать ответ от сервера</string>
     <string name="twofactor_text">У вас включена двухфакторная аутентификация. Для входа вставьте код, полученный из специального приложения.</string>
     <string name="twofactor_hint">Код 2FA</string>
@@ -1188,6 +1188,6 @@
         <item>Все новости</item>
     </string-array>
     <string name="err_picture_not_enough_memory_text">Недостаточно памяти для обработки изображений. Закройте все неиспользуемые приложения и повторите попытку.</string>
-    <string name="reason">Причина: %1$s</string>
+    <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>
 </resources>

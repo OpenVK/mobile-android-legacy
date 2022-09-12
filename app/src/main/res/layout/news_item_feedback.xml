@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/user_photo"
+        android:id="@+id/author_avatar"
         android:layout_width="50dip"
         android:layout_height="50dip"
         android:layout_alignParentTop="true"
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="10dip"
-        android:layout_toRightOf="@id/user_photo"
+        android:layout_toRightOf="@id/author_avatar"
         android:ellipsize="marquee"
         android:paddingLeft="12dip"
         android:paddingTop="3.5dip"
@@ -43,9 +43,9 @@
         android:id="@+id/post_info_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/user_photo"
+        android:layout_alignBottom="@+id/author_avatar"
         android:layout_below="@+id/poster_name_view"
-        android:layout_toRightOf="@+id/user_photo"
+        android:layout_toRightOf="@+id/author_avatar"
         android:duplicateParentState="true"
         android:gravity="left"
         android:paddingLeft="12dip"
@@ -219,7 +219,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/user_photo"
+        android:layout_below="@+id/author_avatar"
         android:layout_marginBottom="8dip"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"

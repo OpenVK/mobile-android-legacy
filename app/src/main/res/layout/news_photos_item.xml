@@ -9,7 +9,7 @@
     <View android:id="@+id/user_profile_btn" android:layout_width="match_parent" android:layout_height="61dip" android:background="@drawable/photo_list_name_btn" android:layout_marginLeft="@dimen/list_side_padding_neg" android:layout_marginRight="@dimen/list_side_padding_neg"></View>
     
     <ImageView
-        android:id="@+id/user_photo"
+        android:id="@+id/author_avatar"
         android:layout_width="50dip"
         android:layout_height="50dip"
         android:layout_alignParentTop="true"
@@ -32,7 +32,7 @@
         android:layout_marginTop="5dip"
         android:paddingTop="3.5dip"
         android:paddingLeft="12dip"
-        android:layout_toRightOf="@id/user_photo"
+        android:layout_toRightOf="@id/author_avatar"
         android:layout_alignParentTop="true"
         android:ellipsize="marquee"
         android:singleLine="true"
@@ -45,9 +45,9 @@
         android:id="@+id/post_info_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/user_photo"
+        android:layout_alignBottom="@+id/author_avatar"
         android:layout_below="@+id/poster_name_view"
-        android:layout_toRightOf="@+id/user_photo"
+        android:layout_toRightOf="@+id/author_avatar"
         android:gravity="left"
         android:paddingLeft="12dip"
         android:text="post date"
@@ -82,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/user_photo"
+        android:layout_below="@+id/author_avatar"
         android:layout_marginRight="8dip"
         android:layout_marginTop="3dip"
         android:duplicateParentState="true"

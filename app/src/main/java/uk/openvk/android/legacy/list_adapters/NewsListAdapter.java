@@ -5,7 +5,10 @@ import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -71,6 +74,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
         public final TextView reposts_counter;
         public final TextView comments_counter;
         public final View convertView;
+        public final ImageView avatar;
 
         public Holder(View view) {
             super(view);
@@ -82,6 +86,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             this.likes_counter = view.findViewById(R.id.post_likes);
             this.reposts_counter = view.findViewById(R.id.post_reposts);
             this.comments_counter = view.findViewById(R.id.post_comments);
+            this.avatar = view.findViewById(R.id.author_avatar);
         }
 
         void bind(final int position) {
@@ -90,7 +95,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             post_info.setText(item.info);
             if(item.text.length() > 0) {
                 post_text.setVisibility(View.VISIBLE);
-                post_text.setText(Html.fromHtml(item.text));
+                post_text.setText(item.text);
                 post_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 post_text.setVisibility(View.GONE);
@@ -106,6 +111,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             reposts_counter.setText("" + item.counters.reposts);
             comments_counter.setText("" + item.counters.comments);
             Bitmap item_photo = item.getPhoto();
+            Bitmap author_avatar = item.getAvatar();
             if(item_photo != null) {
                 post_photo.setImageBitmap(item_photo);
                 post_photo.setVisibility(View.VISIBLE);
@@ -115,6 +121,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
                 post_photo.setLayoutParams(layoutParams);
             } else {
                 post_photo.setVisibility(View.GONE);
+            }
+            if(author_avatar != null) {
+                avatar.setImageBitmap(author_avatar);
             }
 
             post_text.setOnTouchListener(new SwipeListener(ctx) {

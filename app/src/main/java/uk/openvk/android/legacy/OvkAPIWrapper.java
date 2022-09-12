@@ -497,21 +497,21 @@ public class OvkAPIWrapper {
                         InputStream input = new BufferedInputStream(url.openStream());
                         OutputStream output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
                         try {
-                            File directory = new File(ctx.getCacheDir().getAbsolutePath(), "photos");
+                            File directory = new File(ctx.getCacheDir().getAbsolutePath(), "cache");
                             if (!directory.exists()) {
                                 directory.mkdirs();
                             }
                             if (contentType.equals("image/jpeg")) {
-                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg";
-                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg");
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".jpeg";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".jpeg");
                             } else if (contentType.equals("image/png")) {
-                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png";
-                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png");
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".png";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".png");
                             } else if (contentType.equals("image/gif")) {
-                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png";
-                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png");
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".png";
+                                output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".png");
                             } else {
-                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1];
+                                downloaded_file_path = ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1];
                                 output = new FileOutputStream(ctx.getCacheDir().getAbsolutePath() + "/" + _url[1]);
                             }
                         } catch (Exception ex) {
@@ -520,13 +520,13 @@ public class OvkAPIWrapper {
 
                         byte data[] = new byte[1024];
 
-                        if(contentType.equals("image/jpeg") && !new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg").exists()) {
+                        if(contentType.equals("image/jpeg") && !new File(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".jpeg").exists()) {
                             while ((count = input.read(data)) != -1) {
                                 total += count;
                                 output.write(data, 0, count);
                             }
                             output.flush();
-                        } else if(contentType.equals("image/png") && !new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png").exists()) {
+                        } else if(contentType.equals("image/png") && !new File(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".png").exists()) {
                             while ((count = input.read(data)) != -1) {
                                 total += count;
                                 output.write(data, 0, count);
@@ -539,19 +539,19 @@ public class OvkAPIWrapper {
                             }
                             output.flush();
                         } else {
-                            if(contentType.equals("image/jpeg") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".jpeg").length()) {
+                            if(contentType.equals("image/jpeg") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".jpeg").length()) {
                                 while ((count = input.read(data)) != -1) {
                                     total += count;
                                     output.write(data, 0, count);
                                 }
                                 output.flush();
-                            } else if(contentType.equals("image/png") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".png").length()) {
+                            } else if(contentType.equals("image/png") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".png").length()) {
                                 while ((count = input.read(data)) != -1) {
                                     total += count;
                                     output.write(data, 0, count);
                                 }
                                 output.flush();
-                            } else if(contentType.equals("image/gif") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/photos/" + _url[1] + ".gif").length()) {
+                            } else if(contentType.equals("image/gif") && contentLength != new File(ctx.getCacheDir().getAbsolutePath() + "/cache/" + _url[1] + ".gif").length()) {
                                 while ((count = input.read(data)) != -1) {
                                     total += count;
                                     output.write(data, 0, count);

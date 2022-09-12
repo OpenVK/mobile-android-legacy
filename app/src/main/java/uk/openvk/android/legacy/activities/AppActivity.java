@@ -117,6 +117,7 @@ public class AppActivity extends Activity {
     public ArrayList<ConversationsListItem> dmConvListItemArray;
     public ArrayList<SimpleListItem> spinnerActionBarArray;
     public ArrayList<GroupPostInfo> groupPostInfoArray;
+    public ArrayList<String> newsAvatarsArray;
     public NewsListAdapter newsListAdapter;
     public ConversationsListAdapter conversationsListAdapter;
     public int postAuthorId;
@@ -430,6 +431,7 @@ public class AppActivity extends Activity {
         friendsListItemArray = new ArrayList<FriendsListItem>();
         userPostInfoArray = new ArrayList<UserPostInfo>();
         dmConvListItemArray = new ArrayList<ConversationsListItem>();
+        newsAvatarsArray = new ArrayList<String>();
         server_2 = "";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             View actionBarView = LayoutInflater.from(this).inflate(R.layout.custom_actionbar_layout, null);
@@ -1304,8 +1306,8 @@ public class AppActivity extends Activity {
                                 } else if (json_response.getInt("error_code") == 3) {
                                     AlertDialog outdated_api_dlg;
                                     AlertDialog.Builder builder = new AlertDialog.Builder(AppActivity.this);
-                                    builder.setTitle(R.string.deprecated_openvk_api_error_title);
-                                    builder.setMessage(R.string.deprecated_openvk_api_error);
+                                    builder.setTitle(R.string.incompatible_openvk_api_title);
+                                    builder.setMessage(R.string.incompatible_openvk_api);
                                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -1625,8 +1627,8 @@ public class AppActivity extends Activity {
                                         current_item.counters.isLiked = true;
                                         newsListItemArray.set(newsfeed_id, current_item);
                                     } else if(json_response.getJSONObject("response").getInt("liked") == 1) {
-                                        send_request = ("/method/Likes.remove");
-                                        openVK_API.sendMethod("Likes.remove", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                        send_request = ("/method/Likes.delete");
+                                        openVK_API.sendMethod("Likes.delete", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
                                         NewsListItem current_item = newsListItemArray.get(newsfeed_id);
                                         current_item.counters.likes = current_item.counters.likes - 1;
                                         current_item.counters.isLiked = false;
@@ -1656,8 +1658,8 @@ public class AppActivity extends Activity {
                                     }
                                 } else if (json_response.getJSONObject("response").getInt("liked") == 1) {
                                     try {
-                                        send_request = ("/method/Likes.remove");
-                                        openVK_API.sendMethod("Likes.remove", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
+                                        send_request = ("/method/Likes.delete");
+                                        openVK_API.sendMethod("Likes.delete", "owner_id=" + owner_id + "&item_id=" + post_id + "&type=post");
                                         NewsListItem current_item = wallListItemArray.get(newsfeed_id);
                                         current_item.counters.likes = current_item.counters.likes - 1;
                                         current_item.counters.isLiked = false;
@@ -1689,7 +1691,6 @@ public class AppActivity extends Activity {
                                     NewsListItem newsListItem = newsListItemArray.get(newsfeed_picpost_id);
                                     if (newsListItem.repost == null) {
                                         newsListItem.photo = photo_bmp;
-                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nNews count: " + newsListItemArray.size());
                                         newsListItemArray.set(newsfeed_picpost_id, newsListItem);
                                         news_listview = newsLayout.findViewById(R.id.news_listview);
                                         if (newsListAdapter != null) {
@@ -1700,12 +1701,27 @@ public class AppActivity extends Activity {
                                         }
                                     }
                                 }
+                            } else if (from.equals("author_avatar")) {
+                                if(newsListItemArray.size() > newsfeed_picpost_id) {
+                                    NewsListItem newsListItem = newsListItemArray.get(newsfeed_picpost_id);
+                                    newsListItem.avatar = photo_bmp;
+                                    Log.d("OpenVK", "TEST!");
+                                    if (newsListAdapter != null) {
+                                        if (newsListItem.repost == null) {
+                                            newsListItemArray.set(newsfeed_picpost_id, newsListItem);
+                                            news_listview = newsLayout.findViewById(R.id.news_listview);
+                                            newsListAdapter.notifyItemChanged(newsfeed_picpost_id);
+                                        }
+                                    } else {
+                                        newsListAdapter = new NewsListAdapter(AppActivity.this, newsListItemArray);
+                                        news_listview.setAdapter(newsListAdapter);
+                                    }
+                                }
                             } else {
                                 if(wallListItemArray.size() > newsfeed_picpost_id) {
                                     NewsListItem newsListItem = wallListItemArray.get(newsfeed_picpost_id);
                                     if (newsListItem.repost == null) {
                                         newsListItem.photo = photo_bmp;
-                                        Log.d("OpenVK Legacy", "Post ID: " + newsfeed_picpost_id + "\r\nWall count: " + wallListItemArray.size());
                                         wallListItemArray.set(newsfeed_picpost_id, newsListItem);
                                         WallLayout wall_layout = profileLayout.findViewById(R.id.all_posts_wll);
                                         RecyclerView wall_listview = wall_layout.findViewById(R.id.news_listview);
@@ -1833,6 +1849,7 @@ public class AppActivity extends Activity {
     }
 
     public void appendNewsItem() {
+        newsAvatarsArray.clear();
         NewsLayout newsLayout = findViewById(R.id.news_layout);
         try {
             if (send_request.startsWith("/method/Newsfeed.get")) {
@@ -1877,6 +1894,7 @@ public class AppActivity extends Activity {
                                         getJSONObject(groups_index).getInt("id")) {
                                     item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("groups")).
                                             getJSONObject(groups_index).getString("name");
+                                    loadNewsAvatars(news_item_index, json_response.getJSONObject("response").getJSONArray("groups").getJSONObject(groups_index).getString("photo_50"), "group");
                                     newsListItemArray.set(news_item_index, item);
                                 }
                             }
@@ -1887,6 +1905,7 @@ public class AppActivity extends Activity {
                                     item.name = ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
                                             getJSONObject(users_index).getString("first_name") + " " + ((JSONArray) json_response.getJSONObject("response").getJSONArray("profiles")).
                                             getJSONObject(users_index).getString("last_name");
+                                    loadNewsAvatars(news_item_index, json_response.getJSONObject("response").getJSONArray("profiles").getJSONObject(users_index).getString("photo_50"), "user");
                                     newsListItemArray.set(news_item_index, item);
                                 }
                             }
@@ -2052,7 +2071,7 @@ public class AppActivity extends Activity {
                 int attachments_length = attachments.length();
                 for (int i = 0; i < attachments_length; i++) {
                     if (((JSONObject) newsfeed.get(pos)).isNull("attachments") == false) {
-                        if (availHeapSizeInMB >= 192 || attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() < 3) {
+                        if (attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() < 6) {
                             String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
                                     getJSONObject(0).getString("url");
                             if (attachments.getJSONObject(i).getString("type").equals("photo")) {
@@ -2064,9 +2083,9 @@ public class AppActivity extends Activity {
                                             url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "news_cache_" + post_id, post_id, "newsfeed");
                                 }
                             }
-                        } else if(attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").length() >= 3) {
+                        } else {
                             String url = attachments.getJSONObject(i).getJSONObject("photo").getJSONArray("sizes").
-                                    getJSONObject(2).getString("url");
+                                    getJSONObject(5).getString("url");
                             if (attachments.getJSONObject(i).getString("type").equals("photo")) {
                                 if (url.startsWith("https://")) {
                                     openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
@@ -2081,6 +2100,30 @@ public class AppActivity extends Activity {
                 }
             }
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadNewsAvatars(int pos, String url, String type) {
+        try {
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+                post_id = pos;
+                if(url.startsWith("http://")) {
+                    if(type.equals("group")) {
+                        openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "group_avatar_cache_" + post_id, post_id, "author_avatar");
+                    } else {
+                        openVK_API.downloadRaw(url.substring("http://".length()).split("/")[0],
+                                url.substring("http://".length() + url.substring("http://".length()).split("/")[0].length() + 1), "user_avatar_cache_" + post_id, post_id, "author_avatar");
+                    }
+                } else {
+                    openVK_API.downloadRaw(url.substring("https://".length()).split("/")[0],
+                            url.substring("https://".length() + url.substring("https://".length()).split("/")[0].length() + 1), "avatar_cache_" + post_id, post_id, "author_avatar");
+                }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

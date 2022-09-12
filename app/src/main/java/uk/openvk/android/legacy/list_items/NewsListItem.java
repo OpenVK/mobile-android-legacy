@@ -46,4 +46,8 @@ public class NewsListItem {
     public Bitmap getPhoto() {
         return photo;
     }
+
+    public Bitmap getAvatar() {
+        return avatar;
+    }
 }
