@@ -95,6 +95,7 @@
             android:id="@+id/profile_photo"
             android:layout_width="90dip"
             android:layout_height="90dip"
+            android:scaleType="centerCrop"
             android:src="@drawable/photo_loading_black" />
     </FrameLayout>
 </RelativeLayout>
