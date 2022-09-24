@@ -95,6 +95,11 @@
             android:label="@string/messages"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
+        <activity
+            android:name=".activities.CommentsActivity"
+            android:label="@string/comments"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+        </activity>
         <service android:name=".services.AccountAuthenticatorService" android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />

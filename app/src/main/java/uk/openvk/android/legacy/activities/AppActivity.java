@@ -263,7 +263,7 @@ public class AppActivity extends Activity {
                 editor.putString("currentLayout", "ProfileLayout");
                 editor.commit();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    getActionBar().setIcon(R.drawable.icon);
+                    getActionBar().setIcon(R.drawable.ic_ab_app);
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -285,7 +285,7 @@ public class AppActivity extends Activity {
                 editor.putString("currentLayout", "FriendsLayout");
                 editor.commit();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    getActionBar().setIcon(R.drawable.icon);
+                    getActionBar().setIcon(R.drawable.ic_ab_app);
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -530,12 +530,11 @@ public class AppActivity extends Activity {
                             ((Spinner) getActionBar().getCustomView().findViewById(R.id.spinner)).setVisibility(View.GONE);
                         }
                     }
-                    DisplayMetrics dm = getResources().getDisplayMetrics();
-                    double density = dm.density * 160;
-                    double x = Math.pow(dm.widthPixels / density, 2);
-                    double y = Math.pow(dm.heightPixels / density, 2);
-                    double screenInches = Math.sqrt(x + y);
-                    if(screenInches < 8) {
+                    DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+                    float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+                    float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+                    int orientation = getApplicationContext().getResources().getConfiguration().orientation;
+                    if(dpWidth < 7) {
                         openSlidingMenu();
                     }
                 } else {
@@ -916,102 +915,104 @@ public class AppActivity extends Activity {
     }
 
     public void openSlidingMenu() {
-        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-        float screenWidth = dm.widthPixels / dm.density;
-        final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
-        double density = dm.density * 160;
-        double x = Math.pow(dm.widthPixels / density, 2);
-        double y = Math.pow(dm.heightPixels / density, 2);
-        double screenInches = Math.sqrt(x + y);
-        if(screenInches < 8) {
-            if (sliding_animated == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                if (menu_is_closed == true) {
-                    menu_is_closed = false;
-                    TranslateAnimation animate = new TranslateAnimation(
-                            -(300 * getResources().getDisplayMetrics().scaledDensity),                 // fromXDelta
-                            0,                 // toXDelta
-                            0,  // fromYDelta
-                            0);                // toYDelta
-                    animate.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            sliding_animated = false;
-                            slidingMenuLayout.setVisibility(View.VISIBLE);
-                            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                            lp.setMargins(0, 0, 0, 0);
-                            slidingMenuLayout.setLayoutParams(lp);
-                            sliding_animated = false;
-                        }
+        try {
+            final SlidingMenuLayout slidingMenuLayout = findViewById(R.id.sliding_menu_layout);
+            DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+            float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+            int orientation = this.getResources().getConfiguration().orientation;
+            if (dpWidth < 7) {
+                if (sliding_animated == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if (menu_is_closed == true) {
+                        menu_is_closed = false;
+                        TranslateAnimation animate = new TranslateAnimation(
+                                -(300 * getResources().getDisplayMetrics().scaledDensity),                 // fromXDelta
+                                0,                 // toXDelta
+                                0,  // fromYDelta
+                                0);                // toYDelta
+                        animate.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                                sliding_animated = false;
+                                slidingMenuLayout.setVisibility(View.VISIBLE);
+                                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                                lp.setMargins(0, 0, 0, 0);
+                                slidingMenuLayout.setLayoutParams(lp);
+                                sliding_animated = false;
+                            }
 
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            sliding_animated = true;
-                        }
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                sliding_animated = true;
+                            }
 
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
 
-                        }
-                    });
-                    animate.setDuration(200);
-                    animate.setFillAfter(true);
-                    sliding_animated = false;
-                    slidingMenuLayout.startAnimation(animate);
+                            }
+                        });
+                        animate.setDuration(200);
+                        animate.setFillAfter(true);
+                        sliding_animated = false;
+                        slidingMenuLayout.startAnimation(animate);
+                    } else {
+                        menu_is_closed = true;
+                        TranslateAnimation animate = new TranslateAnimation(
+                                0,                 // fromXDelta
+                                -(300 * getResources().getDisplayMetrics().scaledDensity),                 // toXDelta
+                                0,  // fromYDelta
+                                0);                  // toYDelta
+                        animate.setDuration(200);
+                        animate.setFillAfter(true);
+                        animate.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                                sliding_animated = false;
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                sliding_animated = true;
+                                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                                lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
+                                slidingMenuLayout.setLayoutParams(lp);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                        slidingMenuLayout.startAnimation(animate);
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Log.e("OpenVK Legacy", "Sliding menu animation doesn't ended.");
                 } else {
-                    menu_is_closed = true;
-                    TranslateAnimation animate = new TranslateAnimation(
-                            0,                 // fromXDelta
-                            -(300 * getResources().getDisplayMetrics().scaledDensity),                 // toXDelta
-                            0,  // fromYDelta
-                            0);                  // toYDelta
-                    animate.setDuration(200);
-                    animate.setFillAfter(true);
-                    animate.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            sliding_animated = false;
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            sliding_animated = true;
-                            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                            lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
-                            slidingMenuLayout.setLayoutParams(lp);
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-                    slidingMenuLayout.startAnimation(animate);
+                    if (menu_is_closed == true) {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                        lp.setMargins(0, 0, 0, 0);
+                        slidingMenuLayout.setLayoutParams(lp);
+                        slidingMenuLayout.setVisibility(View.VISIBLE);
+                        menu_is_closed = false;
+                    } else {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
+                        lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
+                        slidingMenuLayout.setLayoutParams(lp);
+                        slidingMenuLayout.setVisibility(View.GONE);
+                        menu_is_closed = true;
+                    }
                 }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Log.e("OpenVK Legacy", "Sliding menu animation doesn't ended.");
             } else {
                 if (menu_is_closed == true) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                    lp.setMargins(0, 0, 0, 0);
-                    slidingMenuLayout.setLayoutParams(lp);
                     slidingMenuLayout.setVisibility(View.VISIBLE);
                     menu_is_closed = false;
                 } else {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) slidingMenuLayout.getLayoutParams();
-                    lp.setMargins((int) -(300 * getResources().getDisplayMetrics().scaledDensity), 0, 0, 0);
-                    slidingMenuLayout.setLayoutParams(lp);
                     slidingMenuLayout.setVisibility(View.GONE);
                     menu_is_closed = true;
                 }
             }
-        } else {
-            if (menu_is_closed == true) {
-                slidingMenuLayout.setVisibility(View.VISIBLE);
-                menu_is_closed = false;
-            } else {
-                slidingMenuLayout.setVisibility(View.GONE);
-                menu_is_closed = true;
-            }
+        } catch(Exception ex) {
+
         }
     }
 
@@ -1283,6 +1284,13 @@ public class AppActivity extends Activity {
             intent.putExtra("online", profileItem.online);
             startActivity(intent);
         }
+    }
+
+    public void openWallComments(int position, View view) {
+        Intent intent = new Intent(getApplicationContext(), CommentsActivity.class);
+        intent.putExtra("owner_id", newsListItemArray.get(position).owner_id);
+        intent.putExtra("post_id", newsListItemArray.get(position).post_id);
+        startActivity(intent);
     }
 
 

@@ -95,7 +95,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             post_info.setText(item.info);
             if(item.text.length() > 0) {
                 post_text.setVisibility(View.VISIBLE);
-                post_text.setText(item.text);
+                post_text.setText(item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\""));
                 post_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 post_text.setVisibility(View.GONE);
@@ -181,6 +182,18 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
                         }
                     } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
                         ((ProfileIntentActivity) ctx).addLike(position, "post", view);
+                    }
+                }
+            });
+            comments_counter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        if(((AppActivity) ctx).menu_is_closed == false) {
+                            ((AppActivity) ctx).openSlidingMenu();
+                        } else {
+                            ((AppActivity) ctx).openWallComments(position, view);
+                        }
                     }
                 }
             });

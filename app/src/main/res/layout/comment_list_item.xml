@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/background_light"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/author_avatar"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_below="@+id/ncomm_ntext"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginBottom="10dip"
+        android:cropToPadding="true"
+        android:src="@drawable/photo_loading" />
+
+    <TextView
+        android:id="@+id/comm_author"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/author_avatar"
+        android:layout_toRightOf="@+id/author_avatar"
+        android:duplicateParentState="true"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="#000"
+        android:textSize="18dip" />
+
+    <TextView
+        android:id="@+id/comment_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/comm_author"
+        android:layout_alignLeft="@+id/comm_author"
+        android:duplicateParentState="true"
+        android:ellipsize="none"
+        android:singleLine="false"
+        android:text="TextView"
+        android:textColor="@color/main_text"
+        android:textSize="15dip">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/comm_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/comment_text"
+        android:layout_alignLeft="@+id/comment_text"
+        android:paddingBottom="10dip"
+        android:text="TextView"
+        android:textColor="@color/hint"
+        android:textSize="15dip" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/comm_time"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="?android:attr/listDivider" />
+
+</RelativeLayout>

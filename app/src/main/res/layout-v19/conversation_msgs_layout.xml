@@ -28,7 +28,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:divider="@null"
-                android:stackFromBottom="true">
+                android:stackFromBottom="true"
+                android:fitsSystemWindows="false">
 
             </ListView>
 

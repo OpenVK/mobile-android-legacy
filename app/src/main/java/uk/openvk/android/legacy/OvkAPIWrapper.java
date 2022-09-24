@@ -38,6 +38,7 @@ import javax.net.ssl.SSLException;
 
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthenticationActivity;
+import uk.openvk.android.legacy.activities.CommentsActivity;
 import uk.openvk.android.legacy.activities.ConversationActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.activities.MainSettingsActivity;
@@ -312,7 +313,13 @@ public class OvkAPIWrapper {
                 BufferedReader in;
                 int status = -1;
                 inputStream_isClosed = false;
-                status = httpsConnection.getResponseCode();
+                try {
+                    status = httpsConnection.getResponseCode();
+                } catch (Exception ex) {
+                    if(httpsConnection != null) {
+                        status = httpsConnection.getResponseCode();
+                    }
+                }
                 Log.d("OpenVK Legacy", "Connected!");
                 String response;
                 Log.d("OpenVK Legacy","Response code: " + status);
@@ -469,6 +476,14 @@ public class OvkAPIWrapper {
             bundle.putString("Error_message", connectionErrorString);
             msg.setData(bundle);
             ConversationActivity.handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("CommentsActivity")) {
+            Message msg = handler.obtainMessage(FriendsIntentActivity.UPDATE_UI);
+            Bundle bundle = new Bundle();
+            bundle.putString("State", state);
+            bundle.putString("API_method", "/method/" + api_method);
+            bundle.putString("JSON_response", "" + jsonResponseString);
+            msg.setData(bundle);
+            CommentsActivity.handler.sendMessage(msg);
         }
     }
 

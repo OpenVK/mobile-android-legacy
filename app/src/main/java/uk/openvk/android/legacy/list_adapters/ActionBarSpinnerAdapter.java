@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,19 +65,17 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
             item_name.setText(item.name);
         }
         if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            DisplayMetrics dm = new DisplayMetrics();
-            ((AppActivity) ctx).getWindowManager().getDefaultDisplay().getMetrics(dm);
-            double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
-            double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
-            double screenInches = Math.sqrt(x + y);
-            if (ctx.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && screenInches < 7) {
+            DisplayMetrics displayMetrics = ((AppActivity) ctx).getResources().getDisplayMetrics();
+            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+            float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+            if (ctx.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && dpWidth < 7) {
                 TextView item_name = view.findViewById(R.id.item_title);
                 LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
-                ll_layoutParams.setMargins(0, -6, 0, 0);
+                ll_layoutParams.setMargins(0, -8, 0, 0);
                 item_name.setLayoutParams(ll_layoutParams);
                 TextView app_title = view.findViewById(R.id.app_title);
                 ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
-                ll_layoutParams.setMargins(0, -8, 0, 0);
+                ll_layoutParams.setMargins(0, -12, 0, 0);
                 item_name.setLayoutParams(ll_layoutParams);
             }
         }
