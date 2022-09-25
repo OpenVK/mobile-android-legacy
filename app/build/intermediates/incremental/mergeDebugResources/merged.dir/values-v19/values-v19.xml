@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BaseStyle" parent="android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+    <style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+</resources>

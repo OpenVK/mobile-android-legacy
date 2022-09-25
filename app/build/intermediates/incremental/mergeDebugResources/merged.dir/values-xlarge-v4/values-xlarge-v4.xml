@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PopupIfTablet" parent="BaseStyle">
+        <item name="android:windowIsFloating">false</item>
+	    <item name="android:windowContentOverlay">@null</item>
+	    <!--item name="android:windowSoftInputMode">stateAlwaysHidden</item-->
+	    <item name="android:windowActionModeOverlay">true</item>
+	    <item name="android:windowIsTranslucent">true</item>
+	    <item name="android:windowBackground">@drawable/attach_dropdown</item>
+    </style>
+</resources>

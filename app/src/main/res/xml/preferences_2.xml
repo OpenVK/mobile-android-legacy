@@ -42,7 +42,8 @@
 	</PreferenceCategory-->
 
 
-	<PreferenceCategory android:title="@string/sett_other">
+	<PreferenceCategory android:title="@string/sett_other"
+		android:layout="@layout/category_prefw">
 		<Preference
 			android:id="@+id/debug_menu"
 			android:key="debug_menu"
