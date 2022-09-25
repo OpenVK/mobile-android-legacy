@@ -181,6 +181,7 @@ public class OvkAPIWrapper {
                     if(httpConnection != null) {
                         status = httpConnection.getResponseCode();
                     }
+                    throw ex;
                 }
                 Log.d("OpenVK Legacy", "Connected!");
                 String response;
@@ -280,6 +281,15 @@ public class OvkAPIWrapper {
                 if(ex.getMessage() != null)
                     Log.e("OpenVK Legacy", ex.getMessage());
                 else Log.e("OpenVK Legacy", connectionErrorString);
+            } catch(IOException ex) {
+                Log.e("OpenVK Legacy", ex.getMessage());
+                if(ex.getMessage().equals("Received authentication challenge is null")) {
+                    state = "2fa_required";
+                } else {
+                    state = "no_connection";
+                    ex.printStackTrace();
+                }
+                sendMessageToParent();
             } catch(Exception ex) {
                 ex.printStackTrace();
                 state = "no_connection";
@@ -313,13 +323,7 @@ public class OvkAPIWrapper {
                 BufferedReader in;
                 int status = -1;
                 inputStream_isClosed = false;
-                try {
-                    status = httpsConnection.getResponseCode();
-                } catch (Exception ex) {
-                    if(httpsConnection != null) {
-                        status = httpsConnection.getResponseCode();
-                    }
-                }
+                status = httpsConnection.getResponseCode();
                 Log.d("OpenVK Legacy", "Connected!");
                 String response;
                 Log.d("OpenVK Legacy","Response code: " + status);
@@ -397,8 +401,14 @@ public class OvkAPIWrapper {
                 ex.printStackTrace();
                 isConnected = true;
             } catch(IOException ex) {
-                ex.printStackTrace();
-                isConnected = true;
+                Log.e("OpenVK Legacy", ex.getMessage());
+                if(ex.getMessage().equals("Received authentication challenge is null")) {
+                    state = "2fa_required";
+                } else {
+                    state = "no_connection";
+                    ex.printStackTrace();
+                }
+                sendMessageToParent();
             } catch(Exception ex) {
                 ex.printStackTrace();
                 isConnected = true;

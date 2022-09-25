@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<!--CheckBoxPreference android:title="@string/sett_load_images"
+					android:summary="@string/sett_load_images_summary" android:key="loadImages"
+					android:defaultValue="true" /-->
+
+	<PreferenceCategory android:title="@string/sett_cache">
+				    <Preference android:title="@string/sett_clear_img_cache"
+						android:summary="" android:key="clearImageCache"/>
+				    <!--ListPreference android:entries="@array/sett_img_cache_location"
+						android:entryValues="@array/sett_cache_location_v" android:title="@string/sett_cache_location"
+						android:dialogTitle="@string/sett_cache_location" android:key="imgCacheLocation"
+						android:defaultValue="internal" /-->
+				</PreferenceCategory>
+</PreferenceScreen>

@@ -170,10 +170,10 @@
     <string name="sett_https">Защищенное соединение</string>
     <string name="sett_https_summary">Использовать протокол HTTPS</string>
     <string name="sett_general">Общие</string>
-    <string name="sett_notifications">Оповещения</string>
+    <string name="sett_notifications">Уведомления</string>
     <string name="sett_notify_sound">Звук</string>
     <string name="sett_notify_vibrate">Вибрация</string>
-    <string name="sett_notify_led">Индикатор</string>
+    <string name="sett_notify_led">Световой индикатор</string>
     <string name="sett_other">Прочее</string>
     
     

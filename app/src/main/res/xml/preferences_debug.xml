@@ -5,10 +5,12 @@
     <Preference
         android:id="@+id/logToFile"
         android:key="logToFile"
+        android:layout="@layout/pref_widget"
         android:title="@string/write_logs_to_file" />
 
     <Preference
         android:key="terminate"
+        android:layout="@layout/pref_widget"
         android:title="@string/terminate" />
 
 </PreferenceScreen>

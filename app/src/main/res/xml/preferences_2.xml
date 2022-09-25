@@ -10,7 +10,9 @@
         
     </PreferenceCategory-->
     
-	<PreferenceCategory android:title="@string/sett_general">
+	<PreferenceCategory
+		android:title="@string/sett_general"
+		android:layout="@layout/category_prefw">
 
 		<!--ListPreference android:entries="@array/sett_update_interval_items"
 			android:entryValues="@array/sett_update_interval_v" android:title="@string/sett_update_interval"
@@ -19,6 +21,7 @@
 
 		<CheckBoxPreference android:title="@string/sett_https"
 			android:summary="@string/sett_https_summary" android:key="useHTTPS"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="false"/>
 
 		<!--Preference android:title="Stop C2DM"
@@ -43,8 +46,11 @@
 		<Preference
 			android:id="@+id/debug_menu"
 			android:key="debug_menu"
+			android:layout="@layout/pref_widget"
 			android:title="@string/debug_menu" />
-		<Preference android:title="@string/menu_about" android:key="about" />
+		<Preference android:title="@string/menu_about"
+			android:key="about"
+			android:layout="@layout/pref_widget" />
 
 	</PreferenceCategory>
 

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--PreferenceCategory android:title="Для Олега">
+		<ListPreference android:entries="@array/sett_api_host"
+			android:entryValues="@array/sett_api_host" android:title="Домен API"
+			android:dialogTitle="Домен API" android:key="apiHost"
+			android:defaultValue="api.vk.com" />
+		<Preference android:title="Перезапустить приложение" android:summary="Чтобы новый домен применился" android:key="restart" />
+        
+    </PreferenceCategory-->
+    
+	<PreferenceCategory android:title="@string/sett_general">
+
+		<!--ListPreference android:entries="@array/sett_update_interval_items"
+			android:entryValues="@array/sett_update_interval_v" android:title="@string/sett_update_interval"
+			android:dialogTitle="@string/sett_update_interval" android:key="updateInterval"
+			android:defaultValue="180000" android:dependency="enableC2DM"/-->
+
+		<CheckBoxPreference android:title="@string/sett_https"
+			android:summary="@string/sett_https_summary" android:key="useHTTPS"
+			android:defaultValue="false"/>
+
+		<!--Preference android:title="Stop C2DM"
+			android:summary="" android:key="stopc2dm"/>
+		<Preference android:title="Start C2DM"
+			android:summary="" android:key="startc2dm"/-->
+	</PreferenceCategory>
+
+
+	<!-- PreferenceCategory android:title="@string/sett_video_calls" android:key="cat_video_calls">
+		<CheckBoxPreference android:title="@string/sett_accept_calls"
+		 android:key="acceptVoip"
+			android:defaultValue="true" />
+		<RingtonePreference android:ringtoneType="ringtone"
+			android:key="voipRingtone" android:title="@string/sett_call_ringtone"
+			android:showDefault="true" android:showSilent="true"
+			android:defaultValue="content://settings/system/notification_sound"/>
+	</PreferenceCategory-->
+
+
+	<PreferenceCategory android:title="@string/sett_other">
+		<Preference
+			android:id="@+id/debug_menu"
+			android:key="debug_menu"
+			android:title="@string/debug_menu" />
+		<Preference android:title="@string/menu_about" android:key="about" />
+
+	</PreferenceCategory>
+
+</PreferenceScreen>

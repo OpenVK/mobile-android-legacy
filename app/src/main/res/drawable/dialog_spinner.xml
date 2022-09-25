@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item><layer-list>
+        <item android:width="128dp" android:height="20dp"><shape>
+            <stroke android:color="@color/white" android:width="1dp"></stroke>
+            <corners android:radius="4dp"></corners>
+            <solid android:color="#00000000"></solid>
+            <padding android:bottom="1dp" android:left="1dp" android:right="1dp" android:top="1dp" />
+        </shape>
+        </item>
+        <item>
+            <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+                android:gravity="right"
+                android:scaleType="fitXY"
+                android:src="@drawable/spinner_arrow_dialog"/>
+        </item>
+    </layer-list></item>
+
+</selector>

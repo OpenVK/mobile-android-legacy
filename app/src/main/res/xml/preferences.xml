@@ -10,11 +10,14 @@
         
     </PreferenceCategory-->
     
-	<PreferenceCategory android:title="@string/sett_general">
+	<PreferenceCategory
+		android:title="@string/sett_general"
+		android:layout="@layout/category_prefw">
 
 		<ListPreference android:entries="@array/sett_friends_order"
 			android:entryValues="@array/sett_friends_order_v" android:title="@string/sett_flist_sort"
 			android:dialogTitle="@string/sett_flist_sort" android:key="friendsOrderNew"
+			android:layout="@layout/list_prefw"
 			android:defaultValue="firstname" />
 			
 		<!--ListPreference android:entries="@array/sett_update_interval_items"
@@ -24,20 +27,25 @@
 
 		<CheckBoxPreference android:title="@string/sett_https"
 			android:summary="@string/sett_https_summary" android:key="useHTTPS"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="false"/>
 		
 		<CheckBoxPreference android:title="@string/sett_push"
 			android:summary="@string/sett_push_summary" android:key="enableC2DM"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true" android:disableDependentsState="true"/>
 		
 		<CheckBoxPreference android:title="@string/sett_update_on_open"
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true"/>
 			
 		<CheckBoxPreference android:title="@string/sett_bdays" android:key="notifyBDays"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true"/>
 			
 		<Preference android:title="@string/sett_advanced"
+			android:layout="@layout/pref_widget"
 			android:summary="" android:key="advanced"/>
 		
 		<!--Preference android:title="Stop C2DM"
@@ -47,22 +55,30 @@
 	</PreferenceCategory>
 
 
-	<PreferenceCategory android:title="@string/sett_notifications" android:key="cat_notify">
+	<PreferenceCategory
+		android:title="@string/sett_notifications"
+		android:layout="@layout/category_prefw"
+		android:key="cat_notify">
 		<CheckBoxPreference android:title="@string/sett_notify_sound"
-		 android:key="notifySound"
+		 	android:key="notifySound"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/sett_notify_vibrate"
-		 android:key="notifyVibrate"
+		 	android:key="notifyVibrate"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/sett_notify_led"
-		 android:key="notifyLED"
+		 	android:key="notifyLED"
+			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true" />
 		<RingtonePreference android:ringtoneType="notification"
+			android:layout="@layout/checkbox_prefw"
 			android:key="notifyRingtone" android:title="@string/sett_ringtone"
 			android:showDefault="true" android:showSilent="false"
 			android:defaultValue="content://settings/system/notification_sound"/>
 		<Preference
 			android:key="doNotDistrib"
+			android:layout="@layout/checkbox_prefw"
 			android:title="@string/dnd_mode" />
 
 	</PreferenceCategory>
@@ -77,27 +93,44 @@
 			android:defaultValue="content://settings/system/notification_sound"/>
 	</PreferenceCategory-->
 
-	
-	<PreferenceCategory android:title="@string/sett_account">
-		<Preference android:title="@string/sett_news_banned"
-			android:summary="@string/sett_news_banned_summary" android:key="newsBanned"/>
-			
-		<Preference android:title="@string/sett_sync"
-			android:summary="" android:key="sync"/>
-	
-		<Preference android:title="@string/log_out"
-			android:summary="" android:key="logOut"/>
+
+	<PreferenceCategory
+		android:layout="@layout/category_prefw"
+		android:title="@string/sett_account">
+		<Preference
+			android:key="newsBanned"
+			android:layout="@layout/pref_widget"
+			android:summary="@string/sett_news_banned_summary"
+			android:title="@string/sett_news_banned" />
+
+		<Preference
+			android:key="sync"
+			android:layout="@layout/pref_widget"
+			android:summary=""
+			android:title="@string/sett_sync" />
+
+		<Preference
+			android:key="logOut"
+			android:layout="@layout/pref_widget"
+			android:summary=""
+			android:title="@string/log_out" />
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/sett_other">
+	<PreferenceCategory
+		android:title="@string/sett_other"
+		android:layout="@layout/category_prefw">
 		<Preference
+			android:layout="@layout/pref_widget"
 			android:id="@+id/debug_menu"
 			android:key="debug_menu"
 			android:title="@string/debug_menu" />
 		<Preference
+			android:layout="@layout/pref_widget"
 			android:key="about_instance"
 			android:title="@string/about_instance" />
-		<Preference android:title="@string/menu_about" android:key="about" />
+		<Preference android:title="@string/menu_about"
+			android:layout="@layout/pref_widget"
+			android:key="about" />
 
 	</PreferenceCategory>
 

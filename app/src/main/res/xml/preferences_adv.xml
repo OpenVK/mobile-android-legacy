@@ -5,8 +5,9 @@
 					android:summary="@string/sett_load_images_summary" android:key="loadImages"
 					android:defaultValue="true" /-->
 
-	<PreferenceCategory android:title="@string/sett_cache">
+	<PreferenceCategory android:title="@string/sett_cache" android:layout="@layout/category_prefw">
 				    <Preference android:title="@string/sett_clear_img_cache"
+						android:layout="@layout/pref_widget"
 						android:summary="" android:key="clearImageCache"/>
 				    <!--ListPreference android:entries="@array/sett_img_cache_location"
 						android:entryValues="@array/sett_cache_location_v" android:title="@string/sett_cache_location"

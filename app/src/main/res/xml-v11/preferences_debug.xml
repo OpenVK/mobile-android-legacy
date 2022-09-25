@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+    <Preference
+        android:id="@+id/logToFile"
+        android:key="logToFile"
+        android:title="@string/write_logs_to_file" />
+
+    <Preference
+        android:key="terminate"
+        android:title="@string/terminate" />
+
+</PreferenceScreen>

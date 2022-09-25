@@ -92,10 +92,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                     case UPDATE_UI:
                         state = msg.getData().getString("State");
                         send_request = msg.getData().getString("API_method");
-                        try {
-                            json_login = new JSONObject(msg.getData().getString("JSON_response"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        if(!state.equals("2fa_required")) {
+                            try {
+                                json_login = new JSONObject(msg.getData().getString("JSON_response"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                         connectionErrorString = msg.getData().getString("Error_message");
                         updateUITask.run();
@@ -391,6 +393,29 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
                         if(!AuthenticationActivity.this.isFinishing()) error_dlg.show();
                     } else if(state.equals("creating_ssl_connection")) {
                         sslSocketThread.start();
+                    } else if(state.equals("2fa_required")) {
+                        connectionDialog.cancel();
+                        AlertDialog twofactor_dlg;
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AuthenticationActivity.this);
+                        View twofactor_view = getLayoutInflater().inflate(R.layout.twofactor_auth, null, false);
+                        builder.setTitle(R.string.auth);
+                        builder.setView(twofactor_view);
+                        final EditText two_factor_code = twofactor_view.findViewById(R.id.two_factor_code);
+                        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                twoFactorLogin(two_factor_code.getText().toString());
+                            }
+                        });
+                        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                two_factor_required = false;
+                            }
+                        });
+                        twofactor_dlg = builder.create();
+                        twofactor_dlg.setCancelable(false);
+                        if(!AuthenticationActivity.this.isFinishing()) twofactor_dlg.show();
                     }
                 }
             });
