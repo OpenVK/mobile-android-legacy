@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="list_side_padding">12dip</dimen>
-    <dimen name="list_side_padding_neg">-12dip</dimen>
-</resources>
