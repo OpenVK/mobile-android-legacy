@@ -1,35 +1,28 @@
 package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.activities.AppActivity;
-import uk.openvk.android.legacy.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.list_items.CommentsListItem;
-import uk.openvk.android.legacy.list_items.NewsListItem;
-import uk.openvk.android.legacy.listeners.SwipeListener;
+import uk.openvk.android.legacy.api.models.Comment;
 
 public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapter.Holder> {
 
-    private ArrayList<CommentsListItem> items = new ArrayList<>();
+    private ArrayList<Comment> items = new ArrayList<>();
     private Context ctx;
     public LruCache memCache;
 
-    public CommentsListAdapter(Context context, ArrayList<CommentsListItem> comments) {
+    public CommentsListAdapter(Context context, ArrayList<Comment> comments) {
         ctx = context;
         items = comments;
     }
@@ -49,7 +42,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         super.onViewRecycled(holder);
     }
 
-    public CommentsListItem getItem(int position) {
+    public Comment getItem(int position) {
        return items.get(position);
     }
 
@@ -76,9 +69,9 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         }
 
         void bind(final int position) {
-            CommentsListItem item = getItem(position);
+            Comment item = getItem(position);
             author_name.setText(item.author);
-            comment_info.setText(item.info);
+            comment_info.setText(new SimpleDateFormat("d MMMM yyyy").format(item.date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(item.date));
             if(item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
                 comment_text.setText(item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -87,17 +80,10 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             } else {
                 comment_text.setVisibility(View.GONE);
             }
-
-            Bitmap avatar = item.getAvatar();
-            if(author_avatar != null) {
-                author_avatar.setImageBitmap(avatar);
-            } else {
-                author_avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
-            }
         }
     }
 
-    public void setArray(ArrayList<CommentsListItem> array) {
+    public void setArray(ArrayList<Comment> array) {
         items = array;
     }
 }

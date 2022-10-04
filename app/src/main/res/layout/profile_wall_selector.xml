@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="50dp"
     android:orientation="horizontal"
     android:paddingLeft="11dip"
     android:paddingRight="11dip"
-    android:paddingTop="8dip" >
+    android:paddingTop="4dip"
+    android:paddingBottom="4dip"
+    android:background="#ffffff">
 
     <TextView
         android:id="@+id/profile_wall_all_posts"

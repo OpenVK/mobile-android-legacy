@@ -1,123 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <LinearLayout
-            android:id="@+id/error_ll"
+        <uk.openvk.android.legacy.layouts.ProgressLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:id="@+id/progress_layout"
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:layout_gravity="fill" />
 
-            <ImageView
-                android:id="@+id/error_icon2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_warning_light" />
-
-            <TextView
-                android:id="@+id/error_text2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dip"
-                android:layout_marginTop="12dip"
-                android:layout_marginRight="12dip"
-                android:gravity="center"
-                android:text="@string/err_text"
-                android:textColor="#a3a3a3"
-                android:textSize="16dip" />
-
-            <TextView
-                android:id="@+id/reason_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dip"
-                android:gravity="center_horizontal"
-                android:textColor="#a3a3a3" />
-
-            <TextView
-                android:id="@+id/error_button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_btn_link"
-                android:paddingLeft="10dip"
-                android:paddingTop="3dip"
-                android:paddingRight="10dip"
-                android:paddingBottom="3dip"
-                android:text="@string/err_try_again"
-                android:textColor="@color/btn_link"
-                android:textSize="22dip"
-                android:textStyle="italic" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/news_progressll"
+        <uk.openvk.android.legacy.layouts.ErrorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:id="@+id/error_layout"
+            android:visibility="gone" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
+        <uk.openvk.android.legacy.layouts.NewsfeedLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/newsfeed_layout"
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:layout_gravity="fill"/>
 
         <uk.openvk.android.legacy.layouts.ProfileLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/profile_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"></uk.openvk.android.legacy.layouts.ProfileLayout>
-
-        <uk.openvk.android.legacy.layouts.NewsLayout
-            android:id="@+id/news_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginLeft="0dp"
-            android:background="#e3e4e6">
-
-        </uk.openvk.android.legacy.layouts.NewsLayout>
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:layout_gravity="fill"/>
 
         <uk.openvk.android.legacy.layouts.FriendsLayout
-            android:id="@+id/friends_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
-
-        </uk.openvk.android.legacy.layouts.FriendsLayout>
+            android:id="@+id/friends_layout"
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:layout_gravity="fill"/>
 
         <uk.openvk.android.legacy.layouts.ConversationsLayout
-            android:id="@+id/messages_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:visibility="gone">
+            android:id="@+id/conversations_layout"
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:layout_gravity="fill"
+            android:background="@android:color/white"/>
 
-        </uk.openvk.android.legacy.layouts.ConversationsLayout>
 
-        <uk.openvk.android.legacy.layouts.SlidingMenuLayout
-            android:id="@+id/sliding_menu_layout"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:background="#1c1d22"
-            android:theme="@style/SlidingMenu"
-            android:visibility="gone">
 
-        </uk.openvk.android.legacy.layouts.SlidingMenuLayout>
-    </RelativeLayout>
-
-</FrameLayout>
+</LinearLayout>

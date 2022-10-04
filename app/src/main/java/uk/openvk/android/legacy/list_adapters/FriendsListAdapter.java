@@ -1,6 +1,10 @@
 package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,16 +18,15 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.list_items.FriendsListItem;
-import uk.openvk.android.legacy.listeners.SwipeListener;
+import uk.openvk.android.legacy.api.models.Friend;
 
 public class FriendsListAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<FriendsListItem> objects;
+    ArrayList<Friend> objects;
     public boolean opened_sliding_menu;
 
-    public FriendsListAdapter(Context context, ArrayList<FriendsListItem> items) {
+    public FriendsListAdapter(Context context, ArrayList<Friend> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -45,8 +48,8 @@ public class FriendsListAdapter extends BaseAdapter {
         return position;
     }
 
-    FriendsListItem getFriendsListItem(int position) {
-        return ((FriendsListItem) getItem(position));
+    Friend getFriend(int position) {
+        return ((Friend) getItem(position));
     }
 
     @Override
@@ -56,9 +59,17 @@ public class FriendsListAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.friend_list_item, parent, false);
         }
 
-        FriendsListItem item = getFriendsListItem(position);
-        ((TextView) view.findViewById(R.id.flist_item_text)).setText(item.name);
-        if(item.online == 1) {
+        Friend item = getFriend(position);
+        if(item.verified) {
+            String name = String.format("%s %s  ", item.first_name, item.last_name);
+            SpannableStringBuilder sb = new SpannableStringBuilder(name);
+            ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ((TextView) view.findViewById(R.id.flist_item_text)).setText(sb);
+        } else {
+            ((TextView) view.findViewById(R.id.flist_item_text)).setText(String.format("%s %s", item.first_name, item.last_name));
+        }
+        if(item.online) {
             ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.VISIBLE);
         } else {
             ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
@@ -84,14 +95,6 @@ public class FriendsListAdapter extends BaseAdapter {
                 return super.onTouch(v, event);
             }
         }); */
-
-        view.setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return super.onTouch(v, event);
-            }
-        });
 
         return view;
     }

@@ -26,7 +26,5 @@
     <uk.openvk.android.legacy.layouts.SearchResultsLayout
         android:id="@+id/sr_ll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </uk.openvk.android.legacy.layouts.SearchResultsLayout>
+        android:layout_height="match_parent" />
 </LinearLayout>

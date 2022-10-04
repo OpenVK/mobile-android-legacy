@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_actionbar">
+
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:src="@drawable/ic_left_menu"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/title_menu_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark"
+                tools:ignore="Suspicious0dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titlebar_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="App subtitle"
+                    android:textColor="@color/api_v8_ll_subtitle_color"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/titlebar_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="App title"
+                    android:textColor="@color/api_v8_ll_title_color" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/action_btn"
+                android:layout_width="52dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:visibility="gone"
+                android:src="@drawable/ic_ab_write"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+            <ImageButton
+                android:id="@+id/action_btn2"
+                android:layout_width="52dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:visibility="gone"
+                android:src="@drawable/ic_ab_write"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/titlebar2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_actionbar"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:paddingLeft="2dp"
+            android:src="@drawable/ic_ab_back_holo_dark" />
+
+        <ImageButton
+            android:id="@+id/ovkButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp"
+            android:background="@null"
+            android:src="@drawable/ic_ab_app" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/titlebar_subtitle2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="App subtitle"
+                android:textColor="@color/api_v8_ll_subtitle_color"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/titlebar_title2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="App title"
+                android:textColor="@color/api_v8_ll_title_color" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

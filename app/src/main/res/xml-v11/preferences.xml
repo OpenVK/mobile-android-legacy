@@ -26,10 +26,6 @@
 			android:summary="@string/sett_https_summary" android:key="useHTTPS"
 			android:defaultValue="false"/>
 		
-		<CheckBoxPreference android:title="@string/sett_push"
-			android:summary="@string/sett_push_summary" android:key="enableC2DM"
-			android:defaultValue="true" android:disableDependentsState="true"/>
-		
 		<CheckBoxPreference android:title="@string/sett_update_on_open"
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
 			android:defaultValue="true"/>
@@ -48,6 +44,11 @@
 
 
 	<PreferenceCategory android:title="@string/sett_notifications" android:key="cat_notify">
+
+        <CheckBoxPreference android:title="@string/sett_push"
+            android:summary="@string/sett_push_summary" android:key="enableC2DM"
+            android:defaultValue="true" android:disableDependentsState="true"/>
+
 		<CheckBoxPreference android:title="@string/sett_notify_sound"
 		 android:key="notifySound"
 			android:defaultValue="true" />

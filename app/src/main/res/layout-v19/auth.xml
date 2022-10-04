@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ctrl="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/auth"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg_auth">
+    android:orientation="horizontal">
 
-    <View
-        android:id="@+id/statusbarView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#00000000" />
-
-    <LinearLayout
+    <uk.openvk.android.legacy.layouts.XLinearLayout
+        android:id="@+id/auth_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:background="@drawable/bg_auth">
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -194,6 +189,6 @@
             android:text="@string/register"
             android:textColor="#bacedf"
             android:textSize="17dip" />
-    </LinearLayout>
+    </uk.openvk.android.legacy.layouts.XLinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

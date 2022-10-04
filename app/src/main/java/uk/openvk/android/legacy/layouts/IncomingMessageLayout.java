@@ -20,7 +20,7 @@ public class IncomingMessageLayout extends LinearLayout {
         layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
 
-        LinearLayout msg_block = view.findViewById(R.id.msg_wrap);
+        LinearLayout msg_block = (LinearLayout) view.findViewById(R.id.msg_wrap);
         layoutParams = (LinearLayout.LayoutParams) msg_block.getLayoutParams();
         layoutParams.width = LayoutParams.WRAP_CONTENT;
         msg_block.setLayoutParams(layoutParams);

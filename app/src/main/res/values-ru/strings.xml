@@ -12,12 +12,20 @@
     <string name="send_b">Отпр.</string>
     <string name="msg_hint">Ваше сообщение</string>
     <string name="menu_settings">Настройки</string>
-    <string name="menu_about">О программе</string>
+    <string name="menu_about">О приложении</string>
     <string name="instances_list_title">Список инстанций</string>
     <string-array name="popup_menu_api_v8">
         <item>Настройки</item>
-        <item>О программе</item>
+        <item>О приложении</item>
         <item>Закрыть</item>
+    </string-array>
+
+    <string-array name="connection_error_reasons">
+        <item>Отсутствует подключение к Интернету</item>
+        <item>Сервер отправил некорректный ответ</item>
+        <item>Превышено время ожидания ответа</item>
+        <item>Обрыв защищенного соединения</item>
+        <item>Сбой инстанции</item>
     </string-array>
     
     <string name="load_more">Загрузить ещё</string>
@@ -168,7 +176,7 @@
     	<item>По популярности</item>
     </string-array>
     <string name="sett_https">Защищенное соединение</string>
-    <string name="sett_https_summary">Использовать протокол HTTPS</string>
+    <string name="sett_https_summary">Принудительно использовать протокол HTTPS</string>
     <string name="sett_general">Общие</string>
     <string name="sett_notifications">Уведомления</string>
     <string name="sett_notify_sound">Звук</string>
@@ -195,8 +203,9 @@
     <string name="date_ago_now">только что</string>
     <string name="message">Сообщение</string>
     <string name="fsize_b">байт</string>
-    <string name="fsize_kb">КБ</string>
+    <string name="fsize_kb">кБ</string>
     <string name="fsize_mb">МБ</string>
+    <string name="fsize_gb">ГБ</string>
     <string name="delete">Удалить</string>
     <string name="confirm">Подтверждение</string>
     <string name="delete_confirm">Вы действительно хотите удалить эту запись?</string>
@@ -406,6 +415,7 @@
     <string name="friend_deleted_m">%s был удалён из Вашего списка друзей</string>
     <string name="friend_deleted_f">%s была удалена из Вашего списка друзей</string>
     <string name="auth_error_network">Не удалось войти из-за проблем с интернет-соединением. Проверьте подключение к сети и повторите попытку.</string>
+    <string name="auth_error_ssl">Не удалось войти из-за проблем с защищенным соединением. Попробуйте выбрать другую инстанцию.</string>
     <string name="no_friend_requests">Новых заявок нет</string>
     
     <string name="search_global">Глобальный поиск</string>
@@ -509,7 +519,7 @@
 	<string name="page_deleted">Эта страница удалена или заморожена. Информация недоступна.</string>
 	<string name="page_blacklist">Нет доступа</string>
 	<string name="sett_push">Push-уведомления</string>
-	<string name="sett_push_summary">Получать уведомления о новых сообщениях даже когда приложение не запущено</string>
+	<string name="sett_push_summary">Получать уведомления даже за пределами приложения</string>
 	<string name="push_unsupported">Требуется Android 2.2 или выше</string>
 	<string name="not_updated">Не обновлялось</string>
 	<string name="no_videos">Нет видеозаписей</string>
@@ -1190,4 +1200,5 @@
     <string name="err_picture_not_enough_memory_text">Недостаточно памяти для обработки изображений. Закройте все неиспользуемые приложения и повторите попытку.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>
+    <string name="invalid_session">Сессия недействительна. Пожалуйста, авторизуйтесь еще раз.</string>
 </resources>

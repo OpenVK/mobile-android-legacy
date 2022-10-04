@@ -78,7 +78,8 @@
     </style>
 
     <style name="SlidingMenu" parent="android:style/Widget.Holo.ListView">
-        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">#1B1D26</item>
     </style>
 
     <style name="EmojiPicker" parent="DialogNoTitle">

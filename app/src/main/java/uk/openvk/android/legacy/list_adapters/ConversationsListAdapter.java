@@ -2,28 +2,26 @@ package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
-import uk.openvk.android.legacy.list_items.ConversationsListItem;
-import uk.openvk.android.legacy.listeners.SwipeListener;
+import uk.openvk.android.legacy.api.models.Conversation;
 
 public class ConversationsListAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<ConversationsListItem> objects;
+    ArrayList<Conversation> objects;
     public boolean opened_sliding_menu;
 
-    public ConversationsListAdapter(Context context, ArrayList<ConversationsListItem> items) {
+    public ConversationsListAdapter(Context context, ArrayList<Conversation> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -45,8 +43,8 @@ public class ConversationsListAdapter extends BaseAdapter {
         return position;
     }
 
-    ConversationsListItem getConversationItem(int position) {
-        return ((ConversationsListItem) getItem(position));
+    Conversation getConversationItem(int position) {
+        return ((Conversation) getItem(position));
     }
 
     @Override
@@ -56,38 +54,33 @@ public class ConversationsListAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.conversation_item, parent, false);
         }
 
-        ConversationsListItem item = getConversationItem(position);
+        Conversation item = getConversationItem(position);
         ((TextView) view.findViewById(R.id.conversation_title)).setText(item.title);
-        ((TextView) view.findViewById(R.id.conversation_time)).setText(item.lastMsgTimestamp);
-        if(item.lastMsgText.length() > 0) {
-            ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.VISIBLE);
-            ((TextView) view.findViewById(R.id.conversation_text)).setText(item.lastMsgText);
+        String lastMsgTimestamp;
+        if((System.currentTimeMillis() - (item.lastMsgTime * 1000)) < 86400000) {
+            lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(item.lastMsgTime);
+        } else {
+            lastMsgTimestamp = new SimpleDateFormat(" dd.MM HH:mm ").format(item.lastMsgTime);
+        }
+        ((TextView) view.findViewById(R.id.conversation_time)).setText(lastMsgTimestamp);
+        if(item.lastMsgTime != 0 && item.lastMsgText != null) {
+            if (item.lastMsgText.length() > 0) {
+                ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.VISIBLE);
+                ((TextView) view.findViewById(R.id.conversation_text)).setText(item.lastMsgText);
+            } else {
+                ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.GONE);
+            }
         } else {
             ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.GONE);
+            ((TextView) view.findViewById(R.id.conversation_time)).setVisibility(View.GONE);
         }
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).getConversation(position);
-                }
-            }
-        });
-
-        /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return super.onTouch(v, event);
-            }
-        }); */
-
-        view.setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return super.onTouch(v, event);
+             if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                ((AppActivity) ctx).getConversation(position);
+             }
             }
         });
 

@@ -41,56 +41,28 @@
             android:paddingBottom="14dp">
 
             <LinearLayout
+                android:id="@+id/birthdate_ll"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="12dp"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/birthdate_ll"
+                <TextView
+                    android:id="@+id/birthdate_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/birthday_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/profile_bdate"
-                        android:textAllCaps="true"
-                        android:textColor="#888888" />
-
-                    <TextView
-                        android:id="@+id/birthday_label2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="6 January 2004"
-                        android:textSize="18sp" />
-
-                </LinearLayout>
+                    android:text="@string/profile_bdate"
+                    android:textAllCaps="true"
+                    android:textColor="#888888" />
 
                 <TextView
-                    android:id="@+id/interests_info"
+                    android:id="@+id/birthdate_label2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:text="@string/profile_interests"
-                    android:textAllCaps="true"
-                    android:textColor="#888888"
-                    android:textStyle="bold" />
-
-                <View
-                    android:id="@+id/divider2"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#888888" />
+                    android:text="6 January 2004"
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -100,6 +72,34 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="12dp"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:id="@+id/interests_category">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/profile_interests"
+                        android:textAllCaps="true"
+                        android:textColor="#888888"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@+id/divider2"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#888888" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/interests_layout"
@@ -237,7 +237,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/quotes_label"
@@ -263,7 +264,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/about_label"
@@ -287,7 +289,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:id="@+id/contacts_layout">
 
                 <TextView
                     android:id="@+id/contacts_info"
@@ -342,7 +345,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:id="@+id/telegram_label"
@@ -362,6 +366,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>

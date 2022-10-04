@@ -3,13 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#1B1D26">
+
 
     <uk.openvk.android.legacy.layouts.SlidingMenuSearch
         android:id="@+id/sliding_menu_search"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        />
 
     <LinearLayout
         android:id="@+id/profile_menu_ll"
@@ -35,14 +38,16 @@
             android:layout_weight="1"
             android:singleLine="false"
             android:text="Profile name"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"/>
 
         <ImageButton
             android:id="@+id/imageButton2"
             android:layout_width="54dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:src="@drawable/ic_left_post_photo" />
+            android:src="@drawable/ic_left_post_photo"
+        />
 
     </LinearLayout>
 
@@ -54,7 +59,7 @@
         android:layout_marginRight="0dp"
         android:entries="@array/leftmenu"
         android:fitsSystemWindows="false"
-        android:theme="@style/SlidingMenu">
+        android:color="@color/white">
 
     </ListView>
 

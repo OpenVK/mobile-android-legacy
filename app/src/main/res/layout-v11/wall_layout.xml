@@ -7,13 +7,12 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/news_listview"
+        android:id="@+id/wall_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/window_bg_transparent"
         android:theme="@style/NewsItemTransparentBackground"
         android:visibility="visible"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         android:nestedScrollingEnabled="false"
         tools:targetApi="lollipop">
 

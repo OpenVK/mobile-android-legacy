@@ -22,7 +22,7 @@
         android:id="@+id/last_msg_rl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/conversation_ll"
+        android:layout_below="@+id/conversation_ll"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
@@ -84,7 +84,8 @@
             android:layout_weight="1"
             android:text="Conversation title"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/conversation_time"
@@ -93,8 +94,6 @@
 
             android:layout_gravity="center"
             android:gravity="right"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
             android:text="12:00"
             android:textColor="@color/timestamp_color"
             android:textStyle="italic" />

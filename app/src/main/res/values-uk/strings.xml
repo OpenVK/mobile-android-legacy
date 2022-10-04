@@ -12,13 +12,21 @@
     <string name="send_b">Відпр.</string>
     <string name="msg_hint">Ваше повідомлення</string>
     <string name="menu_settings">Налаштуваня</string>
-    <string name="menu_about">Про програму</string>
+    <string name="menu_about">Про додаток</string>
     <string name="instances_list_title">Список інстанцій</string>
     <string-array name="popup_menu_api_v8">
         <item>Налаштуваня</item>
-        <item>Про програму</item>
+        <item>Про додаток</item>
         <item>Закрити</item>
     </string-array>
+
+    <string-array name="connection_error_reasons">
+        <item>Відсутнє підключення до Інтернету</item>
+        <item>Сервер надіслав некоректну відповідь</item>
+        <item>Перевищено час очікування відповіді</item>
+        <item>Збій інстанції</item>
+    </string-array>
+
     <string name="load_more">Завантажити ще</string>
     <string-array name="months_short">
         <item>січ</item>
@@ -267,8 +275,6 @@
     <string name="post_options">Опції запису</string>
     <string-array name="post_options">
     	<item>Тільки для друзів</item>
-    	<item>Експорт в Twitter</item>
-    	<item>Експорт в Facebook</item>
     	<!--item>Вказати місцезнаходження</item-->
     </string-array>
     <string name="photo_save_ok">Фотографія збережена на карту пам\'яті</string>
@@ -406,6 +412,7 @@
     <string name="friend_deleted_m">%s був видалений з Вашого списку друзів</string>
     <string name="friend_deleted_f">%s була видалена з Вашого списку друзів</string>
     <string name="auth_error_network">Не вдалося увійти через проблеми з інтернет-з\'єднанням. Перевірте підключення до мережі і повторіть спробу.</string>
+    <string name="auth_error_ssl">Не вдалося увійти через проблеми із захищеним з\'єднанням. Спробуйте вибрати іншу інстанцію.</string>
     <string name="no_friend_requests">Нових заявок немає  </string>
     
     <string name="search_global">Глобальний пошук</string>
@@ -509,7 +516,7 @@
 	<string name="page_deleted">Ця сторінка видалена або заморожена. інформація недоступна.</string>
 	<string name="page_blacklist">Немає доступу</string>
 	<string name="sett_push">Push-сповіщення</string>
-	<string name="sett_push_summary">Отримувати сповіщення про нові повідомлення навіть коли додаток не запущено</string>
+	<string name="sett_push_summary">Отримувати повідомлення навіть за межами додатка</string>
 	<string name="push_unsupported">Потрібен Android 2.2 або вище</string>
 	<string name="not_updated">Не оновлювалося</string>
 	<string name="no_videos">Немає відеозаписів</string>
@@ -1170,7 +1177,7 @@
     <string name="dnd_mode">Режим \"Не турбувати\"</string>
     <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s</string>
     <string name="allow_permisssion_in_storage_title">Потрібні дозволи</string>
-    <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про програму\"?</string>
+    <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про додаток\"?</string>
     <string name="open_btn">Відкрити</string>
     <string name="birthday">День народження</string>
     <string name="post_fail_empty">Вибач, але ми не можемо запостити порожнє повідомлення</string>

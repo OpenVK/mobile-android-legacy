@@ -17,23 +17,19 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.ConversationActivity;
-import uk.openvk.android.legacy.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.api.models.Message;
 import uk.openvk.android.legacy.layouts.IncomingMessageLayout;
 import uk.openvk.android.legacy.layouts.MessagesDateSeparator;
 import uk.openvk.android.legacy.layouts.OutcomingMessageLayout;
-import uk.openvk.android.legacy.list_items.FriendsListItem;
-import uk.openvk.android.legacy.list_items.MessagesListItem;
-import uk.openvk.android.legacy.listeners.SwipeListener;
 
 public class MessagesListAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<MessagesListItem> objects;
+    ArrayList<Message> objects;
     public boolean opened_sliding_menu;
 
-    public MessagesListAdapter(Context context, ArrayList<MessagesListItem> items) {
+    public MessagesListAdapter(Context context, ArrayList<Message> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -55,13 +51,13 @@ public class MessagesListAdapter extends BaseAdapter {
         return position;
     }
 
-    MessagesListItem getMessagesListItem(int position) {
-        return ((MessagesListItem) getItem(position));
+    Message getMessagesListItem(int position) {
+        return ((Message) getItem(position));
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        MessagesListItem item = getMessagesListItem(position);
+        Message item = getMessagesListItem(position);
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.message_item, parent, false);
@@ -133,13 +129,6 @@ public class MessagesListAdapter extends BaseAdapter {
             ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
         }
 
-        view.setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return super.onTouch(v, event);
-            }
-        });
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,7 +141,7 @@ public class MessagesListAdapter extends BaseAdapter {
         return view;
     }
 
-    public void setArray(ArrayList<MessagesListItem> array) {
+    public void setArray(ArrayList<Message> array) {
         objects = array;
     }
 

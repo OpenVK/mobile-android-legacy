@@ -13,9 +13,7 @@
         android:background="@null"
         android:ems="10"
         android:hint="Name"
-        android:importantForAutofill="no"
         android:inputType="textPersonName"
-        android:paddingStart="16dip"
         android:paddingLeft="16dip"
         android:textColorHint="#afafaf"
         tools:ignore="TextContrastCheck" />

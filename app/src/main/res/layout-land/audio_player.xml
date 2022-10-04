@@ -116,7 +116,7 @@
         android:padding="7dip"
         android:src="@drawable/ic_audio_broadcast" />
 
-    <LinearLayout
+    <uk.openvk.android.legacy.layouts.AlbumScrollView
         android:id="@+id/audio_player_cover_scroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
-            <ImageView
+            <uk.openvk.android.legacy.layouts.SquareImageView
                 android:id="@+id/audio_player_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -149,7 +149,7 @@
                 android:textSize="17dip"
                 android:text="TextView" />
         </LinearLayout>
-    </LinearLayout>
+    </uk.openvk.android.legacy.layouts.AlbumScrollView>
 
     <TextView
         android:id="@+id/aplayer_title"

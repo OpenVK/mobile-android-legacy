@@ -2,23 +2,38 @@ package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
+
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.list_adapters.NewsfeedAdapter;
+import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
 public class WallLayout extends LinearLayout {
+    private View headerView;
+    private int param = 0;
     public TextView titlebar_title;
     public String state;
-    public JSONArray newsfeed;
+    public JSONArray wall;
     public String send_request;
     public SharedPreferences global_sharedPreferences;
+    private NewsfeedAdapter wallAdapter;
+    private RecyclerView wallView;
+    private LinearLayoutManager llm;
+    private ArrayList<NewsfeedItem> wallItems;
 
     public WallLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -27,8 +42,88 @@ public class WallLayout extends LinearLayout {
 
         this.addView(view);
 
+        llm = new LinearLayoutManager(context);
+
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+    }
+
+    public void createAdapter(Context ctx, ArrayList<NewsfeedItem> wallItems) {
+        this.wallItems = wallItems;
+        wallAdapter = new NewsfeedAdapter(ctx, wallItems);
+        wallView = (RecyclerView) findViewById(R.id.wall_listview);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        wallView.setLayoutManager(llm);
+        wallView.setAdapter(wallAdapter);
+    }
+
+    public void updateItem(int position) {
+        if(wallAdapter != null) {
+            wallView = (RecyclerView) findViewById(R.id.wall_listview);
+            wallAdapter.notifyItemChanged(position);
+        }
+    }
+
+    private void loadPhotos() {
+        wallView = (RecyclerView) findViewById(R.id.news_listview);
+        try {
+            int visibleItemCount = llm.getChildCount();
+            int totalItemCount = llm.getItemCount();
+            int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
+            int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
+            for (int i = 0; i < totalItemCount; i++) {
+                try {
+                    NewsfeedItem item = wallItems.get(i);
+                    if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                        item.photo = null;
+                    } else {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_item_photo_%s", getContext().getCacheDir(), i), options);
+                        if (bitmap != null) {
+                            item.photo = bitmap;
+                        }
+                    }
+                    wallItems.set(i, item);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            wallAdapter.notifyDataSetChanged();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void setScrollingPositions() {
+        loadPhotos();
+        wallView = (RecyclerView) findViewById(R.id.wall_listview);
+        wallView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                loadPhotos();
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+            }
+        });
+    }
+
+    public void select(int position, String item, int value) {
+        if(item.equals("likes")) {
+            if(value == 1) {
+                wallItems.get(position).counters.isLiked = true;
+                wallItems.get(position).counters.likes += 1;
+            } else {
+                wallItems.get(position).counters.isLiked = false;
+                wallItems.get(position).counters.likes -= 1;
+            }
+            wallAdapter.notifyDataSetChanged();
+        }
     }
 }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="selected_view" type="id"/>
+    <item name="internal_fragment_container" type="id"/>
     <item name="fragment_wrapper" type="id"/>
     <item name="attach_album_image" type="id"/>
     <item name="badge" type="id"/>

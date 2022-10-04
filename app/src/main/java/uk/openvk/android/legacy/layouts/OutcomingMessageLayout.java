@@ -21,8 +21,8 @@ public class OutcomingMessageLayout extends LinearLayout {
         layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
 
-        LinearLayout msg_block = view.findViewById(R.id.msg_wrap);
-        TextView msg_text = msg_block.findViewById(R.id.msg_text);
+        LinearLayout msg_block = (LinearLayout) view.findViewById(R.id.msg_wrap);
+        TextView msg_text = (TextView) msg_block.findViewById(R.id.msg_text);
         layoutParams = (LinearLayout.LayoutParams) msg_text.getLayoutParams();
         layoutParams.width = LayoutParams.WRAP_CONTENT;
         msg_text.setLayoutParams(layoutParams);

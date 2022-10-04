@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.vkontakte.android.LoadMoreCommentsView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:vk="http://schemas.android.com/apk/res/com.vkontakte.android"
     android:layout_width="fill_parent"
     android:layout_height="43dip"
     android:background="@drawable/post_load_more_comments"
     android:clickable="true"
     android:focusable="true"
     android:paddingTop="1dip"
-    android:focusableInTouchMode="false"
-    android:orientation="horizontal">
+    android:focusableInTouchMode="false" >
 
     <TextView
         android:id="@+id/loadmore_text"
@@ -26,4 +26,4 @@
         android:layout_gravity="center"
         android:visibility="invisible" />
 
-</LinearLayout>
+</com.vkontakte.android.LoadMoreCommentsView>

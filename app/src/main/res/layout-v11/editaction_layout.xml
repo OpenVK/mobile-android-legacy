@@ -13,7 +13,6 @@
         android:background="@null"
         android:ems="10"
         android:hint="Name"
-        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:paddingLeft="16dip"
         android:textColorHint="#afafaf" />

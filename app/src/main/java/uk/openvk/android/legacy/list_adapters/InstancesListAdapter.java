@@ -13,10 +13,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.activities.AppActivity;
-import uk.openvk.android.legacy.activities.AuthenticationActivity;
+import uk.openvk.android.legacy.activities.AuthActivity;
+import uk.openvk.android.legacy.activities.AuthActivity;
 import uk.openvk.android.legacy.list_items.InstancesListItem;
-import uk.openvk.android.legacy.list_items.SimpleListItem;
 
 public class InstancesListAdapter extends BaseAdapter {
     Context ctx;
@@ -54,9 +53,9 @@ public class InstancesListAdapter extends BaseAdapter {
         if (view == null) {
             view = inflater.inflate(R.layout.instance_item, parent, false);
             InstancesListItem item = getListItem(position);
-            TextView item_name = view.findViewById(R.id.item_title);
+            TextView item_name = (TextView) view.findViewById(R.id.item_title);
             item_name.setText(item.server);
-            ImageView item_official = view.findViewById(R.id.official_state);
+            ImageView item_official = (ImageView) view.findViewById(R.id.official_state);
             if(item.official) {
                 item_official.setVisibility(View.VISIBLE);
             } else {
@@ -70,9 +69,9 @@ public class InstancesListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).onSimpleListItemClicked(position);
-                } else if(ctx.getClass().getSimpleName().equals("AuthenticationActivity")) {
-                    ((AuthenticationActivity) ctx).clickInstancesItem(position);
+                    //((AppActivity) ctx).onSimpleListItemClicked(position);
+                } else if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                    ((AuthActivity) ctx).clickInstancesItem(position);
                 }
             }
         });
@@ -80,9 +79,9 @@ public class InstancesListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).onSimpleListItemClicked(position);
-                } else if(ctx.getClass().getSimpleName().equals("AuthenticationActivity")) {
-                    ((AuthenticationActivity) ctx).clickInstancesItem(position);
+                    //((AppActivity) ctx).onSimpleListItemClicked(position);
+                } else if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                    ((AuthActivity) ctx).clickInstancesItem(position);
                 }
             }
         });

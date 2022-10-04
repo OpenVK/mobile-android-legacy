@@ -4,13 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/comments_list"
+    <uk.openvk.android.legacy.layouts.CommentsListLayout
+        android:id="@+id/comments_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_weight="1"/>
 
     <uk.openvk.android.legacy.layouts.CommentPanel
         android:id="@+id/comment_panel"

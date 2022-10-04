@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ctrl="http://schemas.android.com/tools"
-    android:id="@+id/auth"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/bg_auth">
+    android:layout_height="fill_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <uk.openvk.android.legacy.layouts.XLinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/auth_layout"
+        android:background="@drawable/bg_auth"
         android:orientation="vertical">
-
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -176,11 +175,11 @@
             </LinearLayout>
         </ScrollView>
 
+
         <TextView
             android:id="@+id/reg_btn"
             android:layout_width="match_parent"
             android:layout_height="60dip"
-            android:background="@drawable/login_reg_btn"
             android:gravity="center"
             android:orientation="vertical"
             android:shadowColor="#80163857"
@@ -188,7 +187,9 @@
             android:shadowRadius="0.0000001"
             android:text="@string/register"
             android:textColor="#bacedf"
+            android:background="@drawable/login_reg_btn"
             android:textSize="17dip" />
-    </LinearLayout>
 
-</RelativeLayout>
+    </uk.openvk.android.legacy.layouts.XLinearLayout>
+
+</LinearLayout>

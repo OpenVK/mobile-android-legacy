@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#1B1D26">
 
     <uk.openvk.android.legacy.layouts.SlidingMenuSearch
         android:id="@+id/sliding_menu_search"
@@ -25,7 +26,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginLeft="13dp"
-            android:src="@drawable/user_placeholder" />
+            android:src="@drawable/user_placeholder"/>
 
         <TextView
             android:id="@+id/profile_name"
@@ -36,7 +37,8 @@
             android:ellipsize="marquee"
             android:singleLine="true"
             android:text="Profile name"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"/>
 
         <ImageButton
             android:id="@+id/imageButton2"

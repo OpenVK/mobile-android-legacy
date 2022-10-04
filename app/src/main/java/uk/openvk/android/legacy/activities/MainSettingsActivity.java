@@ -7,137 +7,118 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.TimerTask;
-
-import uk.openvk.android.legacy.Application;
 import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkAPIWrapper;
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.Ovk;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.layouts.ActionBarImitation;
 
 public class MainSettingsActivity extends PreferenceActivity {
-    public boolean isQuiting;
-    public static Handler handler;
-    public String state;
-    public String send_request;
-    public String server;
-    public boolean isSecured;
-    public JSONObject json_response;
-    public static final int UPDATE_UI = 0;
-    public static final int GET_CONNECTION_TYPE = 1;
-    public AlertDialog about_instance_dlg;
-    public OvkAPIWrapper openVK_API;
-    public View about_instance_view;
-    public UpdateUITask updateUITask;
+    private boolean isQuiting;
+    private OvkApplication app;
+    private Global global = new Global();
+    public OvkAPIWrapper ovk_api;
+    private SharedPreferences global_prefs;
+    private SharedPreferences instance_prefs;
+    private AlertDialog about_instance_dlg;
+    public Handler handler;
+    private View about_instance_view;
+    private Ovk ovk;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isQuiting = false;
-        updateUITask = new UpdateUITask();
-        handler = new Handler() {
-            public void handleMessage(Message msg) {
-                final int what = msg.what;
-                switch(what) {
-                    case UPDATE_UI:
-                        state = msg.getData().getString("State");
-                        send_request = msg.getData().getString("API_method");
-                        if(state != "no_connection" && state != "timeout") {
-                            try {
-                                json_response = new JSONObject(msg.getData().getString("JSON_response"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
-                        updateUITask.run();
-                        break;
-                    case GET_CONNECTION_TYPE:
-                        state = msg.getData().getString("State");
-                        server = msg.getData().getString("Server");
-                        isSecured = msg.getData().getBoolean("IsSecured");
-                        Log.d("OpenVK Legacy", "Getting handle message!\r\nConnection state: " + state + "\r\nAPI method: " + send_request);
-                        updateUITask.run();
-                }
-            }
-        };
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
-        if(sharedPreferences.getString("auth_token", "").length() > 0) {
+        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        if(instance_prefs.getString("access_token", "").length() > 0) {
             addPreferencesFromResource(R.xml.preferences);
         } else {
             addPreferencesFromResource(R.xml.preferences_2);
         }
         setContentView(R.layout.custom_preferences_layout);
-        final CheckBoxPreference https_connection = (CheckBoxPreference) findPreference("useHTTPS");
-        https_connection.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("instance", 0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                return false;
-            }
-        });
-
+        app = ((OvkApplication) getApplicationContext());
+        setListeners();
+        ovk_api = new OvkAPIWrapper(this, true);
+        ovk_api.setServer(instance_prefs.getString("server", ""));
+        ovk = new Ovk();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getActionBar().setHomeButtonEnabled(true);
+            try {
+                getActionBar().setDisplayShowHomeEnabled(true);
+                getActionBar().setDisplayHomeAsUpEnabled(true);
+            } catch (Exception ex) {
+                Log.e("OpenVK", "Cannot display home button.");
             }
-            getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
-            TextView titlebar_title = findViewById(R.id.titlebar_title);
-            titlebar_title.setText(R.string.menu_settings);
-            final ImageButton back_btn = findViewById(R.id.backButton);
-            final ImageButton ovk_btn = findViewById(R.id.ovkButton);
-            back_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onBackPressed();
-                }
-            });
-            ovk_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onBackPressed();
-                }
-            });
-            titlebar_title.setOnClickListener(new View.OnClickListener() {
+            final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
+            actionBarImitation.setHomeButtonVisibillity(true);
+            actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
+            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     onBackPressed();
                 }
             });
         }
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                Bundle data = message.getData();
+                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                receiveState(message.what, data);
+            }
+        };
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            resizeTranslucentLayout();
+    private void receiveState(int message, Bundle data) {
+        try {
+            if (message == HandlerMessages.OVK_CHECK_HTTP) {
+                TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+                connection_type.setText(getResources().getString(R.string.default_connection));
+            } else if (message == HandlerMessages.OVK_CHECK_HTTPS) {
+                TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+                connection_type.setText(getResources().getString(R.string.secured_connection));
+            } else if (message == HandlerMessages.OVK_VERSION) {
+                ovk.parseVersion(data.getString("response"));
+                TextView openvk_version_tv = (TextView) about_instance_view.findViewById(R.id.instance_version_label2);
+                openvk_version_tv.setText(String.format("OpenVK %s", ovk.version));
+                ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.VISIBLE);
+            }
+        } catch (Exception ex) {
+
         }
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setListeners() {
         Preference about_preference = findPreference("about");
         about_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -145,21 +126,21 @@ public class MainSettingsActivity extends PreferenceActivity {
                 AlertDialog about_dlg;
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainSettingsActivity.this);
                 View about_view = getLayoutInflater().inflate(R.layout.about_application_layout, null, false);
-                TextView about_text = about_view.findViewById(R.id.about_text);
+                TextView about_text = (TextView) about_view.findViewById(R.id.about_text);
                 if(getSharedPreferences("instance", 0).getString("server", "").equals("openvk.uk") || getSharedPreferences("instance", 0).getString("server", "").equals("openvk.co")
                         || getSharedPreferences("instance", 0).getString("server", "").equals("openvk.su")) {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
+                        about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, app.build_number) + "</font>"));
                     } else {
-                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text, BuildConfig.VERSION_NAME, app.build_number)));
                     }
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text_lollipop, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text_lollipop, BuildConfig.VERSION_NAME, app.build_number)));
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text_froyo, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number)));
+                        about_text.setText(Html.fromHtml(getResources().getString(R.string.about_text_froyo, BuildConfig.VERSION_NAME, app.build_number)));
                     } else {
-                        about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text_froyo, BuildConfig.VERSION_NAME, ((Application) getApplicationContext()).build_number) + "</font>"));
+                        about_text.setText(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.about_text_froyo, BuildConfig.VERSION_NAME, app.build_number) + "</font>"));
                     }
                 }
                 isQuiting = true;
@@ -188,12 +169,12 @@ public class MainSettingsActivity extends PreferenceActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("instance", 0).edit();
-                            editor.putString("auth_token", "");
+                            editor.putString("access_token", "");
                             editor.putString("server", "");
                             editor.commit();
                             Intent authActivity = new Intent(getApplicationContext(), this.getClass());
                             int pendingIntentId = 1;
-                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), pendingIntentId, authActivity, PendingIntent.FLAG_MUTABLE);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), pendingIntentId, authActivity, PendingIntent.FLAG_NO_CREATE);
                             AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                             mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
                             System.exit(0);
@@ -234,61 +215,42 @@ public class MainSettingsActivity extends PreferenceActivity {
         });
 
         final Preference about_instance = findPreference("about_instance");
-        if(about_instance != null) {
-            about_instance.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    AlertDialog.Builder builder;
-                    builder = new AlertDialog.Builder(MainSettingsActivity.this);
-                    about_instance_view = getLayoutInflater().inflate(R.layout.about_instance_layout, null, false);
-                    TextView server_name = about_instance_view.findViewById(R.id.server_addr_label2);
-                    ((TextView) about_instance_view.findViewById(R.id.connection_type_label2)).setText(getResources().getString(R.string.loading));
-                    ((TextView) about_instance_view.findViewById(R.id.instance_version_label2)).setText(getResources().getString(R.string.loading));
-                    ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.GONE);
-                    server_name.setText(getSharedPreferences("instance", 0).getString("server", ""));
-                    builder.setTitle(getResources().getString(R.string.about_instance));
-                    isQuiting = true;
-                    builder.setView(about_instance_view);
-                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            isQuiting = false;
-                        }
-                    });
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        setDialogStyle(about_instance_view);
-                    }
-                    about_instance_dlg = builder.create();
-                    about_instance_dlg.show();
-                    openVK_API = new OvkAPIWrapper(MainSettingsActivity.this, getSharedPreferences("instance", 0).getString("server", ""), null, json_response, true);
-                    openVK_API.isSecured();
-                    openVK_API.sendMethod("Ovk.version", null);
-                    return false;
-                }
-            });
+           if(about_instance != null) {
+               about_instance.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                   @Override
+                   public boolean onPreferenceClick(Preference preference) {
+                       openAboutInstanceDialog();
+                       return false;
+                   }
+               });
         }
     }
 
-    private void resizeTranslucentLayout() {
-        try {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            View statusbarView = findViewById(R.id.statusbarView);
-            LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) statusbarView.getLayoutParams();
-            int statusbar_height = getResources().getIdentifier("status_bar_height", "dimen", "android");
-            final TypedArray styledAttributes = getTheme().obtainStyledAttributes(
-                    new int[]{android.R.attr.actionBarSize});
-            int actionbar_height = (int) styledAttributes.getDimension(0, 0);
-            styledAttributes.recycle();
-            if (statusbar_height > 0) {
-                ll_layoutParams.height = getResources().getDimensionPixelSize(statusbar_height) + actionbar_height;
+    private void openAboutInstanceDialog() {
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(MainSettingsActivity.this);
+        about_instance_view = getLayoutInflater().inflate(R.layout.about_instance_layout, null, false);
+        TextView server_name = (TextView) about_instance_view.findViewById(R.id.server_addr_label2);
+        ((TextView) about_instance_view.findViewById(R.id.connection_type_label2)).setText(getResources().getString(R.string.loading));
+        ((TextView) about_instance_view.findViewById(R.id.instance_version_label2)).setText(getResources().getString(R.string.loading));
+        ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.GONE);
+        server_name.setText(instance_prefs.getString("server", ""));
+        builder.setTitle(getResources().getString(R.string.about_instance));
+        isQuiting = true;
+        builder.setView(about_instance_view);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                isQuiting = false;
             }
-            statusbarView.setLayoutParams(ll_layoutParams);
-        } catch (Exception ex) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            View statusbarView = findViewById(R.id.statusbarView);
-            statusbarView.setVisibility(View.GONE);
-            ex.printStackTrace();
+        });
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            setDialogStyle(about_instance_view);
         }
+        about_instance_dlg = builder.create();
+        about_instance_dlg.show();
+        ovk_api.checkHTTPS();
+        ovk.getVersion(ovk_api);
     }
 
     private void setDialogStyle(View view) {
@@ -304,75 +266,4 @@ public class MainSettingsActivity extends PreferenceActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
-            onBackPressed();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            resizeTranslucentLayout();
-        }
-    }
-
-    class UpdateUITask extends TimerTask {
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(isFinishing() == false) {
-                        if (state.equals("checking_connection")) {
-                            TextView connection_type_tv = about_instance_view.findViewById(R.id.connection_type_label2);
-                            try {
-                                if (isSecured == true) {
-                                    connection_type_tv.setText(getResources().getString(R.string.secured_connection));
-                                } else {
-                                    connection_type_tv.setText(getResources().getString(R.string.default_connection));
-                                }
-                                ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.VISIBLE);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        } else if (state.equals("getting_response")) {
-                            TextView openvk_version_tv = about_instance_view.findViewById(R.id.instance_version_label2);
-                            try {
-                                openvk_version_tv.setText("OpenVK " + json_response.getString("response"));
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        } else if (state.equals("no_connection")) {
-                            TextView connection_type_tv = about_instance_view.findViewById(R.id.connection_type_label2);
-                            try {
-                                connection_type_tv.setText(getResources().getString(R.string.connection_error));
-                                ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.GONE);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        } else if (state.equals("timeout")) {
-                            TextView connection_type_tv = about_instance_view.findViewById(R.id.connection_type_label2);
-                            try {
-                                connection_type_tv.setText(getResources().getString(R.string.connection_error));
-                                ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.GONE);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
 }
