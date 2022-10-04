@@ -1,11 +1,14 @@
 package uk.openvk.android.legacy.layouts;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -61,15 +64,35 @@ public class ProfileLayout extends LinearLayout {
     }
 
     public void setDMButtonListener(final Context ctx, final int peer_id) {
-        ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).getConversationById(peer_id);
-                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                    ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+        DisplayMetrics dm = new DisplayMetrics();
+        ((Activity) ctx).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int mWidthPixels = dm.widthPixels;
+        int mHeightPixels = dm.heightPixels;
+        double x = Math.pow(mWidthPixels/dm.xdpi,2);
+        double y = Math.pow(mHeightPixels/dm.ydpi,2);
+        double screenInches = Math.sqrt(x+y);
+        if(screenInches < 7) {
+            ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).getConversationById(peer_id);
+                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            ((ImageButton) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).getConversationById(peer_id);
+                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+                    }
+                }
+            });
+        }
     }
 }

@@ -98,7 +98,15 @@
                 </TableRow>
 
             </LinearLayout>
-
+            <uk.openvk.android.legacy.layouts.ProfileWallSelector
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/wall_selector"/>
+            <uk.openvk.android.legacy.layouts.WallLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/wall_layout"
+                android:background="#e3e4e6" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

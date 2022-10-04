@@ -7,7 +7,7 @@ android {
         applicationId "uk.openvk.android.legacy"
         minSdkVersion 7
         targetSdkVersion 26
-        versionCode 100
+        versionCode 101
         versionName "3.0.4-notreleased"
     }
     buildTypes {
