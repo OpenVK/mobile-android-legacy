@@ -32,6 +32,9 @@ public class Users {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONArray("response");
+            if(this.users.size() > 0) {
+                this.users.clear();
+            }
             for (int i = 0; i < users.length(); i++) {
                 User user = new User(users.getJSONObject(i));
                 this.users.add(user);
@@ -45,6 +48,9 @@ public class Users {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONObject("response").getJSONArray("items");
+            if(this.users.size() > 0) {
+                this.users.clear();
+            }
             for (int i = 0; i < users.length(); i++) {
                 User user = new User(users.getJSONObject(i));
                 this.users.add(user);

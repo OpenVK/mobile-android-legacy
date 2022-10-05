@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
@@ -89,6 +93,12 @@ public class AppActivity extends Activity {
         super.onCreate(savedInstanceState);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        if(instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("server", "").length() == 0) {
+            Context context = getApplicationContext();
+            Intent intent = new Intent(context, AuthActivity.class);
+            startActivity(intent);
+            finish();
+        }
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setContentView(R.layout.app_layout);
@@ -119,7 +129,15 @@ public class AppActivity extends Activity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(item.getItemId() == android.R.id.home) {
-                if (!menu.isMenuShowing()) menu.showMenu(true);
+                if(!((OvkApplication) getApplicationContext()).isTablet) {
+                    menu.toggle(true);
+                } else {
+                    if(slidingmenuLayout.getVisibility() == View.VISIBLE) {
+                        slidingmenuLayout.setVisibility(View.GONE);
+                    } else {
+                        slidingmenuLayout.setVisibility(View.VISIBLE);
+                    }
+                }
             }
         }
         if(item.getItemId() == R.id.newpost) {
@@ -137,16 +155,29 @@ public class AppActivity extends Activity {
         return true;
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            newsfeedLayout.adjustLayoutSize(newConfig.orientation);
+        }
+        super.onConfigurationChanged(newConfig);
+    }
+
     private void createSlidingMenu() {
-        menu = new SlidingMenu(this);
-        menu.setMode(SlidingMenu.LEFT);
-        menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         slidingmenuLayout = new SlidingMenuLayout(this);
-        menu.setMenu(slidingmenuLayout);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-        menu.setFadeDegree(0.8f);
-        menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
-        menu.setSlidingEnabled(true);
+        if(!((OvkApplication) getApplicationContext()).isTablet) {
+            menu = new SlidingMenu(this);
+            menu.setMode(SlidingMenu.LEFT);
+            menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
+            menu.setMenu(slidingmenuLayout);
+            menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+            menu.setFadeDegree(0.8f);
+            menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+            menu.setSlidingEnabled(true);
+        } else {
+            slidingmenuLayout = findViewById(R.id.sliding_menu);
+            slidingmenuLayout.setVisibility(View.VISIBLE);
+        }
         slidingMenuArray = new ArrayList<SlidingMenuItem>();
         if (slidingMenuArray != null) {
             for (int slider_menu_item_index = 0; slider_menu_item_index < getResources().getStringArray(R.array.leftmenu).length; slider_menu_item_index++) {
@@ -171,7 +202,11 @@ public class AppActivity extends Activity {
                 }
             }
             SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
-            ((ListView) menu.getMenu().findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
+            if(!((OvkApplication) getApplicationContext()).isTablet) {
+                ((ListView) menu.getMenu().findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
+            } else {
+                ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
+            }
         }
         slidingmenuLayout.setSearchListener(new View.OnClickListener() {
             @Override
@@ -194,6 +229,7 @@ public class AppActivity extends Activity {
         friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
         conversationsLayout = (ConversationsLayout) findViewById(R.id.conversations_layout);
         progressLayout.setVisibility(View.VISIBLE);
+        newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -232,8 +268,14 @@ public class AppActivity extends Activity {
     }
 
     public void onSlidingMenuItemClicked(int position) {
+        if(position < 8) {
+            if (!((OvkApplication) getApplicationContext()).isTablet) {
+                menu.toggle(true);
+            } else {
+                slidingmenuLayout.setVisibility(View.GONE);
+            }
+        }
         if(position == 0) {
-            menu.toggle(true);
             if(friendsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
@@ -244,6 +286,7 @@ public class AppActivity extends Activity {
             } else {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.VISIBLE);
@@ -252,7 +295,6 @@ public class AppActivity extends Activity {
             global_prefs_editor.commit();
             friends.get(ovk_api, account.id, "friends_list");
         } else if(position == 3) {
-            menu.toggle(true);
             if(conversationsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
@@ -272,7 +314,6 @@ public class AppActivity extends Activity {
             global_prefs_editor.commit();
             messages.getConversations(ovk_api);
         } else if(position == 5) {
-            menu.toggle(true);
             if(newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
@@ -286,6 +327,7 @@ public class AppActivity extends Activity {
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
             }
             global_prefs_editor.putString("current_screen", "newsfeed");
             global_prefs_editor.commit();
@@ -337,10 +379,12 @@ public class AppActivity extends Activity {
                 longPollService.start(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENT) {
                 newsfeedLayout.setScrollingPositions();
-            } else if(message == HandlerMessages.NEWSFEED_ITEM_AVATAR) {
-                newsfeedLayout.updateAllItems();
+            } else if(message == HandlerMessages.NEWSFEED_AVATAR) {
+                newsfeedLayout.loadAvatars();
             } else if (message == HandlerMessages.WALL_ATTACHMENT) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
+            } else if (message == HandlerMessages.WALL_AVATAR) {
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
@@ -409,7 +453,11 @@ public class AppActivity extends Activity {
     }
 
     public void openAccountProfile() {
-        menu.toggle(true);
+        if(!((OvkApplication) getApplicationContext()).isTablet) {
+            menu.toggle(true);
+        } else {
+            slidingmenuLayout.setVisibility(View.GONE);
+        }
         profileLayout.setVisibility(View.GONE);
         newsfeedLayout.setVisibility(View.GONE);
         friendsLayout.setVisibility(View.GONE);
@@ -434,8 +482,12 @@ public class AppActivity extends Activity {
     }
 
     public void retryConnection(String method, String args) {
-        errorLayout.setVisibility(View.GONE);
+        profileLayout.setVisibility(View.GONE);
+        newsfeedLayout.setVisibility(View.GONE);
+        friendsLayout.setVisibility(View.GONE);
+        conversationsLayout.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
+        errorLayout.setVisibility(View.GONE);
         if(method.equals("Newsfeed.get")) {
             newsfeed.get(ovk_api, 50);
         } else if(method.equals("Account.getProfileInfo")) {
@@ -526,6 +578,7 @@ public class AppActivity extends Activity {
         try {
             intent.putExtra("post_id", item.post_id);
             intent.putExtra("owner_id", item.owner_id);
+            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

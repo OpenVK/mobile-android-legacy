@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -9,9 +10,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -23,6 +27,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.list_adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
@@ -86,7 +91,7 @@ public class NewsfeedLayout extends LinearLayout {
                     NewsfeedItem item = newsfeedItems.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_item_avatar_%s", getContext().getCacheDir(), i), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatar/avatar_%d", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -114,9 +119,12 @@ public class NewsfeedLayout extends LinearLayout {
                     } else {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_item_photo_%s", getContext().getCacheDir(), i), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachment/newsfeed_attachment_%s", getContext().getCacheDir(), item.post_id), options);
                         if (bitmap != null) {
                             item.photo = bitmap;
+                            item.photo_status = "loaded";
+                        } else if(item.photo_hsize_url.length() > 0 || item.photo_msize_url.length() > 0) {
+                            item.photo_status = "error";
                         }
                     }
                     newsfeedItems.set(i, item);
@@ -166,6 +174,20 @@ public class NewsfeedLayout extends LinearLayout {
                 newsfeedItems.get(position).counters.likes -= 1;
             }
             newsfeedAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void adjustLayoutSize(int orientation) {
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            LinearLayout.LayoutParams layoutParams = new LayoutParams((int)(600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+            newsfeedView.setLayoutParams(layoutParams);
+        } else {
+            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+            newsfeedView.setLayoutParams(layoutParams);
         }
     }
 }

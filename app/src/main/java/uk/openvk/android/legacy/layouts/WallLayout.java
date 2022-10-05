@@ -66,31 +66,33 @@ public class WallLayout extends LinearLayout {
     }
 
     private void loadPhotos() {
-        wallView = (RecyclerView) findViewById(R.id.news_listview);
+        wallView = (RecyclerView) findViewById(R.id.wall_listview);
         try {
-            int visibleItemCount = llm.getChildCount();
-            int totalItemCount = llm.getItemCount();
-            int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
-            int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
-            for (int i = 0; i < totalItemCount; i++) {
-                try {
-                    NewsfeedItem item = wallItems.get(i);
-                    if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                        item.photo = null;
-                    } else {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_item_photo_%s", getContext().getCacheDir(), i), options);
-                        if (bitmap != null) {
-                            item.photo = bitmap;
+            if(wallAdapter != null) {
+                int visibleItemCount = llm.getChildCount();
+                int totalItemCount = llm.getItemCount();
+                int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
+                int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
+                for (int i = 0; i < totalItemCount; i++) {
+                    try {
+                        NewsfeedItem item = wallItems.get(i);
+                        if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                            item.photo = null;
+                        } else {
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachment/wall_attachment_%s", getContext().getCacheDir(), i), options);
+                            if (bitmap != null) {
+                                item.photo = bitmap;
+                            }
                         }
+                        wallItems.set(i, item);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    wallItems.set(i, item);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
+                wallAdapter.notifyDataSetChanged();
             }
-            wallAdapter.notifyDataSetChanged();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -124,6 +126,50 @@ public class WallLayout extends LinearLayout {
                 wallItems.get(position).counters.likes -= 1;
             }
             wallAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void limitWidth(final int width) {
+        this.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int leftWas, int topWas, int rightWas, int bottomWas )
+            {
+                int widthWas = rightWas - leftWas;
+                if( v.getWidth() != widthWas ) {
+                    if (v.getWidth() > width) {
+                        wallView.getLayoutParams().width = width;
+                    }
+                }
+            }
+        });
+    }
+
+    public void loadAvatars() {
+        if(wallAdapter != null) {
+            wallView = (RecyclerView) findViewById(R.id.wall_listview);
+            for (int i = 0; i < getCount(); i++) {
+                try {
+                    NewsfeedItem item = wallItems.get(i);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_avatar/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    if (bitmap != null) {
+                        item.avatar = bitmap;
+                    }
+                    wallItems.set(i, item);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            wallAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private int getCount() {
+        try {
+            return wallView.getAdapter().getItemCount();
+        } catch (NullPointerException npE) {
+            return 0;
         }
     }
 }

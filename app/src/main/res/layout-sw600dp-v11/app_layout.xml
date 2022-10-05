@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+    <uk.openvk.android.legacy.layouts.SlidingMenuLayout
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:id="@+id/sliding_menu"
+        android:visibility="gone"
+        android:background="#1B1D26"/>
+    />
+
     <uk.openvk.android.legacy.layouts.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
+        android:layout_weight="1"
         android:visibility="gone" />
 
     <uk.openvk.android.legacy.layouts.NewsfeedLayout
@@ -51,7 +60,6 @@
         android:layout_weight="1"
         android:layout_gravity="fill"
         android:background="@android:color/white"/>
-
 
 
 </LinearLayout>

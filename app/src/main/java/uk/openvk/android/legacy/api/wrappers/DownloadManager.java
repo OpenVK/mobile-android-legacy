@@ -41,6 +41,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.models.Photo;
 
 /**
  * Created by Dmitry on 27.09.2022.
@@ -105,7 +106,7 @@ public class DownloadManager {
     }
 
 
-    public void downloadPhotosToCache(final ArrayList<String> photos, final String prefix) {
+    public void downloadPhotosToCache(final ArrayList<Photo> photos, final String where) {
         Log.v("DownloadManager", String.format("Downloading %d photos...", photos.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
@@ -115,17 +116,28 @@ public class DownloadManager {
             int filesize = 0;
             private InputStream response_in;
             private String url = "";
-            private String filename;
+            private String filename = "";
 
             @Override
             public void run() {
+                try {
+                    File directory = new File(ctx.getCacheDir().getAbsolutePath(), where);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
                 for (int i = 0; i < photos.size(); i++) {
                     filesize = 0;
-                    filename = String.format("%s_%d", prefix, i);
-                    if (photos.get(i).length() == 0) {
+                    Photo photo = photos.get(i);
+                    if(filename.equals(photo.filename)) {
+                        Log.e("DownloadManager", "Duplicated filename. Skipping...");
+                    } else if (photo.url.length() == 0) {
+                        filename = photo.filename;
                         Log.e("DownloadManager", "Invalid address. Skipping...");
                         try {
-                            File downloadedFile = new File(ctx.getCacheDir(), filename);
+                            File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
                             if(downloadedFile.exists()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 byte[] bytes = new byte[1];
@@ -137,14 +149,15 @@ public class DownloadManager {
                             e.printStackTrace();
                         }
                     } else {
+                        filename = photo.filename;
                         String short_address = "";
-                        if(photos.get(i).length() > 40) {
-                            short_address = photos.get(i).substring(0, 39);
+                        if(photos.get(i).url.length() > 40) {
+                            short_address = photos.get(i).url.substring(0, 39);
                         } else {
-                            short_address = photos.get(i);
+                            short_address = photos.get(i).url;
                         }
                         Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photos.size()));
-                        url = photos.get(i);
+                        url = photos.get(i).url;
                         if (legacy_mode) {
                             request_legacy = new HttpGet(url);
                             request_legacy.getParams().setParameter("timeout", 30000);
@@ -171,7 +184,7 @@ public class DownloadManager {
                             } else {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
-                                File downloadedFile = new File(ctx.getCacheDir(), filename);
+                                File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
                                 while ((inByte = response.body().byteStream().read()) != -1) {
@@ -189,16 +202,16 @@ public class DownloadManager {
                         }
                     }
                 }
-                if (response_code == 200) {
-                    if (prefix.equals("profile_avatar")) {
-                        sendMessage(HandlerMessages.PROFILE_AVATAR, prefix);
-                    } else if (prefix.equals("newsfeed_item_avatar")) {
-                        sendMessage(HandlerMessages.NEWSFEED_ITEM_AVATAR, prefix);
-                    } else if (prefix.equals("newsfeed_item_photo")) {
-                        sendMessage(HandlerMessages.NEWSFEED_ATTACHMENT, prefix);
-                    } else if (prefix.equals("wall_item_photo")) {
-                        sendMessage(HandlerMessages.WALL_ATTACHMENT, prefix);
-                    }
+                if (where.equals("profile_avatar")) {
+                    sendMessage(HandlerMessages.PROFILE_AVATAR, where);
+                } else if (where.equals("newsfeed_avatar")) {
+                    sendMessage(HandlerMessages.NEWSFEED_AVATAR, where);
+                } else if (where.equals("newsfeed_photo_attachment")) {
+                    sendMessage(HandlerMessages.NEWSFEED_ATTACHMENT, where);
+                } else if (where.equals("wall_photo_attachment")) {
+                    sendMessage(HandlerMessages.WALL_ATTACHMENT, where);
+                } else if (where.equals("wall_avatar")) {
+                    sendMessage(HandlerMessages.WALL_AVATAR, where);
                 }
             }
         };

@@ -36,7 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_weight="1"
-            android:singleLine="false"
+            android:ellipsize="marquee"
+            android:singleLine="true"
             android:text="Profile name"
             android:textSize="18sp"
             android:textColor="#FFFFFF"/>

@@ -92,6 +92,8 @@
 
         </LinearLayout>
 
+
+
         <ImageView
             android:id="@+id/post_options_btn"
             android:layout_width="24dp"
@@ -249,6 +251,15 @@
             android:textColorLink="#2B587A"
             android:textSize="14dip"></TextView>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/photo_progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="12dp"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/post_photo"

@@ -15,13 +15,13 @@ import android.widget.LinearLayout;
 public class OvkApplication extends Application {
 
     public String version;
-    public int build_number = 101;
+    public int build_number = 103;
     public boolean isTablet;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Global global = new Global();
+        Global global = new Global(this);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
 

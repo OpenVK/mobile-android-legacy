@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.api;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.models.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -34,9 +34,9 @@ public class Newsfeed {
 
     public void parse(Context ctx, String response) {
         newsfeedItems = new ArrayList<NewsfeedItem>();
-        ArrayList<String> photo_hsize = new ArrayList<String>();
-        ArrayList<String> photo_msize = new ArrayList<String>();
-        ArrayList<String> avatars = new ArrayList<String>();
+        ArrayList<Photo> photos_hsize = new ArrayList<Photo>();
+        ArrayList<Photo> photos_msize = new ArrayList<Photo>();
+        ArrayList<Photo> avatars = new ArrayList<Photo>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
@@ -70,6 +70,7 @@ public class Newsfeed {
                     }
                     NewsfeedItem item = new NewsfeedItem(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "",
                             photo_medium_size, photo_high_size, owner_id, post_id, ctx);
+                    item.author_id = author_id;
                     if(author_id > 0) {
                         if(newsfeed.has("profiles")) {
                             JSONArray profiles = newsfeed.getJSONArray("profiles");
@@ -77,8 +78,10 @@ public class Newsfeed {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if (profile.getInt("id") == author_id) {
                                     author_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    avatar_url = profile.getString("photo_50");
                                 } else if (profile.getInt("id") == owner_id) {
                                     owner_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    avatar_url = profile.getString("photo_50");
                                 }
                             }
                         }
@@ -112,15 +115,23 @@ public class Newsfeed {
                             }
                         }
                     }
-                    photo_hsize.add(photo_high_size);
-                    photo_msize.add(photo_medium_size);
-                    avatars.add(avatar_url);
+                    Photo photo_m = new Photo();
+                    photo_m.url = photo_medium_size;
+                    photo_m.filename = String.format("newsfeed_attachment_%d", post_id);
+                    photos_msize.add(photo_m);
+                    Photo photo_h = new Photo();
+                    photo_h.url = photo_high_size;
+                    photo_h.filename = String.format("newsfeed_attachment_%d", post_id);
+                    photos_hsize.add(photo_h);
+                    Photo avatar = new Photo();
+                    avatar.url = avatar_url;
+                    avatar.filename = String.format("avatar_%d", author_id);
+                    avatars.add(avatar);
                     newsfeedItems.add(item);
                 }
                 DownloadManager downloadManager = new DownloadManager(ctx, true);
-                downloadManager.downloadPhotosToCache(photo_msize, "newsfeed_item_photo");
-                downloadManager.downloadPhotosToCache(photo_msize, "newsfeed_item_photo");
-                downloadManager.downloadPhotosToCache(avatars, "newsfeed_item_avatar");
+                downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachment");
+                downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatar");
             }
         } catch (JSONException e) {
             e.printStackTrace();

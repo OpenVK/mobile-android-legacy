@@ -22,7 +22,9 @@ public class NewsfeedItem {
     public String text;
     public int owner_id;
     public int post_id;
+    public String photo_status;
     public NewsItemCountersInfo counters;
+    public int author_id;
 
     public NewsfeedItem(String author, int dt_sec, RepostInfo repostInfo, String post_text, NewsItemCountersInfo nICI, String avatar_url, String photo_msize_url,
                         String photo_hsize_url, int o_id, int p_id, Context ctx) {
@@ -43,6 +45,11 @@ public class NewsfeedItem {
         this.photo_hsize_url = photo_hsize_url;
         owner_id = o_id;
         post_id = p_id;
+        if(photo_msize_url.length() > 0 || photo_hsize_url.length() > 0) {
+            this.photo_status = "loading";
+        } else {
+            this.photo_status = "none";
+        }
     }
 
 }

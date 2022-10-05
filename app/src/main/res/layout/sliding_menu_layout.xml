@@ -35,7 +35,7 @@
             android:layout_marginLeft="8dp"
             android:layout_weight="1"
             android:ellipsize="marquee"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="Profile name"
             android:textSize="18sp"
             android:textColor="#FFFFFF"/>

@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import java.util.Arrays;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.ProfileIntentActivity;
@@ -64,14 +65,7 @@ public class ProfileLayout extends LinearLayout {
     }
 
     public void setDMButtonListener(final Context ctx, final int peer_id) {
-        DisplayMetrics dm = new DisplayMetrics();
-        ((Activity) ctx).getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int mWidthPixels = dm.widthPixels;
-        int mHeightPixels = dm.heightPixels;
-        double x = Math.pow(mWidthPixels/dm.xdpi,2);
-        double y = Math.pow(mHeightPixels/dm.ydpi,2);
-        double screenInches = Math.sqrt(x+y);
-        if(screenInches < 7) {
+        if(!((OvkApplication) ctx.getApplicationContext()).isTablet) {
             ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {

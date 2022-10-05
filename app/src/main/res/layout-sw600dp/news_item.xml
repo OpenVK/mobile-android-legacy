@@ -38,7 +38,7 @@
     -->
 
     <LinearLayout
-        android:layout_width="600dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_post"
@@ -136,6 +136,15 @@
                 android:textColorLink="#2B587A"
                 android:textSize="14dip"></TextView>
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/photo_progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="12dp"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/post_photo"

@@ -7,12 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -70,6 +72,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         public final TextView comments_counter;
         public final View convertView;
         public final ImageView avatar;
+        private final ProgressBar photo_progress;
 
         public Holder(View view) {
             super(view);
@@ -82,6 +85,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.reposts_counter = (TextView) view.findViewById(R.id.post_reposts);
             this.comments_counter = (TextView) view.findViewById(R.id.post_comments);
             this.avatar = (ImageView) view.findViewById(R.id.author_avatar);
+            this.photo_progress = ((ProgressBar) view.findViewById(R.id.photo_progress));
         }
 
         void bind(final int position) {
@@ -97,11 +101,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 post_text.setVisibility(View.GONE);
             }
 
-            if(item.photo == null) {
+            if(item.photo == null && item.photo_status.equals("none")) {
                 post_photo.setImageBitmap(item.photo);
                 post_photo.setVisibility(View.GONE);
+            } else if(item.photo == null && item.photo_status.equals("loading")) {
+                photo_progress.setVisibility(View.VISIBLE);
             } else {
                 post_photo.setImageBitmap(item.photo);
+                photo_progress.setVisibility(View.GONE);
                 post_photo.setVisibility(View.VISIBLE);
             }
 

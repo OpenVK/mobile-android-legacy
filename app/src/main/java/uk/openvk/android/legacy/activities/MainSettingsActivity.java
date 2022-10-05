@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.activities;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -172,11 +173,12 @@ public class MainSettingsActivity extends PreferenceActivity {
                             editor.putString("access_token", "");
                             editor.putString("server", "");
                             editor.commit();
-                            Intent authActivity = new Intent(getApplicationContext(), this.getClass());
-                            int pendingIntentId = 1;
-                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), pendingIntentId, authActivity, PendingIntent.FLAG_NO_CREATE);
-                            AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
+                            Intent mStartActivity = new Intent(MainSettingsActivity.this, MainActivity.class);
+                            int mPendingIntentId = 123456;
+                            PendingIntent mPendingIntent = PendingIntent.getActivity(MainSettingsActivity.this, mPendingIntentId, mStartActivity,
+                                    PendingIntent.FLAG_CANCEL_CURRENT);
+                            AlarmManager mgr = (AlarmManager) MainSettingsActivity.this.getSystemService(Context.ALARM_SERVICE);
+                            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                             System.exit(0);
                         }
                     });

@@ -64,5 +64,5 @@ public class Conversation {
 
     public void sendMessage(OvkAPIWrapper ovk, String text) {
         ovk.sendAPIMethod("Messages.send", String.format("peer_id=%d&message=%s", peer_id, URLEncoder.encode(text)));
-    };
+    }
 }

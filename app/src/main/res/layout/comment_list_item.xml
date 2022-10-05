@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/comm_author"
         android:layout_alignLeft="@+id/comm_author"
+        android:layout_marginRight="18dp"
         android:duplicateParentState="true"
         android:ellipsize="none"
         android:singleLine="false"

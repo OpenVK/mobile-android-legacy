@@ -23,7 +23,7 @@
         android:layout_weight="1"
         android:singleLine="true"
         android:text="TextView"
-        android:textColor="#FFF"
+        android:textColor="#FFFFFF"
         android:textSize="17dip" />
 
     <TextView
