@@ -20,7 +20,9 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
+import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.list_adapters.CommentsListAdapter;
+import uk.openvk.android.legacy.list_adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.list_adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
@@ -80,6 +82,27 @@ public class CommentsListLayout extends LinearLayout {
             return commentsView.getAdapter().getItemCount();
         } catch (NullPointerException npE) {
             return 0;
+        }
+    }
+
+    public void loadAvatars() {
+        if(commentsAdapter != null) {
+            commentsView = (RecyclerView) findViewById(R.id.comments_list);
+            for (int i = 0; i < getCount(); i++) {
+                try {
+                    Comment item = comments.get(i);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/comment_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                    if (bitmap != null) {
+                        item.avatar = bitmap;
+                    }
+                    comments.set(i, item);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            commentsAdapter.notifyDataSetChanged();
         }
     }
 }

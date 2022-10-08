@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -155,9 +156,9 @@ public class User {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONArray("items");
-            if(users != null) {
+            if (users != null) {
                 for (int i = 0; i < users.length(); i++) {
-                    if(i == position) {
+                    if (i == position) {
                         JSONObject user = (JSONObject) users.get(i);
                         first_name = user.getString("first_name");
                         last_name = user.getString("last_name");
@@ -182,43 +183,43 @@ public class User {
                             avatar_url = user.getString("photo_max_orig");
                         }
                         friends_status = user.getInt("friend_status");
-                        if(!user.isNull("interests")) {
+                        if (!user.isNull("interests")) {
                             interests = user.getString("interests");
                         } else {
                             interests = "";
                         }
-                        if(!user.isNull("movies")) {
+                        if (!user.isNull("movies")) {
                             movies = user.getString("movies");
                         } else {
                             movies = "";
                         }
-                        if(!user.isNull("music")) {
+                        if (!user.isNull("music")) {
                             music = user.getString("music");
                         } else {
                             music = "";
                         }
-                        if(!user.isNull("tv")) {
+                        if (!user.isNull("tv")) {
                             tv = user.getString("tv");
                         } else {
                             tv = "";
                         }
-                        if(!user.isNull("books")) {
+                        if (!user.isNull("books")) {
                             books = user.getString("books");
                         } else {
                             books = "";
                         }
                         //birthdate = user.getString("bdate");
-                        if(!user.isNull("city")) {
+                        if (!user.isNull("city")) {
                             city = user.getString("city");
                         } else {
                             city = "";
                         }
-                        if(user.getInt("verified") == 1) {
+                        if (user.getInt("verified") == 1) {
                             verified = true;
                         } else {
                             verified = false;
                         }
-                        if(user.getInt("online") == 1) {
+                        if (user.getInt("online") == 1) {
                             online = true;
                         } else {
                             online = false;
@@ -229,5 +230,9 @@ public class User {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void downloadAvatar(DownloadManager downloadManager) {
+        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "profile_avatars");
     }
 }

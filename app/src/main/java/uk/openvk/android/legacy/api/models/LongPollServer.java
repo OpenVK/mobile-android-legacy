@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.models;
 
 /**
  * Created by Dmitry on 27.09.2022.

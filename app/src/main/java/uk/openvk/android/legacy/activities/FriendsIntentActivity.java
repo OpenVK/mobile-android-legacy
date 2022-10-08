@@ -23,6 +23,7 @@ import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ErrorLayout;
@@ -157,11 +158,13 @@ public class FriendsIntentActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.FRIENDS_GET) {
-                friends.parse(data.getString("response"));
+                friends.parse(data.getString("response"), new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)), true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.VISIBLE);
                 friendsLayout.createAdapter(this, friendsList);
+            }  else if (message == HandlerMessages.FRIEND_AVATARS) {
+                friendsLayout.loadAvatars();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);

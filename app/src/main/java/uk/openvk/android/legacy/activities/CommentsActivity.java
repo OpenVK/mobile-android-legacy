@@ -22,6 +22,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Comment;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.CommentPanel;
@@ -34,6 +35,7 @@ import static uk.openvk.android.legacy.R.id.send_btn;
 
 public class CommentsActivity extends Activity {
     private OvkAPIWrapper ovk_api;
+    private DownloadManager downloadManager;
     private Wall wall;
     public Handler handler;
     private SharedPreferences global_prefs;
@@ -47,6 +49,7 @@ public class CommentsActivity extends Activity {
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
     private String author_name;
+    private int author_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,7 @@ public class CommentsActivity extends Activity {
                 owner_id = extras.getInt("owner_id");
                 post_id = extras.getInt("post_id");
                 author_name = extras.getString("author_name");
+                author_id = extras.getInt("author_id");
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
@@ -98,6 +102,7 @@ public class CommentsActivity extends Activity {
                 ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
+                downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
                 wall.getComments(ovk_api, owner_id, post_id);
             }
         } else {
@@ -145,7 +150,7 @@ public class CommentsActivity extends Activity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                Comment comment = new Comment(author_name, (int)(System.currentTimeMillis() / 1000), msg_text);
+                Comment comment = new Comment(author_id, author_name, (int)(System.currentTimeMillis() / 1000), msg_text);
                 comments.add(comment);
                 commentsLayout.createAdapter(CommentsActivity.this, comments);
                 ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
@@ -185,8 +190,10 @@ public class CommentsActivity extends Activity {
 
     private void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
-            comments = wall.parseComments(data.getString("response"));
+            comments = wall.parseComments(this, downloadManager, data.getString("response"));
             commentsLayout.createAdapter(this, comments);
+        } else if (message == HandlerMessages.COMMENT_AVATARS) {
+            commentsLayout.loadAvatars();
         }
     }
 }

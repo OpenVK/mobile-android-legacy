@@ -52,11 +52,17 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
     }
 
     private void setListeners() {
-        Preference clear_image_cache = findPreference("clearImageCache");
+        final Preference clear_image_cache = findPreference("clearImageCache");
+        long cache_size = dlManager.getCacheSize();
+        String cache_size_in_megabytes = String.format("%s %s", cache_size / 1024, getResources().getString(R.string.fsize_kb));
+        clear_image_cache.setSummary(cache_size_in_megabytes);
         clear_image_cache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 dlManager.clearCache();
+                long cache_size = dlManager.getCacheSize();
+                String cache_size_in_megabytes = String.format("%s %s", cache_size / 1024, getResources().getString(R.string.fsize_kb));
+                clear_image_cache.setSummary(cache_size_in_megabytes);
                 return false;
             }
         });

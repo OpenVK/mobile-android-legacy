@@ -74,6 +74,9 @@ public class FriendsListAdapter extends BaseAdapter {
         } else {
             ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
         }
+        if(item.avatar != null) {
+            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageBitmap(item.avatar);
+        }
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

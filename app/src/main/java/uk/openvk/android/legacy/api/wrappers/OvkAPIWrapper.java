@@ -253,6 +253,10 @@ public class OvkAPIWrapper {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLProtocolException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -316,7 +320,7 @@ public class OvkAPIWrapper {
                             } else if (method.equals("Friends.get")) {
                                 if (where.equals("friends_list")) {
                                     sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                } else {
+                                } else if (where.equals("profile_counter")) {
                                     sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
                                 }
                             } else if (method.equals("Friends.get")) {
@@ -401,8 +405,8 @@ public class OvkAPIWrapper {
                             } else if (error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                             }
-                        } else if (response_code == 500 || response_code == 502 || response_code == 503) {
-                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, response_body);
+                        } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     }
                     ;
@@ -414,6 +418,10 @@ public class OvkAPIWrapper {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
+                } catch(javax.net.ssl.SSLProtocolException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -558,8 +566,8 @@ public class OvkAPIWrapper {
                             } else if(error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                             }
-                        } else if(response_code == 500 || response_code == 502 || response_code == 503) {
-                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
+                        } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
                 } catch (SocketTimeoutException e) {
@@ -570,6 +578,10 @@ public class OvkAPIWrapper {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
+                } catch(javax.net.ssl.SSLProtocolException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -714,8 +726,8 @@ public class OvkAPIWrapper {
                             } else if(error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                             }
-                        } else if(response_code == 500 || response_code == 502 || response_code == 503) {
-                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
+                        } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
                 } catch (SocketTimeoutException e) {
@@ -726,6 +738,10 @@ public class OvkAPIWrapper {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
+                } catch(javax.net.ssl.SSLProtocolException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {

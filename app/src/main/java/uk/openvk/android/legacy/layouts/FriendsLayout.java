@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -57,6 +59,28 @@ public class FriendsLayout extends LinearLayout {
             return friendsAdapter.getCount();
         } catch(Exception ex) {
             return 0;
+        }
+    }
+
+    public void loadAvatars() {
+        if(friendsAdapter != null) {
+            friendsListView = (ListView) findViewById(R.id.friends_listview);
+            for (int i = 0; i < getCount(); i++) {
+                try {
+                    Friend item = friends.get(i);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                    if (bitmap != null) {
+                        item.avatar = bitmap;
+                    }
+                    friends.set(i, item);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            friendsAdapter = new FriendsListAdapter(getContext(), friends);
+            friendsListView.setAdapter(friendsAdapter);
         }
     }
 }

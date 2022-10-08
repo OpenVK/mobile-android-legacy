@@ -1138,6 +1138,14 @@
 	<string name="secured_connection">Secured (HTTPS)</string>
 	<string name="default_connection">Default (HTTP)</string>
 	<string name="instance_version">Instance version:</string>
+	<string name="instance_statistics">Statistics:</string>
+	<string name="instance_users_count">%d users</string>
+	<string name="instance_online_users_count">%d online users</string>
+	<string name="instance_active_users_count">%d active users</string>
+	<string name="instance_groups_count">%d groups</string>
+	<string name="instance_wall_posts_count">%d wall posts</string>
+	<string name="instance_admins_count">%d administrators</string>
+    <string name="instance_links">Links:</string>
 	<string name="connection_error">Connection error</string>
 	<string-array name="newsfeed_actionbar_items">
 		<item>Subscriptions</item>

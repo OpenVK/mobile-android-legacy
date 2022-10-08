@@ -30,8 +30,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,6 +46,9 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthActivity;
+import uk.openvk.android.legacy.activities.CommentsActivity;
+import uk.openvk.android.legacy.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Photo;
 
@@ -171,7 +180,7 @@ public class DownloadManager {
                                 HttpResponse response = httpClientLegacy.execute(request_legacy);
                                 StatusLine statusLine = response.getStatusLine();
                                 response_in = response.getEntity().getContent();
-                                File downloadedFile = new File(ctx.getCacheDir(), filename);
+                                File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
                                 while ((inByte = response_in.read()) != -1) {
@@ -203,15 +212,126 @@ public class DownloadManager {
                     }
                 }
                 if (where.equals("profile_avatar")) {
-                    sendMessage(HandlerMessages.PROFILE_AVATAR, where);
+                    sendMessage(HandlerMessages.PROFILE_AVATARS, where);
                 } else if (where.equals("newsfeed_avatar")) {
-                    sendMessage(HandlerMessages.NEWSFEED_AVATAR, where);
+                    sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
                 } else if (where.equals("newsfeed_photo_attachment")) {
-                    sendMessage(HandlerMessages.NEWSFEED_ATTACHMENT, where);
+                    sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
                 } else if (where.equals("wall_photo_attachment")) {
-                    sendMessage(HandlerMessages.WALL_ATTACHMENT, where);
+                    sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
                 } else if (where.equals("wall_avatar")) {
-                    sendMessage(HandlerMessages.WALL_AVATAR, where);
+                    sendMessage(HandlerMessages.WALL_AVATARS, where);
+                } else if (where.equals("friend_avatars")) {
+                    sendMessage(HandlerMessages.FRIEND_AVATARS, where);
+                } else if (where.equals("comment_avatars")) {
+                    sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                }
+            }
+        };
+
+        Thread thread = new Thread(httpRunnable);
+        thread.start();
+    }
+
+    public void downloadOnePhotoToCache(final String url, final String filename, final String where) {
+        Runnable httpRunnable = new Runnable() {
+            private Request request = null;
+            private HttpGet request_legacy = null;
+            StatusLine statusLine = null;
+            int response_code = 0;
+            int filesize = 0;
+            private InputStream response_in;
+
+            @Override
+            public void run() {
+                try {
+                    File directory = new File(ctx.getCacheDir().getAbsolutePath(), where);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+                filesize = 0;
+                if (url.length() == 0) {
+                    Log.e("DownloadManager", "Invalid address. Skipping...");
+                    try {
+                        File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                        if(downloadedFile.exists()) {
+                            FileOutputStream fos = new FileOutputStream(downloadedFile);
+                            byte[] bytes = new byte[1];
+                            bytes[0] = 0;
+                            fos.write(bytes);
+                            fos.close();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    String short_address = "";
+                    if(url.length() > 40) {
+                        short_address = url.substring(0, 39);
+                    } else {
+                        short_address = url;
+                    }
+                    Log.v("DownloadManager", String.format("Downloading %s...", short_address));
+                    if (legacy_mode) {
+                        request_legacy = new HttpGet(url);
+                        request_legacy.getParams().setParameter("timeout", 30000);
+                    } else {
+                        request = new Request.Builder()
+                                .url(url)
+                                .build();
+                    }
+                    try {
+                        if (legacy_mode) {
+                            HttpResponse response = httpClientLegacy.execute(request_legacy);
+                            StatusLine statusLine = response.getStatusLine();
+                            response_in = response.getEntity().getContent();
+                            File downloadedFile = new File(ctx.getCacheDir(), String.format("%s/%s", ctx.getCacheDir(), where));
+                            FileOutputStream fos = new FileOutputStream(downloadedFile);
+                            int inByte;
+                            while ((inByte = response_in.read()) != -1) {
+                                fos.write(inByte);
+                                filesize++;
+                            }
+                            response_in.close();
+                            fos.close();
+                            response_code = statusLine.getStatusCode();
+                        } else {
+                            Response response = httpClient.newCall(request).execute();
+                            response_code = response.code();
+                            File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                            FileOutputStream fos = new FileOutputStream(downloadedFile);
+                            int inByte;
+                            while ((inByte = response.body().byteStream().read()) != -1) {
+                                fos.write(inByte);
+                                filesize++;
+                            }
+                            fos.close();
+                            response.body().byteStream().close();
+                        }
+                        Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
+                    } catch (IOException e) {
+                        Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                    } catch (Exception e) {
+                        Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                    }
+                }
+                if (where.equals("profile_avatars")) {
+                    sendMessage(HandlerMessages.PROFILE_AVATARS, where);
+                } else if (where.equals("newsfeed_avatars")) {
+                    sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
+                } else if (where.equals("newsfeed_photo_attachments")) {
+                    sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
+                } else if (where.equals("wall_photo_attachments")) {
+                    sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
+                } else if (where.equals("wall_avatars")) {
+                    sendMessage(HandlerMessages.WALL_AVATARS, where);
+                } else if (where.equals("friend_avatars")) {
+                    sendMessage(HandlerMessages.FRIEND_AVATARS, where);
+                } else if (where.equals("comment_avatars")) {
+                    sendMessage(HandlerMessages.COMMENT_AVATARS, where);
                 }
             }
         };
@@ -230,6 +350,12 @@ public class DownloadManager {
             ((AuthActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
             ((AppActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("CommentsActivity")) {
+            ((CommentsActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -244,6 +370,12 @@ public class DownloadManager {
             ((AuthActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
             ((AppActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("CommentsIntentActivity")) {
+            ((CommentsActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -260,5 +392,29 @@ public class DownloadManager {
         } catch (Exception ex) {
 
         }
+    }
+
+    public long getCacheSize() {
+        final long[] size = {0};
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                long foldersize = 0;
+                File[] filelist = new File(ctx.getCacheDir().getAbsolutePath()).listFiles();
+                for (int i = 0; i < filelist.length; i++) {
+                    if (filelist[i].isDirectory()) {
+                        File[] filelist2 = new File(filelist[i].getAbsolutePath()).listFiles();
+                        for(int file_index = 0; file_index < filelist2.length; file_index++) {
+                            foldersize += filelist2.length;
+                        }
+                    } else {
+                        foldersize += filelist[i].length();
+                    }
+                }
+                size[0] = foldersize;
+            }
+        };
+        new Thread(runnable).run();
+        return size[0];
     }
 }

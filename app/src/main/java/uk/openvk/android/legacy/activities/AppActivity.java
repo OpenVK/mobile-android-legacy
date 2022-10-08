@@ -5,27 +5,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -36,12 +32,13 @@ import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.LongPollServer;
+import uk.openvk.android.legacy.api.models.LongPollServer;
 import uk.openvk.android.legacy.api.Messages;
 import uk.openvk.android.legacy.api.Newsfeed;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ConversationsLayout;
@@ -57,12 +54,11 @@ import uk.openvk.android.legacy.list_items.NewsfeedItem;
 import uk.openvk.android.legacy.list_items.SlidingMenuItem;
 import uk.openvk.android.legacy.services.LongPollService;
 
-/**
- * Created by Dmitry on 27.09.2022.
- */
 public class AppActivity extends Activity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
+    private LongPollService longPollService;
+    private DownloadManager downloadManager;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -76,7 +72,6 @@ public class AppActivity extends Activity {
     private FriendsLayout friendsLayout;
     private ConversationsLayout conversationsLayout;
     private SlidingMenuLayout slidingmenuLayout;
-    private LongPollService longPollService;
     private Account account;
     private Newsfeed newsfeed;
     private Messages messages;
@@ -108,6 +103,7 @@ public class AppActivity extends Activity {
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
+        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -367,7 +363,7 @@ public class AppActivity extends Activity {
                     //newpost.setVisible(true);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                newsfeed.parse(this, data.getString("response"));
+                newsfeed.parse(this, downloadManager, data.getString("response"));
                 newsfeedLayout.createAdapter(this, newsfeed.getNewsfeedItems());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -377,14 +373,16 @@ public class AppActivity extends Activity {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""));
                 longPollService.start(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
-            } else if (message == HandlerMessages.NEWSFEED_ATTACHMENT) {
+            } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
                 newsfeedLayout.setScrollingPositions();
-            } else if(message == HandlerMessages.NEWSFEED_AVATAR) {
+            } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
                 newsfeedLayout.loadAvatars();
-            } else if (message == HandlerMessages.WALL_ATTACHMENT) {
+            } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
-            } else if (message == HandlerMessages.WALL_AVATAR) {
+            } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
+            } else if (message == HandlerMessages.FRIEND_AVATARS) {
+                friendsLayout.loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
@@ -393,13 +391,15 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.VISIBLE);
                     profileLayout.setDMButtonListener(this, user.id);
+                    user.downloadAvatar(new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)));
                     wall.get(ovk_api, user.id, 50);
+                    friends.get(ovk_api, user.id, "profile_counter");
                 }
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, data.getString("response"));
+                wall.parse(this, downloadManager, data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
             } else if (message == HandlerMessages.FRIENDS_GET) {
-                friends.parse(data.getString("response"));
+                friends.parse(data.getString("response"), downloadManager, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
                     progressLayout.setVisibility(View.GONE);
@@ -407,7 +407,11 @@ public class AppActivity extends Activity {
                 }
                 friendsLayout.createAdapter(this, friendsList);
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                // not implemented yet
+                friends.parse(data.getString("response"), downloadManager, false);
+                ArrayList<Friend> friendsList = friends.getFriends();
+                if (global_prefs.getString("current_screen", "").equals("profile")) {
+                    profileLayout.setCounter(user, "friends", friendsList.size());
+                }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 conversations = messages.parseConversationsList(data.getString("response"));
                 conversationsLayout.createAdapter(this, conversations);
@@ -430,7 +434,7 @@ public class AppActivity extends Activity {
                     ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
+                    message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION) {
                 errorLayout.setReason(message);
                 progressLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
@@ -442,6 +446,10 @@ public class AppActivity extends Activity {
                 Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
                 startActivity(intent);
                 finish();
+            } else if(message == HandlerMessages.PROFILE_AVATARS) {
+                if(user.avatar_url.length() > 0) {
+                    profileLayout.loadAvatar(user);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -579,6 +587,7 @@ public class AppActivity extends Activity {
             intent.putExtra("post_id", item.post_id);
             intent.putExtra("owner_id", item.owner_id);
             intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+            intent.putExtra("author_id", account.id);
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

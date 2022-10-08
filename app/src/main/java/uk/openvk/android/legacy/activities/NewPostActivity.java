@@ -56,9 +56,8 @@ public class NewPostActivity extends Activity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
-        } else {
-            installLayouts();
         }
+        installLayouts();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -90,7 +89,6 @@ public class NewPostActivity extends Activity {
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 response_sb = new StringBuilder();
-                installLayouts();
             }
         }
     }
@@ -115,7 +113,6 @@ public class NewPostActivity extends Activity {
                     onBackPressed();
                 }
             });
-            actionbarImitation.setTitle(getResources().getString(R.string.new_status));
             actionbarImitation.setActionButton("done", 0, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -134,7 +131,10 @@ public class NewPostActivity extends Activity {
                     }
                 }
             });
+            actionbarImitation.setTitle(getResources().getString(R.string.new_status));
+
         }
+
     }
 
     private void receiveState(int message, Bundle data) {
@@ -165,7 +165,7 @@ public class NewPostActivity extends Activity {
         if(item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if(item.getItemId() == R.id.sendpost) {
-            EditText statusEditText = findViewById(R.id.status_text_edit2);
+            EditText statusEditText = findViewById(R.id.status_text_edit);
             if(statusEditText.getText().toString().length() == 0) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
             } else if(connection_status == false) {

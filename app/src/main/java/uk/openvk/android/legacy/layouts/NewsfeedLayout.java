@@ -91,7 +91,7 @@ public class NewsfeedLayout extends LinearLayout {
                     NewsfeedItem item = newsfeedItems.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatar/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }

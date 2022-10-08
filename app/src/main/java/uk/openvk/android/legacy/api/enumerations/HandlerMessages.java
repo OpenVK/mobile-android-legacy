@@ -68,13 +68,14 @@ public class HandlerMessages {
     public static int OVK_CHECK_HTTPS                   = 905;
 
     // Misc
-    public static int NEWSFEED_ATTACHMENT               = 1000;
-    public static int WALL_ATTACHMENT                   = 1002;
-    public static int WALL_AVATAR                       = 1003;
-    public static int NEWSFEED_AVATAR                   = 1004;
-    public static int PROFILE_AVATAR                    = 1005;
-    public static int FRIENDS_ITEM_AVATAR               = 1006;
-    public static int COMMENT_AVATAR                    = 1007;
+    public static int NEWSFEED_ATTACHMENTS              = 1000;
+    public static int WALL_ATTACHMENTS                  = 1002;
+    public static int WALL_AVATARS                      = 1003;
+    public static int NEWSFEED_AVATARS                  = 1004;
+    public static int PROFILE_AVATARS                   = 1005;
+    public static int FRIEND_AVATARS                    = 1006;
+    public static int COMMENT_AVATARS                   = 1007;
+    public static int CONVERSATION_AVATARS              = 1008;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;

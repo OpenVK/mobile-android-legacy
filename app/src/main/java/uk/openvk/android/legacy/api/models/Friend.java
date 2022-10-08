@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -18,6 +19,8 @@ public class Friend {
     public int id;
     public boolean verified;
     public boolean online;
+    public Bitmap avatar;
+    public String avatar_url;
     private JSONParser jsonParser;
 
     public Friend(JSONObject user) {
@@ -43,8 +46,12 @@ public class Friend {
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
-                if(user.getInt("verified") == 1) {
-                    verified = true;
+                if(user.has("verified")) {
+                    if (user.getInt("verified") == 1) {
+                        verified = true;
+                    } else {
+                        verified = false;
+                    }
                 } else {
                     verified = false;
                 }
@@ -52,6 +59,23 @@ public class Friend {
                     online = true;
                 } else {
                     online = false;
+                }
+                if (user.has("photo_50")) {
+                    avatar_url = user.getString("photo_50");
+                } else if (user.has("photo_100")) {
+                    avatar_url = user.getString("photo_100");
+                } else if (user.has("photo_200_orig")) {
+                    avatar_url = user.getString("photo_200_orig");
+                } else if (user.has("photo_200")) {
+                    avatar_url = user.getString("photo_200");
+                } else if (user.has("photo_400")) {
+                    avatar_url = user.getString("photo_400");
+                } else if (user.has("photo_400_orig")) {
+                    avatar_url = user.getString("photo_400_orig");
+                } else if (user.has("photo_max")) {
+                    avatar_url = user.getString("photo_max");
+                } else if (user.has("photo_max_orig")) {
+                    avatar_url = user.getString("photo_max_orig");
                 }
             }
         } catch (JSONException e) {
@@ -81,12 +105,33 @@ public class Friend {
                         } else {
                             online = false;
                         }
+                        if (user.has("photo_50")) {
+                            avatar_url = user.getString("photo_50");
+                        } else if (user.has("photo_100")) {
+                            avatar_url = user.getString("photo_100");
+                        } else if (user.has("photo_200_orig")) {
+                            avatar_url = user.getString("photo_200_orig");
+                        } else if (user.has("photo_200")) {
+                            avatar_url = user.getString("photo_200");
+                        } else if (user.has("photo_400")) {
+                            avatar_url = user.getString("photo_400");
+                        } else if (user.has("photo_400_orig")) {
+                            avatar_url = user.getString("photo_400_orig");
+                        } else if (user.has("photo_max")) {
+                            avatar_url = user.getString("photo_max");
+                        } else if (user.has("photo_max_orig")) {
+                            avatar_url = user.getString("photo_max_orig");
+                        }
                     }
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void downloadAvatar(DownloadManager downloadManager) {
+        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "friend_avatars");
     }
 
 }

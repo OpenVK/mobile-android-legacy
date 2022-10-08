@@ -1192,6 +1192,14 @@
     <string name="secured_connection">"Защищённое (HTTPS) "</string>
     <string name="default_connection">Обычное (HTTP)</string>
     <string name="instance_version">Версия инстанции:</string>
+    <string name="instance_statistics">Статистика:</string>
+    <string name="instance_users_count">%d пользователей</string>
+    <string name="instance_online_users_count">%d в сети</string>
+    <string name="instance_active_users_count">%d активных</string>
+    <string name="instance_groups_count">%d групп</string>
+    <string name="instance_wall_posts_count">%d записей</string>
+    <string name="instance_admins_count">%d администраторов</string>
+    <string name="instance_links">Ссылки:</string>
     <string name="connection_error">Ошибка подключения</string>
     <string-array name="newsfeed_actionbar_items">
         <item>Подписки</item>

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
@@ -71,7 +73,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         void bind(final int position) {
             Comment item = getItem(position);
             author_name.setText(item.author);
-            comment_info.setText(new SimpleDateFormat("d MMMM yyyy").format(item.date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(item.date));
+            Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
+            comment_info.setText(new SimpleDateFormat("d MMMM yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
             if(item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
                 comment_text.setText(item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -79,6 +82,9 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 comment_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 comment_text.setVisibility(View.GONE);
+            }
+            if(item.avatar != null) {
+                author_avatar.setImageBitmap(item.avatar);
             }
         }
     }

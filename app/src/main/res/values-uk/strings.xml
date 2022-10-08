@@ -1189,6 +1189,14 @@
     <string name="secured_connection">"Захищене (HTTPS) "</string>
     <string name="default_connection">Звичайне (HTTP)</string>
     <string name="instance_version">Версiя iнстанцiї:</string>
+    <string name="instance_statistics">Статистика:</string>
+    <string name="instance_users_count">%d користувачів</string>
+    <string name="instance_online_users_count">%d в мережі</string>
+    <string name="instance_active_users_count">%d активних</string>
+    <string name="instance_groups_count">%d груп</string>
+    <string name="instance_wall_posts_count">%d записів</string>
+    <string name="instance_admins_count">%d адміністраторів</string>
+    <string name="instance_links">Посилання:</string>
     <string name="connection_error">Помилка пiдключення</string>
     <string-array name="newsfeed_actionbar_items">
         <item>Передплати</item>

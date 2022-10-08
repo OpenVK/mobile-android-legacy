@@ -13,39 +13,31 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
 import uk.openvk.android.legacy.api.Likes;
-import uk.openvk.android.legacy.api.LongPollServer;
-import uk.openvk.android.legacy.api.Messages;
-import uk.openvk.android.legacy.api.Newsfeed;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ErrorLayout;
-import uk.openvk.android.legacy.layouts.FriendsLayout;
-import uk.openvk.android.legacy.layouts.NewsfeedLayout;
 import uk.openvk.android.legacy.layouts.ProfileLayout;
 import uk.openvk.android.legacy.layouts.ProgressLayout;
-import uk.openvk.android.legacy.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.layouts.WallLayout;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 import uk.openvk.android.legacy.list_items.SlidingMenuItem;
-import uk.openvk.android.legacy.services.LongPollService;
 
 public class ProfileIntentActivity extends Activity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
+    private DownloadManager downloadManager;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -59,6 +51,7 @@ public class ProfileIntentActivity extends Activity {
     private Wall wall;
     private Likes likes;
     private String access_token;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +64,7 @@ public class ProfileIntentActivity extends Activity {
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         likes = new Likes();
+        user = new User();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -103,6 +97,7 @@ public class ProfileIntentActivity extends Activity {
                 if (path.startsWith("openvk://profile/")) {
                     String args = path.substring("openvk://profile/".length());
                     ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                    downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
                     ovk_api.setServer(instance_prefs.getString("server", ""));
                     ovk_api.setAccessToken(access_token);
                     users = new Users();
@@ -169,23 +164,32 @@ public class ProfileIntentActivity extends Activity {
         try {
             if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
-                User user = users.getList().get(0);
+                user = users.getList().get(0);
                 profileLayout.updateLayout(user);
                 progressLayout.setVisibility(View.GONE);
                 profileLayout.setVisibility(View.VISIBLE);
                 profileLayout.setDMButtonListener(this, user.id);
+                user.downloadAvatar(new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)));
                 wall.get(ovk_api, user.id, 50);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 users.parseSearch(data.getString("response"));
                 users.getUser(ovk_api, users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, data.getString("response"));
+                wall.parse(this, downloadManager, data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+            } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
+            } else if (message == HandlerMessages.WALL_AVATARS) {
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
                 progressLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
+            } else if(message == HandlerMessages.PROFILE_AVATARS) {
+                if(user.avatar_url.length() > 0) {
+                    profileLayout.loadAvatar(user);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

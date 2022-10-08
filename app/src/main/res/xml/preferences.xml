@@ -73,13 +73,13 @@
 			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true" />
 		<RingtonePreference android:ringtoneType="notification"
-			android:layout="@layout/checkbox_prefw"
+			android:layout="@layout/list_prefw"
 			android:key="notifyRingtone" android:title="@string/sett_ringtone"
 			android:showDefault="true" android:showSilent="false"
 			android:defaultValue="content://settings/system/notification_sound"/>
 		<Preference
 			android:key="doNotDistrib"
-			android:layout="@layout/checkbox_prefw"
+			android:layout="@layout/pref_widget"
 			android:title="@string/dnd_mode" />
 
 	</PreferenceCategory>

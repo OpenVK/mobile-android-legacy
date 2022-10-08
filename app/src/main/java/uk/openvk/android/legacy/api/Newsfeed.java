@@ -23,16 +23,16 @@ public class Newsfeed {
     private JSONParser jsonParser;
     private ArrayList<NewsfeedItem> newsfeedItems;
 
-    public Newsfeed(String response, Context ctx) {
+    public Newsfeed(String response, DownloadManager downloadManager, Context ctx) {
         jsonParser = new JSONParser();
-        parse(ctx, response);
+        parse(ctx, downloadManager, response);
     }
 
     public Newsfeed() {
         jsonParser = new JSONParser();
     }
 
-    public void parse(Context ctx, String response) {
+    public void parse(Context ctx, DownloadManager downloadManager, String response) {
         newsfeedItems = new ArrayList<NewsfeedItem>();
         ArrayList<Photo> photos_hsize = new ArrayList<Photo>();
         ArrayList<Photo> photos_msize = new ArrayList<Photo>();
@@ -129,9 +129,8 @@ public class Newsfeed {
                     avatars.add(avatar);
                     newsfeedItems.add(item);
                 }
-                DownloadManager downloadManager = new DownloadManager(ctx, true);
-                downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachment");
-                downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatar");
+                downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
+                downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatars");
             }
         } catch (JSONException e) {
             e.printStackTrace();

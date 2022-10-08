@@ -56,18 +56,30 @@ public class ActionBarImitation extends LinearLayout {                  // for p
                 ((ImageButton) findViewById(R.id.action_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_write));
                 ((ImageButton) findViewById(R.id.action_btn)).setOnClickListener(onClickListener);
                 ((ImageButton) findViewById(R.id.action_btn)).setVisibility(VISIBLE);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_write));
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setVisibility(VISIBLE);
             } else {
-                ((ImageButton) findViewById(R.id.action_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_write));
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_write));
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(VISIBLE);
+                ((ImageButton) findViewById(R.id.action_btn2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_write));
                 ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(onClickListener);
                 ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
             }
-        } else if(icon.equals("check_mark")) {
+        } else if(icon.equals("done")) {
             if(position == 0) {
                 ((ImageButton) findViewById(R.id.action_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_done));
                 ((ImageButton) findViewById(R.id.action_btn)).setOnClickListener(onClickListener);
                 ((ImageButton) findViewById(R.id.action_btn)).setVisibility(VISIBLE);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_done));
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setVisibility(VISIBLE);
             } else {
-                ((ImageButton) findViewById(R.id.action_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_done));
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_done));
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(VISIBLE);
+                ((ImageButton) findViewById(R.id.action_btn2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_done));
                 ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(onClickListener);
                 ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
             }

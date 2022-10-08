@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.Conversation;
+import uk.openvk.android.legacy.api.models.LongPollServer;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 

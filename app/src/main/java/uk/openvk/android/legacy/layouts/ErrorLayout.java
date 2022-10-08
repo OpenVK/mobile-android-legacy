@@ -37,8 +37,10 @@ public class ErrorLayout extends LinearLayout{
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(1));
         } else if(message == HandlerMessages.CONNECTION_TIMEOUT) {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(2));
-        } else if(message == HandlerMessages.INTERNAL_ERROR) {
+        } else if(message == HandlerMessages.BROKEN_SSL_CONNECTION) {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
+        } else if(message == HandlerMessages.INTERNAL_ERROR) {
+            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(4));
         }
         if(description.length() > 0) {
             ((TextView) findViewById(R.id.reason_text)).setVisibility(VISIBLE);

@@ -26,16 +26,16 @@ public class Wall {
     private ArrayList<NewsfeedItem> wallItems;
     private ArrayList<Comment> comments;
 
-    public Wall(String response, Context ctx) {
+    public Wall(String response, DownloadManager downloadManager, Context ctx) {
         jsonParser = new JSONParser();
-        parse(ctx, response);
+        parse(ctx, downloadManager, response);
     }
 
     public Wall() {
         jsonParser = new JSONParser();
     }
 
-    public void parse(Context ctx, String response) {
+    public void parse(Context ctx, DownloadManager downloadManager, String response) {
         wallItems = new ArrayList<NewsfeedItem>();
         ArrayList<Photo> photos_hsize = new ArrayList<Photo>();
         ArrayList<Photo> photos_msize = new ArrayList<Photo>();
@@ -132,31 +132,35 @@ public class Wall {
                     avatars.add(avatar);
                     wallItems.add(item);
                 }
-                DownloadManager downloadManager = new DownloadManager(ctx, true);
-                downloadManager.downloadPhotosToCache(photos_msize, "wall_attachment");
-                downloadManager.downloadPhotosToCache(avatars, "wall_avatar");
+                downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
+                downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public ArrayList<Comment> parseComments(String response) {
+    public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String response) {
         comments = new ArrayList<Comment>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if (json != null) {
                 JSONObject comments = json.getJSONObject("response");
                 JSONArray items = comments.getJSONArray("items");
+                ArrayList<Photo> avatars = new ArrayList<>();
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject item = items.getJSONObject(i);
                     String text = item.getString("text");
                     int author_id = item.getInt("from_id");
                     int date = item.getInt("date");
                     Comment comment = new Comment();
+                    comment.id = author_id;
                     comment.text = text;
                     comment.author = String.format("(Unknown author: %d)", author_id);
                     comment.date = date;
+                    Photo photo = new Photo();
+                    photo.url = "";
+                    photo.filename = "";
                     if(author_id > 0) {
                         if(comments.has("profiles")) {
                             JSONArray profiles = comments.getJSONArray("profiles");
@@ -164,6 +168,9 @@ public class Wall {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if (profile.getInt("id") == author_id) {
                                     comment.author = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    comment.avatar_url = profile.getString("photo_100");
+                                    photo.url = comment.avatar_url;
+                                    photo.filename = String.format("avatar_%d", author_id);
                                 }
                             }
                         }
@@ -174,12 +181,17 @@ public class Wall {
                                 JSONObject group = groups.getJSONObject(groups_index);
                                 if (group.getInt("id") == author_id) {
                                     comment.author = group.getString("name");
+                                    comment.avatar_url = group.getString("photo_100");
+                                    photo.url = comment.avatar_url;
+                                    photo.filename = String.format("avatar_%d", author_id);
                                 }
                             }
                         }
                     }
+                    avatars.add(photo);
                     this.comments.add(comment);
                 }
+                downloadManager.downloadPhotosToCache(avatars, "comment_avatars");
             }
         } catch(JSONException e) {
             e.printStackTrace();
