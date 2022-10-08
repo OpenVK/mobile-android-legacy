@@ -46,6 +46,7 @@ public class Friend {
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
+                avatar_url = "";
                 if(user.has("verified")) {
                     if (user.getInt("verified") == 1) {
                         verified = true;

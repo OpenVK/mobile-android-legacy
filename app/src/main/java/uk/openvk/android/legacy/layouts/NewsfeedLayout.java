@@ -119,7 +119,7 @@ public class NewsfeedLayout extends LinearLayout {
                     } else {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachment/newsfeed_attachment_%s", getContext().getCacheDir(), item.post_id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_%s", getContext().getCacheDir(), item.post_id), options);
                         if (bitmap != null) {
                             item.photo = bitmap;
                             item.photo_status = "loaded";
