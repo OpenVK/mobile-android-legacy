@@ -1,10 +1,14 @@
 package uk.openvk.android.legacy.api.models;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
 
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
@@ -13,7 +17,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 /**
  * Created by Dmitry on 30.09.2022.
  */
-public class Friend {
+public class Friend implements Parcelable {
     public String first_name;
     public String last_name;
     public int id;
@@ -39,6 +43,28 @@ public class Friend {
         this.verified = verified;
         jsonParser = new JSONParser();
     }
+
+    protected Friend(Parcel in) {
+        first_name = in.readString();
+        last_name = in.readString();
+        id = in.readInt();
+        verified = in.readByte() != 0;
+        online = in.readByte() != 0;
+        avatar = in.readParcelable(Bitmap.class.getClassLoader());
+        avatar_url = in.readString();
+    }
+
+    public static final Creator<Friend> CREATOR = new Creator<Friend>() {
+        @Override
+        public Friend createFromParcel(Parcel in) {
+            return new Friend(in);
+        }
+
+        @Override
+        public Friend[] newArray(int size) {
+            return new Friend[size];
+        }
+    };
 
     public void parse(JSONObject user) {
         try {
@@ -135,4 +161,19 @@ public class Friend {
         downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "friend_avatars");
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(first_name);
+        parcel.writeString(last_name);
+        parcel.writeInt(id);
+        parcel.writeByte((byte) (verified ? 1 : 0));
+        parcel.writeByte((byte) (online ? 1 : 0));
+        parcel.writeParcelable(avatar, i);
+        parcel.writeString(avatar_url);
+    }
 }

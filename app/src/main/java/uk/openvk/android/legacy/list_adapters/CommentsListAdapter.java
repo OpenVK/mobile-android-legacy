@@ -86,6 +86,9 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             if(item.avatar != null) {
                 author_avatar.setImageBitmap(item.avatar);
             }
+            if(position == getItemCount() - 1) {
+                ((View) convertView.findViewById(R.id.divider)).setVisibility(View.GONE);
+            }
         }
     }
 

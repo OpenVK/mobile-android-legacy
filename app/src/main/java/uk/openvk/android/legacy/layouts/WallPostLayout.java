@@ -9,8 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,13 +20,10 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
-import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.list_adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.list_adapters.FriendsListAdapter;
-import uk.openvk.android.legacy.list_adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
-public class CommentsListLayout extends LinearLayout {
+public class WallPostLayout extends LinearLayout {
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -39,10 +36,10 @@ public class CommentsListLayout extends LinearLayout {
     private LinearLayoutManager llm;
     private ArrayList<Comment> comments;
 
-    public CommentsListLayout(Context context, AttributeSet attrs) {
+    public WallPostLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.comments_list, null);
+                R.layout.wall_post_layout, null);
 
         this.addView(view);
 
@@ -103,6 +100,31 @@ public class CommentsListLayout extends LinearLayout {
                 }
             }
             commentsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setPost(NewsfeedItem item) {
+        ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
+        if(item.text.length() > 0) {
+            ((TextView) findViewById(R.id.post_view)).setText(item.text);
+        } else {
+            ((TextView) findViewById(R.id.post_view)).setVisibility(GONE);
+        }
+        ((TextView) findViewById(R.id.wall_view_time)).setText(item.info);
+
+        if(item.avatar != null) {
+            ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);
+        }
+
+        if(item.photo != null) {
+            ((ImageView) findViewById(R.id.post_photo)).setImageBitmap(item.photo);
+            ((ImageView) findViewById(R.id.post_photo)).setVisibility(VISIBLE);
+        } else {
+            ((ImageView) findViewById(R.id.post_photo)).setVisibility(GONE);
+        }
+        ((TextView) findViewById(R.id.wall_view_like)).setText("" + item.counters.likes);
+        if(item.counters.isLiked) {
+            ((TextView) findViewById(R.id.wall_view_like)).setSelected(true);
         }
     }
 }

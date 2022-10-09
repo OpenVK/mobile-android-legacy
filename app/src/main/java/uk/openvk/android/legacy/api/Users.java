@@ -1,9 +1,13 @@
 package uk.openvk.android.legacy.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.User;
@@ -13,7 +17,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 /**
  * Created by Dmitry on 30.09.2022.
  */
-public class Users {
+public class Users implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<User> users;
     public User user;
@@ -27,6 +31,23 @@ public class Users {
         jsonParser = new JSONParser();
         parse(response);
     }
+
+    protected Users(Parcel in) {
+        users = in.createTypedArrayList(User.CREATOR);
+        user = in.readParcelable(User.class.getClassLoader());
+    }
+
+    public static final Creator<Users> CREATOR = new Creator<Users>() {
+        @Override
+        public Users createFromParcel(Parcel in) {
+            return new Users(in);
+        }
+
+        @Override
+        public Users[] newArray(int size) {
+            return new Users[size];
+        }
+    };
 
     public void parse(String response) {
         try {
@@ -82,5 +103,16 @@ public class Users {
 
     public void search(OvkAPIWrapper ovk, String query) {
         ovk.sendAPIMethod("Users.search", String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", query));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeTypedList(users);
+        parcel.writeParcelable(user, i);
     }
 }

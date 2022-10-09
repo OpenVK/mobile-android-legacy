@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/actionbar_imitation"/>
 
-    <uk.openvk.android.legacy.layouts.CommentsListLayout
+    <uk.openvk.android.legacy.layouts.WallPostLayout
         android:id="@+id/comments_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -24,6 +24,7 @@ public class HandlerMessages {
     public static int GROUPS_GET                        = 300;
     public static int GROUPS_GET_ALT                    = 301;
     public static int GROUPS_GET_BY_ID                  = 302;
+    public static int GROUPS_SEARCH                 = 303;
 
     // Likes
     public static int LIKES_ADD                         = 400;

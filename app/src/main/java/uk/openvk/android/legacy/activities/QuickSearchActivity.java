@@ -18,8 +18,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -30,6 +32,7 @@ import uk.openvk.android.legacy.layouts.SearchResultsLayout;
 public class QuickSearchActivity extends Activity {
     private OvkAPIWrapper ovk_api;
     private Users users;
+    private Groups groups;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -62,6 +65,7 @@ public class QuickSearchActivity extends Activity {
         }
         setTextEditListener();
         users = new Users();
+        groups = new Groups();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
@@ -89,8 +93,13 @@ public class QuickSearchActivity extends Activity {
         if(message == HandlerMessages.USERS_SEARCH) {
             users.parseSearch(data.getString("response"));
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
-            searchResultsLayout.createAdapter(this, users.getList());
+            searchResultsLayout.createUsersAdapter(this, users.getList());
             ((LinearLayout) searchResultsLayout.findViewById(R.id.people_ll)).setVisibility(View.VISIBLE);
+        } else if(message == HandlerMessages.GROUPS_SEARCH) {
+            groups.parseSearch(data.getString("response"));
+            final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
+            searchResultsLayout.createGroupsAdapter(this, groups.getList());
+            ((LinearLayout) searchResultsLayout.findViewById(R.id.community_ll)).setVisibility(View.VISIBLE);
         }
     }
 
@@ -103,6 +112,7 @@ public class QuickSearchActivity extends Activity {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String query = search_edit.getText().toString();
                     try {
+                        groups.search(ovk_api, query);
                         users.search(ovk_api, query);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -125,5 +135,9 @@ public class QuickSearchActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
+    }
+
+    public void showGroup(int position) {
+        Toast.makeText(this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
     }
 }

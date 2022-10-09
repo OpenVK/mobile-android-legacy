@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -112,7 +113,7 @@ public class AppActivity extends Activity {
                 receiveState(message.what, data);
             }
         };
-        account = new Account();
+        account = new Account(this);
         account.getProfileInfo(ovk_api);
         newsfeed = new Newsfeed();
         user = new User();
@@ -234,7 +235,6 @@ public class AppActivity extends Activity {
             }
         } else {
             ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setTitle(getResources().getString(R.string.app_name));
             actionBarImitation.setOnMenuClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -242,11 +242,21 @@ public class AppActivity extends Activity {
                 }
             });
         }
+        setActionBarTitle(getResources().getString(R.string.newsfeed));
         if(activity_menu == null) {
             onPrepareOptionsMenu(activity_menu);
         }
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
+    }
+
+    public void setActionBarTitle(String title) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setTitle(title);
+        } else {
+            ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation.setTitle(title);
+        }
     }
 
     private void openNewPostActivity() {
@@ -264,6 +274,7 @@ public class AppActivity extends Activity {
     }
 
     public void onSlidingMenuItemClicked(int position) {
+        global_prefs_editor = global_prefs.edit();
         if(position < 8) {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
                 menu.toggle(true);
@@ -272,6 +283,7 @@ public class AppActivity extends Activity {
             }
         }
         if(position == 0) {
+            setActionBarTitle(getResources().getString(R.string.friends));
             if(friendsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
@@ -289,8 +301,12 @@ public class AppActivity extends Activity {
             }
             global_prefs_editor.putString("current_screen", "friends");
             global_prefs_editor.commit();
+            if(friends == null) {
+                friends = new Friends();
+            }
             friends.get(ovk_api, account.id, "friends_list");
         } else if(position == 3) {
+            setActionBarTitle(getResources().getString(R.string.messages));
             if(conversationsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
@@ -308,8 +324,12 @@ public class AppActivity extends Activity {
             }
             global_prefs_editor.putString("current_screen", "messages");
             global_prefs_editor.commit();
+            if(messages == null) {
+                messages = new Messages();
+            }
             messages.getConversations(ovk_api);
         } else if(position == 5) {
+            setActionBarTitle(getResources().getString(R.string.newsfeed));
             if(newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
@@ -327,6 +347,9 @@ public class AppActivity extends Activity {
             }
             global_prefs_editor.putString("current_screen", "newsfeed");
             global_prefs_editor.commit();
+            if(newsfeed == null) {
+                newsfeed = new Newsfeed();
+            }
             newsfeed.get(ovk_api, 50);
         } else if(position == 8) {
             Context context = getApplicationContext();
@@ -372,7 +395,7 @@ public class AppActivity extends Activity {
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""));
-                longPollService.start(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
+                longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
                 newsfeedLayout.setScrollingPositions();
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
@@ -436,6 +459,8 @@ public class AppActivity extends Activity {
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION) {
                 errorLayout.setReason(message);
+                errorLayout.setData(data);
+                errorLayout.setRetryAction(this);
                 progressLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
             } else if(message == HandlerMessages.INVALID_TOKEN) {
@@ -454,7 +479,8 @@ public class AppActivity extends Activity {
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(this, data.getString("method"), data.getString("args"));
+            errorLayout.setData(data);
+            errorLayout.setRetryAction(this);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
@@ -474,6 +500,9 @@ public class AppActivity extends Activity {
         progressLayout.setVisibility(View.VISIBLE);
         global_prefs_editor.putString("current_screen", "profile");
         global_prefs_editor.commit();
+        if(users == null) {
+            users = new Users();
+        }
         users.getUser(ovk_api, account.id);
     }
 
@@ -496,14 +525,17 @@ public class AppActivity extends Activity {
         conversationsLayout.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
-        if(method.equals("Newsfeed.get")) {
-            newsfeed.get(ovk_api, 50);
-        } else if(method.equals("Account.getProfileInfo")) {
+        if(account.id == 0) {
+            account.addQueue(method, args);
             account.getProfileInfo(ovk_api);
-        } else if(method.equals("Messages.getLongPollServer")) {
-            messages.getLongPollServer(ovk_api);
-        } else if(method.equals("Friends.get")) {
-            friends.get(ovk_api, account.id, "friends_list");
+        } else {
+            if (method.equals("Newsfeed.get")) {
+                newsfeed.get(ovk_api, 50);
+            } else if (method.equals("Messages.getLongPollServer")) {
+                messages.getLongPollServer(ovk_api);
+            } else if (method.equals("Friends.get")) {
+                friends.get(ovk_api, account.id, "friends_list");
+            }
         }
     }
 
@@ -582,12 +614,14 @@ public class AppActivity extends Activity {
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
         }
-        Intent intent = new Intent(getApplicationContext(), CommentsActivity.class);
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
         try {
             intent.putExtra("post_id", item.post_id);
             intent.putExtra("owner_id", item.owner_id);
             intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
             intent.putExtra("author_id", account.id);
+            intent.putExtra("post", item);
+            intent.putExtra("post_counters", item.counters);
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

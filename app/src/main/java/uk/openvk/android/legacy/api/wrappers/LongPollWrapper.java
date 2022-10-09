@@ -23,6 +23,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -143,6 +145,14 @@ public class LongPollWrapper {
                             }
                         }
                         Thread.sleep(2000);
+                    }
+                } catch(SocketTimeoutException ex) {
+                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    try {
+                        Thread.sleep(60000);
+                        run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 } catch (Exception ex) {
                     isActivated = false;

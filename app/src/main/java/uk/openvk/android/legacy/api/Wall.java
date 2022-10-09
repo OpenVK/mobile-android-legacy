@@ -1,11 +1,14 @@
 package uk.openvk.android.legacy.api;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -21,7 +24,7 @@ import uk.openvk.android.legacy.list_items.NewsfeedItem;
 /**
  * Created by Dmitry on 28.09.2022.
  */
-public class Wall {
+public class Wall implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<NewsfeedItem> wallItems;
     private ArrayList<Comment> comments;
@@ -217,5 +220,15 @@ public class Wall {
 
     public void createComment(OvkAPIWrapper ovk, int owner_id, int post_id, String text) {
         ovk.sendAPIMethod("Wall.createComment", String.format("owner_id=%d&post_id=%d&message=%s", owner_id, post_id, URLEncoder.encode(text)));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
     }
 }

@@ -2,7 +2,6 @@ package uk.openvk.android.legacy.list_adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,15 +12,15 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.User;
 
-public class SearchResultAdapter extends BaseAdapter {
+public class GroupsSearchResultAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<User> objects;
-    public boolean opened_sliding_menu;
+    ArrayList<Group> objects;
 
-    public SearchResultAdapter(Context context, ArrayList<User> items) {
+    public GroupsSearchResultAdapter(Context context, ArrayList<Group> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -34,7 +33,7 @@ public class SearchResultAdapter extends BaseAdapter {
     }
 
     @Override
-    public User getItem(int position) {
+    public Group getItem(int position) {
         return objects.get(position);
     }
 
@@ -43,8 +42,8 @@ public class SearchResultAdapter extends BaseAdapter {
         return position;
     }
 
-    User getUser(int position) {
-        return ((User) getItem(position));
+    Group getGroup(int position) {
+        return ((Group) getItem(position));
     }
 
     @Override
@@ -54,25 +53,17 @@ public class SearchResultAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.search_result_item, parent, false);
         }
 
-        User item = getUser(position);
-        ((TextView) view.findViewById(R.id.sr_list_item_text)).setText(String.format("%s %s", item.first_name, item.last_name));
-        if(item.city.length() > 0) {
-            ((TextView) view.findViewById(R.id.sr_list_item_subtext)).setText(item.city);
-        } else {
-            ((TextView) view.findViewById(R.id.sr_list_item_subtext)).setVisibility(View.GONE);
-        }
-        if(item.online) {
-            ((ImageView) view.findViewById(R.id.sr_list_item_online)).setVisibility(View.VISIBLE);
-        } else {
-            ((ImageView) view.findViewById(R.id.sr_list_item_online)).setVisibility(View.GONE);
-        }
+        Group item = getGroup(position);
+        ((TextView) view.findViewById(R.id.sr_list_item_text)).setText(item.name);
+        ((TextView) view.findViewById(R.id.sr_list_item_subtext)).setVisibility(View.GONE);
+        ((ImageView) view.findViewById(R.id.sr_list_item_online)).setVisibility(View.GONE);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
                     ((QuickSearchActivity) ctx).hideSelectedItemBackground(position);
-                    ((QuickSearchActivity) ctx).showProfile(position);
+                    ((QuickSearchActivity) ctx).showGroup(position);
                 }
             }
         });

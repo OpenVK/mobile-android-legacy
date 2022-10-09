@@ -125,13 +125,14 @@
         </activity>
 
         <activity
-            android:name=".activities.CommentsActivity"
-            android:label="@string/comments"
+            android:name=".activities.WallPostActivity"
+            android:label="@string/new_status"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
 
+        <!--suppress AndroidDomInspection -->
         <service
             android:name=".services.LongPollService"
             android:enabled="true"

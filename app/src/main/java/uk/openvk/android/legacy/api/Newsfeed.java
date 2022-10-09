@@ -1,11 +1,14 @@
 package uk.openvk.android.legacy.api;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
@@ -19,7 +22,7 @@ import uk.openvk.android.legacy.list_items.NewsfeedItem;
 /**
  * Created by Dmitry on 28.09.2022.
  */
-public class Newsfeed {
+public class Newsfeed implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<NewsfeedItem> newsfeedItems;
 
@@ -31,6 +34,22 @@ public class Newsfeed {
     public Newsfeed() {
         jsonParser = new JSONParser();
     }
+
+    protected Newsfeed(Parcel in) {
+        newsfeedItems = in.createTypedArrayList(NewsfeedItem.CREATOR);
+    }
+
+    public static final Creator<Newsfeed> CREATOR = new Creator<Newsfeed>() {
+        @Override
+        public Newsfeed createFromParcel(Parcel in) {
+            return new Newsfeed(in);
+        }
+
+        @Override
+        public Newsfeed[] newArray(int size) {
+            return new Newsfeed[size];
+        }
+    };
 
     public void parse(Context ctx, DownloadManager downloadManager, String response) {
         newsfeedItems = new ArrayList<NewsfeedItem>();
@@ -143,5 +162,15 @@ public class Newsfeed {
 
     public ArrayList<NewsfeedItem> getNewsfeedItems() {
         return newsfeedItems;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeTypedList(newsfeedItems);
     }
 }

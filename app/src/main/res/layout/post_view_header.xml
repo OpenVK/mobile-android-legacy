@@ -52,7 +52,7 @@
                     android:id="@+id/wall_view_time"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="today at 26:63"
+                    android:text="today at 20:00"
                     android:textColor="#9ca0a6"
                     android:textSize="14dip" />
             </LinearLayout>
@@ -90,7 +90,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_below="@+id/post_retweet_text"
             android:layout_marginLeft="9dip"
             android:layout_toRightOf="@+id/wall_retweet_photo"
             android:drawableLeft="@drawable/ic_retweet"
@@ -113,7 +112,7 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="7dip"
             android:src="@drawable/photo_loading" />
-        
+
         <TextView
             android:id="@+id/wall_retweet_time"
             android:layout_width="match_parent"
@@ -129,28 +128,126 @@
 
     </RelativeLayout>
 
-    <uk.openvk.android.legacy.layouts.ExTextView
-        android:id="@+id/wall_view_post"
+    <LinearLayout
+        android:id="@+id/post_attach_container"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="7dip"
-        android:layout_marginLeft="12dip"
-        android:layout_marginRight="12dip"
-        android:paddingTop="8dip"
-        android:textColor="#000"
-        android:textColorHighlight="#802B587A"
-        android:textColorLink="#2B587A"
-        android:textSize="14dip" />
-
-    <uk.openvk.android.legacy.layouts.ui.LinearLayout
-        android:id="@+id/wall_view_attach"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/post_view"
+        android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dip"
+        android:layout_marginTop="1dip"
         android:layout_marginRight="5dip"
-        android:orientation="vertical"
-        android:visibility="gone" >
-    </uk.openvk.android.legacy.layouts.ui.LinearLayout>
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/post_retweet_photo"
+            android:layout_width="42dip"
+            android:layout_height="42dip"
+            android:layout_below="@+id/post_retweet_text"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginBottom="10dip"
+            android:src="@drawable/photo_loading" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/post_retweet_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/post_retweet_text"
+                android:layout_marginLeft="9dip"
+                android:layout_marginTop="-1dip"
+                android:layout_marginRight="10dip"
+                android:layout_toRightOf="@+id/post_retweet_photo"
+                android:drawableLeft="@drawable/ic_retweet"
+                android:drawablePadding="3dip"
+                android:duplicateParentState="true"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text="Orig Poster Name"
+                android:textColor="@color/main_text"
+                android:textSize="16dip"
+                android:visibility="visible"></TextView>
+
+            <TextView
+                android:id="@+id/post_retweet_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/post_retweet_name"
+                android:layout_alignBottom="@+id/post_retweet_photo"
+                android:layout_marginLeft="9dip"
+                android:layout_toRightOf="@+id/post_retweet_photo"
+                android:gravity="left"
+                android:text="orig post date"
+                android:textColor="@color/hint"
+                android:textSize="14dip" />
+
+            <TextView
+                android:id="@+id/post_retweet_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/author_avatar"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dip"
+                android:layout_marginTop="-2dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginBottom="8dip"
+                android:linksClickable="false"
+                android:text="repost text"
+                android:textColor="@color/main_text"
+                android:textSize="14dip" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/news_item_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/post_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/post_retweet_photo"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:autoLink="web|email"
+            android:duplicateParentState="true"
+            android:linksClickable="false"
+            android:paddingBottom="10dip"
+            android:text="post text"
+            android:textColor="@color/main_text"
+            android:textColorHighlight="#802B587A"
+            android:textColorLink="#2B587A"
+            android:textSize="14dip"></TextView>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/photo_progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="12dp"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/post_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginBottom="10dip"
+        android:adjustViewBounds="true"
+        android:src="@null" />
 
     <LinearLayout
         android:id="@+id/wall_view_nlikesw"

@@ -168,13 +168,15 @@ public class FriendsIntentActivity extends Activity {
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
+                errorLayout.setData(data);
+                errorLayout.setRetryAction(this);
                 progressLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(this, data.getString("method"), data.getString("args"));
+            errorLayout.setRetryAction(this);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }

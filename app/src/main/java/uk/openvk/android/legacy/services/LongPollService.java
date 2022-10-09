@@ -35,7 +35,7 @@ public class LongPollService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void start(String instance, String lp_server, String key, int ts, boolean use_https) {
+    public void run(String instance, String lp_server, String key, int ts, boolean use_https) {
         ovk_api = new OvkAPIWrapper(ctx, use_https);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);

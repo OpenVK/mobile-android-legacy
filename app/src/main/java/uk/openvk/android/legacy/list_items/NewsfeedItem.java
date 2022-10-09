@@ -2,14 +2,17 @@ package uk.openvk.android.legacy.list_items;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
 
-public class NewsfeedItem {
+public class NewsfeedItem implements Parcelable {
 
     private String avatar_url;
     public String photo_msize_url;
@@ -52,4 +55,51 @@ public class NewsfeedItem {
         }
     }
 
+    protected NewsfeedItem(Parcel in) {
+        avatar_url = in.readString();
+        photo_msize_url = in.readString();
+        photo_hsize_url = in.readString();
+        avatar = in.readParcelable(Bitmap.class.getClassLoader());
+        photo = in.readParcelable(Bitmap.class.getClassLoader());
+        name = in.readString();
+        info = in.readString();
+        text = in.readString();
+        owner_id = in.readInt();
+        post_id = in.readInt();
+        photo_status = in.readString();
+        author_id = in.readInt();
+    }
+
+    public static final Creator<NewsfeedItem> CREATOR = new Creator<NewsfeedItem>() {
+        @Override
+        public NewsfeedItem createFromParcel(Parcel in) {
+            return new NewsfeedItem(in);
+        }
+
+        @Override
+        public NewsfeedItem[] newArray(int size) {
+            return new NewsfeedItem[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(avatar_url);
+        parcel.writeString(photo_msize_url);
+        parcel.writeString(photo_hsize_url);
+        parcel.writeParcelable(avatar, i);
+        parcel.writeParcelable(photo, i);
+        parcel.writeString(name);
+        parcel.writeString(info);
+        parcel.writeString(text);
+        parcel.writeInt(owner_id);
+        parcel.writeInt(post_id);
+        parcel.writeString(photo_status);
+        parcel.writeInt(author_id);
+    }
 }

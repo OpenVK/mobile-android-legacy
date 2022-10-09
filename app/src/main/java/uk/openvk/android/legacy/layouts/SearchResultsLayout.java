@@ -10,16 +10,18 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.api.Users;
+import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.User;
-import uk.openvk.android.legacy.list_adapters.FriendsListAdapter;
-import uk.openvk.android.legacy.list_adapters.SearchResultAdapter;
+import uk.openvk.android.legacy.list_adapters.GroupsSearchResultAdapter;
+import uk.openvk.android.legacy.list_adapters.UsersSearchResultAdapter;
 
 public class SearchResultsLayout extends LinearLayout {
     private ListView people_listview;
+    private ListView groups_listview;
     private ArrayList<User> users;
-    private SearchResultAdapter searchResultAdapter;
+    private UsersSearchResultAdapter usersSearchResultAdapter;
+    private GroupsSearchResultAdapter groupsSearchResultAdapter;
+    private ArrayList<Group> groups;
 
     public SearchResultsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -29,10 +31,17 @@ public class SearchResultsLayout extends LinearLayout {
         this.addView(view);
     }
 
-    public void createAdapter(Context ctx, ArrayList<User> users) {
+    public void createGroupsAdapter(Context ctx, ArrayList<Group> groups) {
+        this.groups = groups;
+        groupsSearchResultAdapter = new GroupsSearchResultAdapter(ctx, groups);
+        groups_listview = (ListView) findViewById(R.id.community_listview);
+        groups_listview.setAdapter(groupsSearchResultAdapter);
+    }
+
+    public void createUsersAdapter(Context ctx, ArrayList<User> users) {
         this.users = users;
-        searchResultAdapter = new SearchResultAdapter(ctx, users);
+        usersSearchResultAdapter = new UsersSearchResultAdapter(ctx, users);
         people_listview = (ListView) findViewById(R.id.people_listview);
-        people_listview.setAdapter(searchResultAdapter);
+        people_listview.setAdapter(usersSearchResultAdapter);
     }
 }

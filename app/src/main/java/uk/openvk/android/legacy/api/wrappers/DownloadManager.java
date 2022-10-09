@@ -26,18 +26,21 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,7 +49,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthActivity;
-import uk.openvk.android.legacy.activities.CommentsActivity;
+import uk.openvk.android.legacy.activities.WallPostActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -90,7 +93,31 @@ public class DownloadManager {
             httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
             legacy_mode = true;
         } else {
-            httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+            SSLContext sslContext = null;
+            try {
+                sslContext = SSLContext.getInstance("SSL");
+                TrustManager[] trustAllCerts = new TrustManager[]{
+                        new X509TrustManager() {
+                            @Override
+                            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                            }
+
+                            @Override
+                            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                            }
+
+                            @Override
+                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                return new java.security.cert.X509Certificate[]{};
+                            }
+                        }
+                };
+                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory) sslContext.getSocketFactory();
+                httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory()).connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+            } catch (Exception e) {
+                httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+            }
             legacy_mode = false;
         }
     }
@@ -122,7 +149,8 @@ public class DownloadManager {
             private HttpGet request_legacy = null;
             StatusLine statusLine = null;
             int response_code = 0;
-            int filesize = 0;
+            long filesize = 0;
+            long content_length = 0;
             private InputStream response_in;
             private String url = "";
             private String filename = "";
@@ -180,27 +208,37 @@ public class DownloadManager {
                                 HttpResponse response = httpClientLegacy.execute(request_legacy);
                                 StatusLine statusLine = response.getStatusLine();
                                 response_in = response.getEntity().getContent();
+                                content_length = response.getEntity().getContentLength();
                                 File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
-                                FileOutputStream fos = new FileOutputStream(downloadedFile);
-                                int inByte;
-                                while ((inByte = response_in.read()) != -1) {
-                                    fos.write(inByte);
-                                    filesize++;
+                                if(content_length != downloadedFile.length()) {
+                                    FileOutputStream fos = new FileOutputStream(downloadedFile);
+                                    int inByte;
+                                    while ((inByte = response_in.read()) != -1) {
+                                        fos.write(inByte);
+                                        filesize++;
+                                    }
+                                    fos.close();
+                                } else {
+                                    Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response_in.close();
-                                fos.close();
                                 response_code = statusLine.getStatusCode();
                             } else {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
+                                content_length = response.body().contentLength();
                                 File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
-                                FileOutputStream fos = new FileOutputStream(downloadedFile);
-                                int inByte;
-                                while ((inByte = response.body().byteStream().read()) != -1) {
-                                    fos.write(inByte);
-                                    filesize++;
+                                if(content_length != downloadedFile.length()) {
+                                    FileOutputStream fos = new FileOutputStream(downloadedFile);
+                                    int inByte;
+                                    while ((inByte = response.body().byteStream().read()) != -1) {
+                                        fos.write(inByte);
+                                        filesize++;
+                                    }
+                                    fos.close();
+                                } else {
+                                    Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
-                                fos.close();
                                 response.body().byteStream().close();
                             }
                             Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photos.size()));
@@ -211,15 +249,15 @@ public class DownloadManager {
                         }
                     }
                 }
-                if (where.equals("profile_avatar")) {
+                if (where.equals("profile_avatars")) {
                     sendMessage(HandlerMessages.PROFILE_AVATARS, where);
-                } else if (where.equals("newsfeed_avatar")) {
+                } else if (where.equals("newsfeed_avatars")) {
                     sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
-                } else if (where.equals("newsfeed_photo_attachment")) {
+                } else if (where.equals("newsfeed_photo_attachments")) {
                     sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
-                } else if (where.equals("wall_photo_attachment")) {
+                } else if (where.equals("wall_photo_attachments")) {
                     sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
-                } else if (where.equals("wall_avatar")) {
+                } else if (where.equals("wall_avatars")) {
                     sendMessage(HandlerMessages.WALL_AVATARS, where);
                 } else if (where.equals("friend_avatars")) {
                     sendMessage(HandlerMessages.FRIEND_AVATARS, where);
@@ -239,7 +277,8 @@ public class DownloadManager {
             private HttpGet request_legacy = null;
             StatusLine statusLine = null;
             int response_code = 0;
-            int filesize = 0;
+            long filesize = 0;
+            long content_length = 0;
             private InputStream response_in;
 
             @Override
@@ -288,27 +327,36 @@ public class DownloadManager {
                             HttpResponse response = httpClientLegacy.execute(request_legacy);
                             StatusLine statusLine = response.getStatusLine();
                             response_in = response.getEntity().getContent();
+                            content_length = response.getEntity().getContentLength();
                             File downloadedFile = new File(ctx.getCacheDir(), String.format("%s/%s", ctx.getCacheDir(), where));
-                            FileOutputStream fos = new FileOutputStream(downloadedFile);
-                            int inByte;
-                            while ((inByte = response_in.read()) != -1) {
-                                fos.write(inByte);
-                                filesize++;
+                            if(content_length != downloadedFile.length()) {
+                                FileOutputStream fos = new FileOutputStream(downloadedFile);
+                                int inByte;
+                                while ((inByte = response_in.read()) != -1) {
+                                    fos.write(inByte);
+                                    filesize++;
+                                }
+                                fos.close();
+                            } else {
+                                Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response_in.close();
-                            fos.close();
                             response_code = statusLine.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();
                             File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
-                            FileOutputStream fos = new FileOutputStream(downloadedFile);
-                            int inByte;
-                            while ((inByte = response.body().byteStream().read()) != -1) {
-                                fos.write(inByte);
-                                filesize++;
+                            if(content_length != downloadedFile.length()) {
+                                FileOutputStream fos = new FileOutputStream(downloadedFile);
+                                int inByte;
+                                while ((inByte = response.body().byteStream().read()) != -1) {
+                                    fos.write(inByte);
+                                    filesize++;
+                                }
+                                fos.close();
+                            } else {
+                                Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
-                            fos.close();
                             response.body().byteStream().close();
                         }
                         Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
@@ -354,8 +402,8 @@ public class DownloadManager {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("CommentsActivity")) {
-            ((CommentsActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -375,7 +423,7 @@ public class DownloadManager {
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("CommentsIntentActivity")) {
-            ((CommentsActivity) ctx).handler.sendMessage(msg);
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
         }
     }
 

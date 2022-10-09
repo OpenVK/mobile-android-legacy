@@ -1,8 +1,12 @@
 package uk.openvk.android.legacy.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.InstanceAdmin;
@@ -14,7 +18,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 /**
  * Created by Dmitry on 01.10.2022.
  */
-public class Ovk {
+public class Ovk implements Parcelable {
     private JSONParser jsonParser;
     public String version;
     public InstanceStatistics instance_stats;
@@ -23,6 +27,32 @@ public class Ovk {
     public Ovk() {
         jsonParser = new JSONParser();
     }
+
+    protected Ovk(Parcel in) {
+        version = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(version);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Ovk> CREATOR = new Creator<Ovk>() {
+        @Override
+        public Ovk createFromParcel(Parcel in) {
+            return new Ovk(in);
+        }
+
+        @Override
+        public Ovk[] newArray(int size) {
+            return new Ovk[size];
+        }
+    };
 
     public void getVersion(OvkAPIWrapper ovk) {
         ovk.sendAPIMethod("Ovk.version");

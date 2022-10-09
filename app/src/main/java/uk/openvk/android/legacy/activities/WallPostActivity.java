@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -26,14 +25,13 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.CommentPanel;
-import uk.openvk.android.legacy.layouts.CommentsListLayout;
+import uk.openvk.android.legacy.layouts.WallPostLayout;
 import uk.openvk.android.legacy.list_adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.list_adapters.MessagesListAdapter;
+import uk.openvk.android.legacy.list_items.NewsItemCountersInfo;
+import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
-import static uk.openvk.android.legacy.R.id.send_btn;
 
-
-public class CommentsActivity extends Activity {
+public class WallPostActivity extends Activity {
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     private Wall wall;
@@ -45,7 +43,7 @@ public class CommentsActivity extends Activity {
     private int owner_id;
     private int post_id;
     private ArrayList<Comment> comments;
-    private CommentsListLayout commentsLayout;
+    private WallPostLayout wallPostLayout;
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
     private String author_name;
@@ -59,8 +57,8 @@ public class CommentsActivity extends Activity {
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
-        commentsLayout = findViewById(R.id.comments_layout);
-        commentPanel = commentsLayout.findViewById(R.id.comment_panel);
+        wallPostLayout = findViewById(R.id.comments_layout);
+        commentPanel = wallPostLayout.findViewById(R.id.comment_panel);
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -82,6 +80,9 @@ public class CommentsActivity extends Activity {
                 post_id = extras.getInt("post_id");
                 author_name = extras.getString("author_name");
                 author_id = extras.getInt("author_id");
+                NewsfeedItem post = (NewsfeedItem) extras.get("post");
+                post.counters = (NewsItemCountersInfo) extras.get("post_counters");
+                wallPostLayout.setPost(post);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
@@ -114,7 +115,7 @@ public class CommentsActivity extends Activity {
             } else {
                 final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
                 actionBarImitation.setHomeButtonVisibillity(true);
-                actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
+                actionBarImitation.setTitle(getResources().getString(R.string.new_status));
                 actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -152,7 +153,7 @@ public class CommentsActivity extends Activity {
                 }
                 Comment comment = new Comment(author_id, author_name, (int)(System.currentTimeMillis() / 1000), msg_text);
                 comments.add(comment);
-                commentsLayout.createAdapter(CommentsActivity.this, comments);
+                wallPostLayout.createAdapter(WallPostActivity.this, comments);
                 ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
             }
         });
@@ -191,9 +192,9 @@ public class CommentsActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
             comments = wall.parseComments(this, downloadManager, data.getString("response"));
-            commentsLayout.createAdapter(this, comments);
+            wallPostLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_AVATARS) {
-            commentsLayout.loadAvatars();
+            wallPostLayout.loadAvatars();
         }
     }
 }

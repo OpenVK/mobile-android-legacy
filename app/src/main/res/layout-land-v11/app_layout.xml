@@ -25,7 +25,8 @@
         android:id="@+id/newsfeed_layout"
         android:visibility="gone"
         android:layout_weight="1"
-        android:layout_gravity="fill"/>
+        android:layout_gravity="fill"
+        android:background="#DDDDDD"/>
 
     <uk.openvk.android.legacy.layouts.ProfileLayout
         android:layout_width="match_parent"

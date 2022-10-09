@@ -1,10 +1,14 @@
 package uk.openvk.android.legacy.api.models;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
 
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
@@ -13,7 +17,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 /**
  * Created by Dmitry on 30.09.2022.
  */
-public class User {
+public class User implements Parcelable {
     public String first_name;
     public String last_name;
     public int id;
@@ -66,6 +70,39 @@ public class User {
     public User() {
         jsonParser = new JSONParser();
     }
+
+    protected User(Parcel in) {
+        first_name = in.readString();
+        last_name = in.readString();
+        id = in.readInt();
+        verified = in.readByte() != 0;
+        online = in.readByte() != 0;
+        ls_date = in.readInt();
+        status = in.readString();
+        city = in.readString();
+        birthdate = in.readString();
+        screen_name = in.readString();
+        avatar = in.readParcelable(Bitmap.class.getClassLoader());
+        avatar_url = in.readString();
+        friends_status = in.readInt();
+        interests = in.readString();
+        movies = in.readString();
+        music = in.readString();
+        tv = in.readString();
+        books = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public void parse(JSONObject user) {
         try {
@@ -234,5 +271,32 @@ public class User {
 
     public void downloadAvatar(DownloadManager downloadManager) {
         downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "profile_avatars");
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(first_name);
+        parcel.writeString(last_name);
+        parcel.writeInt(id);
+        parcel.writeByte((byte) (verified ? 1 : 0));
+        parcel.writeByte((byte) (online ? 1 : 0));
+        parcel.writeInt(ls_date);
+        parcel.writeString(status);
+        parcel.writeString(city);
+        parcel.writeString(birthdate);
+        parcel.writeString(screen_name);
+        parcel.writeParcelable(avatar, i);
+        parcel.writeString(avatar_url);
+        parcel.writeInt(friends_status);
+        parcel.writeString(interests);
+        parcel.writeString(movies);
+        parcel.writeString(music);
+        parcel.writeString(tv);
+        parcel.writeString(books);
     }
 }

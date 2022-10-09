@@ -33,6 +33,8 @@ public class SlidingMenuLayout extends LinearLayout {
                 }
             }
         });
+        TextView profile_name = (TextView) findViewById(R.id.profile_name);
+        profile_name.setText(getResources().getString(R.string.loading));
     }
 
     public SlidingMenuLayout(Context context, AttributeSet attrs) {

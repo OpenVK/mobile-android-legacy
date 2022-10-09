@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,9 @@ import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
 public class ErrorLayout extends LinearLayout{
+    private String api_method;
+    private String api_args;
+
     public ErrorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
@@ -50,14 +54,27 @@ public class ErrorLayout extends LinearLayout{
         }
     }
 
-    public void setRetryAction(final Context ctx, final String method, final String args) {
+    public void setRetryAction(final Context ctx) {
         ((TextView) findViewById(R.id.retry_btn)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).retryConnection(method, args);
+                    ((AppActivity) ctx).retryConnection(api_method, api_args);
                 }
             }
         });
+    }
+
+    public void setData(Bundle data) {
+        try {
+            if(data.containsKey("method")) {
+                api_method = data.getString("method");
+            }
+            if(data.containsKey("args")) {
+                api_args = data.getString("args");
+            }
+        } catch (Exception ex) {
+
+        }
     }
 }

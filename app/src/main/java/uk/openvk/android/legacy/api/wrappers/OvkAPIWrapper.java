@@ -12,7 +12,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -24,13 +23,9 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -38,13 +33,10 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.Okio;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthActivity;
-import uk.openvk.android.legacy.activities.CommentsActivity;
+import uk.openvk.android.legacy.activities.WallPostActivity;
 import uk.openvk.android.legacy.activities.ConversationActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.activities.MainSettingsActivity;
@@ -335,6 +327,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                             } else if (method.equals("Groups.getById")) {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                            } else if (method.equals("Groups.search")) {
+                                sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
                             } else if (method.equals("Likes.add")) {
                                 sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
                             } else if (method.equals("Likes.delete")) {
@@ -496,6 +490,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                             } else if (method.equals("Groups.getById")) {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                            } else if (method.equals("Groups.search")) {
+                                sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
                             } else if (method.equals("Likes.add")) {
                                 sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
                             } else if (method.equals("Likes.delete")) {
@@ -656,6 +652,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
                             } else if (method.equals("Groups.getById")) {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
+                            } else if (method.equals("Groups.search")) {
+                                sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
                             } else if (method.equals("Likes.add")) {
                                 sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
                             } else if (method.equals("Likes.delete")) {
@@ -775,8 +773,8 @@ public class OvkAPIWrapper {
             ((NewPostActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("CommentsActivity")) {
-            ((CommentsActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -803,8 +801,8 @@ public class OvkAPIWrapper {
             ((NewPostActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("CommentsActivity")) {
-            ((CommentsActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -832,8 +830,8 @@ public class OvkAPIWrapper {
             ((NewPostActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("CommentsActivity")) {
-            ((CommentsActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
         }
     }
 

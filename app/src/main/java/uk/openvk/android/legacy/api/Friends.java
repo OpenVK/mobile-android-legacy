@@ -1,10 +1,13 @@
 package uk.openvk.android.legacy.api;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.Friend;
@@ -13,7 +16,7 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
-public class Friends {
+public class Friends implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<Friend> friends;
     private DownloadManager downloadManager;
@@ -27,6 +30,21 @@ public class Friends {
         jsonParser = new JSONParser();
         parse(response, downloadManager, downloadPhoto);
     }
+
+    protected Friends(Parcel in) {
+    }
+
+    public static final Creator<Friends> CREATOR = new Creator<Friends>() {
+        @Override
+        public Friends createFromParcel(Parcel in) {
+            return new Friends(in);
+        }
+
+        @Override
+        public Friends[] newArray(int size) {
+            return new Friends[size];
+        }
+    };
 
     public void parse(String response, DownloadManager downloadManager, boolean downloadPhoto) {
         try {
@@ -57,5 +75,14 @@ public class Friends {
 
     public ArrayList<Friend> getFriends() {
         return friends;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
     }
 }

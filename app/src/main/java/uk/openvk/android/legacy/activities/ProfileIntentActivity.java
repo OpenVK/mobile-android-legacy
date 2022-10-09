@@ -184,6 +184,8 @@ public class ProfileIntentActivity extends Activity {
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
+                errorLayout.setData(data);
+                errorLayout.setRetryAction(this);
                 progressLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
@@ -194,7 +196,8 @@ public class ProfileIntentActivity extends Activity {
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(this, data.getString("method"), data.getString("args"));
+            errorLayout.setData(data);
+            errorLayout.setRetryAction(this);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
