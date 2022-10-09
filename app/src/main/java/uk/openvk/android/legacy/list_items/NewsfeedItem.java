@@ -82,6 +82,10 @@ public class NewsfeedItem implements Parcelable {
         }
     };
 
+    public NewsfeedItem() {
+        counters = new NewsItemCountersInfo();
+    }
+
     @Override
     public int describeContents() {
         return 0;

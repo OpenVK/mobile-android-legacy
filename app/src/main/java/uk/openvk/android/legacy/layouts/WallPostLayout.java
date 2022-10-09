@@ -127,4 +127,33 @@ public class WallPostLayout extends LinearLayout {
             ((TextView) findViewById(R.id.wall_view_like)).setSelected(true);
         }
     }
+
+    public void loadWallAvatar(int author_id) {
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
+            if (bitmap != null) {
+                ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(bitmap);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void loadWallPhoto(int post_id) {
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_%s", getContext().getCacheDir(), post_id), options);
+            if (bitmap != null) {
+                ((ImageView) findViewById(R.id.post_photo)).setImageBitmap(bitmap);
+                ((ImageView) findViewById(R.id.post_photo)).setVisibility(VISIBLE);
+            } else {
+                ((ImageView) findViewById(R.id.post_photo)).setVisibility(GONE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

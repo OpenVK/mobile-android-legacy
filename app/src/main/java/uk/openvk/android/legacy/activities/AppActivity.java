@@ -620,8 +620,11 @@ public class AppActivity extends Activity {
             intent.putExtra("owner_id", item.owner_id);
             intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
             intent.putExtra("author_id", account.id);
-            intent.putExtra("post", item);
-            intent.putExtra("post_counters", item.counters);
+            intent.putExtra("post_author_id", item.author_id);
+            intent.putExtra("post_author_name", item.name);
+            intent.putExtra("post_info", item.info);
+            intent.putExtra("post_text", item.text);
+            intent.putExtra("post_likes", item.counters.likes);
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

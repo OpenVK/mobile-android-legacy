@@ -48,6 +48,7 @@ public class WallPostActivity extends Activity {
     private CommentsListAdapter commentsAdapter;
     private String author_name;
     private int author_id;
+    private int post_author_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +77,20 @@ public class WallPostActivity extends Activity {
                 finish();
                 return;
             } else {
+                NewsfeedItem post = new NewsfeedItem();
+                post.owner_id = extras.getInt("owner_id");
+                post.post_id = extras.getInt("post_id");
+                post.name = extras.getString("post_author_name");
+                post.info = extras.getString("post_info");
+                post.text = extras.getString("post_text");
                 owner_id = extras.getInt("owner_id");
                 post_id = extras.getInt("post_id");
                 author_name = extras.getString("author_name");
+                post_author_id = extras.getInt("post_author_id");
                 author_id = extras.getInt("author_id");
-                NewsfeedItem post = (NewsfeedItem) extras.get("post");
-                post.counters = (NewsItemCountersInfo) extras.get("post_counters");
                 wallPostLayout.setPost(post);
+                wallPostLayout.loadWallAvatar(post_author_id);
+                wallPostLayout.loadWallPhoto(post_id);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
@@ -104,7 +112,7 @@ public class WallPostActivity extends Activity {
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
-                wall.getComments(ovk_api, owner_id, post_id);
+                wall.getComments(ovk_api, owner_id, post_author_id);
             }
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

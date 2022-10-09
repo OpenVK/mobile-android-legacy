@@ -40,6 +40,10 @@ public class NewsItemCountersInfo implements Parcelable {
         }
     };
 
+    public NewsItemCountersInfo() {
+
+    }
+
     @Override
     public int describeContents() {
         return 0;
