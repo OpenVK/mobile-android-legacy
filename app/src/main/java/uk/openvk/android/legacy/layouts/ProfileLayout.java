@@ -96,7 +96,7 @@ public class ProfileLayout extends LinearLayout {
     public void loadAvatar(User user) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/profile_avatar/avatar_%s", getContext().getCacheDir(), user.id), options);
+        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
         if (bitmap != null) {
             user.avatar = bitmap;
         } else if(user.avatar_url.length() > 0) {

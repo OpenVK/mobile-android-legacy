@@ -24,7 +24,7 @@ public class HandlerMessages {
     public static int GROUPS_GET                        = 300;
     public static int GROUPS_GET_ALT                    = 301;
     public static int GROUPS_GET_BY_ID                  = 302;
-    public static int GROUPS_SEARCH                 = 303;
+    public static int GROUPS_SEARCH                     = 303;
 
     // Likes
     public static int LIKES_ADD                         = 400;
@@ -74,9 +74,11 @@ public class HandlerMessages {
     public static int WALL_AVATARS                      = 1003;
     public static int NEWSFEED_AVATARS                  = 1004;
     public static int PROFILE_AVATARS                   = 1005;
-    public static int FRIEND_AVATARS                    = 1006;
-    public static int COMMENT_AVATARS                   = 1007;
-    public static int CONVERSATION_AVATARS              = 1008;
+    public static int GROUP_AVATARS                     = 1006;
+    public static int GROUP_AVATARS_ALT                 = 1007;
+    public static int FRIEND_AVATARS                    = 1008;
+    public static int COMMENT_AVATARS                   = 1009;
+    public static int CONVERSATION_AVATARS              = 1010;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;

@@ -6,7 +6,6 @@ import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,15 +17,17 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.api.models.Friend;
+import uk.openvk.android.legacy.api.models.Group;
 
-public class FriendsListAdapter extends BaseAdapter {
+public class GroupsListAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<Friend> objects;
+    ArrayList<Group> objects;
     public boolean opened_sliding_menu;
 
-    public FriendsListAdapter(Context context, ArrayList<Friend> items) {
+    public GroupsListAdapter(Context context, ArrayList<Group> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -43,7 +44,7 @@ public class FriendsListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Group getItem(int position) {
         return objects.get(position);
     }
 
@@ -52,34 +53,30 @@ public class FriendsListAdapter extends BaseAdapter {
         return position;
     }
 
-    Friend getFriend(int position) {
-        return ((Friend) getItem(position));
+    Group getGroup(int position) {
+        return (getItem(position));
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = inflater.inflate(R.layout.friend_list_item, parent, false);
+            view = inflater.inflate(R.layout.group_list_item, parent, false);
         }
 
-        Friend item = getFriend(position);
+        Group item = getItem(position);
         if(item.verified) {
-            String name = String.format("%s %s  ", item.first_name, item.last_name);
+            String name = String.format("%s  ", item.name);
             SpannableStringBuilder sb = new SpannableStringBuilder(name);
             ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
             sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ((TextView) view.findViewById(R.id.flist_item_text)).setText(sb);
+            ((TextView) view.findViewById(R.id.group_list_item_text)).setText(sb);
         } else {
-            ((TextView) view.findViewById(R.id.flist_item_text)).setText(String.format("%s %s", item.first_name, item.last_name));
+            ((TextView) view.findViewById(R.id.group_list_item_text)).setText(String.format("%s", item.name));
         }
-        if(item.online) {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.VISIBLE);
-        } else {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
-        }
+
         if(item.avatar != null) {
-            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageBitmap(item.avatar);
+            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(item.avatar);
         }
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -87,10 +84,10 @@ public class FriendsListAdapter extends BaseAdapter {
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
                     ((AppActivity) ctx).hideSelectedItemBackground(position);
-                    ((AppActivity) ctx).showProfile(position);
-                } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-                    ((FriendsIntentActivity) ctx).hideSelectedItemBackground(position);
-                    ((FriendsIntentActivity) ctx).showProfile(position);
+                    ((AppActivity) ctx).showGroup(position);
+                } else if(ctx.getClass().getSimpleName().equals("GroupsIntentActivity")) {
+                    ((GroupIntentActivity) ctx).hideSelectedItemBackground(position);
+                    ((GroupIntentActivity) ctx).showGroup(position);
                 }
             }
         });

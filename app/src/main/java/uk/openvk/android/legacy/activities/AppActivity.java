@@ -29,10 +29,12 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
+import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.LongPollServer;
 import uk.openvk.android.legacy.api.Messages;
 import uk.openvk.android.legacy.api.Newsfeed;
@@ -45,6 +47,7 @@ import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ConversationsLayout;
 import uk.openvk.android.legacy.layouts.ErrorLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
+import uk.openvk.android.legacy.layouts.GroupsLayout;
 import uk.openvk.android.legacy.layouts.NewsfeedLayout;
 import uk.openvk.android.legacy.layouts.ProfileLayout;
 import uk.openvk.android.legacy.layouts.ProgressLayout;
@@ -77,12 +80,14 @@ public class AppActivity extends Activity {
     private Newsfeed newsfeed;
     private Messages messages;
     private Users users;
+    private Groups groups;
     private Friends friends;
     private Wall wall;
     private ArrayList<Conversation> conversations;
     private User user;
     private Likes likes;
     private Menu activity_menu;
+    private GroupsLayout groupsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,6 +229,7 @@ public class AppActivity extends Activity {
         profileLayout = (ProfileLayout) findViewById(R.id.profile_layout);
         newsfeedLayout = (NewsfeedLayout) findViewById(R.id.newsfeed_layout);
         friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
+        groupsLayout = (GroupsLayout) findViewById(R.id.groups_layout);
         conversationsLayout = (ConversationsLayout) findViewById(R.id.conversations_layout);
         progressLayout.setVisibility(View.VISIBLE);
         newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
@@ -311,6 +317,7 @@ public class AppActivity extends Activity {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
@@ -318,6 +325,7 @@ public class AppActivity extends Activity {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.VISIBLE);
                 errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.GONE);
@@ -328,18 +336,44 @@ public class AppActivity extends Activity {
                 messages = new Messages();
             }
             messages.getConversations(ovk_api);
+        } else if(position == 4) {
+            setActionBarTitle(getResources().getString(R.string.groups));
+            if(groupsLayout.getCount() == 0) {
+                profileLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.VISIBLE);
+            } else {
+                profileLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.VISIBLE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+            }
+            global_prefs_editor.putString("current_screen", "groups");
+            global_prefs_editor.commit();
+            if(groups == null) {
+                groups = new Groups();
+            }
+            groups.getGroups(ovk_api, account.id);
         } else if(position == 5) {
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if(newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
                 profileLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.VISIBLE);
@@ -369,6 +403,7 @@ public class AppActivity extends Activity {
                 messages.getLongPollServer(ovk_api);
                 users = new Users();
                 friends = new Friends();
+                groups = new Groups();
                 wall = new Wall();
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
@@ -406,6 +441,8 @@ public class AppActivity extends Activity {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsLayout.loadAvatars();
+            } else if (message == HandlerMessages.GROUP_AVATARS) {
+                groupsLayout.loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
@@ -429,6 +466,14 @@ public class AppActivity extends Activity {
                     friendsLayout.setVisibility(View.VISIBLE);
                 }
                 friendsLayout.createAdapter(this, friendsList);
+            } else if (message == HandlerMessages.GROUPS_GET) {
+                groups.parse(data.getString("response"), downloadManager, true);
+                ArrayList<Group> groupsList = groups.getList();
+                if (global_prefs.getString("current_screen", "").equals("groups")) {
+                    progressLayout.setVisibility(View.GONE);
+                    groupsLayout.setVisibility(View.VISIBLE);
+                }
+                groupsLayout.createAdapter(this, groupsList);
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 friends.parse(data.getString("response"), downloadManager, false);
                 ArrayList<Friend> friendsList = friends.getFriends();
@@ -495,6 +540,7 @@ public class AppActivity extends Activity {
         profileLayout.setVisibility(View.GONE);
         newsfeedLayout.setVisibility(View.GONE);
         friendsLayout.setVisibility(View.GONE);
+        groupsLayout.setVisibility(View.GONE);
         conversationsLayout.setVisibility(View.GONE);
         errorLayout.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
@@ -504,6 +550,7 @@ public class AppActivity extends Activity {
             users = new Users();
         }
         users.getUser(ovk_api, account.id);
+        setActionBarTitle(getResources().getString(R.string.profile));
     }
 
     public void openFriendsList() {
@@ -609,12 +656,14 @@ public class AppActivity extends Activity {
 
     public void openWallComments(int position, View view) {
         NewsfeedItem item;
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
+            intent.putExtra("where", "wall");
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
+            intent.putExtra("where", "newsfeed");
         }
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
         try {
             intent.putExtra("post_id", item.post_id);
             intent.putExtra("owner_id", item.owner_id);
@@ -629,5 +678,12 @@ public class AppActivity extends Activity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void showGroup(int position) {
+        String url = "openvk://group/" + "id" + groups.getList().get(position).id;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }

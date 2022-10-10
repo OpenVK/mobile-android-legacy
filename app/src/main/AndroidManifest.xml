@@ -58,7 +58,7 @@
 
         <activity
             android:name=".activities.ProfileIntentActivity"
-            android:label="@string/app_name"
+            android:label="@string/profile"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -72,7 +72,7 @@
 
         <activity
             android:name=".activities.FriendsIntentActivity"
-            android:label="@string/app_name"
+            android:label="@string/friends"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -81,6 +81,20 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="openvk" android:host="friends"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.GroupIntentActivity"
+            android:label="@string/group"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk" android:host="group"/>
             </intent-filter>
         </activity>
 

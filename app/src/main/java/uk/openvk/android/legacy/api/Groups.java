@@ -8,8 +8,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.Group;
+import uk.openvk.android.legacy.api.models.Photo;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -24,10 +27,12 @@ public class Groups implements Parcelable {
 
     public Groups() {
         jsonParser = new JSONParser();
+        groups = new ArrayList<Group>();
     }
 
     public Groups(String response) {
         jsonParser = new JSONParser();
+        groups = new ArrayList<Group>();
         parse(response);
     }
 
@@ -97,5 +102,36 @@ public class Groups implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeTypedList(groups);
+    }
+
+    public void getGroupByID(OvkAPIWrapper ovk, int id) {
+        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%d&fields=verified,photo_100,is_member,members_count", id));
+    }
+
+    public void getGroups(OvkAPIWrapper ovk, int user_id) {
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&fields=verified,photo_100,is_member,members_count", user_id));
+    }
+
+    public void parse(String response, DownloadManager downloadManager, boolean downloadPhoto) {
+        try {
+            this.groups.clear();
+            JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
+            JSONArray groups = json.getJSONArray("items");
+            ArrayList<Photo> avatars;
+            avatars = new ArrayList<Photo>();
+            for (int i = 0; i < groups.length(); i++) {
+                Group group = new Group(groups.getJSONObject(i));
+                Photo photo = new Photo();
+                photo.url = group.avatar_url;
+                photo.filename = String.format("avatar_%d", group.id);
+                avatars.add(photo);
+                this.groups.add(group);
+            }
+            if(downloadPhoto) {
+                downloadManager.downloadPhotosToCache(avatars, "group_avatars");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

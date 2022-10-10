@@ -141,11 +141,16 @@ public class WallPostLayout extends LinearLayout {
         }
     }
 
-    public void loadWallPhoto(int post_id) {
+    public void loadWallPhoto(int post_id, String where) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_%s", getContext().getCacheDir(), post_id), options);
+            Bitmap bitmap = null;
+            if(where.equals("newsfeed")) {
+                bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_%s", getContext().getCacheDir(), post_id), options);
+            } else {
+                bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_%s", getContext().getCacheDir(), post_id), options);
+            }
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.post_photo)).setImageBitmap(bitmap);
                 ((ImageView) findViewById(R.id.post_photo)).setVisibility(VISIBLE);

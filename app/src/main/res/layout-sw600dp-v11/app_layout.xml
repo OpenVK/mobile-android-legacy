@@ -53,6 +53,14 @@
         android:layout_weight="1"
         android:layout_gravity="fill"/>
 
+    <uk.openvk.android.legacy.layouts.GroupsLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/groups_layout"
+        android:visibility="gone"
+        android:layout_weight="1"
+        android:layout_gravity="fill"/>
+
     <uk.openvk.android.legacy.layouts.ConversationsLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

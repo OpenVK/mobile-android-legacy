@@ -36,6 +36,7 @@ import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthActivity;
+import uk.openvk.android.legacy.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.activities.WallPostActivity;
 import uk.openvk.android.legacy.activities.ConversationActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
@@ -326,7 +327,7 @@ public class OvkAPIWrapper {
                             } else if (method.equals("Groups.get")) {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                             } else if (method.equals("Groups.getById")) {
-                                sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
                             } else if (method.equals("Groups.search")) {
                                 sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
                             } else if (method.equals("Likes.add")) {
@@ -489,7 +490,7 @@ public class OvkAPIWrapper {
                             } else if (method.equals("Groups.get")) {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                             } else if (method.equals("Groups.getById")) {
-                                sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
                             } else if (method.equals("Groups.search")) {
                                 sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
                             } else if (method.equals("Likes.add")) {
@@ -651,7 +652,7 @@ public class OvkAPIWrapper {
                             } else if (method.equals("Groups.get")) {
                                 sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
                             } else if (method.equals("Groups.getById")) {
-                                sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
+                                sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
                             } else if (method.equals("Groups.search")) {
                                 sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
                             } else if (method.equals("Likes.add")) {
@@ -765,6 +766,8 @@ public class OvkAPIWrapper {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
             ((MainSettingsActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
@@ -793,6 +796,8 @@ public class OvkAPIWrapper {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
             ((MainSettingsActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
@@ -820,6 +825,8 @@ public class OvkAPIWrapper {
             ((AppActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {

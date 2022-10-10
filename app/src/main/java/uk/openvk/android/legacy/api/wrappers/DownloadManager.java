@@ -49,6 +49,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.AuthActivity;
+import uk.openvk.android.legacy.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.activities.WallPostActivity;
 import uk.openvk.android.legacy.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.activities.ProfileIntentActivity;
@@ -210,7 +211,7 @@ public class DownloadManager {
                                 response_in = response.getEntity().getContent();
                                 content_length = response.getEntity().getContentLength();
                                 File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
-                                if(content_length != downloadedFile.length()) {
+                                if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
                                     while ((inByte = response_in.read()) != -1) {
@@ -228,7 +229,7 @@ public class DownloadManager {
                                 response_code = response.code();
                                 content_length = response.body().contentLength();
                                 File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
-                                if(content_length != downloadedFile.length()) {
+                                if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
                                     while ((inByte = response.body().byteStream().read()) != -1) {
@@ -253,6 +254,8 @@ public class DownloadManager {
                     sendMessage(HandlerMessages.PROFILE_AVATARS, where);
                 } else if (where.equals("newsfeed_avatars")) {
                     sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
+                } else if (where.equals("group_avatars")) {
+                    sendMessage(HandlerMessages.GROUP_AVATARS, where);
                 } else if (where.equals("newsfeed_photo_attachments")) {
                     sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
                 } else if (where.equals("wall_photo_attachments")) {
@@ -329,7 +332,7 @@ public class DownloadManager {
                             response_in = response.getEntity().getContent();
                             content_length = response.getEntity().getContentLength();
                             File downloadedFile = new File(ctx.getCacheDir(), String.format("%s/%s", ctx.getCacheDir(), where));
-                            if(content_length != downloadedFile.length()) {
+                            if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
                                 while ((inByte = response_in.read()) != -1) {
@@ -346,7 +349,7 @@ public class DownloadManager {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();
                             File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
-                            if(content_length != downloadedFile.length()) {
+                            if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
                                 while ((inByte = response.body().byteStream().read()) != -1) {
@@ -372,6 +375,8 @@ public class DownloadManager {
                     sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
                 } else if (where.equals("newsfeed_photo_attachments")) {
                     sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
+                } else if (where.equals("group_avatars")) {
+                    sendMessage(HandlerMessages.GROUP_AVATARS, where);
                 } else if (where.equals("wall_photo_attachments")) {
                     sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
                 } else if (where.equals("wall_avatars")) {
@@ -402,6 +407,8 @@ public class DownloadManager {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
             ((WallPostActivity) ctx).handler.sendMessage(msg);
         }
@@ -422,6 +429,8 @@ public class DownloadManager {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
             ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("CommentsIntentActivity")) {
             ((WallPostActivity) ctx).handler.sendMessage(msg);
         }

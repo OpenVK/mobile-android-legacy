@@ -35,7 +35,6 @@ import uk.openvk.android.legacy.list_items.SlidingMenuItem;
 
 public class ProfileIntentActivity extends Activity {
 
-    private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     public Handler handler;
@@ -142,8 +141,9 @@ public class ProfileIntentActivity extends Activity {
             }
         } else {
             ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation.setHomeButtonVisibillity(true);
             actionBarImitation.setTitle(getResources().getString(R.string.profile));
-            actionBarImitation.setOnMenuClickListener(new View.OnClickListener() {
+            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     onBackPressed();

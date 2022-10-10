@@ -55,7 +55,7 @@ public class QuickSearchActivity extends Activity {
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
             actionBarImitation.setHomeButtonVisibillity(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
+            actionBarImitation.setTitle(getResources().getString(R.string.search_global));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -138,6 +138,9 @@ public class QuickSearchActivity extends Activity {
     }
 
     public void showGroup(int position) {
-        Toast.makeText(this, getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+        String url = "openvk://group/" + "id" + groups.getList().get(position).id;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }

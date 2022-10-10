@@ -107,6 +107,7 @@ public class User implements Parcelable {
     public void parse(JSONObject user) {
         try {
             if(user != null) {
+                avatar_url = "";
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
@@ -196,6 +197,7 @@ public class User implements Parcelable {
             if (users != null) {
                 for (int i = 0; i < users.length(); i++) {
                     if (i == position) {
+                        avatar_url = "";
                         JSONObject user = (JSONObject) users.get(i);
                         first_name = user.getString("first_name");
                         last_name = user.getString("last_name");
