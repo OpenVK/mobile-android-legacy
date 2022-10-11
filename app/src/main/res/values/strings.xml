@@ -884,6 +884,7 @@
 	<string-array name="profile_followers">
 	    <item>follower</item>
 	    <item>followers</item>
+		<item>followers</item>
 	</string-array>
 	<string-array name="profile_photos">
 	    <item>photo</item>
@@ -893,10 +894,12 @@
 	<string-array name="profile_audios">
 	    <item>audio</item>
 	    <item>audios</item>
+		<item>audios</item>
 	</string-array>
 	<string-array name="profile_videos">
 	    <item>video</item>
 	    <item>videos</item>
+		<item>videos</item>
 	</string-array>
 	<string-array name="profile_groups">
 	    <item>group</item>
