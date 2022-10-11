@@ -129,6 +129,17 @@ public class WallLayout extends LinearLayout {
         }
     }
 
+    public void select(int position, String item, String value) {
+        if(item.equals("likes")) {
+            if(value.equals("add")) {
+                wallItems.get(position).counters.isLiked = true;
+            } else {
+                wallItems.get(position).counters.isLiked = false;
+            }
+            wallAdapter.notifyDataSetChanged();
+        }
+    }
+
     public void limitWidth(final int width) {
         this.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override

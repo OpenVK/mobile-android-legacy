@@ -29,7 +29,7 @@ public class GroupHeader extends RelativeLayout {
         LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
         layoutParams.width = LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        ((TextView) view.findViewById(R.id.profile_last_seen)).setText("");
+        ((TextView) view.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.open_group));
         ((TextView) view.findViewById(R.id.profile_activity)).setText("");
     }
 

@@ -13,6 +13,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -20,7 +21,9 @@ import android.widget.ListView;
 import java.util.Arrays;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Groups;
+import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -34,6 +37,7 @@ import uk.openvk.android.legacy.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.layouts.ProfileHeader;
 import uk.openvk.android.legacy.layouts.ProgressLayout;
 import uk.openvk.android.legacy.layouts.WallLayout;
+import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
 public class GroupIntentActivity extends Activity {
     private OvkAPIWrapper ovk_api;
@@ -49,6 +53,9 @@ public class GroupIntentActivity extends Activity {
     private ErrorLayout errorLayout;
     private NestedScrollView groupScrollView;
     private Group group;
+    private Account account;
+    private String args;
+    private Likes likes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,23 +93,17 @@ public class GroupIntentActivity extends Activity {
                 return;
             }
             try {
+                account = new Account(this);
+                likes = new Likes();
+                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api.setServer(instance_prefs.getString("server", ""));
+                ovk_api.setAccessToken(access_token);
+                account.getProfileInfo(ovk_api);
                 if (path.startsWith("openvk://group/")) {
-                    String args = path.substring("openvk://group/".length());
-                    ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                    args = path.substring("openvk://group/".length());
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
-                    ovk_api.setServer(instance_prefs.getString("server", ""));
-                    ovk_api.setAccessToken(access_token);
                     groups = new Groups();
                     wall = new Wall();
-                    if(args.startsWith("id")) {
-                        try {
-                            groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(2)));
-                        } catch (Exception ex) {
-                            groups.search(ovk_api, args);
-                        }
-                    } else {
-                        groups.search(ovk_api, args);
-                    }
                     installLayouts();
                 }
             } catch (Exception ex) {
@@ -111,6 +112,14 @@ public class GroupIntentActivity extends Activity {
                 return;
             }
         }
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onMenuItemSelected(featureId, item);
     }
 
     private void installLayouts() {
@@ -148,7 +157,17 @@ public class GroupIntentActivity extends Activity {
     }
 
     private void receiveState(int message, Bundle data) {
-        if (message == HandlerMessages.GROUPS_GET_BY_ID) {
+        if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+            if(args.startsWith("id")) {
+                try {
+                    groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(2)));
+                } catch (Exception ex) {
+                    groups.search(ovk_api, args);
+                }
+            } else {
+                groups.search(ovk_api, args);
+            }
+        } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
             groups.parse(data.getString("response"));
             group = groups.getList().get(0);
             updateLayout(group);
@@ -157,11 +176,17 @@ public class GroupIntentActivity extends Activity {
             setJoinButtonListener(group.id);
             group.downloadAvatar(downloadManager);
             wall.get(ovk_api, -group.id, 50);
-        } else if(message == HandlerMessages.GROUP_AVATARS) {
-            loadAvatar();
         } else if(message == HandlerMessages.GROUPS_SEARCH) {
             groups.parseSearch(data.getString("response"));
             groups.getGroupByID(ovk_api, groups.getList().get(0).id);
+        } else if(message == HandlerMessages.LIKES_ADD) {
+            likes.parse(data.getString("response"));
+            ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+        } else if(message == HandlerMessages.LIKES_DELETE) {
+            likes.parse(data.getString("response"));
+            ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+        } else if(message == HandlerMessages.GROUP_AVATARS) {
+            loadAvatar();
         } else if (message == HandlerMessages.WALL_GET) {
             wall.parse(this, downloadManager, data.getString("response"));
             ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
@@ -206,5 +231,54 @@ public class GroupIntentActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
+    }
+
+    public void openWallComments(int position, View view) {
+        NewsfeedItem item;
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+        item = wall.getWallItems().get(position);
+        intent.putExtra("where", "wall");
+        try {
+            intent.putExtra("post_id", item.post_id);
+            intent.putExtra("owner_id", item.owner_id);
+            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+            intent.putExtra("author_id", account.id);
+            intent.putExtra("post_author_id", item.author_id);
+            intent.putExtra("post_author_name", item.name);
+            intent.putExtra("post_info", item.info);
+            intent.putExtra("post_text", item.text);
+            intent.putExtra("post_likes", item.counters.likes);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void addLike(int position, String post, View view) {
+        NewsfeedItem item = wall.getWallItems().get(position);
+        ((WallLayout) findViewById(R.id.wall_layout)).select(1, "likes", "add");
+        likes.add(ovk_api, item.owner_id, item.post_id, 1);
+    }
+
+    public void deleteLike(int position, String post, View view) {
+        NewsfeedItem item = wall.getWallItems().get(position);
+        ((WallLayout) findViewById(R.id.wall_layout)).select(0, "likes", "delete");
+        likes.delete(ovk_api, item.owner_id, item.post_id, 0);
+    }
+
+    public void showAuthorPage(int position) {
+        NewsfeedItem item;
+        item = wall.getWallItems().get(position);
+        if(item.author_id < 0) {
+            String url = "openvk://group/" + "id" + -item.author_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } else {
+            String url = "openvk://profile/" + "id" + item.author_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        }
     }
 }

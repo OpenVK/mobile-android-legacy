@@ -294,6 +294,7 @@ public class AppActivity extends Activity {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
@@ -301,6 +302,7 @@ public class AppActivity extends Activity {
                 profileLayout.setVisibility(View.GONE);
                 newsfeedLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
                 conversationsLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.VISIBLE);
@@ -558,6 +560,7 @@ public class AppActivity extends Activity {
         newsfeedLayout.setVisibility(View.GONE);
         friendsLayout.setVisibility(View.GONE);
         conversationsLayout.setVisibility(View.GONE);
+        groupsLayout.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
         global_prefs_editor.putString("current_screen", "friends");
@@ -569,6 +572,7 @@ public class AppActivity extends Activity {
         profileLayout.setVisibility(View.GONE);
         newsfeedLayout.setVisibility(View.GONE);
         friendsLayout.setVisibility(View.GONE);
+        groupsLayout.setVisibility(View.GONE);
         conversationsLayout.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
@@ -577,11 +581,35 @@ public class AppActivity extends Activity {
             account.getProfileInfo(ovk_api);
         } else {
             if (method.equals("Newsfeed.get")) {
+                if(newsfeed == null) {
+                    newsfeed = new Newsfeed();
+                }
                 newsfeed.get(ovk_api, 50);
             } else if (method.equals("Messages.getLongPollServer")) {
+                if(messages == null) {
+                    messages = new Messages();
+                }
                 messages.getLongPollServer(ovk_api);
+            } else if (method.equals("Messages.getConversations")) {
+                if(messages == null) {
+                    messages = new Messages();
+                }
+                messages.getConversations(ovk_api);
             } else if (method.equals("Friends.get")) {
+                if(friends == null) {
+                    friends = new Friends();
+                }
                 friends.get(ovk_api, account.id, "friends_list");
+            } else if (method.equals("Groups.get")) {
+                if(groups == null) {
+                    groups = new Groups();
+                }
+                groups.getGroups(ovk_api, account.id);
+            } else if (method.equals("Users.get")) {
+                if(users == null) {
+                    users = new Users();
+                }
+                users.getUser(ovk_api, account.id);
             }
         }
     }
@@ -622,8 +650,10 @@ public class AppActivity extends Activity {
         NewsfeedItem item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
+            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(1, "likes", "add");
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
+            newsfeedLayout.select(1, "likes", "delete");
         }
         likes.add(ovk_api, item.owner_id, item.post_id, position);
     }
@@ -632,8 +662,10 @@ public class AppActivity extends Activity {
         NewsfeedItem item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
+            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(0, "likes", 0);
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
+            newsfeedLayout.select(0, "likes", 0);
         }
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
     }
@@ -685,5 +717,25 @@ public class AppActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
+    }
+
+    public void showAuthorPage(int position) {
+        NewsfeedItem item;
+        if (global_prefs.getString("current_screen", "").equals("profile")) {
+            item = wall.getWallItems().get(position);
+        } else {
+            item = newsfeed.getNewsfeedItems().get(position);
+        }
+        if(item.author_id < 0) {
+            String url = "openvk://group/" + "id" + -item.author_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } else {
+            String url = "openvk://profile/" + "id" + item.author_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        }
     }
 }

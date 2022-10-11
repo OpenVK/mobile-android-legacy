@@ -57,7 +57,8 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="4dp"
-                    android:text="@string/join_group" />
+                    android:text="@string/join_group"
+                    android:visibility="gone"/>
 
                 <TableRow
                     android:layout_width="wrap_content"

@@ -177,6 +177,17 @@ public class NewsfeedLayout extends LinearLayout {
         }
     }
 
+    public void select(int position, String item, String value) {
+        if(item.equals("likes")) {
+            if(value.equals("add")) {
+                newsfeedItems.get(position).counters.isLiked = true;
+            } else {
+                newsfeedItems.get(position).counters.isLiked = false;
+            }
+            newsfeedAdapter.notifyDataSetChanged();
+        }
+    }
+
     public void adjustLayoutSize(int orientation) {
         if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
             newsfeedView = (RecyclerView) findViewById(R.id.news_listview);

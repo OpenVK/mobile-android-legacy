@@ -22,6 +22,7 @@ import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -51,6 +52,7 @@ public class ProfileIntentActivity extends Activity {
     private Likes likes;
     private String access_token;
     private User user;
+    private String args;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class ProfileIntentActivity extends Activity {
         Bundle data = intent.getExtras();
         likes = new Likes();
         user = new User();
+        friends = new Friends();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -93,23 +96,17 @@ public class ProfileIntentActivity extends Activity {
                 return;
             }
             try {
+                account = new Account(this);
+                likes = new Likes();
+                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api.setServer(instance_prefs.getString("server", ""));
+                ovk_api.setAccessToken(access_token);
+                account.getProfileInfo(ovk_api);
                 if (path.startsWith("openvk://profile/")) {
-                    String args = path.substring("openvk://profile/".length());
-                    ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                    args = path.substring("openvk://profile/".length());
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
-                    ovk_api.setServer(instance_prefs.getString("server", ""));
-                    ovk_api.setAccessToken(access_token);
                     users = new Users();
                     wall = new Wall();
-                    if(args.startsWith("id")) {
-                        try {
-                            users.getUser(ovk_api, Integer.parseInt(args.substring(2)));
-                        } catch (Exception ex) {
-                            users.search(ovk_api, args);
-                        }
-                    } else {
-                        users.search(ovk_api, args);
-                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -162,7 +159,17 @@ public class ProfileIntentActivity extends Activity {
 
     private void receiveState(int message, Bundle data) {
         try {
-            if (message == HandlerMessages.USERS_GET) {
+            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                if(args.startsWith("id")) {
+                    try {
+                        users.getUser(ovk_api, Integer.parseInt(args.substring(2)));
+                    } catch (Exception ex) {
+                        users.search(ovk_api, args);
+                    }
+                } else {
+                    users.search(ovk_api, args);
+                }
+            } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
                 profileLayout.updateLayout(user);
@@ -170,6 +177,7 @@ public class ProfileIntentActivity extends Activity {
                 profileLayout.setVisibility(View.VISIBLE);
                 profileLayout.setDMButtonListener(this, user.id);
                 user.downloadAvatar(new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)));
+                friends.get(ovk_api, user.id, "profile_counter");
                 wall.get(ovk_api, user.id, 50);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 users.parseSearch(data.getString("response"));
@@ -181,6 +189,18 @@ public class ProfileIntentActivity extends Activity {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
+            } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
+                friends.parse(data.getString("response"), downloadManager, false);
+                ArrayList<Friend> friendsList = friends.getFriends();
+                if (global_prefs.getString("current_screen", "").equals("profile")) {
+                    profileLayout.setCounter(user, "friends", friendsList.size());
+                }
+            } else if(message == HandlerMessages.LIKES_ADD) {
+                likes.parse(data.getString("response"));
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+            } else if(message == HandlerMessages.LIKES_DELETE) {
+                likes.parse(data.getString("response"));
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
@@ -215,12 +235,14 @@ public class ProfileIntentActivity extends Activity {
 
     public void addLike(int position, String post, View view) {
         NewsfeedItem item = wall.getWallItems().get(position);
-        likes.add(ovk_api, item.owner_id, item.post_id, position);
+        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(1, "likes", "add");
+        likes.add(ovk_api, item.owner_id, item.post_id, 1);
     }
 
     public void deleteLike(int position, String post, View view) {
         NewsfeedItem item = wall.getWallItems().get(position);
-        likes.delete(ovk_api, item.owner_id, item.post_id, position);
+        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(0, "likes", "delete");
+        likes.delete(ovk_api, item.owner_id, item.post_id, 0);
     }
 
     public void getConversationById(int peer_id) {
@@ -236,6 +258,43 @@ public class ProfileIntentActivity extends Activity {
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void openWallComments(int position, View view) {
+        NewsfeedItem item;
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+        item = wall.getWallItems().get(position);
+        intent.putExtra("where", "wall");
+        try {
+            intent.putExtra("post_id", item.post_id);
+            intent.putExtra("owner_id", item.owner_id);
+            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+            intent.putExtra("author_id", account.id);
+            intent.putExtra("post_author_id", item.author_id);
+            intent.putExtra("post_author_name", item.name);
+            intent.putExtra("post_info", item.info);
+            intent.putExtra("post_text", item.text);
+            intent.putExtra("post_likes", item.counters.likes);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void showAuthorPage(int position) {
+        NewsfeedItem item;
+        item = wall.getWallItems().get(position);
+        if(item.author_id < 0) {
+            String url = "openvk://group/" + "id" + -item.author_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } else {
+            String url = "openvk://profile/" + "id" + item.author_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
         }
     }
 }

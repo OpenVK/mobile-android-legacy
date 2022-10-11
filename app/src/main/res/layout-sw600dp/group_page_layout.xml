@@ -60,7 +60,8 @@
                         android:layout_marginRight="10dp"
                         android:background="@drawable/btn_light_blue"
                         android:src="@drawable/ic_ab_add"
-                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 

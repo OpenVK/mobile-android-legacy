@@ -90,7 +90,7 @@ public class WallPostActivity extends Activity {
                 post_author_id = extras.getInt("post_author_id");
                 author_id = extras.getInt("author_id");
                 wallPostLayout.setPost(post);
-                wallPostLayout.loadWallAvatar(post_author_id);
+                wallPostLayout.loadWallAvatar(post_author_id, where);
                 wallPostLayout.loadWallPhoto(post_id, where);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
