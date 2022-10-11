@@ -908,14 +908,18 @@
 	</string-array>
 	<string-array name="profile_members">
 	    <item>member</item>
+		<item>members</item>
 	    <item>members</item>
 	</string-array>
 	<string-array name="profile_topics">
 	    <item>topic</item>
+		<item>topics</item>
 	    <item>topics</item>
 	</string-array>
 	<string-array name="profile_age_years">
 	    <item>%d year</item>
+		<item>%d years</item>
+		<item>%d years</item>
 	    <item>%d years</item>
 	</string-array>
 	<string name="group_event_join">I\'ll be there</string>
@@ -927,6 +931,7 @@
 	<string-array name="friends_mutual">
 	    <item>%d mutual</item>
 	    <item>%d mutual</item>
+		<item>%d mutual</item>
 	</string-array>
 	<string name="profile_inactive_banned">This profile has been temporarily suspended due to security concerns.</string>
 	<string name="profile_inactive_deleted">This user deleted their page. Information unavailable.</string>
