@@ -82,8 +82,12 @@ public class Friend implements Parcelable {
                 } else {
                     verified = false;
                 }
-                if(user.getInt("online") == 1) {
-                    online = true;
+                if(user.has("online")) {
+                    if (user.getInt("online") == 1) {
+                        online = true;
+                    } else {
+                        online = false;
+                    }
                 } else {
                     online = false;
                 }

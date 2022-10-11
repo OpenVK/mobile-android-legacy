@@ -1,18 +1,16 @@
-package uk.openvk.android.legacy.list_items;
+package uk.openvk.android.legacy.api.counters;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
-public class NewsItemCountersInfo implements Parcelable {
+public class PostCounters implements Parcelable {
     public int likes;
     public int comments;
     public int reposts;
     public boolean isLiked;
     public boolean isReposted;
 
-    public NewsItemCountersInfo(int likes_count, int comments_count, int reposts_count, boolean likes_selected, boolean reposts_selected) {
+    public PostCounters(int likes_count, int comments_count, int reposts_count, boolean likes_selected, boolean reposts_selected) {
         likes = likes_count;
         comments = comments_count;
         reposts = reposts_count;
@@ -20,7 +18,7 @@ public class NewsItemCountersInfo implements Parcelable {
         isReposted = reposts_selected;
     }
 
-    protected NewsItemCountersInfo(Parcel in) {
+    protected PostCounters(Parcel in) {
         likes = in.readInt();
         comments = in.readInt();
         reposts = in.readInt();
@@ -28,19 +26,19 @@ public class NewsItemCountersInfo implements Parcelable {
         isReposted = in.readByte() != 0;
     }
 
-    public static final Creator<NewsItemCountersInfo> CREATOR = new Creator<NewsItemCountersInfo>() {
+    public static final Creator<PostCounters> CREATOR = new Creator<PostCounters>() {
         @Override
-        public NewsItemCountersInfo createFromParcel(Parcel in) {
-            return new NewsItemCountersInfo(in);
+        public PostCounters createFromParcel(Parcel in) {
+            return new PostCounters(in);
         }
 
         @Override
-        public NewsItemCountersInfo[] newArray(int size) {
-            return new NewsItemCountersInfo[size];
+        public PostCounters[] newArray(int size) {
+            return new PostCounters[size];
         }
     };
 
-    public NewsItemCountersInfo() {
+    public PostCounters() {
 
     }
 

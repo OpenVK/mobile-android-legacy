@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
@@ -16,7 +15,7 @@ import uk.openvk.android.legacy.api.models.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.list_items.NewsItemCountersInfo;
+import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
 /**
@@ -77,7 +76,7 @@ public class Newsfeed implements Parcelable {
                     String photo_medium_size = "";
                     String photo_high_size = "";
                     String content = post.getString("text");
-                    NewsItemCountersInfo counters = new NewsItemCountersInfo(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), false, false);
+                    PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), false, false);
                     if(attachments.length() == 1) {
                         JSONObject attachment = attachments.getJSONObject(0);
                         if(attachment.getString("type").equals("photo")) {

@@ -5,12 +5,12 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.counters.PostCounters;
 
 public class NewsfeedItem implements Parcelable {
 
@@ -26,10 +26,10 @@ public class NewsfeedItem implements Parcelable {
     public int owner_id;
     public int post_id;
     public String photo_status;
-    public NewsItemCountersInfo counters;
+    public PostCounters counters;
     public int author_id;
 
-    public NewsfeedItem(String author, int dt_sec, RepostInfo repostInfo, String post_text, NewsItemCountersInfo nICI, String avatar_url, String photo_msize_url,
+    public NewsfeedItem(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, String photo_msize_url,
                         String photo_hsize_url, int o_id, int p_id, Context ctx) {
         name = author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
@@ -83,7 +83,7 @@ public class NewsfeedItem implements Parcelable {
     };
 
     public NewsfeedItem() {
-        counters = new NewsItemCountersInfo();
+        counters = new PostCounters();
     }
 
     @Override

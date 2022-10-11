@@ -27,7 +27,6 @@ import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.CommentPanel;
 import uk.openvk.android.legacy.layouts.WallPostLayout;
 import uk.openvk.android.legacy.list_adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.list_items.NewsItemCountersInfo;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
 

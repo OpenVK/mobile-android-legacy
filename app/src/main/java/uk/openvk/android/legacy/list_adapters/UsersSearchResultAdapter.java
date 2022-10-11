@@ -55,6 +55,9 @@ public class UsersSearchResultAdapter extends BaseAdapter {
 
         User item = getUser(position);
         ((TextView) view.findViewById(R.id.sr_list_item_text)).setText(String.format("%s %s", item.first_name, item.last_name));
+        if(item.city == null) {
+            item.city = "";
+        }
         if(item.city.length() > 0) {
             ((TextView) view.findViewById(R.id.sr_list_item_subtext)).setText(item.city);
         } else {

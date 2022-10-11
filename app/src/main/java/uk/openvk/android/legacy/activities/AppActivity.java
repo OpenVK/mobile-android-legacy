@@ -422,6 +422,24 @@ public class AppActivity extends Activity {
                     //MenuItem newpost = activity_menu.getItem(R.id.newpost);
                     //newpost.setVisible(true);
                 }
+                account.getCounters(ovk_api);
+            } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
+                account.parseCounters(data.getString("response"));
+                SlidingMenuItem friends_item = slidingMenuArray.get(0);
+                friends_item.counter = account.counters.friends_requests;
+                slidingMenuArray.set(0, friends_item);
+                SlidingMenuItem messages_item = slidingMenuArray.get(3);
+                messages_item.counter = account.counters.new_messages;
+                slidingMenuArray.set(3, messages_item);
+                SlidingMenuItem notifications_item = slidingMenuArray.get(6);
+                notifications_item.counter = account.counters.notifications;
+                slidingMenuArray.set(6, notifications_item);
+                SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
+                if(!((OvkApplication) getApplicationContext()).isTablet) {
+                    ((ListView) menu.getMenu().findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
+                } else {
+                    ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
+                }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
                 newsfeed.parse(this, downloadManager, data.getString("response"));
                 newsfeedLayout.createAdapter(this, newsfeed.getNewsfeedItems());

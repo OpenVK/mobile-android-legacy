@@ -169,6 +169,9 @@ public class DownloadManager {
                 for (int i = 0; i < photos.size(); i++) {
                     filesize = 0;
                     Photo photo = photos.get(i);
+                    if(photo.url == null) {
+                        photo.url = "";
+                    }
                     if(filename.equals(photo.filename)) {
                         Log.e("DownloadManager", "Duplicated filename. Skipping...");
                     } else if (photo.url.length() == 0) {

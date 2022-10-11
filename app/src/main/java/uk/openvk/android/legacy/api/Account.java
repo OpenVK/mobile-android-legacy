@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import uk.openvk.android.legacy.activities.AppActivity;
+import uk.openvk.android.legacy.api.counters.AccountCounters;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -19,6 +20,7 @@ public class Account implements Parcelable {
     public int id;
     public String status;
     public String birthdate;
+    public AccountCounters counters;
     private JSONParser jsonParser;
     private String queue_method;
     private String queue_args;
@@ -89,8 +91,25 @@ public class Account implements Parcelable {
         }
     }
 
+    public void parseCounters(String response) {
+        try {
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONObject counters = json.getJSONObject("response");
+            int friends = counters.getInt("friends");
+            int messages = counters.getInt("messages");
+            int notifications = counters.getInt("notifications");
+            this.counters = new AccountCounters(friends, messages, notifications);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void getProfileInfo(OvkAPIWrapper ovk) {
         ovk.sendAPIMethod("Account.getProfileInfo");
+    }
+
+    public void getCounters(OvkAPIWrapper ovk) {
+        ovk.sendAPIMethod("Account.getCounters");
     }
 
     @Override
