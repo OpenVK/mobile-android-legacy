@@ -37,6 +37,22 @@ public class Wall implements Parcelable {
         jsonParser = new JSONParser();
     }
 
+    protected Wall(Parcel in) {
+        wallItems = in.createTypedArrayList(NewsfeedItem.CREATOR);
+    }
+
+    public static final Creator<Wall> CREATOR = new Creator<Wall>() {
+        @Override
+        public Wall createFromParcel(Parcel in) {
+            return new Wall(in);
+        }
+
+        @Override
+        public Wall[] newArray(int size) {
+            return new Wall[size];
+        }
+    };
+
     public void parse(Context ctx, DownloadManager downloadManager, String response) {
         wallItems = new ArrayList<NewsfeedItem>();
         ArrayList<Photo> photos_hsize = new ArrayList<Photo>();
@@ -62,6 +78,7 @@ public class Wall implements Parcelable {
                     String photo_medium_size = "";
                     String photo_high_size = "";
                     String avatar_url = "";
+                    String attachment_status = "";
                     String content = post.getString("text");
                     PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), false, false);
                     if(attachments.length() == 1) {
@@ -71,10 +88,22 @@ public class Wall implements Parcelable {
                             JSONArray photo_sizes = photo.getJSONArray("sizes");
                             photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                             photo_high_size = photo_sizes.getJSONObject(10).getString("url");
+
+                            if(photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
+                                attachment_status = "loading";
+                            } else {
+                                attachment_status = "none";
+                            }
+                        } else {
+                            attachment_status = "not_supported";
                         }
                     }
                     NewsfeedItem item = new NewsfeedItem(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "",
                             photo_medium_size, photo_high_size, owner_id, post_id, ctx);
+                    if(post.getJSONArray("copy_history").length() > 0) {
+                        attachment_status = "not_supported";
+                    }
+                    item.photo_status = attachment_status;
                     item.author_id = author_id;
                     if(author_id > 0) {
                         if(newsfeed.has("profiles")) {
@@ -228,6 +257,6 @@ public class Wall implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-
+        parcel.writeTypedList(wallItems);
     }
 }
