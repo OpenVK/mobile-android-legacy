@@ -34,14 +34,19 @@ public class Global {
 
     public boolean isTablet() {
         if(ctx != null) {
-            DisplayMetrics dismetrics = ctx.getResources().getDisplayMetrics();
-            float dpWidth = dismetrics.widthPixels / dismetrics.density;
-            if(dpWidth >= 600) {
-                return true;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                DisplayMetrics dismetrics = ctx.getResources().getDisplayMetrics();
+                float dpWidth = dismetrics.widthPixels / dismetrics.density;
+                if (dpWidth >= 600) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
+        } else {
+            return false;
         }
-        return false;
     }
 }

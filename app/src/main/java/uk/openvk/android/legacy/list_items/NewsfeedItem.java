@@ -48,11 +48,6 @@ public class NewsfeedItem implements Parcelable {
         this.photo_hsize_url = photo_hsize_url;
         owner_id = o_id;
         post_id = p_id;
-        if(photo_msize_url.length() > 0 || photo_hsize_url.length() > 0) {
-            this.photo_status = "loading";
-        } else {
-            this.photo_status = "none";
-        }
     }
 
     protected NewsfeedItem(Parcel in) {

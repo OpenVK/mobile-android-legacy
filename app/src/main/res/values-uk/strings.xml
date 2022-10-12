@@ -1166,7 +1166,8 @@
     <string name="unable_to_parse_error">Неможливо обробити вiдповiдь вiд сервера</string>
     <string name="twofactor_text">У вас увімкнена двофакторна аутентифікація. Для входу введіть код отриманий в додатку.</string>
     <string name="twofactor_hint">Код 2FA</string>
-    <string name="not_implemented">Поки що не реалiзовано.</string>
+    <string name="not_implemented">На даний момент така функція не реалізована. Стежте за оновленнями.</string>
+    <string name="not_supported">На даний момент така функція не підтримується. Стежте за оновленнями.</string>
     <string name="please_wait_network">Дочекайтеся закiчення завантаження i повторiть спробу.</string>
     <string name="posting_error">При надсиланні запису сталася помилка. Повторіть спробу пізніше.</string>
     <string name="posted_successfully">Запись опублікована.</string>

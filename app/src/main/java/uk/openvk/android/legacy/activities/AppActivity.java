@@ -391,6 +391,8 @@ public class AppActivity extends Activity {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, MainSettingsActivity.class);
             startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
         }
     }
 

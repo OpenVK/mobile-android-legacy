@@ -74,6 +74,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         public final View convertView;
         public final ImageView avatar;
         private final ProgressBar photo_progress;
+        private final TextView error_label;
 
         public Holder(View view) {
             super(view);
@@ -87,6 +88,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.comments_counter = (TextView) view.findViewById(R.id.post_comments);
             this.avatar = (ImageView) view.findViewById(R.id.author_avatar);
             this.photo_progress = ((ProgressBar) view.findViewById(R.id.photo_progress));
+            this.error_label = ((TextView) convertView.findViewById(R.id.error_label));
         }
 
         void bind(final int position) {
@@ -105,11 +107,21 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(item.photo == null && item.photo_status.equals("none")) {
                 post_photo.setImageBitmap(item.photo);
                 post_photo.setVisibility(View.GONE);
+                error_label.setVisibility(View.GONE);
             } else if(item.photo == null && item.photo_status.equals("loading")) {
                 photo_progress.setVisibility(View.VISIBLE);
+                post_photo.setVisibility(View.GONE);
+                error_label.setVisibility(View.GONE);
+            } else if(item.photo_status.equals("not_supported")) {
+                error_label.setText(ctx.getResources().getString(R.string.not_supported));
+                error_label.setVisibility(View.VISIBLE);
+                photo_progress.setVisibility(View.GONE);
+                post_photo.setVisibility(View.GONE);
             } else {
+                error_label.setVisibility(View.GONE);
                 post_photo.setImageBitmap(item.photo);
                 photo_progress.setVisibility(View.GONE);
+                if(item.photo != null)
                 post_photo.setVisibility(View.VISIBLE);
             }
 

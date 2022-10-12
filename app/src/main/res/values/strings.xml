@@ -1123,7 +1123,8 @@
 	<string name="unable_to_parse_error">Unable to parse response from server</string>
 	<string name="twofactor_text">You have two-factor authentication enabled. To login, paste the code received in the application.</string>
 	<string name="twofactor_hint">2FA code</string>
-	<string name="not_implemented">Not implemented yet.</string>
+	<string name="not_implemented">At the moment this feature is not implemented. Stay tuned.</string>
+	<string name="not_supported">At the moment this feature is not supported. Stay tuned.</string>
 	<string name="please_wait_network">Wait for the load to finish and try again.</string>
 	<string name="posting_error">An error occurred while posting. Please try again later.</string>
 	<string name="posted_successfully">Post published.</string>

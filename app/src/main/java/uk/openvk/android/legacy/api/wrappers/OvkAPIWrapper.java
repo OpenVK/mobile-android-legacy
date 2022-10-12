@@ -258,6 +258,14 @@ public class OvkAPIWrapper {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLHandshakeException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -425,7 +433,15 @@ public class OvkAPIWrapper {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch (IOException e) {
+                } catch(javax.net.ssl.SSLHandshakeException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                }catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -584,6 +600,14 @@ public class OvkAPIWrapper {
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLHandshakeException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
@@ -746,6 +770,14 @@ public class OvkAPIWrapper {
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLHandshakeException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch(javax.net.ssl.SSLException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);

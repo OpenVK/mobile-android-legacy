@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_post"
@@ -237,20 +238,32 @@
             android:id="@+id/post_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/post_retweet_photo"
             android:layout_alignParentLeft="true"
+            android:layout_below="@+id/post_retweet_photo"
+            android:layout_marginBottom="10dip"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
             android:autoLink="web|email"
             android:duplicateParentState="true"
             android:linksClickable="false"
-            android:paddingBottom="10dip"
             android:text="post text"
             android:textColor="@color/main_text"
             android:textColorHighlight="#802B587A"
             android:textColorLink="#2B587A"
             android:textSize="14dip"></TextView>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/error_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:paddingBottom="10dip"
+        android:text="TextView"
+        android:textColor="@color/timestamp_color"
+        android:textStyle="italic"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/photo_progress"
@@ -265,11 +278,12 @@
         android:id="@+id/post_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dip"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"
-        android:layout_marginBottom="10dip"
         android:adjustViewBounds="true"
-        android:src="@null" />
+        android:src="@null"
+        android:visibility="gone" />
 
     <View
         android:id="@+id/post_divider"

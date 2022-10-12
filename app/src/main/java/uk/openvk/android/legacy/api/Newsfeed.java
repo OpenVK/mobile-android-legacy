@@ -75,6 +75,7 @@ public class Newsfeed implements Parcelable {
                     String avatar_url = "";
                     String photo_medium_size = "";
                     String photo_high_size = "";
+                    String attachment_status = "";
                     String content = post.getString("text");
                     PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), false, false);
                     if(attachments.length() == 1) {
@@ -84,10 +85,22 @@ public class Newsfeed implements Parcelable {
                             JSONArray photo_sizes = photo.getJSONArray("sizes");
                             photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                             photo_high_size = photo_sizes.getJSONObject(10).getString("url");
+                            if(photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
+                                attachment_status = "loading";
+                            } else {
+                                attachment_status = "none";
+                            }
+                        } else {
+                            attachment_status = "not_supported";
                         }
                     }
+
                     NewsfeedItem item = new NewsfeedItem(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "",
                             photo_medium_size, photo_high_size, owner_id, post_id, ctx);
+                    if(post.getJSONArray("copy_history").length() > 0) {
+                        attachment_status = "not_supported";
+                    }
+                    item.photo_status = attachment_status;
                     item.author_id = author_id;
                     if(author_id > 0) {
                         if(newsfeed.has("profiles")) {

@@ -1169,7 +1169,8 @@
     <string name="unable_to_parse_error">Невозможно обработать ответ от сервера</string>
     <string name="twofactor_text">У вас включена двухфакторная аутентификация. Для входа вставьте код, полученный из специального приложения.</string>
     <string name="twofactor_hint">Код 2FA</string>
-    <string name="not_implemented">Пока не реализовано.</string>
+    <string name="not_implemented">На данный момент такая функция не реализована. Следите за обновлениями.</string>
+    <string name="not_supported">На данный момент такая функция не поддерживается. Следите за обновлениями.</string>
     <string name="please_wait_network">Дождитесь окончания загрузки и повторите попытку.</string>
     <string name="posting_error">При отправке записи произошла ошибка. Повторите попытку позже.</string>
     <string name="posted_successfully">Запись опубликована.</string>

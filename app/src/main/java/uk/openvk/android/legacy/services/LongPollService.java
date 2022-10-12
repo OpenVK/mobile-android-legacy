@@ -45,6 +45,7 @@ public class LongPollService extends Service {
 
     private void runLongPull(String lp_server, String key, int ts, boolean use_https) {
         lpW = new LongPollWrapper(ctx, use_https);
+        lpW.updateCounters(ovk_api);
         lpW.longPoll(lp_server, key, ts);
     }
 

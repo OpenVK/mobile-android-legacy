@@ -163,4 +163,22 @@ public class LongPollWrapper {
         thread = new Thread(longPollRunnable);
         thread.start();
     }
+
+    public void updateCounters(final OvkAPIWrapper ovk) {
+        Thread thread = null;
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ovk.sendAPIMethod("Account.getCounters");
+                try {
+                    Thread.sleep(15000);
+                    run();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread = new Thread(runnable);
+        thread.start();
+    }
 }
