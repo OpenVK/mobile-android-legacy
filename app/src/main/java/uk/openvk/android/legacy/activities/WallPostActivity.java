@@ -90,7 +90,7 @@ public class WallPostActivity extends Activity {
                 author_id = extras.getInt("author_id");
                 wallPostLayout.setPost(post);
                 wallPostLayout.loadWallAvatar(post_author_id, where);
-                wallPostLayout.loadWallPhoto(post_id, where);
+                wallPostLayout.loadWallPhoto(owner_id, post_id, where);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
@@ -112,7 +112,7 @@ public class WallPostActivity extends Activity {
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
-                wall.getComments(ovk_api, post_author_id, post.post_id);
+                wall.getComments(ovk_api, owner_id, post.post_id);
             }
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

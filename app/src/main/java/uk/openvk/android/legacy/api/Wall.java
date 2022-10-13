@@ -103,7 +103,7 @@ public class Wall implements Parcelable {
                     if(post.getJSONArray("copy_history").length() > 0) {
                         attachment_status = "not_supported";
                     }
-                    item.photo_status = attachment_status;
+                    item.attachment_status = attachment_status;
                     item.author_id = author_id;
                     if(author_id > 0) {
                         if(newsfeed.has("profiles")) {
@@ -151,11 +151,11 @@ public class Wall implements Parcelable {
                     }
                     Photo photo_m = new Photo();
                     photo_m.url = photo_medium_size;
-                    photo_m.filename = String.format("wall_attachment_%d", post_id);
+                    photo_m.filename = String.format("wall_attachment_o%dp%d", owner_id, post_id);
                     photos_msize.add(photo_m);
                     Photo photo_h = new Photo();
                     photo_h.url = photo_high_size;
-                    photo_h.filename = String.format("wall_attachment_%d", post_id);
+                    photo_h.filename = String.format("wall_attachment_o%dp%d", owner_id, post_id);
                     photos_hsize.add(photo_h);
                     Photo avatar = new Photo();
                     avatar.url = avatar_url;

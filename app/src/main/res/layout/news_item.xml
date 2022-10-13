@@ -251,19 +251,23 @@
             android:textColorHighlight="#802B587A"
             android:textColorLink="#2B587A"
             android:textSize="14dip"></TextView>
-    </LinearLayout>
 
-    <TextView
-        android:id="@+id/error_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
-        android:paddingBottom="10dip"
-        android:text="TextView"
-        android:textColor="@color/timestamp_color"
-        android:textStyle="italic"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/error_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:drawableLeft="@drawable/ic_msg_error"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:text="TextView"
+            android:textColor="@color/timestamp_color"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/photo_progress"

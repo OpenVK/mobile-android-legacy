@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.list_adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
@@ -45,6 +46,7 @@ public class NewsfeedLayout extends LinearLayout {
     private ListView newsfeedListView;
     private LinearLayoutManager llm;
     private ArrayList<NewsfeedItem> newsfeedItems;
+    public boolean loading_more_posts = false;
 
     public NewsfeedLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,12 +63,17 @@ public class NewsfeedLayout extends LinearLayout {
 
     public void createAdapter(Context ctx, ArrayList<NewsfeedItem> newsfeedItems) {
         this.newsfeedItems = newsfeedItems;
-        newsfeedAdapter = new NewsfeedAdapter(ctx, newsfeedItems);
         newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
-        llm = new LinearLayoutManager(ctx);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        newsfeedView.setLayoutManager(llm);
-        newsfeedView.setAdapter(newsfeedAdapter);
+        if(newsfeedAdapter == null) {
+            newsfeedAdapter = new NewsfeedAdapter(ctx, this.newsfeedItems);
+            llm = new LinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            newsfeedView.setLayoutManager(llm);
+            newsfeedView.setAdapter(newsfeedAdapter);
+        } else {
+            newsfeedAdapter.setArray(newsfeedItems);
+            newsfeedAdapter.notifyDataSetChanged();
+        }
     }
 
     public void updateItem(int position) {
@@ -119,12 +126,11 @@ public class NewsfeedLayout extends LinearLayout {
                     } else {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_%s", getContext().getCacheDir(), item.post_id), options);
-                        if (bitmap != null) {
-                            item.photo = bitmap;
-                            item.photo_status = "loaded";
-                        } else if(item.photo_hsize_url.length() > 0 || item.photo_msize_url.length() > 0) {
-                            item.photo_status = "error";
+                        if(item.photo_msize_url.length() > 0 || item.photo_hsize_url.length() > 0) {
+                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                            if (bitmap != null) {
+                                item.photo = bitmap;
+                            }
                         }
                     }
                     newsfeedItems.set(i, item);
@@ -138,19 +144,39 @@ public class NewsfeedLayout extends LinearLayout {
         newsfeedAdapter.notifyDataSetChanged();
     }
 
-    public void setScrollingPositions() {
+    public void setScrollingPositions(final Context ctx, final boolean load_photos, final boolean infinity_scroll) {
         loadPhotos();
+        loading_more_posts = false;
         newsfeedView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            int pastVisiblesItems, visibleItemCount, totalItemCount;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                loadPhotos();
+                if(load_photos) {
+                    loadPhotos();
+                }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if(infinity_scroll) {
+                    if (dy > 0) {
+                        visibleItemCount = llm.getChildCount();
+                        totalItemCount = llm.getItemCount();
+                        pastVisiblesItems = llm.findFirstVisibleItemPosition();
 
+                        if (!loading_more_posts) {
+                            if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                                    loading_more_posts = true;
+                                    ((AppActivity) ctx).loadMoreNews();
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
     }

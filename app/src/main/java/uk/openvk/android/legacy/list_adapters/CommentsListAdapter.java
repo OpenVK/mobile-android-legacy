@@ -60,6 +60,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         public final TextView comment_text;
         public final View convertView;
         public final ImageView author_avatar;
+        public final View divider;
 
         public Holder(View view) {
             super(view);
@@ -68,6 +69,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             this.comment_info = view.findViewById(R.id.comm_time);
             this.comment_text = view.findViewById(R.id.comment_text);
             this.author_avatar = view.findViewById(R.id.author_avatar);
+            this.divider = view.findViewById(R.id.divider);
         }
 
         void bind(final int position) {
@@ -81,13 +83,15 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                         .replaceAll("&amp;", "&").replaceAll("&quot;", "\""));
                 comment_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
-                comment_text.setVisibility(View.GONE);
+                comment_text.setText("");
             }
             if(item.avatar != null) {
                 author_avatar.setImageBitmap(item.avatar);
             }
             if(position == getItemCount() - 1) {
-                ((View) convertView.findViewById(R.id.divider)).setVisibility(View.GONE);
+                divider.setVisibility(View.GONE);
+            } else {
+                divider.setVisibility(View.VISIBLE);
             }
         }
     }

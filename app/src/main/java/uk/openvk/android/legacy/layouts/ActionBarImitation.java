@@ -86,8 +86,10 @@ public class ActionBarImitation extends LinearLayout {                  // for p
         } else {
             if(position == 0) {
                 ((ImageButton) findViewById(R.id.action_btn)).setVisibility(GONE);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setVisibility(GONE);
             } else {
                 ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(GONE);
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(GONE);
             }
         }
     }

@@ -81,9 +81,11 @@ public class WallLayout extends LinearLayout {
                         } else {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_%s", getContext().getCacheDir(), item.post_id), options);
-                            if (bitmap != null) {
-                                item.photo = bitmap;
+                            if(item.photo_msize_url.length() > 0 || item.photo_hsize_url.length() > 0) {
+                                Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                if (bitmap != null) {
+                                    item.photo = bitmap;
+                                }
                             }
                         }
                         wallItems.set(i, item);

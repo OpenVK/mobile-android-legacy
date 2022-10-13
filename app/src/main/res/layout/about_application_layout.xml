@@ -9,8 +9,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <uk.openvk.android.legacy.layouts.ActionBarImitation
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/actionbar_imitation"/>
+
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/logo"
             android:layout_width="200dp"
             android:layout_height="58dp"
             android:layout_gravity="center"
@@ -18,13 +23,255 @@
             android:src="@drawable/openvk_logo_color" />
 
         <TextView
-            android:id="@+id/about_text"
+            android:id="@+id/app_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
+            android:textColor="#4682b8"
             android:gravity="center"
-            android:text="About text" />
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="Application title" />
+
+        <TextView
+            android:id="@+id/app_version_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:textSize="12dp"
+            android:text="Application version" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/app_links_title"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="3dp"
+                    android:gravity="center"
+                    android:text="@string/about_app_links" />
+
+                <TextView
+                    android:id="@+id/app_links_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="[this is app links]"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/app_credits_title"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="3dp"
+                    android:gravity="center"
+                    android:text="@string/credits" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/app_author_ll"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/app_author_title"
+                        android:textStyle="bold"
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/about_app_author"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/app_author_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="Dmitry Tretyakov (Tinelix)"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/app_design_ll"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/app_design_title"
+                        android:textStyle="bold"
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/about_app_design"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/app_author_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="VKontakte 3.0.4 for Android\nby Gregory Klyushnikov"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/app_development_team_title"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="3dp"
+                    android:gravity="center"
+                    android:text="@string/openvk_legacy_devteam" />
+
+                <TextView
+                    android:id="@+id/app_development_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="@string/app_devteam"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/app_credits_title"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="3dp"
+                    android:gravity="center"
+                    android:text="@string/about_app_translations" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/app_english_ll"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/english_title"
+                        android:textStyle="bold"
+                        android:layout_width="148dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="English"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/app_author_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/app_russian_ll"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/russian_title"
+                        android:textStyle="bold"
+                        android:layout_width="148dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="Russian"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/app_author_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/app_ukrainian_ll"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/ukrainian_title"
+                        android:textStyle="bold"
+                        android:layout_width="148dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="Ukrainian"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/app_author_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
+                        android:layout_weight="1"/>
+
+                    <TextView
+                        android:id="@+id/app_license_title"
+                        android:textStyle="bold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
+                        android:gravity="center"
+                        android:text="@string/app_license"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/app_license_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:text="[coming soon]"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </LinearLayout>

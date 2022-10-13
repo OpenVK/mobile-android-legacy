@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">OpenVK</string>
+    <string name="full_app_name">OpenVK Legacy для Android</string>
     <string name="loading">Загрузка…</string>
     <string name="add_comment_hint">Ваш комментарий</string>
     <string name="send">Отправить</string>
@@ -73,9 +74,8 @@
     <string name="cancel">Отмена</string>
     <string name="ok">OK</string>
     
-    <string name="about_text"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версия %1$s (сборка %2$d)</small><br/><br/><small>Разработчик: <a href=\"openvk://profile/tretdm\">Дмитрий Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорий Клюшников</a></small>]]></string>
-    <string name="about_text_froyo"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версия %1$s (сборка %2$d)</small><br/><br/><small>Разработчик: <a href=\"http://openvk.co/tretdm\">Дмитрий Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорий Клюшников</a></small>]]></string>
-    <string name="about_text_lollipop"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версия %1$s (сборка %2$d)</small><br/><br/><small>Разработчик: <a href=\"https://openvk.uk/tretdm\">Дмитрий Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорий Клюшников</a></small>]]></string>
+    <string name="app_version_text">Версия %1$s (сборка %2$d)</string>
+    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">GitHub</a>]]></string>
 
     <string-array name="like_menu">
 	    <item>Не нравится</item>
@@ -1210,4 +1210,11 @@
     <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>
     <string name="invalid_session">Сессия недействительна. Пожалуйста, авторизуйтесь еще раз.</string>
+    <string name="openvk_legacy_devteam">Команда разработки OpenVK Legacy</string>
+    <string name="about_app_links">Ссылки</string>
+    <string name="credits">Титры</string>
+    <string name="about_app_translations">Переводы</string>
+    <string name="about_app_author">Автор</string>
+    <string name="about_app_design">Дизайн</string>
+    <string name="app_license">Лицензия OpenVK Legacy</string>
 </resources>

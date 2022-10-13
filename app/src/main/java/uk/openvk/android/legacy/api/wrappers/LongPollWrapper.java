@@ -25,7 +25,12 @@ import org.apache.http.util.EntityUtils;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLProtocolException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -105,7 +110,7 @@ public class LongPollWrapper {
         this.server = lp_server;
         String url = "";
         url = String.format("%s?act=a_check&key=%s&ts=%d&wait=15", lp_server, key, ts);
-        Log.v("OpenVK LPW", String.format("Connecting to %s via LongPoll...", lp_server));
+        Log.v("OpenVK LPW", String.format("Activating LongPoll via %s...", lp_server));
         final String fUrl = url;
         isActivated = true;
         Thread thread = null;
@@ -127,6 +132,7 @@ public class LongPollWrapper {
                             .build();
                 }
                 try {
+                    Log.v("OpenVK LPW", String.format("LongPoll activated."));
                     while(isActivated) {
                         if (legacy_mode) {
                             HttpResponse response = httpClientLegacy.execute(request_legacy);
@@ -138,22 +144,43 @@ public class LongPollWrapper {
                             response_body = response.body().string();
                             response_code = response.code();
                         }
-                        Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                        if (response_body.length() > 0) {
-                            if (response_code == 200) {
-
-                            }
+                        if (response_code == 200) {
+                            Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                        } else {
+                            Log.v("OpenVK LPW", String.format("Getting response from %s (%s)", server, response_code));
                         }
                         Thread.sleep(2000);
                     }
                 } catch(SocketTimeoutException ex) {
                     Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
                     try {
+                        Log.v("OpenVK LPW", "Retrying in 60 seconds...");
                         Thread.sleep(60000);
                         run();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                } catch(UnknownHostException ex) {
+                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    try {
+                        Log.v("OpenVK LPW", "Retrying in 60 seconds...");
+                        Thread.sleep(60000);
+                        run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } catch(SSLProtocolException ex) {
+                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    isActivated = false;
+                    Log.v("OpenVK LPW", "LongPoll service stopped.");
+                } catch(SSLHandshakeException ex) {
+                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", "LongPoll service stopped.");
+                    isActivated = false;
+                } catch(SSLException ex) {
+                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", "LongPoll service stopped.");
+                    isActivated = false;
                 } catch (Exception ex) {
                     isActivated = false;
                     ex.printStackTrace();
@@ -171,7 +198,7 @@ public class LongPollWrapper {
             public void run() {
                 ovk.sendAPIMethod("Account.getCounters");
                 try {
-                    Thread.sleep(15000);
+                    Thread.sleep(5000);
                     run();
                 } catch (InterruptedException e) {
                     e.printStackTrace();

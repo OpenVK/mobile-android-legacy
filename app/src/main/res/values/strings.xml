@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<string name="app_name">OpenVK</string>
+	<string name="full_app_name">OpenVK Legacy for Android</string>
 	<string name="loading">Loading…</string>
 	<string name="add_comment_hint">Your comment</string>
 	<string name="send">Send</string>
@@ -79,9 +80,10 @@
 	<string name="audio_play_error">A playback error has occurred.</string>
 	<string name="cancel">Cancel</string>
 	<string name="ok">OK</string>
-	<string name="about_text"><![CDATA[<b>OpenVK Legacy for Android</b><br/><br/><small>Version %1$s (build %2$d)</small><br/><br/><small>Developed by <a href=\"openvk://profile/tretdm\">Dmitry Tretyakov</a><br/>Designed by <a href=\"https://grishka.me\">Gregory Klyushnikov</a></small>]]></string>
-	<string name="about_text_froyo"><![CDATA[<b>OpenVK Legacy for Android</b><br/><br/><small>Version %1$s (build %2$d)</small><br/><br/><small>Developed by <a href=\"http://openvk.co/tretdm\">Dmitry Tretyakov</a><br/>Designed by <a href=\"https://grishka.me\">Gregory Klyushnikov</a></small>]]></string>
-	<string name="about_text_lollipop"><![CDATA[<b>OpenVK Legacy for Android</b><br/><br/><small>Version %1$s (build %2$d)</small><br/><br/><small>Developed by <a href=\"https://openvk.uk/tretdm\">Dmitry Tretyakov</a><br/>Designed by <a href=\"https://grishka.me\">Gregory Klyushnikov</a></small>]]></string>
+
+	<string name="app_version_text">Version %1$s (build %2$d)</string>
+	<string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">GitHub</a>]]></string>
+
 	<string-array name="like_menu">
 		<item>Unlike</item>
 		<item>Share with friends</item>
@@ -1163,4 +1165,12 @@
 	<string name="err_picture_not_enough_memory_text">Not enough memory for image processing. Close all unused applications and try again.</string>
 	<string name="reason">Reason: %s</string>
 	<string name="official_state">OpenVK official instance</string>
+	<string name="openvk_legacy_devteam">OpenVK Legacy Development Team</string>
+	<string name="about_app_links">Links</string>
+	<string name="credits">Credits</string>
+	<string name="about_app_translations">Translations</string>
+	<string name="about_app_author">Author</string>
+	<string name="about_app_design">Design</string>
+	<string name="app_devteam">Dmitry Tretyakov (Tinelix)\nVladimir Barinov (Veselcraft)</string>
+    <string name="app_license">OpenVK Legacy License</string>
 </resources>

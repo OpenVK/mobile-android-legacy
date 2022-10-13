@@ -417,6 +417,7 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                             }
                         } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                            Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     }
@@ -588,6 +589,7 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                             }
                         } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                            Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
@@ -749,7 +751,6 @@ public class OvkAPIWrapper {
                         } else if(response_code == 400) {
                             error = new Error();
                             error.parse(response_body);
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, error.description));
                             if(error.code == 3) {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                             } else if(error.code == 5) {
@@ -758,6 +759,7 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                             }
                         } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                            Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };

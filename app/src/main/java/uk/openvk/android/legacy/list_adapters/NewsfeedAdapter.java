@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -18,11 +19,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.api.models.OvkLink;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
@@ -104,25 +108,54 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 post_text.setVisibility(View.GONE);
             }
 
-            if(item.photo == null && item.photo_status.equals("none")) {
-                post_photo.setImageBitmap(item.photo);
+            if(item.photo != null) {
+                item.attachment_status = "photo";
+            }
+
+            Pattern pattern = Pattern.compile("[.*?]");
+            Matcher matcher = pattern.matcher(item.text);
+            OvkLink link = new OvkLink();
+            while(matcher.find()) {
+                if(matcher.groupCount() > 0) {
+                    for(int i = 0; i < matcher.groupCount(); i++) {
+                        String[] markup = matcher.group(i).split("|");
+                        Log.d("Matcher", matcher.group(i));
+                        if(markup.length >= 2) {
+                            link.screen_name = markup[0];
+                            if (matcher.group(i).startsWith("id")) {
+                                link.url = String.format("openvk://profile/%s", markup[0]);
+                            } else if (matcher.group(i).startsWith("club")) {
+                                link.url = String.format("openvk://group/%s", markup[0]);
+                            }
+                            link.name = markup[1];
+                            if(matcher.group(i).startsWith("id") || matcher.group(i).startsWith("club")) {
+                                item.text = item.text.replace(matcher.group(i), String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                                post_text.setText(Html.fromHtml(item.text));
+                            }
+                        }
+                    }
+                }
+            }
+            if(item.attachment_status.equals("none")) {
+                post_photo.setImageBitmap(null);
                 post_photo.setVisibility(View.GONE);
                 error_label.setVisibility(View.GONE);
-            } else if(item.photo == null && item.photo_status.equals("loading")) {
+            } else if(item.attachment_status.equals("loading")) {
                 photo_progress.setVisibility(View.VISIBLE);
                 post_photo.setVisibility(View.GONE);
                 error_label.setVisibility(View.GONE);
-            } else if(item.photo_status.equals("not_supported")) {
+            } else if(item.attachment_status.equals("not_supported")) {
                 error_label.setText(ctx.getResources().getString(R.string.not_supported));
                 error_label.setVisibility(View.VISIBLE);
                 photo_progress.setVisibility(View.GONE);
                 post_photo.setVisibility(View.GONE);
-            } else {
+            } else if(item.attachment_status.equals("photo")) {
                 error_label.setVisibility(View.GONE);
-                post_photo.setImageBitmap(item.photo);
                 photo_progress.setVisibility(View.GONE);
-                if(item.photo != null)
-                post_photo.setVisibility(View.VISIBLE);
+                if(item.photo != null) {
+                    post_photo.setImageBitmap(item.photo);
+                    post_photo.setVisibility(View.VISIBLE);
+                }
             }
 
             if(item.counters.isLiked == true) {

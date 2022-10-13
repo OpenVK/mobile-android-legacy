@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--PreferenceCategory android:title="Для Олега">
-		<ListPreference android:entries="@array/sett_api_host"
-			android:entryValues="@array/sett_api_host" android:title="Домен API"
-			android:dialogTitle="Домен API" android:key="apiHost"
-			android:defaultValue="api.vk.com" />
-		<Preference android:title="Перезапустить приложение" android:summary="Чтобы новый домен применился" android:key="restart" />
-        
-    </PreferenceCategory-->
     
 	<PreferenceCategory android:title="@string/sett_general">
+		<!-- maybe implement
+                <ListPreference android:entries="@array/sett_friends_order"
+                    android:entryValues="@array/sett_friends_order_v" android:title="@string/sett_flist_sort"
+                    android:dialogTitle="@string/sett_flist_sort" android:key="friendsOrderNew"
+                    android:layout="@layout/list_prefw"
+                    android:defaultValue="0" />
+        -->
 
-		<ListPreference android:entries="@array/sett_friends_order"
-			android:entryValues="@array/sett_friends_order_v" android:title="@string/sett_flist_sort"
-			android:dialogTitle="@string/sett_flist_sort" android:key="friendsOrderNew"
-			android:defaultValue="firstname" />
 			
 		<!--ListPreference android:entries="@array/sett_update_interval_items"
 			android:entryValues="@array/sett_update_interval_v" android:title="@string/sett_update_interval"
@@ -35,18 +30,14 @@
 			
 		<Preference android:title="@string/sett_advanced"
 			android:summary="" android:key="advanced"/>
-		
-		<!--Preference android:title="Stop C2DM"
-			android:summary="" android:key="stopc2dm"/>
-		<Preference android:title="Start C2DM"
-			android:summary="" android:key="startc2dm"/-->
+
 	</PreferenceCategory>
 
 
 	<PreferenceCategory android:title="@string/sett_notifications" android:key="cat_notify">
 
         <CheckBoxPreference android:title="@string/sett_push"
-            android:summary="@string/sett_push_summary" android:key="enableC2DM"
+            android:summary="@string/sett_push_summary" android:key="enableNotification"
             android:defaultValue="true" android:disableDependentsState="true"/>
 
 		<CheckBoxPreference android:title="@string/sett_notify_sound"
@@ -62,29 +53,20 @@
 			android:key="notifyRingtone" android:title="@string/sett_ringtone"
 			android:showDefault="true" android:showSilent="false"
 			android:defaultValue="content://settings/system/notification_sound"/>
-		<Preference
-			android:key="doNotDistrib"
-			android:title="@string/dnd_mode" />
+		<!-- maybe implement
+            <Preference
+                android:key="doNotDistrib"
+                android:layout="@layout/pref_widget"
+                android:title="@string/dnd_mode" />
+        !-->
 
 	</PreferenceCategory>
-	
-	<!-- PreferenceCategory android:title="@string/sett_video_calls" android:key="cat_video_calls">
-		<CheckBoxPreference android:title="@string/sett_accept_calls"
-		 android:key="acceptVoip"
-			android:defaultValue="true" />
-		<RingtonePreference android:ringtoneType="ringtone"
-			android:key="voipRingtone" android:title="@string/sett_call_ringtone"
-			android:showDefault="true" android:showSilent="true"
-			android:defaultValue="content://settings/system/notification_sound"/>
-	</PreferenceCategory-->
 
-	
 	<PreferenceCategory android:title="@string/sett_account">
-		<Preference android:title="@string/sett_news_banned"
-			android:summary="@string/sett_news_banned_summary" android:key="newsBanned"/>
-			
-		<Preference android:title="@string/sett_sync"
-			android:summary="" android:key="sync"/>
+		<!-- maybe implement
+			<Preference android:title="@string/sett_news_banned"
+				android:summary="@string/sett_news_banned_summary" android:key="newsBanned"/>
+		!-->
 	
 		<Preference android:title="@string/log_out"
 			android:summary="" android:key="logOut"/>

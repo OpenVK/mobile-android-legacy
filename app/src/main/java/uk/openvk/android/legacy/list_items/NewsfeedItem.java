@@ -25,7 +25,7 @@ public class NewsfeedItem implements Parcelable {
     public String text;
     public int owner_id;
     public int post_id;
-    public String photo_status;
+    public String attachment_status;
     public PostCounters counters;
     public int author_id;
 
@@ -61,7 +61,7 @@ public class NewsfeedItem implements Parcelable {
         text = in.readString();
         owner_id = in.readInt();
         post_id = in.readInt();
-        photo_status = in.readString();
+        attachment_status = in.readString();
         author_id = in.readInt();
     }
 
@@ -98,7 +98,7 @@ public class NewsfeedItem implements Parcelable {
         parcel.writeString(text);
         parcel.writeInt(owner_id);
         parcel.writeInt(post_id);
-        parcel.writeString(photo_status);
+        parcel.writeString(attachment_status);
         parcel.writeInt(author_id);
     }
 }

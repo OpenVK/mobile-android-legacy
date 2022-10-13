@@ -88,6 +88,7 @@ public class AppActivity extends Activity {
     private Likes likes;
     private Menu activity_menu;
     private GroupsLayout groupsLayout;
+    private int newsfeed_count = 25;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -386,7 +387,8 @@ public class AppActivity extends Activity {
             if(newsfeed == null) {
                 newsfeed = new Newsfeed();
             }
-            newsfeed.get(ovk_api, 50);
+            newsfeed_count = 25;
+            newsfeed.get(ovk_api, newsfeed_count);
         } else if(position == 8) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, MainSettingsActivity.class);
@@ -402,7 +404,7 @@ public class AppActivity extends Activity {
                 account.parse(data.getString("response"));
                 String profile_name = String.format("%s %s", account.first_name, account.last_name);
                 slidingmenuLayout.setProfileName(profile_name);
-                newsfeed.get(ovk_api, 50);
+                newsfeed.get(ovk_api, newsfeed_count);
                 messages = new Messages();
                 messages.getLongPollServer(ovk_api);
                 users = new Users();
@@ -449,12 +451,14 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     newsfeedLayout.setVisibility(View.VISIBLE);
                 }
+                newsfeedLayout.loading_more_posts = true;
+                newsfeedLayout.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""));
                 longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
-                newsfeedLayout.setScrollingPositions();
+                newsfeedLayout.setScrollingPositions(this, true, true);
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
                 newsfeedLayout.loadAvatars();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
@@ -756,6 +760,13 @@ public class AppActivity extends Activity {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);
+        }
+    }
+
+    public void loadMoreNews() {
+        newsfeed_count = newsfeed_count + 25;
+        if(newsfeed != null) {
+            newsfeed.get(ovk_api, newsfeed_count);
         }
     }
 }

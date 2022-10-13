@@ -139,7 +139,7 @@
             android:layout_width="52dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:visibility="visible"
+            android:visibility="gone"
             android:src="@drawable/ic_ab_write"
             tools:ignore="SpeakableTextPresentCheck" />
 

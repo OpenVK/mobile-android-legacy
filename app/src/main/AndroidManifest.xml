@@ -146,6 +146,14 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
 
+        <activity
+            android:name=".activities.AboutApplicationActivity"
+            android:label="@string/menu_about"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+        </activity>
+
         <!--suppress AndroidDomInspection -->
         <service
             android:name=".services.LongPollService"

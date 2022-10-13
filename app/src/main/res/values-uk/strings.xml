@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OpenVK</string>
+    <string name="full_app_name">OpenVK Legacy для Android</string>
     <string name="loading">Завантаження…</string>
     <string name="add_comment_hint">Ваш коментар</string>
     <string name="send">Надіслати</string>
@@ -71,10 +72,9 @@
     
     <string name="cancel">Скасувати</string>
     <string name="ok">OK</string>
-    
-    <string name="about_text"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версія %1$s (збірка %2$d)</small><br/><br/><small>Розробник: <a href=\"openvk://profile/tretdm\">Дмитро Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорій Клюшніков</a></small>]]></string>
-    <string name="about_text_froyo"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версія %1$s (збірка %2$d)</small><br/><br/><small>Розробник: <a href=\"http://openvk.co/tretdm\">Дмитро Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорій Клюшніков</a></small>]]></string>
-    <string name="about_text_lollipop"><![CDATA[<b>OpenVK Legacy для Android</b><br/><small>Версія %1$s (збірка %2$d)</small><br/><br/><small>Розробник: <a href=\"https://openvk.uk/tretdm\">Дмитро Третьяков</a><br/>Дизайнер: <a href=\"https://grishka.me\">Григорій Клюшніков</a></small>]]></string>
+
+    <string name="app_version_text">Версія %1$s (збірка %2$d)</string>
+    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">GitHub</a>]]></string>
 
     <string-array name="like_menu">
 	    <item>Не подобається</item>
@@ -1206,4 +1206,11 @@
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Офіційна інстанція OpenVK</string>
+    <string name="openvk_legacy_devteam">Команда розробки OpenVK Legacy</string>
+    <string name="about_app_links">Посилання</string>
+    <string name="credits">Титри</string>
+    <string name="about_app_translations">Переклади</string>
+    <string name="about_app_author">Автор</string>
+    <string name="about_app_design">Дизайн</string>
+    <string name="app_license">Лiцензiя OpenVK Legacy</string>
 </resources>
