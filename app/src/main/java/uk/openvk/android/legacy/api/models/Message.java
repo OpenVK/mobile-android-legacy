@@ -13,6 +13,7 @@ public class Message {
     public String timestamp;
     public int timestamp_int;
     public String text;
+    public boolean sending;
 
     public Message(boolean incoming, boolean error, int _timestamp, String _text, Context ctx) {
         isIncoming = incoming;

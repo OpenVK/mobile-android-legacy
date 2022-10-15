@@ -7,10 +7,9 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-
 import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.api.counters.AccountCounters;
+import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -26,18 +25,24 @@ public class Account implements Parcelable {
     private String queue_args;
     private Context ctx;
     private boolean retryConnection;
+    public User user;
+    private Users users;
 
     public Account(Context ctx) {
         retryConnection = false;
         jsonParser = new JSONParser();
+        this.user = new User();
+        this.users = new Users();
         this.ctx = ctx;
     }
 
-    public Account(String response, Context ctx) {
+    public Account(String response, Context ctx, OvkAPIWrapper ovk) {
         retryConnection = false;
         jsonParser = new JSONParser();
+        this.user = new User();
+        this.users = new Users();
         this.ctx = ctx;
-        parse(response);
+        parse(response, ovk);
     }
 
     public Account(String first_name, String last_name, int id, String status, String birthdate) {
@@ -47,6 +52,8 @@ public class Account implements Parcelable {
         this.id = id;
         this.status = status;
         this.birthdate = birthdate;
+        this.user = new User();
+        this.users = new Users();
         jsonParser = new JSONParser();
     }
 
@@ -70,16 +77,21 @@ public class Account implements Parcelable {
         }
     };
 
-    public void parse(String response) {
+    public void parse(String response, OvkAPIWrapper ovk) {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
                 JSONObject account = json.getJSONObject("response");
                 first_name = account.getString("first_name");
+                user.first_name = account.getString("first_name");
                 last_name = account.getString("last_name");
+                user.last_name = account.getString("last_name");
                 id = account.getInt("id");
+                user.id = account.getInt("id");
                 status = account.getString("status");
+                user.status = account.getString("status");
                 birthdate = account.getString("bdate");
+                user.birthdate = account.getString("bdate");
             }
         } catch (JSONException e) {
             e.printStackTrace();

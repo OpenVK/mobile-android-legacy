@@ -6,6 +6,9 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +16,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Parcel;
@@ -21,6 +25,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -102,7 +107,6 @@ public class SlidingMenu extends RelativeLayout {
 	 * the onOpened event occurs, that object's appropriate
 	 * method is invoked.
 	 *
-	 * @see OnOpenedEvent
 	 */
 	public interface OnOpenedListener {
 
@@ -121,7 +125,6 @@ public class SlidingMenu extends RelativeLayout {
 	 * the onClose event occurs, that object's appropriate
 	 * method is invoked.
 	 *
-	 * @see OnCloseEvent
 	 */
 	public interface OnCloseListener {
 
@@ -140,7 +143,6 @@ public class SlidingMenu extends RelativeLayout {
 	 * the onClosed event occurs, that object's appropriate
 	 * method is invoked.
 	 *
-	 * @see OnClosedEvent
 	 */
 	public interface OnClosedListener {
 
@@ -380,7 +382,6 @@ public class SlidingMenu extends RelativeLayout {
 	/**
 	 * Set the behind view (menu) content to the given View.
 	 *
-	 * @param view The desired content to display.
 	 */
 	public void setMenu(View v) {
 		mViewBehind.setContent(v);
@@ -407,7 +408,7 @@ public class SlidingMenu extends RelativeLayout {
 	/**
 	 * Set the secondary behind view (right menu) content to the given View.
 	 *
-	 * @param view The desired content to display.
+	 * The desired content to display.
 	 */
 	public void setSecondaryMenu(View v) {
 		mViewBehind.setSecondaryContent(v);
@@ -993,10 +994,43 @@ public class SlidingMenu extends RelativeLayout {
 		int rightPadding = insets.right;
 		int topPadding = insets.top;
 		int bottomPadding = insets.bottom;
-		if (!mActionbarOverlay) {
-			Log.v(TAG, "setting padding!");
-			setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
-		}
+        int navigation_height = 0;
+        int navigation_width = 0;
+        if(Build.VERSION.SDK_INT >= 30) {
+            Resources resources = getContext().getResources();
+            int nav_height_id = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+            int nav_width_id = resources.getIdentifier("navigation_bar_width", "dimen", "android");
+            int rotation = ((WindowManager) getContext().getSystemService(
+                    Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+            if (nav_height_id > 0) {
+                navigation_height = resources.getDimensionPixelSize(nav_height_id);
+            }
+            if(nav_width_id > 0) {
+                navigation_width = resources.getDimensionPixelSize(nav_width_id);
+            }
+            if (!mActionbarOverlay) {
+                Log.v(TAG, "setting padding!");
+                switch (rotation) {
+                    case Surface.ROTATION_0:
+                        setPadding(leftPadding, topPadding, rightPadding, navigation_height);
+                        break;
+                    case Surface.ROTATION_90:
+                        setPadding(leftPadding, topPadding, navigation_width, bottomPadding);
+                        break;
+                    case Surface.ROTATION_180:
+                        setPadding(leftPadding, nav_height_id, rightPadding, bottomPadding);
+                        break;
+                    default:
+                        setPadding(navigation_width, topPadding, rightPadding, bottomPadding);
+                        break;
+                }
+            }
+        } else {
+            if (!mActionbarOverlay) {
+                Log.v(TAG, "setting padding!");
+                setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
+            }
+        }
 		return true;
 	}
 

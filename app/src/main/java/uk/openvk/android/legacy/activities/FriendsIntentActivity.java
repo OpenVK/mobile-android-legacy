@@ -22,13 +22,11 @@ import uk.openvk.android.legacy.api.Friends;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Friend;
-import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ErrorLayout;
 import uk.openvk.android.legacy.layouts.FriendsLayout;
-import uk.openvk.android.legacy.layouts.ProfileLayout;
 import uk.openvk.android.legacy.layouts.ProgressLayout;
 import uk.openvk.android.legacy.list_items.SlidingMenuItem;
 

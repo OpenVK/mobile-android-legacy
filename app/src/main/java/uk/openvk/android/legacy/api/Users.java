@@ -1,15 +1,15 @@
 package uk.openvk.android.legacy.api;
 
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -83,6 +83,26 @@ public class Users implements Parcelable {
 
     public void getUser(OvkAPIWrapper ovk, int user_id) {
         ovk.sendAPIMethod("Users.get", String.format("user_ids=%d&fields=verified,sex,has_photo,photo_200,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", user_id));
+    }
+
+    public void getAccountUser(OvkAPIWrapper ovk, int user_id) {
+        ovk.sendAPIMethod("Users.get", String.format("user_ids=%d&fields=verified,sex,has_photo,photo_200,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", user_id), "account_user");
+    }
+
+    public void getPeerUsers(OvkAPIWrapper ovk, ArrayList<Conversation> conversations) {
+        ArrayList<Integer> user_ids = new ArrayList<>();
+        for(int i = 0; i < conversations.size(); i++) {
+            user_ids.add(conversations.get(i).peer_id);
+        }
+        StringBuilder ids_list = new StringBuilder();
+        for(int i = 0; i < user_ids.size(); i++) {
+            if(i < user_ids.size() - 1) {
+                ids_list.append(String.format("%d,", user_ids.get(i)));
+            } else {
+                ids_list.append(user_ids.get(i));
+            }
+        }
+        ovk.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", ids_list), "peers");
     }
 
     public void get(OvkAPIWrapper ovk, ArrayList<Integer> user_ids) {

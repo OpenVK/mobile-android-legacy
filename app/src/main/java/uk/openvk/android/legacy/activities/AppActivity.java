@@ -1,17 +1,22 @@
 package uk.openvk.android.legacy.activities;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +46,7 @@ import uk.openvk.android.legacy.api.Newsfeed;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
@@ -89,6 +95,8 @@ public class AppActivity extends Activity {
     private Menu activity_menu;
     private GroupsLayout groupsLayout;
     private int newsfeed_count = 25;
+    private int notification_id;
+    private String last_longpoll_response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +104,9 @@ public class AppActivity extends Activity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         if(instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("server", "").length() == 0) {
-            Context context = getApplicationContext();
-            Intent intent = new Intent(context, AuthActivity.class);
-            startActivity(intent);
             finish();
         }
+        last_longpoll_response = "";
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setContentView(R.layout.app_layout);
@@ -126,6 +132,11 @@ public class AppActivity extends Activity {
         likes = new Likes();
         global_prefs_editor.putString("current_screen", "newsfeed");
         global_prefs_editor.commit();
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
+            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        }
+        Bundle data = new Bundle();
     }
 
     @Override
@@ -160,8 +171,10 @@ public class AppActivity extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if(((OvkApplication) getApplicationContext()).isTablet) {
-            newsfeedLayout.adjustLayoutSize(newConfig.orientation);
+        newsfeedLayout.adjustLayoutSize(newConfig.orientation);
+        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(newConfig.orientation);
+        if(!((OvkApplication) getApplicationContext()).isTablet) {
+            menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
         super.onConfigurationChanged(newConfig);
     }
@@ -179,6 +192,7 @@ public class AppActivity extends Activity {
             menu.setSlidingEnabled(true);
         } else {
             slidingmenuLayout = findViewById(R.id.sliding_menu);
+            slidingmenuLayout.setAccountProfileListener(this);
             slidingmenuLayout.setVisibility(View.VISIBLE);
         }
         slidingMenuArray = new ArrayList<SlidingMenuItem>();
@@ -285,8 +299,6 @@ public class AppActivity extends Activity {
         if(position < 8) {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
                 menu.toggle(true);
-            } else {
-                slidingmenuLayout.setVisibility(View.GONE);
             }
         }
         if(position == 0) {
@@ -401,7 +413,7 @@ public class AppActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                account.parse(data.getString("response"));
+                account.parse(data.getString("response"), ovk_api);
                 String profile_name = String.format("%s %s", account.first_name, account.last_name);
                 slidingmenuLayout.setProfileName(profile_name);
                 newsfeed.get(ovk_api, newsfeed_count);
@@ -427,6 +439,11 @@ public class AppActivity extends Activity {
                     //newpost.setVisible(true);
                 }
                 account.getCounters(ovk_api);
+                users.getAccountUser(ovk_api, account.id);
+                if(messages == null) {
+                    messages = new Messages();
+                }
+                messages.getConversations(ovk_api);
             } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
                 account.parseCounters(data.getString("response"));
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
@@ -457,6 +474,8 @@ public class AppActivity extends Activity {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""));
                 longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
+            } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
+                slidingmenuLayout.loadAccountAvatar(account);
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
                 newsfeedLayout.setScrollingPositions(this, true, true);
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
@@ -477,10 +496,14 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.VISIBLE);
                     profileLayout.setDMButtonListener(this, user.id);
-                    user.downloadAvatar(new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)));
+                    user.downloadAvatar(downloadManager);
                     wall.get(ovk_api, user.id, 50);
                     friends.get(ovk_api, user.id, "profile_counter");
                 }
+            } else if (message == HandlerMessages.USERS_GET_ALT) {
+                users.parse(data.getString("response"));
+                account.user = users.getList().get(0);
+                account.user.downloadAvatar(downloadManager, "account_avatar");
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager, data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
@@ -546,6 +569,26 @@ public class AppActivity extends Activity {
                 if(user.avatar_url.length() > 0) {
                     profileLayout.loadAvatar(user);
                 }
+            } else if(message == HandlerMessages.LONGPOLL) {
+                MessageEvent msg_event = new MessageEvent(data.getString("response"));
+                if(msg_event.peer_id > 0 && global_prefs.getBoolean("enableNotification", true)) {
+                    if (!last_longpoll_response.equals(data.getString("response"))) {
+                        String msg_author = String.format("Unknown ID %d", msg_event.peer_id);
+                        if(conversations != null) {
+                            for (int i = 0; i < conversations.size(); i++) {
+                                if (conversations.get(i).peer_id == msg_event.peer_id) {
+                                    msg_author = conversations.get(i).title;
+                                }
+                            }
+                        }
+                        notification_id = notification_id + 1;
+                        last_longpoll_response = data.getString("response");
+                        NotificationManager notifMan = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        Notification notification = createNotification(notifMan, "lp_updates", "LongPoll Updates", R.drawable.ic_stat_notify, msg_author, msg_event.msg_text);
+                        notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
+                        notifMan.notify(notification_id, notification);
+                    }
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -557,11 +600,48 @@ public class AppActivity extends Activity {
         }
     }
 
+    public Notification createNotification(NotificationManager notifMan, String channel_id, String channel, int icon, String title, String description) {
+        NotificationManager notificationManager;
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel mChannel = new NotificationChannel(channel_id, channel, importance);
+            notifMan.createNotificationChannel(mChannel);
+            Notification.Builder builder =
+                    new Notification.Builder(this)
+                            .setSmallIcon(icon)
+                            .setContentTitle(title)
+                            .setContentText(description)
+                            .setChannelId("lp_updates");
+            notification = builder.build();
+            Intent notificationIntent = new Intent(this, ConversationActivity.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+            notification.contentIntent = contentIntent;
+            notifMan.notify(notification_id, notification);
+        } else {
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(icon)
+                            .setContentTitle(title)
+                            .setContentText(description);
+
+            notification = builder.build();
+        }
+        return notification;
+    }
+
+    public PendingIntent createConversationIntent(int peer_id, String title) {
+        Intent notificationIntent = new Intent(this, ConversationActivity.class);
+        notificationIntent.putExtra("peer_id", peer_id);
+        notificationIntent.putExtra("conv_title", title);
+        notificationIntent.putExtra("online", 1);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        return contentIntent;
+    }
+
     public void openAccountProfile() {
         if(!((OvkApplication) getApplicationContext()).isTablet) {
             menu.toggle(true);
-        } else {
-            slidingmenuLayout.setVisibility(View.GONE);
         }
         profileLayout.setVisibility(View.GONE);
         newsfeedLayout.setVisibility(View.GONE);
@@ -604,36 +684,38 @@ public class AppActivity extends Activity {
             account.addQueue(method, args);
             account.getProfileInfo(ovk_api);
         } else {
-            if (method.equals("Newsfeed.get")) {
-                if(newsfeed == null) {
-                    newsfeed = new Newsfeed();
+            if(method != null) {
+                if (method.equals("Newsfeed.get")) {
+                    if (newsfeed == null) {
+                        newsfeed = new Newsfeed();
+                    }
+                    newsfeed.get(ovk_api, 50);
+                } else if (method.equals("Messages.getLongPollServer")) {
+                    if (messages == null) {
+                        messages = new Messages();
+                    }
+                    messages.getLongPollServer(ovk_api);
+                } else if (method.equals("Messages.getConversations")) {
+                    if (messages == null) {
+                        messages = new Messages();
+                    }
+                    messages.getConversations(ovk_api);
+                } else if (method.equals("Friends.get")) {
+                    if (friends == null) {
+                        friends = new Friends();
+                    }
+                    friends.get(ovk_api, account.id, "friends_list");
+                } else if (method.equals("Groups.get")) {
+                    if (groups == null) {
+                        groups = new Groups();
+                    }
+                    groups.getGroups(ovk_api, account.id);
+                } else if (method.equals("Users.get")) {
+                    if (users == null) {
+                        users = new Users();
+                    }
+                    users.getUser(ovk_api, account.id);
                 }
-                newsfeed.get(ovk_api, 50);
-            } else if (method.equals("Messages.getLongPollServer")) {
-                if(messages == null) {
-                    messages = new Messages();
-                }
-                messages.getLongPollServer(ovk_api);
-            } else if (method.equals("Messages.getConversations")) {
-                if(messages == null) {
-                    messages = new Messages();
-                }
-                messages.getConversations(ovk_api);
-            } else if (method.equals("Friends.get")) {
-                if(friends == null) {
-                    friends = new Friends();
-                }
-                friends.get(ovk_api, account.id, "friends_list");
-            } else if (method.equals("Groups.get")) {
-                if(groups == null) {
-                    groups = new Groups();
-                }
-                groups.getGroups(ovk_api, account.id);
-            } else if (method.equals("Users.get")) {
-                if(users == null) {
-                    users = new Users();
-                }
-                users.getUser(ovk_api, account.id);
             }
         }
     }

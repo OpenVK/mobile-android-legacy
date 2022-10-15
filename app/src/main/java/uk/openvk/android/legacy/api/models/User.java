@@ -8,11 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
  * Created by Dmitry on 30.09.2022.
@@ -300,5 +297,9 @@ public class User implements Parcelable {
         parcel.writeString(music);
         parcel.writeString(tv);
         parcel.writeString(books);
+    }
+
+    public void downloadAvatar(DownloadManager downloadManager, String where) {
+        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), where);
     }
 }

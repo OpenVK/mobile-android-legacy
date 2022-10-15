@@ -19,15 +19,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="7dip"
+            android:layout_gravity="center"
             android:src="@drawable/ic_msg_error_up"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/msg_progress"
             android:layout_width="30dip"
             android:layout_height="30dip"
-            android:layout_marginRight="6dip"
-            android:visibility="gone" />
+            android:layout_marginRight="7dip"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/msg_wrap"

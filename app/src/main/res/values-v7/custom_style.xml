@@ -55,14 +55,6 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="TranslucentStyle" parent="android:style/Theme.Translucent.NoTitleBar"></style>
-    <style name="TranslucentStyleWithTitle" parent="BaseStyle">
-         <item name="android:background">@null</item>
-         <item name="android:windowContentOverlay">@null</item>
-	     <item name="android:windowIsTranslucent">true</item>
-         <item name="android:windowBackground">@color/window_bg_transparent</item>
-	</style>
-
     <style name="LightStyle" parent="android:style/Theme.Light"></style>
 
     <style name="DialogNoTitle" parent="android:style/Theme.Dialog">

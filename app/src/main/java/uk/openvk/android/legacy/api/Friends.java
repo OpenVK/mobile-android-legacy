@@ -1,13 +1,11 @@
 package uk.openvk.android.legacy.api;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.Friend;

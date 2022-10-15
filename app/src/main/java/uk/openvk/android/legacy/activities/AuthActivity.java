@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -107,6 +108,26 @@ public class AuthActivity extends Activity {
                 receiveState(message.what, data.getString("response"));
             }
         };
+        (findViewById(R.id.reg_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(global_prefs.getBoolean("useHTTPS", true)) {
+                    openWebAddress(String.format("https://%s/reg", instance_edit.getText().toString()));
+                } else {
+                    openWebAddress(String.format("http://%s/reg", instance_edit.getText().toString()));
+                }
+            }
+        });
+        (findViewById(R.id.forgot_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(global_prefs.getBoolean("useHTTPS", true)) {
+                    openWebAddress(String.format("https://%s/restore", instance_edit.getText().toString()));
+                } else {
+                    openWebAddress(String.format("http://%s/restore", instance_edit.getText().toString()));
+                }
+            }
+        });
     }
 
     private void authorize() {
@@ -236,6 +257,16 @@ public class AuthActivity extends Activity {
             alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_ssl))
                     .setNeutralButton(R.string.ok, null).create();
             alertDialog.show();
+        } else if(message == HandlerMessages.NOT_OPENVK_INSTANCE) {
+            connectionDialog.cancel();
+            alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_not_openvk_instance))
+                    .setNeutralButton(R.string.ok, null).create();
+            alertDialog.show();
+        } else if(message == HandlerMessages.UNKNOWN_ERROR) {
+            connectionDialog.cancel();
+            alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_unknown_error))
+                    .setNeutralButton(R.string.ok, null).create();
+            alertDialog.show();
         }
     }
 
@@ -259,5 +290,11 @@ public class AuthActivity extends Activity {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
         }
         return description;
+    }
+
+    public void openWebAddress(String address) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(address));
+        startActivity(i);
     }
 }

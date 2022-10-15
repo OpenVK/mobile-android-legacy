@@ -6,9 +6,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-
-import java.io.File;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;

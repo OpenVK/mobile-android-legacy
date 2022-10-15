@@ -414,6 +414,8 @@
     <string name="delete_friend_confirm">Вы действительно хотите удалить %s из своего списка друзей?</string>
     <string name="friend_deleted_m">%s был удалён из Вашего списка друзей</string>
     <string name="friend_deleted_f">%s была удалена из Вашего списка друзей</string>
+    <string name="auth_error_unknown_error">Не удалось подключиться к инстанции по неизвестным причинам. Повторите попытку позже или выберите другую инстанцию.</string>
+    <string name="auth_error_not_openvk_instance">Указанный сервер не является OpenVK-совместимой инстанцией. Попробуйте выбрать другую инстанцию.</string>
     <string name="auth_error_network">Не удалось войти из-за проблем с интернет-соединением. Проверьте подключение к сети и повторите попытку.</string>
     <string name="auth_error_ssl">Не удалось войти из-за проблем с защищенным соединением. Попробуйте выбрать другую инстанцию.</string>
     <string name="no_friend_requests">Новых заявок нет</string>

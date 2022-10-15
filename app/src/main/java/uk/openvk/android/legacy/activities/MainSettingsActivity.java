@@ -1,6 +1,5 @@
 package uk.openvk.android.legacy.activities;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -8,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,18 +15,14 @@ import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -243,6 +237,7 @@ public class MainSettingsActivity extends PreferenceActivity {
                 editor.putString("server", "");
                 editor.commit();
                 Intent mStartActivity = new Intent(MainSettingsActivity.this, MainActivity.class);
+                mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 int mPendingIntentId = 123456;
                 PendingIntent mPendingIntent = PendingIntent.getActivity(MainSettingsActivity.this, mPendingIntentId, mStartActivity,
                         PendingIntent.FLAG_CANCEL_CURRENT);

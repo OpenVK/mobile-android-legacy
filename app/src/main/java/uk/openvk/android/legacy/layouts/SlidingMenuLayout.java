@@ -1,9 +1,12 @@
 package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
+import uk.openvk.android.legacy.api.Account;
 
 public class SlidingMenuLayout extends LinearLayout {
 
@@ -53,5 +57,31 @@ public class SlidingMenuLayout extends LinearLayout {
     public void setProfileName(String name) {
         TextView profile_name = (TextView) findViewById(R.id.profile_name);
         profile_name.setText(name);
+    }
+
+    public void setAccountProfileListener(final Context ctx) {
+        ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) ctx).openAccountProfile();
+                }
+            }
+        });
+    }
+
+    public void loadAccountAvatar(Account account) {
+        ImageView avatar = (ImageView) findViewById(R.id.avatar);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getContext().getCacheDir(), account.user.id), options);
+        if (bitmap != null) {
+            account.user.avatar = bitmap;
+        } else if(account.user.avatar_url.length() > 0) {
+            account.user.avatar = null;
+        } else {
+            account.user.avatar = null;
+        }
+        if(account.user.avatar != null) ((ImageView) findViewById(R.id.avatar)).setImageBitmap(account.user.avatar);
     }
 }

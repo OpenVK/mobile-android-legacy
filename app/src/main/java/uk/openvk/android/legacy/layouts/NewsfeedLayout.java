@@ -215,11 +215,18 @@ public class NewsfeedLayout extends LinearLayout {
     }
 
     public void adjustLayoutSize(int orientation) {
-        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
-            LinearLayout.LayoutParams layoutParams = new LayoutParams((int)(600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-            newsfeedView.setLayoutParams(layoutParams);
+        if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                newsfeedView.setLayoutParams(layoutParams);
+            } else {
+                newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                newsfeedView.setLayoutParams(layoutParams);
+            }
         } else {
             newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
             LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

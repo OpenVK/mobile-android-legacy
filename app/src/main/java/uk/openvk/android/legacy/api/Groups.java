@@ -8,10 +8,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.Photo;
-import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;

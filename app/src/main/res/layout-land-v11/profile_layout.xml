@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#e3e4e6">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/profile_ext_header"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#313743"
+                android:orientation="vertical">
+
+                <uk.openvk.android.legacy.layouts.ProfileHeader
+                    android:id="@+id/profile_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </uk.openvk.android.legacy.layouts.ProfileHeader>
+
+                <uk.openvk.android.legacy.layouts.AboutProfileLayout
+                    android:id="@+id/about_profile_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                </uk.openvk.android.legacy.layouts.AboutProfileLayout>
+
+                <Button
+                    android:id="@+id/send_direct_msg"
+                    style="@style/BlueButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/message" />
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="center">
+
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                        android:id="@+id/photos_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="8dp">
+
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                        android:id="@+id/friends_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp">
+
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+
+                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                        android:id="@+id/mutual_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent">
+
+                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+                </TableRow>
+
+                <uk.openvk.android.legacy.layouts.ProfileWallSelector
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/wall_selector"/>
+
+                <uk.openvk.android.legacy.layouts.WallLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/wall_layout"
+                    android:background="#e3e4e6" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

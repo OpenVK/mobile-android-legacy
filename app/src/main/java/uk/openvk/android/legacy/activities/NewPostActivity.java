@@ -3,9 +3,6 @@ package uk.openvk.android.legacy.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,8 +21,6 @@ import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
-
-import static uk.openvk.android.legacy.api.enumerations.HandlerMessages.WALL_POST;
 
 public class NewPostActivity extends Activity {
     public String server;

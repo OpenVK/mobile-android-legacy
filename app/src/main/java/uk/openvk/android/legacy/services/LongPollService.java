@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import uk.openvk.android.legacy.api.wrappers.LongPollWrapper;
+import uk.openvk.android.legacy.longpoll_api.wrappers.LongPollWrapper;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 public class LongPollService extends Service {

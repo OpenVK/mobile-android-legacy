@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
             if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0) {
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, AuthActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
             } else {

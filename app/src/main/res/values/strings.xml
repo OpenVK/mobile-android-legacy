@@ -401,6 +401,8 @@
     <string name="friend_deleted">%s has been removed from your friend list</string>
     <string name="friend_deleted_m">%s has been removed from your friend list</string>
     <string name="friend_deleted_f">%s has been removed from your friend list</string>
+	<string name="auth_error_unknown_error">Failed to connect to the instance for unknown reasons. Please try again later or choose another instance.</string>
+	<string name="auth_error_not_openvk_instance">The specified server is not an OpenVK-compatible instance. Try to choose another instance.</string>
     <string name="auth_error_network">Unable to log in due to problems with a network. Please check your connection and try again.</string>
 	<string name="auth_error_ssl">Unable to sign in due to problems with a secure connection. Try to choose another instance.</string>
 	

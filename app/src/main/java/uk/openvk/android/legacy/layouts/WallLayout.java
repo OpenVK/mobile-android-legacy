@@ -2,13 +2,16 @@ package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -18,6 +21,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.list_adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
@@ -183,6 +187,27 @@ public class WallLayout extends LinearLayout {
             return wallView.getAdapter().getItemCount();
         } catch (NullPointerException npE) {
             return 0;
+        }
+    }
+
+    public void adjustLayoutSize(int orientation) {
+        if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                wallView = (RecyclerView) findViewById(R.id.wall_listview);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                wallView.setLayoutParams(layoutParams);
+            } else {
+                wallView = (RecyclerView) findViewById(R.id.wall_listview);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                wallView.setLayoutParams(layoutParams);
+            }
+        } else {
+            wallView = (RecyclerView) findViewById(R.id.wall_listview);
+            LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+            wallView.setLayoutParams(layoutParams);
         }
     }
 }

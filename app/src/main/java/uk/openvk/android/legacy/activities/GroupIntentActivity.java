@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -24,7 +25,6 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Likes;
-import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Group;
@@ -34,7 +34,6 @@ import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ErrorLayout;
 import uk.openvk.android.legacy.layouts.GroupHeader;
 import uk.openvk.android.legacy.layouts.ProfileCounterLayout;
-import uk.openvk.android.legacy.layouts.ProfileHeader;
 import uk.openvk.android.legacy.layouts.ProgressLayout;
 import uk.openvk.android.legacy.layouts.WallLayout;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
@@ -112,6 +111,7 @@ public class GroupIntentActivity extends Activity {
                 return;
             }
         }
+        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
     }
 
     @Override
@@ -120,6 +120,12 @@ public class GroupIntentActivity extends Activity {
             onBackPressed();
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        super.onConfigurationChanged(newConfig);
     }
 
     private void installLayouts() {

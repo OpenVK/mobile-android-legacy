@@ -44,8 +44,10 @@ public class HandlerMessages {
 
     // Users
     public static int USERS_GET                         = 600;
-    public static int USERS_FOLLOWERS                   = 601;
-    public static int USERS_SEARCH                      = 602;
+    public static int USERS_GET_ALT                     = 601;
+    public static int USERS_GET_ALT2                    = 602;
+    public static int USERS_FOLLOWERS                   = 603;
+    public static int USERS_SEARCH                      = 604;
 
     // Wall
     public static int WALL_GET                          = 700;
@@ -69,7 +71,8 @@ public class HandlerMessages {
     public static int OVK_CHECK_HTTPS                   = 905;
 
     // Misc
-    public static int NEWSFEED_ATTACHMENTS              = 1000;
+    public static int ACCOUNT_AVATAR                    = 1000;
+    public static int NEWSFEED_ATTACHMENTS              = 1001;
     public static int WALL_ATTACHMENTS                  = 1002;
     public static int WALL_AVATARS                      = 1003;
     public static int NEWSFEED_AVATARS                  = 1004;
@@ -79,6 +82,7 @@ public class HandlerMessages {
     public static int FRIEND_AVATARS                    = 1008;
     public static int COMMENT_AVATARS                   = 1009;
     public static int CONVERSATION_AVATARS              = 1010;
+    public static int LONGPOLL                          = 1011;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;
@@ -86,7 +90,10 @@ public class HandlerMessages {
     public static int INVALID_JSON_RESPONSE             =  -3;
     public static int INVALID_USAGE                     =  -4;
     public static int INVALID_TOKEN                     =  -5;
-    public static int METHOD_NOT_FOUND                  =  -6;
-    public static int BROKEN_SSL_CONNECTION             =  -7;
-    public static int INTERNAL_ERROR                    =  -8;
+    public static int CHAT_DISABLED                     =  -6;
+    public static int METHOD_NOT_FOUND                  =  -7;
+    public static int BROKEN_SSL_CONNECTION             =  -8;
+    public static int INTERNAL_ERROR                    =  -9;
+    public static int NOT_OPENVK_INSTANCE               =  -10;
+    public static int UNKNOWN_ERROR                     =  -11;
 }

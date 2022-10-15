@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 public class OvkApplication extends Application {
 
     public String version;
-    public int build_number = 114;
+    public int build_number = 118;
     public boolean isTablet;
 
     @Override
@@ -38,6 +38,10 @@ public class OvkApplication extends Application {
 
         if(!global_prefs.contains("useHTTPS")) {
             global_prefs_editor.putBoolean("useHTTPS", true);
+        }
+
+        if(!global_prefs.contains("enableNotification")) {
+            global_prefs_editor.putBoolean("enableNotification", true);
         }
 
         global_prefs_editor.commit();

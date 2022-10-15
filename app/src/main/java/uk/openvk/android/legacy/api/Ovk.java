@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.InstanceAdmin;

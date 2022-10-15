@@ -2,7 +2,6 @@ package uk.openvk.android.legacy.activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,18 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.Messages;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ConversationPanel;
-import uk.openvk.android.legacy.layouts.ConversationsLayout;
-import uk.openvk.android.legacy.list_adapters.ConversationsListAdapter;
 import uk.openvk.android.legacy.list_adapters.MessagesListAdapter;
 
 public class ConversationActivity extends Activity {
@@ -48,6 +43,7 @@ public class ConversationActivity extends Activity {
     public int peer_id;
     public ActionBarImitation actionBarImitation;
     private ArrayList<uk.openvk.android.legacy.api.models.Message> history;
+    private uk.openvk.android.legacy.api.models.Message last_sended_message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,8 +147,13 @@ public class ConversationActivity extends Activity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                uk.openvk.android.legacy.api.models.Message message = new uk.openvk.android.legacy.api.models.Message(false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
-                history.add(message);
+                last_sended_message = new uk.openvk.android.legacy.api.models.Message(false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                last_sended_message.sending = true;
+                last_sended_message.isError = false;
+                if(history == null) {
+                    history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
+                }
+                history.add(last_sended_message);
                 conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history);
                 messagesList.setAdapter(conversation_adapter);
                 ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
@@ -196,6 +197,15 @@ public class ConversationActivity extends Activity {
         if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             history = conversation.parseHistory(this, data.getString("response"));
             conversation_adapter = new MessagesListAdapter(this, history);
+            messagesList.setAdapter(conversation_adapter);
+        } else if (message == HandlerMessages.CHAT_DISABLED) {
+            last_sended_message.sending = false;
+            last_sended_message.isError = true;
+            history.set(history.size() - 1, last_sended_message);
+            messagesList.setAdapter(conversation_adapter);
+        } else if(message == HandlerMessages.MESSAGES_SEND) {
+            last_sended_message.sending = false;
+            history.set(history.size() - 1, last_sended_message);
             messagesList.setAdapter(conversation_adapter);
         }
     }

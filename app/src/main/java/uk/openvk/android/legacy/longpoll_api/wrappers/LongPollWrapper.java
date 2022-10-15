@@ -1,9 +1,11 @@
-package uk.openvk.android.legacy.api.wrappers;
+package uk.openvk.android.legacy.longpoll_api.wrappers;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
@@ -23,7 +25,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
+import uk.openvk.android.legacy.activities.AppActivity;
+import uk.openvk.android.legacy.activities.AuthActivity;
+import uk.openvk.android.legacy.activities.ConversationActivity;
+import uk.openvk.android.legacy.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.activities.MainSettingsActivity;
+import uk.openvk.android.legacy.activities.NewPostActivity;
+import uk.openvk.android.legacy.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.activities.WallPostActivity;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
  * Created by Dmitry on 29.09.2022.
@@ -146,6 +159,7 @@ public class LongPollWrapper {
                         }
                         if (response_code == 200) {
                             Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                            sendLongPollMessageToActivity(response_body);
                         } else {
                             Log.v("OpenVK LPW", String.format("Getting response from %s (%s)", server, response_code));
                         }
@@ -191,21 +205,49 @@ public class LongPollWrapper {
         thread.start();
     }
 
+    private void sendLongPollMessageToActivity(String response) {
+        Message msg = new Message();
+        msg.what = HandlerMessages.LONGPOLL;
+        Bundle bundle = new Bundle();
+        bundle.putString("response", response);
+        msg.setData(bundle);
+        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
+            ((AuthActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+            ((AppActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            ((ConversationActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            ((NewPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
+        }
+    }
+
     public void updateCounters(final OvkAPIWrapper ovk) {
         Thread thread = null;
+        final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 ovk.sendAPIMethod("Account.getCounters");
                 try {
-                    Thread.sleep(5000);
-                    run();
-                } catch (InterruptedException e) {
+                    handler.postDelayed(this, 5000);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
-        thread = new Thread(runnable);
-        thread.start();
+        handler.postDelayed(runnable, 5000);
     }
 }

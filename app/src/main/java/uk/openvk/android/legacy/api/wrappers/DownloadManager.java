@@ -29,17 +29,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
@@ -253,7 +247,9 @@ public class DownloadManager {
                         }
                     }
                 }
-                if (where.equals("profile_avatars")) {
+                if (where.equals("account_avatar")) {
+                    sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
+                } else if (where.equals("profile_avatars")) {
                     sendMessage(HandlerMessages.PROFILE_AVATARS, where);
                 } else if (where.equals("newsfeed_avatars")) {
                     sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
@@ -372,7 +368,9 @@ public class DownloadManager {
                         Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
                     }
                 }
-                if (where.equals("profile_avatars")) {
+                if (where.equals("account_avatar")) {
+                    sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
+                } else if (where.equals("profile_avatars")) {
                     sendMessage(HandlerMessages.PROFILE_AVATARS, where);
                 } else if (where.equals("newsfeed_avatars")) {
                     sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);

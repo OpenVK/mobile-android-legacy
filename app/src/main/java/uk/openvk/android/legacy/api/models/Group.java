@@ -3,13 +3,11 @@ package uk.openvk.android.legacy.api.models;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONObject;
 
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
  * Created by Dmitry on 09.10.2022.

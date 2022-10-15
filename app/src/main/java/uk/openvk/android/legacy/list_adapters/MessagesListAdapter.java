@@ -80,57 +80,64 @@ public class MessagesListAdapter extends BaseAdapter {
             prev_startOfDay.setSeconds(0);
         }
         if(prev_startOfDay != null) {
-            Log.d("StartOfDay", "Comparision result: " + startOfDay.compareTo(prev_startOfDay) + " d.");
             if (startOfDay.compareTo(prev_startOfDay) <= 0) {
-                ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
+                (view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
             } else {
-                ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
-                ((TextView) ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
+                (view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
+                ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
             }
         } else {
-            ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
-            ((TextView) ((MessagesDateSeparator) view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
+            (view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
+            ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
         }
         if(item.isIncoming) {
-            ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
-            ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
+            (view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
+            (view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
         } else {
-            ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setVisibility(View.GONE);
-            ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).setVisibility(View.VISIBLE);
+            (view.findViewById(R.id.incoming_msg)).setVisibility(View.GONE);
+            (view.findViewById(R.id.outcoming_msg)).setVisibility(View.VISIBLE);
         }
 
-        if(!item.isError) {
-            ((ImageView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_failed)).setVisibility(View.GONE);
+        if(item.sending) {
+            ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.VISIBLE);
+        } else {
+            ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.GONE);
+            if(item.isError) {
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.GONE);
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_failed)).setVisibility(View.VISIBLE);
+            } else {
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.GONE);
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_failed)).setVisibility(View.GONE);
+            }
         }
 
-        ((ProgressBar) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_progress)).setVisibility(View.GONE);
 
         if(item.text.length() > 12) {
             if(item.isIncoming) {
-                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
-                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+                ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
+                ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
             } else {
-                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
-                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
             }
         } else {
             if(item.isIncoming) {
-                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
-                ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
+                ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+                ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
             } else {
-                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
-                ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
+                ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
+                (( view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
             }
         }
 
         if(item.isIncoming) {
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
-            ((TextView) ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
+            ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
+            ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
         } else {
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
-            ((TextView) ((OutcomingMessageLayout) view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
+            ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
+            ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
         }
 
         view.setOnClickListener(new View.OnClickListener() {

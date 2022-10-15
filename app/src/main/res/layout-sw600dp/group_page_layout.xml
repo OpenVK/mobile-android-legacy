@@ -77,7 +77,7 @@
                     android:layout_marginBottom="8dp">
 
                     <uk.openvk.android.legacy.layouts.ProfileCounterLayout
-                        android:id="@+id/profile_header"
+                        android:id="@+id/members_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="8dp"

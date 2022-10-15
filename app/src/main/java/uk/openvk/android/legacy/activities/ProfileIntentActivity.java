@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ import uk.openvk.android.legacy.layouts.ProfileLayout;
 import uk.openvk.android.legacy.layouts.ProgressLayout;
 import uk.openvk.android.legacy.layouts.WallLayout;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
-import uk.openvk.android.legacy.list_items.SlidingMenuItem;
 
 public class ProfileIntentActivity extends Activity {
 
@@ -114,6 +114,13 @@ public class ProfileIntentActivity extends Activity {
                 return;
             }
         }
+        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        super.onConfigurationChanged(newConfig);
     }
 
     private void installLayouts() {
