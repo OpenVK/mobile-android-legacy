@@ -107,7 +107,7 @@ public class Groups implements Parcelable {
     }
 
     public void getGroups(OvkAPIWrapper ovk, int user_id) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&fields=verified,photo_200,is_member,members_count&extended=1", user_id));
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=50&fields=verified,photo_200,is_member,members_count&extended=1", user_id));
     }
 
     public void parse(String response, DownloadManager downloadManager, boolean downloadPhoto) {
