@@ -841,7 +841,7 @@ public class AppActivity extends Activity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://group/" + "id" + groups.getList().get(position).id;
+        String url = "openvk://group/" + "club" + groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
@@ -855,7 +855,7 @@ public class AppActivity extends Activity {
             item = newsfeed.getNewsfeedItems().get(position);
         }
         if(item.author_id < 0) {
-            String url = "openvk://group/" + "id" + -item.author_id;
+            String url = "openvk://group/" + "club" + -item.author_id;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             startActivity(i);

@@ -177,9 +177,9 @@
             android:text="post text"
             android:textColor="@color/main_text"
             android:textColorHighlight="#802B587A"
-            android:textColorLink="#2B587A"
+            android:textColorLink="@color/ovk_color"
             android:textSize="14dip"
-            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage"/>
+            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
 
         <TextView
             android:id="@+id/error_label"
@@ -271,9 +271,12 @@
                     android:layout_marginLeft="10dip"
                     android:layout_marginRight="10dip"
                     android:layout_marginTop="2dip"
+                    android:autoLink="web|email"
                     android:linksClickable="false"
                     android:text="repost text"
                     android:textColor="@color/main_text"
+                    android:textColorHighlight="#802B587A"
+                    android:textColorLink="@color/ovk_color"
                     android:textSize="14dip"
                     tools:ignore="HardcodedText,SpUsage" />
             </LinearLayout>
@@ -298,6 +301,7 @@
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"
         android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:src="@null"
         android:visibility="gone"
         tools:ignore="ContentDescription" />

@@ -35,6 +35,7 @@
         <item>No internet connection</item>
         <item>Server sent an invalid response</item>
         <item>Response timed out</item>
+		<item>Secure connection failure</item>
         <item>Instance failure</item>
     </string-array>
 
@@ -81,8 +82,7 @@
 	<string name="cancel">Cancel</string>
 	<string name="ok">OK</string>
 
-	<string name="app_version_text">Version %1$s (build %2$d)</string>
-	<string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">GitHub</a>]]></string>
+	<string name="app_version_text">Version %1$s</string>
 
 	<string-array name="like_menu">
 		<item>Unlike</item>
@@ -1131,6 +1131,7 @@
 	<string name="not_supported">At the moment this feature is not supported. Stay tuned.</string>
 	<string name="please_wait_network">Wait for the load to finish and try again.</string>
 	<string name="posting_error">An error occurred while posting. Please try again later.</string>
+    <string name="posting_access_denied">You are not allowed to post on this wall.</string>
 	<string name="posted_successfully">Post published.</string>
 	<string name="debug_menu">Debug menu</string>
 	<string name="api_logging">API logging</string>
@@ -1167,12 +1168,15 @@
 	<string name="err_picture_not_enough_memory_text">Not enough memory for image processing. Close all unused applications and try again.</string>
 	<string name="reason">Reason: %s</string>
 	<string name="official_state">OpenVK official instance</string>
-	<string name="openvk_legacy_devteam">OpenVK Legacy Development Team</string>
 	<string name="about_app_links">Links</string>
+    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Source code</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
 	<string name="credits">Credits</string>
-	<string name="about_app_translations">Translations</string>
 	<string name="about_app_author">Author</string>
-	<string name="about_app_design">Design</string>
-	<string name="app_devteam">Dmitry Tretyakov (Tinelix)\nVladimir Barinov (Veselcraft)</string>
+    <string name="app_author_value" formatted="false"><![CDATA[<a href=\"%s/id2287\">Dmitry Tretyakov</a> (Tinelix)]]></string>
+    <string name="openvk_legacy_devteam">OpenVK Legacy Development Team</string>
+	<string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Dmitry Tretyakov</a> (Tinelix)<br><a href=\"%s/id1\">Vladimir Barinov</a> (Veselcraft)]]></string>
+    <string name="about_app_design">Design</string>
+    <string name="about_app_translations">Translations</string>
     <string name="app_license">OpenVK Legacy License</string>
+    <string name="app_design_value" formatted="false"><![CDATA[VKontakte 3.0.4 for Android<br>by <a href=\"https://grishka.me\">Gregory Klyushnikov</a>]]></string>
 </resources>

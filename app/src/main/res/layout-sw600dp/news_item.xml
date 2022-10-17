@@ -122,8 +122,8 @@
                 android:id="@+id/post_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/post_retweet_photo"
                 android:layout_alignParentLeft="true"
+                android:layout_below="@+id/post_retweet_photo"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
                 android:autoLink="web|email"
@@ -133,8 +133,8 @@
                 android:text="post text"
                 android:textColor="@color/main_text"
                 android:textColorHighlight="#802B587A"
-                android:textColorLink="#2B587A"
-                android:textSize="14dip"/>
+                android:textColorLink="@color/ovk_color"
+                android:textSize="14dip" />
 
             <LinearLayout
                 android:id="@+id/post_attach_container"
@@ -209,9 +209,12 @@
                         android:layout_marginLeft="10dip"
                         android:layout_marginRight="10dip"
                         android:layout_marginTop="2dip"
+                        android:autoLink="web|email"
                         android:linksClickable="false"
                         android:text="repost text"
                         android:textColor="@color/main_text"
+                        android:textColorHighlight="#802B587A"
+                        android:textColorLink="@color/ovk_color"
                         android:textSize="14dip"
                         tools:ignore="HardcodedText,SpUsage" />
                 </LinearLayout>
@@ -242,15 +245,17 @@
             android:padding="12dp"
             android:visibility="gone"/>
 
-        <ImageView
-            android:id="@+id/post_photo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:layout_marginRight="10dip"
-            android:layout_marginBottom="10dip"
-            android:adjustViewBounds="true"
-            android:src="@null" />
+            <ImageView
+                android:id="@+id/post_photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dip"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@null"
+                android:visibility="gone" />
 
         <uk.openvk.android.legacy.attachments.PollAttachment
             android:id="@+id/poll_layout"

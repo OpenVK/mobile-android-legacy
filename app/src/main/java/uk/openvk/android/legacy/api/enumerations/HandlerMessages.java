@@ -96,8 +96,9 @@ public class HandlerMessages {
     public static int INVALID_TOKEN                     =  -5;
     public static int CHAT_DISABLED                     =  -6;
     public static int METHOD_NOT_FOUND                  =  -7;
-    public static int BROKEN_SSL_CONNECTION             =  -8;
-    public static int INTERNAL_ERROR                    =  -9;
-    public static int NOT_OPENVK_INSTANCE               =  -10;
-    public static int UNKNOWN_ERROR                     =  -11;
+    public static int ACCESS_DENIED                     =  -8;
+    public static int BROKEN_SSL_CONNECTION             =  -9;
+    public static int INTERNAL_ERROR                    =  -10;
+    public static int NOT_OPENVK_INSTANCE               =  -11;
+    public static int UNKNOWN_ERROR                     =  -12;
 }

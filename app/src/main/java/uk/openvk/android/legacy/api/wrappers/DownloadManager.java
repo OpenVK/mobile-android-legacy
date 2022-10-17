@@ -119,18 +119,15 @@ public class DownloadManager {
 
     private String generateUserAgent(Context ctx) {
         String version_name = "";
-        int version_code = 0;
-        String user_agent;
+        String user_agent = "";
         try {
             PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getApplicationContext().getPackageName(), 0);
             version_name = packageInfo.versionName;
-            version_code = packageInfo.versionCode;
         } catch (Exception e) {
             OvkApplication app = ((OvkApplication) ctx.getApplicationContext());
             version_name = app.version;
-            version_code = app.build_number;
         } finally {
-            user_agent = String.format("OpenVK Legacy/%s.%d (Android %s; SDK %d; %s; %s %s; %s)", version_name, version_code,
+            user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %d; %s; %s %s; %s)", version_name,
                     Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language"));
         }
         return user_agent;

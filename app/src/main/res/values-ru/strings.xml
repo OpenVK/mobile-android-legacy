@@ -74,8 +74,7 @@
     <string name="cancel">Отмена</string>
     <string name="ok">OK</string>
     
-    <string name="app_version_text">Версия %1$s (сборка %2$d)</string>
-    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">GitHub</a>]]></string>
+    <string name="app_version_text">Версия %1$s</string>
 
     <string-array name="like_menu">
 	    <item>Не нравится</item>
@@ -278,7 +277,6 @@
     <string-array name="post_options">
     	<item>Только для друзей</item>
     	<item>Экспорт в Telegram</item>
-    	<!--item>Указать местоположение</item-->
     </string-array>
     <string name="photo_save_ok">Фотография сохранена на карту памяти</string>
     
@@ -378,7 +376,7 @@
     <string name="sync_off">Не синхронизировать</string>
     <string name="sync_off_summary">Отключить синхронизацию контактов</string>
     <string name="sync_not_supported">Не поддерживается на этом устройстве</string>
-    <string name="sync_text">Добавить к Вашим контактам на телефоне информацию и фотографии друзей ВКонтакте?</string>
+    <string name="sync_text">Добавить к Вашим контактам на телефоне информацию и фотографии друзей OpenVK?</string>
     <string name="sett_sync">Синхронизация контактов</string>
     <string name="log_out_warning">При выходе из учётной записи из устройства будут удалены все связанные с ней данные. Продолжить?</string>
     
@@ -670,7 +668,7 @@
 	<string name="chat_typing_multiple">%s набирают сообщение..</string>
 	<string name="wall_owners_posts">Записи %s</string>
 	<string name="wall_all_posts">Все записи</string>
-	<string name="wall_comment_repost"><font color="#aaaaaa">Комментарий к </font><a href="vklink://view/?http://vk.com/wall%1$d_%2$d">записи</a></string>
+	<string name="wall_comment_repost"><font color="#aaaaaa">Комментарий к </font><a href="openvk://view/?http://openvk.uk/wall%1$d_%2$d">записи</a></string>
 	<string name="wall_post_reply">В ответ на запись</string>
 	<string name="topics">Обсуждения</string>
 	<string-array name="topic_posts">
@@ -1175,6 +1173,7 @@
     <string name="not_supported">На данный момент такая функция не поддерживается. Следите за обновлениями.</string>
     <string name="please_wait_network">Дождитесь окончания загрузки и повторите попытку.</string>
     <string name="posting_error">При отправке записи произошла ошибка. Повторите попытку позже.</string>
+    <string name="posting_access_denied">Вы не имеете права публиковать запись на этой стене.</string>
     <string name="posted_successfully">Запись опубликована.</string>
     <string name="debug_menu">Меню отладки</string>
     <string name="api_logging">Журналирование API</string>
@@ -1212,11 +1211,15 @@
     <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>
     <string name="invalid_session">Сессия недействительна. Пожалуйста, авторизуйтесь еще раз.</string>
-    <string name="openvk_legacy_devteam">Команда разработки OpenVK Legacy</string>
     <string name="about_app_links">Ссылки</string>
+    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Исходный код</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
     <string name="credits">Титры</string>
-    <string name="about_app_translations">Переводы</string>
     <string name="about_app_author">Автор</string>
+    <string name="app_author_value" formatted="false"><![CDATA[<a href=\"%s/id2287\">Dmitry Tretyakov</a> (Tinelix)]]></string>
+    <string name="openvk_legacy_devteam">Команда разработки OpenVK Legacy</string>
+    <string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитрий Третьяков</a> (Tinelix)<br><a href=\"%s/id1\">Владимир Баринов</a> (Veselcraft)]]></string>
     <string name="about_app_design">Дизайн</string>
+    <string name="app_design_value" formatted="false"><![CDATA[ВКонтакте 3.0.4 для Android<br>от <a href=\"https://grishka.me\">Григория Клюшникова</a>]]></string>
+    <string name="about_app_translations">Переводы</string>
     <string name="app_license">Лицензия OpenVK Legacy</string>
 </resources>

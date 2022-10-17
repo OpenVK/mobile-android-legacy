@@ -25,6 +25,7 @@
         <item>Відсутнє підключення до Інтернету</item>
         <item>Сервер надіслав некоректну відповідь</item>
         <item>Перевищено час очікування відповіді</item>
+        <item>Обрив захищеного з\'єднання</item>
         <item>Збій інстанції</item>
     </string-array>
 
@@ -73,8 +74,7 @@
     <string name="cancel">Скасувати</string>
     <string name="ok">OK</string>
 
-    <string name="app_version_text">Версія %1$s (збірка %2$d)</string>
-    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">GitHub</a>]]></string>
+    <string name="app_version_text">Версія %1$s</string>
 
     <string-array name="like_menu">
 	    <item>Не подобається</item>
@@ -144,7 +144,7 @@
     <string name="pull_to_refresh">Потягніть, щоб оновити</string>
     <string name="pull_to_refresh_bottom">Потягніть, щоб оновити</string>
     <string name="release_to_refresh">Відпустіть, щоб оновити</string>
-    <string name="refreshing">Оновлення..</string>
+    <string name="refreshing">Оновлення...</string>
     <string name="updated">Оновлено</string>
     <string name="error">Помилка</string>
     <string name="attach_note">Нотатка</string>
@@ -180,7 +180,7 @@
     <string name="sett_notifications">Оповіщення</string>
     <string name="sett_notify_sound">Звук</string>
     <string name="sett_notify_vibrate">Вібрація</string>
-    <string name="sett_notify_led">Індикатор</string>
+    <string name="sett_notify_led">Світловий індикатор</string>
     <string name="sett_other">Інше</string>
     
     
@@ -279,8 +279,8 @@
     </string-array>
     <string name="photo_save_ok">Фотографія збережена на карту пам\'яті</string>
     
-    <string name="share_wall">ВКонтакте - стіна</string>
-    <string name="share_album">ВКонтакте - фотоальбом</string>
+    <string name="share_wall">OpenVK - стіна</string>
+    <string name="share_album">OpenVK - фотоальбом</string>
     <string name="select_album">Виберіть альбом</string>
     <string name="share_unsupported">Відправка цього файлу не підтримується</string>
     <string name="share_video_title">Новий відеозапис</string>
@@ -375,7 +375,7 @@
     <string name="sync_off">Не синхронізувати</string>
     <string name="sync_off_summary">Вимкнути синхронізацію контактів</string>
     <string name="sync_not_supported">Не підтримується на цьому пристрої</string>
-    <string name="sync_text">Додати до Ваших контактів на телефоні інформацію та фотографії друзів ВКонтакте?</string>
+    <string name="sync_text">Додати до Ваших контактів на телефоні інформацію та фотографії друзів OpenVK?</string>
     <string name="sett_sync">Синхронізація контактів</string>
     <string name="log_out_warning">При виході з облікового запису з пристрою будуть видалені всі пов\'язані з ним дані. Продовжити?</string>
     
@@ -1172,6 +1172,7 @@
     <string name="not_supported">На даний момент така функція не підтримується. Стежте за оновленнями.</string>
     <string name="please_wait_network">Дочекайтеся закiчення завантаження i повторiть спробу.</string>
     <string name="posting_error">При надсиланні запису сталася помилка. Повторіть спробу пізніше.</string>
+    <string name="posting_access_denied">Ви не маєте права публікувати запис на цій стіні.</string>
     <string name="posted_successfully">Запись опублікована.</string>
     <string name="debug_menu">Меню налагодження</string>
     <string name="api_logging">Журналування API</string>
@@ -1208,11 +1209,15 @@
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Офіційна інстанція OpenVK</string>
-    <string name="openvk_legacy_devteam">Команда розробки OpenVK Legacy</string>
     <string name="about_app_links">Посилання</string>
+    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Вихідний код</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
     <string name="credits">Титри</string>
-    <string name="about_app_translations">Переклади</string>
     <string name="about_app_author">Автор</string>
+    <string name="app_author_value" formatted="false"><![CDATA[<a href="%s/id2287">Дмитро Третьяков</a> (Tinelix)]]></string>
+    <string name="openvk_legacy_devteam">Команда розробки OpenVK Legacy</string>
+    <string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитро Третьяков</a> (Tinelix)<br><a href=\"%s/id1\">Володимир Барiнов</a> (Veselcraft)]]></string>
     <string name="about_app_design">Дизайн</string>
+    <string name="app_design_value" formatted="false"><![CDATA[ВКонтакте 3.0.4 для Android<br>вiд <a href=\"https://grishka.me\">Григорія Клюшнікова</a>]]></string>
+    <string name="about_app_translations">Переклади</string>
     <string name="app_license">Лiцензiя OpenVK Legacy</string>
 </resources>

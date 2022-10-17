@@ -159,6 +159,12 @@ public class WallPostLayout extends LinearLayout {
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.post_photo)).setImageBitmap(bitmap);
                 ((ImageView) findViewById(R.id.post_photo)).setVisibility(VISIBLE);
+                final double viewWidthToBitmapWidthRatio = (double)((ImageView) findViewById(R.id.post_photo)).getWidth() / (double)bitmap.getWidth();
+                if((float)bitmap.getWidth() / (float)bitmap.getHeight() > 1.25) {
+                    ((ImageView) findViewById(R.id.post_photo)).getLayoutParams().height = (int) (bitmap.getWidth() * viewWidthToBitmapWidthRatio);
+                } else {
+                    ((ImageView) findViewById(R.id.post_photo)).getLayoutParams().height = (int)(400 * getResources().getDisplayMetrics().density);
+                }
             } else {
                 ((ImageView) findViewById(R.id.post_photo)).setVisibility(GONE);
             }

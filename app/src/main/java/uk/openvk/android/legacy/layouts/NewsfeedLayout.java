@@ -231,9 +231,15 @@ public class NewsfeedLayout extends LinearLayout {
             }
         } else {
             newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
-            LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-            newsfeedView.setLayoutParams(layoutParams);
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                newsfeedView.setLayoutParams(layoutParams);
+            } else {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                newsfeedView.setLayoutParams(layoutParams);
+            }
         }
     }
 }

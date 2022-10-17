@@ -216,9 +216,15 @@ public class WallLayout extends LinearLayout {
             }
         } else {
             wallView = (RecyclerView) findViewById(R.id.wall_listview);
-            LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-            wallView.setLayoutParams(layoutParams);
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                wallView.setLayoutParams(layoutParams);
+            } else {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                wallView.setLayoutParams(layoutParams);
+            }
         }
     }
 }

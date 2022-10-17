@@ -95,17 +95,14 @@ public class OvkAPIWrapper {
     private String generateUserAgent(Context ctx) {
         String version_name = "";
         String user_agent = "";
-        int version_code = 0;
         try {
             PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getApplicationContext().getPackageName(), 0);
             version_name = packageInfo.versionName;
-            version_code = packageInfo.versionCode;
         } catch (Exception e) {
             OvkApplication app = ((OvkApplication) ctx.getApplicationContext());
             version_name = app.version;
-            version_code = app.build_number;
         } finally {
-            user_agent = String.format("OpenVK Legacy/%s.%d (Android %s; SDK %d; %s; %s %s; %s)", version_name, version_code,
+            user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %d; %s; %s %s; %s)", version_name,
                     Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language"));
         }
         return user_agent;
@@ -433,6 +430,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
                             } else if (error.code == 5) {
                                 sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
+                            } else if (error.code == 15) {
+                                sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
                             } else if (error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                             }
@@ -616,6 +615,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                             } else if(error.code == 5) {
                                 sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
+                            } else if (error.code == 15) {
+                                sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
                             } else if(error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                             } else if(error.code == 945) {
@@ -800,6 +801,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                             } else if(error.code == 5) {
                                 sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
+                            } else if (error.code == 15) {
+                                sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
                             } else if(error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                             } else if(error.code == 945) {

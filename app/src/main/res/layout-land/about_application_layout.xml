@@ -1,68 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="200dp"
-            android:layout_height="58dp"
-            android:layout_gravity="center"
-            android:layout_margin="8dip"
-            android:src="@drawable/openvk_logo_color" />
-
-        <TextView
-            android:id="@+id/app_title"
+        <uk.openvk.android.legacy.layouts.ActionBarImitation
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:textColor="#4682b8"
-            android:gravity="center"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            android:text="Application title" />
+            android:id="@+id/actionbar_imitation"/>
 
-        <TextView
-            android:id="@+id/app_version_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="12dp"
-            android:gravity="center"
-            android:textSize="12dp"
-            android:text="Application version" />
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_margin="8dip"
+                android:src="@drawable/openvk_logo_color"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/app_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="Application title"
+                    android:textColor="#4682b8"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/app_version_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="Application version"
+                    android:textSize="12dp"
+                    tools:ignore="HardcodedText,RtlHardcoded,SpUsage" />
+            </LinearLayout>
+        </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/app_links_title"
-                    android:textStyle="bold"
-                    android:layout_width="match_parent"
+                    android:layout_width="400dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="3dp"
                     android:gravity="center"
-                    android:text="@string/about_app_links" />
+                    android:text="@string/about_app_links"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/app_links_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="400dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
@@ -71,35 +94,37 @@
                     android:gravity="center"
                     android:text="[this is app links]"
                     android:textColorHighlight="@color/ovk_color"
-                    android:textColorLink="@color/ovk_color" />
+                    android:textColorLink="@color/ovk_color"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:id="@+id/app_credits_title"
-                    android:textStyle="bold"
-                    android:layout_width="match_parent"
+                    android:layout_width="400dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="3dp"
                     android:gravity="center"
-                    android:text="@string/credits" />
+                    android:text="@string/credits"
+                    android:textStyle="bold" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:id="@+id/app_author_ll"
+                    android:layout_width="400dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/app_author_title"
-                        android:textStyle="bold"
                         android:layout_width="140dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_weight="1"
                         android:text="@string/about_app_author"
-                        android:layout_weight="1"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/app_author_text"
@@ -110,25 +135,28 @@
                         android:layout_weight="1"
                         android:text="@string/app_author_value"
                         android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color" />
+                        android:textColorLink="@color/ovk_color"
+                        tools:ignore="HardcodedText" />
+
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:id="@+id/app_design_ll"
+                    android:layout_width="400dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/app_design_title"
-                        android:textStyle="bold"
                         android:layout_width="140dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_weight="1"
                         android:text="@string/about_app_design"
-                        android:layout_weight="1"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/app_design_text"
@@ -139,23 +167,24 @@
                         android:layout_weight="1"
                         android:text="@string/app_design_value"
                         android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color" />
+                        android:textColorLink="@color/ovk_color"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/app_development_team_title"
-                    android:textStyle="bold"
-                    android:layout_width="match_parent"
+                    android:layout_width="400dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="3dp"
                     android:gravity="center"
-                    android:text="@string/openvk_legacy_devteam" />
+                    android:text="@string/openvk_legacy_devteam"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/app_development_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="400dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
@@ -167,8 +196,8 @@
                     android:textColorLink="@color/ovk_color" />
 
                 <TextView
-                    android:id="@+id/app_translations_title"
-                    android:layout_width="match_parent"
+                    android:id="@+id/app_credits_title"
+                    android:layout_width="400dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="3dp"
                     android:layout_marginLeft="8dp"
@@ -178,21 +207,23 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:id="@+id/app_english_ll"
+                    android:layout_width="400dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/english_title"
-                        android:textStyle="bold"
                         android:layout_width="148dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_weight="1"
                         android:text="English"
-                        android:layout_weight="1"/>
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:id="@+id/app_eng_translators_text"
@@ -203,24 +234,28 @@
                         android:layout_weight="1"
                         android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
                         android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color" />
+                        android:textColorLink="@color/ovk_color"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:id="@+id/app_russian_ll"
+                    android:layout_width="400dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/russian_title"
-                        android:textStyle="bold"
                         android:layout_width="148dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_weight="1"
                         android:text="Russian"
-                        android:layout_weight="1"/>
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:id="@+id/app_rus_translators_text"
@@ -231,25 +266,28 @@
                         android:layout_weight="1"
                         android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
                         android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color" />
+                        android:textColorLink="@color/ovk_color"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:id="@+id/app_ukrainian_ll"
+                    android:layout_width="400dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/ukrainian_title"
-                        android:textStyle="bold"
                         android:layout_width="148dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_weight="1"
                         android:text="Ukrainian"
-                        android:layout_weight="1"/>
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:id="@+id/app_ukr_translators_text"
@@ -260,31 +298,36 @@
                         android:layout_weight="1"
                         android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
                         android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color" />
+                        android:textColorLink="@color/ovk_color"
+                        tools:ignore="HardcodedText" />
 
-                    <TextView
-                        android:id="@+id/app_license_title"
-                        android:textStyle="bold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="3dp"
-                        android:gravity="center"
-                        android:text="@string/app_license"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:id="@+id/app_license_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:text="[coming soon]"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:visibility="gone"
-                        android:layout_marginBottom="8dp"/>
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/app_license_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/app_license"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/app_license_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="[coming soon]"
+                    android:visibility="gone"
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

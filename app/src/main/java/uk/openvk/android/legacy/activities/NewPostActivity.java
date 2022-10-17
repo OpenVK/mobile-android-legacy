@@ -138,6 +138,9 @@ public class NewPostActivity extends Activity {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();
                 finish();
+            } else if(message == HandlerMessages.ACCESS_DENIED){
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_access_denied), Toast.LENGTH_LONG).show();
+                connectionDialog.cancel();
             } else {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();

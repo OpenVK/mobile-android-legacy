@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,6 +59,7 @@ public class GroupIntentActivity extends Activity {
     private Likes likes;
     private int item_pos;
     private int poll_answer;
+    private Menu activity_menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,9 +120,23 @@ public class GroupIntentActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.newsfeed, menu);
+        activity_menu = menu;
+        return true;
+    }
+
+    @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
-            onBackPressed();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (item.getItemId() == android.R.id.home) {
+                onBackPressed();
+            }
+        }
+        if(item.getItemId() == R.id.newpost) {
+            openNewPostActivity();
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -167,14 +184,30 @@ public class GroupIntentActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                if (args.startsWith("id")) {
+                if (args.startsWith("club")) {
                     try {
-                        groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(2)));
+                        groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(4)));
                     } catch (Exception ex) {
                         groups.search(ovk_api, args);
                     }
                 } else {
                     groups.search(ovk_api, args);
+                }
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
+                    actionBarImitation.setHomeButtonVisibillity(true);
+                    actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            openNewPostActivity();
+                        }
+                    });
+                } else {
+                    if(activity_menu == null) {
+                        onPrepareOptionsMenu(activity_menu);
+                    }
+                    //MenuItem newpost = activity_menu.getItem(R.id.newpost);
+                    //newpost.setVisible(true);
                 }
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
                 groups.parse(data.getString("response"));
@@ -273,6 +306,16 @@ public class GroupIntentActivity extends Activity {
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void openNewPostActivity() {
+        try {
+            Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
+            intent.putExtra("owner_id", -group.id);
+            startActivity(intent);
+        } catch (Exception ex) {
+
         }
     }
 

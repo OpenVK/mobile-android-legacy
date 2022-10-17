@@ -27,6 +27,8 @@ import uk.openvk.android.legacy.api.models.OvkLink;
 import uk.openvk.android.legacy.attachments.PollAttachment;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
+import static android.R.attr.bitmap;
+
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
     private ArrayList<NewsfeedItem> items = new ArrayList<>();
@@ -157,6 +159,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 pollAttachment.setVisibility(View.GONE);
             } else if(item.attachment_status.equals("loading")) {
                 photo_progress.setVisibility(View.VISIBLE);
+                post_photo.setImageBitmap(null);
                 post_photo.setVisibility(View.GONE);
                 error_label.setVisibility(View.GONE);
                 pollAttachment.setVisibility(View.GONE);
@@ -164,6 +167,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 error_label.setText(ctx.getResources().getString(R.string.not_supported));
                 error_label.setVisibility(View.VISIBLE);
                 photo_progress.setVisibility(View.GONE);
+                post_photo.setImageBitmap(null);
                 post_photo.setVisibility(View.GONE);
                 pollAttachment.setVisibility(View.GONE);
             } else if(item.attachment_status.equals("photo")) {
@@ -173,15 +177,24 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 if(item.photo != null) {
                     post_photo.setImageBitmap(item.photo);
                     post_photo.setVisibility(View.VISIBLE);
+                    final double viewWidthToBitmapWidthRatio = (double)post_photo.getWidth() / (double)item.photo.getWidth();
+                    if((float)item.photo.getWidth() / (float)item.photo.getHeight() > 1) {
+                        post_photo.getLayoutParams().height = (int) (item.photo.getHeight() * viewWidthToBitmapWidthRatio);
+                    } else {
+                        post_photo.getLayoutParams().height = (int)(400 * ctx.getResources().getDisplayMetrics().density);
+                    }
                 }
             } else if(item.attachment_status.equals("poll")) {
                 error_label.setVisibility(View.GONE);
                 photo_progress.setVisibility(View.GONE);
+                post_photo.setImageBitmap(null);
+                post_photo.setVisibility(View.GONE);
                 pollAttachment.setVisibility(View.VISIBLE);
                 pollAttachment.createAdapter(ctx, position, item.poll.answers, item.poll.multiple, item.poll.user_votes, item.poll.votes);
                 pollAttachment.setPollInfo(item.poll.question, item.poll.anonymous, item.poll.end_date);
             } else {
                 error_label.setVisibility(View.GONE);
+                post_photo.setImageBitmap(null);
                 photo_progress.setVisibility(View.GONE);
                 post_photo.setVisibility(View.GONE);
                 pollAttachment.setVisibility(View.GONE);
