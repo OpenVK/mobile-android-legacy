@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/newpost_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -16,13 +17,15 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:fillViewport="true" >
+        android:fillViewport="true"
+        tools:ignore="InefficientWeight">
 
         <LinearLayout
             android:id="@+id/newpost_scroll_content"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            tools:ignore="ScrollViewSize">
 
             <EditText
                 android:id="@+id/status_text_edit"
@@ -33,12 +36,14 @@
                 android:gravity="top"
                 android:inputType="textCapSentences|textMultiLine"
                 android:padding="7dip"
-                android:singleLine="false"></EditText>
+                android:singleLine="false"
+                tools:ignore="Deprecated"></EditText>
 
             <View
                 android:id="@+id/newpost_attachments"
                 android:layout_width="match_parent"
-                android:layout_height="80dp" />
+                android:layout_height="80dp"
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>
@@ -50,7 +55,9 @@
         android:paddingBottom="4dip"
         android:paddingLeft="12dip"
         android:paddingRight="12dip"
-        android:paddingTop="4dip" >
+        android:paddingTop="4dip"
+        android:visibility="visible"
+        tools:ignore="RtlHardcoded">
 
         <TextView
             android:id="@+id/newpost_location_address"
@@ -61,21 +68,26 @@
             android:ellipsize="middle"
             android:singleLine="true"
             android:text="Address"
-            android:textColor="#b1b2b5" />
+            android:textColor="#b1b2b5"
+            android:visibility="visible"
+            tools:ignore="Deprecated,HardcodedText,InefficientWeight,RtlHardcoded" />
 
         <TextView
             android:id="@+id/newpost_friends_only"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/post_friends_only"
-            android:textColor="#b1b2b5" />
+            android:textColor="#b1b2b5"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/newpost_tg_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dip"
-            android:src="@drawable/ic_newpost_tg" />
+            android:src="@drawable/ic_newpost_tg"
+            android:visibility="gone"
+            tools:ignore="ContentDescription,RtlHardcoded" />
 
     </LinearLayout>
 
@@ -92,7 +104,8 @@
         android:layout_height="54dp"
         android:gravity="center"
         android:paddingLeft="12dip"
-        android:paddingRight="12dip">
+        android:paddingRight="12dip"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/newpost_btn_location"
@@ -100,7 +113,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_newpost_location" />
+            android:src="@drawable/ic_newpost_location"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/newpost_btn_mention"
@@ -108,7 +122,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_newpost_mention" />
+            android:src="@drawable/ic_newpost_mention"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/newpost_btn_photo"
@@ -116,7 +131,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_newpost_photo" />
+            android:src="@drawable/ic_newpost_photo"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/newpost_btn_attach"
@@ -124,7 +140,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_newpost_attach" />
+            android:src="@drawable/ic_newpost_attach"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/newpost_btn_settings"
@@ -132,7 +149,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_newpost_settings" />
+            android:src="@drawable/ic_newpost_settings"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
 

@@ -17,7 +17,6 @@
             android:dividerHeight="1dp"
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false"
-            android:paddingTop="4dp"
             android:visibility="visible">
 
         </ListView>

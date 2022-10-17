@@ -10,4 +10,6 @@
     <color name="statusbar_color">#3b597b</color>
     <color name="timestamp_block">#99000000</color>
     <color name="white">#ffffff</color>
+    <color name="ovk_color">#3972a3</color>
+    <color name="ovk_color_light">#a7d1ef</color>
 </resources>

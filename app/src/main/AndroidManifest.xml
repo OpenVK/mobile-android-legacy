@@ -156,7 +156,7 @@
 
         <!--suppress AndroidDomInspection -->
         <service
-            android:name=".services.LongPollService"
+            android:name=".longpoll_api.LongPollService"
             android:enabled="true"
             android:exported="true">
         </service>

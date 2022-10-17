@@ -14,11 +14,14 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.Photo;
+import uk.openvk.android.legacy.api.models.Poll;
+import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.list_items.RepostInfo;
 
 /**
  * Created by Dmitry on 28.09.2022.
@@ -64,6 +67,7 @@ public class Wall implements Parcelable {
                 JSONObject newsfeed = json.getJSONObject("response");
                 JSONArray items = newsfeed.getJSONArray("items");
                 for(int i = 0; i < items.length(); i++) {
+                    Poll poll = null;
                     JSONObject post = items.getJSONObject(i);
                     JSONObject comments = post.getJSONObject("comments");
                     JSONObject likes = post.getJSONObject("likes");
@@ -94,17 +98,45 @@ public class Wall implements Parcelable {
                             } else {
                                 attachment_status = "none";
                             }
+                        } else if(attachment.getString("type").equals("poll")) {
+                            JSONObject poll_attachment = attachment.getJSONObject("poll");
+                            poll = new Poll(poll_attachment.getString("question"), poll_attachment.getInt("id"), poll_attachment.getLong("end_date"), poll_attachment.getBoolean("multiple"), poll_attachment.getBoolean("can_vote"),
+                                    poll_attachment.getBoolean("anonymous"));
+                            JSONArray answers = poll_attachment.getJSONArray("answers");
+                            JSONArray votes = poll_attachment.getJSONArray("answer_ids");
+                            if(votes.length() > 0) {
+                                poll.user_votes = votes.length();
+                            }
+                            poll.votes = poll_attachment.getInt("votes");
+                            for(int answers_index = 0; answers_index < answers.length(); answers_index++) {
+                                JSONObject answer = answers.getJSONObject(answers_index);
+                                PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"), answer.getInt("votes"), answer.getString("text"));
+                                for(int votes_index = 0; votes_index < votes.length(); votes_index++) {
+                                    if(answer.getInt("id") == votes.getInt(votes_index)) {
+                                        pollAnswer.is_voted = true;
+                                    }
+                                }
+                                poll.answers.add(pollAnswer);
+                            }
+                            attachment_status = "poll";
                         } else {
                             attachment_status = "not_supported";
                         }
                     }
                     NewsfeedItem item = new NewsfeedItem(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "",
-                            photo_medium_size, photo_high_size, owner_id, post_id, ctx);
+                            photo_medium_size, photo_high_size, null, owner_id, post_id, ctx);
                     if(post.getJSONArray("copy_history").length() > 0) {
-                        attachment_status = "not_supported";
+                        attachment_status = "none";
+                        JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
+                        NewsfeedItem repost_item = new NewsfeedItem(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), null, repost.getString("text"), null, "",
+                                null, null, null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
+                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), ctx);
+                        repostInfo.newsfeed_item = repost_item;
+                        item.repost = repostInfo;
                     }
                     item.attachment_status = attachment_status;
                     item.author_id = author_id;
+                    item.poll = poll;
                     if(author_id > 0) {
                         if(newsfeed.has("profiles")) {
                             JSONArray profiles = newsfeed.getJSONArray("profiles");

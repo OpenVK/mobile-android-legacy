@@ -53,6 +53,8 @@ public class ProfileIntentActivity extends Activity {
     private String access_token;
     private User user;
     private String args;
+    private int item_pos;
+    private int poll_answer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +187,9 @@ public class ProfileIntentActivity extends Activity {
                 profileLayout.setDMButtonListener(this, user.id);
                 user.downloadAvatar(new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)));
                 friends.get(ovk_api, user.id, "profile_counter");
+                if(user.id == account.id) {
+                    profileLayout.hideHeaderButtons(this);
+                }
                 wall.get(ovk_api, user.id, 50);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 users.parseSearch(data.getString("response"));
@@ -208,6 +213,16 @@ public class ProfileIntentActivity extends Activity {
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 likes.parse(data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+            } else if(message == HandlerMessages.POLL_ADD_VOTE) {
+                NewsfeedItem item = wall.getWallItems().get(item_pos);
+                item.poll.answers.get(poll_answer).is_voted = true;
+                wall.getWallItems().set(item_pos, item);
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+            } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
+                NewsfeedItem item = wall.getWallItems().get(item_pos);
+                item.poll.answers.get(poll_answer).is_voted = false;
+                wall.getWallItems().set(item_pos, item);
+                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
@@ -303,5 +318,29 @@ public class ProfileIntentActivity extends Activity {
             i.setData(Uri.parse(url));
             startActivity(i);
         }
+    }
+
+    public void voteInPoll(int item_pos, int answer) {
+        this.item_pos = item_pos;
+        this.poll_answer = answer;
+        NewsfeedItem item = wall.getWallItems().get(item_pos);
+        item.poll.user_votes = 1;
+        item.poll.answers.get(answer).votes = item.poll.answers.get(answer).votes + 1;
+        wall.getWallItems().set(item_pos, item);
+        item.poll.vote(ovk_api, item.poll.id, item.poll.answers.get(poll_answer).id);
+    }
+
+    public void removeVoteInPoll(int item_pos) {
+        this.item_pos = item_pos;
+        NewsfeedItem item = wall.getWallItems().get(item_pos);
+        for(int i = 0; i < item.poll.answers.size(); i++) {
+            if(item.poll.answers.get(i).is_voted) {
+                item.poll.answers.get(i).is_voted = false;
+                item.poll.answers.get(i).votes = item.poll.answers.get(i).votes - 1;
+            }
+        }
+        item.poll.user_votes = 0;
+        wall.getWallItems().set(item_pos, item);
+        item.poll.unvote(ovk_api, item.poll.id);
     }
 }

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -62,7 +61,7 @@ import uk.openvk.android.legacy.layouts.WallLayout;
 import uk.openvk.android.legacy.list_adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 import uk.openvk.android.legacy.list_items.SlidingMenuItem;
-import uk.openvk.android.legacy.services.LongPollService;
+import uk.openvk.android.legacy.longpoll_api.LongPollService;
 
 public class AppActivity extends Activity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
@@ -97,6 +96,8 @@ public class AppActivity extends Activity {
     private int newsfeed_count = 25;
     private int notification_id;
     private String last_longpoll_response;
+    private int item_pos;
+    private int poll_answer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +131,11 @@ public class AppActivity extends Activity {
         newsfeed = new Newsfeed();
         user = new User();
         likes = new Likes();
+        messages = new Messages();
+        users = new Users();
+        friends = new Friends();
+        groups = new Groups();
+        wall = new Wall();
         global_prefs_editor.putString("current_screen", "newsfeed");
         global_prefs_editor.commit();
         if(((OvkApplication) getApplicationContext()).isTablet) {
@@ -201,9 +207,9 @@ public class AppActivity extends Activity {
                 if (slider_menu_item_index == 0) {
                     slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_friends)));
                 } else if (slider_menu_item_index == 1) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_photos)));
+                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_photos)));
                 } else if (slider_menu_item_index == 2) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_video)));
+                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_video)));
                 } else if (slider_menu_item_index == 3) {
                     slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_messages)));
                 } else if (slider_menu_item_index == 4) {
@@ -211,9 +217,9 @@ public class AppActivity extends Activity {
                 } else if (slider_menu_item_index == 5) {
                     slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_news)));
                 } else if (slider_menu_item_index == 6) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_feedback)));
+                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_feedback)));
                 } else if (slider_menu_item_index == 7) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_fave)));
+                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_fave)));
                 } else if (slider_menu_item_index == 8) {
                     slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_settings)));
                 }
@@ -296,7 +302,7 @@ public class AppActivity extends Activity {
 
     public void onSlidingMenuItemClicked(int position) {
         global_prefs_editor = global_prefs.edit();
-        if(position < 8) {
+        if(position < 4) {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
                 menu.toggle(true);
             }
@@ -326,7 +332,7 @@ public class AppActivity extends Activity {
                 friends = new Friends();
             }
             friends.get(ovk_api, account.id, "friends_list");
-        } else if(position == 3) {
+        } else if(position == 1) {
             setActionBarTitle(getResources().getString(R.string.messages));
             if(conversationsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -351,7 +357,7 @@ public class AppActivity extends Activity {
                 messages = new Messages();
             }
             messages.getConversations(ovk_api);
-        } else if(position == 4) {
+        } else if(position == 2) {
             setActionBarTitle(getResources().getString(R.string.groups));
             if(groupsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -375,7 +381,7 @@ public class AppActivity extends Activity {
                 groups = new Groups();
             }
             groups.getGroups(ovk_api, account.id);
-        } else if(position == 5) {
+        } else if(position == 3) {
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if(newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -401,7 +407,7 @@ public class AppActivity extends Activity {
             }
             newsfeed_count = 25;
             newsfeed.get(ovk_api, newsfeed_count);
-        } else if(position == 8) {
+        } else if(position == 4) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, MainSettingsActivity.class);
             startActivity(intent);
@@ -417,12 +423,7 @@ public class AppActivity extends Activity {
                 String profile_name = String.format("%s %s", account.first_name, account.last_name);
                 slidingmenuLayout.setProfileName(profile_name);
                 newsfeed.get(ovk_api, newsfeed_count);
-                messages = new Messages();
                 messages.getLongPollServer(ovk_api);
-                users = new Users();
-                friends = new Friends();
-                groups = new Groups();
-                wall = new Wall();
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
                     actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
@@ -449,12 +450,12 @@ public class AppActivity extends Activity {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = account.counters.friends_requests;
                 slidingMenuArray.set(0, friends_item);
-                SlidingMenuItem messages_item = slidingMenuArray.get(3);
+                SlidingMenuItem messages_item = slidingMenuArray.get(1);
                 messages_item.counter = account.counters.new_messages;
-                slidingMenuArray.set(3, messages_item);
-                SlidingMenuItem notifications_item = slidingMenuArray.get(6);
-                notifications_item.counter = account.counters.notifications;
-                slidingMenuArray.set(6, notifications_item);
+                slidingMenuArray.set(1, messages_item);
+                //SlidingMenuItem notifications_item = slidingMenuArray.get(6);
+                //notifications_item.counter = account.counters.notifications;
+                //slidingMenuArray.set(6, notifications_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
                 if(!((OvkApplication) getApplicationContext()).isTablet) {
                     ((ListView) menu.getMenu().findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
@@ -496,6 +497,9 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.VISIBLE);
                     profileLayout.setDMButtonListener(this, user.id);
+                    if(user.id == account.id) {
+                        profileLayout.hideHeaderButtons(this);
+                    }
                     user.downloadAvatar(downloadManager);
                     wall.get(ovk_api, user.id, 50);
                     friends.get(ovk_api, user.id, "profile_counter");
@@ -552,11 +556,15 @@ public class AppActivity extends Activity {
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION) {
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(this);
-                progressLayout.setVisibility(View.GONE);
-                errorLayout.setVisibility(View.VISIBLE);
+                if(data.getString("method").equals("Account.getProfileInfo") || (data.getString("method").equals("Newsfeed.get") && newsfeed.getNewsfeedItems().size() == 0) ||
+                        (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
+                        (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                    errorLayout.setReason(message);
+                    errorLayout.setData(data);
+                    errorLayout.setRetryAction(this);
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
+                }
             } else if(message == HandlerMessages.INVALID_TOKEN) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
                 instance_prefs_editor.putString("access_token", "");
@@ -588,6 +596,20 @@ public class AppActivity extends Activity {
                         notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
                         notifMan.notify(notification_id, notification);
                     }
+                }
+            } else if(message == HandlerMessages.POLL_ADD_VOTE) {
+                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
+                    item.poll.answers.get(poll_answer).is_voted = true;
+                    newsfeed.getNewsfeedItems().set(item_pos, item);
+                    newsfeedLayout.updateItem(item, item_pos);
+                }
+            } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
+                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
+                    item.poll.answers.get(poll_answer).is_voted = false;
+                    newsfeed.getNewsfeedItems().set(item_pos, item);
+                    newsfeedLayout.updateItem(item, item_pos);
                 }
             }
         } catch (Exception ex) {
@@ -759,7 +781,7 @@ public class AppActivity extends Activity {
             ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(1, "likes", "add");
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
-            newsfeedLayout.select(1, "likes", "delete");
+            newsfeedLayout.select(1, "likes", "add");
         }
         likes.add(ovk_api, item.owner_id, item.post_id, position);
     }
@@ -768,10 +790,10 @@ public class AppActivity extends Activity {
         NewsfeedItem item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
-            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(0, "likes", 0);
+            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(0, "likes", "delete");
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
-            newsfeedLayout.select(0, "likes", 0);
+            newsfeedLayout.select(0, "likes", "delete");
         }
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
     }
@@ -850,5 +872,29 @@ public class AppActivity extends Activity {
         if(newsfeed != null) {
             newsfeed.get(ovk_api, newsfeed_count);
         }
+    }
+
+    public void voteInPoll(int item_pos, int answer) {
+        this.item_pos = item_pos;
+        this.poll_answer = answer;
+        NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
+        item.poll.user_votes = 1;
+        item.poll.answers.get(answer).votes = item.poll.answers.get(answer).votes + 1;
+        newsfeed.getNewsfeedItems().set(item_pos, item);
+        item.poll.vote(ovk_api, item.poll.id, item.poll.answers.get(poll_answer).id);
+    }
+
+    public void removeVoteInPoll(int item_pos) {
+        this.item_pos = item_pos;
+        NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
+        for(int i = 0; i < item.poll.answers.size(); i++) {
+            if(item.poll.answers.get(i).is_voted) {
+                item.poll.answers.get(i).is_voted = false;
+                item.poll.answers.get(i).votes = item.poll.answers.get(i).votes - 1;
+            }
+        }
+        item.poll.user_votes = 0;
+        newsfeed.getNewsfeedItems().set(item_pos, item);
+        item.poll.unvote(ovk_api, item.poll.id);
     }
 }

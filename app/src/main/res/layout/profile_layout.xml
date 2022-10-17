@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6">
@@ -65,7 +65,8 @@
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="8dp"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:visibility="gone">
 
                     </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
 
@@ -82,7 +83,8 @@
                         android:id="@+id/mutual_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:visibility="gone">
 
                     </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
                 </TableRow>
@@ -90,9 +92,10 @@
             </LinearLayout>
 
             <uk.openvk.android.legacy.layouts.ProfileWallSelector
+                android:id="@+id/wall_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/wall_selector"/>
+                android:visibility="gone" />
 
             <uk.openvk.android.legacy.layouts.WallLayout
                 android:layout_width="match_parent"
@@ -101,6 +104,6 @@
                 android:background="#e3e4e6" />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
 </LinearLayout>

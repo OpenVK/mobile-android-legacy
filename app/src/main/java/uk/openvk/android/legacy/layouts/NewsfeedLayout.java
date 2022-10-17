@@ -76,9 +76,10 @@ public class NewsfeedLayout extends LinearLayout {
         }
     }
 
-    public void updateItem(int position) {
+    public void updateItem(NewsfeedItem item, int position) {
         if(newsfeedAdapter != null) {
             newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            newsfeedItems.set(position, item);
             newsfeedAdapter.notifyItemChanged(position);
         }
     }
@@ -130,6 +131,7 @@ public class NewsfeedLayout extends LinearLayout {
                             Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
                             if (bitmap != null) {
                                 item.photo = bitmap;
+                                item.attachment_status = "photo";
                             }
                         }
                     }

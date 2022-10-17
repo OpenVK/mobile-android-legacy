@@ -6,11 +6,8 @@ import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -27,6 +24,7 @@ import uk.openvk.android.legacy.activities.AppActivity;
 import uk.openvk.android.legacy.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.attachments.PollAttachment;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
@@ -72,6 +70,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         public final TextView post_info;
         public final TextView post_text;
         public final ImageView post_photo;
+        public final LinearLayout repost_info;
+        public final TextView original_poster_name;
+        public final TextView original_post_info;
+        public final TextView original_post_text;
         public final TextView likes_counter;
         public final TextView reposts_counter;
         public final TextView comments_counter;
@@ -79,6 +81,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         public final ImageView avatar;
         private final ProgressBar photo_progress;
         private final TextView error_label;
+        private final PollAttachment pollAttachment;
 
         public Holder(View view) {
             super(view);
@@ -93,6 +96,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.avatar = (ImageView) view.findViewById(R.id.author_avatar);
             this.photo_progress = ((ProgressBar) view.findViewById(R.id.photo_progress));
             this.error_label = ((TextView) convertView.findViewById(R.id.error_label));
+            this.pollAttachment = ((PollAttachment) convertView.findViewById(R.id.poll_layout));
+            this.repost_info = ((LinearLayout) convertView.findViewById(R.id.post_attach_container));
+            this.original_poster_name = ((TextView) convertView.findViewById(R.id.post_retweet_name));
+            this.original_post_info = ((TextView) convertView.findViewById(R.id.post_retweet_time));
+            this.original_post_text = ((TextView) convertView.findViewById(R.id.post_retweet_text));
         }
 
         void bind(final int position) {
@@ -108,8 +116,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 post_text.setVisibility(View.GONE);
             }
 
-            if(item.photo != null) {
-                item.attachment_status = "photo";
+            if(item.repost != null) {
+                repost_info.setVisibility(View.VISIBLE);
+                original_poster_name.setText(item.repost.name);
+                original_post_info.setText(item.repost.time);
+                original_post_text.setText(item.repost.newsfeed_item.text);
+            } else {
+                repost_info.setVisibility(View.GONE);
             }
 
             Pattern pattern = Pattern.compile("[.*?]");
@@ -137,25 +150,41 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
             }
             if(item.attachment_status.equals("none")) {
+                photo_progress.setVisibility(View.GONE);
                 post_photo.setImageBitmap(null);
                 post_photo.setVisibility(View.GONE);
                 error_label.setVisibility(View.GONE);
+                pollAttachment.setVisibility(View.GONE);
             } else if(item.attachment_status.equals("loading")) {
                 photo_progress.setVisibility(View.VISIBLE);
                 post_photo.setVisibility(View.GONE);
                 error_label.setVisibility(View.GONE);
+                pollAttachment.setVisibility(View.GONE);
             } else if(item.attachment_status.equals("not_supported")) {
                 error_label.setText(ctx.getResources().getString(R.string.not_supported));
                 error_label.setVisibility(View.VISIBLE);
                 photo_progress.setVisibility(View.GONE);
                 post_photo.setVisibility(View.GONE);
+                pollAttachment.setVisibility(View.GONE);
             } else if(item.attachment_status.equals("photo")) {
                 error_label.setVisibility(View.GONE);
                 photo_progress.setVisibility(View.GONE);
+                pollAttachment.setVisibility(View.GONE);
                 if(item.photo != null) {
                     post_photo.setImageBitmap(item.photo);
                     post_photo.setVisibility(View.VISIBLE);
                 }
+            } else if(item.attachment_status.equals("poll")) {
+                error_label.setVisibility(View.GONE);
+                photo_progress.setVisibility(View.GONE);
+                pollAttachment.setVisibility(View.VISIBLE);
+                pollAttachment.createAdapter(ctx, position, item.poll.answers, item.poll.multiple, item.poll.user_votes, item.poll.votes);
+                pollAttachment.setPollInfo(item.poll.question, item.poll.anonymous, item.poll.end_date);
+            } else {
+                error_label.setVisibility(View.GONE);
+                photo_progress.setVisibility(View.GONE);
+                post_photo.setVisibility(View.GONE);
+                pollAttachment.setVisibility(View.GONE);
             }
 
             if(item.counters.isLiked == true) {

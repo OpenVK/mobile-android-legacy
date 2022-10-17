@@ -12,12 +12,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 
 import java.util.Arrays;
 
@@ -50,11 +50,13 @@ public class GroupIntentActivity extends Activity {
     private Wall wall;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private NestedScrollView groupScrollView;
+    private ScrollView groupScrollView;
     private Group group;
     private Account account;
     private String args;
     private Likes likes;
+    private int item_pos;
+    private int poll_answer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +133,7 @@ public class GroupIntentActivity extends Activity {
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        groupScrollView = (NestedScrollView) findViewById(R.id.group_scrollview);
+        groupScrollView = (ScrollView) findViewById(R.id.group_scrollview);
         groupScrollView.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -163,43 +165,57 @@ public class GroupIntentActivity extends Activity {
     }
 
     private void receiveState(int message, Bundle data) {
-        if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-            if(args.startsWith("id")) {
-                try {
-                    groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(2)));
-                } catch (Exception ex) {
+        try {
+            if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                if (args.startsWith("id")) {
+                    try {
+                        groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(2)));
+                    } catch (Exception ex) {
+                        groups.search(ovk_api, args);
+                    }
+                } else {
                     groups.search(ovk_api, args);
                 }
-            } else {
-                groups.search(ovk_api, args);
+            } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
+                groups.parse(data.getString("response"));
+                group = groups.getList().get(0);
+                updateLayout(group);
+                progressLayout.setVisibility(View.GONE);
+                groupScrollView.setVisibility(View.VISIBLE);
+                setJoinButtonListener(group.id);
+                group.downloadAvatar(downloadManager);
+                wall.get(ovk_api, -group.id, 50);
+            } else if (message == HandlerMessages.GROUPS_SEARCH) {
+                groups.parseSearch(data.getString("response"));
+                groups.getGroupByID(ovk_api, groups.getList().get(0).id);
+            } else if (message == HandlerMessages.LIKES_ADD) {
+                likes.parse(data.getString("response"));
+                ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+            } else if (message == HandlerMessages.LIKES_DELETE) {
+                likes.parse(data.getString("response"));
+                ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+            } else if (message == HandlerMessages.GROUP_AVATARS) {
+                loadAvatar();
+            } else if (message == HandlerMessages.WALL_GET) {
+                wall.parse(this, downloadManager, data.getString("response"));
+                ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+            } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
+                ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
+            } else if (message == HandlerMessages.WALL_AVATARS) {
+                ((WallLayout) findViewById(R.id.wall_layout)).loadAvatars();
+            } else if(message == HandlerMessages.POLL_ADD_VOTE) {
+                NewsfeedItem item = wall.getWallItems().get(item_pos);
+                item.poll.answers.get(poll_answer).is_voted = true;
+                wall.getWallItems().set(item_pos, item);
+                ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+            } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
+                NewsfeedItem item = wall.getWallItems().get(item_pos);
+                item.poll.answers.get(poll_answer).is_voted = false;
+                wall.getWallItems().set(item_pos, item);
+                ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
             }
-        } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
-            groups.parse(data.getString("response"));
-            group = groups.getList().get(0);
-            updateLayout(group);
-            progressLayout.setVisibility(View.GONE);
-            groupScrollView.setVisibility(View.VISIBLE);
-            setJoinButtonListener(group.id);
-            group.downloadAvatar(downloadManager);
-            wall.get(ovk_api, -group.id, 50);
-        } else if(message == HandlerMessages.GROUPS_SEARCH) {
-            groups.parseSearch(data.getString("response"));
-            groups.getGroupByID(ovk_api, groups.getList().get(0).id);
-        } else if(message == HandlerMessages.LIKES_ADD) {
-            likes.parse(data.getString("response"));
-            ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
-        } else if(message == HandlerMessages.LIKES_DELETE) {
-            likes.parse(data.getString("response"));
-            ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
-        } else if(message == HandlerMessages.GROUP_AVATARS) {
-            loadAvatar();
-        } else if (message == HandlerMessages.WALL_GET) {
-            wall.parse(this, downloadManager, data.getString("response"));
-            ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
-        } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-            ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
-        } else if (message == HandlerMessages.WALL_AVATARS) {
-            ((WallLayout) findViewById(R.id.wall_layout)).loadAvatars();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -286,5 +302,29 @@ public class GroupIntentActivity extends Activity {
             i.setData(Uri.parse(url));
             startActivity(i);
         }
+    }
+
+    public void voteInPoll(int item_pos, int answer) {
+        this.item_pos = item_pos;
+        this.poll_answer = answer;
+        NewsfeedItem item = wall.getWallItems().get(item_pos);
+        item.poll.user_votes = 1;
+        item.poll.answers.get(answer).votes = item.poll.answers.get(answer).votes + 1;
+        wall.getWallItems().set(item_pos, item);
+        item.poll.vote(ovk_api, item.poll.id, item.poll.answers.get(poll_answer).id);
+    }
+
+    public void removeVoteInPoll(int item_pos) {
+        this.item_pos = item_pos;
+        NewsfeedItem item = wall.getWallItems().get(item_pos);
+        for(int i = 0; i < item.poll.answers.size(); i++) {
+            if(item.poll.answers.get(i).is_voted) {
+                item.poll.answers.get(i).is_voted = false;
+                item.poll.answers.get(i).votes = item.poll.answers.get(i).votes - 1;
+            }
+        }
+        item.poll.user_votes = 0;
+        wall.getWallItems().set(item_pos, item);
+        item.poll.unvote(ovk_api, item.poll.id);
     }
 }

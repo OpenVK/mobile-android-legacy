@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
   android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_gravity="center_vertical" android:orientation="vertical" android:layout_marginLeft="5dip" android:layout_marginRight="5dip">
     <LinearLayout android:layout_height="fill_parent" android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:orientation="horizontal" android:layout_weight="1">
-        <TextView android:layout_height="wrap_content" android:text="TextView" android:layout_width="fill_parent" android:layout_marginBottom="3dip" android:id="@+id/notify_title" android:layout_weight="1" android:layout_marginRight="3dip" android:textSize="17dip" android:singleLine="true" style="@style/NotificationTitle"></TextView>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/notify_num" android:text="TextView" android:singleLine="true" android:textColor="@color/main_text" style="@style/NotificationText"></TextView>
+        <TextView android:layout_height="wrap_content" android:text="TextView" android:layout_width="fill_parent" android:layout_marginBottom="3dip" android:id="@+id/notify_title" android:layout_weight="1" android:layout_marginRight="3dip" android:textSize="17dip" android:singleLine="true" style="@style/NotificationTitle"
+            tools:ignore="HardcodedText"></TextView>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/notify_num" android:text="TextView" android:singleLine="true" android:textColor="@color/main_text" style="@style/NotificationText"
+            tools:ignore="HardcodedText"></TextView>
     </LinearLayout>
     <ProgressBar android:id="@+id/notify_progress" android:layout_width="fill_parent" style="?android:attr/progressBarStyleHorizontal" android:layout_height="wrap_content"></ProgressBar>
 </LinearLayout>

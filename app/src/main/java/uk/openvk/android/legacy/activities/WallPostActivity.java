@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
@@ -82,6 +83,8 @@ public class WallPostActivity extends Activity {
                 post.name = extras.getString("post_author_name");
                 post.info = extras.getString("post_info");
                 post.text = extras.getString("post_text");
+                post.counters = new PostCounters();
+                post.counters.likes = extras.getInt("post_likes");
                 owner_id = extras.getInt("owner_id");
                 post_id = extras.getInt("post_id");
                 String where = extras.getString("where");
@@ -115,35 +118,8 @@ public class WallPostActivity extends Activity {
                 wall.getComments(ovk_api, owner_id, post.post_id);
             }
         } else {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    getActionBar().setHomeButtonEnabled(true);
-                }
-                getActionBar().setDisplayHomeAsUpEnabled(true);
-            } else {
-                final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                actionBarImitation.setHomeButtonVisibillity(true);
-                actionBarImitation.setTitle(getResources().getString(R.string.new_status));
-                actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onBackPressed();
-                    }
-                });
-            }
-            wall = new Wall();
-            ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
-            ovk_api.setServer(instance_prefs.getString("server", ""));
-            ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
-            handler = new Handler() {
-                @Override
-                public void handleMessage(Message message) {
-                    Bundle data = message.getData();
-                    Log.d("OpenVK", String.format("Handling API message: %s", message.what));
-                    receiveState(message.what, data);
-                }
-            };
-            wall.getComments(ovk_api, owner_id, post_id);
+            finish();
+            return;
         }
     }
 

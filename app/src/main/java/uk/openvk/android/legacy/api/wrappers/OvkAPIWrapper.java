@@ -26,6 +26,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +58,7 @@ public class OvkAPIWrapper {
     public boolean use_https;
     public boolean legacy_mode;
     private String status;
-    private Error error;
+    public Error error;
     private Context ctx;
     private Handler handler;
     private String access_token;
@@ -119,6 +120,7 @@ public class OvkAPIWrapper {
     }
 
     public void authorize(String username, String password) {
+        error.description = "";
         String url = "";
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, password);
@@ -203,6 +205,7 @@ public class OvkAPIWrapper {
     }
 
     public void authorize(String username, String password, String code) {
+        error.description = "";
         String url = "";
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, password, code);
@@ -286,6 +289,7 @@ public class OvkAPIWrapper {
     }
 
     public void sendAPIMethod(final String method, final String args, final String where) {
+        error.description = "";
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
@@ -416,6 +420,10 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
                             } else if (method.equals("Newsfeed.get")) {
                                 sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                            } else if (method.equals("Polls.addVote")) {
+                                sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
+                            } else if (method.equals("Polls.deleteVote")) {
+                                sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
                             }
                         } else if (response_code == 400) {
                             error = new Error();
@@ -434,6 +442,12 @@ public class OvkAPIWrapper {
                         }
                     }
                     ;
+                } catch (SocketException e) {
+                    if(e.getMessage().contains("ETIMEDOUT")) {
+                        Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                    }
                 } catch (SocketTimeoutException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
@@ -466,6 +480,7 @@ public class OvkAPIWrapper {
     }
 
     public void sendAPIMethod(final String method, final String args) {
+        error.description = "";
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
@@ -588,6 +603,10 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
                             } else if (method.equals("Newsfeed.get")) {
                                 sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                            } else if (method.equals("Polls.addVote")) {
+                                sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
+                            } else if (method.equals("Polls.deleteVote")) {
+                                sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
                             }
                         } else if(response_code == 400) {
                             error = new Error();
@@ -607,6 +626,12 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
+                } catch (SocketException e) {
+                    if(e.getMessage().contains("ETIMEDOUT")) {
+                        Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                    }
                 } catch (SocketTimeoutException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
@@ -639,6 +664,7 @@ public class OvkAPIWrapper {
     }
 
     public void sendAPIMethod(final String method) {
+        error.description = "";
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?access_token=%s", server, method, access_token);
@@ -761,6 +787,10 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
                             } else if (method.equals("Newsfeed.get")) {
                                 sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
+                            } else if (method.equals("Polls.addVote")) {
+                                sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
+                            } else if (method.equals("Polls.deleteVote")) {
+                                sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, response_body);
                             }
                         } else if(response_code == 400) {
                             error = new Error();
@@ -780,6 +810,12 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
+                } catch (SocketException e) {
+                    if(e.getMessage().contains("ETIMEDOUT")) {
+                        Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
+                    }
                 } catch (SocketTimeoutException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();

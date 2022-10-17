@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.activities.AppActivity;
@@ -57,10 +58,12 @@ public class ConversationsListAdapter extends BaseAdapter {
         Conversation item = getConversationItem(position);
         ((TextView) view.findViewById(R.id.conversation_title)).setText(item.title);
         String lastMsgTimestamp;
-        if((System.currentTimeMillis() - (item.lastMsgTime * 1000)) < 86400000) {
-            lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(item.lastMsgTime);
+        if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 86400000) {
+            lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
+        } else if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 31536000000L) {
+            lastMsgTimestamp = new SimpleDateFormat(" dd MMM ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
         } else {
-            lastMsgTimestamp = new SimpleDateFormat(" dd.MM HH:mm ").format(item.lastMsgTime);
+            lastMsgTimestamp = new SimpleDateFormat(" dd.MM.yyyy ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
         }
         ((TextView) view.findViewById(R.id.conversation_time)).setText(lastMsgTimestamp);
         if(item.lastMsgTime != 0 && item.lastMsgText != null) {

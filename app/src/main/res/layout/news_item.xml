@@ -53,13 +53,15 @@
             android:layout_marginTop="10dip"
             android:layout_marginBottom="10dip"
             android:scaleType="centerCrop"
-            android:src="@drawable/photo_loading"></ImageView>
+            android:src="@drawable/photo_loading"
+            tools:ignore="ContentDescription,ObsoleteLayoutParam,RtlHardcoded"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="InefficientWeight">
 
             <TextView
                 android:id="@+id/poster_name_view"
@@ -75,7 +77,8 @@
                 android:singleLine="true"
                 android:text="Poster Name"
                 android:textColor="@color/main_text"
-                android:textSize="16dip"></TextView>
+                android:textSize="16dip"
+                tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage"/>
 
             <TextView
                 android:id="@+id/post_info_view"
@@ -89,7 +92,8 @@
                 android:paddingLeft="12dip"
                 android:text="post date"
                 android:textColor="@color/hint"
-                android:textSize="14dip" />
+                android:textSize="14dip"
+                tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
 
         </LinearLayout>
 
@@ -104,7 +108,8 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="8dip"
             android:layout_marginRight="4dip"
-            android:src="@drawable/ic_card_menu" />
+            android:src="@drawable/ic_card_menu"
+            tools:ignore="ContentDescription,ObsoleteLayoutParam,RtlHardcoded" />
 
     </LinearLayout>
     <!-- /LinearLayout -->
@@ -152,83 +157,6 @@
     -->
 
     <LinearLayout
-        android:id="@+id/post_attach_container"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/post_view"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="5dip"
-        android:layout_marginTop="1dip"
-        android:layout_marginRight="5dip"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/post_retweet_photo"
-            android:layout_width="42dip"
-            android:layout_height="42dip"
-            android:layout_below="@+id/post_retweet_text"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dip"
-            android:layout_marginBottom="10dip"
-            android:src="@drawable/photo_loading" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/post_retweet_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/post_retweet_text"
-                android:layout_marginLeft="9dip"
-                android:layout_marginTop="-1dip"
-                android:layout_marginRight="10dip"
-                android:layout_toRightOf="@+id/post_retweet_photo"
-                android:drawableLeft="@drawable/ic_retweet"
-                android:drawablePadding="3dip"
-                android:duplicateParentState="true"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:text="Orig Poster Name"
-                android:textColor="@color/main_text"
-                android:textSize="16dip"
-                android:visibility="visible"></TextView>
-
-            <TextView
-                android:id="@+id/post_retweet_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/post_retweet_name"
-                android:layout_alignBottom="@+id/post_retweet_photo"
-                android:layout_marginLeft="9dip"
-                android:layout_toRightOf="@+id/post_retweet_photo"
-                android:gravity="left"
-                android:text="orig post date"
-                android:textColor="@color/hint"
-                android:textSize="14dip" />
-
-            <TextView
-                android:id="@+id/post_retweet_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/author_avatar"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="10dip"
-                android:layout_marginTop="-2dip"
-                android:layout_marginRight="10dip"
-                android:layout_marginBottom="8dip"
-                android:linksClickable="false"
-                android:text="repost text"
-                android:textColor="@color/main_text"
-                android:textSize="14dip" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/news_item_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -250,7 +178,8 @@
             android:textColor="@color/main_text"
             android:textColorHighlight="#802B587A"
             android:textColorLink="#2B587A"
-            android:textSize="14dip"></TextView>
+            android:textSize="14dip"
+            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage"/>
 
         <TextView
             android:id="@+id/error_label"
@@ -266,7 +195,90 @@
             android:textColor="@color/timestamp_color"
             android:textSize="12sp"
             android:textStyle="italic"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="HardcodedText,RtlHardcoded" />
+
+        <LinearLayout
+            android:id="@+id/post_attach_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/post_view"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="1dip"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:ignore="ObsoleteLayoutParam,RtlHardcoded">
+
+            <ImageView
+                android:id="@+id/post_retweet_photo"
+                android:layout_width="42dip"
+                android:layout_height="42dip"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/post_retweet_text"
+                android:layout_marginBottom="10dip"
+                android:layout_marginLeft="10dip"
+                android:src="@drawable/photo_loading"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/post_retweet_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/post_retweet_text"
+                    android:layout_marginLeft="9dip"
+                    android:layout_marginRight="10dip"
+                    android:layout_marginTop="-1dip"
+                    android:layout_toRightOf="@+id/post_retweet_photo"
+                    android:drawableLeft="@drawable/ic_retweet"
+                    android:drawablePadding="3dip"
+                    android:duplicateParentState="true"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:text="Orig Poster Name"
+                    android:textColor="@color/main_text"
+                    android:textSize="16dip"
+                    android:visibility="visible"
+                    tools:ignore="Deprecated,HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/post_retweet_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/post_retweet_photo"
+                    android:layout_below="@+id/post_retweet_name"
+                    android:layout_marginLeft="9dip"
+                    android:layout_toRightOf="@+id/post_retweet_photo"
+                    android:gravity="left"
+                    android:text="orig post date"
+                    android:textColor="@color/hint"
+                    android:textSize="14dip"
+                    tools:ignore="HardcodedText,SpUsage" />
+
+                <TextView
+                    android:id="@+id/post_retweet_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/author_avatar"
+                    android:layout_marginBottom="8dip"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginRight="10dip"
+                    android:layout_marginTop="2dip"
+                    android:linksClickable="false"
+                    android:text="repost text"
+                    android:textColor="@color/main_text"
+                    android:textSize="14dip"
+                    tools:ignore="HardcodedText,SpUsage" />
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar
@@ -287,6 +299,16 @@
         android:layout_marginRight="10dip"
         android:adjustViewBounds="true"
         android:src="@null"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
+
+    <uk.openvk.android.legacy.attachments.PollAttachment
+        android:id="@+id/poll_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
         android:visibility="gone" />
 
     <View
@@ -297,7 +319,8 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="10dip"
-        android:background="#e5e5e5" />
+        android:background="#e5e5e5"
+        tools:ignore="ObsoleteLayoutParam,RtlHardcoded" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -308,7 +331,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="InefficientWeight">
 
             <TextView
                 android:id="@+id/post_comments"
@@ -328,7 +352,8 @@
                 android:singleLine="true"
                 android:text="5"
                 android:textColor="@color/post_counters"
-                android:textSize="15dip" />
+                android:textSize="15dip"
+                tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
         </LinearLayout>
 
         <TextView
@@ -347,7 +372,8 @@
             android:paddingRight="5dip"
             android:text="2"
             android:textColor="@color/post_counters"
-            android:textSize="15dip" />
+            android:textSize="15dip"
+            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
 
         <TextView
             android:id="@+id/post_likes"
@@ -367,7 +393,8 @@
             android:paddingRight="5dip"
             android:text="251"
             android:textColor="@color/post_counters"
-            android:textSize="15dip" />
+            android:textSize="15dip"
+            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
 
     </LinearLayout>
 

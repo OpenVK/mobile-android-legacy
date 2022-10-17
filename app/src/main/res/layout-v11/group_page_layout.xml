@@ -15,7 +15,7 @@
         android:id="@+id/error_layout"
         android:visibility="gone" />
 
-    <android.support.v4.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6"
@@ -85,6 +85,6 @@
                 android:background="#e3e4e6" />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
 </LinearLayout>

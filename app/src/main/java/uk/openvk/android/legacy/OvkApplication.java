@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 public class OvkApplication extends Application {
 
     public String version;
-    public int build_number = 118;
+    public int build_number = 120;
     public boolean isTablet;
 
     @Override

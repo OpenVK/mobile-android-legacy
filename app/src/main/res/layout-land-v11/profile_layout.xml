@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6">
@@ -67,7 +67,8 @@
                         android:id="@+id/photos_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
-                        android:layout_marginRight="8dp">
+                        android:layout_marginRight="8dp"
+                        android:visibility="gone">
 
                     </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
 
@@ -82,7 +83,8 @@
                     <uk.openvk.android.legacy.layouts.ProfileCounterLayout
                         android:id="@+id/mutual_counter"
                         android:layout_width="110dp"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
                     </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
                 </TableRow>
@@ -101,6 +103,6 @@
             </LinearLayout>
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
 </LinearLayout>

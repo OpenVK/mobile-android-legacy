@@ -242,7 +242,11 @@ public class LongPollWrapper {
             public void run() {
                 ovk.sendAPIMethod("Account.getCounters");
                 try {
-                    handler.postDelayed(this, 5000);
+                    if(error != null && error.description.length() > 0) {
+                        handler.postDelayed(this, 5000);
+                    } else {
+                        handler.postDelayed(this, 60000);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

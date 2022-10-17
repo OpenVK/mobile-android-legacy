@@ -70,19 +70,23 @@ public class HandlerMessages {
     public static int OVK_CHECK_HTTP                    = 904;
     public static int OVK_CHECK_HTTPS                   = 905;
 
+    // Poll
+    public static int POLL_ADD_VOTE                     = 1000;
+    public static int POLL_DELETE_VOTE                  = 1001;
+
     // Misc
-    public static int ACCOUNT_AVATAR                    = 1000;
-    public static int NEWSFEED_ATTACHMENTS              = 1001;
-    public static int WALL_ATTACHMENTS                  = 1002;
-    public static int WALL_AVATARS                      = 1003;
-    public static int NEWSFEED_AVATARS                  = 1004;
-    public static int PROFILE_AVATARS                   = 1005;
-    public static int GROUP_AVATARS                     = 1006;
-    public static int GROUP_AVATARS_ALT                 = 1007;
-    public static int FRIEND_AVATARS                    = 1008;
-    public static int COMMENT_AVATARS                   = 1009;
-    public static int CONVERSATION_AVATARS              = 1010;
-    public static int LONGPOLL                          = 1011;
+    public static int ACCOUNT_AVATAR                    = 1100;
+    public static int NEWSFEED_ATTACHMENTS              = 1101;
+    public static int WALL_ATTACHMENTS                  = 1102;
+    public static int WALL_AVATARS                      = 1103;
+    public static int NEWSFEED_AVATARS                  = 1104;
+    public static int PROFILE_AVATARS                   = 1105;
+    public static int GROUP_AVATARS                     = 1106;
+    public static int GROUP_AVATARS_ALT                 = 1107;
+    public static int FRIEND_AVATARS                    = 1108;
+    public static int COMMENT_AVATARS                   = 1109;
+    public static int CONVERSATION_AVATARS              = 1110;
+    public static int LONGPOLL                          = 1111;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;

@@ -112,4 +112,12 @@ public class ProfileLayout extends LinearLayout {
             ((ProfileCounterLayout) findViewById(R.id.friends_counter)).setCounter(count, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
         }
     }
+
+    public void hideHeaderButtons(Context ctx) {
+        if(!((OvkApplication) ctx.getApplicationContext()).isTablet) {
+            ((Button) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+        } else {
+            ((ImageButton) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+        }
+    }
 }

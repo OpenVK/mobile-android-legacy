@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.counters.PostCounters;
+import uk.openvk.android.legacy.api.models.Poll;
 
 public class NewsfeedItem implements Parcelable {
 
@@ -28,17 +29,24 @@ public class NewsfeedItem implements Parcelable {
     public String attachment_status;
     public PostCounters counters;
     public int author_id;
+    public Poll poll;
 
     public NewsfeedItem(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, String photo_msize_url,
-                        String photo_hsize_url, int o_id, int p_id, Context ctx) {
+                        String photo_hsize_url, Poll poll, int o_id, int p_id, Context ctx) {
         name = author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
-        if((System.currentTimeMillis() - (dt_sec * 1000)) < 86400000) {
-            info = ctx.getResources().getString(R.string.today_at) + " " + new SimpleDateFormat("HH:mm").format(dt);
-        } if((System.currentTimeMillis() - (dt_sec * 1000)) < (86400000 * 2)) {
-            info = ctx.getResources().getString(R.string.yesterday_at) + " " + new SimpleDateFormat("HH:mm").format(dt);
+        Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
+        dt_midnight.setHours(0);
+        dt_midnight.setMinutes(0);
+        dt_midnight.setSeconds(0);
+        if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 86400000) {
+            info = String.format("%s %s", ctx.getResources().getString(R.string.today_at), new SimpleDateFormat("HH:mm").format(dt));
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < (86400000 * 2)) {
+            info = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at), new SimpleDateFormat("HH:mm").format(dt));
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 31536000000L) {
+            info = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt), ctx.getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt));
         } else {
-            info = new SimpleDateFormat("d MMMM yyyy").format(dt) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(dt);
+            info = String.format("%s %s %s", new SimpleDateFormat("d MMMM yyyy").format(dt), ctx.getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt));
         }
         repost = repostInfo;
         counters = nICI;
@@ -48,6 +56,11 @@ public class NewsfeedItem implements Parcelable {
         this.photo_hsize_url = photo_hsize_url;
         owner_id = o_id;
         post_id = p_id;
+        this.poll = poll;
+    }
+
+    public NewsfeedItem() {
+
     }
 
     protected NewsfeedItem(Parcel in) {
@@ -76,10 +89,6 @@ public class NewsfeedItem implements Parcelable {
             return new NewsfeedItem[size];
         }
     };
-
-    public NewsfeedItem() {
-        counters = new PostCounters();
-    }
 
     @Override
     public int describeContents() {
