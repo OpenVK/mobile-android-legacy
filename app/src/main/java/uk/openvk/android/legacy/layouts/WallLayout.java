@@ -96,7 +96,7 @@ public class WallLayout extends LinearLayout {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             if(item.photo_msize_url.length() > 0 || item.photo_hsize_url.length() > 0) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
                                 if (bitmap != null) {
                                     item.photo = bitmap;
                                     item.attachment_status = "photo";
