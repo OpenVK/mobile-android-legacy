@@ -187,7 +187,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 pollAttachment.setVisibility(View.GONE);
             }
 
-            if(item.counters.isLiked == true) {
+            if(item.counters.isLiked) {
                 likes_counter.setSelected(true);
             } else {
                 likes_counter.setSelected(false);

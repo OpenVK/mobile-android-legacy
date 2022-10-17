@@ -85,7 +85,13 @@ public class Newsfeed implements Parcelable {
                     String photo_high_size = "";
                     String attachment_status = "";
                     String content = post.getString("text");
-                    PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), false, false);
+                    boolean isLiked = false;
+                    if(likes.getInt("user_likes") > 0) {
+                        isLiked = true;
+                    } else {
+                        isLiked = false;
+                    }
+                    PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), isLiked, false);
                     if(attachments.length() == 1) {
                         JSONObject attachment = attachments.getJSONObject(0);
                         if(attachment.getString("type").equals("photo")) {
