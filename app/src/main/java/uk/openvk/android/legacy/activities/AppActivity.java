@@ -778,10 +778,10 @@ public class AppActivity extends Activity {
         NewsfeedItem item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
-            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(1, "likes", "add");
+            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(position, "likes", "add");
         } else {
             item = newsfeed.getNewsfeedItems().get(position);
-            newsfeedLayout.select(1, "likes", "add");
+            newsfeedLayout.select(position, "likes", "add");
         }
         likes.add(ovk_api, item.owner_id, item.post_id, position);
     }

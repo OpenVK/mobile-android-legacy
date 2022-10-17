@@ -278,13 +278,13 @@ public class GroupIntentActivity extends Activity {
 
     public void addLike(int position, String post, View view) {
         NewsfeedItem item = wall.getWallItems().get(position);
-        ((WallLayout) findViewById(R.id.wall_layout)).select(1, "likes", "add");
+        ((WallLayout) findViewById(R.id.wall_layout)).select(position, "likes", "add");
         likes.add(ovk_api, item.owner_id, item.post_id, 1);
     }
 
     public void deleteLike(int position, String post, View view) {
         NewsfeedItem item = wall.getWallItems().get(position);
-        ((WallLayout) findViewById(R.id.wall_layout)).select(0, "likes", "delete");
+        ((WallLayout) findViewById(R.id.wall_layout)).select(position, "likes", "delete");
         likes.delete(ovk_api, item.owner_id, item.post_id, 0);
     }
 
