@@ -16,10 +16,11 @@
         android:visibility="gone" />
 
     <ScrollView
+        android:id="@+id/group_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6"
-        android:id="@+id/group_scrollview">
+        android:descendantFocusability="blocksDescendants">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,25 +47,25 @@
                     style="@style/BlueButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginBottom="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/join_group"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <TableRow
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp">
 
                     <uk.openvk.android.legacy.layouts.ProfileCounterLayout
                         android:id="@+id/members_counter"
@@ -79,10 +80,11 @@
             </LinearLayout>
 
             <uk.openvk.android.legacy.layouts.WallLayout
+                android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/wall_layout"
-                android:background="#e3e4e6" />
+                android:background="#e3e4e6"
+                android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
     </ScrollView>

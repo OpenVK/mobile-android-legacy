@@ -2,13 +2,18 @@ package uk.openvk.android.legacy.layouts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -18,6 +23,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.list_adapters.CommentsListAdapter;
@@ -156,20 +162,41 @@ public class WallPostLayout extends LinearLayout {
             } else {
                 bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), owner_id, post_id), options);
             }
+            final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
             if (bitmap != null) {
-                ((ImageView) findViewById(R.id.post_photo)).setImageBitmap(bitmap);
-                ((ImageView) findViewById(R.id.post_photo)).setVisibility(VISIBLE);
-                final double viewWidthToBitmapWidthRatio = (double)((ImageView) findViewById(R.id.post_photo)).getWidth() / (double)bitmap.getWidth();
-                if((float)bitmap.getWidth() / (float)bitmap.getHeight() > 1.25) {
-                    ((ImageView) findViewById(R.id.post_photo)).getLayoutParams().height = (int) (bitmap.getWidth() * viewWidthToBitmapWidthRatio);
-                } else {
-                    ((ImageView) findViewById(R.id.post_photo)).getLayoutParams().height = (int)(400 * getResources().getDisplayMetrics().density);
-                }
+                final float aspect_ratio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
+                post_photo.setImageBitmap(bitmap);
+                post_photo.setVisibility(View.VISIBLE);
             } else {
-                ((ImageView) findViewById(R.id.post_photo)).setVisibility(GONE);
+                Log.e("OpenVK", String.format("'%s/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), owner_id, post_id));
+                post_photo.setVisibility(GONE);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void adjustLayoutSize(int orientation) {
+        if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
+            } else {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
+            }
+        } else {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
+            } else {
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
+            }
         }
     }
 }

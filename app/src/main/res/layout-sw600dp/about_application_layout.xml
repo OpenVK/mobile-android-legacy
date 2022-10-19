@@ -44,270 +44,297 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fillViewport="false"
+            android:id="@+id/about_scrollview">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/app_links_title"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:gravity="center"
-                    android:text="@string/about_app_links"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/app_links_text"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="[this is app links]"
-                    android:textColorHighlight="@color/ovk_color"
-                    android:textColorLink="@color/ovk_color"
-                    tools:ignore="HardcodedText" />
-
-                <TextView
-                    android:id="@+id/app_credits_title"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:gravity="center"
-                    android:text="@string/credits"
-                    android:textStyle="bold" />
-
                 <LinearLayout
-                    android:id="@+id/app_author_ll"
                     android:layout_width="400dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/app_author_title"
-                        android:layout_width="140dp"
+                        android:id="@+id/app_links_title"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
-                        android:text="@string/about_app_author"
+                        android:gravity="center"
+                        android:text="@string/about_app_links"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/app_author_text"
+                        android:id="@+id/app_links_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
-                        android:text="@string/app_author_value"
+                        android:gravity="center"
+                        android:text="[this is app links]"
                         android:textColorHighlight="@color/ovk_color"
                         android:textColorLink="@color/ovk_color"
                         tools:ignore="HardcodedText" />
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/app_author_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="2dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/app_design_ll"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/app_author_title"
+                            android:layout_width="140dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/about_app_author"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/app_author_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/app_author_value"
+                            android:textColorHighlight="@color/ovk_color"
+                            android:textColorLink="@color/ovk_color"
+                            tools:ignore="HardcodedText" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/app_design_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/app_design_title"
+                            android:layout_width="140dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/about_app_design"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/app_design_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/app_design_value"
+                            android:textColorHighlight="@color/ovk_color"
+                            android:textColorLink="@color/ovk_color"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
 
                     <TextView
-                        android:id="@+id/app_design_title"
-                        android:layout_width="140dp"
+                        android:id="@+id/app_development_team_title"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
-                        android:layout_weight="1"
-                        android:text="@string/about_app_design"
+                        android:gravity="center"
+                        android:text="@string/openvk_legacy_devteam"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/app_design_text"
+                        android:id="@+id/app_development_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
-                        android:text="@string/app_design_value"
+                        android:gravity="center"
+                        android:text="@string/app_devteam"
                         android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color"
-                        tools:ignore="HardcodedText" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/app_development_team_title"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:gravity="center"
-                    android:text="@string/openvk_legacy_devteam"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/app_development_text"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/app_devteam"
-                    android:textColorHighlight="@color/ovk_color"
-                    android:textColorLink="@color/ovk_color" />
-
-                <TextView
-                    android:id="@+id/app_credits_title"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:gravity="center"
-                    android:text="@string/about_app_translations"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:id="@+id/app_english_ll"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                        android:textColorLink="@color/ovk_color" />
 
                     <TextView
-                        android:id="@+id/english_title"
-                        android:layout_width="148dp"
+                        android:id="@+id/app_credits_title"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
-                        android:layout_weight="1"
-                        android:text="English"
+                        android:gravity="center"
+                        android:text="@string/about_app_translations"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/app_credits_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:text="@string/credits"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/app_english_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="2dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/english_title"
+                            android:layout_width="148dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="English"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+
+                        <TextView
+                            android:id="@+id/app_eng_translators_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/app_eng_translators"
+                            android:textColorHighlight="@color/ovk_color"
+                            android:textColorLink="@color/ovk_color"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/app_russian_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="2dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/russian_title"
+                            android:layout_width="148dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="Russian"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+
+                        <TextView
+                            android:id="@+id/app_rus_translators_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/app_rus_translators"
+                            android:textColorHighlight="@color/ovk_color"
+                            android:textColorLink="@color/ovk_color"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/app_ukrainian_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/ukrainian_title"
+                            android:layout_width="148dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="Ukrainian"
+                            android:textStyle="bold"
+                            tools:ignore="HardcodedText" />
+
+                        <TextView
+                            android:id="@+id/app_ukr_translators_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/app_ukr_translators"
+                            android:textColorHighlight="@color/ovk_color"
+                            android:textColorLink="@color/ovk_color"
+                            tools:ignore="HardcodedText" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/app_license_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:text="@string/app_license_title"
                         android:textStyle="bold"
-                        tools:ignore="HardcodedText" />
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:id="@+id/agpl_logo"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="5.92"
+                        android:adjustViewBounds="false"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/agpl_logo" />
 
                     <TextView
-                        android:id="@+id/app_eng_translators_text"
+                        android:id="@+id/app_license_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
-                        android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
+                        android:gravity="center"
+                        android:text="@string/app_license_text"
                         android:textColorHighlight="@color/ovk_color"
                         android:textColorLink="@color/ovk_color"
-                        tools:ignore="HardcodedText" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/app_russian_ll"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/russian_title"
-                        android:layout_width="148dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_weight="1"
-                        android:text="Russian"
-                        android:textStyle="bold"
-                        tools:ignore="HardcodedText" />
-
-                    <TextView
-                        android:id="@+id/app_rus_translators_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_weight="1"
-                        android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
-                        android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color"
-                        tools:ignore="HardcodedText" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/app_ukrainian_ll"
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/ukrainian_title"
-                        android:layout_width="148dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_weight="1"
-                        android:text="Ukrainian"
-                        android:textStyle="bold"
-                        tools:ignore="HardcodedText" />
-
-                    <TextView
-                        android:id="@+id/app_ukr_translators_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_weight="1"
-                        android:text="Gregory Klyushnikov\nOpenVK Legacy Team"
-                        android:textColorHighlight="@color/ovk_color"
-                        android:textColorLink="@color/ovk_color"
-                        tools:ignore="HardcodedText" />
+                        android:visibility="visible" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/app_license_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/app_license"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/app_license_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="[coming soon]"
-                    android:visibility="gone"
-                    tools:ignore="HardcodedText" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

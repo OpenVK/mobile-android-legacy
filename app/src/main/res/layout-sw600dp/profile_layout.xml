@@ -104,11 +104,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/wall_selector"/>
+
             <uk.openvk.android.legacy.layouts.WallLayout
+                android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/wall_layout"
-                android:background="#e3e4e6" />
+                android:background="#e3e4e6"
+                android:descendantFocusability="blocksDescendants" />
         </LinearLayout>
     </ScrollView>
 

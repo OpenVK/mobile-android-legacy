@@ -18,14 +18,12 @@
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone"
-        android:layout_weight="1"
         android:layout_gravity="fill" />
 
     <uk.openvk.android.legacy.layouts.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
-        android:layout_weight="1"
         android:visibility="gone" />
 
     <uk.openvk.android.legacy.layouts.NewsfeedLayout
@@ -33,7 +31,6 @@
         android:layout_height="match_parent"
         android:id="@+id/newsfeed_layout"
         android:visibility="gone"
-        android:layout_weight="1"
         android:layout_gravity="fill"
         android:background="#DDDDDD"/>
 
@@ -42,7 +39,6 @@
         android:layout_height="match_parent"
         android:id="@+id/profile_layout"
         android:visibility="gone"
-        android:layout_weight="1"
         android:layout_gravity="fill"/>
 
     <uk.openvk.android.legacy.layouts.FriendsLayout
@@ -50,7 +46,6 @@
         android:layout_height="match_parent"
         android:id="@+id/friends_layout"
         android:visibility="gone"
-        android:layout_weight="1"
         android:layout_gravity="fill"/>
 
     <uk.openvk.android.legacy.layouts.GroupsLayout
@@ -58,7 +53,6 @@
         android:layout_height="match_parent"
         android:id="@+id/groups_layout"
         android:visibility="gone"
-        android:layout_weight="1"
         android:layout_gravity="fill"/>
 
     <uk.openvk.android.legacy.layouts.ConversationsLayout
@@ -66,7 +60,6 @@
         android:layout_height="match_parent"
         android:id="@+id/conversations_layout"
         android:visibility="gone"
-        android:layout_weight="1"
         android:layout_gravity="fill"
         android:background="@android:color/white"/>
 

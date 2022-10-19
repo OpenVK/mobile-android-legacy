@@ -1,7 +1,9 @@
 package uk.openvk.android.legacy.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,11 +14,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.counters.PostCounters;
@@ -26,6 +31,7 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.CommentPanel;
+import uk.openvk.android.legacy.layouts.WallLayout;
 import uk.openvk.android.legacy.layouts.WallPostLayout;
 import uk.openvk.android.legacy.list_adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.list_items.NewsfeedItem;
@@ -59,7 +65,12 @@ public class WallPostActivity extends Activity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         wallPostLayout = findViewById(R.id.comments_layout);
-        commentPanel = wallPostLayout.findViewById(R.id.comment_panel);
+        wallPostLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
+        commentPanel = findViewById(R.id.comment_panel);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        if(((EditText)commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() == 0) {
+            ((Button) commentPanel.findViewById(R.id.send_btn)).setEnabled(false);
+        }
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -171,6 +182,12 @@ public class WallPostActivity extends Activity {
             }
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        wallPostLayout.adjustLayoutSize(newConfig.orientation);
+        super.onConfigurationChanged(newConfig);
     }
 
     private void receiveState(int message, Bundle data) {

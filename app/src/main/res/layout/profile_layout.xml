@@ -6,7 +6,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#e3e4e6">
+        android:background="#e3e4e6"
+        android:descendantFocusability="blocksDescendants">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,24 +42,24 @@
                     style="@style/BlueButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginBottom="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/message" />
 
                 <TableRow
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp">
 
                     <uk.openvk.android.legacy.layouts.ProfileCounterLayout
                         android:id="@+id/photos_counter"
@@ -98,9 +99,9 @@
                 android:visibility="gone" />
 
             <uk.openvk.android.legacy.layouts.WallLayout
+                android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/wall_layout"
                 android:background="#e3e4e6" />
 
         </LinearLayout>

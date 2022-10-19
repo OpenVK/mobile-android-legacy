@@ -14,7 +14,8 @@
         android:id="@+id/comments_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        tools:ignore="InefficientWeight" />
 
     <uk.openvk.android.legacy.layouts.CommentPanel
         android:id="@+id/comment_panel"

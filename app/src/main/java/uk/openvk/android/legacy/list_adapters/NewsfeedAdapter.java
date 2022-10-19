@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -177,12 +178,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 if(item.photo != null) {
                     post_photo.setImageBitmap(item.photo);
                     post_photo.setVisibility(View.VISIBLE);
-                    final double viewWidthToBitmapWidthRatio = (double)post_photo.getWidth() / (double)item.photo.getWidth();
-                    if((float)item.photo.getWidth() / (float)item.photo.getHeight() > 1) {
-                        post_photo.getLayoutParams().height = (int) (item.photo.getHeight() * viewWidthToBitmapWidthRatio);
-                    } else {
-                        post_photo.getLayoutParams().height = (int)(400 * ctx.getResources().getDisplayMetrics().density);
-                    }
                 }
             } else if(item.attachment_status.equals("poll")) {
                 error_label.setVisibility(View.GONE);
@@ -263,6 +258,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
             });
         }
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
     }
 
     public void setArray(ArrayList<NewsfeedItem> array) {

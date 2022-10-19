@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import uk.openvk.android.legacy.BuildConfig;
@@ -44,12 +47,25 @@ public class AboutApplicationActivity extends Activity {
             });
         }
 
+        ScrollView scrollView = findViewById(R.id.about_scrollview);
+        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        scrollView.setFocusable(true);
+        scrollView.setFocusableInTouchMode(true);
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.requestFocusFromTouch();
+                return false;
+            }
+        });
+
         TextView app_title = findViewById(R.id.app_title);
         TextView app_version_label = findViewById(R.id.app_version_text);
         TextView app_author_label = findViewById(R.id.app_author_text);
         TextView app_design_label = findViewById(R.id.app_design_text);
         TextView app_devteam_label = findViewById(R.id.app_development_text);
         TextView app_links = findViewById(R.id.app_links_text);
+        TextView app_license_label = findViewById(R.id.app_license_text);
         OvkApplication app = ((OvkApplication) getApplicationContext());
 
         app_title.setText(getResources().getString(R.string.full_app_name));
@@ -70,12 +86,13 @@ public class AboutApplicationActivity extends Activity {
             }
         }
         app_design_label.setText(Html.fromHtml(getResources().getString(R.string.app_design_value)));
-
+        app_license_label.setText(Html.fromHtml(getResources().getString(R.string.app_license_text)));
 
         app_links.setMovementMethod(LinkMovementMethod.getInstance());
         app_author_label.setMovementMethod(LinkMovementMethod.getInstance());
         app_design_label.setMovementMethod(LinkMovementMethod.getInstance());
         app_devteam_label.setMovementMethod(LinkMovementMethod.getInstance());
+        app_license_label.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override

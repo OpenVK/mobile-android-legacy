@@ -30,6 +30,8 @@ public class NewsfeedItem implements Parcelable {
     public PostCounters counters;
     public int author_id;
     public Poll poll;
+    public int scaledWidth;
+    public int scaledHeight;
 
     public NewsfeedItem(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, String photo_msize_url,
                         String photo_hsize_url, Poll poll, int o_id, int p_id, Context ctx) {
