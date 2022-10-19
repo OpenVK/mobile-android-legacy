@@ -26,6 +26,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -170,7 +171,11 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                         }
                     };
-                }  catch (SocketTimeoutException e) {
+                } catch (ConnectException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch (SocketTimeoutException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
@@ -254,7 +259,11 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                         }
                     };
-                }  catch (SocketTimeoutException e) {
+                } catch (ConnectException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch (SocketTimeoutException e) {
                     Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
@@ -441,6 +450,10 @@ public class OvkAPIWrapper {
                         }
                     }
                     ;
+                } catch (ConnectException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
                         Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
@@ -627,6 +640,10 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
+                } catch (ConnectException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
                         Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
@@ -813,6 +830,10 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
+                } catch (ConnectException e) {
+                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
                         Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));

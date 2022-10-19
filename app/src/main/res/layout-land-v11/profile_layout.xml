@@ -40,18 +40,51 @@
 
                 </uk.openvk.android.legacy.layouts.AboutProfileLayout>
 
-                <Button
-                    android:id="@+id/send_direct_msg"
-                    style="@style/BlueButton"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="6dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/message" />
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/send_direct_msg"
+                        style="@style/BlueButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="2dp"
+                        android:layout_weight="1"
+                        android:text="@string/message"
+                        tools:ignore="InefficientWeight,RtlHardcoded" />
+
+                    <ImageButton
+                        android:id="@+id/add_to_friends"
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="2dp"
+                        android:background="@drawable/btn_light_blue"
+                        android:src="@drawable/ic_ab_add"
+                        tools:ignore="ContentDescription,RtlHardcoded" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="@string/friend_status_friend"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="italic" />
 
                 <TableRow
                     android:layout_width="wrap_content"

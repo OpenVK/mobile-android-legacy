@@ -334,16 +334,18 @@ public class GroupIntentActivity extends Activity {
     public void showAuthorPage(int position) {
         NewsfeedItem item;
         item = wall.getWallItems().get(position);
-        if(item.author_id < 0) {
-            String url = "openvk://group/" + "id" + -item.author_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        } else {
-            String url = "openvk://profile/" + "id" + item.author_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
+        if(item.author_id != -group.id) {
+            if (item.author_id < 0) {
+                String url = "openvk://group/" + "id" + -item.author_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            } else {
+                String url = "openvk://profile/" + "id" + item.author_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
         }
     }
 

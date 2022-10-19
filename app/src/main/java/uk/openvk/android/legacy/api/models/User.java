@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
  * Created by Dmitry on 30.09.2022.
@@ -270,6 +271,10 @@ public class User implements Parcelable {
 
     public void downloadAvatar(DownloadManager downloadManager) {
         downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "profile_avatars");
+    }
+
+    public void areFriends(OvkAPIWrapper ovk) {
+        ovk.sendAPIMethod("Friends.delete", String.format("user_ids=%d", id));
     }
 
     @Override

@@ -83,4 +83,12 @@ public class Friends implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
     }
+
+    public void add(OvkAPIWrapper ovk, int user_id) {
+        ovk.sendAPIMethod("Friends.add", String.format("user_id=%d", user_id));
+    }
+
+    public void delete(OvkAPIWrapper ovk, int user_id) {
+        ovk.sendAPIMethod("Friends.delete", String.format("user_id=%d", user_id));
+    }
 }

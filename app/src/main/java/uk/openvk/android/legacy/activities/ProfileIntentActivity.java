@@ -16,6 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
@@ -28,6 +30,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
+import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.layouts.ErrorLayout;
@@ -218,12 +221,29 @@ public class ProfileIntentActivity extends Activity {
                 progressLayout.setVisibility(View.GONE);
                 profileLayout.setVisibility(View.VISIBLE);
                 profileLayout.setDMButtonListener(this, user.id);
-                user.downloadAvatar(new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)));
-                friends.get(ovk_api, user.id, "profile_counter");
+                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
                     profileLayout.hideHeaderButtons(this);
                 }
+                user.downloadAvatar(downloadManager);
                 wall.get(ovk_api, user.id, 50);
+                friends.get(ovk_api, user.id, "profile_counter");
+            } else if(message == HandlerMessages.FRIENDS_ADD) {
+                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
+                int status = response.getInt("response");
+                if(status == 1) {
+                    user.friends_status = status;
+                } else if(status == 2) {
+                    user.friends_status = 3;
+                }
+                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+            } else if(message == HandlerMessages.FRIENDS_DELETE) {
+                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
+                int status = response.getInt("response");
+                if(status == 1) {
+                    user.friends_status = 0;
+                }
+                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 users.parseSearch(data.getString("response"));
                 users.getUser(ovk_api, users.getList().get(0).id);
@@ -350,16 +370,18 @@ public class ProfileIntentActivity extends Activity {
     public void showAuthorPage(int position) {
         NewsfeedItem item;
         item = wall.getWallItems().get(position);
-        if(item.author_id < 0) {
-            String url = "openvk://group/" + "id" + -item.author_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        } else {
-            String url = "openvk://profile/" + "id" + item.author_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
+        if(item.author_id != user.id) {
+            if (item.author_id < 0) {
+                String url = "openvk://group/" + "id" + -item.author_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            } else {
+                String url = "openvk://profile/" + "id" + item.author_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
         }
     }
 
@@ -385,5 +407,17 @@ public class ProfileIntentActivity extends Activity {
         item.poll.user_votes = 0;
         wall.getWallItems().set(item_pos, item);
         item.poll.unvote(ovk_api, item.poll.id);
+    }
+
+    public void addToFriends(int user_id) {
+        if(user_id != account.id) {
+            friends.add(ovk_api, user_id);
+        }
+    }
+
+    public void deleteFromFriends(int user_id) {
+        if(user_id != account.id) {
+            friends.delete(ovk_api, user_id);
+        }
     }
 }

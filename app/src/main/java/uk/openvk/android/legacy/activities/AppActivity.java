@@ -29,6 +29,8 @@ import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
@@ -48,6 +50,7 @@ import uk.openvk.android.legacy.api.Newsfeed;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -500,6 +503,7 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.VISIBLE);
                     profileLayout.setDMButtonListener(this, user.id);
+                    profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                     if(user.id == account.id) {
                         profileLayout.hideHeaderButtons(this);
                     }
@@ -522,6 +526,22 @@ public class AppActivity extends Activity {
                     friendsLayout.setVisibility(View.VISIBLE);
                 }
                 friendsLayout.createAdapter(this, friendsList);
+            } else if(message == HandlerMessages.FRIENDS_ADD) {
+                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
+                int status = response.getInt("response");
+                if(status == 1) {
+                    user.friends_status = status;
+                } else if(status == 2) {
+                    user.friends_status = 3;
+                }
+                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+            } else if(message == HandlerMessages.FRIENDS_DELETE) {
+                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
+                int status = response.getInt("response");
+                if(status == 1) {
+                    user.friends_status = 0;
+                }
+                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
             } else if (message == HandlerMessages.GROUPS_GET) {
                 groups.parse(data.getString("response"), downloadManager, true);
                 ArrayList<Group> groupsList = groups.getList();
@@ -899,5 +919,16 @@ public class AppActivity extends Activity {
         item.poll.user_votes = 0;
         newsfeed.getNewsfeedItems().set(item_pos, item);
         item.poll.unvote(ovk_api, item.poll.id);
+    }
+
+    public void addToFriends(int user_id) {
+        if(user_id != account.id) {
+            friends.add(ovk_api, user_id);
+        }
+    }
+    public void deleteFromFriends(int user_id) {
+        if(user_id != account.id) {
+            friends.delete(ovk_api, user_id);
+        }
     }
 }

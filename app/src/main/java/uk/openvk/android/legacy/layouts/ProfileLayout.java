@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.Arrays;
 
@@ -93,6 +94,42 @@ public class ProfileLayout extends LinearLayout {
         }
     }
 
+    public void setAddToFriendsButtonListener(final Context ctx, final int user_id, final User user) {
+        TextView friend_status = ((TextView) findViewById(R.id.friend_status));
+        ImageButton add_to_friends_btn = ((ImageButton) findViewById(R.id.add_to_friends));
+        if(user.friends_status == 0) {
+            friend_status.setVisibility(GONE);
+            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+        } else if(user.friends_status == 1) {
+            friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));
+            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+        } else if(user.friends_status == 2) {
+            friend_status.setText(getResources().getString(R.string.friend_status_req_recv_m, user.first_name));
+            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+        } else if(user.friends_status == 3){
+            friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
+            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+        }
+        add_to_friends_btn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (user.friends_status == 0 || user.friends_status == 2) {
+                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).addToFriends(user_id);
+                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).addToFriends(user_id);
+                    }
+                } else {
+                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).deleteFromFriends(user_id);
+                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).deleteFromFriends(user_id);
+                    }
+                }
+            }
+        });
+    }
+
     public void loadAvatar(User user) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -119,5 +156,6 @@ public class ProfileLayout extends LinearLayout {
         } else {
             ((ImageButton) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         }
+        ((ImageButton) findViewById(R.id.add_to_friends)).setVisibility(GONE);
     }
 }

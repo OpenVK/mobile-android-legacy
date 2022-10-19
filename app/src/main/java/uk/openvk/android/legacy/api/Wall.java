@@ -231,7 +231,9 @@ public class Wall implements Parcelable {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if (profile.getInt("id") == author_id) {
                                     comment.author = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
-                                    comment.avatar_url = profile.getString("photo_100");
+                                    if(profile.has("photo_100")) {
+                                        comment.avatar_url = profile.getString("photo_100");
+                                    }
                                     photo.url = comment.avatar_url;
                                     photo.filename = String.format("avatar_%d", author_id);
                                 }
