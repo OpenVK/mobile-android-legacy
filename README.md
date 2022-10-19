@@ -11,3 +11,5 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 ## Building
 We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) along with Java 7 for perfect support of libraries (such as legacy resource format and Gradle 2.0.0) developed for Android 2.1 Eclair and above.
 
+## OpenVK License
+[https://github.com/openvk/mobile-android-legacy/blob/main/COPYING](GNU (Affero) GPL v3.0) or later version.
