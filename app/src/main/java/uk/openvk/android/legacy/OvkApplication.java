@@ -37,7 +37,11 @@ public class OvkApplication extends Application {
         }
 
         if(!global_prefs.contains("useHTTPS")) {
-            global_prefs_editor.putBoolean("useHTTPS", true);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                global_prefs_editor.putBoolean("useHTTPS", true);
+            } else {
+                global_prefs_editor.putBoolean("useHTTPS", false);
+            }
         }
 
         if(!global_prefs.contains("enableNotification")) {
