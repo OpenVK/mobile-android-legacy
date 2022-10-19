@@ -73,7 +73,7 @@ public class AuthActivity extends Activity {
             });
         }
         final EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             instance_edit.setText(getResources().getText(R.string.default_instance));
         } else {
             instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
