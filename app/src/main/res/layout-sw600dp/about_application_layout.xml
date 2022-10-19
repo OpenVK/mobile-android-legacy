@@ -89,6 +89,17 @@
                         android:textColorLink="@color/ovk_color"
                         tools:ignore="HardcodedText" />
 
+                    <TextView
+                        android:id="@+id/app_credits_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:text="@string/credits"
+                        android:textStyle="bold" />
+
                     <LinearLayout
                         android:id="@+id/app_author_ll"
                         android:layout_width="match_parent"
@@ -185,17 +196,6 @@
                         android:layout_marginRight="8dp"
                         android:gravity="center"
                         android:text="@string/about_app_translations"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/app_credits_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:gravity="center"
-                        android:text="@string/credits"
                         android:textStyle="bold" />
 
                     <LinearLayout
