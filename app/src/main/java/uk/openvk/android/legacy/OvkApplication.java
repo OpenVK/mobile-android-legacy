@@ -27,6 +27,8 @@ public class OvkApplication extends Application {
         SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
         SharedPreferences.Editor instance_prefs_editor = instance_prefs.edit();
 
+        version = BuildConfig.VERSION_NAME;
+
         if(!instance_prefs.contains("server")) {
             instance_prefs_editor.putString("server", "");
         }

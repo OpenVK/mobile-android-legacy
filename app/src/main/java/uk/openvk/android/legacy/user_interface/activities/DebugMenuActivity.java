@@ -152,7 +152,7 @@ public class DebugMenuActivity extends PreferenceActivity {
                     isTablet = "No";
                 }
                 writer.append(String.format("OpenVK Legacy %s\r\nAndroid version: %s (API %s)\r\nTablet UI?: %s\r\n" +
-                        "==============================================", ovk.version, Build.VERSION.RELEASE, Build.VERSION.SDK_INT, isTablet));
+                        "==============================================\r\n", ovk.version, Build.VERSION.RELEASE, Build.VERSION.SDK_INT, isTablet));
                 writer.append(log);
                 writer.flush();
                 writer.close();
