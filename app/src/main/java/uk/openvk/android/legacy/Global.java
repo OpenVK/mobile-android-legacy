@@ -1,20 +1,8 @@
 package uk.openvk.android.legacy;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import uk.openvk.android.legacy.activities.AuthActivity;
-import uk.openvk.android.legacy.activities.MainSettingsActivity;
 
 public class Global {
 

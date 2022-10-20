@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.openvk.android.legacy.layouts.ActionBarImitation
+    <uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/actionbar_imitation"/>
@@ -33,7 +33,7 @@
 
     </RelativeLayout>
 
-    <uk.openvk.android.legacy.layouts.ConversationPanel
+    <uk.openvk.android.legacy.user_interface.layouts.ConversationPanel
         android:id="@+id/conversation_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

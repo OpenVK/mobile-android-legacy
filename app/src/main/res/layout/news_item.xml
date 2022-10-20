@@ -306,7 +306,7 @@
         android:visibility="gone"
         tools:ignore="ContentDescription" />
 
-    <uk.openvk.android.legacy.attachments.PollAttachment
+    <uk.openvk.android.legacy.api.attachments.PollAttachment
         android:id="@+id/poll_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -171,7 +171,7 @@
         android:background="@drawable/highlight"
         android:src="@drawable/ic_audio_broadcast" />
 
-    <uk.openvk.android.legacy.layouts.AlbumScrollView
+    <uk.openvk.android.legacy.user_interface.layouts.AlbumScrollView
         android:id="@+id/audio_player_cover_scroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -204,6 +204,6 @@
                 android:textSize="17dip"
                 android:text="TextView" />
         </LinearLayout>
-    </uk.openvk.android.legacy.layouts.AlbumScrollView>
+    </uk.openvk.android.legacy.user_interface.layouts.AlbumScrollView>
 
 </RelativeLayout>

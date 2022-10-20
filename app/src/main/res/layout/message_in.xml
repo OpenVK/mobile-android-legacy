@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <uk.openvk.android.legacy.layouts.TightTextView
+                <uk.openvk.android.legacy.user_interface.layouts.TightTextView
                     android:id="@+id/msg_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

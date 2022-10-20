@@ -9,6 +9,12 @@
         android:title="@string/write_logs_to_file" />
 
     <Preference
+        android:id="@+id/bugReport"
+        android:key="bugReport"
+        android:layout="@layout/pref_widget"
+        android:title="@string/send_bug_report" />
+
+    <Preference
         android:key="terminate"
         android:layout="@layout/pref_widget"
         android:title="@string/terminate" />

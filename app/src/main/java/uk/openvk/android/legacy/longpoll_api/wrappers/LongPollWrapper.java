@@ -37,16 +37,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.activities.AppActivity;
-import uk.openvk.android.legacy.activities.AuthActivity;
-import uk.openvk.android.legacy.activities.ConversationActivity;
-import uk.openvk.android.legacy.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.activities.GroupIntentActivity;
-import uk.openvk.android.legacy.activities.MainSettingsActivity;
-import uk.openvk.android.legacy.activities.NewPostActivity;
-import uk.openvk.android.legacy.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.activities.WallPostActivity;
+import uk.openvk.android.legacy.user_interface.activities.AppActivity;
+import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
+import uk.openvk.android.legacy.user_interface.activities.ConversationActivity;
+import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.user_interface.activities.MainSettingsActivity;
+import uk.openvk.android.legacy.user_interface.activities.NewPostActivity;
+import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.user_interface.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -251,5 +251,23 @@ public class LongPollWrapper {
             }
         };
         handler.postDelayed(runnable, 5000);
+    }
+
+    public void keepUptime(final OvkAPIWrapper ovk) {
+        handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ovk.sendAPIMethod("Account.setOnline");
+                try {
+                    if(error != null && error.description.length() > 0) {
+                        handler.postDelayed(this, 60000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        handler.postDelayed(runnable, 2000);
     }
 }

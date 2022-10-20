@@ -3,13 +3,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.openvk.android.legacy.layouts.ProgressLayout
+    <uk.openvk.android.legacy.user_interface.layouts.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.layouts.ErrorLayout
+    <uk.openvk.android.legacy.user_interface.layouts.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
@@ -34,12 +34,12 @@
                 android:background="#313743"
                 android:orientation="vertical">
 
-                <uk.openvk.android.legacy.layouts.GroupHeader
+                <uk.openvk.android.legacy.user_interface.layouts.GroupHeader
                     android:id="@+id/group_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                </uk.openvk.android.legacy.layouts.GroupHeader>
+                </uk.openvk.android.legacy.user_interface.layouts.GroupHeader>
 
 
                 <Button
@@ -67,19 +67,19 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp">
 
-                    <uk.openvk.android.legacy.layouts.ProfileCounterLayout
+                    <uk.openvk.android.legacy.user_interface.layouts.ProfileCounterLayout
                         android:id="@+id/members_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1">
 
-                    </uk.openvk.android.legacy.layouts.ProfileCounterLayout>
+                    </uk.openvk.android.legacy.user_interface.layouts.ProfileCounterLayout>
                 </TableRow>
 
             </LinearLayout>
 
-            <uk.openvk.android.legacy.layouts.WallLayout
+            <uk.openvk.android.legacy.user_interface.layouts.WallLayout
                 android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

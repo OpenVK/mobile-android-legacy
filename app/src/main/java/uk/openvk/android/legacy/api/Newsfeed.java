@@ -18,8 +18,8 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.counters.PostCounters;
-import uk.openvk.android.legacy.list_items.NewsfeedItem;
-import uk.openvk.android.legacy.list_items.RepostInfo;
+import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.user_interface.list_items.RepostInfo;
 
 /**
  * Created by Dmitry on 28.09.2022.

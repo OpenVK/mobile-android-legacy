@@ -7,7 +7,7 @@
     android:background="#ffffff"
     android:orientation="vertical" >
 
-    <uk.openvk.android.legacy.layouts.ActionBarImitation
+    <uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/actionbar_imitation"/>

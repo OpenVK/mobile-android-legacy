@@ -37,6 +37,7 @@
         <item>Response timed out</item>
 		<item>Secure connection failure</item>
         <item>Instance failure</item>
+        <item>Unknown error</item>
     </string-array>
 
 	<string name="load_more">Load more</string>
@@ -1136,6 +1137,9 @@
 	<string name="debug_menu">Debug menu</string>
 	<string name="api_logging">API logging</string>
 	<string name="write_logs_to_file">Write logs to file</string>
+    <string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>
+    <string name="send_bug_report">Send bug report</string>
+    <string name="debug_on_pre_jellybean">To send the log, enable USB debugging.</string>
 	<string name="terminate">Terminate process</string>
 	<string name="dnd_mode">DND mode</string>
 	<string name="saved_logs_successfully">Log saved to Device Memory/%1$s</string>
@@ -1145,7 +1149,6 @@
 	<string name="birthday">Birthday</string>
 	<string name="post_fail_empty">Sorry, but we can\'t post your empty message</string>
 	<string name="on_wall">%1$s on %2$s\'s wall</string>
-	<string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>
 	<string name="about_instance">About instance</string>
 	<string name="server_address">Server:</string>
 	<string name="connection_type">Connection type</string>
@@ -1168,6 +1171,9 @@
 	<string name="err_picture_not_enough_memory_text">Not enough memory for image processing. Close all unused applications and try again.</string>
 	<string name="reason">Reason: %s</string>
 	<string name="official_state">OpenVK official instance</string>
+
+	<string name="app_issues_link" untranslable="false">https://github.com/openvk/mobile-android-legacy/issues</string>
+
 	<string name="about_app_links">Links</string>
     <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Source code</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
 	<string name="credits">Credits</string>

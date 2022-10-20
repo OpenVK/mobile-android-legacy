@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.openvk.android.legacy.layouts.AudioMiniPlayerView xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.user_interface.layouts.AudioMiniPlayerView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/player_view_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -54,4 +54,4 @@
                 android:textSize="15dip" />
     </LinearLayout>
 
-</uk.openvk.android.legacy.layouts.AudioMiniPlayerView>
+</uk.openvk.android.legacy.user_interface.layouts.AudioMiniPlayerView>

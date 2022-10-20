@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="uk.openvk.android.legacy" >
+    package="uk.openvk.android.legacy">
 
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -24,45 +24,50 @@
         android:largeHeap="true"
         tools:ignore="UnusedAttribute">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".user_interface.activities.MainActivity"
             android:label="@string/app_name"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.AuthActivity"
+            android:name=".user_interface.activities.AuthActivity"
             android:label="@string/app_name"
             android:theme="@style/BaseStyle.NoActionBar"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
         <activity
-            android:name=".activities.AppActivity"
+            android:name=".user_interface.activities.AppActivity"
             android:label="@string/app_name"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.NewPostActivity"
+            android:name=".user_interface.activities.NewPostActivity"
             android:label="@string/new_status"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.ProfileIntentActivity"
+            android:name=".user_interface.activities.ProfileIntentActivity"
             android:label="@string/profile"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -71,12 +76,13 @@
         </activity>
 
         <activity
-            android:name=".activities.FriendsIntentActivity"
+            android:name=".user_interface.activities.FriendsIntentActivity"
             android:label="@string/friends"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -85,12 +91,13 @@
         </activity>
 
         <activity
-            android:name=".activities.GroupIntentActivity"
+            android:name=".user_interface.activities.GroupIntentActivity"
             android:label="@string/group"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -99,47 +106,52 @@
         </activity>
 
         <activity
-            android:name=".activities.ConversationActivity"
+            android:name=".user_interface.activities.ConversationActivity"
             android:label="@string/messages"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.MainSettingsActivity"
+            android:name=".user_interface.activities.MainSettingsActivity"
             android:label="@string/menu_settings"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.DebugMenuActivity"
+            android:name=".user_interface.activities.DebugMenuActivity"
             android:label="@string/debug_menu"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.AdvancedSettingsActivity"
+            android:name=".user_interface.activities.AdvancedSettingsActivity"
             android:label="@string/sett_advanced"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.QuickSearchActivity"
+            android:name=".user_interface.activities.QuickSearchActivity"
             android:label="@string/search_global"
             android:theme="@style/BaseStyle"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
         </activity>
 
         <activity
-            android:name=".activities.WallPostActivity"
+            android:name=".user_interface.activities.WallPostActivity"
             android:label="@string/new_status"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -147,7 +159,7 @@
         </activity>
 
         <activity
-            android:name=".activities.AboutApplicationActivity"
+            android:name=".user_interface.activities.AboutApplicationActivity"
             android:label="@string/menu_about"
             android:theme="@style/BaseStyle"
             android:exported="true"

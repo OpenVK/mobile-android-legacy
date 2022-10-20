@@ -39,13 +39,13 @@ public class LongPollService extends Service {
         ovk_api = new OvkAPIWrapper(ctx, use_https);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);
-        ovk_api.sendAPIMethod("Account.setOnline");
         runLongPull(lp_server, key, ts, use_https);
     }
 
     private void runLongPull(String lp_server, String key, int ts, boolean use_https) {
         lpW = new LongPollWrapper(ctx, use_https);
         lpW.updateCounters(ovk_api);
+        lpW.keepUptime(ovk_api);
         lpW.longPoll(lp_server, key, ts);
     }
 

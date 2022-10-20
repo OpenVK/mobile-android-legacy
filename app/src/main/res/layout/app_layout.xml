@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-        <uk.openvk.android.legacy.layouts.ActionBarImitation
+        <uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/actionbar_imitation"/>
@@ -13,47 +13,47 @@
             android:orientation="horizontal"
             android:layout_weight="1">
 
-        <uk.openvk.android.legacy.layouts.ProgressLayout
+        <uk.openvk.android.legacy.user_interface.layouts.ProgressLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/progress_layout"
             android:visibility="gone" />
 
-        <uk.openvk.android.legacy.layouts.ErrorLayout
+        <uk.openvk.android.legacy.user_interface.layouts.ErrorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/error_layout"
             android:visibility="gone" />
 
-        <uk.openvk.android.legacy.layouts.NewsfeedLayout
+        <uk.openvk.android.legacy.user_interface.layouts.NewsfeedLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/newsfeed_layout"
             android:visibility="gone"
             android:background="#DDDDDD"/>
 
-        <uk.openvk.android.legacy.layouts.ProfileLayout
+        <uk.openvk.android.legacy.user_interface.layouts.ProfileLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/profile_layout"
             android:visibility="gone"
             android:layout_gravity="fill"/>
 
-        <uk.openvk.android.legacy.layouts.FriendsLayout
+        <uk.openvk.android.legacy.user_interface.layouts.FriendsLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/friends_layout"
             android:visibility="gone"
             android:layout_gravity="fill"/>
 
-        <uk.openvk.android.legacy.layouts.GroupsLayout
+        <uk.openvk.android.legacy.user_interface.layouts.GroupsLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/groups_layout"
             android:visibility="gone"
             android:layout_gravity="fill"/>
 
-        <uk.openvk.android.legacy.layouts.ConversationsLayout
+        <uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/conversations_layout"

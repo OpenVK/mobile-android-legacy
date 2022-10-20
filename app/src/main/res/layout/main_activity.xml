@@ -1,4 +1,4 @@
-<uk.openvk.android.legacy.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.user_interface.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/auth"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -16,4 +16,4 @@
         android:paddingBottom="20dip"
         android:src="@drawable/login_logo" />
 
-</uk.openvk.android.legacy.layouts.XLinearLayout>
+</uk.openvk.android.legacy.user_interface.layouts.XLinearLayout>

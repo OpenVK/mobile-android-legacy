@@ -1,18 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.openvk.android.legacy.layouts.WallPostLayout
-        android:id="@+id/comments_layout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <uk.openvk.android.legacy.layouts.CommentPanel
-        android:id="@+id/comment_panel"
+        <uk.openvk.android.legacy.user_interface.layouts.WallPostLayout
+            android:id="@+id/comments_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:ignore="InefficientWeight" />
+
+        <uk.openvk.android.legacy.user_interface.layouts.CommentPanel
+            android:id="@+id/comment_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/background_light" />
+    </LinearLayout>
+
+    <uk.openvk.android.legacy.user_interface.layouts.ProgressLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/background_light" />
+        android:layout_height="match_parent"
+        android:id="@+id/progress_layout"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.user_interface.layouts.ErrorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/error_layout"
+        android:visibility="gone" />
+
 </LinearLayout>

@@ -23,7 +23,7 @@
         android:paddingRight="12dp"
         android:paddingBottom="8dp" />
 
-    <uk.openvk.android.legacy.layouts.SearchResultsLayout
+    <uk.openvk.android.legacy.user_interface.layouts.SearchResultsLayout
         android:id="@+id/sr_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

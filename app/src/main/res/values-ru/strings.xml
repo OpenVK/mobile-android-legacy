@@ -27,6 +27,7 @@
         <item>Превышено время ожидания ответа</item>
         <item>Обрыв защищенного соединения</item>
         <item>Сбой инстанции</item>
+        <item>Неизвестная ошибка</item>
     </string-array>
     
     <string name="load_more">Загрузить ещё</string>
@@ -1178,6 +1179,8 @@
     <string name="debug_menu">Меню отладки</string>
     <string name="api_logging">Журналирование API</string>
     <string name="write_logs_to_file">Запись журнала в файл</string>
+    <string name="send_bug_report">Отправить баг-репорт</string>
+    <string name="debug_on_pre_jellybean">Для отправки журнала включите отладку по USB.</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>
     <string name="saved_logs_successfully">Журнал сохранен в Память устройства/%1$s</string>

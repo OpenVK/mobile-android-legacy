@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ctrl="http://schemas.android.com/apk/res-auto" android:layout_width="fill_parent" android:layout_height="fill_parent">
-    <uk.openvk.android.legacy.layouts.XLinearLayout
+    <uk.openvk.android.legacy.user_interface.layouts.XLinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/auth_layout"
@@ -41,7 +41,7 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-                        <uk.openvk.android.legacy.layouts.EditTextAction
+                        <uk.openvk.android.legacy.user_interface.layouts.EditTextAction
                             android:id="@+id/instance_name"
                             android:layout_width="match_parent"
                             android:layout_height="50dip"
@@ -54,7 +54,7 @@
                             android:textSize="18dip"
                             ctrl:text="@string/default_instance">
 
-                        </uk.openvk.android.legacy.layouts.EditTextAction>
+                        </uk.openvk.android.legacy.user_interface.layouts.EditTextAction>
 
                     </LinearLayout>
 
@@ -185,5 +185,5 @@
             android:background="@drawable/login_reg_btn"
             android:textSize="17dip" />
 
-        </uk.openvk.android.legacy.layouts.XLinearLayout>
+        </uk.openvk.android.legacy.user_interface.layouts.XLinearLayout>
  </LinearLayout>
