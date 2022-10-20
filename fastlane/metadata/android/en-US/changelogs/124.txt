@@ -1,0 +1,8 @@
+OpenVK Legacy, build 124
+
+1. Fixed a crash when trying to send a post, as well as in some situations when the isTablet variable incorrectly determined the interface mode.
+2. Now the profile in tablet mode works again.
+3. Fully supported hyperlink format: [address|name]. At the moment, processing only works for [id?|name] and [club?|name].
+4. The process of creating logs is simplified: at the top you can see the application version, Android version, as well as the interface mode.
+5. Added "Submit a bug report" item to the "Debug menu" for easy submission.
+6. Added online uptime.

@@ -1,0 +1,3 @@
+OpenVK Legacy, build 125
+
+1. The version of the application in the logs is correctly displayed instead of an empty value.

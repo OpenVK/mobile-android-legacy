@@ -1,0 +1,1 @@
+OpenVK Legacy is mobile client for retro devices running Android 2.1 Eclair and higher. Code provided here is not stable yet.
