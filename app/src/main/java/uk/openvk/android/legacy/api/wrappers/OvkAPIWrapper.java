@@ -122,10 +122,10 @@ public class OvkAPIWrapper {
         error.description = "";
         String url = "";
         if(use_https) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, password);
+            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, URLEncoder.encode(password));
             Log.v("OpenVK API", String.format("Connecting to %s... (Secured)", server));
         } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, password);
+            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, URLEncoder.encode(password));
             Log.v("OpenVK API", String.format("Connecting to %s...", server));
         }
         final String fUrl = url;
