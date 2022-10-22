@@ -13,3 +13,8 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
+
+## Download APK
+* via [F-Droid repo](https://repo.openvk.co/repo/) 
+* via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)
+* via [Releases page](https://github.com/openvk/mobile-android-legacy/releases)
