@@ -162,7 +162,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 original_post_text.setText(item.repost.newsfeed_item.text);
                 for(int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
                     if (item.repost.newsfeed_item.attachments.get(i).status.equals("loading")) {
-                        photo_progress.setVisibility(View.VISIBLE);
+                        try {
+                            photo_progress.setVisibility(View.VISIBLE);
+                        } catch (Exception ex) {
+                        }
                         original_post_photo.setImageBitmap(null);
                     } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("not_supported")) {
                         error_label.setText(ctx.getResources().getString(R.string.not_supported));
