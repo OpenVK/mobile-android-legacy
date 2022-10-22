@@ -18,6 +18,7 @@ public class Friends implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<Friend> friends;
     private DownloadManager downloadManager;
+    public int count;
 
     public Friends() {
         jsonParser = new JSONParser();
@@ -48,19 +49,22 @@ public class Friends implements Parcelable {
         try {
             this.friends.clear();
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
-            JSONArray users = json.getJSONArray("items");
-            ArrayList<PhotoAttachment> avatars;
-            avatars = new ArrayList<PhotoAttachment>();
-            for (int i = 0; i < users.length(); i++) {
-                Friend friend = new Friend(users.getJSONObject(i));
-                PhotoAttachment photoAttachment = new PhotoAttachment();
-                photoAttachment.url = friend.avatar_url;
-                photoAttachment.filename = String.format("avatar_%d", friend.id);
-                avatars.add(photoAttachment);
-                this.friends.add(friend);
-            }
-            if(downloadPhoto) {
-                downloadManager.downloadPhotosToCache(avatars, "friend_avatars");
+            if(json != null) {
+                count = json.getInt("count");
+                JSONArray users = json.getJSONArray("items");
+                ArrayList<PhotoAttachment> avatars;
+                avatars = new ArrayList<PhotoAttachment>();
+                for (int i = 0; i < users.length(); i++) {
+                    Friend friend = new Friend(users.getJSONObject(i));
+                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    photoAttachment.url = friend.avatar_url;
+                    photoAttachment.filename = String.format("avatar_%d", friend.id);
+                    avatars.add(photoAttachment);
+                    this.friends.add(friend);
+                }
+                if (downloadPhoto) {
+                    downloadManager.downloadPhotosToCache(avatars, "friend_avatars");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

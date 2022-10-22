@@ -31,6 +31,7 @@ public class ProfileLayout extends LinearLayout {
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+        layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
     }
 

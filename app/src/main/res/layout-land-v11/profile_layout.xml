@@ -58,6 +58,7 @@
                         android:layout_marginRight="2dp"
                         android:layout_weight="1"
                         android:text="@string/message"
+                        android:textSize="20sp"
                         tools:ignore="InefficientWeight,RtlHardcoded" />
 
                     <ImageButton
@@ -82,7 +83,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/friend_status_friend"
-                    android:textColor="@android:color/white"
+                    android:textColor="#bdffffff"
                     android:textSize="18sp"
                     android:textStyle="italic" />
 

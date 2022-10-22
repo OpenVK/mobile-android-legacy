@@ -233,6 +233,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 likes_counter.setSelected(false);
             }
 
+            if(item.counters.enabled) {
+                likes_counter.setEnabled(true);
+            } else {
+                likes_counter.setEnabled(false);
+            }
+
             likes_counter.setText("" + item.counters.likes);
             reposts_counter.setText("" + item.counters.reposts);
             comments_counter.setText("" + item.counters.comments);
