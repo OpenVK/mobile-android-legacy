@@ -6,10 +6,11 @@ import android.os.Parcelable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.models.Group;
-import uk.openvk.android.legacy.api.models.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -89,7 +90,7 @@ public class Groups implements Parcelable {
     }
 
     public void search(OvkAPIWrapper ovk, String query) {
-        ovk.sendAPIMethod("Groups.search", String.format("q=%s&count=50", query));
+        ovk.sendAPIMethod("Groups.search", String.format("q=%s&count=50", URLEncoder.encode(query)));
     }
 
     @Override
@@ -115,14 +116,14 @@ public class Groups implements Parcelable {
             this.groups.clear();
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             JSONArray groups = json.getJSONArray("items");
-            ArrayList<Photo> avatars;
-            avatars = new ArrayList<Photo>();
+            ArrayList<PhotoAttachment> avatars;
+            avatars = new ArrayList<PhotoAttachment>();
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
-                Photo photo = new Photo();
-                photo.url = group.avatar_url;
-                photo.filename = String.format("avatar_%d", group.id);
-                avatars.add(photo);
+                PhotoAttachment photoAttachment = new PhotoAttachment();
+                photoAttachment.url = group.avatar_url;
+                photoAttachment.filename = String.format("avatar_%d", group.id);
+                avatars.add(photoAttachment);
                 this.groups.add(group);
             }
             if(downloadPhoto) {

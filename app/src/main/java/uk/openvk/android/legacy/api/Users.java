@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.models.Conversation;
@@ -122,7 +123,7 @@ public class Users implements Parcelable {
     }
 
     public void search(OvkAPIWrapper ovk, String query) {
-        ovk.sendAPIMethod("Users.search", String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", query));
+        ovk.sendAPIMethod("Users.search", String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", URLEncoder.encode(query)));
     }
 
     @Override

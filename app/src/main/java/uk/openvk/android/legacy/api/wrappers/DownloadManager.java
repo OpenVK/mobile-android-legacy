@@ -41,6 +41,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
 import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
@@ -48,7 +49,6 @@ import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Photo;
 
 /**
  * Created by Dmitry on 27.09.2022.
@@ -134,8 +134,8 @@ public class DownloadManager {
     }
 
 
-    public void downloadPhotosToCache(final ArrayList<Photo> photos, final String where) {
-        Log.v("DownloadManager", String.format("Downloading %d photos...", photos.size()));
+    public void downloadPhotosToCache(final ArrayList<PhotoAttachment> photoAttachments, final String where) {
+        Log.v("DownloadManager", String.format("Downloading %d photoAttachments...", photoAttachments.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
@@ -157,16 +157,16 @@ public class DownloadManager {
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
-                for (int i = 0; i < photos.size(); i++) {
+                for (int i = 0; i < photoAttachments.size(); i++) {
                     filesize = 0;
-                    Photo photo = photos.get(i);
-                    if(photo.url == null) {
-                        photo.url = "";
+                    PhotoAttachment photoAttachment = photoAttachments.get(i);
+                    if(photoAttachment.url == null) {
+                        photoAttachment.url = "";
                     }
-                    if(filename.equals(photo.filename)) {
+                    if(filename.equals(photoAttachment.filename)) {
                         Log.e("DownloadManager", "Duplicated filename. Skipping...");
-                    } else if (photo.url.length() == 0) {
-                        filename = photo.filename;
+                    } else if (photoAttachment.url.length() == 0) {
+                        filename = photoAttachment.filename;
                         Log.e("DownloadManager", "Invalid address. Skipping...");
                         try {
                             File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
@@ -181,15 +181,15 @@ public class DownloadManager {
                             e.printStackTrace();
                         }
                     } else {
-                        filename = photo.filename;
+                        filename = photoAttachment.filename;
                         String short_address = "";
-                        if(photos.get(i).url.length() > 40) {
-                            short_address = photos.get(i).url.substring(0, 39);
+                        if(photoAttachments.get(i).url.length() > 40) {
+                            short_address = photoAttachments.get(i).url.substring(0, 39);
                         } else {
-                            short_address = photos.get(i).url;
+                            short_address = photoAttachments.get(i).url;
                         }
-                        Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photos.size()));
-                        url = photos.get(i).url;
+                        Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photoAttachments.size()));
+                        url = photoAttachments.get(i).url;
                         if (legacy_mode) {
                             request_legacy = new HttpGet(url);
                             request_legacy.getParams().setParameter("timeout", 30000);
@@ -236,11 +236,11 @@ public class DownloadManager {
                                 }
                                 response.body().byteStream().close();
                             }
-                            Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photos.size()));
+                            Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
                         } catch (IOException e) {
-                            Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photos.size()));
+                            Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         } catch (Exception e) {
-                            Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photos.size()));
+                            Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         }
                     }
                 }

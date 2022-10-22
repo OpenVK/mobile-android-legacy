@@ -24,9 +24,14 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
+import uk.openvk.android.legacy.user_interface.activities.AppActivity;
+import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.api.models.WallPost;
 
 public class WallPostLayout extends LinearLayout {
     private View headerView;
@@ -108,7 +113,7 @@ public class WallPostLayout extends LinearLayout {
         }
     }
 
-    public void setPost(NewsfeedItem item) {
+    public void setPost(WallPost item) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
         if(item.text.length() > 0) {
             ((TextView) findViewById(R.id.post_view)).setText(item.text);
@@ -121,16 +126,31 @@ public class WallPostLayout extends LinearLayout {
             ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);
         }
 
-        if(item.photo != null) {
-            ((ImageView) findViewById(R.id.post_photo)).setImageBitmap(item.photo);
-            ((ImageView) findViewById(R.id.post_photo)).setVisibility(VISIBLE);
+        LinearLayout repost_info = ((LinearLayout) findViewById(R.id.post_attach_container));
+
+        if(item.repost != null) {
+            TextView original_poster_name = ((TextView) findViewById(R.id.post_retweet_name));
+            TextView original_post_info = ((TextView) findViewById(R.id.post_retweet_time));
+            TextView original_post_text = ((TextView) findViewById(R.id.post_retweet_text));
+            ImageView original_post_photo = (ImageView) findViewById(R.id.repost_photo);
+            PollLayout original_post_poll = (PollLayout) findViewById(R.id.repost_poll_layout);
+            repost_info.setVisibility(View.VISIBLE);
+            original_poster_name.setText(item.repost.newsfeed_item.name);
+            original_post_info.setText(item.repost.newsfeed_item.info);
+            original_post_text.setText(item.repost.newsfeed_item.text);
+
+            repost_info.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         } else {
-            ((ImageView) findViewById(R.id.post_photo)).setVisibility(GONE);
+            repost_info.setVisibility(View.GONE);
         }
-        ((TextView) findViewById(R.id.wall_view_like)).setText("" + item.counters.likes);
-        if(item.counters.isLiked) {
-            ((TextView) findViewById(R.id.wall_view_like)).setSelected(true);
-        }
+
+        PollLayout pollLayout = findViewById(R.id.poll_layout);
+
     }
 
     public void loadWallAvatar(int author_id, String where) {
@@ -151,23 +171,37 @@ public class WallPostLayout extends LinearLayout {
         }
     }
 
-    public void loadWallPhoto(int owner_id, int post_id, String where) {
+    public void loadWallPhoto(WallPost post, String where) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = null;
+            Bitmap repost_bitmap = null;
+            if(post.repost != null) {
+                if(where.equals("newsfeed")) {
+                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
+                } else {
+                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
+                }
+            }
             if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), owner_id, post_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
             } else {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), owner_id, post_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
             }
             final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
+            final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
             if (bitmap != null) {
                 final float aspect_ratio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
                 post_photo.setImageBitmap(bitmap);
                 post_photo.setVisibility(View.VISIBLE);
             } else {
-                Log.e("OpenVK", String.format("'%s/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), owner_id, post_id));
+                Log.e("OpenVK", String.format("'%s/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), post.owner_id, post.post_id));
+                post_photo.setVisibility(GONE);
+            }
+            if(repost_bitmap != null) {
+                repost_photo.setImageBitmap(repost_bitmap);
+                repost_photo.setVisibility(View.VISIBLE);
                 post_photo.setVisibility(GONE);
             }
         } catch (Exception ex) {

@@ -6,7 +6,7 @@
     <string name="add_comment_hint">Ваш коментар</string>
     <string name="send">Надіслати</string>
     <string name="captcha_hint">Введіть код з картинки</string>
-    <string name="photo">Фотографія</string>
+    <string name="photoAttachment">Фотографія</string>
     <string name="audio">Аудіозапис</string>
     <string name="video">Відеозапис</string>
     <string name="doc">Документ</string>
@@ -893,7 +893,7 @@
     	<item>%d в мережі</item>
     	<item>%d в мережі</item>
 	</string-array>	
-	<string-array name="photos">
+	<string-array name="photoAttachments">
     	<item>%d фотографія</item>
     	<item>%d фотографії</item>
     	<item>%d фотографій</item>

@@ -26,6 +26,7 @@ import uk.openvk.android.legacy.api.Friends;
 import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.models.User;
@@ -37,7 +38,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.api.models.WallPost;
 
 public class ProfileIntentActivity extends Activity {
 
@@ -267,13 +268,13 @@ public class ProfileIntentActivity extends Activity {
                 likes.parse(data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
-                NewsfeedItem item = wall.getWallItems().get(item_pos);
-                item.poll.answers.get(poll_answer).is_voted = true;
+                WallPost item = wall.getWallItems().get(item_pos);
+                ((PollAttachment) item.attachments.get(0).getContent()).answers.get(poll_answer).is_voted = true;
                 wall.getWallItems().set(item_pos, item);
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
             } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
-                NewsfeedItem item = wall.getWallItems().get(item_pos);
-                item.poll.answers.get(poll_answer).is_voted = false;
+                WallPost item = wall.getWallItems().get(item_pos);
+                ((PollAttachment) item.attachments.get(0).getContent()).answers.get(poll_answer).is_voted = false;
                 wall.getWallItems().set(item_pos, item);
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
@@ -309,7 +310,7 @@ public class ProfileIntentActivity extends Activity {
     }
 
     public void addLike(int position, String post, View view) {
-        NewsfeedItem item;
+        WallPost item;
         WallLayout wallLayout = ((WallLayout) profileLayout.findViewById(R.id.wall_layout));
         item = wall.getWallItems().get(position);
         wallLayout.select(position, "likes", "add");
@@ -317,7 +318,7 @@ public class ProfileIntentActivity extends Activity {
     }
 
     public void deleteLike(int position, String post, View view) {
-        NewsfeedItem item;
+        WallPost item;
         WallLayout wallLayout = ((WallLayout) profileLayout.findViewById(R.id.wall_layout));
         item = wall.getWallItems().get(position);
         wallLayout.select(0, "likes", "delete");
@@ -351,7 +352,7 @@ public class ProfileIntentActivity extends Activity {
     }
 
     public void openWallComments(int position, View view) {
-        NewsfeedItem item;
+        WallPost item;
         Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
         item = wall.getWallItems().get(position);
         intent.putExtra("where", "wall");
@@ -365,6 +366,34 @@ public class ProfileIntentActivity extends Activity {
             intent.putExtra("post_info", item.info);
             intent.putExtra("post_text", item.text);
             intent.putExtra("post_likes", item.counters.likes);
+            boolean contains_poll = false;
+            boolean is_repost = false;
+            if(item.attachments.size() > 0) {
+                for(int i = 0; i < item.attachments.size(); i++) {
+                    if(item.attachments.get(i).type.equals("poll")) {
+                        contains_poll = true;
+                        PollAttachment poll = ((PollAttachment) item.attachments.get(i).getContent());
+                        intent.putExtra("poll_question", poll.question);
+                        intent.putExtra("poll_anonymous", poll.anonymous);
+                        //intent.putExtra("poll_answers", poll.answers);
+                        intent.putExtra("poll_total_votes", poll.votes);
+                        intent.putExtra("poll_user_votes", poll.user_votes);
+                    }
+                }
+            }
+            intent.putExtra("contains_poll", contains_poll);
+            if(item.repost != null) {
+                is_repost = true;
+                intent.putExtra("is_repost", is_repost);
+                intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
+                intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
+                intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
+                intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
+                intent.putExtra("repost_info", item.repost.newsfeed_item.info);
+                intent.putExtra("repost_text", item.repost.newsfeed_item.text);
+            } else {
+                intent.putExtra("is_repost", is_repost);
+            }
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -372,7 +401,7 @@ public class ProfileIntentActivity extends Activity {
     }
 
     public void showAuthorPage(int position) {
-        NewsfeedItem item;
+        WallPost item;
         item = wall.getWallItems().get(position);
         if(item.author_id != user.id) {
             if (item.author_id < 0) {
@@ -392,25 +421,27 @@ public class ProfileIntentActivity extends Activity {
     public void voteInPoll(int item_pos, int answer) {
         this.item_pos = item_pos;
         this.poll_answer = answer;
-        NewsfeedItem item = wall.getWallItems().get(item_pos);
-        item.poll.user_votes = 1;
-        item.poll.answers.get(answer).votes = item.poll.answers.get(answer).votes + 1;
+        WallPost item = wall.getWallItems().get(item_pos);
+        PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(0).getContent());
+        pollAttachment.user_votes = 1;
+        pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
         wall.getWallItems().set(item_pos, item);
-        item.poll.vote(ovk_api, item.poll.id, item.poll.answers.get(poll_answer).id);
+        pollAttachment.vote(ovk_api, pollAttachment.id);
     }
 
     public void removeVoteInPoll(int item_pos) {
         this.item_pos = item_pos;
-        NewsfeedItem item = wall.getWallItems().get(item_pos);
-        for(int i = 0; i < item.poll.answers.size(); i++) {
-            if(item.poll.answers.get(i).is_voted) {
-                item.poll.answers.get(i).is_voted = false;
-                item.poll.answers.get(i).votes = item.poll.answers.get(i).votes - 1;
+        WallPost item = wall.getWallItems().get(item_pos);
+        PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(0).getContent());
+        for(int i = 0; i < pollAttachment.answers.size(); i++) {
+            if(pollAttachment.answers.get(i).is_voted) {
+                pollAttachment.answers.get(i).is_voted = false;
+                pollAttachment.answers.get(i).votes = pollAttachment.answers.get(i).votes - 1;
             }
         }
-        item.poll.user_votes = 0;
+        pollAttachment.user_votes = 0;
         wall.getWallItems().set(item_pos, item);
-        item.poll.unvote(ovk_api, item.poll.id);
+        pollAttachment.unvote(ovk_api);
     }
 
     public void addToFriends(int user_id) {
@@ -422,6 +453,27 @@ public class ProfileIntentActivity extends Activity {
     public void deleteFromFriends(int user_id) {
         if(user_id != account.id) {
             friends.delete(ovk_api, user_id);
+        }
+    }
+
+    public void openWallRepostComments(int position, View view) {
+        WallPost item;
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+        item = wall.getWallItems().get(position);
+        intent.putExtra("where", "wall");
+        try {
+            intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
+            intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
+            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+            intent.putExtra("author_id", account.id);
+            intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
+            intent.putExtra("post_author_name", item.repost.newsfeed_item.name);
+            intent.putExtra("post_info", item.repost.newsfeed_item.info);
+            intent.putExtra("post_text", item.repost.newsfeed_item.text);
+            intent.putExtra("post_likes", item.repost.newsfeed_item.counters.likes);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

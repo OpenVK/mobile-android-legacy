@@ -37,7 +37,7 @@
 	        android:id="@+id/album_qty"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:text="9000 photos"
+	        android:text="9000 photoAttachments"
 	        android:textColor="#CFFF"
 	        android:textSize="17dip" >
 	    </TextView>

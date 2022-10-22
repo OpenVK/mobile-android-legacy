@@ -21,16 +21,20 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Comment;
+import uk.openvk.android.legacy.api.models.PollAnswer;
+import uk.openvk.android.legacy.api.models.RepostInfo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.CommentPanel;
 import uk.openvk.android.legacy.user_interface.layouts.WallPostLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.api.models.WallPost;
 
 
 public class WallPostActivity extends Activity {
@@ -84,23 +88,8 @@ public class WallPostActivity extends Activity {
                 finish();
                 return;
             } else {
-                NewsfeedItem post = new NewsfeedItem();
-                post.owner_id = extras.getInt("owner_id");
-                post.post_id = extras.getInt("post_id");
-                post.name = extras.getString("post_author_name");
-                post.info = extras.getString("post_info");
-                post.text = extras.getString("post_text");
-                post.counters = new PostCounters();
-                post.counters.likes = extras.getInt("post_likes");
-                owner_id = extras.getInt("owner_id");
-                post_id = extras.getInt("post_id");
-                String where = extras.getString("where");
-                author_name = extras.getString("author_name");
-                post_author_id = extras.getInt("post_author_id");
-                author_id = extras.getInt("author_id");
-                wallPostLayout.setPost(post);
-                wallPostLayout.loadWallAvatar(post_author_id, where);
-                wallPostLayout.loadWallPhoto(owner_id, post_id, where);
+                WallPost post = new WallPost();
+                getPost(post, extras);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
@@ -128,6 +117,37 @@ public class WallPostActivity extends Activity {
             finish();
             return;
         }
+    }
+
+    private void getPost(WallPost post, Bundle extras) {
+        post.owner_id = extras.getInt("owner_id");
+        post.post_id = extras.getInt("post_id");
+        post.name = extras.getString("post_author_name");
+        post.info = extras.getString("post_info");
+        post.text = extras.getString("post_text");
+        post.counters = new PostCounters();
+        post.counters.likes = extras.getInt("post_likes");
+        owner_id = extras.getInt("owner_id");
+        post_id = extras.getInt("post_id");
+        String where = extras.getString("where");
+        author_name = extras.getString("author_name");
+        post_author_id = extras.getInt("post_author_id");
+        author_id = extras.getInt("author_id");
+        post.attachments = new ArrayList<>();
+        if(extras.getBoolean("is_repost")) {
+            post.repost = new RepostInfo(extras.getString("repost_author_name"), 0, this);
+            post.repost.newsfeed_item = new WallPost();
+            post.repost.newsfeed_item.attachments = new ArrayList<>();
+            post.repost.newsfeed_item.name = extras.getString("repost_author_name");
+            post.repost.newsfeed_item.info = extras.getString("repost_info");
+            post.repost.newsfeed_item.owner_id = extras.getInt("repost_owner_id");
+            post.repost.newsfeed_item.post_id = extras.getInt("repost_id");
+            post.repost.newsfeed_item.text = extras.getString("repost_text");
+        }
+
+        wallPostLayout.setPost(post);
+        wallPostLayout.loadWallAvatar(post_author_id, where);
+        wallPostLayout.loadWallPhoto(post, where);
     }
 
     private void setCommentsView() {

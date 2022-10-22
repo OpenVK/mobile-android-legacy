@@ -136,7 +136,7 @@ public class QuickSearchActivity extends Activity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://group/" + "id" + groups.getList().get(position).id;
+        String url = "openvk://group/" + "club" + groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);

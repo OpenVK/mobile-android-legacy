@@ -70,7 +70,7 @@ public class HandlerMessages {
     public static int OVK_CHECK_HTTP                    = 904;
     public static int OVK_CHECK_HTTPS                   = 905;
 
-    // Poll
+    // PollAttachment
     public static int POLL_ADD_VOTE                     = 1000;
     public static int POLL_DELETE_VOTE                  = 1001;
 

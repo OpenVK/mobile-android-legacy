@@ -8,8 +8,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.models.Friend;
-import uk.openvk.android.legacy.api.models.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -49,14 +49,14 @@ public class Friends implements Parcelable {
             this.friends.clear();
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             JSONArray users = json.getJSONArray("items");
-            ArrayList<Photo> avatars;
-            avatars = new ArrayList<Photo>();
+            ArrayList<PhotoAttachment> avatars;
+            avatars = new ArrayList<PhotoAttachment>();
             for (int i = 0; i < users.length(); i++) {
                 Friend friend = new Friend(users.getJSONObject(i));
-                Photo photo = new Photo();
-                photo.url = friend.avatar_url;
-                photo.filename = String.format("avatar_%d", friend.id);
-                avatars.add(photo);
+                PhotoAttachment photoAttachment = new PhotoAttachment();
+                photoAttachment.url = friend.avatar_url;
+                photoAttachment.filename = String.format("avatar_%d", friend.id);
+                avatars.add(photoAttachment);
                 this.friends.add(friend);
             }
             if(downloadPhoto) {

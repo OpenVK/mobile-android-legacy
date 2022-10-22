@@ -39,6 +39,7 @@ import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.LongPollServer;
@@ -62,7 +63,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.SlidingMenuAdapter;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.user_interface.list_items.SlidingMenuItem;
 import uk.openvk.android.legacy.longpoll_api.LongPollService;
 
@@ -479,7 +480,7 @@ public class AppActivity extends Activity {
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
                 newsfeed.parse(this, downloadManager, data.getString("response"));
-                newsfeedLayout.createAdapter(this, newsfeed.getNewsfeedItems());
+                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
                     newsfeedLayout.setVisibility(View.VISIBLE);
@@ -588,14 +589,16 @@ public class AppActivity extends Activity {
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
-                if(data.getString("method").equals("Account.getProfileInfo") || (data.getString("method").equals("Newsfeed.get") && newsfeed.getNewsfeedItems().size() == 0) ||
-                        (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
-                        (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
-                    errorLayout.setReason(message);
-                    errorLayout.setData(data);
-                    errorLayout.setRetryAction(this);
-                    progressLayout.setVisibility(View.GONE);
-                    errorLayout.setVisibility(View.VISIBLE);
+                if(data.containsKey("method")) {
+                    if (data.getString("method").equals("Account.getProfileInfo") || (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
+                            (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
+                            (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                        errorLayout.setReason(message);
+                        errorLayout.setData(data);
+                        errorLayout.setRetryAction(this);
+                        progressLayout.setVisibility(View.GONE);
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
                 }
             } else if(message == HandlerMessages.INVALID_TOKEN) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
@@ -631,16 +634,16 @@ public class AppActivity extends Activity {
                 }
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
-                    item.poll.answers.get(poll_answer).is_voted = true;
-                    newsfeed.getNewsfeedItems().set(item_pos, item);
+                    WallPost item = newsfeed.getWallPosts().get(item_pos);
+                    ((PollAttachment) item.attachments.get(0).getContent()).answers.get(poll_answer).is_voted = true;
+                    newsfeed.getWallPosts().set(item_pos, item);
                     newsfeedLayout.updateItem(item, item_pos);
                 }
             } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
-                    item.poll.answers.get(poll_answer).is_voted = false;
-                    newsfeed.getNewsfeedItems().set(item_pos, item);
+                    WallPost item = newsfeed.getWallPosts().get(item_pos);
+                    ((PollAttachment) item.attachments.get(0).getContent()).answers.get(poll_answer).is_voted = false;
+                    newsfeed.getWallPosts().set(item_pos, item);
                     newsfeedLayout.updateItem(item, item_pos);
                 }
             }
@@ -807,24 +810,24 @@ public class AppActivity extends Activity {
     }
 
     public void addLike(int position, String post, View view) {
-        NewsfeedItem item;
+        WallPost item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
             ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(position, "likes", "add");
         } else {
-            item = newsfeed.getNewsfeedItems().get(position);
+            item = newsfeed.getWallPosts().get(position);
             newsfeedLayout.select(position, "likes", "add");
         }
         likes.add(ovk_api, item.owner_id, item.post_id, position);
     }
 
     public void deleteLike(int position, String post, View view) {
-        NewsfeedItem item;
+        WallPost item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
             ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(0, "likes", "delete");
         } else {
-            item = newsfeed.getNewsfeedItems().get(position);
+            item = newsfeed.getWallPosts().get(position);
             newsfeedLayout.select(0, "likes", "delete");
         }
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
@@ -847,13 +850,13 @@ public class AppActivity extends Activity {
     }
 
     public void openWallComments(int position, View view) {
-        NewsfeedItem item;
+        WallPost item;
         Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
             intent.putExtra("where", "wall");
         } else {
-            item = newsfeed.getNewsfeedItems().get(position);
+            item = newsfeed.getWallPosts().get(position);
             intent.putExtra("where", "newsfeed");
         }
         try {
@@ -866,6 +869,34 @@ public class AppActivity extends Activity {
             intent.putExtra("post_info", item.info);
             intent.putExtra("post_text", item.text);
             intent.putExtra("post_likes", item.counters.likes);
+            boolean contains_poll = false;
+            boolean is_repost = false;
+            if(item.attachments.size() > 0) {
+                for(int i = 0; i < item.attachments.size(); i++) {
+                    if(item.attachments.get(i).type.equals("poll")) {
+                        contains_poll = true;
+                        PollAttachment poll = ((PollAttachment) item.attachments.get(i).getContent());
+                        intent.putExtra("poll_question", poll.question);
+                        intent.putExtra("poll_anonymous", poll.anonymous);
+                        //intent.putExtra("poll_answers", poll.answers);
+                        intent.putExtra("poll_total_votes", poll.votes);
+                        intent.putExtra("poll_user_votes", poll.user_votes);
+                    }
+                }
+            }
+            intent.putExtra("contains_poll", contains_poll);
+            if(item.repost != null) {
+                is_repost = true;
+                intent.putExtra("is_repost", is_repost);
+                intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
+                intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
+                intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
+                intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
+                intent.putExtra("repost_info", item.repost.newsfeed_item.info);
+                intent.putExtra("repost_text", item.repost.newsfeed_item.text);
+            } else {
+                intent.putExtra("is_repost", is_repost);
+            }
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -880,11 +911,11 @@ public class AppActivity extends Activity {
     }
 
     public void showAuthorPage(int position) {
-        NewsfeedItem item;
+        WallPost item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
         } else {
-            item = newsfeed.getNewsfeedItems().get(position);
+            item = newsfeed.getWallPosts().get(position);
         }
         if(item.author_id < 0) {
             String url = "openvk://group/" + "club" + -item.author_id;
@@ -909,25 +940,27 @@ public class AppActivity extends Activity {
     public void voteInPoll(int item_pos, int answer) {
         this.item_pos = item_pos;
         this.poll_answer = answer;
-        NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
-        item.poll.user_votes = 1;
-        item.poll.answers.get(answer).votes = item.poll.answers.get(answer).votes + 1;
-        newsfeed.getNewsfeedItems().set(item_pos, item);
-        item.poll.vote(ovk_api, item.poll.id, item.poll.answers.get(poll_answer).id);
+        WallPost item = newsfeed.getWallPosts().get(item_pos);
+        PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(0).getContent());
+        pollAttachment.user_votes = 1;
+        pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
+        newsfeed.getWallPosts().set(item_pos, item);
+        pollAttachment.vote(ovk_api, pollAttachment.id);
     }
 
     public void removeVoteInPoll(int item_pos) {
         this.item_pos = item_pos;
-        NewsfeedItem item = newsfeed.getNewsfeedItems().get(item_pos);
-        for(int i = 0; i < item.poll.answers.size(); i++) {
-            if(item.poll.answers.get(i).is_voted) {
-                item.poll.answers.get(i).is_voted = false;
-                item.poll.answers.get(i).votes = item.poll.answers.get(i).votes - 1;
+        WallPost item = newsfeed.getWallPosts().get(item_pos);
+        PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(0).getContent());
+        for(int i = 0; i < pollAttachment.answers.size(); i++) {
+            if(pollAttachment.answers.get(i).is_voted) {
+                pollAttachment.answers.get(i).is_voted = false;
+                pollAttachment.answers.get(i).votes = pollAttachment.answers.get(i).votes - 1;
             }
         }
-        item.poll.user_votes = 0;
-        newsfeed.getNewsfeedItems().set(item_pos, item);
-        item.poll.unvote(ovk_api, item.poll.id);
+        pollAttachment.user_votes = 0;
+        newsfeed.getWallPosts().set(item_pos, item);
+        pollAttachment.unvote(ovk_api);
     }
 
     public void addToFriends(int user_id) {
@@ -938,6 +971,32 @@ public class AppActivity extends Activity {
     public void deleteFromFriends(int user_id) {
         if(user_id != account.id) {
             friends.delete(ovk_api, user_id);
+        }
+    }
+
+    public void openWallRepostComments(int position, View view) {
+        WallPost item;
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+        if (global_prefs.getString("current_screen", "").equals("profile")) {
+            item = wall.getWallItems().get(position);
+            intent.putExtra("where", "wall");
+        } else {
+            item = newsfeed.getWallPosts().get(position);
+            intent.putExtra("where", "newsfeed");
+        }
+        try {
+            intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
+            intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
+            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+            intent.putExtra("author_id", account.id);
+            intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
+            intent.putExtra("post_author_name", item.repost.newsfeed_item.name);
+            intent.putExtra("post_info", item.repost.newsfeed_item.info);
+            intent.putExtra("post_text", item.repost.newsfeed_item.text);
+            intent.putExtra("post_likes", 0);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

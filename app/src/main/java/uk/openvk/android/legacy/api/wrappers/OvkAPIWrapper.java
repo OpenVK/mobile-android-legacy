@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -210,10 +211,10 @@ public class OvkAPIWrapper {
         error.description = "";
         String url = "";
         if(use_https) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, password, code);
+            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, URLEncoder.encode(password), code);
             Log.v("OpenVK API", String.format("Connecting to %s (Secured)...", server));
         } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, password, code);
+            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, URLEncoder.encode(password), code);
             Log.v("OpenVK API", String.format("Connecting to %s...", server));
         }
         final String fUrl = url;

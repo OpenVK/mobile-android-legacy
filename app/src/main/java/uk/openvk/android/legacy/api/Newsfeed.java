@@ -11,22 +11,25 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.Photo;
-import uk.openvk.android.legacy.api.models.Poll;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.counters.PostCounters;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
-import uk.openvk.android.legacy.user_interface.list_items.RepostInfo;
+import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.api.models.RepostInfo;
 
 /**
  * Created by Dmitry on 28.09.2022.
  */
 public class Newsfeed implements Parcelable {
     private JSONParser jsonParser;
-    private ArrayList<NewsfeedItem> newsfeedItems;
+    private ArrayList<WallPost> items;
+    private ArrayList<PhotoAttachment> photos_msize;
+    private ArrayList<PhotoAttachment> photos_hsize;
 
     public Newsfeed(String response, DownloadManager downloadManager, Context ctx) {
         jsonParser = new JSONParser();
@@ -38,7 +41,7 @@ public class Newsfeed implements Parcelable {
     }
 
     protected Newsfeed(Parcel in) {
-        newsfeedItems = in.createTypedArrayList(NewsfeedItem.CREATOR);
+        items = in.createTypedArrayList(WallPost.CREATOR);
     }
 
     public static final Creator<Newsfeed> CREATOR = new Creator<Newsfeed>() {
@@ -54,17 +57,16 @@ public class Newsfeed implements Parcelable {
     };
 
     public void parse(Context ctx, DownloadManager downloadManager, String response) {
-        newsfeedItems = new ArrayList<NewsfeedItem>();
-        ArrayList<Photo> photos_hsize = new ArrayList<Photo>();
-        ArrayList<Photo> photos_msize = new ArrayList<Photo>();
-        ArrayList<Photo> avatars = new ArrayList<Photo>();
+        items = new ArrayList<WallPost>();
+        photos_hsize = new ArrayList<PhotoAttachment>();
+        photos_msize = new ArrayList<PhotoAttachment>();
+        ArrayList<PhotoAttachment> avatars = new ArrayList<PhotoAttachment>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
                 JSONObject newsfeed = json.getJSONObject("response");
                 JSONArray items = newsfeed.getJSONArray("items");
                 for(int i = 0; i < items.length(); i++) {
-                    Poll poll = null;
                     JSONObject post = items.getJSONObject(i);
                     JSONObject comments = post.getJSONObject("comments");
                     JSONObject likes = post.getJSONObject("likes");
@@ -78,12 +80,9 @@ public class Newsfeed implements Parcelable {
                     String original_author_avatar_url = "";
                     String author_name = "";
                     String owner_name = "";
+                    String avatar_url = "";
                     String owner_avatar_url = "";
                     String author_avatar_url = "";
-                    String avatar_url = "";
-                    String photo_medium_size = "";
-                    String photo_high_size = "";
-                    String attachment_status = "";
                     String content = post.getString("text");
                     boolean isLiked = false;
                     if(likes.getInt("user_likes") > 0) {
@@ -92,56 +91,21 @@ public class Newsfeed implements Parcelable {
                         isLiked = false;
                     }
                     PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), isLiked, false);
-                    if(attachments.length() == 1) {
-                        JSONObject attachment = attachments.getJSONObject(0);
-                        if(attachment.getString("type").equals("photo")) {
-                            JSONObject photo = attachment.getJSONObject("photo");
-                            JSONArray photo_sizes = photo.getJSONArray("sizes");
-                            photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
-                            photo_high_size = photo_sizes.getJSONObject(10).getString("url");
-                            if(photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
-                                attachment_status = "loading";
-                            } else {
-                                attachment_status = "none";
-                            }
-                        } else if(attachment.getString("type").equals("poll")) {
-                            JSONObject poll_attachment = attachment.getJSONObject("poll");
-                            poll = new Poll(poll_attachment.getString("question"), poll_attachment.getInt("id"), poll_attachment.getLong("end_date"), poll_attachment.getBoolean("multiple"), poll_attachment.getBoolean("can_vote"),
-                                    poll_attachment.getBoolean("anonymous"));
-                            JSONArray answers = poll_attachment.getJSONArray("answers");
-                            JSONArray votes = poll_attachment.getJSONArray("answer_ids");
-                            if(votes.length() > 0) {
-                                poll.user_votes = votes.length();
-                            }
-                            poll.votes = poll_attachment.getInt("votes");
-                            for(int answers_index = 0; answers_index < answers.length(); answers_index++) {
-                                JSONObject answer = answers.getJSONObject(answers_index);
-                                PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"), answer.getInt("votes"), answer.getString("text"));
-                                for(int votes_index = 0; votes_index < votes.length(); votes_index++) {
-                                    if(answer.getInt("id") == votes.getInt(votes_index)) {
-                                        pollAnswer.is_voted = true;
-                                    }
-                                }
-                                poll.answers.add(pollAnswer);
-                            }
-                            attachment_status = "poll";
-                        } else {
-                            attachment_status = "not_supported";
-                        }
-                    }
 
-                    NewsfeedItem item = new NewsfeedItem(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "",
-                            photo_medium_size, photo_high_size, poll, owner_id, post_id, ctx);
+                    ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, attachments);
+
+                    WallPost item = new WallPost(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "", attachments_list, owner_id, post_id, ctx);
                     if(post.getJSONArray("copy_history").length() > 0) {
-                        attachment_status = "none";
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
-                        NewsfeedItem repost_item = new NewsfeedItem(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), null, repost.getString("text"), null, "",
-                                null, null, null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
+                        WallPost repost_item = new WallPost(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), null, repost.getString("text"), null, "",
+                                null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
                         RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), ctx);
                         repostInfo.newsfeed_item = repost_item;
                         item.repost = repostInfo;
+                        JSONArray repost_attachments = repost.getJSONArray("attachments");
+                        attachments_list = createAttachmentsList(owner_id, post_id, repost_attachments);
+                        repost_item.attachments = attachments_list;
                     }
-                    item.attachment_status = attachment_status;
                     item.author_id = author_id;
                     if(author_id > 0) {
                         if(newsfeed.has("profiles")) {
@@ -189,19 +153,11 @@ public class Newsfeed implements Parcelable {
                             }
                         }
                     }
-                    Photo photo_m = new Photo();
-                    photo_m.url = photo_medium_size;
-                    photo_m.filename = String.format("newsfeed_attachment_o%dp%d", owner_id, post_id);
-                    photos_msize.add(photo_m);
-                    Photo photo_h = new Photo();
-                    photo_h.url = photo_high_size;
-                    photo_h.filename = String.format("newsfeed_attachment_o%dp%d", owner_id, post_id);
-                    photos_hsize.add(photo_h);
-                    Photo avatar = new Photo();
+                    PhotoAttachment avatar = new PhotoAttachment();
                     avatar.url = avatar_url;
                     avatar.filename = String.format("avatar_%d", author_id);
                     avatars.add(avatar);
-                    newsfeedItems.add(item);
+                    this.items.add(item);
                 }
                 downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
                 downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatars");
@@ -215,8 +171,72 @@ public class Newsfeed implements Parcelable {
         ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&extended=1", count));
     }
 
-    public ArrayList<NewsfeedItem> getNewsfeedItems() {
-        return newsfeedItems;
+    public ArrayList<Attachment> createAttachmentsList(int owner_id, int post_id, JSONArray attachments) {
+        ArrayList<Attachment> attachments_list = new ArrayList<>();
+        try {
+            for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
+                String photo_medium_size = "";
+                String photo_high_size = "";
+                String attachment_status = "";
+                JSONObject attachment = attachments.getJSONObject(attachments_index);
+                if (attachment.getString("type").equals("photo")) {
+                    JSONObject photo = attachment.getJSONObject("photo");
+                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    JSONArray photo_sizes = photo.getJSONArray("sizes");
+                    photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
+                    photo_high_size = photo_sizes.getJSONObject(10).getString("url");
+                    photoAttachment.url = photo_medium_size;
+                    photoAttachment.filename = String.format("newsfeed_attachment_o%dp%d", owner_id, post_id);
+                    if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
+                        attachment_status = "loading";
+                    } else {
+                        attachment_status = "none";
+                    }
+                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                    attachment_obj.status = attachment_status;
+                    attachment_obj.setContent(photoAttachment);
+                    attachments_list.add(attachment_obj);
+                    photos_msize.add(photoAttachment);
+                } else if (attachment.getString("type").equals("poll")) {
+                    JSONObject poll_attachment = attachment.getJSONObject("poll");
+                    PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"), poll_attachment.getInt("id"), poll_attachment.getLong("end_date"), poll_attachment.getBoolean("multiple"), poll_attachment.getBoolean("can_vote"),
+                            poll_attachment.getBoolean("anonymous"));
+                    JSONArray answers = poll_attachment.getJSONArray("answers");
+                    JSONArray votes = poll_attachment.getJSONArray("answer_ids");
+                    if (votes.length() > 0) {
+                        pollAttachment.user_votes = votes.length();
+                    }
+                    pollAttachment.votes = poll_attachment.getInt("votes");
+                    for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
+                        JSONObject answer = answers.getJSONObject(answers_index);
+                        PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"), answer.getInt("votes"), answer.getString("text"));
+                        for (int votes_index = 0; votes_index < votes.length(); votes_index++) {
+                            if (answer.getInt("id") == votes.getInt(votes_index)) {
+                                pollAnswer.is_voted = true;
+                            }
+                        }
+                        pollAttachment.answers.add(pollAnswer);
+                    }
+                    attachment_status = "done";
+                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                    attachment_obj.status = attachment_status;
+                    attachment_obj.setContent(pollAttachment);
+                    attachments_list.add(attachment_obj);
+                } else {
+                    attachment_status = "not_supported";
+                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                    attachment_obj.status = attachment_status;
+                    attachments_list.add(attachment_obj);
+                }
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return attachments_list;
+    }
+
+    public ArrayList<WallPost> getWallPosts() {
+        return items;
     }
 
     @Override
@@ -226,6 +246,6 @@ public class Newsfeed implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeTypedList(newsfeedItems);
+        parcel.writeTypedList(items);
     }
 }

@@ -25,6 +25,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
+import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -163,8 +165,17 @@ public class LongPollWrapper {
                         }
                         Thread.sleep(2000);
                     }
+                } catch(ConnectException ex) {
+                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
+                    try {
+                        Log.v("OpenVK LPW", "Retrying in 60 seconds...");
+                        Thread.sleep(60000);
+                        run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 } catch(SocketTimeoutException ex) {
-                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     try {
                         Log.v("OpenVK LPW", "Retrying in 60 seconds...");
                         Thread.sleep(60000);
@@ -173,7 +184,7 @@ public class LongPollWrapper {
                         e.printStackTrace();
                     }
                 } catch(UnknownHostException ex) {
-                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     try {
                         Log.v("OpenVK LPW", "Retrying in 60 seconds...");
                         Thread.sleep(60000);
@@ -182,15 +193,15 @@ public class LongPollWrapper {
                         e.printStackTrace();
                     }
                 } catch(SSLProtocolException ex) {
-                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     isActivated = false;
                     Log.v("OpenVK LPW", "LongPoll service stopped.");
                 } catch(SSLHandshakeException ex) {
-                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     Log.v("OpenVK LPW", "LongPoll service stopped.");
                     isActivated = false;
                 } catch(SSLException ex) {
-                    Log.e("OpenVK LPW", "Connection error: " + ex.getMessage());
+                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     Log.v("OpenVK LPW", "LongPoll service stopped.");
                     isActivated = false;
                 } catch (Exception ex) {

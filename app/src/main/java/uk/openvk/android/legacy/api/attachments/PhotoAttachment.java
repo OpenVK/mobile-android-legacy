@@ -1,36 +1,33 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.attachments;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
 
-/**
- * Created by Dmitry on 05.10.2022.
- */
-
-public class Photo implements Parcelable {
+public class PhotoAttachment implements Parcelable {
     public String url;
     public String filename;
-    public Photo() {
+    public Bitmap photo;
+    public PhotoAttachment() {
         this.url = url;
         this.filename = filename;
     }
 
-    protected Photo(Parcel in) {
+    protected PhotoAttachment(Parcel in) {
         url = in.readString();
         filename = in.readString();
     }
 
-    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
+    public static final Creator<PhotoAttachment> CREATOR = new Creator<PhotoAttachment>() {
         @Override
-        public Photo createFromParcel(Parcel in) {
-            return new Photo(in);
+        public PhotoAttachment createFromParcel(Parcel in) {
+            return new PhotoAttachment(in);
         }
 
         @Override
-        public Photo[] newArray(int size) {
-            return new Photo[size];
+        public PhotoAttachment[] newArray(int size) {
+            return new PhotoAttachment[size];
         }
     };
 

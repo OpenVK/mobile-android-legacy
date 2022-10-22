@@ -23,9 +23,11 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.NewsfeedAdapter;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.api.models.WallPost;
 
 public class NewsfeedLayout extends LinearLayout {
     private View headerView;
@@ -39,7 +41,7 @@ public class NewsfeedLayout extends LinearLayout {
     private RecyclerView newsfeedView;
     private ListView newsfeedListView;
     private LinearLayoutManager llm;
-    private ArrayList<NewsfeedItem> newsfeedItems;
+    private ArrayList<WallPost> wallPosts;
     public boolean loading_more_posts = false;
 
     public NewsfeedLayout(Context context, AttributeSet attrs) {
@@ -55,25 +57,25 @@ public class NewsfeedLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void createAdapter(Context ctx, ArrayList<NewsfeedItem> newsfeedItems) {
-        this.newsfeedItems = newsfeedItems;
+    public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts) {
+        this.wallPosts = wallPosts;
         newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
         if(newsfeedAdapter == null) {
-            newsfeedAdapter = new NewsfeedAdapter(ctx, this.newsfeedItems);
+            newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts);
             llm = new LinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             newsfeedView.setLayoutManager(llm);
             newsfeedView.setAdapter(newsfeedAdapter);
         } else {
-            newsfeedAdapter.setArray(newsfeedItems);
+            newsfeedAdapter.setArray(wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
         }
     }
 
-    public void updateItem(NewsfeedItem item, int position) {
+    public void updateItem(WallPost item, int position) {
         if(newsfeedAdapter != null) {
             newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
-            newsfeedItems.set(position, item);
+            wallPosts.set(position, item);
             newsfeedAdapter.notifyItemChanged(position);
         }
     }
@@ -90,14 +92,14 @@ public class NewsfeedLayout extends LinearLayout {
             newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
             for (int i = 0; i < getCount(); i++) {
                 try {
-                    NewsfeedItem item = newsfeedItems.get(i);
+                    WallPost item = wallPosts.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
-                    newsfeedItems.set(i, item);
+                    wallPosts.set(i, item);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -115,21 +117,52 @@ public class NewsfeedLayout extends LinearLayout {
             int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
             for (int i = 0; i < totalItemCount; i++) {
                 try {
-                    NewsfeedItem item = newsfeedItems.get(i);
-                    if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                        item.photo = null;
-                    } else {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        if(item.photo_msize_url.length() > 0 || item.photo_hsize_url.length() > 0) {
-                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
-                            if (bitmap != null) {
-                                item.photo = bitmap;
-                                item.attachment_status = "photo";
+                    WallPost item = wallPosts.get(i);
+                    if(item.repost != null) {
+                        if (item.repost.newsfeed_item.attachments.size() > 0) {
+                            if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
+                                PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(0).getContent());
+                                Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
+                                if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                                    photoAttachment.photo = null;
+                                } else {
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                    if (photoAttachment.url.length() > 0) {
+                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(),
+                                                item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
+                                        if (bitmap != null) {
+                                            photoAttachment.photo = bitmap;
+                                            attachment.status = "done";
+                                            item.repost.newsfeed_item.attachments.set(0, attachment);
+                                        }
+                                    }
+                                }
+                                wallPosts.set(i, item);
                             }
                         }
                     }
-                    newsfeedItems.set(i, item);
+                    if(item.attachments.size() > 0) {
+                        if(item.attachments.get(0).type.equals("photo")) {
+                            PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
+                            Attachment attachment = item.attachments.get(0);
+                            if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                                photoAttachment.photo = null;
+                            } else {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                if (photoAttachment.url.length() > 0) {
+                                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                    if (bitmap != null) {
+                                        photoAttachment.photo = bitmap;
+                                        attachment.status = "done";
+                                        item.attachments.set(0, attachment);
+                                    }
+                                }
+                            }
+                            wallPosts.set(i, item);
+                        }
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -189,11 +222,11 @@ public class NewsfeedLayout extends LinearLayout {
     public void select(int position, String item, int value) {
         if(item.equals("likes")) {
             if(value == 1) {
-                newsfeedItems.get(position).counters.isLiked = true;
-                newsfeedItems.get(position).counters.likes += 1;
+                wallPosts.get(position).counters.isLiked = true;
+                wallPosts.get(position).counters.likes += 1;
             } else {
-                newsfeedItems.get(position).counters.isLiked = false;
-                newsfeedItems.get(position).counters.likes -= 1;
+                wallPosts.get(position).counters.isLiked = false;
+                wallPosts.get(position).counters.likes -= 1;
             }
             newsfeedAdapter.notifyDataSetChanged();
         }
@@ -202,9 +235,9 @@ public class NewsfeedLayout extends LinearLayout {
     public void select(int position, String item, String value) {
         if(item.equals("likes")) {
             if(value.equals("add")) {
-                newsfeedItems.get(position).counters.isLiked = true;
+                wallPosts.get(position).counters.isLiked = true;
             } else {
-                newsfeedItems.get(position).counters.isLiked = false;
+                wallPosts.get(position).counters.isLiked = false;
             }
             newsfeedAdapter.notifyDataSetChanged();
         }

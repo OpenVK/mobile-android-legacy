@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.user_interface.list_items;
+package uk.openvk.android.legacy.api.models;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -13,7 +13,7 @@ import uk.openvk.android.legacy.R;
 public class RepostInfo implements Parcelable {
     public String name;
     public String time;
-    public NewsfeedItem newsfeed_item;
+    public WallPost newsfeed_item;
     public RepostInfo(String original_author, int dt_sec, Context ctx) {
         name = original_author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
@@ -35,7 +35,7 @@ public class RepostInfo implements Parcelable {
     protected RepostInfo(Parcel in) {
         name = in.readString();
         time = in.readString();
-        newsfeed_item = in.readParcelable(NewsfeedItem.class.getClassLoader());
+        newsfeed_item = in.readParcelable(WallPost.class.getClassLoader());
     }
 
     public static final Creator<RepostInfo> CREATOR = new Creator<RepostInfo>() {

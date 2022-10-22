@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.user_interface.list_items;
+package uk.openvk.android.legacy.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

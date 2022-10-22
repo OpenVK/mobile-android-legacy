@@ -1,46 +1,34 @@
-package uk.openvk.android.legacy.user_interface.list_items;
+package uk.openvk.android.legacy.api.models;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.counters.PostCounters;
-import uk.openvk.android.legacy.api.models.OvkLink;
-import uk.openvk.android.legacy.api.models.Poll;
 
-import static uk.openvk.android.legacy.R.color.link;
-
-public class NewsfeedItem implements Parcelable {
+public class WallPost implements Parcelable {
 
     private String avatar_url;
-    public String photo_msize_url;
-    public String photo_hsize_url;
     public Bitmap avatar;
-    public Bitmap photo;
     public String name;
     public RepostInfo repost;
     public String info;
     public String text;
     public int owner_id;
     public int post_id;
-    public String attachment_status;
     public PostCounters counters;
     public int author_id;
-    public Poll poll;
-    public int scaledWidth;
-    public int scaledHeight;
+    public ArrayList<Attachment> attachments;
 
-    public NewsfeedItem(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, String photo_msize_url,
-                        String photo_hsize_url, Poll poll, int o_id, int p_id, Context ctx) {
+    public WallPost(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments, int o_id, int p_id, Context ctx) {
         name = author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
         Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
@@ -60,41 +48,35 @@ public class NewsfeedItem implements Parcelable {
         counters = nICI;
         text = post_text;
         this.avatar_url = avatar_url;
-        this.photo_msize_url = photo_msize_url;
-        this.photo_hsize_url = photo_hsize_url;
         owner_id = o_id;
         post_id = p_id;
-        this.poll = poll;
+        this.attachments = attachments;
     }
 
-    public NewsfeedItem() {
+    public WallPost() {
 
     }
 
-    protected NewsfeedItem(Parcel in) {
+    protected WallPost(Parcel in) {
         avatar_url = in.readString();
-        photo_msize_url = in.readString();
-        photo_hsize_url = in.readString();
         avatar = in.readParcelable(Bitmap.class.getClassLoader());
-        photo = in.readParcelable(Bitmap.class.getClassLoader());
         name = in.readString();
         info = in.readString();
         text = in.readString();
         owner_id = in.readInt();
         post_id = in.readInt();
-        attachment_status = in.readString();
         author_id = in.readInt();
     }
 
-    public static final Creator<NewsfeedItem> CREATOR = new Creator<NewsfeedItem>() {
+    public static final Creator<WallPost> CREATOR = new Creator<WallPost>() {
         @Override
-        public NewsfeedItem createFromParcel(Parcel in) {
-            return new NewsfeedItem(in);
+        public WallPost createFromParcel(Parcel in) {
+            return new WallPost(in);
         }
 
         @Override
-        public NewsfeedItem[] newArray(int size) {
-            return new NewsfeedItem[size];
+        public WallPost[] newArray(int size) {
+            return new WallPost[size];
         }
     };
 
@@ -106,16 +88,12 @@ public class NewsfeedItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(avatar_url);
-        parcel.writeString(photo_msize_url);
-        parcel.writeString(photo_hsize_url);
         parcel.writeParcelable(avatar, i);
-        parcel.writeParcelable(photo, i);
         parcel.writeString(name);
         parcel.writeString(info);
         parcel.writeString(text);
         parcel.writeInt(owner_id);
         parcel.writeInt(post_id);
-        parcel.writeString(attachment_status);
         parcel.writeInt(author_id);
     }
 }

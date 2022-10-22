@@ -22,8 +22,10 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.user_interface.list_adapters.NewsfeedAdapter;
-import uk.openvk.android.legacy.user_interface.list_items.NewsfeedItem;
+import uk.openvk.android.legacy.api.models.WallPost;
 
 public class WallLayout extends LinearLayout {
     private View headerView;
@@ -36,7 +38,7 @@ public class WallLayout extends LinearLayout {
     private NewsfeedAdapter wallAdapter;
     private RecyclerView wallView;
     private LinearLayoutManager llm;
-    private ArrayList<NewsfeedItem> wallItems;
+    private ArrayList<WallPost> wallItems;
 
     public WallLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,7 +63,7 @@ public class WallLayout extends LinearLayout {
         params.height = getMeasuredHeight();
     }
 
-    public void createAdapter(Context ctx, ArrayList<NewsfeedItem> wallItems) {
+    public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
         wallAdapter = new NewsfeedAdapter(ctx, wallItems);
         wallView = (RecyclerView) findViewById(R.id.wall_listview);
@@ -70,7 +72,7 @@ public class WallLayout extends LinearLayout {
         wallView.setAdapter(wallAdapter);
     }
 
-    public void updateItem(NewsfeedItem item, int position) {
+    public void updateItem(WallPost item, int position) {
         if(wallAdapter != null) {
             wallView = (RecyclerView) findViewById(R.id.news_listview);
             wallItems.set(position, item);
@@ -88,17 +90,45 @@ public class WallLayout extends LinearLayout {
                 int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
                 for (int i = 0; i < totalItemCount; i++) {
                     try {
-                        NewsfeedItem item = wallItems.get(i);
+                        WallPost item = wallItems.get(i);
+                        if(item.repost != null) {
+                            if (item.repost.newsfeed_item.attachments.size() > 0) {
+                                if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
+                                    PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(0).getContent());
+                                    Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
+                                    if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                                        photoAttachment.photo = null;
+                                    } else {
+                                        BitmapFactory.Options options = new BitmapFactory.Options();
+                                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                        if (photoAttachment.url.length() > 0) {
+                                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(),
+                                                    item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
+                                            if (bitmap != null) {
+                                                photoAttachment.photo = bitmap;
+                                                attachment.status = "done";
+                                                item.repost.newsfeed_item.attachments.set(0, attachment);
+                                            }
+                                        }
+                                    }
+                                    wallItems.set(i, item);
+                                }
+                            }
+                        }
                         if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                            item.photo = null;
+                            ((PhotoAttachment) item.attachments.get(0).getContent()).photo = null;
                         } else {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            if(item.photo_msize_url.length() > 0 || item.photo_hsize_url.length() > 0) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
-                                if (bitmap != null) {
-                                    item.photo = bitmap;
-                                    item.attachment_status = "photo";
+                            if(item.attachments.size() > 0) {
+                                if(item.attachments.get(0).type.equals("photo")) {
+                                    if (((PhotoAttachment) item.attachments.get(0).getContent()).url.length() > 0) {
+                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                        if (bitmap != null) {
+                                            ((PhotoAttachment) item.attachments.get(0).getContent()).photo = bitmap;
+                                            item.attachments.get(0).status = "done";
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -176,7 +206,7 @@ public class WallLayout extends LinearLayout {
             wallView = (RecyclerView) findViewById(R.id.wall_listview);
             for (int i = 0; i < getCount(); i++) {
                 try {
-                    NewsfeedItem item = wallItems.get(i);
+                    WallPost item = wallItems.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
