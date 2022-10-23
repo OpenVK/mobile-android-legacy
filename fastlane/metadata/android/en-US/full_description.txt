@@ -1,1 +1,3 @@
-OpenVK Legacy is mobile client for retro devices running Android 2.1 Eclair and higher. Code provided here is not stable yet.
+OpenVK Legacy is a mobile client for OpenVK for retro devices running Android 2.1 Eclair and higher. Code provided here is not stable yet.
+
+<a href='https://codeberg.org/OpenVK/openvk'>OpenVK</a> is an open source social network inspired by VK.
