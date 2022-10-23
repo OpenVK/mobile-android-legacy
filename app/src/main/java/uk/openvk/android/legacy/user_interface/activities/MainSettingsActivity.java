@@ -22,6 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -43,6 +47,7 @@ public class MainSettingsActivity extends PreferenceActivity {
     public Handler handler;
     private View about_instance_view;
     private Ovk ovk;
+    private int danger_zone_multiple_tap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,10 +204,36 @@ public class MainSettingsActivity extends PreferenceActivity {
         }
 
         Preference debug_menu = findPreference("debug_menu");
+        danger_zone_multiple_tap = 0;
+        global_prefs.getBoolean("debugDangerZone", false);
         debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                MainSettingsActivity.this.danger_zone_multiple_tap += 1;
+                if(MainSettingsActivity.this.danger_zone_multiple_tap == 1) {
+                    Timer timer = new Timer();
+                    timer.schedule(new HideDangerZone(), 8000, 8000);
+                }
+                if(MainSettingsActivity.this.danger_zone_multiple_tap < 5) {
+                    Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                    startActivity(intent);
+                } else if(MainSettingsActivity.this.danger_zone_multiple_tap == 5) {
+                    Toast.makeText(MainSettingsActivity.this, "злой армянин кушает", Toast.LENGTH_LONG).show();
+                } else if(MainSettingsActivity.this.danger_zone_multiple_tap == 10) {
+                    global_prefs.edit().putBoolean("debugDangerZone", true).commit();
+                    Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                    startActivity(intent);
+                    MainSettingsActivity.this.danger_zone_multiple_tap = 0;
+                }
+                return false;
+            }
+        });
+
+        Preference network_settings = findPreference("network_settings");
+        network_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getApplicationContext(), NetworkSettingsActivity.class);
                 startActivity(intent);
                 return false;
             }
@@ -276,7 +307,7 @@ public class MainSettingsActivity extends PreferenceActivity {
             }
         });
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            setDialogStyle(about_instance_view);
+            setDialogStyle(about_instance_view, "about_instance");
         }
         about_instance_dlg = builder.create();
         about_instance_dlg.show();
@@ -285,33 +316,42 @@ public class MainSettingsActivity extends PreferenceActivity {
         ovk.aboutInstance(ovk_api);
     }
 
-    private void setDialogStyle(View view) {
+    private void setDialogStyle(View view, String dialog_name) {
         try {
-            ((TextView) view.findViewById(R.id.server_addr_label)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.server_addr_label2)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.connection_type_label)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.connection_type_label2)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_version_label)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_version_label2)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_users_count)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_statistics_label)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_online_users_count)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_active_users_count)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_groups_count)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_admins_count)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_wall_posts_count)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label2)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label3)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label4)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label5)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label6)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label7)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label8)).setTextColor(Color.WHITE);
-            ((TextView) view.findViewById(R.id.instance_links_label9)).setTextColor(Color.WHITE);
+            if(dialog_name.equals("about_instance")) {
+                ((TextView) view.findViewById(R.id.server_addr_label)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.server_addr_label2)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.connection_type_label)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.connection_type_label2)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_version_label)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_version_label2)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_users_count)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_statistics_label)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_online_users_count)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_active_users_count)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_groups_count)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_admins_count)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_wall_posts_count)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label2)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label3)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label4)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label5)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label6)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label7)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label8)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.instance_links_label9)).setTextColor(Color.WHITE);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
+    private class HideDangerZone extends TimerTask {
+        @Override
+        public void run() {
+            MainSettingsActivity.this.danger_zone_multiple_tap = 0;
+            MainSettingsActivity.this.global_prefs.edit().putBoolean("debugDangerZone", false).commit();
+        }
+    }
 }

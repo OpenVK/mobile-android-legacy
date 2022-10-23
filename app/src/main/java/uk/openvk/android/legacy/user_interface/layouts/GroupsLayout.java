@@ -57,24 +57,28 @@ public class GroupsLayout extends LinearLayout {
     }
 
     public void loadAvatars() {
-        if(groupsAdapter != null) {
-            groupsListView = (ListView) findViewById(R.id.groups_listview);
-            for (int i = 0; i < getCount(); i++) {
-                try {
-                    Group item = groups.get(i);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/group_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
-                    if (bitmap != null) {
-                        item.avatar = bitmap;
+        try {
+            if(groupsAdapter != null) {
+                groupsListView = (ListView) findViewById(R.id.groups_listview);
+                for (int i = 0; i < getCount(); i++) {
+                    try {
+                        Group item = groups.get(i);
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/group_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                        if (bitmap != null) {
+                            item.avatar = bitmap;
+                        }
+                        groups.set(i, item);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    groups.set(i, item);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
+                groupsAdapter = new GroupsListAdapter(getContext(), groups);
+                groupsListView.setAdapter(groupsAdapter);
             }
-            groupsAdapter = new GroupsListAdapter(getContext(), groups);
-            groupsListView.setAdapter(groupsAdapter);
+        } catch (OutOfMemoryError ex) {
+            ex.printStackTrace();
         }
     }
 }

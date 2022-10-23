@@ -61,6 +61,7 @@ public class HandlerMessages {
 
     // Newsfeed
     public static int NEWSFEED_GET                      = 800;
+    public static int NEWSFEED_GET_MORE                 = 801;
 
     // OpenVK specific
     public static int OVK_VERSION                       = 900;

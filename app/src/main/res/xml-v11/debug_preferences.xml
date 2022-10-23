@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="debug_menu">
+
+    <PreferenceCategory
+        android:title="@string/sett_general">
+
+    <Preference
+        android:id="@+id/logToFile"
+        android:key="logToFile"
+        android:title="@string/write_logs_to_file" />
+
+    <Preference
+        android:id="@+id/bugReport"
+        android:key="bugReport"
+        android:title="@string/send_bug_report" />
+
+    <Preference
+        android:key="terminate"
+        android:title="@string/terminate" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/sett_danger_zone"
+        android:key="danger_zone">
+        <Preference
+            android:key="copyAccessToken"
+            android:title="@string/copy_token"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

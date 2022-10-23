@@ -17,7 +17,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_preferences_layout);
-        addPreferencesFromResource(R.xml.preferences_adv);
+        addPreferencesFromResource(R.xml.advanced_preferences);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);

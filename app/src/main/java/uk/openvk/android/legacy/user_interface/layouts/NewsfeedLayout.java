@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,8 +101,8 @@ public class NewsfeedLayout extends LinearLayout {
                         item.avatar = bitmap;
                     }
                     wallPosts.set(i, item);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (OutOfMemoryError err) {
+                    err.printStackTrace();
                 }
             }
             newsfeedAdapter.notifyDataSetChanged();
@@ -116,8 +117,8 @@ public class NewsfeedLayout extends LinearLayout {
             int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
             int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
             for (int i = 0; i < totalItemCount; i++) {
+                WallPost item = wallPosts.get(i);
                 try {
-                    WallPost item = wallPosts.get(i);
                     if(item.repost != null) {
                         if (item.repost.newsfeed_item.attachments.size() > 0) {
                             if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
@@ -163,8 +164,10 @@ public class NewsfeedLayout extends LinearLayout {
                             wallPosts.set(i, item);
                         }
                     }
+                } catch (OutOfMemoryError error) {
+                    Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
                 }
             }
         } catch (Exception ex) {
@@ -223,10 +226,8 @@ public class NewsfeedLayout extends LinearLayout {
         if(item.equals("likes")) {
             if(value == 1) {
                 wallPosts.get(position).counters.isLiked = true;
-                wallPosts.get(position).counters.likes += 1;
             } else {
                 wallPosts.get(position).counters.isLiked = false;
-                wallPosts.get(position).counters.likes -= 1;
             }
             newsfeedAdapter.notifyDataSetChanged();
         }

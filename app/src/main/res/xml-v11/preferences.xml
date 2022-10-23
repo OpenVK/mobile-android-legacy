@@ -16,10 +16,6 @@
 			android:entryValues="@array/sett_update_interval_v" android:title="@string/sett_update_interval"
 			android:dialogTitle="@string/sett_update_interval" android:key="updateInterval"
 			android:defaultValue="180000" android:dependency="enableC2DM"/-->
-
-		<CheckBoxPreference android:title="@string/sett_https"
-			android:summary="@string/sett_https_summary" android:key="useHTTPS"
-			android:defaultValue="false"/>
 		
 		<CheckBoxPreference android:title="@string/sett_update_on_open"
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
@@ -73,6 +69,12 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/sett_other">
+
+		<Preference
+			android:id="@+id/network_settings"
+			android:key="network_settings"
+			android:title="@string/sett_network" />
+
 		<Preference
 			android:id="@+id/debug_menu"
 			android:key="debug_menu"

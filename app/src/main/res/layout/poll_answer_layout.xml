@@ -42,7 +42,7 @@
                     android:layout_alignParentTop="true"
                     android:max="20"
                     android:progress="18"
-                    android:progressDrawable="@drawable/horizontal_progress" />
+                    android:progressDrawable="@drawable/horizontal_progress_2" />
 
                 <TextView
                     android:id="@+id/answer_votes_count"

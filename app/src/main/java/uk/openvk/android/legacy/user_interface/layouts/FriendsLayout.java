@@ -69,6 +69,8 @@ public class FriendsLayout extends LinearLayout {
                         item.avatar = bitmap;
                     }
                     friends.set(i, item);
+                } catch (OutOfMemoryError ex) {
+                    ex.printStackTrace();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

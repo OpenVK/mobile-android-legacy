@@ -66,6 +66,7 @@ public class LongPollWrapper {
     private Handler handler;
     private String access_token;
     private boolean isActivated;
+    private boolean logging_enabled;
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
@@ -158,10 +159,10 @@ public class LongPollWrapper {
                             response_code = response.code();
                         }
                         if (response_code == 200) {
-                            Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                           // Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
                             sendLongPollMessageToActivity(response_body);
                         } else {
-                            Log.v("OpenVK LPW", String.format("Getting response from %s (%s)", server, response_code));
+                            //Log.v("OpenVK LPW", String.format("Getting response from %s (%s)", server, response_code));
                         }
                         Thread.sleep(2000);
                     }

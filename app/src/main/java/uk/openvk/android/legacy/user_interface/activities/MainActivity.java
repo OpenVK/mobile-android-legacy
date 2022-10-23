@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
         public void run() {
             SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-            if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0) {
+            if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("account_password", "").length() == 0) {
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, AuthActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

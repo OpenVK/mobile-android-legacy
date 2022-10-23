@@ -133,6 +133,15 @@
         </activity>
 
         <activity
+            android:name=".user_interface.activities.NetworkSettingsActivity"
+            android:label="@string/sett_network"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+        </activity>
+
+        <activity
             android:name=".user_interface.activities.AdvancedSettingsActivity"
             android:label="@string/sett_advanced"
             android:theme="@style/BaseStyle"

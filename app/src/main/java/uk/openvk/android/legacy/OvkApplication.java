@@ -37,6 +37,10 @@ public class OvkApplication extends Application {
             global_prefs_editor.putInt("owner_id", 0);
         }
 
+        if(!instance_prefs.contains("account_password")) {
+            instance_prefs_editor.putString("account_password", "");
+        }
+
         if(!global_prefs.contains("useHTTPS")) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 global_prefs_editor.putBoolean("useHTTPS", true);
@@ -47,6 +51,10 @@ public class OvkApplication extends Application {
 
         if(!global_prefs.contains("enableNotification")) {
             global_prefs_editor.putBoolean("enableNotification", true);
+        }
+
+        if(!global_prefs.contains("debugDangerZone")) {
+            global_prefs_editor.putBoolean("debugDangerZone", false);
         }
 
         global_prefs_editor.commit();

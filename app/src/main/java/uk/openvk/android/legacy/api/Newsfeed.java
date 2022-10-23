@@ -30,10 +30,13 @@ public class Newsfeed implements Parcelable {
     private ArrayList<WallPost> items;
     private ArrayList<PhotoAttachment> photos_msize;
     private ArrayList<PhotoAttachment> photos_hsize;
+    public long next_from;
 
     public Newsfeed(String response, DownloadManager downloadManager, Context ctx) {
         jsonParser = new JSONParser();
-        parse(ctx, downloadManager, response);
+        if(items == null) {
+            parse(ctx, downloadManager, response, true);
+        }
     }
 
     public Newsfeed() {
@@ -56,15 +59,18 @@ public class Newsfeed implements Parcelable {
         }
     };
 
-    public void parse(Context ctx, DownloadManager downloadManager, String response) {
-        items = new ArrayList<WallPost>();
-        photos_hsize = new ArrayList<PhotoAttachment>();
-        photos_msize = new ArrayList<PhotoAttachment>();
+    public void parse(Context ctx, DownloadManager downloadManager, String response, boolean clear) {
+        if(clear) {
+            items = new ArrayList<WallPost>();
+            photos_hsize = new ArrayList<PhotoAttachment>();
+            photos_msize = new ArrayList<PhotoAttachment>();
+        }
         ArrayList<PhotoAttachment> avatars = new ArrayList<PhotoAttachment>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
                 JSONObject newsfeed = json.getJSONObject("response");
+                next_from = newsfeed.getLong("next_from");
                 JSONArray items = newsfeed.getJSONArray("items");
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject post = items.getJSONObject(i);
@@ -247,5 +253,9 @@ public class Newsfeed implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeTypedList(items);
+    }
+
+    public void get(OvkAPIWrapper ovk, int count, long start_from) {
+        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&start_from=%d&extended=1", count, start_from), "more_news");
     }
 }

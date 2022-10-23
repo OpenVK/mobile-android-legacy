@@ -128,17 +128,22 @@ public class ProfileLayout extends LinearLayout {
     }
 
     public void loadAvatar(User user) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
-        if (bitmap != null) {
-            user.avatar = bitmap;
-        } else if(user.avatar_url.length() > 0) {
-            user.avatar = null;
-        } else {
-            user.avatar = null;
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
+            if (bitmap != null) {
+                user.avatar = bitmap;
+            } else if (user.avatar_url.length() > 0) {
+                user.avatar = null;
+            } else {
+                user.avatar = null;
+            }
+            if (user.avatar != null)
+                ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
+        } catch (OutOfMemoryError ex) {
+            ex.printStackTrace();
         }
-        if(user.avatar != null) ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
     }
 
     public void setCounter(User user, String where, int count) {

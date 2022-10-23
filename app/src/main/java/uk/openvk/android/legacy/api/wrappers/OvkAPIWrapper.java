@@ -50,9 +50,6 @@ import uk.openvk.android.legacy.user_interface.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Error;
 
-/**
- * Created by Dmitry on 27.09.2022.
- */
 @SuppressWarnings("ALL")
 public class OvkAPIWrapper {
 
@@ -67,6 +64,7 @@ public class OvkAPIWrapper {
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
+    private boolean logging_enabled = true; // default for beta releases
 
     public OvkAPIWrapper(Context ctx, boolean use_https) {
         this.ctx = ctx;
@@ -118,15 +116,19 @@ public class OvkAPIWrapper {
         this.use_https = value;
     }
 
+    public void log(boolean value) {
+        this.logging_enabled = value;
+    }
+
     public void authorize(String username, String password) {
         error.description = "";
         String url = "";
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, URLEncoder.encode(password));
-            Log.v("OpenVK API", String.format("Connecting to %s... (Secured)", server));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s... (Secured)", server));
         } else {
             url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&2fa_supported=1", server, username, URLEncoder.encode(password));
-            Log.v("OpenVK API", String.format("Connecting to %s...", server));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s...", server));
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
@@ -159,7 +161,7 @@ public class OvkAPIWrapper {
                         response_code = response.code();
                     }
                     if (response_body.length() > 0) {
-                        Log.v("OpenVK API", String.format("Connected (%d)", response_code));
+                        if(logging_enabled) Log.v("OpenVK API", String.format("Connected (%d)", response_code));
                         if (response_code == 400) {
                             sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                         } else if (response_code == 401) {
@@ -173,29 +175,31 @@ public class OvkAPIWrapper {
                         }
                     };
                 } catch (ConnectException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketTimeoutException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
                 } catch (UnknownHostException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLHandshakeException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch (OutOfMemoryError e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -212,10 +216,10 @@ public class OvkAPIWrapper {
         String url = "";
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, URLEncoder.encode(password), code);
-            Log.v("OpenVK API", String.format("Connecting to %s (Secured)...", server));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s (Secured)...", server));
         } else {
             url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&2fa_supported=1", server, username, URLEncoder.encode(password), code);
-            Log.v("OpenVK API", String.format("Connecting to %s...", server));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s...", server));
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
@@ -247,7 +251,7 @@ public class OvkAPIWrapper {
                         response_code = response.code();
                     }
                     if (response_body.length() > 0) {
-                        Log.v("OpenVK API", String.format("Connected (%d)", response_code));
+                        if(logging_enabled) Log.v("OpenVK API", String.format("Connected (%d)", response_code));
                         if (response_code == 400) {
                             sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                         } else if (response_code == 401) {
@@ -261,29 +265,31 @@ public class OvkAPIWrapper {
                         }
                     };
                 } catch (ConnectException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketTimeoutException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
                 } catch (UnknownHostException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLHandshakeException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch (OutOfMemoryError e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -300,10 +306,10 @@ public class OvkAPIWrapper {
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            Log.v("OpenVK API", String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
         } else {
             url = String.format("http://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            Log.v("OpenVK API", String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
@@ -336,7 +342,7 @@ public class OvkAPIWrapper {
                     }
                     if (response_body.length() > 0) {
                         if (response_code == 200) {
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
                             if (method.equals("Account.getProfileInfo")) {
                                 sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
                             } else if (method.equals("Account.setOnline")) {
@@ -426,7 +432,11 @@ public class OvkAPIWrapper {
                             } else if (method.equals("Wall.getComments")) {
                                 sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
                             } else if (method.equals("Newsfeed.get")) {
-                                sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                if(where.equals("more_news")) {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
+                                } else {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                }
                             } else if (method.equals("Polls.addVote")) {
                                 sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
                             } else if (method.equals("Polls.deleteVote")) {
@@ -435,7 +445,7 @@ public class OvkAPIWrapper {
                         } else if (response_code == 400) {
                             error = new Error();
                             error.parse(response_body);
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
                             if (error.code == 3) {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
                             } else if (error.code == 5) {
@@ -445,43 +455,44 @@ public class OvkAPIWrapper {
                             } else if (error.code == 100) {
                                 sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                             }
-                        } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
-                            Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
+                        } else if (response_code >= 500 && response_code <= 526) {
+                            if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
-                    }
-                    ;
+                    };
                 } catch (ConnectException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
-                        Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
                     }
                 } catch (SocketTimeoutException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
                 } catch (UnknownHostException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLHandshakeException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                }catch (IOException e) {
+                } catch (OutOfMemoryError e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -533,7 +544,7 @@ public class OvkAPIWrapper {
                     }
                     if (response_body.length() > 0) {
                         if(response_code == 200) {
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
                             if (method.equals("Account.getProfileInfo")) {
                                 sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
                             } else if (method.equals("Account.setOnline")) {
@@ -624,7 +635,7 @@ public class OvkAPIWrapper {
                         } else if(response_code == 400) {
                             error = new Error();
                             error.parse(response_body);
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
                             if(error.code == 3) {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                             } else if(error.code == 5) {
@@ -636,41 +647,43 @@ public class OvkAPIWrapper {
                             } else if(error.code == 945) {
                                 sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
                             }
-                        } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
-                            Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
+                        } else if (response_code >= 500 && response_code <= 526) {
+                            if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
                 } catch (ConnectException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
-                        Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
                     }
                 } catch (SocketTimeoutException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
                 } catch (UnknownHostException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLHandshakeException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                } catch (OutOfMemoryError e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -687,10 +700,10 @@ public class OvkAPIWrapper {
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?access_token=%s", server, method, access_token);
-            Log.v("OpenVK API", String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
         } else {
             url = String.format("http://%s/method/%s?access_token=%s", server, method, access_token);
-            Log.v("OpenVK API", String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
+            if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
@@ -723,7 +736,7 @@ public class OvkAPIWrapper {
                     }
                     if (response_body.length() > 0) {
                         if(response_code == 200) {
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
                             if (method.equals("Account.getProfileInfo")) {
                                 sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, response_body);
                             } else if (method.equals("Account.setOnline")) {
@@ -814,7 +827,7 @@ public class OvkAPIWrapper {
                         } else if(response_code == 400) {
                             error = new Error();
                             error.parse(response_body);
-                            Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
                             if(error.code == 3) {
                                 sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                             } else if(error.code == 5) {
@@ -826,39 +839,39 @@ public class OvkAPIWrapper {
                             } else if(error.code == 945) {
                                 sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
                             }
-                        } else if (response_code == 500 || response_code == 501 || response_code == 502 || response_code == 503) {
+                        } else if (response_code >= 500 && response_code <= 526) {
                             Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                         }
                     };
                 } catch (ConnectException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
-                        Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
                     }
                 } catch (SocketTimeoutException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
                 } catch (UnknownHostException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
                 } catch(javax.net.ssl.SSLProtocolException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLHandshakeException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch(javax.net.ssl.SSLException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                 } catch (IOException e) {
@@ -970,7 +983,7 @@ public class OvkAPIWrapper {
         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).followRedirects(false).followSslRedirects(false).build();
         String url = "";
         url = String.format("http://%s", server);
-        Log.v("OpenVK API", String.format("Checking %s...", server));
+        if(logging_enabled) Log.v("OpenVK API", String.format("Checking %s...", server));
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
@@ -1006,11 +1019,11 @@ public class OvkAPIWrapper {
                         sendMessage(HandlerMessages.OVK_CHECK_HTTPS, response_body);
                     }
                 } catch (SocketTimeoutException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
                 } catch (UnknownHostException e) {
-                    Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (IOException e) {

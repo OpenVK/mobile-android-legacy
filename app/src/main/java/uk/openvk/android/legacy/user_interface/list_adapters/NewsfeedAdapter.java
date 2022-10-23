@@ -227,6 +227,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
             }
 
+            likes_counter.setText("" + item.counters.likes);
+            reposts_counter.setText("" + item.counters.reposts);
+            comments_counter.setText("" + item.counters.comments);
+
             if(item.counters.isLiked) {
                 likes_counter.setSelected(true);
             } else {
@@ -235,13 +239,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
             if(item.counters.enabled) {
                 likes_counter.setEnabled(true);
+                if(item.counters.isLiked) {
+                    likes_counter.setText("" + (item.counters.likes + 1));
+                } else {
+                    likes_counter.setText("" + (item.counters.likes));
+                }
             } else {
                 likes_counter.setEnabled(false);
             }
 
-            likes_counter.setText("" + item.counters.likes);
-            reposts_counter.setText("" + item.counters.reposts);
-            comments_counter.setText("" + item.counters.comments);
             Bitmap author_avatar = item.avatar;
             if(author_avatar != null) {
                 avatar.setImageBitmap(author_avatar);

@@ -3,8 +3,8 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <stroke android:color="#14000000" android:width="1px"/>
-            <solid android:color="#14000000" />
+            <stroke android:color="@color/ovk_color" android:width="1px"/>
+            <solid android:color="#e7e7e7" />
         </shape>
     </item>
 
@@ -12,7 +12,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <stroke android:color="#14000000" android:width="1px"/>
+                <stroke android:color="@color/ovk_color" android:width="1px"/>
                 <solid android:color="@color/ovk_color_light"/>
             </shape>
         </clip>

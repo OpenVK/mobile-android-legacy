@@ -13,11 +13,6 @@
 			android:defaultValue="0" />
 		-->
 
-		<CheckBoxPreference android:title="@string/sett_https"
-			android:summary="@string/sett_https_summary" android:key="useHTTPS"
-			android:layout="@layout/checkbox_prefw"
-			android:defaultValue="false"/>
-		
 		<CheckBoxPreference android:title="@string/sett_update_on_open"
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
 			android:layout="@layout/checkbox_prefw"
@@ -88,15 +83,24 @@
 	<PreferenceCategory
 		android:title="@string/sett_other"
 		android:layout="@layout/category_prefw">
+
+        <Preference
+            android:layout="@layout/pref_widget"
+            android:id="@+id/network_settings"
+            android:key="network_settings"
+            android:title="@string/sett_network" />
+
 		<Preference
 			android:layout="@layout/pref_widget"
 			android:id="@+id/debug_menu"
 			android:key="debug_menu"
 			android:title="@string/debug_menu" />
+
 		<Preference
 			android:layout="@layout/pref_widget"
 			android:key="about_instance"
 			android:title="@string/about_instance" />
+
 		<Preference android:title="@string/menu_about"
 			android:layout="@layout/pref_widget"
 			android:key="about" />

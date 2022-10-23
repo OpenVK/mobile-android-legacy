@@ -135,7 +135,7 @@ public class DownloadManager {
 
 
     public void downloadPhotosToCache(final ArrayList<PhotoAttachment> photoAttachments, final String where) {
-        Log.v("DownloadManager", String.format("Downloading %d photoAttachments...", photoAttachments.size()));
+        Log.v("DownloadManager", String.format("Downloading %d photos...", photoAttachments.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
@@ -164,10 +164,10 @@ public class DownloadManager {
                         photoAttachment.url = "";
                     }
                     if(filename.equals(photoAttachment.filename)) {
-                        Log.e("DownloadManager", "Duplicated filename. Skipping...");
+                        //Log.e("DownloadManager", "Duplicated filename. Skipping...");
                     } else if (photoAttachment.url.length() == 0) {
                         filename = photoAttachment.filename;
-                        Log.e("DownloadManager", "Invalid address. Skipping...");
+                        //Log.e("DownloadManager", "Invalid address. Skipping...");
                         try {
                             File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
                             if(downloadedFile.exists()) {
@@ -188,7 +188,7 @@ public class DownloadManager {
                         } else {
                             short_address = photoAttachments.get(i).url;
                         }
-                        Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photoAttachments.size()));
+                        //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photoAttachments.size()));
                         url = photoAttachments.get(i).url;
                         if (legacy_mode) {
                             request_legacy = new HttpGet(url);
@@ -214,7 +214,7 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    //Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response_in.close();
                                 response_code = statusLine.getStatusCode();
@@ -232,18 +232,19 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    //Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response.body().byteStream().close();
                             }
-                            Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
+                            //Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
                         } catch (IOException e) {
-                            Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            //Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         } catch (Exception e) {
-                            Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            //Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         }
                     }
                 }
+                Log.v("DownloadManager", String.format("Downloaded!"));
                 if (where.equals("account_avatar")) {
                     sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
                 } else if (where.equals("profile_avatars")) {
@@ -292,7 +293,7 @@ public class DownloadManager {
                 }
                 filesize = 0;
                 if (url.length() == 0) {
-                    Log.e("DownloadManager", "Invalid address. Skipping...");
+                    //Log.e("DownloadManager", "Invalid address. Skipping...");
                     try {
                         File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
                         if(downloadedFile.exists()) {
@@ -312,7 +313,7 @@ public class DownloadManager {
                     } else {
                         short_address = url;
                     }
-                    Log.v("DownloadManager", String.format("Downloading %s...", short_address));
+                    //Log.v("DownloadManager", String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
                         request_legacy = new HttpGet(url);
                         request_legacy.getParams().setParameter("timeout", 30000);
@@ -337,7 +338,7 @@ public class DownloadManager {
                                 }
                                 fos.close();
                             } else {
-                                Log.w("DownloadManager", "Filesizes match, skipping...");
+                                //Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response_in.close();
                             response_code = statusLine.getStatusCode();
@@ -354,17 +355,18 @@ public class DownloadManager {
                                 }
                                 fos.close();
                             } else {
-                                Log.w("DownloadManager", "Filesizes match, skipping...");
+                                //Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response.body().byteStream().close();
                         }
-                        Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
+                        //Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
                     } catch (IOException e) {
-                        Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                        //Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
                     } catch (Exception e) {
-                        Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                        //Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
                     }
                 }
+                Log.v("DownloadManager", String.format("Downloaded!"));
                 if (where.equals("account_avatar")) {
                     sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
                 } else if (where.equals("profile_avatars")) {

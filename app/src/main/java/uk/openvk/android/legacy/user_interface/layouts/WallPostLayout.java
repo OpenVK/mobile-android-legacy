@@ -149,6 +149,10 @@ public class WallPostLayout extends LinearLayout {
             repost_info.setVisibility(View.GONE);
         }
 
+        if(item.counters != null) {
+            ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s", item.counters.likes));
+        }
+
         PollLayout pollLayout = findViewById(R.id.poll_layout);
 
     }
@@ -204,8 +208,10 @@ public class WallPostLayout extends LinearLayout {
                 repost_photo.setVisibility(View.VISIBLE);
                 post_photo.setVisibility(GONE);
             }
+        } catch (OutOfMemoryError error) {
+            Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
         }
     }
 

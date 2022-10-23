@@ -296,11 +296,18 @@ public class ProfileIntentActivity extends Activity {
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(this);
-                progressLayout.setVisibility(View.GONE);
-                errorLayout.setVisibility(View.VISIBLE);
+                if(data.containsKey("method")) {
+                    if (data.getString("method").equals("Account.getProfileInfo") ||
+                            (data.getString("method").equals("Users.get") && user.id == 0) ||
+                            (data.getString("method").equals("Users.search") && user.id == 0) ||
+                            (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                        errorLayout.setReason(message);
+                        errorLayout.setData(data);
+                        errorLayout.setRetryAction(this);
+                        progressLayout.setVisibility(View.GONE);
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 if(user.avatar_url.length() > 0) {
                     profileLayout.loadAvatar(user);
@@ -448,7 +455,7 @@ public class ProfileIntentActivity extends Activity {
                     pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
                 }
                 wall.getWallItems().set(item_pos, item);
-                pollAttachment.vote(ovk_api, pollAttachment.id);
+                pollAttachment.vote(ovk_api, pollAttachment.answers.get(answer).id);
             }
         }
     }

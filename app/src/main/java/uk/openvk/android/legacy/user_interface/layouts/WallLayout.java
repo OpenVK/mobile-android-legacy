@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,8 +90,8 @@ public class WallLayout extends LinearLayout {
                 int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
                 int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
                 for (int i = 0; i < totalItemCount; i++) {
+                    WallPost item = wallItems.get(i);
                     try {
-                        WallPost item = wallItems.get(i);
                         if(item.repost != null) {
                             if (item.repost.newsfeed_item.attachments.size() > 0) {
                                 if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
@@ -116,7 +117,9 @@ public class WallLayout extends LinearLayout {
                             }
                         }
                         if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                            ((PhotoAttachment) item.attachments.get(0).getContent()).photo = null;
+                            if(item.attachments.get(0).type.equals("photo")) {
+                                ((PhotoAttachment) item.attachments.get(0).getContent()).photo = null;
+                            }
                         } else {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -133,8 +136,10 @@ public class WallLayout extends LinearLayout {
                             }
                         }
                         wallItems.set(i, item);
+                    } catch (OutOfMemoryError error) {
+                        Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
                     }
                 }
                 wallAdapter.notifyDataSetChanged();
@@ -216,8 +221,8 @@ public class WallLayout extends LinearLayout {
                         item.avatar = bitmap;
                     }
                     wallItems.set(i, item);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (OutOfMemoryError err) {
+                    err.printStackTrace();
                 }
             }
             wallAdapter.notifyDataSetChanged();

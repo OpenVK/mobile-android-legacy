@@ -414,7 +414,7 @@ public class GroupIntentActivity extends Activity {
                     pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
                 }
                 wall.getWallItems().set(item_pos, item);
-                pollAttachment.vote(ovk_api, pollAttachment.id);
+                pollAttachment.vote(ovk_api, pollAttachment.answers.get(answer).id);
             }
         }
     }

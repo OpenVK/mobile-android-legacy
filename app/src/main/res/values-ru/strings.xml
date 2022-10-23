@@ -29,7 +29,9 @@
         <item>Сбой инстанции</item>
         <item>Неизвестная ошибка</item>
     </string-array>
-    
+
+    <string name="invalid_password">Неверный пароль</string>
+
     <string name="load_more">Загрузить ещё</string>
     <string-array name="months_short">
         <item>янв</item>
@@ -175,15 +177,23 @@
     	<item>По фамилии</item>
     	<item>По популярности</item>
     </string-array>
-    <string name="sett_https">Защищенное соединение</string>
-    <string name="sett_https_summary">Принудительно использовать протокол HTTPS</string>
     <string name="sett_general">Общие</string>
     <string name="sett_notifications">Уведомления</string>
     <string name="sett_notify_sound">Звук</string>
     <string name="sett_notify_vibrate">Вибрация</string>
     <string name="sett_notify_led">Световой индикатор</string>
     <string name="sett_other">Прочее</string>
-    
+
+    <string name="sett_danger_zone">Опасная зона</string>
+
+    <string name="sett_network">Настройки сети</string>
+    <string name="sett_https">Защищенное соединение</string>
+    <string name="sett_https_summary">Принудительно использовать протокол HTTPS</string>
+    <string name="sett_use_proxy">Использовать прокси-сервер</string>
+    <string name="sett_proxy_connection">Настройки прокси-соединения</string>
+    <string name="sett_proxy_address">Адрес прокси-сервера</string>
+    <string name="sett_proxy_address_alt">Адрес:</string>
+    <string name="sett_proxy_type">Тип:</string>
     
     <string-array name="date_ago_hrs">
     	<item>час назад</item>
@@ -1022,6 +1032,9 @@
 	<string name="repost_ok_group">Запись появится в сообществе</string>
 	<string name="post_friends_only">Только для друзей</string>
 	<string name="confirm_close_post">Если вы выйдете, эта запись будет потеряна.</string>
+    <string name="confirm_with_password">Для подтверждения введите пароль от своего аккаунта.</string>
+    <string name="copy_token">Скопировать токен доступа</string>
+    <string name="copy_token_toast">Токен доступа скопирован в буфер обмена. Для обеспечения безопасности не раскрывайте третьим лицам!</string>
 	<string name="poll_btn_vote">Голосовать</string>
 	<string name="offline">Не в сети</string>
 	<string-array name="chat_members">

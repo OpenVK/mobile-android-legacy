@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -26,7 +27,8 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginLeft="13dp"
-            android:src="@drawable/user_placeholder"/>
+            android:src="@drawable/user_placeholder"
+            tools:ignore="ContentDescription,RtlHardcoded" />
 
         <TextView
             android:id="@+id/profile_name"
@@ -38,14 +40,16 @@
             android:maxLines="1"
             android:text="Profile name"
             android:textSize="18sp"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded" />
 
         <ImageButton
             android:id="@+id/imageButton2"
             android:layout_width="54dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:src="@drawable/ic_left_post_photo" />
+            android:src="@drawable/ic_left_post_photo"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
 

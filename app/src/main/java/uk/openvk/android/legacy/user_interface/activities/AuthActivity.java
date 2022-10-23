@@ -222,10 +222,12 @@ public class AuthActivity extends Activity {
             if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
         } else if (message == HandlerMessages.AUTHORIZED) {
             connectionDialog.cancel();
+            String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
             SharedPreferences.Editor instance_editor = instance_prefs.edit();
             Authorization auth = new Authorization(response);
             instance_editor.putString("access_token", auth.getAccessToken());
             instance_editor.putString("server", ((EditTextAction) findViewById(R.id.instance_name)).getText());
+            instance_editor.putString("account_password", password);
             instance_editor.commit();
             if(connectionDialog != null) connectionDialog.cancel();
             Context context = getApplicationContext();

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+	<PreferenceCategory
+		android:title="@string/sett_general"
+		android:layout="@layout/category_prefw">
+
+		<CheckBoxPreference android:title="@string/sett_https"
+			android:summary="@string/sett_https_summary" android:key="useHTTPS"
+			android:layout="@layout/checkbox_prefw"
+			android:defaultValue="false"/>
+
+        <!--
+		<CheckBoxPreference android:title="@string/sett_use_proxy"
+			android:key="useProxy"
+			android:layout="@layout/checkbox_prefw"
+			android:defaultValue="false"/>
+			
+		<Preference android:title="@string/sett_advanced"
+			android:layout="@layout/pref_widget"
+			android:summary="" android:key="proxySettings"/>
+		!-->
+
+	</PreferenceCategory>
+
+
+</PreferenceScreen>

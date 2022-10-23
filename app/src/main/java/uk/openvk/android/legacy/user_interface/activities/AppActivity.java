@@ -481,7 +481,7 @@ public class AppActivity extends Activity {
                     ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                newsfeed.parse(this, downloadManager, data.getString("response"));
+                newsfeed.parse(this, downloadManager, data.getString("response"), true);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -489,7 +489,16 @@ public class AppActivity extends Activity {
                 }
                 newsfeedLayout.loading_more_posts = true;
                 newsfeedLayout.setScrollingPositions(this, false, true);
-            } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
+            } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
+                newsfeed.parse(this, downloadManager, data.getString("response"), false);
+                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    progressLayout.setVisibility(View.GONE);
+                    newsfeedLayout.setVisibility(View.VISIBLE);
+                }
+                newsfeedLayout.loading_more_posts = true;
+                newsfeedLayout.setScrollingPositions(this, false, true);
+            }else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""));
                 longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
@@ -589,19 +598,6 @@ public class AppActivity extends Activity {
                 } else if (global_prefs.getString("current_screen", "").equals("profile")) {
                     ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
-                if(data.containsKey("method")) {
-                    if (data.getString("method").equals("Account.getProfileInfo") || (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
-                            (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
-                            (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
-                        errorLayout.setReason(message);
-                        errorLayout.setData(data);
-                        errorLayout.setRetryAction(this);
-                        progressLayout.setVisibility(View.GONE);
-                        errorLayout.setVisibility(View.VISIBLE);
-                    }
-                }
             } else if(message == HandlerMessages.INVALID_TOKEN) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
                 instance_prefs_editor.putString("access_token", "");
@@ -692,6 +688,20 @@ public class AppActivity extends Activity {
                             wall.getWallItems().set(item_pos, item);
                             ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                         }
+                    }
+                }
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+                    message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
+                if(data.containsKey("method")) {
+                    if (data.getString("method").equals("Account.getProfileInfo") ||
+                            (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
+                            (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
+                            (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                        errorLayout.setReason(message);
+                        errorLayout.setData(data);
+                        errorLayout.setRetryAction(this);
+                        progressLayout.setVisibility(View.GONE);
+                        errorLayout.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -979,9 +989,8 @@ public class AppActivity extends Activity {
     }
 
     public void loadMoreNews() {
-        newsfeed_count = newsfeed_count + 25;
         if(newsfeed != null) {
-            newsfeed.get(ovk_api, newsfeed_count);
+            newsfeed.get(ovk_api, 25, newsfeed.next_from);
         }
     }
 
@@ -998,7 +1007,7 @@ public class AppActivity extends Activity {
                     pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
                 }
                 newsfeed.getWallPosts().set(item_pos, item);
-                pollAttachment.vote(ovk_api, pollAttachment.id);
+                pollAttachment.vote(ovk_api, pollAttachment.answers.get(answer).id);
             }
         }
     }
