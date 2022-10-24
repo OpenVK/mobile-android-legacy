@@ -720,9 +720,7 @@
 	<string name="topic_info_fixed">Тема закреплена</string>
 	<string name="topic_info_closed">Тема закрыта</string>
 	<string name="topic_info_fixed_closed">Тема закреплена и закрыта</string>
-	
-	
-	
+
 	<string name="sett_advanced">Расширенные настройки</string>
 	<string name="sett_big_images_mobile">Большие фото через моб. сеть</string>
 	<string name="sett_big_images_mobile_summary">Загружать большие фотографии в новостях через 3G</string>
@@ -905,7 +903,7 @@
     	<item>%d в сети</item>
     	<item>%d в сети</item>
 	</string-array>	
-	<string-array name="photoAttachments">
+	<string-array name="photos">
     	<item>%d фотография</item>
     	<item>%d фотографии</item>
     	<item>%d фотографий</item>
