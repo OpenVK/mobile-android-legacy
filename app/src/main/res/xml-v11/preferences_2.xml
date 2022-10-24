@@ -49,7 +49,7 @@
 			android:id="@+id/network_settings"
 			android:key="network_settings"
 			android:title="@string/sett_network" />
-		
+
 		<Preference android:title="@string/menu_about" android:key="about" />
 
 	</PreferenceCategory>
