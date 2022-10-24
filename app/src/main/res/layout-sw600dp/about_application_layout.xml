@@ -90,7 +90,7 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
-                        android:id="@+id/app_credits_title"
+                        android:id="@+id/app_translations_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="3dp"
