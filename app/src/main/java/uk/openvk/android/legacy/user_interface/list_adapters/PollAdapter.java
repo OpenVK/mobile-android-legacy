@@ -33,6 +33,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
     private boolean multiple;
     public LruCache memCache;
     private int user_votes;
+    private int total_votes_2;
 
     public PollAdapter(Context context, int item_pos, ArrayList<PollAnswer> answers, boolean multiple, int user_votes, int total_votes) {
         ctx = context;
@@ -41,6 +42,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
         this.multiple = multiple;
         this.user_votes = user_votes;
         this.total_votes = total_votes;
+        this.total_votes_2 = total_votes;
     }
 
     @Override
@@ -94,12 +96,14 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                     answer_name.setTypeface(Typeface.DEFAULT_BOLD);
                     answer_progress.setProgressDrawable(ctx.getResources().getDrawable(R.drawable.horizontal_progress));
                     answer_votes_count.setTextColor(ctx.getResources().getColor(R.color.ovk_color));
+                    answer_votes_count.setText(String.valueOf(item.votes + 1));
+                    total_votes = total_votes_2 + 1;
                 } else {
                     answer_name.setTypeface(Typeface.DEFAULT);
                     answer_progress.setProgressDrawable(ctx.getResources().getDrawable(R.drawable.horizontal_progress_2));
                     answer_votes_count.setTextColor(Color.parseColor("#6f6f6f"));
+                    answer_votes_count.setText(String.valueOf(item.votes));
                 }
-                answer_votes_count.setText(String.valueOf(item.votes));
                 answer_progress.setMax(total_votes);
                 answer_progress.setProgress(item.votes);
                 double progress = (double) item.votes / (double) total_votes;
@@ -118,6 +122,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                     }
                 });
             } else if(user_votes == 0) {
+                total_votes = total_votes_2;
                 answer_name.setTypeface(Typeface.DEFAULT);
                 answer_progress.setMax(total_votes);
                 answer_progress.setProgress(0);

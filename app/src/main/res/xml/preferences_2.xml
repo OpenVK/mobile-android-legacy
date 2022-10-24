@@ -49,6 +49,13 @@
 			android:key="debug_menu"
 			android:layout="@layout/pref_widget"
 			android:title="@string/debug_menu" />
+
+		<Preference
+			android:layout="@layout/pref_widget"
+			android:id="@+id/network_settings"
+			android:key="network_settings"
+			android:title="@string/sett_network" />
+
 		<Preference android:title="@string/menu_about"
 			android:key="about"
 			android:layout="@layout/pref_widget" />
