@@ -904,7 +904,7 @@
     	<item>%d в мережі</item>
     	<item>%d в мережі</item>
 	</string-array>	
-	<string-array name="photoAttachments">
+	<string-array name="photos">
     	<item>%d фотографія</item>
     	<item>%d фотографії</item>
     	<item>%d фотографій</item>
