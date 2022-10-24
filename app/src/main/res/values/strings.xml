@@ -235,6 +235,7 @@
 	<string name="fsize_b">bytes</string>
 	<string name="fsize_kb">KB</string>
 	<string name="fsize_mb">MB</string>
+	<string name="fsize_gb">GB</string>
 	<string name="delete">Delete</string>
 	<string name="confirm">Please confirm</string>
 	<string name="delete_confirm">Are you sure you want to delete this post?</string>
@@ -948,6 +949,7 @@
 	<string name="open_in_browser">Open in a browser</string>
 	<string name="link_copied">Link has been copied to the clipboard</string>
 	<string name="friends_of_user">%s\'s friends</string>
+	<string name="invalid_session">The session is invalid. Please login again.</string>
 	<string-array name="friends_mutual">
 	    <item>%d mutual</item>
 	    <item>%d mutual</item>

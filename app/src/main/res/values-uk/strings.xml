@@ -6,7 +6,7 @@
     <string name="add_comment_hint">Ваш коментар</string>
     <string name="send">Надіслати</string>
     <string name="captcha_hint">Введіть код з картинки</string>
-    <string name="photoAttachment">Фотографія</string>
+    <string name="photos">Фотографія</string>
     <string name="audio">Аудіозапис</string>
     <string name="video">Відеозапис</string>
     <string name="doc">Документ</string>
@@ -1172,7 +1172,7 @@
 	<string name="add_photo_from_album">Вибрати з альбому</string>
 	<string name="saved_to_album">Фотографія була збережена в альбом \"Збережені фотографії\".</string>
     <string name="profile_telegram">Telegram</string>
-    <string name="telegram_not_installed" translatable="false">Встановiть програму Telegram</string>
+    <string name="telegram_not_installed">Встановiть програму Telegram</string>
     <string name="newpost_export_tg">Експорт до Telegram</string>
     <string name="welcome_title3">Синхронiзацiя контактiв</string>
     <string name="widget_news">OpenVK - новини</string>
