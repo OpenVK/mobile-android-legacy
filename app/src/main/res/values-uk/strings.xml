@@ -6,7 +6,7 @@
     <string name="add_comment_hint">Ваш коментар</string>
     <string name="send">Надіслати</string>
     <string name="captcha_hint">Введіть код з картинки</string>
-    <string name="photos">Фотографія</string>
+    <string name="photo">Фотографія</string>
     <string name="audio">Аудіозапис</string>
     <string name="video">Відеозапис</string>
     <string name="doc">Документ</string>
