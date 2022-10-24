@@ -2,13 +2,13 @@
 <ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
  <ContactsDataKind
   android:icon="@drawable/icon"
-  android:mimeType="vnd.android.cursor.item/vnd.com.vkontakte.android.profile"
+  android:mimeType="vnd.android.cursor.item/vnd.uk.openvk.android.legacy.profile"
   android:summaryColumn="data2"
   android:detailColumn="data3"
   android:detailSocialSummary="true" />
  <ContactsDataKind
   android:icon="@drawable/icon"
-  android:mimeType="vnd.android.cursor.item/vnd.com.vkontakte.android.sendmsg"
+  android:mimeType="vnd.android.cursor.item/vnd.uk.openvk.android.legacy.sendmsg"
   android:summaryColumn="data2"
   android:detailColumn="data3"
   android:detailSocialSummary="true" />

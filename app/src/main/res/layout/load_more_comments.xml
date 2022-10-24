@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.vkontakte.android.LoadMoreCommentsView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:vk="http://schemas.android.com/apk/res/com.vkontakte.android"
+<uk.openvk.android.legacy.LoadMoreCommentsView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:vk="http://schemas.android.com/apk/res/uk.openvk.android.legacy"
     android:layout_width="fill_parent"
     android:layout_height="43dip"
     android:background="@drawable/post_load_more_comments"
@@ -26,4 +26,4 @@
         android:layout_gravity="center"
         android:visibility="invisible" />
 
-</com.vkontakte.android.LoadMoreCommentsView>
+</uk.openvk.android.legacy.LoadMoreCommentsView>

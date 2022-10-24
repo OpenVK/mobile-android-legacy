@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.vkontakte.android.DocAttachView xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.DocAttachView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
         android:paddingBottom="10dip"
@@ -32,4 +32,4 @@
         </TextView>
     </FrameLayout>
 
-</com.vkontakte.android.DocAttachView>
+</uk.openvk.android.legacy.DocAttachView>
