@@ -17,6 +17,9 @@ public class LongPollService extends Service {
     private LongPollWrapper lpW;
     private Context ctx;
     private String access_token;
+    
+    public LongPollService() {
+    }
 
     public LongPollService(Context ctx, String access_token) {
         this.ctx = ctx;

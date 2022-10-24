@@ -60,7 +60,7 @@
             android:layout_height="match_parent" >
 
             <ImageView
-                android:id="@+id/audio_panel_cover"
+                android:id="@+id/audio_panel_cover2"
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -70,12 +70,12 @@
                 android:src="#80FFFFFF"/>
 
             <TextView
-                android:id="@+id/audio_panel_title"
+                android:id="@+id/audio_panel_title2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="6dip"
-                android:layout_toRightOf="@+id/audio_panel_cover"
+                android:layout_toRightOf="@+id/audio_panel_cover2"
                 android:text="TextView"
                 android:textColor="#e5FFFFFF"
                 android:singleLine="true"
@@ -85,11 +85,11 @@
                 android:textSize="18dip" />
 
             <TextView
-                android:id="@+id/audio_panel_artist"
+                android:id="@+id/audio_panel_artist2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/audio_panel_title"
-                android:layout_toRightOf="@+id/audio_panel_cover"
+                android:layout_below="@+id/audio_panel_title2"
+                android:layout_toRightOf="@+id/audio_panel_cover2"
                 android:text="TextView"
                 android:textColor="#99FFFFFF"
                 android:singleLine="true"
