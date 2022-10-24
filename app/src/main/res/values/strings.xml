@@ -473,7 +473,7 @@
     <string name="audio_saved">Saved</string>
     
     
-    <string name="error_loading_poll">Error loading pollAttachment: %s</string>
+    <string name="error_loading_poll">Error loading poll: %s</string>
     
     <string-array name="profile_counters">
         <item>Photos</item>
@@ -833,8 +833,8 @@
 	<string name="group_invites_you">%s invites you</string>
 	<string name="groups_invitations">Invitations</string>
 	<string name="comments_one_comment">One comment</string>
-	<string name="poll_open">Public pollAttachment</string>
-	<string name="poll_anonym">Anonymous pollAttachment</string>
+	<string name="poll_open">Public poll</string>
+	<string name="poll_anonym">Anonymous poll</string>
 	<string name="recommendations">Recommendations</string>
 	
 	<string-array name="friends_tab_all">
