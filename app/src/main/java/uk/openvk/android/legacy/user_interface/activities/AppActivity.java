@@ -62,6 +62,7 @@ import uk.openvk.android.legacy.user_interface.layouts.NewsfeedLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.SlidingMenuLayout;
+import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
@@ -99,10 +100,12 @@ public class AppActivity extends Activity {
     private Menu activity_menu;
     private GroupsLayout groupsLayout;
     private int newsfeed_count = 25;
-    private int notification_id;
+    private int notification_id = 200;
     private String last_longpoll_response;
     private int item_pos;
     private int poll_answer;
+    private NotificationManager notifMan;
+    private NotificationChannel notifChannel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,14 @@ public class AppActivity extends Activity {
         if(instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("server", "").length() == 0) {
             finish();
         }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notifMan = getSystemService(NotificationManager.class);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            notifChannel = new NotificationChannel("lp_updates", "LongPoll Updates", importance);
+            notifChannel.enableLights(false);
+            notifChannel.enableVibration(false);
+            notifMan.createNotificationChannel(notifChannel);
+        }
         last_longpoll_response = "";
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
@@ -120,6 +131,7 @@ public class AppActivity extends Activity {
         installLayouts();
         Global global = new Global();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
@@ -481,6 +493,7 @@ public class AppActivity extends Activity {
                     ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
+                downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                 newsfeed.parse(this, downloadManager, data.getString("response"), true);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
@@ -500,7 +513,8 @@ public class AppActivity extends Activity {
                 newsfeedLayout.setScrollingPositions(this, false, true);
             }else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
-                longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""));
+                longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
+                longPollService.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                 longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
                 slidingmenuLayout.loadAccountAvatar(account);
@@ -624,8 +638,7 @@ public class AppActivity extends Activity {
                         }
                         notification_id = notification_id + 1;
                         last_longpoll_response = data.getString("response");
-                        NotificationManager notifMan = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        Notification notification = createNotification(notifMan, "lp_updates", "LongPoll Updates", R.drawable.ic_stat_notify, msg_author, msg_event.msg_text);
+                        Notification notification = createNotification(notifMan, R.drawable.ic_stat_notify, msg_author, msg_event.msg_text);
                         notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
                         notifMan.notify(notification_id, notification);
                     }
@@ -693,10 +706,24 @@ public class AppActivity extends Activity {
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
                 if(data.containsKey("method")) {
-                    if (data.getString("method").equals("Account.getProfileInfo") ||
-                            (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
-                            (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
-                            (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                    try {
+                        if (data.getString("method").equals("Account.getProfileInfo") ||
+                                (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
+                                (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
+                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                            errorLayout.setReason(message);
+                            errorLayout.setData(data);
+                            errorLayout.setRetryAction(this);
+                            progressLayout.setVisibility(View.GONE);
+                            errorLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            if(data.getString("method").equals("Wall.get") && global_prefs.getString("current_screen", "").equals("profile")) {
+                                ((WallErrorLayout) profileLayout.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                            } else {
+                                Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    } catch (Exception ex) {
                         errorLayout.setReason(message);
                         errorLayout.setData(data);
                         errorLayout.setRetryAction(this);
@@ -715,13 +742,9 @@ public class AppActivity extends Activity {
         }
     }
 
-    public Notification createNotification(NotificationManager notifMan, String channel_id, String channel, int icon, String title, String description) {
-        NotificationManager notificationManager;
+    public Notification createNotification(NotificationManager notifMan, int icon, String title, String description) {
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel mChannel = new NotificationChannel(channel_id, channel, importance);
-            notifMan.createNotificationChannel(mChannel);
             Notification.Builder builder =
                     new Notification.Builder(this)
                             .setSmallIcon(icon)
@@ -730,9 +753,8 @@ public class AppActivity extends Activity {
                             .setChannelId("lp_updates");
             notification = builder.build();
             Intent notificationIntent = new Intent(this, ConversationActivity.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 2, notificationIntent, 0);
             notification.contentIntent = contentIntent;
-            notifMan.notify(notification_id, notification);
         } else {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(this)
@@ -1062,6 +1084,25 @@ public class AppActivity extends Activity {
             intent.putExtra("post_info", item.repost.newsfeed_item.info);
             intent.putExtra("post_text", item.repost.newsfeed_item.text);
             intent.putExtra("post_likes", 0);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void viewPhotoAttachment(int position) {
+        WallPost item;
+        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
+        if (global_prefs.getString("current_screen", "").equals("profile")) {
+            item = wall.getWallItems().get(position);
+            intent.putExtra("where", "wall");
+        } else {
+            item = newsfeed.getWallPosts().get(position);
+            intent.putExtra("where", "newsfeed");
+        }
+        try {
+            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                    item.owner_id, item.post_id));
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -10,16 +10,14 @@
 			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="false"/>
 
-        <!--
 		<CheckBoxPreference android:title="@string/sett_use_proxy"
 			android:key="useProxy"
 			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="false"/>
 			
-		<Preference android:title="@string/sett_advanced"
+		<Preference android:title="@string/sett_proxy_address"
 			android:layout="@layout/pref_widget"
 			android:summary="" android:key="proxySettings"/>
-		!-->
 
 	</PreferenceCategory>
 

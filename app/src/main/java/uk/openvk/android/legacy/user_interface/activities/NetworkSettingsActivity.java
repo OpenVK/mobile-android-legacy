@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.user_interface.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -13,7 +14,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -69,13 +77,18 @@ public class NetworkSettingsActivity extends PreferenceActivity {
     }
 
     private void setListeners() {
-        /*((Preference) findPreference("proxySettings")).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        ((Preference) findPreference("proxySettings")).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 openProxySettingsDialog();
                 return false;
             }
-        });*/
+        });
+        if(global_prefs.contains("proxy_address")) {
+            if(global_prefs.getString("proxy_address", "").length() > 0) {
+                ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
+            }
+        }
     }
 
     private void openProxySettingsDialog() {
@@ -85,10 +98,27 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         builder.setTitle(getResources().getString(R.string.sett_proxy_connection));
         builder.setView(proxy_settings_view);
         final EditText proxy_address = ((EditText) proxy_settings_view.findViewById(R.id.proxy_address));
+        final EditText proxy_port = ((EditText) proxy_settings_view.findViewById(R.id.proxy_port));
+        final Spinner proxy_type_spinner = proxy_settings_view.findViewById(R.id.proxy_type);
+
+        ArrayAdapter proxy_type_adapter = ArrayAdapter.createFromResource(this, R.array.proxy_type, android.R.layout.simple_spinner_item);
+        final String[] proxy_types = getResources().getStringArray(R.array.proxy_type);
+        proxy_type_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        proxy_type_spinner.setAdapter(proxy_type_adapter);
+
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                SharedPreferences.Editor editor = global_prefs.edit();
+                if(proxy_types[proxy_type_spinner.getSelectedItemPosition()].equals("HTTP")) {
+                    editor.putString("proxy_type", "http");
+                }
+                if(proxy_port.getText().length() > 0) {
+                    editor.putString("proxy_address", String.format("%s:%s", proxy_address.getText().toString(), proxy_port.getText().toString()));
+                } else {
+                    editor.putString("proxy_address", String.format("%s:8080", proxy_address.getText().toString()));
+                }
+                editor.commit();
             }
         });
         builder.setNegativeButton(R.string.cancel, null);
@@ -101,7 +131,9 @@ public class NetworkSettingsActivity extends PreferenceActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(proxy_address.getText().length() > 0) {
+                if(proxy_address.getText().length() > 0 && !proxy_address.getText().toString().contains(":") &&
+                        !proxy_address.getText().toString().contains("/") &&
+                        !proxy_address.getText().toString().contains("@")) {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 } else {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
@@ -114,10 +146,34 @@ public class NetworkSettingsActivity extends PreferenceActivity {
             }
         });
         dialog.show();
-        if (proxy_address.getText().length() > 0) {
+        if(global_prefs.contains("proxy_address")) {
+            if (global_prefs.getString("proxy_address", "").length() > 0) {
+                String[] address_split = global_prefs.getString("proxy_address", "").split(":");
+                proxy_address.setText(address_split[0]);
+                proxy_port.setText(address_split[1]);
+            }
+        }
+        if (proxy_address.getText().length() > 0 && !proxy_address.getText().toString().contains(":") &&
+                !proxy_address.getText().toString().contains("/") &&
+                !proxy_address.getText().toString().contains("@")) {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
         } else {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        }
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            setDialogStyle(proxy_settings_view, "proxy_settings");
+        }
+    }
+
+    private void setDialogStyle(View view, String dialog_name) {
+        try {
+            if (dialog_name.equals("proxy_settings")) {
+                ((TextView) view.findViewById(R.id.proxy_address_label)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.proxy_type_label)).setTextColor(Color.WHITE);
+            }
+        } catch (Exception ex) {
+
         }
     }
 }

@@ -8,14 +8,12 @@
 			android:summary="@string/sett_https_summary" android:key="useHTTPS"
 			android:defaultValue="false"/>
 
-
-		<!--
 		<CheckBoxPreference android:title="@string/sett_use_proxy" android:key="useProxy"
 			android:defaultValue="false"/>
 
 		<Preference android:title="@string/sett_proxy_address"
 			android:summary="" android:key="proxySettings"/>
-		!-->
+
 	</PreferenceCategory>
 
 </PreferenceScreen>

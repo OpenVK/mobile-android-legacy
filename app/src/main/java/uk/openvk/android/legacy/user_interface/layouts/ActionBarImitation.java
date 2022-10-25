@@ -100,6 +100,7 @@ public class ActionBarImitation extends LinearLayout {                  // for p
     }
 
     public void setOnBackClickListener(OnClickListener onClickListener) {
-        ((ImageButton) findViewById(R.id.ovkButton)).setOnClickListener(onClickListener);
+        (findViewById(R.id.ovkButton)).setOnClickListener(onClickListener);
+        (findViewById(R.id.backButton)).setOnClickListener(onClickListener);
     }
 }

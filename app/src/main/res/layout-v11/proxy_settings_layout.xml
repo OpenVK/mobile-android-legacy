@@ -37,14 +37,11 @@
                 android:maxLines="1"
                 tools:ignore="HardcodedText,RtlHardcoded" />
 
-            <!-- strange default NumberEditText margin !-->
-
             <EditText
                 android:id="@+id/proxy_port"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
-                android:layout_marginTop="-3.5dp"
                 android:ems="10"
                 android:gravity="right"
                 android:inputType="number"

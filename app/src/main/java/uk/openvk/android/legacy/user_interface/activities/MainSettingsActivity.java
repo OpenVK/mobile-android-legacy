@@ -31,6 +31,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Ovk;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.InstanceLink;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -55,7 +56,7 @@ public class MainSettingsActivity extends PreferenceActivity {
         isQuiting = false;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-        if(instance_prefs.getString("access_token", "").length() > 0 && instance_prefs.getString("instance", "").length() > 0 && instance_prefs.getString("password", "").length() > 0) {
+        if(instance_prefs.getString("account_password", "").length() > 0) {
             addPreferencesFromResource(R.xml.preferences);
         } else {
             addPreferencesFromResource(R.xml.preferences_2);
@@ -205,31 +206,34 @@ public class MainSettingsActivity extends PreferenceActivity {
 
         Preference debug_menu = findPreference("debug_menu");
         danger_zone_multiple_tap = 0;
-        if(global_prefs.getString("access_token", "").length() > 0) {
             global_prefs.getBoolean("debugDangerZone", false);
             debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    MainSettingsActivity.this.danger_zone_multiple_tap += 1;
-                    if (MainSettingsActivity.this.danger_zone_multiple_tap == 1) {
-                        Timer timer = new Timer();
-                        timer.schedule(new HideDangerZone(), 8000, 8000);
-                    }
-                    if (MainSettingsActivity.this.danger_zone_multiple_tap < 5) {
+                    if(instance_prefs.getString("access_token", "").length() > 0) {
+                        MainSettingsActivity.this.danger_zone_multiple_tap += 1;
+                        if (MainSettingsActivity.this.danger_zone_multiple_tap == 1) {
+                            Timer timer = new Timer();
+                            timer.schedule(new HideDangerZone(), 8000, 8000);
+                        }
+                        if (MainSettingsActivity.this.danger_zone_multiple_tap < 5) {
+                            Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                            startActivity(intent);
+                        } else if (MainSettingsActivity.this.danger_zone_multiple_tap == 5) {
+                            Toast.makeText(MainSettingsActivity.this, "злой армянин кушает", Toast.LENGTH_LONG).show();
+                        } else if (MainSettingsActivity.this.danger_zone_multiple_tap == 10) {
+                            global_prefs.edit().putBoolean("debugDangerZone", true).commit();
+                            Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                            startActivity(intent);
+                            MainSettingsActivity.this.danger_zone_multiple_tap = 0;
+                        }
+                    } else {
                         Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
                         startActivity(intent);
-                    } else if (MainSettingsActivity.this.danger_zone_multiple_tap == 5) {
-                        Toast.makeText(MainSettingsActivity.this, "злой армянин кушает", Toast.LENGTH_LONG).show();
-                    } else if (MainSettingsActivity.this.danger_zone_multiple_tap == 10) {
-                        global_prefs.edit().putBoolean("debugDangerZone", true).commit();
-                        Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
-                        startActivity(intent);
-                        MainSettingsActivity.this.danger_zone_multiple_tap = 0;
                     }
                     return false;
                 }
             });
-        }
 
         Preference network_settings = findPreference("network_settings");
         network_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -268,6 +272,7 @@ public class MainSettingsActivity extends PreferenceActivity {
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("instance", 0).edit();
                 editor.putString("access_token", "");
                 editor.putString("server", "");
+                editor.putString("account_password", "");
                 editor.commit();
                 Intent mStartActivity = new Intent(MainSettingsActivity.this, MainActivity.class);
                 mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

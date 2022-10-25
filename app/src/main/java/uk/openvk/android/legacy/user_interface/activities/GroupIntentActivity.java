@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -39,6 +40,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.GroupHeader;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
+import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.api.models.WallPost;
 
@@ -265,6 +267,13 @@ public class GroupIntentActivity extends Activity {
                         wall.getWallItems().set(item_pos, item);
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
+                }
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+                    message == HandlerMessages.INTERNAL_ERROR) {
+                if (data.getString("method").equals("Wall.get")) {
+                    ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
                 }
             }
         } catch (Exception ex) {

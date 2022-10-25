@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ctrl="http://schemas.android.com/apk/res-auto" android:layout_width="fill_parent" android:layout_height="fill_parent">
+    xmlns:ctrl="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent" android:layout_height="fill_parent">
     <uk.openvk.android.legacy.user_interface.layouts.XLinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -19,7 +21,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical|center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="ScrollViewSize">
 
                 <ImageView
                     android:id="@+id/auth_logo"
@@ -27,7 +30,8 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="20dip"
                     android:paddingBottom="20dip"
-                    android:src="@drawable/login_logo" />
+                    android:src="@drawable/login_logo"
+                    tools:ignore="ContentDescription" />
 
                 <LinearLayout
                     android:layout_width="310dip"
@@ -52,7 +56,8 @@
                             android:textColor="#000"
                             android:textColorHint="#afafaf"
                             android:textSize="18dip"
-                            ctrl:text="@string/default_instance">
+                            ctrl:textHint="@string/instance"
+                            tools:ignore="InefficientWeight,SpUsage">
 
                         </uk.openvk.android.legacy.user_interface.layouts.EditTextAction>
 
@@ -78,7 +83,8 @@
                         android:text=""
                         android:textColor="#000"
                         android:textColorHint="#afafaf"
-                        android:textSize="18dip">
+                        android:textSize="18dip"
+                        tools:ignore="SpUsage">
 
                     </EditText>
 
@@ -105,7 +111,8 @@
                         android:textColor="#000"
                         android:textColorHint="#afafaf"
                         android:textSize="18dip"
-                        android:typeface="sans" />
+                        android:typeface="sans"
+                        tools:ignore="Deprecated,SpUsage" />
 
                 </LinearLayout>
 
@@ -132,7 +139,8 @@
                         android:text="@string/log_in"
                         android:textColor="@color/auth_btn"
                         android:textSize="18dip"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="RtlHardcoded,SpUsage" />
 
                     <Button
                         android:id="@+id/settings_btn"
@@ -149,7 +157,8 @@
                         android:text="@string/menu_settings"
                         android:textColor="@color/auth_btn"
                         android:textSize="18dip"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="SpUsage" />
 
                 </LinearLayout>
 
@@ -166,7 +175,8 @@
                     android:shadowRadius="0.0000001"
                     android:text="@string/forgot_pass"
                     android:textColor="#bacedf"
-                    android:textSize="17dip" />
+                    android:textSize="17dip"
+                    tools:ignore="SpUsage" />
             </LinearLayout>
         </ScrollView>
 
@@ -183,7 +193,8 @@
             android:text="@string/register"
             android:textColor="#bacedf"
             android:background="@drawable/login_reg_btn"
-            android:textSize="17dip" />
+            android:textSize="17dip"
+            tools:ignore="SpUsage" />
 
         </uk.openvk.android.legacy.user_interface.layouts.XLinearLayout>
  </LinearLayout>

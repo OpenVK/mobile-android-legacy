@@ -8,11 +8,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -26,6 +28,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -142,8 +146,8 @@ public class LongPollWrapper {
                     request_legacy.getParams().setParameter("timeout", 30000);
                 } else {
                     request = new Request.Builder()
-                            .url(fUrl)
-                            .build();
+                                .url(fUrl)
+                                .build();
                 }
                 try {
                     Log.v("OpenVK LPW", String.format("LongPoll activated."));
@@ -213,6 +217,26 @@ public class LongPollWrapper {
         };
         thread = new Thread(longPollRunnable);
         thread.start();
+    }
+
+    public void setProxyConnection(boolean useProxy, String address) {
+        try {
+            if(useProxy) {
+                String[] address_array = address.split(":");
+                if (address_array.length == 2) {
+                    if (legacy_mode) {
+                        HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
+                        httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                    } else {
+                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(address_array[0],
+                                        Integer.valueOf(address_array[1])))).build();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void sendLongPollMessageToActivity(String response) {

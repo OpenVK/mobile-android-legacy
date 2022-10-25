@@ -101,6 +101,7 @@ public class AuthActivity extends Activity {
             }
         });
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {

@@ -17,13 +17,15 @@ public class LongPollService extends Service {
     private LongPollWrapper lpW;
     private Context ctx;
     private String access_token;
-    
+    private boolean use_https = false;
+
     public LongPollService() {
     }
 
-    public LongPollService(Context ctx, String access_token) {
+    public LongPollService(Context ctx, String access_token, boolean use_https) {
         this.ctx = ctx;
         this.access_token = access_token;
+        lpW = new LongPollWrapper(ctx, use_https);
     }
 
     @Override
@@ -39,6 +41,10 @@ public class LongPollService extends Service {
     }
 
     public void run(String instance, String lp_server, String key, int ts, boolean use_https) {
+        this.use_https = use_https;
+        if(lpW == null) {
+            lpW = new LongPollWrapper(ctx, use_https);
+        }
         ovk_api = new OvkAPIWrapper(ctx, use_https);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);
@@ -46,10 +52,11 @@ public class LongPollService extends Service {
     }
 
     private void runLongPull(String lp_server, String key, int ts, boolean use_https) {
-        lpW = new LongPollWrapper(ctx, use_https);
         lpW.updateCounters(ovk_api);
         lpW.keepUptime(ovk_api);
-        lpW.longPoll(lp_server, key, ts);
+        if(lp_server != null && key != null) {
+            lpW.longPoll(lp_server, key, ts);
+        }
     }
 
     @Override
@@ -62,5 +69,12 @@ public class LongPollService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.i("OpenVK Legacy", "Stopping LongPoll Service...");
+    }
+
+    public void setProxyConnection(boolean useProxy, String proxy_address) {
+        if(lpW == null) {
+            lpW = new LongPollWrapper(ctx, use_https);
+        }
+        lpW.setProxyConnection(useProxy, proxy_address);
     }
 }

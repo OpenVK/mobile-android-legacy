@@ -16,13 +16,14 @@
             android:layout_height="match_parent"
             android:background="@null"
             android:src="@drawable/ic_left_menu"
-            tools:ignore="SpeakableTextPresentCheck" />
+            tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="InefficientWeight">
 
             <ImageButton
                 android:id="@+id/title_menu_btn"
@@ -30,7 +31,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark"
-                tools:ignore="Suspicious0dp" />
+                tools:ignore="ContentDescription,Suspicious0dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -38,7 +39,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="NestedWeights">
 
                 <TextView
                     android:id="@+id/titlebar_title"
@@ -47,7 +49,8 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="App title"
-                    android:textColor="@color/api_v8_ll_title_color" />
+                    android:textColor="@color/api_v8_ll_title_color"
+                    tools:ignore="HardcodedText,InefficientWeight" />
 
                 <TextView
                     android:id="@+id/titlebar_subtitle"
@@ -56,7 +59,8 @@
                     android:text="App subtitle"
                     android:textColor="@color/api_v8_ll_subtitle_color"
                     android:textSize="12sp"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:ignore="HardcodedText" />
 
             </LinearLayout>
 
@@ -67,7 +71,7 @@
                 android:background="@null"
                 android:visibility="gone"
                 android:src="@drawable/ic_ab_write"
-                tools:ignore="SpeakableTextPresentCheck" />
+                tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
             <ImageButton
                 android:id="@+id/action_btn2"
@@ -76,7 +80,7 @@
                 android:background="@null"
                 android:visibility="gone"
                 android:src="@drawable/ic_ab_write"
-                tools:ignore="SpeakableTextPresentCheck" />
+                tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
         </LinearLayout>
 
@@ -90,29 +94,41 @@
         android:orientation="horizontal"
         android:visibility="gone">
 
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:paddingLeft="2dp"
-            android:src="@drawable/ic_ab_back_holo_dark" />
-
-        <ImageButton
-            android:id="@+id/ovkButton"
+        <LinearLayout
+            android:id="@+id/home_btn_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginRight="4dp"
-            android:background="@null"
-            android:src="@drawable/ic_ab_app" />
+            android:orientation="horizontal"
+            tools:ignore="RtlHardcoded">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:paddingLeft="2dp"
+                android:src="@drawable/ic_ab_back_holo_dark"
+                tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ovkButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:src="@drawable/ic_ab_app"
+                tools:ignore="ContentDescription,NestedWeights,RtlHardcoded" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="InefficientWeight">
 
             <TextView
                 android:id="@+id/titlebar_title2"
@@ -121,7 +137,8 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="App title"
-                android:textColor="@color/api_v8_ll_title_color" />
+                android:textColor="@color/api_v8_ll_title_color"
+                tools:ignore="HardcodedText,InefficientWeight,NestedWeights" />
 
             <TextView
                 android:id="@+id/titlebar_subtitle2"
@@ -130,7 +147,8 @@
                 android:text="App subtitle"
                 android:textColor="@color/api_v8_ll_subtitle_color"
                 android:textSize="12sp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
 
@@ -139,18 +157,18 @@
             android:layout_width="52dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:visibility="gone"
             android:src="@drawable/ic_ab_write"
-            tools:ignore="SpeakableTextPresentCheck" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
         <ImageButton
             android:id="@+id/action_btn2_actionbar2"
             android:layout_width="52dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:visibility="gone"
             android:src="@drawable/ic_ab_write"
-            tools:ignore="SpeakableTextPresentCheck" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
     </LinearLayout>
 </LinearLayout>

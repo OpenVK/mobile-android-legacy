@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -38,6 +39,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
+import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.api.models.WallPost;
 
@@ -296,17 +298,31 @@ public class ProfileIntentActivity extends Activity {
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
-                if(data.containsKey("method")) {
-                    if (data.getString("method").equals("Account.getProfileInfo") ||
-                            (data.getString("method").equals("Users.get") && user.id == 0) ||
-                            (data.getString("method").equals("Users.search") && user.id == 0) ||
-                            (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
-                        errorLayout.setReason(message);
-                        errorLayout.setData(data);
-                        errorLayout.setRetryAction(this);
-                        progressLayout.setVisibility(View.GONE);
-                        errorLayout.setVisibility(View.VISIBLE);
+                try {
+                    if (data.containsKey("method")) {
+                        if (data.getString("method").equals("Account.getProfileInfo") ||
+                                (data.getString("method").equals("Users.get") && user.id == 0) ||
+                                (data.getString("method").equals("Users.search") && user.id == 0) ||
+                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                            errorLayout.setReason(message);
+                            errorLayout.setData(data);
+                            errorLayout.setRetryAction(this);
+                            progressLayout.setVisibility(View.GONE);
+                            errorLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            if (data.getString("method").equals("Wall.get")) {
+                                ((WallErrorLayout) profileLayout.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                            } else {
+                                Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                            }
+                        }
                     }
+                } catch (Exception ex) {
+                    errorLayout.setReason(message);
+                    errorLayout.setData(data);
+                    errorLayout.setRetryAction(this);
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
                 }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 if(user.avatar_url.length() > 0) {

@@ -1,39 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
+    android:background="#ffffff"
     android:orientation="horizontal"
+    android:paddingBottom="4dip"
     android:paddingLeft="11dip"
     android:paddingRight="11dip"
-    android:paddingTop="4dip"
-    android:paddingBottom="4dip"
-    android:background="#ffffff">
+    android:paddingTop="4dip">
 
     <TextView
         android:id="@+id/profile_wall_all_posts"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="32dip"
         android:layout_weight="1"
         android:background="@drawable/profile_selector"
+        android:ellipsize="marquee"
         android:gravity="center"
+        android:maxLines="1"
         android:singleLine="true"
         android:text="@string/wall_all_posts"
         android:textAllCaps="true"
         android:textSize="12dip"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:ignore="Deprecated,SpUsage,UnusedAttribute" />
 
     <TextView
         android:id="@+id/profile_wall_owner_posts"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="32dip"
         android:layout_weight="1"
         android:background="@drawable/profile_selector"
+        android:ellipsize="marquee"
         android:gravity="center"
+        android:maxLines="1"
+        android:overScrollMode="always"
         android:singleLine="true"
         android:text="@string/wall_owners_posts"
         android:textAllCaps="true"
         android:textSize="12dip"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:ignore="Deprecated,SpUsage,UnusedAttribute" />
 
     <View
         android:layout_width="14dip"
@@ -41,7 +49,7 @@
 
     <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/profile_wall_post_btn"
@@ -53,10 +61,10 @@
             android:src="@drawable/ic_profile_addpost" />
 
         <ProgressBar
-            android:layout_gravity="center"
             android:id="@+id/profile_wall_progress"
             android:layout_width="30dip"
-            android:layout_height="30dip" />
+            android:layout_height="30dip"
+            android:layout_gravity="center" />
 
     </FrameLayout>
 

@@ -8,11 +8,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -27,6 +29,9 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.ProtocolException;
+import java.net.Proxy;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
@@ -56,6 +61,8 @@ public class OvkAPIWrapper {
     public String server;
     public boolean use_https;
     public boolean legacy_mode;
+    public boolean proxy_connection;
+    public String proxy_type;
     private String status;
     public Error error;
     private Context ctx;
@@ -89,6 +96,26 @@ public class OvkAPIWrapper {
             httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
                     .retryOnConnectionFailure(false).build();
             legacy_mode = false;
+        }
+    }
+
+    public void setProxyConnection(boolean useProxy, String address) {
+        try {
+            if(useProxy) {
+                String[] address_array = address.split(":");
+                if (address_array.length == 2) {
+                    if (legacy_mode) {
+                        HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
+                        httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                    } else {
+                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(address_array[0],
+                                        Integer.valueOf(address_array[1])))).build();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -174,6 +201,10 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                         }
                     };
+                } catch (ProtocolException e) {
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (ConnectException e) {
                     if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
@@ -264,6 +295,10 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                         }
                     };
+                } catch (ProtocolException e) {
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (ConnectException e) {
                     if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
@@ -464,6 +499,10 @@ public class OvkAPIWrapper {
                     if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch (ProtocolException e) {
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
@@ -656,6 +695,10 @@ public class OvkAPIWrapper {
                     if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch (ProtocolException e) {
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (SocketException e) {
                     if(e.getMessage().contains("ETIMEDOUT")) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
@@ -845,6 +888,10 @@ public class OvkAPIWrapper {
                         }
                     };
                 } catch (ConnectException e) {
+                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch (ProtocolException e) {
                     if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);

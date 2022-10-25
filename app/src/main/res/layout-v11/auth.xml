@@ -23,7 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:gravity="center_vertical|center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                ctrl:ignore="ScrollViewSize">
 
                 <ImageView
                     android:id="@+id/auth_logo"
@@ -31,7 +32,8 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="20dip"
                     android:paddingBottom="20dip"
-                    android:src="@drawable/login_logo" />
+                    android:src="@drawable/login_logo"
+                    ctrl:ignore="ContentDescription" />
 
                 <LinearLayout
                     android:layout_width="310dip"
@@ -51,12 +53,13 @@
                             android:layout_height="50dip"
                             android:layout_weight="1"
                             android:background="@null"
-                            android:hint="@string/instance"
                             android:inputType="textEmailAddress"
                             android:textColor="#000"
                             android:textColorHint="#afafaf"
                             android:textSize="18dip"
-                            ctrl:text="@string/default_instance">
+                            app:textHint="@string/instance"
+                            ctrl:ignore="InefficientWeight,SpUsage"
+                            ctrl:textHint="@string/instance">
 
                         </uk.openvk.android.legacy.user_interface.layouts.EditTextAction>
 
@@ -82,7 +85,8 @@
                         android:text=""
                         android:textColor="#000"
                         android:textColorHint="#afafaf"
-                        android:textSize="18dip">
+                        android:textSize="18dip"
+                        ctrl:ignore="SpUsage">
 
                     </EditText>
 
@@ -109,7 +113,8 @@
                         android:textColor="#000"
                         android:textColorHint="#afafaf"
                         android:textSize="18dip"
-                        android:typeface="sans" />
+                        android:typeface="sans"
+                        ctrl:ignore="Deprecated,SpUsage" />
 
                 </LinearLayout>
 
@@ -137,7 +142,8 @@
                         android:text="@string/log_in"
                         android:textColor="@color/auth_btn"
                         android:textSize="18dip"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        ctrl:ignore="ButtonStyle,RtlHardcoded,SpUsage" />
 
                     <Button
                         android:id="@+id/settings_btn"
@@ -154,7 +160,8 @@
                         android:text="@string/menu_settings"
                         android:textColor="@color/auth_btn"
                         android:textSize="18dip"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        ctrl:ignore="ButtonStyle,SpUsage" />
 
                 </LinearLayout>
 
@@ -171,7 +178,8 @@
                     android:shadowRadius="0.0000001"
                     android:text="@string/forgot_pass"
                     android:textColor="#bacedf"
-                    android:textSize="17dip" />
+                    android:textSize="17dip"
+                    ctrl:ignore="SpUsage" />
             </LinearLayout>
         </ScrollView>
 
@@ -188,7 +196,8 @@
             android:text="@string/register"
             android:textColor="#bacedf"
             android:background="@drawable/login_reg_btn"
-            android:textSize="17dip" />
+            android:textSize="17dip"
+            ctrl:ignore="SpUsage" />
 
     </uk.openvk.android.legacy.user_interface.layouts.XLinearLayout>
 

@@ -79,6 +79,14 @@
 
             </LinearLayout>
 
+            <uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:visibility="gone"
+                android:id="@+id/wall_error_layout"
+                />
+
             <uk.openvk.android.legacy.user_interface.layouts.WallLayout
                 android:id="@+id/wall_layout"
                 android:layout_width="match_parent"

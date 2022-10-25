@@ -9,11 +9,13 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -29,6 +31,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -114,6 +118,26 @@ public class DownloadManager {
                 httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
             }
             legacy_mode = false;
+        }
+    }
+
+    public void setProxyConnection(boolean useProxy, String address) {
+        try {
+            if(useProxy) {
+                String[] address_array = address.split(":");
+                if (address_array.length == 2) {
+                    if (legacy_mode) {
+                        HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
+                        httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                    } else {
+                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(address_array[0],
+                                        Integer.valueOf(address_array[1])))).build();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

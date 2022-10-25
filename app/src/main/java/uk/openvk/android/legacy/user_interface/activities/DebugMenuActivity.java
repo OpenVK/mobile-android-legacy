@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.autofill.AutofillManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -137,6 +139,9 @@ public class DebugMenuActivity extends PreferenceActivity {
         builder.setTitle(getResources().getString(R.string.confirm));
         final View confirm_view = getLayoutInflater().inflate(R.layout.confirm_with_passw_layout, null, false);
         final EditText password_edit = ((EditText) confirm_view.findViewById(R.id.password_edit));
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            ((TextView) confirm_view.findViewById(R.id.enter_password_label)).setTextColor(Color.WHITE);
+        }
         builder.setView(confirm_view);
         builder.setPositiveButton(R.string.ok, null);
         builder.setNegativeButton(R.string.cancel, null);

@@ -216,6 +216,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     if (item.attachments.get(i).getContent() != null) {
                         post_photo.setImageBitmap(((PhotoAttachment) item.attachments.get(0).getContent()).photo);
                         post_photo.setVisibility(View.VISIBLE);
+                        post_photo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                                    ((AppActivity) ctx).viewPhotoAttachment(position);
+                                }
+                            }
+                        });
                     }
                 } else if (item.attachments.get(i).type.equals("poll")) {
                     if (item.attachments.get(i).getContent() != null) {

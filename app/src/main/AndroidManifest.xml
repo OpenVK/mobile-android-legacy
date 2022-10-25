@@ -175,6 +175,14 @@
             android:configChanges="screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>
 
+        <activity
+            android:name=".user_interface.activities.PhotoViewerActivity"
+            android:label="@string/photo"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
+        </activity>
+
         <!--suppress AndroidDomInspection -->
         <service
             android:name=".longpoll_api.LongPollService"

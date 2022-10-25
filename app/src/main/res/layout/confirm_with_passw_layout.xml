@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:importantForAutofill="no"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            tools:ignore="UnusedAttribute" />
 
     </LinearLayout>
 
