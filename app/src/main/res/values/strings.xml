@@ -694,6 +694,17 @@
 	<string name="feed_comments_topic">Topic</string>
 	<string name="album_unnamed">Unnamed</string>
 	<string name="sett_cache">Image cache</string>
+	<string name="sett_cache_quality">Quality</string>
+    <string-array name="sett_cache_quality_array">
+        <item>Medium</item>
+        <item>High</item>
+        <item>Original</item>
+    </string-array>
+    <string name="sett_cache_quality_alt">Image Quality</string>
+    <string name="sett_cache_quality_highres">Allows you to see clearer, but does not save traffic.</string>
+    <string name="sett_cache_quality_highestres">Allows you to see even clearer, but does not save traffic.</string>
+    <string name="sett_cache_quality_lowres">Useful for saving traffic and device resources.</string>
+    <string name="sett_cache_quality_oomrisk">This may cause the application to become unstable!</string>
 	<string name="sett_clear_img_cache">Clear</string>
 	<string name="img_cache_cleared">Cache cleared!</string>
 	<string name="sett_cache_location">Location</string>

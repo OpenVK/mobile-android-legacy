@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -146,6 +147,7 @@ public class WallPostActivity extends Activity {
         }
 
         wallPostLayout.setPost(post);
+        wallPostLayout.setPhotoListener(this);
         wallPostLayout.loadWallAvatar(post_author_id, where);
         wallPostLayout.loadWallPhoto(post, where);
     }
@@ -212,6 +214,18 @@ public class WallPostActivity extends Activity {
             wallPostLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_AVATARS) {
             wallPostLayout.loadAvatars();
+        }
+    }
+
+    public void viewPhotoAttachment() {
+        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
+        intent.putExtra("where", "wall");
+        try {
+            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                    owner_id, post_id));
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

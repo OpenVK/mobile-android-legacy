@@ -1,8 +1,11 @@
 package uk.openvk.android.legacy;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.webkit.MimeTypeMap;
 
 public class Global {
 
@@ -37,4 +40,11 @@ public class Global {
             return false;
         }
     }
+
+    public long getHeapSize() {
+        Runtime rt = Runtime.getRuntime();
+        long heap_max_mem = rt.maxMemory();
+        return heap_max_mem;
+    }
+
 }

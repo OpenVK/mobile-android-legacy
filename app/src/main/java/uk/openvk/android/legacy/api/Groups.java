@@ -104,14 +104,14 @@ public class Groups implements Parcelable {
     }
 
     public void getGroupByID(OvkAPIWrapper ovk, int id) {
-        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%d&fields=verified,photo_100,is_member,members_count", id));
+        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count", id));
     }
 
     public void getGroups(OvkAPIWrapper ovk, int user_id) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=50&fields=verified,photo_200,is_member,members_count&extended=1", user_id));
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=50&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count&extended=1", user_id));
     }
 
-    public void parse(String response, DownloadManager downloadManager, boolean downloadPhoto) {
+    public void parse(String response, DownloadManager downloadManager, String quality, boolean downloadPhoto) {
         try {
             this.groups.clear();
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
@@ -121,7 +121,17 @@ public class Groups implements Parcelable {
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
                 PhotoAttachment photoAttachment = new PhotoAttachment();
-                photoAttachment.url = group.avatar_url;
+                if(quality.equals("medium")) {
+                    photoAttachment.url = group.avatar_msize_url;
+                } else if(quality.equals("high")) {
+                    photoAttachment.url = group.avatar_hsize_url;
+                } else {
+                    photoAttachment.url = group.avatar_osize_url;
+                }
+
+                if(photoAttachment.url.length() == 0) {
+                    photoAttachment.url = group.avatar_msize_url;
+                }
                 photoAttachment.filename = String.format("avatar_%d", group.id);
                 avatars.add(photoAttachment);
                 this.groups.add(group);

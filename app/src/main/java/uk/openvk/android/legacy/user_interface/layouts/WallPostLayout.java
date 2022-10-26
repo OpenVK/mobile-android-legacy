@@ -30,6 +30,7 @@ import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
 
@@ -237,5 +238,16 @@ public class WallPostLayout extends LinearLayout {
                 ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
             }
         }
+    }
+
+    public void setPhotoListener(final Context ctx) {
+        ((ImageView) findViewById(R.id.post_photo)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ctx.getClass().equals("WallPostActivity")) {
+                    ((WallPostActivity) ctx).viewPhotoAttachment();
+                }
+            }
+        });
     }
 }

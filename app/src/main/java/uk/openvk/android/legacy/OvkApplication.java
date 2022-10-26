@@ -36,6 +36,19 @@ public class OvkApplication extends Application {
         if(!global_prefs.contains("owner_id")) {
             global_prefs_editor.putInt("owner_id", 0);
         }
+        long heap_size = global.getHeapSize();
+
+        Log.d("OpenVK", String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
+
+        if(!global_prefs.contains("photos_quality")) {
+            if(heap_size <= 67108864L) {
+                global_prefs_editor.putString("photos_quality", "medium");
+            } else if(heap_size <= 134217728L) {
+                global_prefs_editor.putString("photos_quality", "high");
+            } else {
+                global_prefs_editor.putString("photos_quality", "original");
+            }
+        }
 
         if(!instance_prefs.contains("account_password")) {
             instance_prefs_editor.putString("account_password", "");

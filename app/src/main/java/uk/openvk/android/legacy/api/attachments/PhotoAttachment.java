@@ -7,11 +7,10 @@ import android.os.Parcelable;
 
 public class PhotoAttachment implements Parcelable {
     public String url;
+    public String original_url;
     public String filename;
     public Bitmap photo;
     public PhotoAttachment() {
-        this.url = url;
-        this.filename = filename;
     }
 
     protected PhotoAttachment(Parcel in) {

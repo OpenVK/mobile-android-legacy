@@ -103,4 +103,14 @@ public class ActionBarImitation extends LinearLayout {                  // for p
         (findViewById(R.id.ovkButton)).setOnClickListener(onClickListener);
         (findViewById(R.id.backButton)).setOnClickListener(onClickListener);
     }
+
+    public void enableDarkTheme(boolean value) {
+        if(value) {
+            ((LinearLayout) findViewById(R.id.titlebar)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            ((LinearLayout) findViewById(R.id.titlebar2)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+        } else {
+            ((LinearLayout) findViewById(R.id.titlebar)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            ((LinearLayout) findViewById(R.id.titlebar2)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+        }
+    }
 }

@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.api.models;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +28,9 @@ public class User implements Parcelable {
     public String birthdate;
     public String screen_name;
     public Bitmap avatar;
-    public String avatar_url;
+    public String avatar_msize_url;
+    public String avatar_hsize_url;
+    public String avatar_osize_url;
     public int friends_status;
     public String interests;
     public String movies;
@@ -44,7 +47,7 @@ public class User implements Parcelable {
         parse(response, position);
     }
 
-    public User(String first_name, String last_name, int id, String status, String city, String screen_name, String avatar_url, int friends_status, int ls_date, String birthdate,
+    public User(String first_name, String last_name, int id, String status, String city, String screen_name, String avatar_msize_url, int friends_status, int ls_date, String birthdate,
                 String interests, String movies, String music, String tv, String books, boolean verified) {
         this.first_name = first_name;
         this.last_name = last_name;
@@ -54,7 +57,7 @@ public class User implements Parcelable {
         this.city = city;
         this.birthdate = birthdate;
         this.screen_name = screen_name;
-        this.avatar_url = avatar_url;
+        this.avatar_msize_url = avatar_msize_url;
         this.friends_status = friends_status;
         this.ls_date = ls_date;
         this.interests = interests;
@@ -62,6 +65,8 @@ public class User implements Parcelable {
         this.music = music;
         this.tv = tv;
         this.books = books;
+        avatar_hsize_url = "";
+        avatar_osize_url = "";
         jsonParser = new JSONParser();
     }
 
@@ -81,7 +86,7 @@ public class User implements Parcelable {
         birthdate = in.readString();
         screen_name = in.readString();
         avatar = in.readParcelable(Bitmap.class.getClassLoader());
-        avatar_url = in.readString();
+        avatar_msize_url = in.readString();
         friends_status = in.readInt();
         interests = in.readString();
         movies = in.readString();
@@ -105,7 +110,9 @@ public class User implements Parcelable {
     public void parse(JSONObject user) {
         try {
             if(user != null) {
-                avatar_url = "";
+                avatar_msize_url = "";
+                avatar_hsize_url = "";
+                avatar_osize_url = "";
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
@@ -119,21 +126,21 @@ public class User implements Parcelable {
                 }
                 //screen_name = user.getString("screen_name");
                 if (user.has("photo_50")) {
-                    avatar_url = user.getString("photo_50");
+                    avatar_msize_url = user.getString("photo_50");
                 } else if (user.has("photo_100")) {
-                    avatar_url = user.getString("photo_100");
+                    avatar_msize_url = user.getString("photo_100");
                 } else if (user.has("photo_200_orig")) {
-                    avatar_url = user.getString("photo_200_orig");
+                    avatar_msize_url = user.getString("photo_200_orig");
                 } else if (user.has("photo_200")) {
-                    avatar_url = user.getString("photo_200");
+                    avatar_msize_url = user.getString("photo_200");
                 } else if (user.has("photo_400")) {
-                    avatar_url = user.getString("photo_400");
+                    avatar_hsize_url = user.getString("photo_400");
                 } else if (user.has("photo_400_orig")) {
-                    avatar_url = user.getString("photo_400_orig");
+                    avatar_hsize_url = user.getString("photo_400_orig");
                 } else if (user.has("photo_max")) {
-                    avatar_url = user.getString("photo_max");
+                    avatar_osize_url = user.getString("photo_max");
                 } else if (user.has("photo_max_orig")) {
-                    avatar_url = user.getString("photo_max_orig");
+                    avatar_osize_url = user.getString("photo_max_orig");
                 }
                 friends_status = user.getInt("friend_status");
                 if(!user.isNull("interests")) {
@@ -195,7 +202,6 @@ public class User implements Parcelable {
             if (users != null) {
                 for (int i = 0; i < users.length(); i++) {
                     if (i == position) {
-                        avatar_url = "";
                         JSONObject user = (JSONObject) users.get(i);
                         first_name = user.getString("first_name");
                         last_name = user.getString("last_name");
@@ -203,22 +209,23 @@ public class User implements Parcelable {
                         status = user.getString("status");
                         screen_name = user.getString("screen_name");
                         if (user.has("photo_50")) {
-                            avatar_url = user.getString("photo_50");
-                        } else if (user.has("photo_100")) {
-                            avatar_url = user.getString("photo_100");
-                        } else if (user.has("photo_200_orig")) {
-                            avatar_url = user.getString("photo_200_orig");
-                        } else if (user.has("photo_200")) {
-                            avatar_url = user.getString("photo_200");
-                        } else if (user.has("photo_400")) {
-                            avatar_url = user.getString("photo_400");
-                        } else if (user.has("photo_400_orig")) {
-                            avatar_url = user.getString("photo_400_orig");
-                        } else if (user.has("photo_max")) {
-                            avatar_url = user.getString("photo_max");
-                        } else if (user.has("photo_max_orig")) {
-                            avatar_url = user.getString("photo_max_orig");
+                            avatar_msize_url = user.getString("photo_50");
+                        } if (user.has("photo_100")) {
+                            avatar_msize_url = user.getString("photo_100");
+                        } if (user.has("photo_200_orig")) {
+                            avatar_msize_url = user.getString("photo_200_orig");
+                        } if (user.has("photo_200")) {
+                            avatar_msize_url = user.getString("photo_200");
+                        } if (user.has("photo_400")) {
+                            avatar_hsize_url = user.getString("photo_400");
+                        } if (user.has("photo_400_orig")) {
+                            avatar_hsize_url = user.getString("photo_400_orig");
+                        } if (user.has("photo_max")) {
+                            avatar_osize_url = user.getString("photo_max");
+                        } if (user.has("photo_max_orig")) {
+                            avatar_osize_url = user.getString("photo_max_orig");
                         }
+
                         friends_status = user.getInt("friend_status");
                         if (!user.isNull("interests")) {
                             interests = user.getString("interests");
@@ -269,12 +276,20 @@ public class User implements Parcelable {
         }
     }
 
-    public void downloadAvatar(DownloadManager downloadManager) {
-        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "profile_avatars");
-    }
-
-    public void areFriends(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Friends.delete", String.format("user_ids=%d", id));
+    public void downloadAvatar(DownloadManager downloadManager, String quality) {
+        if(quality.equals("medium")) {
+            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%d", id), "profile_avatars");
+        } else if(quality.equals("high")) {
+            if(avatar_hsize_url.length() == 0) {
+                avatar_hsize_url = avatar_msize_url;
+            }
+            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%d", id), "profile_avatars");
+        } else if(quality.equals("original")) {
+            if(avatar_osize_url.length() == 0) {
+                avatar_osize_url = avatar_msize_url;
+            }
+            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%d", id), "profile_avatars");
+        }
     }
 
     @Override
@@ -295,7 +310,9 @@ public class User implements Parcelable {
         parcel.writeString(birthdate);
         parcel.writeString(screen_name);
         parcel.writeParcelable(avatar, i);
-        parcel.writeString(avatar_url);
+        parcel.writeString(avatar_msize_url);
+        parcel.writeString(avatar_hsize_url);
+        parcel.writeString(avatar_osize_url);
         parcel.writeInt(friends_status);
         parcel.writeString(interests);
         parcel.writeString(movies);
@@ -304,7 +321,19 @@ public class User implements Parcelable {
         parcel.writeString(books);
     }
 
-    public void downloadAvatar(DownloadManager downloadManager, String where) {
-        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), where);
+    public void downloadAvatar(DownloadManager downloadManager, String quality, String where) {
+        if(quality.equals("medium")) {
+            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%d", id), where);
+        } else if(quality.equals("high")) {
+            if(avatar_hsize_url.length() == 0) {
+                avatar_hsize_url = avatar_msize_url;
+            }
+            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%d", id), where);
+        } else if(quality.equals("original")) {
+            if(avatar_osize_url.length() == 0) {
+                avatar_osize_url = avatar_msize_url;
+            }
+            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%d", id), where);
+        }
     }
 }

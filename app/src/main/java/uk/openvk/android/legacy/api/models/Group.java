@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.api.models;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -20,7 +21,9 @@ public class Group implements Parcelable {
     private JSONParser jsonParser;
     public String screen_name;
     public Bitmap avatar;
-    public String avatar_url;
+    public String avatar_msize_url;
+    public String avatar_hsize_url;
+    public String avatar_osize_url;
     public int members_count;
 
     public Group() {
@@ -37,7 +40,9 @@ public class Group implements Parcelable {
             if (group != null) {
                 name = group.getString("name");
                 id = group.getInt("id");
-                avatar_url = "";
+                avatar_msize_url = "";
+                avatar_hsize_url = "";
+                avatar_osize_url = "";
                 if(group.has("screen_name") && !group.isNull("screen_name")) {
                     screen_name = group.getString("screen_name");
                 }
@@ -52,21 +57,21 @@ public class Group implements Parcelable {
                 }
 
                 if (group.has("photo_50")) {
-                    avatar_url = group.getString("photo_50");
-                } else if (group.has("photo_100")) {
-                    avatar_url = group.getString("photo_100");
-                } else if (group.has("photo_200_orig")) {
-                    avatar_url = group.getString("photo_200_orig");
-                } else if (group.has("photo_200")) {
-                    avatar_url = group.getString("photo_200");
-                } else if (group.has("photo_400")) {
-                    avatar_url = group.getString("photo_400");
-                } else if (group.has("photo_400_orig")) {
-                    avatar_url = group.getString("photo_400_orig");
-                } else if (group.has("photo_max")) {
-                    avatar_url = group.getString("photo_max");
-                } else if (group.has("photo_max_orig")) {
-                    avatar_url = group.getString("photo_max_orig");
+                    avatar_msize_url = group.getString("photo_50");
+                } if (group.has("photo_100")) {
+                    avatar_msize_url = group.getString("photo_100");
+                } if (group.has("photo_200")) {
+                    avatar_msize_url = group.getString("photo_200");
+                } if (group.has("photo_200_orig")) {
+                    avatar_msize_url = group.getString("photo_200_orig");
+                } if (group.has("photo_400")) {
+                    avatar_hsize_url = group.getString("photo_400");
+                } if (group.has("photo_400_orig")) {
+                    avatar_hsize_url = group.getString("photo_400_orig");
+                } if (group.has("photo_max")) {
+                    avatar_osize_url = group.getString("photo_max");
+                } if (group.has("photo_max_orig")) {
+                    avatar_osize_url = group.getString("photo_max_orig");
                 }
                 if(group.has("members_count")) {
                     members_count = group.getInt("members_count");
@@ -110,13 +115,27 @@ public class Group implements Parcelable {
         parcel.writeByte((byte) (verified ? 1 : 0));
         parcel.writeString(screen_name);
         parcel.writeParcelable(avatar, i);
-        parcel.writeString(avatar_url);
+        parcel.writeString(avatar_msize_url);
+        parcel.writeString(avatar_hsize_url);
+        parcel.writeString(avatar_osize_url);
         parcel.writeInt(members_count);
     }
 
 
-    public void downloadAvatar(DownloadManager downloadManager) {
-        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "group_avatars");
+    public void downloadAvatar(DownloadManager downloadManager, String quality) {
+        if(quality.equals("medium")) {
+            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%d", id), "group_avatars");
+        } else if(quality.equals("high")) {
+            if(avatar_hsize_url.length() == 0) {
+                avatar_hsize_url = avatar_msize_url;
+            }
+            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%d", id), "group_avatars");
+        } else if(quality.equals("original")) {
+            if(avatar_osize_url.length() == 0) {
+                avatar_osize_url = avatar_msize_url;
+            }
+            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%d", id), "group_avatars");
+        }
     }
 
 

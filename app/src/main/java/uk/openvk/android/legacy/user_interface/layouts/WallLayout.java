@@ -98,7 +98,11 @@ public class WallLayout extends LinearLayout {
                                     PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(0).getContent());
                                     Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                     if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                                        photoAttachment.photo = null;
+                                        if(photoAttachment.photo != null) {
+                                            photoAttachment.photo.recycle();
+                                            photoAttachment.photo = null;
+                                            System.gc();
+                                        }
                                     } else {
                                         BitmapFactory.Options options = new BitmapFactory.Options();
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -139,7 +143,11 @@ public class WallLayout extends LinearLayout {
                     } catch (OutOfMemoryError error) {
                         Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
                     } catch (Exception ex) {
-                        Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
+                        if(ex.getMessage() != null) {
+                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
+                        } else {
+                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getClass().getSimpleName()));
+                        }
                     }
                 }
                 wallAdapter.notifyDataSetChanged();

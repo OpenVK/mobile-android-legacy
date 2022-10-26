@@ -39,6 +39,7 @@ import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Group;
@@ -494,7 +495,7 @@ public class AppActivity extends Activity {
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
                 downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                newsfeed.parse(this, downloadManager, data.getString("response"), true);
+                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), true);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -503,7 +504,7 @@ public class AppActivity extends Activity {
                 newsfeedLayout.loading_more_posts = true;
                 newsfeedLayout.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
-                newsfeed.parse(this, downloadManager, data.getString("response"), false);
+                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -517,7 +518,7 @@ public class AppActivity extends Activity {
                 longPollService.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                 longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
-                slidingmenuLayout.loadAccountAvatar(account);
+                slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
                 newsfeedLayout.setScrollingPositions(this, true, true);
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
@@ -542,16 +543,16 @@ public class AppActivity extends Activity {
                     if(user.id == account.id) {
                         profileLayout.hideHeaderButtons(this);
                     }
-                    user.downloadAvatar(downloadManager);
+                    user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 50);
                     friends.get(ovk_api, user.id, "profile_counter");
                 }
             } else if (message == HandlerMessages.USERS_GET_ALT) {
                 users.parse(data.getString("response"));
                 account.user = users.getList().get(0);
-                account.user.downloadAvatar(downloadManager, "account_avatar");
+                account.user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""), "account_avatar");
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, data.getString("response"));
+                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
             } else if (message == HandlerMessages.FRIENDS_GET) {
                 friends.parse(data.getString("response"), downloadManager, true);
@@ -578,7 +579,7 @@ public class AppActivity extends Activity {
                 }
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
             } else if (message == HandlerMessages.GROUPS_GET) {
-                groups.parse(data.getString("response"), downloadManager, true);
+                groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
@@ -621,8 +622,18 @@ public class AppActivity extends Activity {
                 startActivity(intent);
                 finish();
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                if(user.avatar_url.length() > 0) {
-                    profileLayout.loadAvatar(user);
+                if(global_prefs.getString("photos_quality", "").equals("medium")) {
+                    if (user.avatar_msize_url.length() > 0) {
+                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                    }
+                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
+                    if (user.avatar_hsize_url.length() > 0) {
+                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                    }
+                } else {
+                    if (user.avatar_osize_url.length() > 0) {
+                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                    }
                 }
             } else if(message == HandlerMessages.LONGPOLL) {
                 MessageEvent msg_event = new MessageEvent(data.getString("response"));
@@ -1103,6 +1114,14 @@ public class AppActivity extends Activity {
         try {
             intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
                     item.owner_id, item.post_id));
+            if(item.attachments != null) {
+                for(int i = 0; i < item.attachments.size(); i++) {
+                    if(item.attachments.get(i).type.equals("photo")) {
+                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
+                        intent.putExtra("original_link", photo.original_url);
+                    }
+                }
+            }
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

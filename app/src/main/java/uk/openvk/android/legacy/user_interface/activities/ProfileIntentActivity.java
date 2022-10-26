@@ -27,6 +27,7 @@ import uk.openvk.android.legacy.api.Friends;
 import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Friend;
@@ -229,7 +230,7 @@ public class ProfileIntentActivity extends Activity {
                 if(user.id == account.id) {
                     profileLayout.hideHeaderButtons(this);
                 }
-                user.downloadAvatar(downloadManager);
+                user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 wall.get(ovk_api, user.id, 50);
                 friends.get(ovk_api, user.id, "profile_counter");
             } else if(message == HandlerMessages.FRIENDS_ADD) {
@@ -252,7 +253,7 @@ public class ProfileIntentActivity extends Activity {
                 users.parseSearch(data.getString("response"));
                 users.getUser(ovk_api, users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, data.getString("response"));
+                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
@@ -325,8 +326,18 @@ public class ProfileIntentActivity extends Activity {
                     errorLayout.setVisibility(View.VISIBLE);
                 }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                if(user.avatar_url.length() > 0) {
-                    profileLayout.loadAvatar(user);
+                if(global_prefs.getString("photos_quality", "").equals("medium")) {
+                    if (user.avatar_msize_url.length() > 0) {
+                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                    }
+                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
+                    if (user.avatar_hsize_url.length() > 0) {
+                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                    }
+                } else {
+                    if (user.avatar_osize_url.length() > 0) {
+                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -522,6 +533,28 @@ public class ProfileIntentActivity extends Activity {
             intent.putExtra("post_info", item.repost.newsfeed_item.info);
             intent.putExtra("post_text", item.repost.newsfeed_item.text);
             intent.putExtra("post_likes", item.repost.newsfeed_item.counters.likes);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void viewPhotoAttachment(int position) {
+        WallPost item;
+        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
+        item = wall.getWallItems().get(position);
+        intent.putExtra("where", "wall");
+        try {
+            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                    item.owner_id, item.post_id));
+            if(item.attachments != null) {
+                for(int i = 0; i < item.attachments.size(); i++) {
+                    if(item.attachments.get(i).type.equals("photo")) {
+                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
+                        intent.putExtra("original_link", photo.original_url);
+                    }
+                }
+            }
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

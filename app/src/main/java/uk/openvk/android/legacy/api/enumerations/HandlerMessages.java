@@ -88,6 +88,7 @@ public class HandlerMessages {
     public static int COMMENT_AVATARS                   = 1109;
     public static int CONVERSATION_AVATARS              = 1110;
     public static int LONGPOLL                          = 1111;
+    public static int SAVE_PHOTO_TO_STORAGE             = 1112;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;
@@ -98,8 +99,9 @@ public class HandlerMessages {
     public static int CHAT_DISABLED                     =  -6;
     public static int METHOD_NOT_FOUND                  =  -7;
     public static int ACCESS_DENIED                     =  -8;
-    public static int BROKEN_SSL_CONNECTION             =  -9;
-    public static int INTERNAL_ERROR                    =  -10;
-    public static int NOT_OPENVK_INSTANCE               =  -11;
-    public static int UNKNOWN_ERROR                     =  -12;
+    public static int ACCESS_DENIED_MARSHMALLOW         =  -9;
+    public static int BROKEN_SSL_CONNECTION             =  -10;
+    public static int INTERNAL_ERROR                    =  -11;
+    public static int NOT_OPENVK_INSTANCE               =  -12;
+    public static int UNKNOWN_ERROR                     =  -13;
 }

@@ -221,6 +221,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             public void onClick(View view) {
                                 if (ctx.getClass().getSimpleName().equals("AppActivity")) {
                                     ((AppActivity) ctx).viewPhotoAttachment(position);
+                                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                                    ((ProfileIntentActivity) ctx).viewPhotoAttachment(position);
+                                } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                                    ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
                                 }
                             }
                         });

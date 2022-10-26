@@ -127,17 +127,35 @@ public class ProfileLayout extends LinearLayout {
         });
     }
 
-    public void loadAvatar(User user) {
+    public void loadAvatar(User user, String quality) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
-            if (bitmap != null) {
-                user.avatar = bitmap;
-            } else if (user.avatar_url.length() > 0) {
-                user.avatar = null;
+            if(quality.equals("medium")) {
+                if (bitmap != null) {
+                    user.avatar = bitmap;
+                } else if (user.avatar_msize_url.length() > 0) {
+                    user.avatar = null;
+                } else {
+                    user.avatar = null;
+                }
+            } else if(quality.equals("high")) {
+                if (bitmap != null) {
+                    user.avatar = bitmap;
+                } else if (user.avatar_hsize_url.length() > 0) {
+                    user.avatar = null;
+                } else {
+                    user.avatar = null;
+                }
             } else {
-                user.avatar = null;
+                if (bitmap != null) {
+                    user.avatar = bitmap;
+                } else if (user.avatar_osize_url.length() > 0) {
+                    user.avatar = null;
+                } else {
+                    user.avatar = null;
+                }
             }
             if (user.avatar != null)
                 ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);

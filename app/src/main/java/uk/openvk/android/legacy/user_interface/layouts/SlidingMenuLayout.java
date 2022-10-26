@@ -69,17 +69,35 @@ public class SlidingMenuLayout extends LinearLayout {
         });
     }
 
-    public void loadAccountAvatar(Account account) {
+    public void loadAccountAvatar(Account account, String quality) {
         ImageView avatar = (ImageView) findViewById(R.id.avatar);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getContext().getCacheDir(), account.user.id), options);
-        if (bitmap != null) {
-            account.user.avatar = bitmap;
-        } else if(account.user.avatar_url.length() > 0) {
-            account.user.avatar = null;
+        if(quality.equals("medium")) {
+            if (bitmap != null) {
+                account.user.avatar = bitmap;
+            } else if (account.user.avatar_msize_url.length() > 0) {
+                account.user.avatar = null;
+            } else {
+                account.user.avatar = null;
+            }
+        } else if(quality.equals("high")) {
+            if (bitmap != null) {
+                account.user.avatar = bitmap;
+            } else if (account.user.avatar_hsize_url.length() > 0) {
+                account.user.avatar = null;
+            } else {
+                account.user.avatar = null;
+            }
         } else {
-            account.user.avatar = null;
+            if (bitmap != null) {
+                account.user.avatar = bitmap;
+            } else if (account.user.avatar_osize_url.length() > 0) {
+                account.user.avatar = null;
+            } else {
+                account.user.avatar = null;
+            }
         }
         if(account.user.avatar != null) ((ImageView) findViewById(R.id.avatar)).setImageBitmap(account.user.avatar);
     }

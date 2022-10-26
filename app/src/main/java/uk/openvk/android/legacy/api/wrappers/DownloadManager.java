@@ -307,6 +307,7 @@ public class DownloadManager {
 
             @Override
             public void run() {
+                Log.v("DownloadManager", String.format("Downloading %s...", url));
                 try {
                     File directory = new File(ctx.getCacheDir().getAbsolutePath(), where);
                     if (!directory.exists()) {
@@ -382,6 +383,9 @@ public class DownloadManager {
                                 //Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response.body().byteStream().close();
+                            if (response != null){
+                                response.close();
+                            }
                         }
                         //Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
                     } catch (IOException e) {

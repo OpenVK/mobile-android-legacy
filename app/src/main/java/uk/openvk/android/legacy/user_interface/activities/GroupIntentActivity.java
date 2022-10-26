@@ -29,6 +29,7 @@ import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Likes;
 import uk.openvk.android.legacy.api.Wall;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Group;
@@ -220,7 +221,7 @@ public class GroupIntentActivity extends Activity {
                 progressLayout.setVisibility(View.GONE);
                 groupScrollView.setVisibility(View.VISIBLE);
                 setJoinButtonListener(group.id);
-                group.downloadAvatar(downloadManager);
+                group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 wall.get(ovk_api, -group.id, 50);
             } else if (message == HandlerMessages.GROUPS_SEARCH) {
                 groups.parseSearch(data.getString("response"));
@@ -234,7 +235,7 @@ public class GroupIntentActivity extends Activity {
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 loadAvatar();
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, data.getString("response"));
+                wall.parse(this, downloadManager,  global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
@@ -298,7 +299,7 @@ public class GroupIntentActivity extends Activity {
         Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/group_avatars/avatar_%s", getCacheDir(), group.id), options);
         if (bitmap != null) {
             group.avatar = bitmap;
-        } else if(group.avatar_url.length() > 0) {
+        } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0 || group.avatar_osize_url.length() > 0) {
             group.avatar = null;
         } else {
             group.avatar = null;
@@ -462,6 +463,28 @@ public class GroupIntentActivity extends Activity {
             intent.putExtra("post_info", item.repost.newsfeed_item.info);
             intent.putExtra("post_text", item.repost.newsfeed_item.text);
             intent.putExtra("post_likes", item.repost.newsfeed_item.counters.likes);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void viewPhotoAttachment(int position) {
+        WallPost item;
+        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
+        item = wall.getWallItems().get(position);
+        intent.putExtra("where", "wall");
+        try {
+            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                    item.owner_id, item.post_id));
+            if(item.attachments != null) {
+                for(int i = 0; i < item.attachments.size(); i++) {
+                    if(item.attachments.get(i).type.equals("photo")) {
+                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
+                        intent.putExtra("original_link", photo.original_url);
+                    }
+                }
+            }
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();

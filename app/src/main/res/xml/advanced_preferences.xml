@@ -6,12 +6,10 @@
 					android:defaultValue="true" /-->
 
 	<PreferenceCategory android:title="@string/sett_cache" android:layout="@layout/category_prefw">
-				    <Preference android:title="@string/sett_clear_img_cache"
-						android:layout="@layout/pref_widget"
-						android:summary="" android:key="clearImageCache"/>
-				    <!--ListPreference android:entries="@array/sett_img_cache_location"
-						android:entryValues="@array/sett_cache_location_v" android:title="@string/sett_cache_location"
-						android:dialogTitle="@string/sett_cache_location" android:key="imgCacheLocation"
-						android:defaultValue="internal" /-->
-				</PreferenceCategory>
+		<Preference android:title="@string/sett_cache_quality" android:key="imageCacheQuality"
+            android:layout="@layout/pref_widget"/>
+		<Preference android:title="@string/sett_clear_img_cache"
+			android:layout="@layout/pref_widget"
+			android:summary="" android:key="clearImageCache"/>
+	</PreferenceCategory>
 </PreferenceScreen>

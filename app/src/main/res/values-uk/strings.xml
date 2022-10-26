@@ -708,6 +708,17 @@
 	<string name="feed_comments_topic">Тема</string>
 	<string name="album_unnamed">Без назви</string>
 	<string name="sett_cache">Кеш зображень</string>
+    <string name="sett_cache_quality">Якість</string>
+    <string name="sett_cache_quality_alt">Якість зображень</string>
+    <string-array name="sett_cache_quality_array">
+        <item>Середня</item>
+        <item>Висока</item>
+        <item>Вихiдна</item>
+    </string-array>
+    <string name="sett_cache_quality_lowres">Для економії трафіку та ресурсів пристрою.</string>
+    <string name="sett_cache_quality_highres">Дозволяє бачити чіткіше, але не економить трафік.</string>
+    <string name="sett_cache_quality_highestres">Дозволяє бачити ще чіткіше, але не економить трафік.</string>
+    <string name="sett_cache_quality_oomrisk">Це може призвести до нестабільної роботи програми!</string>
 	<string name="sett_clear_img_cache">Очистити</string>
     <string name="img_cache_cleared">Кеш очищен!</string>
 	<string name="sett_cache_location">Розташування</string>
