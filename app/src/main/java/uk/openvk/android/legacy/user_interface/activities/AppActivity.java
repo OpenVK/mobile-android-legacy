@@ -107,10 +107,12 @@ public class AppActivity extends Activity {
     private int poll_answer;
     private NotificationManager notifMan;
     private NotificationChannel notifChannel;
+    private boolean inBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        inBackground = true;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         if(instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("server", "").length() == 0) {
@@ -731,7 +733,9 @@ public class AppActivity extends Activity {
                             if(data.getString("method").equals("Wall.get") && global_prefs.getString("current_screen", "").equals("profile")) {
                                 ((WallErrorLayout) profileLayout.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                             } else {
-                                Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                                if(!inBackground) {
+                                    Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
                     } catch (Exception ex) {
@@ -1126,5 +1130,17 @@ public class AppActivity extends Activity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        inBackground = true;
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        inBackground = false;
+        super.onResume();
     }
 }

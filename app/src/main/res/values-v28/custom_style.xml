@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BaseStyle.Dark" parent="android:style/Theme.Holo">
+        <item name="android:actionBarStyle">@style/ActionBarStyle.Dark</item>
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+    <style name="ActionBarStyle.Dark" parent="android:style/Widget.Holo.ActionBar.Solid">
+        <item name="android:background">@drawable/bg_actionbar_black</item>
+        <item name="android:icon">@drawable/ic_ab_app</item>
+        <item name="android:progressBarStyle">@style/ActionBarProgress</item>
+        <!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
+        <item name="backgroundStacked">@drawable/action_bar_tabs_bg</item-->
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+</resources>

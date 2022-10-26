@@ -244,7 +244,15 @@ public class WallPostLayout extends LinearLayout {
         ((ImageView) findViewById(R.id.post_photo)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ctx.getClass().equals("WallPostActivity")) {
+                if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                    ((WallPostActivity) ctx).viewPhotoAttachment();
+                }
+            }
+        });
+        ((ImageView) findViewById(R.id.repost_photo)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
                     ((WallPostActivity) ctx).viewPhotoAttachment();
                 }
             }

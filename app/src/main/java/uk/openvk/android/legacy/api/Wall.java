@@ -165,11 +165,11 @@ public class Wall implements Parcelable {
                     this.items.add(item);
                 }
                 if(quality.equals("medium")) {
-                    downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
+                    downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
                 } else if(quality.equals("high")) {
-                    downloadManager.downloadPhotosToCache(photos_hsize, "newsfeed_photo_attachments");
+                    downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
                 } else if(quality.equals("original")) {
-                    downloadManager.downloadPhotosToCache(photos_osize, "newsfeed_photo_attachments");
+                    downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
                 }
                 downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
             }

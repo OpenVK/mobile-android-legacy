@@ -75,4 +75,5 @@ public class OvkApplication extends Application {
 
         isTablet = global.isTablet();
     }
+
 }

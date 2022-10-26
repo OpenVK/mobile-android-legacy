@@ -32,7 +32,11 @@
         <item name="android:fadingEdgeLength">0dip</item>
         <item name="android:windowCloseOnTouchOutside">true</item>
         <item name="android:progressBarStyle">@style/ProgressBar</item>
-        <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
+        <item name="android:actionOverflowMenuStyle">@style/ActionBarSpinner</item>
+    </style>
+
+    <style name="ActionBarStyle.TextAppearanceMenu">
+        <item name="android:layout">@layout/pref_widget</item>
     </style>
 
     <style name="ActionBarStyle.Dark" parent="android:style/Widget.Holo.ActionBar.Solid">

@@ -120,6 +120,8 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="ActionBarStyle.TextAppearanceMenu">#ffffff</style>
+
     <declare-styleable name="View">
         <attr name="android:background" />
         <attr name="android:clickable" />
