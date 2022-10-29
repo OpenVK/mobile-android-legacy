@@ -9,7 +9,7 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 ![featureGraphic](https://github.com/openvk/mobile-android-legacy/blob/main/fastlane/metadata/android/en-US/images/featureGraphic.png)
 
 ## Download APK
-* via [F-Droid repo](https://repo.openvk.co/repo/) 
+* via [F-Droid repo](https://repo.openvk.uk/repo/) 
 * via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)
 * via [Releases page](https://github.com/openvk/mobile-android-legacy/releases)
 
