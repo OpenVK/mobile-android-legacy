@@ -1,0 +1,3 @@
+1. Fixed crash when trying to post a comment.
+2. Fixed a cosmetic bug with a dark theme (for photo viewer, for Android 8.1 and below).
+3. Now you can view and zoom photos from the walls, and not just from the news.
