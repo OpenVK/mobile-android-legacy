@@ -130,7 +130,7 @@
     <string name="password">Пароль</string>
     <string name="log_in">Войти</string>
     <string name="auth_error_title">Ошибка авторизации</string>
-    <string name="auth_error">При входе произошла ошибка. Проверьте введенные данные и попробуйте еще раз.</string>
+    <string name="auth_error">При входе произошла ошибка. Проверьте введенные данные и попробуйте ещё раз.</string>
     <string name="wall">Стена</string>
     <string name="friends">Друзья</string>
     <string name="post_to_wall">Написать на стене</string>
@@ -717,7 +717,7 @@
     <string name="sett_cache_quality_alt">Качество изображений</string>
     <string name="sett_cache_quality_lowres">Для экономии трафика и ресурсов устройства.</string>
     <string name="sett_cache_quality_highres">Позволяет видеть четче, но не экономит трафик.</string>
-    <string name="sett_cache_quality_highestres">Позволяет видеть еще четче, но не экономит трафик.</string>
+    <string name="sett_cache_quality_highestres">Позволяет видеть ещё четче, но не экономит трафик.</string>
     <string name="sett_cache_quality_oomrisk">Это может привести к нестабильной работе приложения!</string>
 	<string name="sett_clear_img_cache">Очистить</string>
     <string name="img_cache_cleared">Кэш очищен!</string>
@@ -1235,7 +1235,7 @@
     <string name="err_picture_not_enough_memory_text">Недостаточно памяти для обработки изображений. Закройте все неиспользуемые приложения и повторите попытку.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>
-    <string name="invalid_session">Сессия недействительна. Пожалуйста, авторизуйтесь еще раз.</string>
+    <string name="invalid_session">Сессия недействительна. Пожалуйста, авторизуйтесь ещё раз.</string>
     <string name="about_app_links">Ссылки</string>
     <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Исходный код</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
     <string name="credits">Титры</string>
