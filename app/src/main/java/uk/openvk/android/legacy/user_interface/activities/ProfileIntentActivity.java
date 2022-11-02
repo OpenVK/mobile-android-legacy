@@ -545,7 +545,7 @@ public class ProfileIntentActivity extends Activity {
         item = wall.getWallItems().get(position);
         intent.putExtra("where", "wall");
         try {
-            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+            intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
                     item.owner_id, item.post_id));
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {

@@ -165,6 +165,9 @@ public class WallPostActivity extends Activity {
                     ex.printStackTrace();
                 }
                 Comment comment = new Comment(author_id, author_name, (int)(System.currentTimeMillis() / 1000), msg_text);
+                if(comments == null) {
+                    comments = new ArrayList<Comment>();
+                }
                 comments.add(comment);
                 wallPostLayout.createAdapter(WallPostActivity.this, comments);
                 ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");

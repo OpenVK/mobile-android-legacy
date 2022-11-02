@@ -1116,8 +1116,13 @@ public class AppActivity extends Activity {
             intent.putExtra("where", "newsfeed");
         }
         try {
-            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+            if (global_prefs.getString("current_screen", "").equals("profile")) {
+                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
                     item.owner_id, item.post_id));
+            } else {
+                intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
+                        item.owner_id, item.post_id));
+            }
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {
                     if(item.attachments.get(i).type.equals("photo")) {
