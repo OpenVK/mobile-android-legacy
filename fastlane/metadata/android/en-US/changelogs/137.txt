@@ -1,0 +1,1 @@
+1. Hotfix related to displaying photos in the viewer.
