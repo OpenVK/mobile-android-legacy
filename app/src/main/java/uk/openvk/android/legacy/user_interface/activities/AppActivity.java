@@ -1117,10 +1117,10 @@ public class AppActivity extends Activity {
         }
         try {
             if (global_prefs.getString("current_screen", "").equals("profile")) {
-                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
-                    item.owner_id, item.post_id));
-            } else {
                 intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
+                        item.owner_id, item.post_id));
+            } else {
+                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
                         item.owner_id, item.post_id));
             }
             if(item.attachments != null) {
