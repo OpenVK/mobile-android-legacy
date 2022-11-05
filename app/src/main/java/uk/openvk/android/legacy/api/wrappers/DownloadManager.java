@@ -287,6 +287,8 @@ public class DownloadManager {
                     sendMessage(HandlerMessages.FRIEND_AVATARS, where);
                 } else if (where.equals("comment_avatars")) {
                     sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                } else if (where.equals("conversations_avatars")) {
+                    sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
                 }
             }
         };

@@ -45,19 +45,14 @@
 		<item name="android:fadingEdgeLength">0dip</item>
 		<item name="android:windowCloseOnTouchOutside">true</item>
 		<item name="android:progressBarStyle">@style/ProgressBar</item>
-		<item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
 	</style>
 
 	<style name="ActionBarStyle.Dark" parent="android:style/Widget.Holo.ActionBar.Solid">
-		<item name="android:background">@drawable/bg_actionbar_black</item>
-		<item name="android:titleTextStyle">@style/ActionBarTitleStyle</item>
-		<item name="android:subtitleTextStyle">@style/ActionBarSubtitleStyle</item>
-		<item name="android:icon">@drawable/ic_ab_app</item>
-		<item name="android:progressBarStyle">@style/ActionBarProgress</item>
-		<item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
-		<item name="android:height">50dp</item>
-		<!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
-        <item name="backgroundStacked">@drawable/action_bar_tabs_bg</item-->
+        <item name="android:background">@drawable/bg_actionbar_black</item>
+        <item name="android:icon">@drawable/ic_ab_app</item>
+        <item name="android:progressBarStyle">@style/ActionBarProgress</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
+        <item name="android:height">50dp</item>
 	</style>
 
 	<style name="OverflowMenuStyle" parent="android:style/Widget.Holo.ActionButton.Overflow">

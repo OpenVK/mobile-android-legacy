@@ -177,13 +177,10 @@ public class WallLayout extends LinearLayout {
 
     public void select(int position, String item, int value) {
         if(item.equals("likes")) {
-            wallItems.get(position).counters.enabled = true;
             if(value == 1) {
                 wallItems.get(position).counters.isLiked = true;
-                wallItems.get(position).counters.likes += 1;
             } else {
                 wallItems.get(position).counters.isLiked = false;
-                wallItems.get(position).counters.likes -= 1;
             }
             wallAdapter.notifyDataSetChanged();
         }
@@ -191,7 +188,6 @@ public class WallLayout extends LinearLayout {
 
     public void select(int position, String item, String value) {
         if(item.equals("likes")) {
-            wallItems.get(position).counters.enabled = false;
             if(value.equals("add")) {
                 wallItems.get(position).counters.isLiked = true;
             } else {

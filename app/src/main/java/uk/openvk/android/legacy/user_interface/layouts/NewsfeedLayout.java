@@ -132,7 +132,7 @@ public class NewsfeedLayout extends LinearLayout {
                                     if(photoAttachment.photo != null) {
                                         photoAttachment.photo.recycle();
                                         photoAttachment.photo = null;
-                                        System.gc();
+                                        //System.gc();
                                     }
                                 } else {
                                     BitmapFactory.Options options = new BitmapFactory.Options();

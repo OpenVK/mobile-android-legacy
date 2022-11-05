@@ -86,7 +86,7 @@ public class HandlerMessages {
     public static int GROUP_AVATARS_ALT                 = 1107;
     public static int FRIEND_AVATARS                    = 1108;
     public static int COMMENT_AVATARS                   = 1109;
-    public static int CONVERSATION_AVATARS              = 1110;
+    public static int CONVERSATIONS_AVATARS             = 1110;
     public static int LONGPOLL                          = 1111;
     public static int SAVE_PHOTO_TO_STORAGE             = 1112;
 

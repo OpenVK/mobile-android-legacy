@@ -274,13 +274,9 @@ public class MainSettingsActivity extends PreferenceActivity {
                 editor.putString("server", "");
                 editor.putString("account_password", "");
                 editor.commit();
-                Intent mStartActivity = new Intent(MainSettingsActivity.this, MainActivity.class);
-                mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                int mPendingIntentId = 123456;
-                PendingIntent mPendingIntent = PendingIntent.getActivity(MainSettingsActivity.this, mPendingIntentId, mStartActivity,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
-                AlarmManager mgr = (AlarmManager) MainSettingsActivity.this.getSystemService(Context.ALARM_SERVICE);
-                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(activity);
                 System.exit(0);
             }
         });

@@ -12,11 +12,14 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -155,6 +158,28 @@ public class WallPostActivity extends Activity {
     private void setCommentsView() {
         final CommentPanel commentPanel = (CommentPanel) findViewById(R.id.comment_panel);
         final Button send_btn = ((Button) commentPanel.findViewById(R.id.send_btn));
+        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
+                final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    try {
+                        wall.createComment(ovk_api, owner_id, post_id, msg_text);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    Comment comment = new Comment(author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                    if (comments == null) {
+                        comments = new ArrayList<Comment>();
+                    }
+                    comments.add(comment);
+                    wallPostLayout.createAdapter(WallPostActivity.this, comments);
+                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
+                }
+                return true;
+            }
+        });
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.method.KeyListener;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -83,6 +86,16 @@ public class AuthActivity extends Activity {
             @Override
             public void onClick(View v) {
                 showInstancesDialog();
+            }
+        });
+        ((EditText) findViewById(R.id.auth_pass)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(keyEvent != null && KeyEvent.KEYCODE_ENTER == keyEvent.getKeyCode()
+                        && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    authorize();
+                }
+                return false;
             }
         });
         Button settings_btn = (Button) findViewById(R.id.settings_btn);
@@ -206,7 +219,7 @@ public class AuthActivity extends Activity {
                 if (!AuthActivity.this.isFinishing()) wrong_userdata_dlg.show();
             } else if (message == HandlerMessages.TWOFACTOR_CODE_REQUIRED) {
                 connectionDialog.cancel();
-                AlertDialog twofactor_dlg;
+                final AlertDialog twofactor_dlg;
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
                 View twofactor_view = getLayoutInflater().inflate(R.layout.twofactor_auth, null, false);
                 builder.setTitle(R.string.auth);
@@ -225,6 +238,16 @@ public class AuthActivity extends Activity {
                     }
                 });
                 twofactor_dlg = builder.create();
+                two_factor_code.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                        if(keyEvent != null && KeyEvent.KEYCODE_ENTER == keyEvent.getKeyCode()
+                                && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                            twoFactorLogin(two_factor_code.getText().toString());
+                        }
+                        return false;
+                    }
+                });
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {

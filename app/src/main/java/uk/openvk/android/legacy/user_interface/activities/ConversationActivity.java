@@ -10,11 +10,14 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -136,6 +139,31 @@ public class ConversationActivity extends Activity {
 
     private void setConversationView() {
         final ConversationPanel conversationPanel = (ConversationPanel) findViewById(R.id.conversation_panel);
+        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
+                final String msg_text = ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    try {
+                        conversation.sendMessage(ovk_api, msg_text);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    last_sended_message = new uk.openvk.android.legacy.api.models.Message(false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                    last_sended_message.sending = true;
+                    last_sended_message.isError = false;
+                    if(history == null) {
+                        history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
+                    }
+                    history.add(last_sended_message);
+                    conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history);
+                    messagesList.setAdapter(conversation_adapter);
+                    ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                }
+                return false;
+            }
+        });
         final Button send_btn = (Button) conversationPanel.findViewById(R.id.send_btn);
         send_btn.setEnabled(false);
         send_btn.setOnClickListener(new View.OnClickListener() {

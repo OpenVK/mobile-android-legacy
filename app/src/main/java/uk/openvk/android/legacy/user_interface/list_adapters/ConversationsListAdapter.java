@@ -1,10 +1,12 @@
 package uk.openvk.android.legacy.user_interface.list_adapters;
 
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.api.models.Conversation;
 
@@ -20,13 +23,15 @@ public class ConversationsListAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Conversation> objects;
+    public Account account;
     public boolean opened_sliding_menu;
 
-    public ConversationsListAdapter(Context context, ArrayList<Conversation> items) {
+    public ConversationsListAdapter(Context context, ArrayList<Conversation> items, Account account) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.account = account;
     }
 
     @Override
@@ -76,6 +81,18 @@ public class ConversationsListAdapter extends BaseAdapter {
         } else {
             ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.GONE);
             ((TextView) view.findViewById(R.id.conversation_time)).setVisibility(View.GONE);
+        }
+
+        if(item.avatar_url.length() > 0 && item.avatar != null) {
+            ((ImageView) view.findViewById(R.id.conversation_avatar)).setImageBitmap(item.avatar);
+        }
+
+        if(item.lastMsgAuthorId == item.peer_id) {
+            ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setImageBitmap(account.user.avatar);
+            ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setVisibility(View.GONE);
+        } else if(item.lastMsgAuthorId == account.id) {
+            ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setImageBitmap(account.user.avatar);
+            ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setVisibility(View.VISIBLE);
         }
 
         view.setOnClickListener(new View.OnClickListener() {

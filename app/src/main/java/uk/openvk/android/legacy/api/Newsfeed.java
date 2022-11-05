@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.api;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -122,10 +123,10 @@ public class Newsfeed implements Parcelable {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if (profile.getInt("id") == author_id) {
                                     author_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
-                                    author_avatar_url = profile.getString("photo_50");
+                                    author_avatar_url = profile.getString("photo_100");
                                 } else if (profile.getInt("id") == owner_id) {
                                     owner_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
-                                    owner_avatar_url = profile.getString("photo_50");
+                                    owner_avatar_url = profile.getString("photo_100");
                                 }
                             }
                             if(author_avatar_url.length() > 0)
@@ -138,15 +139,17 @@ public class Newsfeed implements Parcelable {
                                     JSONObject group = groups.getJSONObject(groups_index);
                                     if (-group.getInt("id") == owner_id) {
                                         owner_name = group.getString("name");
-                                        avatar_url = group.getString("photo_50");
+                                        avatar_url = group.getString("photo_100");
                                     }
                                 }
                             }
                         }
                         if(author_id == owner_id) {
                             item.name = author_name;
-                        } else {
+                        } else if(owner_name.length() > 0) {
                             item.name = ctx.getResources().getString(R.string.on_wall, author_name, owner_name);
+                        } else {
+                            item.name = author_name;
                         }
                     } else {
                         if(newsfeed.has("groups") && newsfeed.has("profiles")) {
@@ -156,7 +159,7 @@ public class Newsfeed implements Parcelable {
                                 JSONObject group = groups.getJSONObject(groups_index);
                                 if (-group.getInt("id") == author_id) {
                                     item.name = group.getString("name");
-                                    avatar_url = group.getString("photo_50");
+                                    avatar_url = group.getString("photo_100");
                                 }
                             }
                         }

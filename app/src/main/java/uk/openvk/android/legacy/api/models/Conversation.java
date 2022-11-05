@@ -19,8 +19,10 @@ public class Conversation {
     public int online;
     public Bitmap avatar;
     public Bitmap lastMsgAvatar;
+    public int lastMsgAuthorId;
     public String lastMsgText;
     public int lastMsgTime;
+    public String avatar_url;
     private ArrayList<Message> history;
     private JSONParser jsonParser;
 

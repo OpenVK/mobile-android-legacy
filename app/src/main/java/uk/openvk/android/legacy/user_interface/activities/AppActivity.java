@@ -595,8 +595,8 @@ public class AppActivity extends Activity {
                     profileLayout.setCounter(user, "friends",  friends.count);
                 }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
-                conversations = messages.parseConversationsList(data.getString("response"));
-                conversationsLayout.createAdapter(this, conversations);
+                conversations = messages.parseConversationsList(data.getString("response"), downloadManager);
+                conversationsLayout.createAdapter(this, conversations, account);
                 if (global_prefs.getString("current_screen", "").equals("messages")) {
                     progressLayout.setVisibility(View.GONE);
                     conversationsLayout.setVisibility(View.VISIBLE);
@@ -637,6 +637,8 @@ public class AppActivity extends Activity {
                         profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 }
+            } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
+                conversationsLayout.loadAvatars(conversations);
             } else if(message == HandlerMessages.LONGPOLL) {
                 MessageEvent msg_event = new MessageEvent(data.getString("response"));
                 if(msg_event.peer_id > 0 && global_prefs.getBoolean("enableNotification", true)) {
@@ -1034,7 +1036,12 @@ public class AppActivity extends Activity {
     public void voteInPoll(int item_pos, int answer) {
         this.item_pos = item_pos;
         this.poll_answer = answer;
-        WallPost item = newsfeed.getWallPosts().get(item_pos);
+        WallPost item;
+        if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+            item = newsfeed.getWallPosts().get(item_pos);
+        } else {
+            item = wall.getWallItems().get(item_pos);
+        }
         for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
             if (item.attachments.get(attachment_index).type.equals("poll")) {
                 PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(attachment_index).getContent());
@@ -1043,7 +1050,11 @@ public class AppActivity extends Activity {
                     pollAttachment.answers.get(answer).is_voted = true;
                     pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
                 }
-                newsfeed.getWallPosts().set(item_pos, item);
+                if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    newsfeed.getWallPosts().set(item_pos, item);
+                } else {
+                    wall.getWallItems().set(item_pos, item);
+                }
                 pollAttachment.vote(ovk_api, pollAttachment.answers.get(answer).id);
             }
         }
@@ -1051,18 +1062,27 @@ public class AppActivity extends Activity {
 
     public void removeVoteInPoll(int item_pos) {
         this.item_pos = item_pos;
-        WallPost item = newsfeed.getWallPosts().get(item_pos);
+        WallPost item;
+        if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+            item = newsfeed.getWallPosts().get(item_pos);
+        } else {
+            item = wall.getWallItems().get(item_pos);
+        }
         for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
             if(item.attachments.get(attachment_index).type.equals("poll")) {
                 PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                pollAttachment.user_votes = 0;
                 for (int i = 0; i < pollAttachment.answers.size(); i++) {
                     if (pollAttachment.answers.get(i).is_voted) {
                         pollAttachment.answers.get(i).is_voted = false;
                         pollAttachment.answers.get(i).votes = pollAttachment.answers.get(i).votes - 1;
                     }
                 }
-                pollAttachment.user_votes = 0;
-                newsfeed.getWallPosts().set(item_pos, item);
+                if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    newsfeed.getWallPosts().set(item_pos, item);
+                } else {
+                    wall.getWallItems().set(item_pos, item);
+                }
                 pollAttachment.unvote(ovk_api);
             }
         }
