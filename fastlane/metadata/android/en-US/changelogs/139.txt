@@ -1,0 +1,1 @@
+1. In the last assembly, System.gc() was temporarily commented out, which lagging when scrolling. Now back, should help a little.
