@@ -1,0 +1,5 @@
+1. Now, to enter your account and send messages and comments, just press the ENTER key in physical keyboards.
+2. Implemented receiving avatars in the "Messages" section.
+3. Fixed dark theme display in Android 8.1 and below (except Android 2.x). Already finally!
+4. Fixed bugs: random launch of Activity after logging out of the account and negative counter in the account profile.
+
