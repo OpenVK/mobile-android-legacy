@@ -12,11 +12,11 @@
     <string name="doc">Документ</string>
     <string name="send_b">Відпр.</string>
     <string name="msg_hint">Ваше повідомлення</string>
-    <string name="menu_settings">Налаштуваня</string>
+    <string name="menu_settings">Налаштування</string>
     <string name="menu_about">Про додаток</string>
     <string name="instances_list_title">Список інстанцій</string>
     <string-array name="popup_menu_api_v8">
-        <item>Налаштуваня</item>
+        <item>Налаштування</item>
         <item>Про додаток</item>
         <item>Закрити</item>
     </string-array>
@@ -115,7 +115,7 @@
     
     <string-array name="num_new_messages">
         <item>%d нове повідомлення.</item>
-        <item>%d нових повідомлення.</item>
+        <item>%d нових повідомлень.</item>
         <item>%d нових повідомлень.</item>
     </string-array>
     
@@ -125,12 +125,12 @@
         <item>%d голосів</item>
     </string-array>
 
-    <string name="instance">Iнстанцiя</string>
+    <string name="instance">Інстанція</string>
     <string name="mail">Електронна пошта</string>
     <string name="password">Пароль</string>
     <string name="log_in">Увійти</string>
     <string name="auth_error_title">Помилка авторизації</string>
-    <string name="auth_error">При вході сталася помилка. Перевірте введені дані і спробуйте ще раз.</string>
+    <string name="auth_error">При вході сталася помилка. Перевірте введені дані та спробуйте ще раз.</string>
     <string name="wall">Стіна</string>
     <string name="friends">Друзі</string>
     <string name="post_to_wall">Написати на стіні</string>
@@ -220,7 +220,7 @@
     <string name="confirm">Підтвердження</string>
     <string name="delete_confirm">Ви дійсно хочете видалити цей запис?</string>
     <string name="wall_empty">На стіні немає жодного запису</string>
-    <string name="msg_error">Помилка при відправці повідомлення</string>
+    <string name="msg_error">Помилка при надсиланні повідомлення</string>
     <string name="comments">Коментарі</string>
     <string-array name="ncomments_last">
     	<item>Останній з %d коментаря</item>
@@ -248,8 +248,8 @@
     <string name="add_friend_explain_m">%s отримає оповіщення, а ви зможете бачити в Новинах оновлення його сторінки.</string>
     <string name="add_friend_explain_f">%s отримає оповіщення, а ви зможете бачити в Новинах оновлення її сторінки.</string>
     <string name="add_friend_msg">Додати повідомлення</string>
-    <string name="add_friend_sent_m">Ви відправили %s заявку в друзі і підписалися на оновлення його сторінки.</string>
-    <string name="add_friend_sent_f">Ви відправили %s заявку в друзі і підписалися на оновлення її сторінки.</string>
+    <string name="add_friend_sent_m">Ви відправили %s заявку в друзі й підписалися на оновлення його сторінки.</string>
+    <string name="add_friend_sent_f">Ви відправили %s заявку в друзі та підписалися на оновлення її сторінки.</string>
     <string name="add_friend_accepted">Заявка прийнята</string>
     <string name="add_friend_already_sent">Заявка вже була відправлена. Повторно заявка відправлена не буде.</string>
     <string name="users_audio">Аудіозаписи %s</string>
@@ -287,14 +287,14 @@
     <string name="post_options">Опції запису</string>
     <string-array name="post_options">
     	<item>Тільки для друзів</item>
-    	<!--item>Вказати місцезнаходження</item-->
+    	<!--item>Вказати геолокацію</item-->
     </string-array>
     <string name="photo_save_ok">Фотографія збережена на пам\'ять пристрою</string>
     
     <string name="share_wall">OpenVK - стіна</string>
     <string name="share_album">OpenVK - фотоальбом</string>
     <string name="select_album">Виберіть альбом</string>
-    <string name="share_unsupported">Відправка цього файлу не підтримується</string>
+    <string name="share_unsupported">Надсилання цього файлу не підтримується</string>
     <string name="share_video_title">Новий відеозапис</string>
     <string name="share_video_name">Назва</string>
     <string name="share_video_description">Опис</string>
@@ -303,13 +303,13 @@
     
     <string name="uploading_video">Завантаження відеозапису</string>
     <string name="uploading_audio">Завантаження аудіозапису</string>
-    <string name="uploading_document">Завантаження документу</string>
+    <string name="uploading_document">Завантаження документа</string>
     
     <string name="photo_upload_ok_long">Фотографія успішно завантажена</string>
     <string name="audio_upload_ok_long">Аудіозапис успішно завантажено</string>
     <string name="video_upload_ok_long">Відеозапис успішно завантажено</string>
     <string name="doc_upload_ok_long">Документ успішно завантажено</string>
-    <string name="photos_upload_ok_long">Фотографии успешно загружены</string>
+    <string name="photos_upload_ok_long">Фотографії успішно завантажені</string>
     
     <string name="photo_upload_ok">Фотографія завантажена</string>
     <string name="audio_upload_ok">Аудіозапис завантажено</string>
@@ -368,18 +368,6 @@
     </string-array>
     
     <string name="welcome_next">Далі</string>
-    
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <br/> -->
-    
-    
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    
     <string name="sync_all">Всі друзі</string>
     <string name="sync_all_summary">Додати в контакти дані всіх Ваших друзів</string>
     <string name="sync_existing">Тільки контакти</string>
@@ -423,9 +411,9 @@
     <string name="delete_friend_confirm">Ви дійсно хочете видалити %s зі свого списку друзів?</string>
     <string name="friend_deleted_m">%s був видалений з Вашого списку друзів</string>
     <string name="friend_deleted_f">%s була видалена з Вашого списку друзів</string>
-    <string name="auth_error_unknown_error">Не вдалося підключитися до інстанції через невідомі причини. Повторіть спробу пізніше або виберіть іншу інстанцію.</string>
-    <string name="auth_error_not_openvk_instance">Вказаний сервер не є OpenVK-сумісної інстанцією. Спробуйте вибрати іншу інстанцію.</string>
-    <string name="auth_error_network">Не вдалося увійти через проблеми з інтернет-з\'єднанням. Перевірте підключення до мережі і повторіть спробу.</string>
+    <string name="auth_error_unknown_error">Не вдалося з\'єднатися до інстанції через невідомі причини. Повторіть спробу пізніше або виберіть іншу інстанцію.</string>
+    <string name="auth_error_not_openvk_instance">Вказаний сервер не є OpenVK - сумісною інстанцією. Спробуйте вибрати іншу інстанцію.</string>
+    <string name="auth_error_network">Не вдалося увійти через проблеми з інтернет -  з\'єднанням. Перевірте підключення до мережі та повторіть спробу.</string>
     <string name="auth_error_ssl">Не вдалося увійти через проблеми із захищеним з\'єднанням. Спробуйте вибрати іншу інстанцію.</string>
     <string name="no_friend_requests">Нових заявок немає  </string>
     
@@ -518,8 +506,8 @@
 	<string name="text_copied">Текст скопійований в буфер обміну</string>
 	
 	<string name="video_err_network">Сталася помилка, пов\'язана з підключенням до сервера. Перевірте з\'єднання і повторіть спробу.</string>
-	<string name="video_err_os">Для перегляду цього відеозапису потрібнен Android 2.0 або вище.</string>
-	<string name="video_err_decode">Ваш пристрій не може відтворити це відео. Спробуйте вибрати більш низьку якість.</string>
+	<string name="video_err_os">Для перегляду цього відеозапису потрібен Android 2.0 або вище.</string>
+	<string name="video_err_decode">Ваш пристрій не може відтворити це відео. Спробуйте вибрати нижчу якість.</string>
 	    
 	<string-array name="video_views">
     	<item>%d перегляд</item>
@@ -537,7 +525,7 @@
 	<string name="no_albums">Немає альбомів</string>
 	
 	<string name="sett_update_on_open">Оновлювати при відкритті</string>
-	<string name="sett_update_on_open_summary">Оновлювати новини під час запуску додатку</string>
+	<string name="sett_update_on_open_summary">Оновлювати новини під час запуску застосунку</string>
 	
 	<string-array name="wall_attach_options">
     	<item>Аудіозапис</item>
@@ -592,7 +580,7 @@
 	<string-array name="ntf_rt_x">
 		<item>поділились записом</item>
 		<item>поділились фотографією</item>
-		<item>поділились видеозаписом</item>
+		<item>поділились відеозаписом</item>
 		<item>поділились коментарем</item>
 	</string-array>
 	
@@ -713,17 +701,17 @@
     <string-array name="sett_cache_quality_array">
         <item>Середня</item>
         <item>Висока</item>
-        <item>Вихiдна</item>
+        <item>Вихідна</item>
     </string-array>
     <string name="sett_cache_quality_lowres">Для економії трафіку та ресурсів пристрою.</string>
     <string name="sett_cache_quality_highres">Дозволяє бачити чіткіше, але не економить трафік.</string>
     <string name="sett_cache_quality_highestres">Дозволяє бачити ще чіткіше, але не економить трафік.</string>
     <string name="sett_cache_quality_oomrisk">Це може призвести до нестабільної роботи програми!</string>
 	<string name="sett_clear_img_cache">Очистити</string>
-    <string name="img_cache_cleared">Кеш очищен!</string>
+    <string name="img_cache_cleared">Кеш очищено!</string>
 	<string name="sett_cache_location">Розташування</string>
 	<string-array name="sett_img_cache_location">
-    	<item>Память пристрою</item>
+    	<item>Пам\'ять пристрою</item>
     	<item>SD-карта</item>
     </string-array>
 	<string name="chat_members">Учасники бесіди</string>
@@ -782,13 +770,13 @@
     </string-array>
     
 	<string name="group_descr">Опис</string>
-	<string name="group_site">Веб-сайт</string>
+	<string name="group_site">Вебсайт</string>
 	<string name="group_start_date">Час початку</string>
 	<string name="group_end_date">Час закінчення</string>
-	<string name="group_place">Місцезнаходження</string>
+	<string name="group_place">Геолокація</string>
 	<string name="tomorrow_at">завтра о</string>
 	<string name="add_friend_notify">хоче додати Вас у друзі</string>
-	<string name="sett_send_by_enter">Відправка повід. кнопкою Enter</string>
+	<string name="sett_send_by_enter">Надсилання повід. клавішею Enter</string>
 	<string name="sett_send_by_enter_summary">Тільки з апаратної клавіатури</string>
 	
 	<string name="news_search_explain">Введіть ім\'я, назву або слово</string>
@@ -838,7 +826,7 @@
 	<string name="comment_deleted">Коментар видалено.</string>
 	<string name="comment_restore">Відновити</string>
 	
-	<string name="sett_video_calls">Відедзвінки</string>	
+	<string name="sett_video_calls">Відеодзвінки</string>	
 	<string name="sett_accept_calls">Увімкнути</string>	
 	<string name="sett_call_ringtone">Мелодія дзвінка</string>	
 	<string name="enable">Увімкнути</string>	
@@ -851,14 +839,14 @@
 	<string name="sett_news_banned">Фільтр новин</string>	
 	<string name="sett_news_banned_summary">Змінити список прихованих користувачів і спільнот</string>	
 	<string name="people">Люди</string>	
-	<string name="news_banned_user">Новини від цього користувача тепер приховані з Вашої стрічки. Ви можете відновити їх у налаштуваннях додатку.</string>	
-	<string name="news_banned_group">Новини від цієї спільноти тепер приховані з Вашої стрічки. Ви можете відновити їх у налаштуваннях додатку.</string>	
+	<string name="news_banned_user">Новини від цього користувача тепер приховані з Вашої стрічки. Ви можете відновити їх у налаштуваннях застосунку.</string>	
+	<string name="news_banned_group">Новини від цієї спільноти тепер приховані з Вашої стрічки. Ви можете відновити їх у налаштуваннях застосунку.</string>	
 	<string name="news_unbanned_user">Новини від цього користувача будуть показуватися у Вашій стрічці.</string>	
 	<string name="news_unbanned_group">Новини від цієї спільноти будуть показуватися у Вашій стрічці.</string>	
 	<string name="chat_title_change_ok">Назва бесіди успішно змінено</string>	
 	<string name="delete_chat_user_confirm">Ви дійсно хочете виключити цього користувача з бесіди?</string>	
 	<string name="enter_chat_title">Введіть назву</string>	
-	<string name="already_logged_in">На цьому пристрої вже є акаунт OpenVK. Для входу в інший аккаунт необхідно вийти з поточного.</string>
+	<string name="already_logged_in">На цьому пристрої вже є акаунт OpenVK. Для входу в інший обліковий запис необхідно вийти з поточного.</string>
 	<string name="post_edit_title">Запис</string>
 	<string name="attach_wiki">Сторінка</string>	
 	<string name="post_edit_saved">Запис збережено</string>	
@@ -1132,7 +1120,7 @@
 	    <item>Нейтральне</item>
 	    <item>Позитивне</item>
 	</string-array>
-	<string name="add_video_existing">Вибрати існуюче</string>
+	<string name="add_video_existing">Вибрати чинне</string>
 	<string name="add_video_new">Записати відео</string>
 	<string name="profile_hometown">Рідне місто</string>
 	<string name="page_not_found">Такої сторінки не існує. Можливо, вона була видалена.</string>
@@ -1154,7 +1142,7 @@
 	
 	<string-array name="new_posts">
 	    <item>Показати %d новий запис</item>
-	    <item>Показати %d нових записи</item>
+	    <item>Показати %d нових записів</item>
 	    <item>Показати %d нових записів</item>
 	</string-array>
 	
@@ -1167,7 +1155,7 @@
 	<string name="clear_messages_history_confirm">Ви дійсно хочете видалити всі повідомлення в цьому діалозі? Скасувати цю дію буде неможливо.</string>
 	<string name="shortcut_type_title">Діалог OpenVK</string>
 	<string name="add_shortcut_title">Додати ярлик</string>
-	<string name="audio_widget_inactive">Нажміть для відкриття аудіозаписів</string>
+	<string name="audio_widget_inactive">Натисніть для відкриття аудіозаписів</string>
 	<string name="widget_player_big">OpenVK - аудіоплеєр (великий)</string>
 	<string name="open">Відкрити</string>
 	<string name="delete_photo_confirm">Ви дійсно хочете видалити цю фотографію? Скасувати цю дію буде неможливо.</string>
@@ -1183,25 +1171,25 @@
 	<string name="add_photo_from_album">Вибрати з альбому</string>
 	<string name="saved_to_album">Фотографія була збережена в альбом \"Збережені фотографії\".</string>
     <string name="profile_telegram">Telegram</string>
-    <string name="telegram_not_installed">Встановiть програму Telegram</string>
+    <string name="telegram_not_installed">Встановіть програму Telegram</string>
     <string name="newpost_export_tg">Експорт до Telegram</string>
-    <string name="welcome_title3">Синхронiзацiя контактiв</string>
+    <string name="welcome_title3">Синхронізація контактів</string>
     <string name="widget_news">OpenVK - новини</string>
-    <string name="friend_deleted">%s видалено з ваших особливих друзей</string>
+    <string name="friend_deleted">%s видалено з ваших особливих друзів</string>
 
     <string name="incompatible_openvk_api_title">Версія OpenVK API застаріла</string>
-    <string name="incompatible_openvk_api">Швидше за все, в цій інстанції використовується несумісна версія OpenVK API, в якій не реалізовано або застаріло потрібні функції. Щоб вирішити цю проблему, зверніться до системного адміністратора або розробника програми.</string>
-    <string name="unable_to_parse_error">Неможливо обробити вiдповiдь вiд сервера</string>
+    <string name="incompatible_openvk_api>Ймовірно, в цій інстанції використовується несумісна версія OpenVK API, в якій не реалізовано чи застаріли необхідні функції. Щоб розв'язувати цю проблему, зверніться до системного адміністратора або розробника програми.</string>
+    <string name="unable_to_parse_error">Неможливо обробити відповідь від сервера</string>
     <string name="twofactor_text">У вас увімкнена двофакторна аутентифікація. Для входу введіть код отриманий в додатку.</string>
     <string name="twofactor_hint">Код 2FA</string>
-    <string name="not_implemented">На даний момент така функція не реалізована. Стежте за оновленнями.</string>
-    <string name="not_supported">На даний момент така функція не підтримується. Стежте за оновленнями.</string>
-    <string name="please_wait_network">Дочекайтеся закiчення завантаження i повторiть спробу.</string>
+    <string name="not_implemented">На цей момент така функція не реалізована. Слідкуйте за оновленнями.</string>
+    <string name="not_supported">На цей момент така функція не підтримується. Стежте за оновленнями.</string>
+    <string name="please_wait_network">Дочекайтеся закінчення завантаження і повторіть спробу.</string>
     <string name="posting_error">При надсиланні запису сталася помилка. Повторіть спробу пізніше.</string>
-    <string name="posting_access_denied">Ви не маєте права публікувати запис на цій стіні.</string>
-    <string name="posted_successfully">Запись опублікована.</string>
+    <string name="posting_access_denied">Ви не маєте права опублікувати запис на цій стіні.</string>
+    <string name="posted_successfully">Запис опубліковано.</string>
     <string name="debug_menu">Меню налагодження</string>
-    <string name="api_logging">Журналування API</string>
+    <string name="api_logging">Журналювання API</string>
     <string name="write_logs_to_file">Запис журналу у файл</string>
     <string name="send_bug_report">Надіслати баг-репорт</string>
     <string name="terminate">Завершити процес</string>
@@ -1213,14 +1201,14 @@
     <string name="open_btn">Відкрити</string>
     <string name="birthday">День народження</string>
     <string name="post_fail_empty">Вибач, але ми не можемо запостити порожнє повідомлення</string>
-    <string name="on_wall">%1$s на стiнi %2$s</string>
+    <string name="on_wall">%1$s на стіні %2$s</string>
     <string name="debug_incompatibillity_error">Потрібен Android 4.1 або вище</string>
-    <string name="about_instance">Про iнстанцiю</string>
+    <string name="about_instance">Про інстанцію</string>
     <string name="server_address">Сервер:</string>
     <string name="connection_type">Тип з\'єднання:</string>
     <string name="secured_connection">"Захищене (HTTPS) "</string>
     <string name="default_connection">Звичайне (HTTP)</string>
-    <string name="instance_version">Версiя iнстанцiї:</string>
+    <string name="instance_version">Версія інстанції:</string>
     <string name="instance_statistics">Статистика:</string>
     <string name="instance_users_count">%d користувачів</string>
     <string name="instance_online_users_count">%d в мережі</string>
@@ -1229,10 +1217,10 @@
     <string name="instance_wall_posts_count">%d записів</string>
     <string name="instance_admins_count">%d адміністраторів</string>
     <string name="instance_links">Посилання:</string>
-    <string name="connection_error">Помилка пiдключення</string>
+    <string name="connection_error">Помилка з\'єднання</string>
     <string-array name="newsfeed_actionbar_items">
         <item>Передплати</item>
-        <item>Всi новини</item>
+        <item>Всі новини</item>
     </string-array>
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %s</string>
@@ -1243,16 +1231,16 @@
     <string name="about_app_author">Автор</string>
     <string name="app_author_value" formatted="false"><![CDATA[<a href="%s/id2287">Дмитро Третьяков</a> (Tinelix)]]></string>
     <string name="openvk_legacy_devteam">Команда розробки OpenVK Legacy</string>
-    <string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитро Третьяков</a> (Tinelix)<br><a href=\"%s/id1\">Володимир Барiнов</a> (Veselcraft)]]></string>
+    <string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитро Третьяков</a> (Tinelix)<br><a href=\"%s/id1\">Володимир Барінов</a> (Veselcraft)]]></string>
     <string name="about_app_design">Дизайн</string>
-    <string name="app_design_value" formatted="false"><![CDATA[ВКонтакте 3.0.4 для Android<br>вiд <a href=\"https://grishka.me\">Григорія Клюшнікова</a>]]></string>
+    <string name="app_design_value" formatted="false"><![CDATA[ВКонтакте 3.0.4 для Android<br>від <a href=\"https://grishka.me\">Григорія Клюшнікова</a>]]></string>
     <string name="about_app_translations">Переклади</string>
     <string name="app_eng_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
     <string name="app_rus_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
     <string name="app_ukr_translators">Команда OpenVK Legacy</string>
-    <string name="app_license_title">Лiцензiя OpenVK Legacy</string>
+    <string name="app_license_title">Ліцензія OpenVK Legacy</string>
     <string name="app_license_text"><![CDATA[Ця програма є вільним програмним забезпеченням: ви можете розповсюджувати та/або змінювати його відповідно до умов
     <a href="https://www.gnu.org/licenses/agpl.txt">GNU (Affero) General Public License версії 3.0</a> або пізнішої версії, опублікованої Фондом вільного програмного забезпечення.
     <br><br>БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ, ВКЛЮЧАЮЧИ КОМЕРЦІЙНУ ЦІННІСТЬ АБО ПРИГОДНІ ДЛЯ КОНКРЕТНИХ ЦІЛІВ.]]></string>
-    <string name="wall_err_text">Хмммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
+    <string name="wall_err_text">Хммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
 </resources>
