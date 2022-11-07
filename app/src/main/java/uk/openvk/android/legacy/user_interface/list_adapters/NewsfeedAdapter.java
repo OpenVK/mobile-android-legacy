@@ -263,6 +263,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             Bitmap author_avatar = item.avatar;
             if(author_avatar != null) {
                 avatar.setImageBitmap(author_avatar);
+            } else {
+                avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
             }
 
             ((LinearLayout) convertView.findViewById(R.id.poster_ll)).setOnClickListener(new View.OnClickListener() {

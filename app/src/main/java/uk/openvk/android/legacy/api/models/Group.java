@@ -7,8 +7,11 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
+
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
  * Created by Dmitry on 09.10.2022.
@@ -25,6 +28,7 @@ public class Group implements Parcelable {
     public String avatar_hsize_url;
     public String avatar_osize_url;
     public int members_count;
+    public int is_member;
 
     public Group() {
         jsonParser = new JSONParser();
@@ -40,6 +44,9 @@ public class Group implements Parcelable {
             if (group != null) {
                 name = group.getString("name");
                 id = group.getInt("id");
+                if(group.has("is_member")) {
+                    is_member = group.getInt("is_member");
+                }
                 avatar_msize_url = "";
                 avatar_hsize_url = "";
                 avatar_osize_url = "";
@@ -138,5 +145,11 @@ public class Group implements Parcelable {
         }
     }
 
+    public void join(OvkAPIWrapper ovk) {
+        ovk.sendAPIMethod("Groups.join", String.format("group_id=%d", id));
+    }
 
+    public void leave(OvkAPIWrapper ovk) {
+        ovk.sendAPIMethod("Groups.leave", String.format("group_id=%d", id));
+    }
 }

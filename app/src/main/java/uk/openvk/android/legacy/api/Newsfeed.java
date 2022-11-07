@@ -188,6 +188,18 @@ public class Newsfeed implements Parcelable {
         ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&extended=1", count));
     }
 
+    public void get(OvkAPIWrapper ovk, int count, long start_from) {
+        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&start_from=%d&extended=1", count, start_from), "more_news");
+    }
+
+    public void getGlobal(OvkAPIWrapper ovk, int count) {
+        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%d&extended=1", count));
+    }
+
+    public void getGlobal(OvkAPIWrapper ovk, int count, long start_from) {
+        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%d&start_from=%d&extended=1", count, start_from), "more_news");
+    }
+
     public ArrayList<Attachment> createAttachmentsList(int owner_id, int post_id, String quality, JSONArray attachments) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
@@ -281,7 +293,4 @@ public class Newsfeed implements Parcelable {
         parcel.writeTypedList(items);
     }
 
-    public void get(OvkAPIWrapper ovk, int count, long start_from) {
-        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&start_from=%d&extended=1", count, start_from), "more_news");
-    }
 }

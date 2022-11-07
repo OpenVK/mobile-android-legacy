@@ -25,6 +25,8 @@ public class HandlerMessages {
     public static int GROUPS_GET_ALT                    = 301;
     public static int GROUPS_GET_BY_ID                  = 302;
     public static int GROUPS_SEARCH                     = 303;
+    public static int GROUPS_JOIN                       = 304;
+    public static int GROUPS_LEAVE                      = 305;
 
     // Likes
     public static int LIKES_ADD                         = 400;
@@ -61,7 +63,9 @@ public class HandlerMessages {
 
     // Newsfeed
     public static int NEWSFEED_GET                      = 800;
-    public static int NEWSFEED_GET_MORE                 = 801;
+    public static int NEWSFEED_GET_GLOBAL               = 801;
+    public static int NEWSFEED_GET_MORE                 = 802;
+    public static int NEWSFEED_GET_MORE_GLOBAL          = 803;
 
     // OpenVK specific
     public static int OVK_VERSION                       = 900;

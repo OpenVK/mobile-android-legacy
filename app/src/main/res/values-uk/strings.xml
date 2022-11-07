@@ -289,7 +289,7 @@
     	<item>Тільки для друзів</item>
     	<!--item>Вказати місцезнаходження</item-->
     </string-array>
-    <string name="photo_save_ok">Фотографія збережена на карту пам\'яті</string>
+    <string name="photo_save_ok">Фотографія збережена на пам\'ять пристрою</string>
     
     <string name="share_wall">OpenVK - стіна</string>
     <string name="share_album">OpenVK - фотоальбом</string>

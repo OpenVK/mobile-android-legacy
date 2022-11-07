@@ -406,6 +406,10 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
                             } else if (method.equals("Groups.search")) {
                                 sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                            } else if (method.equals("Groups.join")) {
+                                sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                            } else if (method.equals("Groups.leave")) {
+                                sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
                             } else if (method.equals("Likes.add")) {
                                 sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
                             } else if (method.equals("Likes.delete")) {
@@ -471,6 +475,12 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
                                 } else {
                                     sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                }
+                            } else if (method.equals("Newsfeed.getGlobal")) {
+                                if(where.equals("more_news")) {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET_MORE_GLOBAL, method, args, response_body);
+                                } else {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
                                 }
                             } else if (method.equals("Polls.addVote")) {
                                 sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
@@ -608,6 +618,10 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
                             } else if (method.equals("Groups.search")) {
                                 sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                            } else if (method.equals("Groups.join")) {
+                                sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                            } else if (method.equals("Groups.leave")) {
+                                sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
                             } else if (method.equals("Likes.add")) {
                                 sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
                             } else if (method.equals("Likes.delete")) {
@@ -666,6 +680,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
                             } else if (method.equals("Newsfeed.get")) {
                                 sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                            } else if (method.equals("Newsfeed.getGlobal")) {
+                                sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
                             } else if (method.equals("Polls.addVote")) {
                                 sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
                             } else if (method.equals("Polls.deleteVote")) {
@@ -804,6 +820,10 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
                             } else if (method.equals("Groups.search")) {
                                 sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                            } else if (method.equals("Groups.join")) {
+                                sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                            } else if (method.equals("Groups.leave")) {
+                                sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
                             } else if (method.equals("Likes.add")) {
                                 sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
                             } else if (method.equals("Likes.delete")) {
@@ -862,6 +882,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
                             } else if (method.equals("Newsfeed.get")) {
                                 sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
+                            } else if (method.equals("Newsfeed.getGlobal")) {
+                                sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, response_body);
                             } else if (method.equals("Polls.addVote")) {
                                 sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
                             } else if (method.equals("Polls.deleteVote")) {

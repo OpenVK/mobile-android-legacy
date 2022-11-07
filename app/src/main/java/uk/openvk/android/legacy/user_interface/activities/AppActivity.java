@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,17 +18,20 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
@@ -55,6 +59,7 @@ import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.FriendsLayout;
@@ -108,6 +113,7 @@ public class AppActivity extends Activity {
     private NotificationManager notifMan;
     private NotificationChannel notifChannel;
     private boolean inBackground;
+    private ActionBarLayout ab_layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +137,7 @@ public class AppActivity extends Activity {
         instance_prefs_editor = instance_prefs.edit();
         setContentView(R.layout.app_layout);
         createSlidingMenu();
+
         installLayouts();
         Global global = new Global();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
@@ -163,6 +170,40 @@ public class AppActivity extends Activity {
             ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
         }
         Bundle data = new Bundle();
+    }
+
+    private void setActionBar(String layout_name) {
+        if(layout_name.equals("custom_newsfeed")) {
+            ab_layout.selectItem(0);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                try {
+                    getActionBar().setCustomView(ab_layout);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setHomeButtonEnabled(true);
+                        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
+                actionBarImitation.enableCustomView(true);
+            }
+        } else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                try {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        getActionBar().setHomeButtonEnabled(true);
+                        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
+                actionBarImitation.enableCustomView(false);
+            }
+        }
     }
 
     @Override
@@ -202,6 +243,7 @@ public class AppActivity extends Activity {
         if(!((OvkApplication) getApplicationContext()).isTablet) {
             menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
+        ab_layout.adjustLayout();
         super.onConfigurationChanged(newConfig);
     }
 
@@ -288,6 +330,7 @@ public class AppActivity extends Activity {
         progressLayout.setVisibility(View.VISIBLE);
         newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ab_layout = new ActionBarLayout(this);
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -301,7 +344,10 @@ public class AppActivity extends Activity {
                     if(!menu.isMenuShowing()) menu.showMenu(true);
                 }
             });
+            ab_layout = actionBarImitation.getLayout();
+            ab_layout.createSpinnerAdapter(this);
         }
+        setActionBar("custom_newsfeed");
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         if(activity_menu == null) {
             onPrepareOptionsMenu(activity_menu);
@@ -327,6 +373,8 @@ public class AppActivity extends Activity {
             } else {
                 intent.putExtra("owner_id", account.id);
             }
+            intent.putExtra("account_id", account.id);
+            intent.putExtra("account_first_name", account.user.first_name);
             startActivity(intent);
         } catch (Exception ex) {
 
@@ -341,6 +389,7 @@ public class AppActivity extends Activity {
             }
         }
         if(position == 0) {
+            setActionBar("");
             setActionBarTitle(getResources().getString(R.string.friends));
             if(friendsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -366,6 +415,7 @@ public class AppActivity extends Activity {
             }
             friends.get(ovk_api, account.id, "friends_list");
         } else if(position == 1) {
+            setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));
             if(conversationsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -391,6 +441,7 @@ public class AppActivity extends Activity {
             }
             messages.getConversations(ovk_api);
         } else if(position == 2) {
+            setActionBar("");
             setActionBarTitle(getResources().getString(R.string.groups));
             if(groupsLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -415,6 +466,7 @@ public class AppActivity extends Activity {
             }
             groups.getGroups(ovk_api, account.id);
         } else if(position == 3) {
+            setActionBar("custom_newsfeed");
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if(newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -505,6 +557,16 @@ public class AppActivity extends Activity {
                 }
                 newsfeedLayout.loading_more_posts = true;
                 newsfeedLayout.setScrollingPositions(this, false, true);
+            } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
+                downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), true);
+                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    progressLayout.setVisibility(View.GONE);
+                    newsfeedLayout.setVisibility(View.VISIBLE);
+                }
+                newsfeedLayout.loading_more_posts = true;
+                newsfeedLayout.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
                 newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
@@ -514,7 +576,16 @@ public class AppActivity extends Activity {
                 }
                 newsfeedLayout.loading_more_posts = true;
                 newsfeedLayout.setScrollingPositions(this, false, true);
-            }else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
+            } else if (message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
+                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
+                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                    progressLayout.setVisibility(View.GONE);
+                    newsfeedLayout.setVisibility(View.VISIBLE);
+                }
+                newsfeedLayout.loading_more_posts = true;
+                newsfeedLayout.setScrollingPositions(this, false, true);
+            } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
                 longPollService.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
@@ -810,6 +881,7 @@ public class AppActivity extends Activity {
             users = new Users();
         }
         users.getUser(ovk_api, account.id);
+        setActionBar("");
         setActionBarTitle(getResources().getString(R.string.profile));
     }
 
@@ -947,56 +1019,58 @@ public class AppActivity extends Activity {
     }
 
     public void openWallComments(int position, View view) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = wall.getWallItems().get(position);
-            intent.putExtra("where", "wall");
-        } else {
-            item = newsfeed.getWallPosts().get(position);
-            intent.putExtra("where", "newsfeed");
-        }
-        try {
-            intent.putExtra("post_id", item.post_id);
-            intent.putExtra("owner_id", item.owner_id);
-            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
-            intent.putExtra("author_id", account.id);
-            intent.putExtra("post_author_id", item.author_id);
-            intent.putExtra("post_author_name", item.name);
-            intent.putExtra("post_info", item.info);
-            intent.putExtra("post_text", item.text);
-            intent.putExtra("post_likes", item.counters.likes);
-            boolean contains_poll = false;
-            boolean is_repost = false;
-            if(item.attachments.size() > 0) {
-                for(int i = 0; i < item.attachments.size(); i++) {
-                    if(item.attachments.get(i).type.equals("poll")) {
-                        contains_poll = true;
-                        PollAttachment poll = ((PollAttachment) item.attachments.get(i).getContent());
-                        intent.putExtra("poll_question", poll.question);
-                        intent.putExtra("poll_anonymous", poll.anonymous);
-                        //intent.putExtra("poll_answers", poll.answers);
-                        intent.putExtra("poll_total_votes", poll.votes);
-                        intent.putExtra("poll_user_votes", poll.user_votes);
+        if(account != null) {
+            WallPost item;
+            Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+            if (global_prefs.getString("current_screen", "").equals("profile")) {
+                item = wall.getWallItems().get(position);
+                intent.putExtra("where", "wall");
+            } else {
+                item = newsfeed.getWallPosts().get(position);
+                intent.putExtra("where", "newsfeed");
+            }
+            try {
+                intent.putExtra("post_id", item.post_id);
+                intent.putExtra("owner_id", item.owner_id);
+                intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+                intent.putExtra("author_id", account.id);
+                intent.putExtra("post_author_id", item.author_id);
+                intent.putExtra("post_author_name", item.name);
+                intent.putExtra("post_info", item.info);
+                intent.putExtra("post_text", item.text);
+                intent.putExtra("post_likes", item.counters.likes);
+                boolean contains_poll = false;
+                boolean is_repost = false;
+                if (item.attachments.size() > 0) {
+                    for (int i = 0; i < item.attachments.size(); i++) {
+                        if (item.attachments.get(i).type.equals("poll")) {
+                            contains_poll = true;
+                            PollAttachment poll = ((PollAttachment) item.attachments.get(i).getContent());
+                            intent.putExtra("poll_question", poll.question);
+                            intent.putExtra("poll_anonymous", poll.anonymous);
+                            //intent.putExtra("poll_answers", poll.answers);
+                            intent.putExtra("poll_total_votes", poll.votes);
+                            intent.putExtra("poll_user_votes", poll.user_votes);
+                        }
                     }
                 }
+                intent.putExtra("contains_poll", contains_poll);
+                if (item.repost != null) {
+                    is_repost = true;
+                    intent.putExtra("is_repost", is_repost);
+                    intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
+                    intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
+                    intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
+                    intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
+                    intent.putExtra("repost_info", item.repost.newsfeed_item.info);
+                    intent.putExtra("repost_text", item.repost.newsfeed_item.text);
+                } else {
+                    intent.putExtra("is_repost", is_repost);
+                }
+                startActivity(intent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            intent.putExtra("contains_poll", contains_poll);
-            if(item.repost != null) {
-                is_repost = true;
-                intent.putExtra("is_repost", is_repost);
-                intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
-                intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
-                intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
-                intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
-                intent.putExtra("repost_info", item.repost.newsfeed_item.info);
-                intent.putExtra("repost_text", item.repost.newsfeed_item.text);
-            } else {
-                intent.putExtra("is_repost", is_repost);
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -1154,6 +1228,32 @@ public class AppActivity extends Activity {
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void selectNewsSpinnerItem(int position) {
+        Spinner spinner = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            spinner = (Spinner) (getActionBar().getCustomView().findViewById(R.id.spinner));
+        } else {
+            spinner = ab_layout.findViewById(R.id.spinner);
+        }
+        if (spinner != null) {
+            try {
+                spinner.setSelection(position);
+                Method method = Spinner.class.getDeclaredMethod("onDetachedFromWindow");
+                method.setAccessible(true);
+                method.invoke(spinner);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(position == 0) {
+                newsfeed.get(ovk_api, 50);
+            } else {
+                newsfeed.getGlobal(ovk_api, 50);
+            }
+            newsfeedLayout.setVisibility(View.GONE);
+            progressLayout.setVisibility(View.VISIBLE);
         }
     }
 

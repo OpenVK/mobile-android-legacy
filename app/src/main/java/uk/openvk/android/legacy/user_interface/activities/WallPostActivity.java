@@ -92,6 +92,8 @@ public class WallPostActivity extends Activity {
                 finish();
                 return;
             } else {
+                author_name = extras.getString("author_name");
+                author_id = extras.getInt("author_id");
                 WallPost post = new WallPost();
                 getPost(post, extras);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -134,9 +136,7 @@ public class WallPostActivity extends Activity {
         owner_id = extras.getInt("owner_id");
         post_id = extras.getInt("post_id");
         String where = extras.getString("where");
-        author_name = extras.getString("author_name");
         post_author_id = extras.getInt("post_author_id");
-        author_id = extras.getInt("author_id");
         post.attachments = new ArrayList<>();
         if(extras.getBoolean("is_repost")) {
             post.repost = new RepostInfo(extras.getString("repost_author_name"), 0, this);

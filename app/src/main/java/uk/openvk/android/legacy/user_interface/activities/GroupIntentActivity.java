@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -226,6 +227,14 @@ public class GroupIntentActivity extends Activity {
             } else if (message == HandlerMessages.GROUPS_SEARCH) {
                 groups.parseSearch(data.getString("response"));
                 groups.getGroupByID(ovk_api, groups.getList().get(0).id);
+            } else if (message == HandlerMessages.GROUPS_JOIN) {
+                Button join_btn = findViewById(R.id.join_to_comm);
+                join_btn.setText(R.string.leave_group);
+                group.is_member = 1;
+            } else if (message == HandlerMessages.GROUPS_LEAVE) {
+                Button join_btn = findViewById(R.id.join_to_comm);
+                join_btn.setText(R.string.join_group);
+                group.is_member = 0;
             } else if (message == HandlerMessages.LIKES_ADD) {
                 likes.parse(data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
@@ -283,6 +292,23 @@ public class GroupIntentActivity extends Activity {
     }
 
     private void setJoinButtonListener(int id) {
+        final Button join_btn = ((Button) findViewById(R.id.join_to_comm));
+        join_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(group.is_member > 0) {
+                    group.leave(ovk_api);
+                } else {
+                    group.join(ovk_api);
+                }
+            }
+        });
+        if(group.is_member > 0) {
+            join_btn.setText(R.string.leave_group);
+        } else {
+            join_btn.setText(R.string.join_group);
+        }
+        join_btn.setVisibility(View.VISIBLE);
     }
 
 
@@ -319,51 +345,53 @@ public class GroupIntentActivity extends Activity {
     }
 
     public void openWallComments(int position, View view) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-        item = wall.getWallItems().get(position);
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("post_id", item.post_id);
-            intent.putExtra("owner_id", item.owner_id);
-            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
-            intent.putExtra("author_id", account.id);
-            intent.putExtra("post_author_id", item.author_id);
-            intent.putExtra("post_author_name", item.name);
-            intent.putExtra("post_info", item.info);
-            intent.putExtra("post_text", item.text);
-            intent.putExtra("post_likes", item.counters.likes);
-            boolean contains_poll = false;
-            boolean is_repost = false;
-            if(item.attachments.size() > 0) {
-                for(int i = 0; i < item.attachments.size(); i++) {
-                    if(item.attachments.get(i).type.equals("poll")) {
-                        contains_poll = true;
-                        PollAttachment poll = ((PollAttachment) item.attachments.get(i).getContent());
-                        intent.putExtra("poll_question", poll.question);
-                        intent.putExtra("poll_anonymous", poll.anonymous);
-                        //intent.putExtra("poll_answers", poll.answers);
-                        intent.putExtra("poll_total_votes", poll.votes);
-                        intent.putExtra("poll_user_votes", poll.user_votes);
+        if(account != null) {
+            WallPost item;
+            Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+            item = wall.getWallItems().get(position);
+            intent.putExtra("where", "wall");
+            try {
+                intent.putExtra("post_id", item.post_id);
+                intent.putExtra("owner_id", item.owner_id);
+                intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+                intent.putExtra("author_id", account.id);
+                intent.putExtra("post_author_id", item.author_id);
+                intent.putExtra("post_author_name", item.name);
+                intent.putExtra("post_info", item.info);
+                intent.putExtra("post_text", item.text);
+                intent.putExtra("post_likes", item.counters.likes);
+                boolean contains_poll = false;
+                boolean is_repost = false;
+                if (item.attachments.size() > 0) {
+                    for (int i = 0; i < item.attachments.size(); i++) {
+                        if (item.attachments.get(i).type.equals("poll")) {
+                            contains_poll = true;
+                            PollAttachment poll = ((PollAttachment) item.attachments.get(i).getContent());
+                            intent.putExtra("poll_question", poll.question);
+                            intent.putExtra("poll_anonymous", poll.anonymous);
+                            //intent.putExtra("poll_answers", poll.answers);
+                            intent.putExtra("poll_total_votes", poll.votes);
+                            intent.putExtra("poll_user_votes", poll.user_votes);
+                        }
                     }
                 }
+                intent.putExtra("contains_poll", contains_poll);
+                if (item.repost != null) {
+                    is_repost = true;
+                    intent.putExtra("is_repost", is_repost);
+                    intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
+                    intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
+                    intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
+                    intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
+                    intent.putExtra("repost_info", item.repost.newsfeed_item.info);
+                    intent.putExtra("repost_text", item.repost.newsfeed_item.text);
+                } else {
+                    intent.putExtra("is_repost", is_repost);
+                }
+                startActivity(intent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            intent.putExtra("contains_poll", contains_poll);
-            if(item.repost != null) {
-                is_repost = true;
-                intent.putExtra("is_repost", is_repost);
-                intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
-                intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
-                intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
-                intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
-                intent.putExtra("repost_info", item.repost.newsfeed_item.info);
-                intent.putExtra("repost_text", item.repost.newsfeed_item.text);
-            } else {
-                intent.putExtra("is_repost", is_repost);
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -371,6 +399,8 @@ public class GroupIntentActivity extends Activity {
         try {
             Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
             intent.putExtra("owner_id", -group.id);
+            intent.putExtra("account_id", account.id);
+            intent.putExtra("account_first_name", account.user.first_name);
             startActivity(intent);
         } catch (Exception ex) {
 

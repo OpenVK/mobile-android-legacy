@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
 import uk.openvk.android.legacy.R;
@@ -41,6 +42,8 @@ public class NewPostActivity extends Activity {
     public OvkAPIWrapper ovk_api;
     private Wall wall;
     public static Handler handler;
+    private int account_id;
+    private String account_first_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,6 @@ public class NewPostActivity extends Activity {
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        installLayouts();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -60,6 +62,9 @@ public class NewPostActivity extends Activity {
                 return;
             } else {
                 owner_id = extras.getInt("owner_id");
+                account_id = extras.getInt("account_id");
+                account_first_name = extras.getString("account_first_name");
+                installLayouts();
                 wall = new Wall();
                 global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
@@ -99,6 +104,8 @@ public class NewPostActivity extends Activity {
     }
 
     private void installLayouts() {
+        TextView where = findViewById(R.id.newpost_location_address);
+        where.setText(String.format("%s %s", getResources().getString(R.string.wall), account_first_name));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             final ActionBarImitation actionbarImitation = findViewById(R.id.actionbar_imitation);
             actionbarImitation.setHomeButtonVisibillity(true);

@@ -309,7 +309,7 @@
 		<item>Export to Telegram</item>
 		<!--item>Add my location</item-->
 	</string-array>
-	<string name="photo_save_ok">The photo has been saved to the SD card</string>
+	<string name="photo_save_ok">The photo has been saved to the Device Memory</string>
 	<string name="share_wall">OpenVK – Wall</string>
 	<string name="share_album">OpenVK – Album</string>
 	<string name="select_album">Select an album</string>

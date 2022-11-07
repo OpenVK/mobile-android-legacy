@@ -11,6 +11,7 @@ import android.widget.TextView;
 import uk.openvk.android.legacy.R;
 
 public class ActionBarImitation extends LinearLayout {                  // for pre-Honeycomb (pre-3.0) devices
+    private boolean homeButtonisVisible;
     public ActionBarImitation(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
@@ -25,6 +26,7 @@ public class ActionBarImitation extends LinearLayout {                  // for p
     }
 
     public void setHomeButtonVisibillity(boolean value) {
+        homeButtonisVisible = value;
         if(value) {
             ((LinearLayout) findViewById(R.id.titlebar)).setVisibility(GONE);
             ((LinearLayout) findViewById(R.id.titlebar2)).setVisibility(VISIBLE);
@@ -111,6 +113,28 @@ public class ActionBarImitation extends LinearLayout {                  // for p
         } else {
             ((LinearLayout) findViewById(R.id.titlebar)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             ((LinearLayout) findViewById(R.id.titlebar2)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+        }
+    }
+
+    public void enableCustomView(boolean value) {
+        if(value) {
+            ((ActionBarLayout) findViewById(R.id.custom_layout)).setVisibility(VISIBLE);
+            ((ActionBarLayout) findViewById(R.id.custom_layout2)).setVisibility(VISIBLE);
+            ((LinearLayout) findViewById(R.id.title_layout)).setVisibility(GONE);
+            ((LinearLayout) findViewById(R.id.title_layout2)).setVisibility(GONE);
+        } else {
+            ((ActionBarLayout) findViewById(R.id.custom_layout)).setVisibility(GONE);
+            ((ActionBarLayout) findViewById(R.id.custom_layout2)).setVisibility(GONE);
+            ((LinearLayout) findViewById(R.id.title_layout)).setVisibility(VISIBLE);
+            ((LinearLayout) findViewById(R.id.title_layout2)).setVisibility(VISIBLE);
+        }
+    }
+
+    public ActionBarLayout getLayout() {
+        if(homeButtonisVisible) {
+            return ((ActionBarLayout) findViewById(R.id.custom_layout2));
+        } else {
+            return ((ActionBarLayout) findViewById(R.id.custom_layout));
         }
     }
 }
