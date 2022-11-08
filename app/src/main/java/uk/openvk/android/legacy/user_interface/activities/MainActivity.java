@@ -1,13 +1,24 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,13 +30,26 @@ import uk.openvk.android.legacy.R;
 public class MainActivity extends Activity {
 
     private Global global = new Global();
+    private SharedPreferences global_prefs;
+    private SharedPreferences instance_prefs;
+    private View warn_view;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if(msg.what == 0) {
+                    createOvkWarnDialogForBeginners();
+                }
+            }
+        };
         Timer timer = new Timer();
         timer.schedule(new AutoRun(), 1000);
     }
@@ -34,18 +58,57 @@ public class MainActivity extends Activity {
         public void run() {
             SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-            if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("account_password", "").length() == 0) {
-                Context context = getApplicationContext();
-                Intent intent = new Intent(context, AuthActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+            if ((instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 ||
+                    instance_prefs.getString("account_password", "").length() == 0) && !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
+                Message msg = new Message();
+                msg.what = 0;
+                handler.sendMessage(msg);
             } else {
-                Context context = getApplicationContext();
-                Intent intent = new Intent(context, AppActivity.class);
-                startActivity(intent);
-                finish();
+                closeSplashScreen();
             }
+        }
+    }
+
+    private void createOvkWarnDialogForBeginners() {
+        AlertDialog.Builder dialog_builder = new AlertDialog.Builder(MainActivity.this);
+        dialog_builder.setIcon(android.R.drawable.stat_sys_warning);
+        warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
+        dialog_builder.setView(warn_view);
+        dialog_builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                closeSplashScreen();
+            }
+        });
+        AlertDialog dialog = dialog_builder.create();
+        dialog.show();
+        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(getResources().getString(R.string.ovk_warning));
+        ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
+                global_prefs_editor.putBoolean("hideOvkWarnForBeginners", b);
+                global_prefs_editor.commit();
+            }
+        });
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            setDialogStyle(warn_view, "ovk_warn");
+        }
+    }
+
+    private void closeSplashScreen() {
+        if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 ||
+                instance_prefs.getString("account_password", "").length() == 0) {
+            Context context = getApplicationContext();
+            Intent intent = new Intent(context, AuthActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        } else {
+            Context context = getApplicationContext();
+            Intent intent = new Intent(context, AppActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -66,5 +129,12 @@ public class MainActivity extends Activity {
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setDialogStyle(View view, String dialog_name) {
+        if(dialog_name.equals("ovk_warn")) {
+            ((TextView) view.findViewById(R.id.warn_message_text)).setTextColor(Color.WHITE);
+            ((CheckBox) view.findViewById(R.id.do_not_show_messages)).setTextColor(Color.WHITE);
+        }
     }
 }

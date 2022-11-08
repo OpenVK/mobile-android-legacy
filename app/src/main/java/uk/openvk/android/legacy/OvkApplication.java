@@ -70,6 +70,10 @@ public class OvkApplication extends Application {
             global_prefs_editor.putBoolean("debugDangerZone", false);
         }
 
+        if(!global_prefs.contains("hideOvkWarnForBeginners")) {
+            global_prefs_editor.putBoolean("hideOvkWarnForBeginners", false);
+        }
+
         global_prefs_editor.commit();
         instance_prefs_editor.commit();
 

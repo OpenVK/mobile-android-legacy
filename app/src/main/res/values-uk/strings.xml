@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ovk_warning">Ви запустили вільний клієнт OpenVK Legacy, який працює ТІЛЬКИ з інстанціями OpenVK - мережі з відкритим вихідним кодом, несумісною з ВКонтакте. Будь ласка, авторизуйтеся ТІЛЬКИ до зареєстрованого облікового запису OpenVK в одній з існуючих інстанцій.</string>
+    <string name="dont_show_warn">Більше не показувати попередження наступного разу</string>
     <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
     <string name="loading">Завантаження…</string>
