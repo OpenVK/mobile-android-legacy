@@ -1,0 +1,2 @@
+1. Global newsfeed has added. You can switch in the "News" section by selecting "All news" instead of "Subscriptions".
+2. Added "Join community" or "Leave community" button for groups.

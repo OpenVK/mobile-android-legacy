@@ -1,0 +1,6 @@
+1. Improved the work of the meeting. You can now set or disable notification sound. In addition, you can enable or use a LED indicator and vibration.
+2. Added avatars in incoming messages.
+3. Fixed a bug allowed in the layout for landscape mode.
+4. Improved Ukrainian localization. Thanks for that @AlesAlte (https://github.com/AlesAlte). There were some errors in the syntax, so they were later fixed.
+5. As it was in the original VK 3.x, the blue "Отправить" button now uses the "Отпр." injury (only Russian & Ukrainian localization).
+6. Small fixes in the list of comments.
