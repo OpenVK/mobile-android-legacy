@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -136,10 +137,10 @@ public class AppActivity extends Activity {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .build();
-                if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
-                    notifChannel.setSound(Uri.parse(String.format("android.resource://%s/%d", getApplicationContext().getPackageName(), R.raw.notify)), audioAttributes);
-                } else {
+                if(!global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
                     notifChannel.setSound(Uri.parse(global_prefs.getString("notifyRingtone", "")), audioAttributes);
+                } else {
+                    notifChannel.setSound(null, null);
                 }
             }
             notifMan.createNotificationChannel(notifChannel);
@@ -741,6 +742,10 @@ public class AppActivity extends Activity {
                         Notification notification = createNotification(notifMan, R.drawable.ic_stat_notify, msg_author, msg_event.msg_text);
                         notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
                         notifMan.notify(notification_id, notification);
+                        if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
+                            MediaPlayer mp = MediaPlayer.create(this, R.raw.notify);
+                            mp.start();
+                        }
                     }
                 }
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
@@ -876,7 +881,8 @@ public class AppActivity extends Activity {
             if(global_prefs.getBoolean("notifySound", true)) {
                 notification.defaults = Notification.DEFAULT_SOUND;
                 if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
-                    notification.sound = Uri.parse(String.format("android.resource://%s/raw/notify.mp3", getApplicationContext().getPackageName()));
+                    MediaPlayer mp = MediaPlayer.create(this, R.raw.notify);
+                    mp.start();
                 } else {
                     notification.sound = Uri.parse(global_prefs.getString("notifyRingtone", ""));
                 }

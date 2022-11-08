@@ -66,6 +66,10 @@ public class OvkApplication extends Application {
             global_prefs_editor.putBoolean("enableNotification", true);
         }
 
+        if(!global_prefs.contains("notifyRingtone")) {
+            global_prefs_editor.putString("notifyRingtone", "content://settings/system/notification_sound");
+        }
+
         if(!global_prefs.contains("debugDangerZone")) {
             global_prefs_editor.putBoolean("debugDangerZone", false);
         }
