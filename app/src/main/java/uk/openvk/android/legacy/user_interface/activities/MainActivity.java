@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +73,7 @@ public class MainActivity extends Activity {
 
     private void createOvkWarnDialogForBeginners() {
         AlertDialog.Builder dialog_builder = new AlertDialog.Builder(MainActivity.this);
-        dialog_builder.setIcon(android.R.drawable.stat_sys_warning);
+        dialog_builder.setTitle(R.string.ovk_warning_title);
         warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
         dialog_builder.setView(warn_view);
         dialog_builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -82,7 +84,8 @@ public class MainActivity extends Activity {
         });
         AlertDialog dialog = dialog_builder.create();
         dialog.show();
-        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(getResources().getString(R.string.ovk_warning));
+        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));
+        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
         ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

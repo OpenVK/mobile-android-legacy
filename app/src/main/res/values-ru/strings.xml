@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="ovk_warning">Вы запустили свободный клиент OpenVK Legacy, работающий ТОЛЬКО с инстанциями OpenVK - сети с открытым исходным кодом, несовместимая с ВКонтакте.\n\nПожалуйста, авторизуйтесь ТОЛЬКО в зарегистрированный аккаунт OpenVK в одном из существующих инстанций.</string>
+    <string name="ovk_warning_title">Предупреждение</string>
+    <string name="ovk_warning"><![CDATA[Вы запустили свободный клиент OpenVK Legacy, работающий ТОЛЬКО с инстанциями <a href="https://github.com/openvk/openvk">OpenVK</a> - сети с открытым исходным кодом, несовместимая с ВКонтакте.\n\nПожалуйста, авторизуйтесь ТОЛЬКО в зарегистрированный аккаунт OpenVK в одном из существующих инстанций.]]></string>
     <string name="dont_show_warn">Больше не показывать предупреждение в следующий раз</string>
     <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>

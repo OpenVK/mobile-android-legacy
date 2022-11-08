@@ -168,73 +168,87 @@ public class OvkAPIWrapper {
 
             @Override
             public void run() {
-                if(legacy_mode) {
-                    request_legacy = new HttpGet(fUrl);
-                    request_legacy.getParams().setParameter("timeout", 30000);
-                } else {
-                    request = new Request.Builder()
-                            .url(fUrl)
-                            .addHeader("User-Agent", generateUserAgent(ctx)).build();
-                }
                 try {
-                    if(legacy_mode) {
-                        HttpResponse response = httpClientLegacy.execute(request_legacy);
-                        StatusLine statusLine = response.getStatusLine();
-                        response_body = EntityUtils.toString(response.getEntity());
-                        response_code = statusLine.getStatusCode();
+                    if (legacy_mode) {
+                        request_legacy = new HttpGet(fUrl);
+                        request_legacy.getParams().setParameter("timeout", 30000);
                     } else {
-                        Response response = httpClient.newCall(request).execute();
-                        response_body = response.body().string();
-                        response_code = response.code();
+                        request = new Request.Builder()
+                                .url(fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
                     }
-                    if (response_body.length() > 0) {
-                        if(logging_enabled) Log.v("OpenVK API", String.format("Connected (%d)", response_code));
-                        if (response_code == 400) {
-                            sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
-                        } else if (response_code == 401) {
-                            sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
-                        } else if(response_code == 404) {
-                            sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
-                        } else if (response_code == 200) {
-                            sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                    try {
+                        if (legacy_mode) {
+                            HttpResponse response = httpClientLegacy.execute(request_legacy);
+                            StatusLine statusLine = response.getStatusLine();
+                            response_body = EntityUtils.toString(response.getEntity());
+                            response_code = statusLine.getStatusCode();
                         } else {
-                            sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
+                            Response response = httpClient.newCall(request).execute();
+                            response_body = response.body().string();
+                            response_code = response.code();
                         }
-                    };
-                } catch (ProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (ConnectException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (SocketTimeoutException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
-                } catch (UnknownHostException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLHandshakeException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch (OutOfMemoryError e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                        if (response_body.length() > 0) {
+                            if (logging_enabled)
+                                Log.v("OpenVK API", String.format("Connected (%d)", response_code));
+                            if (response_code == 400) {
+                                sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
+                            } else if (response_code == 401) {
+                                sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                            } else if (response_code == 404) {
+                                sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
+                            } else if (response_code == 200) {
+                                sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                            } else {
+                                sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
+                            }
+                        }
+                        ;
+                    } catch (ProtocolException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (ConnectException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (SocketTimeoutException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
+                    } catch (UnknownHostException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (javax.net.ssl.SSLProtocolException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (javax.net.ssl.SSLHandshakeException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (javax.net.ssl.SSLException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (OutOfMemoryError e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception ex) {
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
+                    ex.printStackTrace();
                 }
             }
         };
@@ -262,73 +276,87 @@ public class OvkAPIWrapper {
 
             @Override
             public void run() {
-                if(legacy_mode) {
-                    request_legacy = new HttpGet(fUrl);
-                    request_legacy.getParams().setParameter("timeout", 30000);
-                } else {
-                    request = new Request.Builder()
-                            .url(fUrl)
-                            .addHeader("User-Agent", generateUserAgent(ctx)).build();
-                }
                 try {
-                    if(legacy_mode) {
-                        HttpResponse response = httpClientLegacy.execute(request_legacy);
-                        StatusLine statusLine = response.getStatusLine();
-                        response_body = EntityUtils.toString(response.getEntity());
-                        response_code = statusLine.getStatusCode();
+                    if (legacy_mode) {
+                        request_legacy = new HttpGet(fUrl);
+                        request_legacy.getParams().setParameter("timeout", 30000);
                     } else {
-                        Response response = httpClient.newCall(request).execute();
-                        response_body = response.body().string();
-                        response_code = response.code();
+                        request = new Request.Builder()
+                                .url(fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
                     }
-                    if (response_body.length() > 0) {
-                        if(logging_enabled) Log.v("OpenVK API", String.format("Connected (%d)", response_code));
-                        if (response_code == 400) {
-                            sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
-                        } else if (response_code == 401) {
-                            sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
-                        } else if(response_code == 404) {
-                            sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
-                        } else if (response_code == 200) {
-                            sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                    try {
+                        if (legacy_mode) {
+                            HttpResponse response = httpClientLegacy.execute(request_legacy);
+                            StatusLine statusLine = response.getStatusLine();
+                            response_body = EntityUtils.toString(response.getEntity());
+                            response_code = statusLine.getStatusCode();
                         } else {
-                            sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
+                            Response response = httpClient.newCall(request).execute();
+                            response_body = response.body().string();
+                            response_code = response.code();
                         }
-                    };
-                } catch (ProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (ConnectException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (SocketTimeoutException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
-                } catch (UnknownHostException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLHandshakeException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch (OutOfMemoryError e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                        if (response_body.length() > 0) {
+                            if (logging_enabled)
+                                Log.v("OpenVK API", String.format("Connected (%d)", response_code));
+                            if (response_code == 400) {
+                                sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
+                            } else if (response_code == 401) {
+                                sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                            } else if (response_code == 404) {
+                                sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
+                            } else if (response_code == 200) {
+                                sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                            } else {
+                                sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
+                            }
+                        }
+                        ;
+                    } catch (ProtocolException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (ConnectException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (SocketTimeoutException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
+                    } catch (UnknownHostException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (javax.net.ssl.SSLProtocolException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (javax.net.ssl.SSLHandshakeException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (javax.net.ssl.SSLException e) {
+                        if (logging_enabled)
+                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (OutOfMemoryError e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception ex) {
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
+                    ex.printStackTrace();
                 }
             }
         };
@@ -356,195 +384,200 @@ public class OvkAPIWrapper {
 
             @Override
             public void run() {
-                if(legacy_mode) {
-                    request_legacy = new HttpGet(fUrl);
-                    request_legacy.getParams().setParameter("timeout", 30000);
-                } else {
-                    request = new Request.Builder()
-                            .url(fUrl)
-                            .addHeader("User-Agent", generateUserAgent(ctx)).build();
-                }
                 try {
-                    if (legacy_mode) {
-                        HttpResponse response = httpClientLegacy.execute(request_legacy);
-                        StatusLine statusLine = response.getStatusLine();
-                        response_body = EntityUtils.toString(response.getEntity());
-                        response_code = statusLine.getStatusCode();
+                    if(legacy_mode) {
+                        request_legacy = new HttpGet(fUrl);
+                        request_legacy.getParams().setParameter("timeout", 30000);
                     } else {
-                        Response response = httpClient.newCall(request).execute();
-                        response_body = response.body().string();
-                        response_code = response.code();
+                        request = new Request.Builder()
+                                .url(fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
                     }
-                    if (response_body.length() > 0) {
-                        if (response_code == 200) {
-                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                            if (method.equals("Account.getProfileInfo")) {
-                                sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
-                            } else if (method.equals("Account.setOnline")) {
-                                sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
-                            } else if (method.equals("Account.setOffline")) {
-                                sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
-                            } else if (method.equals("Account.getCounters")) {
-                                sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
-                            } else if (method.equals("Friends.get")) {
-                                if (where.equals("friends_list")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                } else if (where.equals("profile_counter")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
-                                }
-                            } else if (method.equals("Friends.get")) {
-                                sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                            } else if (method.equals("Friends.add")) {
-                                sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
-                            } else if (method.equals("Friends.delete")) {
-                                sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
-                            } else if (method.equals("Friends.areFriends")) {
-                                sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
-                            } else if (method.equals("Groups.get")) {
-                                sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
-                            } else if (method.equals("Groups.getById")) {
-                                sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
-                            } else if (method.equals("Groups.search")) {
-                                sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                            } else if (method.equals("Groups.join")) {
-                                sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                            } else if (method.equals("Groups.leave")) {
-                                sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                            } else if (method.equals("Likes.add")) {
-                                sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
-                            } else if (method.equals("Likes.delete")) {
-                                sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
-                            } else if (method.equals("Likes.isLiked")) {
-                                sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
-                            } else if (method.equals("Messages.getById")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
-                            } else if (method.equals("Messages.send")) {
-                                sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
-                            } else if (method.equals("Messages.delete")) {
-                                sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
-                            } else if (method.equals("Messages.restore")) {
-                                sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
-                            } else if (method.equals("Messages.getConverstaions")) {
-                                sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
-                            } else if (method.equals("Messages.getConverstaionsByID")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
-                            } else if (method.equals("Messages.getHistory")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
-                            } else if (method.equals("Messages.getLongPollHistory")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
-                            } else if (method.equals("Messages.getLongPollServer")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
-                            } else if (method.equals("Ovk.version")) {
-                                sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
-                            } else if (method.equals("Ovk.test")) {
-                                sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
-                            } else if (method.equals("Ovk.chickenWings")) {
-                                sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
-                            } else if (method.equals("Ovk.aboutInstance")) {
-                                sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
-                            } else if (method.equals("Users.getFollowers")) {
-                                sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
-                            } else if (method.equals("Users.search")) {
-                                sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
-                            } else if (method.equals("Users.get")) {
-                                if (where.equals("profile")) {
-                                    sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                                } else if (where.equals("account_user")) {
-                                    sendMessage(HandlerMessages.USERS_GET_ALT, method, args, response_body);
-                                } else if (where.equals("peers")) {
-                                    sendMessage(HandlerMessages.USERS_GET_ALT2, method, args, response_body);
-                                }
-                            } else if (method.equals("Wall.get")) {
-                                sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
-                            } else if (method.equals("Wall.getById")) {
-                                sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
-                            } else if (method.equals("Wall.post")) {
-                                sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
-                            } else if (method.equals("Wall.repost")) {
-                                sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
-                            } else if (method.equals("Wall.createComment")) {
-                                sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, args, response_body);
-                            } else if (method.equals("Wall.createComment")) {
-                                sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
-                            } else if (method.equals("Wall.getComment")) {
-                                sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
-                            } else if (method.equals("Wall.getComments")) {
-                                sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
-                            } else if (method.equals("Newsfeed.get")) {
-                                if(where.equals("more_news")) {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
-                                } else {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
-                                }
-                            } else if (method.equals("Newsfeed.getGlobal")) {
-                                if(where.equals("more_news")) {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET_MORE_GLOBAL, method, args, response_body);
-                                } else {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
-                                }
-                            } else if (method.equals("Polls.addVote")) {
-                                sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
-                            } else if (method.equals("Polls.deleteVote")) {
-                                sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
-                            }
-                        } else if (response_code == 400) {
-                            error = new Error();
-                            error.parse(response_body);
-                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
-                            if (error.code == 3) {
-                                sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
-                            } else if (error.code == 5) {
-                                sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
-                            } else if (error.code == 15) {
-                                sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
-                            } else if (error.code == 100) {
-                                sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
-                            }
-                        } else if (response_code >= 500 && response_code <= 526) {
-                            if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
-                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                    try {
+                        if (legacy_mode) {
+                            HttpResponse response = httpClientLegacy.execute(request_legacy);
+                            StatusLine statusLine = response.getStatusLine();
+                            response_body = EntityUtils.toString(response.getEntity());
+                            response_code = statusLine.getStatusCode();
+                        } else {
+                            Response response = httpClient.newCall(request).execute();
+                            response_body = response.body().string();
+                            response_code = response.code();
                         }
-                    };
-                } catch (ConnectException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (ProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (SocketException e) {
-                    if(e.getMessage().contains("ETIMEDOUT")) {
+                        if (response_body.length() > 0) {
+                            if (response_code == 200) {
+                                if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                                if (method.equals("Account.getProfileInfo")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
+                                } else if (method.equals("Account.setOnline")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
+                                } else if (method.equals("Account.setOffline")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
+                                } else if (method.equals("Account.getCounters")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
+                                } else if (method.equals("Friends.get")) {
+                                    if (where.equals("friends_list")) {
+                                        sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
+                                    } else if (where.equals("profile_counter")) {
+                                        sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
+                                    }
+                                } else if (method.equals("Friends.get")) {
+                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
+                                } else if (method.equals("Friends.add")) {
+                                    sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
+                                } else if (method.equals("Friends.delete")) {
+                                    sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
+                                } else if (method.equals("Friends.areFriends")) {
+                                    sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
+                                } else if (method.equals("Groups.get")) {
+                                    sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                } else if (method.equals("Groups.getById")) {
+                                    sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
+                                } else if (method.equals("Groups.search")) {
+                                    sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                                } else if (method.equals("Groups.join")) {
+                                    sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                                } else if (method.equals("Groups.leave")) {
+                                    sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
+                                } else if (method.equals("Likes.add")) {
+                                    sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
+                                } else if (method.equals("Likes.delete")) {
+                                    sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
+                                } else if (method.equals("Likes.isLiked")) {
+                                    sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
+                                } else if (method.equals("Messages.getById")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
+                                } else if (method.equals("Messages.send")) {
+                                    sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
+                                } else if (method.equals("Messages.delete")) {
+                                    sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
+                                } else if (method.equals("Messages.restore")) {
+                                    sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
+                                } else if (method.equals("Messages.getConverstaions")) {
+                                    sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
+                                } else if (method.equals("Messages.getConverstaionsByID")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
+                                } else if (method.equals("Messages.getHistory")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
+                                } else if (method.equals("Messages.getLongPollHistory")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
+                                } else if (method.equals("Messages.getLongPollServer")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
+                                } else if (method.equals("Ovk.version")) {
+                                    sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
+                                } else if (method.equals("Ovk.test")) {
+                                    sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
+                                } else if (method.equals("Ovk.chickenWings")) {
+                                    sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
+                                } else if (method.equals("Ovk.aboutInstance")) {
+                                    sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
+                                } else if (method.equals("Users.getFollowers")) {
+                                    sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
+                                } else if (method.equals("Users.search")) {
+                                    sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
+                                } else if (method.equals("Users.get")) {
+                                    if (where.equals("profile")) {
+                                        sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
+                                    } else if (where.equals("account_user")) {
+                                        sendMessage(HandlerMessages.USERS_GET_ALT, method, args, response_body);
+                                    } else if (where.equals("peers")) {
+                                        sendMessage(HandlerMessages.USERS_GET_ALT2, method, args, response_body);
+                                    }
+                                } else if (method.equals("Wall.get")) {
+                                    sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
+                                } else if (method.equals("Wall.getById")) {
+                                    sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
+                                } else if (method.equals("Wall.post")) {
+                                    sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
+                                } else if (method.equals("Wall.repost")) {
+                                    sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
+                                } else if (method.equals("Wall.createComment")) {
+                                    sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, args, response_body);
+                                } else if (method.equals("Wall.createComment")) {
+                                    sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
+                                } else if (method.equals("Wall.getComment")) {
+                                    sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
+                                } else if (method.equals("Wall.getComments")) {
+                                    sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
+                                } else if (method.equals("Newsfeed.get")) {
+                                    if(where.equals("more_news")) {
+                                        sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
+                                    } else {
+                                        sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                    }
+                                } else if (method.equals("Newsfeed.getGlobal")) {
+                                    if(where.equals("more_news")) {
+                                        sendMessage(HandlerMessages.NEWSFEED_GET_MORE_GLOBAL, method, args, response_body);
+                                    } else {
+                                        sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
+                                    }
+                                } else if (method.equals("Polls.addVote")) {
+                                    sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
+                                } else if (method.equals("Polls.deleteVote")) {
+                                    sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
+                                }
+                            } else if (response_code == 400) {
+                                error = new Error();
+                                error.parse(response_body);
+                                if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if (error.code == 3) {
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
+                                } else if (error.code == 5) {
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
+                                } else if (error.code == 15) {
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
+                                } else if (error.code == 100) {
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
+                                }
+                            } else if (response_code >= 500 && response_code <= 526) {
+                                if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                            }
+                        };
+                    } catch (ConnectException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (ProtocolException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (SocketException e) {
+                        if(e.getMessage().contains("ETIMEDOUT")) {
+                            if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                            error.description = e.getMessage();
+                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                        }
+                    } catch (SocketTimeoutException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                    } catch (UnknownHostException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
+                    } catch(javax.net.ssl.SSLProtocolException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch(javax.net.ssl.SSLHandshakeException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch(javax.net.ssl.SSLException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (OutOfMemoryError e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (SocketTimeoutException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
-                } catch (UnknownHostException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
-                } catch(javax.net.ssl.SSLProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLHandshakeException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch (OutOfMemoryError e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
+                    ex.printStackTrace();
                 }
             }
         };
@@ -572,181 +605,186 @@ public class OvkAPIWrapper {
 
             @Override
             public void run() {
-                if(legacy_mode) {
-                    request_legacy = new HttpGet(fUrl);
-                    request_legacy.getParams().setParameter("timeout", 30000);
-                } else {
-                    request = new Request.Builder()
-                            .url(fUrl)
-                            .addHeader("User-Agent", generateUserAgent(ctx)).build();
-                }
                 try {
                     if(legacy_mode) {
-                        HttpResponse response = httpClientLegacy.execute(request_legacy);
-                        StatusLine statusLine = response.getStatusLine();
-                        response_body = EntityUtils.toString(response.getEntity());
-                        response_code = statusLine.getStatusCode();
+                        request_legacy = new HttpGet(fUrl);
+                        request_legacy.getParams().setParameter("timeout", 30000);
                     } else {
-                        Response response = httpClient.newCall(request).execute();
-                        response_body = response.body().string();
-                        response_code = response.code();
+                        request = new Request.Builder()
+                                .url(fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
                     }
-                    if (response_body.length() > 0) {
-                        if(response_code == 200) {
-                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                            if (method.equals("Account.getProfileInfo")) {
-                                sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
-                            } else if (method.equals("Account.setOnline")) {
-                                sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
-                            } else if (method.equals("Account.setOffline")) {
-                                sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
-                            } else if (method.equals("Account.getCounters")) {
-                                sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
-                            } else if (method.equals("Friends.get")) {
-                                sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                            } else if (method.equals("Friends.get")) {
-                                sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                            } else if (method.equals("Friends.add")) {
-                                sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
-                            } else if (method.equals("Friends.delete")) {
-                                sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
-                            } else if (method.equals("Friends.areFriends")) {
-                                sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
-                            } else if (method.equals("Groups.get")) {
-                                sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
-                            } else if (method.equals("Groups.getById")) {
-                                sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
-                            } else if (method.equals("Groups.search")) {
-                                sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                            } else if (method.equals("Groups.join")) {
-                                sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                            } else if (method.equals("Groups.leave")) {
-                                sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                            } else if (method.equals("Likes.add")) {
-                                sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
-                            } else if (method.equals("Likes.delete")) {
-                                sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
-                            } else if (method.equals("Likes.isLiked")) {
-                                sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
-                            } else if (method.equals("Messages.getById")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
-                            } else if (method.equals("Messages.send")) {
-                                sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
-                            } else if (method.equals("Messages.delete")) {
-                                sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
-                            } else if (method.equals("Messages.restore")) {
-                                sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
-                            } else if (method.equals("Messages.getConversations")) {
-                                sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
-                            } else if (method.equals("Messages.getConverstaionsByID")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
-                            } else if (method.equals("Messages.getHistory")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
-                            } else if (method.equals("Messages.getLongPollHistory")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
-                            } else if (method.equals("Messages.getLongPollServer")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
-                            } else if (method.equals("Ovk.version")) {
-                                sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
-                            } else if (method.equals("Ovk.test")) {
-                                sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
-                            } else if (method.equals("Ovk.chickenWings")) {
-                                sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
-                            } else if (method.equals("Ovk.aboutInstance")) {
-                                sendMessage(HandlerMessages.OVK_ABOUTINSTANCE,  method, args, response_body);
-                            } else if (method.equals("Users.get")) {
-                                sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                            } else if (method.equals("Users.getFollowers")) {
-                                sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
-                            } else if (method.equals("Users.search")) {
-                                sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
-                            } else if (method.equals("Users.get")) {
-                                sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                            } else if (method.equals("Wall.get")) {
-                                sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
-                            } else if (method.equals("Wall.getById")) {
-                                sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
-                            } else if (method.equals("Wall.post")) {
-                                sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
-                            } else if (method.equals("Wall.repost")) {
-                                sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
-                            } else if (method.equals("Wall.createComment")) {
-                                sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, args, response_body);
-                            } else if (method.equals("Wall.createComment")) {
-                                sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
-                            } else if (method.equals("Wall.getComment")) {
-                                sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
-                            } else if (method.equals("Wall.getComments")) {
-                                sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
-                            } else if (method.equals("Newsfeed.get")) {
-                                sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
-                            } else if (method.equals("Newsfeed.getGlobal")) {
-                                sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
-                            } else if (method.equals("Polls.addVote")) {
-                                sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
-                            } else if (method.equals("Polls.deleteVote")) {
-                                sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
-                            }
-                        } else if(response_code == 400) {
-                            error = new Error();
-                            error.parse(response_body);
-                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
-                            if(error.code == 3) {
-                                sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
-                            } else if(error.code == 5) {
-                                sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
-                            } else if (error.code == 15) {
-                                sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
-                            } else if(error.code == 100) {
-                                sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
-                            } else if(error.code == 945) {
-                                sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
-                            }
-                        } else if (response_code >= 500 && response_code <= 526) {
-                            if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
-                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                    try {
+                        if(legacy_mode) {
+                            HttpResponse response = httpClientLegacy.execute(request_legacy);
+                            StatusLine statusLine = response.getStatusLine();
+                            response_body = EntityUtils.toString(response.getEntity());
+                            response_code = statusLine.getStatusCode();
+                        } else {
+                            Response response = httpClient.newCall(request).execute();
+                            response_body = response.body().string();
+                            response_code = response.code();
                         }
-                    };
-                } catch (ConnectException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (ProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (SocketException e) {
-                    if(e.getMessage().contains("ETIMEDOUT")) {
+                        if (response_body.length() > 0) {
+                            if(response_code == 200) {
+                                if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                                if (method.equals("Account.getProfileInfo")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
+                                } else if (method.equals("Account.setOnline")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
+                                } else if (method.equals("Account.setOffline")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
+                                } else if (method.equals("Account.getCounters")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
+                                } else if (method.equals("Friends.get")) {
+                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
+                                } else if (method.equals("Friends.get")) {
+                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
+                                } else if (method.equals("Friends.add")) {
+                                    sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
+                                } else if (method.equals("Friends.delete")) {
+                                    sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
+                                } else if (method.equals("Friends.areFriends")) {
+                                    sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
+                                } else if (method.equals("Groups.get")) {
+                                    sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                } else if (method.equals("Groups.getById")) {
+                                    sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
+                                } else if (method.equals("Groups.search")) {
+                                    sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                                } else if (method.equals("Groups.join")) {
+                                    sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                                } else if (method.equals("Groups.leave")) {
+                                    sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
+                                } else if (method.equals("Likes.add")) {
+                                    sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
+                                } else if (method.equals("Likes.delete")) {
+                                    sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
+                                } else if (method.equals("Likes.isLiked")) {
+                                    sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
+                                } else if (method.equals("Messages.getById")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
+                                } else if (method.equals("Messages.send")) {
+                                    sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
+                                } else if (method.equals("Messages.delete")) {
+                                    sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
+                                } else if (method.equals("Messages.restore")) {
+                                    sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
+                                } else if (method.equals("Messages.getConversations")) {
+                                    sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
+                                } else if (method.equals("Messages.getConverstaionsByID")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
+                                } else if (method.equals("Messages.getHistory")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
+                                } else if (method.equals("Messages.getLongPollHistory")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
+                                } else if (method.equals("Messages.getLongPollServer")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
+                                } else if (method.equals("Ovk.version")) {
+                                    sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
+                                } else if (method.equals("Ovk.test")) {
+                                    sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
+                                } else if (method.equals("Ovk.chickenWings")) {
+                                    sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
+                                } else if (method.equals("Ovk.aboutInstance")) {
+                                    sendMessage(HandlerMessages.OVK_ABOUTINSTANCE,  method, args, response_body);
+                                } else if (method.equals("Users.get")) {
+                                    sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
+                                } else if (method.equals("Users.getFollowers")) {
+                                    sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
+                                } else if (method.equals("Users.search")) {
+                                    sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
+                                } else if (method.equals("Users.get")) {
+                                    sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
+                                } else if (method.equals("Wall.get")) {
+                                    sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
+                                } else if (method.equals("Wall.getById")) {
+                                    sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
+                                } else if (method.equals("Wall.post")) {
+                                    sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
+                                } else if (method.equals("Wall.repost")) {
+                                    sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
+                                } else if (method.equals("Wall.createComment")) {
+                                    sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, args, response_body);
+                                } else if (method.equals("Wall.createComment")) {
+                                    sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
+                                } else if (method.equals("Wall.getComment")) {
+                                    sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
+                                } else if (method.equals("Wall.getComments")) {
+                                    sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
+                                } else if (method.equals("Newsfeed.get")) {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                } else if (method.equals("Newsfeed.getGlobal")) {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
+                                } else if (method.equals("Polls.addVote")) {
+                                    sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
+                                } else if (method.equals("Polls.deleteVote")) {
+                                    sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
+                                }
+                            } else if(response_code == 400) {
+                                error = new Error();
+                                error.parse(response_body);
+                                if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(error.code == 3) {
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
+                                } else if(error.code == 5) {
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
+                                } else if (error.code == 15) {
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
+                                } else if(error.code == 100) {
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
+                                } else if(error.code == 945) {
+                                    sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
+                                }
+                            } else if (response_code >= 500 && response_code <= 526) {
+                                if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                            }
+                        };
+                    } catch (ConnectException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (ProtocolException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (SocketException e) {
+                        if(e.getMessage().contains("ETIMEDOUT")) {
+                            if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                            error.description = e.getMessage();
+                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                        }
+                    } catch (SocketTimeoutException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
+                    } catch (UnknownHostException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
+                    } catch(javax.net.ssl.SSLProtocolException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch(javax.net.ssl.SSLHandshakeException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch(javax.net.ssl.SSLException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (OutOfMemoryError e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (SocketTimeoutException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
-                } catch (UnknownHostException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
-                } catch(javax.net.ssl.SSLProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLHandshakeException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch (OutOfMemoryError e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
+                    ex.printStackTrace();
                 }
             }
         };
@@ -774,183 +812,188 @@ public class OvkAPIWrapper {
 
             @Override
             public void run() {
-                if(legacy_mode) {
-                    request_legacy = new HttpGet(fUrl);
-                    request_legacy.getParams().setParameter("timeout", 30000);
-                } else {
-                    request = new Request.Builder()
-                            .url(fUrl)
-                            .addHeader("User-Agent", generateUserAgent(ctx)).build();
-                }
                 try {
                     if(legacy_mode) {
-                        HttpResponse response = httpClientLegacy.execute(request_legacy);
-                        StatusLine statusLine = response.getStatusLine();
-                        response_body = EntityUtils.toString(response.getEntity());
-                        response_code = statusLine.getStatusCode();
+                        request_legacy = new HttpGet(fUrl);
+                        request_legacy.getParams().setParameter("timeout", 30000);
                     } else {
-                        Response response = httpClient.newCall(request).execute();
-                        response_body = response.body().string();
-                        response_code = response.code();
+                        request = new Request.Builder()
+                                .url(fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
                     }
-                    if (response_body.length() > 0) {
-                        if(response_code == 200) {
-                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                            if (method.equals("Account.getProfileInfo")) {
-                                sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, response_body);
-                            } else if (method.equals("Account.setOnline")) {
-                                sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, response_body);
-                            } else if (method.equals("Account.setOffline")) {
-                                sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, response_body);
-                            } else if (method.equals("Account.getCounters")) {
-                                sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, response_body);
-                            } else if (method.equals("Friends.get")) {
-                                sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
-                            } else if (method.equals("Friends.get")) {
-                                sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
-                            } else if (method.equals("Friends.add")) {
-                                sendMessage(HandlerMessages.FRIENDS_ADD, method, response_body);
-                            } else if (method.equals("Friends.delete")) {
-                                sendMessage(HandlerMessages.FRIENDS_DELETE, method, response_body);
-                            } else if (method.equals("Friends.areFriends")) {
-                                sendMessage(HandlerMessages.FRIENDS_CHECK, method, response_body);
-                            } else if (method.equals("Groups.get")) {
-                                sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
-                            } else if (method.equals("Groups.getById")) {
-                                sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
-                            } else if (method.equals("Groups.search")) {
-                                sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                            } else if (method.equals("Groups.join")) {
-                                sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                            } else if (method.equals("Groups.leave")) {
-                                sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                            } else if (method.equals("Likes.add")) {
-                                sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
-                            } else if (method.equals("Likes.delete")) {
-                                sendMessage(HandlerMessages.LIKES_DELETE, method, response_body);
-                            } else if (method.equals("Likes.isLiked")) {
-                                sendMessage(HandlerMessages.LIKES_CHECK, method, response_body);
-                            } else if (method.equals("Messages.getById")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, response_body);
-                            } else if (method.equals("Messages.send")) {
-                                sendMessage(HandlerMessages.MESSAGES_SEND, method, response_body);
-                            } else if (method.equals("Messages.delete")) {
-                                sendMessage(HandlerMessages.MESSAGES_DELETE, method, response_body);
-                            } else if (method.equals("Messages.restore")) {
-                                sendMessage(HandlerMessages.MESSAGES_RESTORE, method, response_body);
-                            } else if (method.equals("Messages.getConverstaions")) {
-                                sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, response_body);
-                            } else if (method.equals("Messages.getConverstaionsByID")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, response_body);
-                            } else if (method.equals("Messages.getHistory")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, response_body);
-                            } else if (method.equals("Messages.getLongPollHistory")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, response_body);
-                            } else if (method.equals("Messages.getLongPollServer")) {
-                                sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, response_body);
-                            } else if (method.equals("Ovk.version")) {
-                                sendMessage(HandlerMessages.OVK_VERSION, method, response_body);
-                            } else if (method.equals("Ovk.test")) {
-                                sendMessage(HandlerMessages.OVK_TEST, method, response_body);
-                            } else if (method.equals("Ovk.chickenWings")) {
-                                sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, response_body);
-                            } else if (method.equals("Ovk.aboutInstance")) {
-                                sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, response_body);
-                            } else if (method.equals("Users.get")) {
-                                sendMessage(HandlerMessages.USERS_GET, method, response_body);
-                            } else if (method.equals("Users.getFollowers")) {
-                                sendMessage(HandlerMessages.USERS_FOLLOWERS, method, response_body);
-                            } else if (method.equals("Users.search")) {
-                                sendMessage(HandlerMessages.USERS_SEARCH, method, response_body);
-                            } else if (method.equals("Users.get")) {
-                                sendMessage(HandlerMessages.USERS_GET, method, response_body);
-                            } else if (method.equals("Wall.get")) {
-                                sendMessage(HandlerMessages.WALL_GET, method, response_body);
-                            } else if (method.equals("Wall.getById")) {
-                                sendMessage(HandlerMessages.WALL_GET_BY_ID, method, response_body);
-                            } else if (method.equals("Wall.post")) {
-                                sendMessage(HandlerMessages.WALL_POST, method, response_body);
-                            } else if (method.equals("Wall.repost")) {
-                                sendMessage(HandlerMessages.WALL_REPOST, method, response_body);
-                            } else if (method.equals("Wall.createComment")) {
-                                sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, response_body);
-                            } else if (method.equals("Wall.createComment")) {
-                                sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, response_body);
-                            } else if (method.equals("Wall.getComment")) {
-                                sendMessage(HandlerMessages.WALL_COMMENT, method, response_body);
-                            } else if (method.equals("Wall.getComments")) {
-                                sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
-                            } else if (method.equals("Newsfeed.get")) {
-                                sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
-                            } else if (method.equals("Newsfeed.getGlobal")) {
-                                sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, response_body);
-                            } else if (method.equals("Polls.addVote")) {
-                                sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
-                            } else if (method.equals("Polls.deleteVote")) {
-                                sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, response_body);
-                            }
-                        } else if(response_code == 400) {
-                            error = new Error();
-                            error.parse(response_body);
-                            if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
-                            if(error.code == 3) {
-                                sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
-                            } else if(error.code == 5) {
-                                sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
-                            } else if (error.code == 15) {
-                                sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
-                            } else if(error.code == 100) {
-                                sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
-                            } else if(error.code == 945) {
-                                sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
-                            }
-                        } else if (response_code >= 500 && response_code <= 526) {
-                            Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
-                            sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                    try {
+                        if(legacy_mode) {
+                            HttpResponse response = httpClientLegacy.execute(request_legacy);
+                            StatusLine statusLine = response.getStatusLine();
+                            response_body = EntityUtils.toString(response.getEntity());
+                            response_code = statusLine.getStatusCode();
+                        } else {
+                            Response response = httpClient.newCall(request).execute();
+                            response_body = response.body().string();
+                            response_code = response.code();
                         }
-                    };
-                } catch (ConnectException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (ProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (SocketException e) {
-                    if(e.getMessage().contains("ETIMEDOUT")) {
+                        if (response_body.length() > 0) {
+                            if(response_code == 200) {
+                                if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                                if (method.equals("Account.getProfileInfo")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, response_body);
+                                } else if (method.equals("Account.setOnline")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, response_body);
+                                } else if (method.equals("Account.setOffline")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, response_body);
+                                } else if (method.equals("Account.getCounters")) {
+                                    sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, response_body);
+                                } else if (method.equals("Friends.get")) {
+                                    sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
+                                } else if (method.equals("Friends.get")) {
+                                    sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
+                                } else if (method.equals("Friends.add")) {
+                                    sendMessage(HandlerMessages.FRIENDS_ADD, method, response_body);
+                                } else if (method.equals("Friends.delete")) {
+                                    sendMessage(HandlerMessages.FRIENDS_DELETE, method, response_body);
+                                } else if (method.equals("Friends.areFriends")) {
+                                    sendMessage(HandlerMessages.FRIENDS_CHECK, method, response_body);
+                                } else if (method.equals("Groups.get")) {
+                                    sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
+                                } else if (method.equals("Groups.getById")) {
+                                    sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
+                                } else if (method.equals("Groups.search")) {
+                                    sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                                } else if (method.equals("Groups.join")) {
+                                    sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                                } else if (method.equals("Groups.leave")) {
+                                    sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
+                                } else if (method.equals("Likes.add")) {
+                                    sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
+                                } else if (method.equals("Likes.delete")) {
+                                    sendMessage(HandlerMessages.LIKES_DELETE, method, response_body);
+                                } else if (method.equals("Likes.isLiked")) {
+                                    sendMessage(HandlerMessages.LIKES_CHECK, method, response_body);
+                                } else if (method.equals("Messages.getById")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, response_body);
+                                } else if (method.equals("Messages.send")) {
+                                    sendMessage(HandlerMessages.MESSAGES_SEND, method, response_body);
+                                } else if (method.equals("Messages.delete")) {
+                                    sendMessage(HandlerMessages.MESSAGES_DELETE, method, response_body);
+                                } else if (method.equals("Messages.restore")) {
+                                    sendMessage(HandlerMessages.MESSAGES_RESTORE, method, response_body);
+                                } else if (method.equals("Messages.getConverstaions")) {
+                                    sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, response_body);
+                                } else if (method.equals("Messages.getConverstaionsByID")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, response_body);
+                                } else if (method.equals("Messages.getHistory")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, response_body);
+                                } else if (method.equals("Messages.getLongPollHistory")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, response_body);
+                                } else if (method.equals("Messages.getLongPollServer")) {
+                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, response_body);
+                                } else if (method.equals("Ovk.version")) {
+                                    sendMessage(HandlerMessages.OVK_VERSION, method, response_body);
+                                } else if (method.equals("Ovk.test")) {
+                                    sendMessage(HandlerMessages.OVK_TEST, method, response_body);
+                                } else if (method.equals("Ovk.chickenWings")) {
+                                    sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, response_body);
+                                } else if (method.equals("Ovk.aboutInstance")) {
+                                    sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, response_body);
+                                } else if (method.equals("Users.get")) {
+                                    sendMessage(HandlerMessages.USERS_GET, method, response_body);
+                                } else if (method.equals("Users.getFollowers")) {
+                                    sendMessage(HandlerMessages.USERS_FOLLOWERS, method, response_body);
+                                } else if (method.equals("Users.search")) {
+                                    sendMessage(HandlerMessages.USERS_SEARCH, method, response_body);
+                                } else if (method.equals("Users.get")) {
+                                    sendMessage(HandlerMessages.USERS_GET, method, response_body);
+                                } else if (method.equals("Wall.get")) {
+                                    sendMessage(HandlerMessages.WALL_GET, method, response_body);
+                                } else if (method.equals("Wall.getById")) {
+                                    sendMessage(HandlerMessages.WALL_GET_BY_ID, method, response_body);
+                                } else if (method.equals("Wall.post")) {
+                                    sendMessage(HandlerMessages.WALL_POST, method, response_body);
+                                } else if (method.equals("Wall.repost")) {
+                                    sendMessage(HandlerMessages.WALL_REPOST, method, response_body);
+                                } else if (method.equals("Wall.createComment")) {
+                                    sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, response_body);
+                                } else if (method.equals("Wall.createComment")) {
+                                    sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, response_body);
+                                } else if (method.equals("Wall.getComment")) {
+                                    sendMessage(HandlerMessages.WALL_COMMENT, method, response_body);
+                                } else if (method.equals("Wall.getComments")) {
+                                    sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
+                                } else if (method.equals("Newsfeed.get")) {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
+                                } else if (method.equals("Newsfeed.getGlobal")) {
+                                    sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, response_body);
+                                } else if (method.equals("Polls.addVote")) {
+                                    sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
+                                } else if (method.equals("Polls.deleteVote")) {
+                                    sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, response_body);
+                                }
+                            } else if(response_code == 400) {
+                                error = new Error();
+                                error.parse(response_body);
+                                if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(error.code == 3) {
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
+                                } else if(error.code == 5) {
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
+                                } else if (error.code == 15) {
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
+                                } else if(error.code == 100) {
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
+                                } else if(error.code == 945) {
+                                    sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
+                                }
+                            } else if (response_code >= 500 && response_code <= 526) {
+                                Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                            }
+                        };
+                    } catch (ConnectException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (ProtocolException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                    } catch (SocketException e) {
+                        if(e.getMessage().contains("ETIMEDOUT")) {
+                            if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                            error.description = e.getMessage();
+                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
+                        }
+                    } catch (SocketTimeoutException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
+                    } catch (UnknownHostException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
+                    } catch(javax.net.ssl.SSLProtocolException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch(javax.net.ssl.SSLHandshakeException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch(javax.net.ssl.SSLException e) {
+                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, error.description);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        error.description = e.getMessage();
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, error.description);
                     }
-                } catch (SocketTimeoutException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
-                } catch (UnknownHostException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
-                } catch(javax.net.ssl.SSLProtocolException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLHandshakeException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch(javax.net.ssl.SSLException e) {
-                    if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, error.description);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    error.description = e.getMessage();
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, error.description);
+                } catch (Exception ex) {
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
+                    ex.printStackTrace();
                 }
             }
         };
