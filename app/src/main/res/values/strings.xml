@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="ovk_warning_title">Warning</string>
-	<string name="ovk_warning"><![CDATA[You have launched a OpenVK Legacy FOSS client that ONLY works with <a href="https://github.com/openvk/openvk">OpenVK</a> instances, an open source network that is not compatible with VKontakte / VK. Please log in ONLY to the registered OpenVK account in one of the existing instances.]]></string>
+	<string name="ovk_warning"><![CDATA[You have launched a OpenVK Legacy FOSS client that ONLY works with <a href="https://github.com/openvk/openvk">OpenVK</a> instances, an open source network that is not compatible with VKontakte / VK.<br><br>Please log in ONLY to the registered OpenVK account in one of the existing instances.]]></string>
     <string name="dont_show_warn">Don\'t show warning next time</string>
     <string name="app_name">OpenVK</string>
 	<string name="full_app_name">OpenVK Legacy for Android</string>

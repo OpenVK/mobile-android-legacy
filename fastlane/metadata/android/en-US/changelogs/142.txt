@@ -1,0 +1,1 @@
+1. At the first startup, the application will immediately warn about the incompatibility of OpenVK Legacy with VKontakte / VK social network, so as not to confuse potential users of this social network.
