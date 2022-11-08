@@ -1178,7 +1178,7 @@
     <string name="friend_deleted">%s видалено з ваших особливих друзів</string>
 
     <string name="incompatible_openvk_api_title">Версія OpenVK API застаріла</string>
-    <string name="incompatible_openvk_api>Ймовірно, в цій інстанції використовується несумісна версія OpenVK API, в якій не реалізовано чи застаріли необхідні функції. Щоб розв'язувати цю проблему, зверніться до системного адміністратора або розробника програми.</string>
+    <string name="incompatible_openvk_api">Ймовірно, в цій інстанції використовується несумісна версія OpenVK API, в якій не реалізовано чи застаріли необхідні функції. Щоб розв\'язувати цю проблему, зверніться до системного адміністратора або розробника програми.</string>
     <string name="unable_to_parse_error">Неможливо обробити відповідь від сервера</string>
     <string name="twofactor_text">У вас увімкнена двофакторна аутентифікація. Для входу введіть код отриманий в додатку.</string>
     <string name="twofactor_hint">Код 2FA</string>
