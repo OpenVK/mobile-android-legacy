@@ -195,6 +195,7 @@ public class ProfileIntentActivity extends Activity {
         try {
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(args.startsWith("id")) {
+                    account.parse(data.getString("response"), ovk_api);
                     try {
                         users.getUser(ovk_api, Integer.parseInt(args.substring(2)));
                     } catch (Exception ex) {
@@ -397,7 +398,7 @@ public class ProfileIntentActivity extends Activity {
             Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
             intent.putExtra("owner_id", user.id);
             intent.putExtra("account_id", account.id);
-            intent.putExtra("account_first_name", account.user.first_name);
+            intent.putExtra("account_first_name", user.first_name);
             startActivity(intent);
         } catch (Exception ex) {
 
@@ -413,7 +414,7 @@ public class ProfileIntentActivity extends Activity {
             try {
                 intent.putExtra("post_id", item.post_id);
                 intent.putExtra("owner_id", item.owner_id);
-                intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+                intent.putExtra("author_name", String.format("%s %s", account.user.first_name, account.user.last_name));
                 intent.putExtra("author_id", account.id);
                 intent.putExtra("post_author_id", item.author_id);
                 intent.putExtra("post_author_name", item.name);

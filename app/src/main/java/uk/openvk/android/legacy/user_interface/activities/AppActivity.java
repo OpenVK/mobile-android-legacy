@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -128,9 +129,22 @@ public class AppActivity extends Activity {
             notifMan = getSystemService(NotificationManager.class);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             notifChannel = new NotificationChannel("lp_updates", "LongPoll Updates", importance);
-            notifChannel.enableLights(false);
-            notifChannel.enableVibration(false);
+            notifChannel.enableLights(global_prefs.getBoolean("notifyLED", true));
+            notifChannel.enableVibration(global_prefs.getBoolean("notifyVibrate", true));
+            if(global_prefs.getBoolean("notifySound", true)) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build();
+                if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
+                    notifChannel.setSound(Uri.parse(String.format("android.resource://%s/%d", getApplicationContext().getPackageName(), R.raw.notify)), audioAttributes);
+                } else {
+                    notifChannel.setSound(Uri.parse(global_prefs.getString("notifyRingtone", "")), audioAttributes);
+                }
+            }
             notifMan.createNotificationChannel(notifChannel);
+        } else {
+            notifMan = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         }
         last_longpoll_response = "";
         global_prefs_editor = global_prefs.edit();
@@ -851,6 +865,22 @@ public class AppActivity extends Activity {
                             .setContentText(description);
 
             notification = builder.build();
+
+            if(global_prefs.getBoolean("notifyLED", true)) {
+                notification.defaults = Notification.DEFAULT_LIGHTS;
+            }
+            if(global_prefs.getBoolean("notifyVibrate", true)) {
+                notification.defaults = Notification.DEFAULT_VIBRATE;
+            }
+
+            if(global_prefs.getBoolean("notifySound", true)) {
+                notification.defaults = Notification.DEFAULT_SOUND;
+                if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
+                    notification.sound = Uri.parse(String.format("android.resource://%s/raw/notify.mp3", getApplicationContext().getPackageName()));
+                } else {
+                    notification.sound = Uri.parse(global_prefs.getString("notifyRingtone", ""));
+                }
+            }
         }
         return notification;
     }

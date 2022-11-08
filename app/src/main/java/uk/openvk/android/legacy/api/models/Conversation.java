@@ -51,6 +51,7 @@ public class Conversation {
                         incoming = true;
                     }
                     Message message = new Message(incoming, false, item.getInt("date"), item.getString("text"), ctx);
+                    message.author_id = item.getInt("from_id");
                     history.add(message);
                 }
             } catch(JSONException ex) {

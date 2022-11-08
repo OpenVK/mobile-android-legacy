@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
@@ -60,6 +63,14 @@ public class ConversationActivity extends Activity {
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
         installLayouts();
         setConversationView();
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", getCacheDir(), peer_id), options);
+            conversation.avatar = bitmap;
+        } catch (OutOfMemoryError error) {
+
+        }
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -90,7 +101,11 @@ public class ConversationActivity extends Activity {
                 } else {
                     actionBarImitation.setHomeButtonVisibillity(true);
                     actionBarImitation.setTitle(conv_title);
-                    actionBarImitation.setSubtitle(conv_title);
+                    if(peer_online == 1) {
+                        actionBarImitation.setSubtitle(getResources().getString(R.string.online));
+                    } else {
+                        actionBarImitation.setSubtitle(getResources().getString(R.string.offline));
+                    }
                 }
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
@@ -124,6 +139,7 @@ public class ConversationActivity extends Activity {
             ovk_api.setServer(instance_prefs.getString("server", ""));
             ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
             conversation.getHistory(ovk_api, peer_id);
+
         }
     }
 
@@ -157,8 +173,12 @@ public class ConversationActivity extends Activity {
                         history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
                     }
                     history.add(last_sended_message);
-                    conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history);
-                    messagesList.setAdapter(conversation_adapter);
+                    if(conversation_adapter == null) {
+                        conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history, peer_id);
+                        messagesList.setAdapter(conversation_adapter);
+                    } else {
+                        conversation_adapter.notifyDataSetChanged();
+                    }
                     ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
                 }
                 return false;
@@ -182,8 +202,12 @@ public class ConversationActivity extends Activity {
                     history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
                 }
                 history.add(last_sended_message);
-                conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history);
-                messagesList.setAdapter(conversation_adapter);
+                if(conversation_adapter == null) {
+                    conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history, peer_id);
+                    messagesList.setAdapter(conversation_adapter);
+                } else {
+                    conversation_adapter.notifyDataSetChanged();
+                }
                 ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
             }
         });
@@ -224,7 +248,7 @@ public class ConversationActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             history = conversation.parseHistory(this, data.getString("response"));
-            conversation_adapter = new MessagesListAdapter(this, history);
+            conversation_adapter = new MessagesListAdapter(this, history, peer_id);
             messagesList.setAdapter(conversation_adapter);
         } else if (message == HandlerMessages.CHAT_DISABLED) {
             last_sended_message.sending = false;

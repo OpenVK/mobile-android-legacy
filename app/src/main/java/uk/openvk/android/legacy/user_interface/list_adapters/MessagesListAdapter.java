@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.user_interface.list_adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +17,21 @@ import java.util.concurrent.TimeUnit;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.activities.ConversationActivity;
 import uk.openvk.android.legacy.api.models.Message;
+import uk.openvk.android.legacy.user_interface.layouts.IncomingMessageLayout;
 
 public class MessagesListAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Message> objects;
     public boolean opened_sliding_menu;
+    public long peer_id;
 
-    public MessagesListAdapter(Context context, ArrayList<Message> items) {
+    public MessagesListAdapter(Context context, ArrayList<Message> items, long peer_id) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.peer_id = peer_id;
     }
 
     @Override
@@ -109,12 +114,32 @@ public class MessagesListAdapter extends BaseAdapter {
             if(item.isIncoming) {
                 ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
                 ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
+                try {
+                    if (peer_id == item.author_id) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                        ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
+                    }
+                } catch (OutOfMemoryError error) {
+
+                }
             } else {
                 ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.GONE);
                 ((view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.VISIBLE);
             }
         } else {
             if(item.isIncoming) {
+                try {
+                    if (peer_id == item.author_id) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                        ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
+                    }
+                } catch (OutOfMemoryError error) {
+
+                }
                 ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
                 ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setVisibility(View.GONE);
             } else {
@@ -124,6 +149,15 @@ public class MessagesListAdapter extends BaseAdapter {
         }
 
         if(item.isIncoming) {
+            try {
+                if (peer_id == item.author_id) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                }
+            } catch (OutOfMemoryError error) {
+
+            }
             ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
             ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
             ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);

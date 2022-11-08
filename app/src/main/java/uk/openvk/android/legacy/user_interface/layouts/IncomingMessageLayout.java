@@ -1,9 +1,11 @@
 package uk.openvk.android.legacy.user_interface.layouts;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import uk.openvk.android.legacy.R;
@@ -24,5 +26,10 @@ public class IncomingMessageLayout extends LinearLayout {
         layoutParams = (LinearLayout.LayoutParams) msg_block.getLayoutParams();
         layoutParams.width = LayoutParams.WRAP_CONTENT;
         msg_block.setLayoutParams(layoutParams);
+    }
+
+    public void setAvatar(Bitmap bitmap) {
+        ImageView avatar = findViewById(R.id.msg_sender_photo);
+        avatar.setImageBitmap(bitmap);
     }
 }

@@ -190,6 +190,7 @@ public class GroupIntentActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                account.parse(data.getString("response"), ovk_api);
                 if (args.startsWith("club")) {
                     try {
                         groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(4)));
@@ -400,7 +401,7 @@ public class GroupIntentActivity extends Activity {
             Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
             intent.putExtra("owner_id", -group.id);
             intent.putExtra("account_id", account.id);
-            intent.putExtra("account_first_name", account.user.first_name);
+            intent.putExtra("account_first_name", group.name);
             startActivity(intent);
         } catch (Exception ex) {
 

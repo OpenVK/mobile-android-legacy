@@ -50,6 +50,8 @@ public class ActionBarImitation extends LinearLayout {                  // for p
             title_view = (TextView) findViewById(R.id.titlebar_subtitle2);
         }
         title_view.setText(title);
+        if(title.length() > 0)
+        title_view.setVisibility(VISIBLE);
     }
 
     public void setActionButton(String icon, int position, OnClickListener onClickListener) {

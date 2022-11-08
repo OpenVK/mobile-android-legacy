@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -161,21 +163,26 @@ public class WallPostActivity extends Activity {
         ((EditText) commentPanel.findViewById(R.id.comment_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
-                final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
-                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                try {
+                    final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
                     try {
                         wall.createComment(ovk_api, owner_id, post_id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                     Comment comment = new Comment(author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                    comment.avatar = bitmap;
                     if (comments == null) {
                         comments = new ArrayList<Comment>();
                     }
                     comments.add(comment);
                     wallPostLayout.createAdapter(WallPostActivity.this, comments);
                     ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
+                } catch (OutOfMemoryError error) {
+
                 }
                 return true;
             }
@@ -183,19 +190,27 @@ public class WallPostActivity extends Activity {
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
                 try {
-                    wall.createComment(ovk_api, owner_id, post_id, msg_text);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                    try {
+                        wall.createComment(ovk_api, owner_id, post_id, msg_text);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    Comment comment = new Comment(author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                    comment.avatar = bitmap;
+                    if (comments == null) {
+                        comments = new ArrayList<Comment>();
+                    }
+                    comments.add(comment);
+                    wallPostLayout.createAdapter(WallPostActivity.this, comments);
+                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
+                } catch (OutOfMemoryError error) {
+
                 }
-                Comment comment = new Comment(author_id, author_name, (int)(System.currentTimeMillis() / 1000), msg_text);
-                if(comments == null) {
-                    comments = new ArrayList<Comment>();
-                }
-                comments.add(comment);
-                wallPostLayout.createAdapter(WallPostActivity.this, comments);
-                ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
             }
         });
         ((EditText) commentPanel.findViewById(R.id.comment_edit)).addTextChangedListener(new TextWatcher() {

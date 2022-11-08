@@ -12,13 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:layout_alignBottom="@+id/message_edit"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="false"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="false"
         android:layout_marginLeft="4dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:text="@string/send"
+        android:text="@string/send_b"
         android:textSize="14sp" />
 
     <EditText
@@ -45,6 +45,7 @@
         android:layout_alignParentBottom="false"
         android:background="@drawable/highlight"
         android:padding="8dp"
-        android:src="@drawable/ic_ab_add_inverse" />
+        android:src="@drawable/ic_ab_add_inverse"
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -1,9 +1,11 @@
 package uk.openvk.android.legacy.user_interface.layouts;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,4 +29,5 @@ public class OutcomingMessageLayout extends LinearLayout {
         layoutParams.width = LayoutParams.WRAP_CONTENT;
         msg_text.setLayoutParams(layoutParams);
     }
+
 }
