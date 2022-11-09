@@ -92,6 +92,14 @@ public class MessagesListAdapter extends BaseAdapter {
             (view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
             (view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
         } else {
+            (view.findViewById(R.id.outcoming_msg)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                        ((ConversationActivity) ctx).getMsgContextMenu(position);
+                    }
+                }
+            });
             (view.findViewById(R.id.incoming_msg)).setVisibility(View.GONE);
             (view.findViewById(R.id.outcoming_msg)).setVisibility(View.VISIBLE);
         }

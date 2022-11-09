@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Groups;
@@ -41,6 +43,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.GroupHeader;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileCounterLayout;
+import uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
@@ -140,9 +143,6 @@ public class GroupIntentActivity extends Activity {
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
             }
-        }
-        if(item.getItemId() == R.id.newpost) {
-            openNewPostActivity();
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -293,23 +293,43 @@ public class GroupIntentActivity extends Activity {
     }
 
     private void setJoinButtonListener(int id) {
-        final Button join_btn = ((Button) findViewById(R.id.join_to_comm));
-        join_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(group.is_member > 0) {
-                    group.leave(ovk_api);
-                } else {
-                    group.join(ovk_api);
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
+            join_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(group.is_member > 0) {
+                        group.leave(ovk_api);
+                    } else {
+                        group.join(ovk_api);
+                    }
                 }
+            });
+            if(group.is_member > 0) {
+                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+            } else {
+                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
             }
-        });
-        if(group.is_member > 0) {
-            join_btn.setText(R.string.leave_group);
+            join_btn.setVisibility(View.VISIBLE);
         } else {
-            join_btn.setText(R.string.join_group);
+            final Button join_btn = ((Button) findViewById(R.id.join_to_comm));
+            join_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(group.is_member > 0) {
+                        group.leave(ovk_api);
+                    } else {
+                        group.join(ovk_api);
+                    }
+                }
+            });
+            if(group.is_member > 0) {
+                join_btn.setText(R.string.leave_group);
+            } else {
+                join_btn.setText(R.string.join_group);
+            }
+            join_btn.setVisibility(View.VISIBLE);
         }
-        join_btn.setVisibility(View.VISIBLE);
     }
 
 

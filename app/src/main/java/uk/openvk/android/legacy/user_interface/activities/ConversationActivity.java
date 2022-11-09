@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,14 +18,19 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.Messages;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.Conversation;
@@ -47,8 +54,10 @@ public class ConversationActivity extends Activity {
     public String conv_title;
     public int peer_online;
     public int peer_id;
+    private int cursor_id;
     public ActionBarImitation actionBarImitation;
     private ArrayList<uk.openvk.android.legacy.api.models.Message> history;
+    private Messages messages;
     private uk.openvk.android.legacy.api.models.Message last_sended_message;
 
     @Override
@@ -63,6 +72,7 @@ public class ConversationActivity extends Activity {
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
         installLayouts();
         setConversationView();
+        messages = new Messages();
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -166,7 +176,7 @@ public class ConversationActivity extends Activity {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    last_sended_message = new uk.openvk.android.legacy.api.models.Message(false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                    last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
                     last_sended_message.sending = true;
                     last_sended_message.isError = false;
                     if(history == null) {
@@ -195,7 +205,7 @@ public class ConversationActivity extends Activity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                last_sended_message = new uk.openvk.android.legacy.api.models.Message(false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
                 last_sended_message.sending = true;
                 last_sended_message.isError = false;
                 if(history == null) {
@@ -254,15 +264,58 @@ public class ConversationActivity extends Activity {
             last_sended_message.sending = false;
             last_sended_message.isError = true;
             history.set(history.size() - 1, last_sended_message);
-            messagesList.setAdapter(conversation_adapter);
+            conversation_adapter.notifyDataSetChanged();
+        } else if (message == HandlerMessages.MESSAGES_DELETE) {
+            history.remove(cursor_id);
+            conversation_adapter.notifyDataSetChanged();
         } else if(message == HandlerMessages.MESSAGES_SEND) {
             last_sended_message.sending = false;
+            last_sended_message.getSendedId(data.getString("response"));
             history.set(history.size() - 1, last_sended_message);
-            messagesList.setAdapter(conversation_adapter);
+            conversation_adapter.notifyDataSetChanged();
         }
     }
 
     public void hideSelectedItemBackground(int position) {
         messagesList.setBackgroundColor(getResources().getColor(R.color.transparent));
+    }
+
+    public void getMsgContextMenu(final int item_pos) {
+        if(!history.get(item_pos).isIncoming) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final ArrayList<String> functions = new ArrayList<>();
+            functions.add(getResources().getString(R.string.delete));
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            builder.setSingleChoiceItems(adapter, -1, null);
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
+                                        long id) {
+                    if (functions.get(position).equals(getResources().getString(R.string.delete))) {
+                        showDeleteConfirmDialog(item_pos);
+                        dialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+    private void showDeleteConfirmDialog(final int position) {
+        cursor_id = position;
+        uk.openvk.android.legacy.api.models.Message msg = history.get(position);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete_msgs_title);
+        builder.setMessage(getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", msg.text)));
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                messages.delete(ovk_api, history.get(position).id);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

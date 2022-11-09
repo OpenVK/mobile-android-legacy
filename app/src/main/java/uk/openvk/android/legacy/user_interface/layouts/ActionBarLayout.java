@@ -51,7 +51,7 @@ public class ActionBarLayout extends LinearLayout {
 
         LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
         layoutParams.width = LayoutParams.MATCH_PARENT;
-        layoutParams.height = LayoutParams.WRAP_CONTENT;
+        layoutParams.height = LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
         createSpinnerAdapter(context);
     }

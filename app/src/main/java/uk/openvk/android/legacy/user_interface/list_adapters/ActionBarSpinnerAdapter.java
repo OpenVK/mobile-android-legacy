@@ -68,26 +68,35 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
             item_name.setText(item.name);
         }
         if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            Global global = new Global();
+            Global global = new Global(ctx);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (ctx.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !global.isTablet()) {
+                if(global.isTablet()) {
                     TextView item_name = view.findViewById(R.id.item_title);
                     LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
-                    ll_layoutParams.setMargins(0, -6, 0, 0);
+                    ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
                     item_name.setLayoutParams(ll_layoutParams);
                     TextView app_title = view.findViewById(R.id.app_title);
                     ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
-                    ll_layoutParams.setMargins(0, -8, 0, 0);
+                    ll_layoutParams.setMargins(0, ((int)(-4 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                    item_name.setLayoutParams(ll_layoutParams);
+                } else if (ctx.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    TextView item_name = view.findViewById(R.id.item_title);
+                    LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
+                    ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                    item_name.setLayoutParams(ll_layoutParams);
+                    TextView app_title = view.findViewById(R.id.app_title);
+                    ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
+                    ll_layoutParams.setMargins(0, ((int)(-4 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
                     item_name.setLayoutParams(ll_layoutParams);
                 }
             } else {
                 TextView item_name = view.findViewById(R.id.item_title);
                 LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
-                ll_layoutParams.setMargins(0, -4, 0, 0);
+                ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
                 item_name.setLayoutParams(ll_layoutParams);
                 TextView app_title = view.findViewById(R.id.app_title);
                 ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
-                ll_layoutParams.setMargins(0, -4, 0, 0);
+                ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
                 item_name.setLayoutParams(ll_layoutParams);
             }
         }

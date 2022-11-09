@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -39,6 +40,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
+import uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
@@ -137,6 +139,13 @@ public class ProfileIntentActivity extends Activity {
     }
 
     private void installLayouts() {
+        ProfileWallSelector selector = findViewById(R.id.wall_selector);
+        (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNewPostActivity();
+            }
+        });
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
         profileLayout = (ProfileLayout) findViewById(R.id.profile_layout);
@@ -173,7 +182,7 @@ public class ProfileIntentActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.newsfeed, menu);
+        inflater.inflate(R.menu.profile, menu);
         activity_menu = menu;
         return true;
     }
@@ -183,6 +192,42 @@ public class ProfileIntentActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
+            } else if(item.getItemId() == R.id.add_to_friends) {
+                if(user.friends_status == 0) {
+                    addToFriends(user.id);
+                } else if(user.friends_status == 1) {
+                    deleteFromFriends(user.id);
+                } else if(user.friends_status == 2) {
+                    addToFriends(user.id);
+                } else {
+                    deleteFromFriends(user.id);
+                }
+            } else if(item.getItemId() == R.id.copy_link) {
+                if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    if(user.screen_name != null && user.screen_name.length() > 0) {
+                        clipboard.setText(String.format("http://%s/%s", instance_prefs.getString("server", ""), user.screen_name));
+                    } else {
+                        clipboard.setText(String.format("http://%s/id%d", instance_prefs.getString("server", ""), user.id));
+                    }
+                } else {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip;
+                    if(user.screen_name != null && user.screen_name.length() > 0) {
+                        clip = android.content.ClipData.newPlainText("OpenVK Profile URL", String.format("http://%s/%s", instance_prefs.getString("server", ""), user.screen_name));
+                    } else {
+                        clip = android.content.ClipData.newPlainText("OpenVK Profile URL", String.format("http://%s/id%d", instance_prefs.getString("server", ""), user.id));
+                    }
+                    clipboard.setPrimaryClip(clip);
+                }
+            } else if(item.getItemId() == R.id.open_in_browser) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                if(user.screen_name != null && user.screen_name.length() > 0) {
+                    i.setData(Uri.parse(String.format("http://%s/%s", instance_prefs.getString("server", ""), user.screen_name)));
+                } else {
+                    i.setData(Uri.parse(String.format("http://%s/id%d", instance_prefs.getString("server", ""), user.id)));
+                }
+                startActivity(i);
             }
         }
         if(item.getItemId() == R.id.newpost) {
@@ -230,6 +275,14 @@ public class ProfileIntentActivity extends Activity {
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
                     profileLayout.hideHeaderButtons(this);
+                }
+                if(user.friends_status == 0) {
+                    findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
+                    activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
+                } else if(user.friends_status == 1) {
+                    activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
+                } else if(user.friends_status == 2) {
+                    activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
                 }
                 user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 wall.get(ovk_api, user.id, 50);

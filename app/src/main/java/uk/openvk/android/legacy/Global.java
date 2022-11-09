@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public class Global {

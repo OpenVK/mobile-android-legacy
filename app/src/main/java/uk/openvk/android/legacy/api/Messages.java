@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.api;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
@@ -105,5 +106,9 @@ public class Messages {
             }
         }
         return longPollServer;
+    }
+
+    public void delete(OvkAPIWrapper ovk, long id) {
+        ovk.sendAPIMethod("Messages.delete", String.format("message_ids=%d", id));
     }
 }

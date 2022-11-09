@@ -16,7 +16,7 @@
             android:id="@+id/spinner"
             style="@style/ActionBarSpinner"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="clip_vertical"
             android:dropDownWidth="wrap_content"
             android:spinnerMode="dropdown" />

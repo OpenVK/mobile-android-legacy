@@ -70,6 +70,7 @@
                         android:layout_marginLeft="2dp"
                         android:background="@drawable/btn_light_blue"
                         android:src="@drawable/ic_ab_add"
+                        android:visibility="gone"
                         tools:ignore="ContentDescription,RtlHardcoded" />
 
                 </LinearLayout>
