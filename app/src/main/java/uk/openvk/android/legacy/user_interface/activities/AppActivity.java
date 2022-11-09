@@ -565,26 +565,31 @@ public class AppActivity extends Activity {
                     ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), true);
-                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
-                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    progressLayout.setVisibility(View.GONE);
-                    newsfeedLayout.setVisibility(View.VISIBLE);
+                if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
+                    downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+                    newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
+                    newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                    if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                        progressLayout.setVisibility(View.GONE);
+                        newsfeedLayout.setVisibility(View.VISIBLE);
+                    }
+                    newsfeedLayout.loading_more_posts = true;
+                    newsfeedLayout.setScrollingPositions(this, false, true);
+                    ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
-                newsfeedLayout.loading_more_posts = true;
-                newsfeedLayout.setScrollingPositions(this, false, true);
-                ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
-                downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), true);
-                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
-                if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    progressLayout.setVisibility(View.GONE);
-                    newsfeedLayout.setVisibility(View.VISIBLE);
+                if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
+                    downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+                    newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
+                    newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                    if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                        progressLayout.setVisibility(View.GONE);
+                        newsfeedLayout.setVisibility(View.VISIBLE);
+                    }
+                    newsfeedLayout.loading_more_posts = true;
+                    newsfeedLayout.setScrollingPositions(this, false, true);
+                    ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
-                newsfeedLayout.loading_more_posts = true;
-                newsfeedLayout.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
                 newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());

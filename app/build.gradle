@@ -7,8 +7,8 @@ android {
         applicationId "uk.openvk.android.legacy"
         minSdkVersion 7
         targetSdkVersion 27
-        versionCode 145
-        versionName "1.0.145-beta"
+        versionCode 146
+        versionName "1.0.146-beta"
     }
     buildTypes {
         release {
