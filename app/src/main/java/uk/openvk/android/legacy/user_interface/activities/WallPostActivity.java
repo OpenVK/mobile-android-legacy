@@ -222,6 +222,11 @@ public class WallPostActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() > 0) {
+                    if(((EditText) commentPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
+                        ((EditText) commentPanel.findViewById(R.id.message_edit)).setLines(4);
+                    } else {
+                        ((EditText) commentPanel.findViewById(R.id.message_edit)).setLines(((EditText) commentPanel.findViewById(R.id.message_edit)).getLineCount());
+                    }
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);

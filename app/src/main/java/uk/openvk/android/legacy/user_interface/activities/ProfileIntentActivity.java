@@ -275,14 +275,16 @@ public class ProfileIntentActivity extends Activity {
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
                     profileLayout.hideHeaderButtons(this);
-                }
-                if(user.friends_status == 0) {
-                    findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                    activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
-                } else if(user.friends_status == 1) {
-                    activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
-                } else if(user.friends_status == 2) {
-                    activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
+                    activity_menu.getItem(0).setVisible(false);
+                } else {
+                    if (user.friends_status == 0) {
+                        findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
+                        activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
+                    } else if (user.friends_status == 1) {
+                        activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
+                    } else if (user.friends_status == 2) {
+                        activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
+                    }
                 }
                 user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 wall.get(ovk_api, user.id, 50);

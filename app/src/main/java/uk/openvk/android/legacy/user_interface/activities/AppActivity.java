@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -247,6 +248,7 @@ public class AppActivity extends Activity {
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.newsfeed, menu);
+        menu.getItem(0).setVisible(false);
         activity_menu = menu;
         return true;
     }
@@ -536,8 +538,8 @@ public class AppActivity extends Activity {
                     if(activity_menu == null) {
                         onPrepareOptionsMenu(activity_menu);
                     }
-                    //MenuItem newpost = activity_menu.getItem(R.id.newpost);
-                    //newpost.setVisible(true);
+                    MenuItem newpost = activity_menu.getItem(0);
+                    newpost.setVisible(true);
                 }
                 account.getCounters(ovk_api);
                 users.getAccountUser(ovk_api, account.id);
@@ -572,6 +574,7 @@ public class AppActivity extends Activity {
                 }
                 newsfeedLayout.loading_more_posts = true;
                 newsfeedLayout.setScrollingPositions(this, false, true);
+                ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
                 downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                 newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), true);
@@ -1289,6 +1292,7 @@ public class AppActivity extends Activity {
                 newsfeed.getGlobal(ovk_api, 50);
             }
             newsfeedLayout.setVisibility(View.GONE);
+            ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
             progressLayout.setVisibility(View.VISIBLE);
         }
     }

@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -190,6 +191,7 @@ public class ConversationActivity extends Activity {
                         conversation_adapter.notifyDataSetChanged();
                     }
                     ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                    messagesList.smoothScrollToPosition(history.size() - 1);
                 }
                 return false;
             }
@@ -219,6 +221,7 @@ public class ConversationActivity extends Activity {
                     conversation_adapter.notifyDataSetChanged();
                 }
                 ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                messagesList.smoothScrollToPosition(history.size() -1);
             }
         });
         ((EditText) conversationPanel.findViewById(R.id.message_edit)).addTextChangedListener(new TextWatcher() {
@@ -230,6 +233,11 @@ public class ConversationActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString().length() > 0) {
+                    if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
+                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(4);
+                    } else {
+                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount());
+                    }
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);
@@ -281,10 +289,12 @@ public class ConversationActivity extends Activity {
     }
 
     public void getMsgContextMenu(final int item_pos) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final ArrayList<String> functions = new ArrayList<>();
+        builder.setTitle(R.string.message);
         if(!history.get(item_pos).isIncoming) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final ArrayList<String> functions = new ArrayList<>();
             functions.add(getResources().getString(R.string.delete));
+            functions.add(getResources().getString(R.string.copy_text));
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
@@ -296,6 +306,37 @@ public class ConversationActivity extends Activity {
                     if (functions.get(position).equals(getResources().getString(R.string.delete))) {
                         showDeleteConfirmDialog(item_pos);
                         dialog.dismiss();
+                    } else if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
+                        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            clipboard.setText(history.get(item_pos).text);
+                        } else {
+                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.content.ClipData clip = android.content.ClipData.newPlainText("Message text", history.get(item_pos).text);
+                            clipboard.setPrimaryClip(clip);
+                        }
+                    }
+                }
+            });
+        } else {
+            functions.add(getResources().getString(R.string.copy_text));
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            builder.setSingleChoiceItems(adapter, -1, null);
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
+                                        long id) {
+                    if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
+                        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            clipboard.setText(history.get(item_pos).text);
+                        } else {
+                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.content.ClipData clip = android.content.ClipData.newPlainText("Message text", history.get(item_pos).text);
+                            clipboard.setPrimaryClip(clip);
+                        }
                     }
                 }
             });
@@ -306,8 +347,14 @@ public class ConversationActivity extends Activity {
         cursor_id = position;
         uk.openvk.android.legacy.api.models.Message msg = history.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.delete_msgs_title);
-        builder.setMessage(getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", msg.text)));
+        builder.setTitle(R.string.confirm);
+        String text;
+        if(msg.text.length() <= 200) {
+            text = msg.text.replace("\n", " ");
+        } else {
+            text = msg.text.substring(0, 200).replace("\n", " ") + "...";
+        }
+        builder.setMessage(getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", text)));
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
