@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="ovk_warning_title">Warning</string>
-	<string name="ovk_warning"><![CDATA[You have launched a OpenVK Legacy FOSS client that ONLY works with <a href="https://github.com/openvk/openvk">OpenVK</a> instances, an open source network that is not compatible with VKontakte / VK.<br><br>Please log in ONLY to the registered OpenVK account in one of the existing instances.]]></string>
-    <string name="dont_show_warn">Don\'t show again</string>
-    <string name="app_name">OpenVK</string>
+	<string name="app_name">OpenVK</string>
 	<string name="full_app_name">OpenVK Legacy for Android</string>
 	<string name="loading">Loading…</string>
 	<string name="add_comment_hint">Your comment</string>
@@ -84,7 +81,7 @@
 	<string name="today_at">Today at</string>
 	<string name="yesterday_at">Yesterday at</string>
 	<string name="date_at">at</string>
-	
+
 	<string name="attach_photo">Photo</string>
 	<string name="attach_poll">Poll</string>
 	<string name="attach_link">Link</string>
@@ -312,7 +309,7 @@
 		<item>Export to Telegram</item>
 		<!--item>Add my location</item-->
 	</string-array>
-	<string name="photo_save_ok">The photo has been saved to the Device Memory</string>
+	<string name="photo_save_ok">The photo has been saved to the SD card</string>
 	<string name="share_wall">OpenVK – Wall</string>
 	<string name="share_album">OpenVK – Album</string>
 	<string name="select_album">Select an album</string>
@@ -407,7 +404,7 @@
 	<string name="edit_album">Edit album</string>
 	<string name="photo_descr">Photo description</string>
 	<string name="photo_no_tags">Nobody is tagged in this photo</string>
-	
+
 	<string name="friends_add">Add friend</string>
     <string name="friends_decline">Hide</string>
     <string name="sett_ringtone">Notification sound</string>
@@ -427,12 +424,12 @@
 	<string name="auth_error_not_openvk_instance">The specified server is not an OpenVK-compatible instance. Try to choose another instance.</string>
     <string name="auth_error_network">Unable to log in due to problems with a network. Please check your connection and try again.</string>
 	<string name="auth_error_ssl">Unable to sign in due to problems with a secure connection. Try to choose another instance.</string>
-	
+
     <string name="no_friend_requests">You don\'t have any friend requests</string>
-    
+
     <string name="search_global">Global search</string>
     <string name="important_friends">Important</string>
-    
+
     <string name="open_event">Open event</string>
     <string name="closed_event">Private event</string>
     <string name="public_page">Public page</string>
@@ -457,7 +454,7 @@
         <item>Forwarded message</item>
         <item>%d forwarded messages</item>
     </string-array>
-	
+
     <string name="post_not_found">Post not found</string>
     <string name="groups">Communities</string>
     <string name="place">Map</string>
@@ -480,10 +477,10 @@
     <string name="view">View</string>
     <string name="close">Close</string>
     <string name="audio_saved">Saved</string>
-    
-    
+
+
     <string name="error_loading_poll">Error loading poll: %s</string>
-    
+
     <string-array name="profile_counters">
         <item>Photos</item>
         <item>Photos of %s</item>
@@ -501,23 +498,23 @@
         <item>News</item>
         <item>Followers</item>
     </string-array>
-    
+
 	<string name="group_s">Group</string>
 	<string name="video_select_quality">Select quality</string>
 	<string name="videos">Videos</string>
 	<string name="videos_of_user">Videos of %s</string>
 	<string name="friend_reqs_mark_viewed">Mark all as viewed</string>
-	
+
 	<string name="liked">Liked</string>
 	<string name="group_members">Group members</string>
-	
+
 	<string name="copy_text">Copy text</string>
 	<string name="text_copied">Text has been copied to the clipboard</string>
-	
+
 	<string name="video_err_network">There are some problems with your network connection.</string>
 	<string name="video_err_os">Android 2.0 or higher is required in order to view this video.</string>
 	<string name="video_err_decode">Your device can not play this video. Try selecting lower quality.</string>
-	
+
 	<string-array name="video_views">
     	<item>%d view</item>
     	<item>%d views</item>
@@ -530,10 +527,10 @@
 	<string name="not_updated">Never updated</string>
 	<string name="no_videos">No videos</string>
 	<string name="no_albums">No albums</string>
-	
+
 	<string name="sett_update_on_open">Refresh on open</string>
 	<string name="sett_update_on_open_summary">Refresh the news feed when you open application</string>
-	
+
 	<string-array name="wall_attach_options">
     	<item>Audio</item>
     	<item>Video</item>
@@ -542,55 +539,55 @@
     <string name="attach">Add</string>
     <string name="docs">Documents</string>
     <string name="no_docs">No documents</string>
-    
+
     <string name="ntf_to_post">to post</string>
 	<string name="ntf_to_photo">to photos</string>
 	<string name="ntf_to_video">to video</string>
 	<string name="ntf_to_comment">to comment</string>
 	<string name="ntf_to_topic">in topic</string>
-	
+
 	<string-array name="ntf_like_m">
 		<item>liked a post</item>
 		<item>liked a photo</item>
 		<item>liked a video</item>
 		<item>liked a comment</item>
 	</string-array>
-	
+
 	<string-array name="ntf_like_f">
 		<item>liked a post</item>
 		<item>liked a photos</item>
 		<item>liked a video</item>
 		<item>liked a comment</item>
 	</string-array>
-	
+
 	<string-array name="ntf_like_x">
 		<item>liked a post</item>
 		<item>liked a photo</item>
 		<item>liked a video</item>
 		<item>liked a comment</item>
 	</string-array>
-	
+
 	<string-array name="ntf_rt_m">
 		<item>shared a post</item>
 		<item>shared a photo</item>
 		<item>shared a video</item>
 		<item>shared a comment</item>
 	</string-array>
-	
+
 	<string-array name="ntf_rt_f">
 		<item>shared a post</item>
 		<item>shared a photos</item>
 		<item>shared a video</item>
 		<item>shared a comment</item>
 	</string-array>
-	
+
 	<string-array name="ntf_rt_x">
 		<item>shared a post</item>
 		<item>shared a photos</item>
 		<item>shared a video</item>
 		<item>shared a comment</item>
 	</string-array>
-	
+
 	<string-array name="ntf_follow_m">
 		<item>followed you</item>
 	</string-array>
@@ -600,7 +597,7 @@
 	<string-array name="ntf_follow_x">
 		<item>followed you</item>
 	</string-array>
-	
+
 	<string-array name="ntf_accepted_m">
 		<item>accepted your friend request</item>
 	</string-array>
@@ -610,7 +607,7 @@
 	<string-array name="ntf_accepted_x">
 		<item>accepted your friend request</item>
 	</string-array>
-	
+
 	<string-array name="ntf_x_more_users">
     	<item>and %d other</item>
     	<item>and %d others</item>
@@ -640,22 +637,22 @@
     <string name="all_videos">All videos</string>
     <string name="like">Like</string>
     <string name="unlike">Unlike</string>
-    
+
     <!-- 2.2 -->
     <string name="register">Sign up</string>
     <string name="registration">Registration</string>
     <string name="reg_continue">Continue</string>
-	
+
 	<string name="suggest_friends">People you may know</string>
-	
+
 	<string name="sett_compress_photos">Compress photos on upload</string>
-	
+
 	<string name="join_group">Join community</string>
 	<string name="leave_group">Leave community</string>
 	<string name="join_group_closed">Send a request</string>
 	<string name="join_page">Subscribe</string>
 	<string name="leave_closed_group_confirm">You are about to leave a closed community. It may not be easy to come back. Leave community?</string>
-	
+
 	<string-array name="community_types">
     	<item>Events</item>
     	<item>Groups</item>
@@ -663,7 +660,7 @@
     </string-array>
     <string name="no_groups">No communities</string>
     <string name="no_events">No events</string>
-    
+
 	<string name="post_from_group_signed">Sign</string>
 	<string name="chat_typing">%s is typing...</string>
 	<string name="chat_typing_multiple">%s are typing...</string>
@@ -678,7 +675,7 @@
     </string-array>
     <string name="search_in_msgs1">Search </string>
     <string name="search_in_msgs2"> in messages</string>
-	
+
 	<string name="create_topic">Create a topic</string>
 	<string name="create">Create</string>
 	<string name="fix_topic">Lock</string>
@@ -717,40 +714,40 @@
     </string-array>
 	<string name="chat_members">Chat members</string>
 	<string name="attach_wall_post">Wall post</string>
-	
+
 	<string name="topic_info_fixed">Topic is locked</string>
 	<string name="topic_info_closed">Topic is closed</string>
 	<string name="topic_info_fixed_closed">Topic is locked and closed</string>
-	
-	
-	
+
+
+
 	<string name="sett_advanced">Advanced settings</string>
 	<string name="sett_big_images_mobile">Big photos on mobile network</string>
 	<string name="sett_big_images_mobile_summary">Load big photos in posts when using 3G</string>
-    
+
 	<string name="multi_photos_hint">In order to upload multiple photos use Share menu in the Gallery app.</string>
-	
+
 	<string name="sett_dnd_hour">Do not disturb for an hour</string>
 	<string name="sett_dnd_8hours">Do not disturb for 8 hours</string>
 	<string name="sett_dnd_cancel">Enable notifications</string>
 	<string name="sett_dnd_desc">Notifications will be enabled automatically at %s</string>
-	
+
 	<string name="video_added">Video file \"%s\" has been added to your page</string>
 	<string name="friend_req_sent">Request sent</string>
 	<string name="msg_forward">Forward</string>
-	
+
 	<string name="birthday_today">Today is %s\'s birthday.</string>
 	<string name="birthday_tomorrow">Tomorrow is %s\'s birthday.</string>
 	<string name="birthday_today_short">%s\'s birthday</string>
 	<string name="birthdays_title">Birthdays</string>
-	
+
 	<string-array name="birthday_age">
     	<item>%d year</item>
     	<item>%d years</item>
     </string-array>
 	<string name="tomorrow">tomorrow</string>
 	<string name="sett_bdays">Birthday notifications</string>
-	
+
 	<string-array name="profile_relation_pm">
     	<item>Single</item>
     	<item>In a relationship with %s</item>
@@ -769,7 +766,7 @@
     	<item>Actively searching</item>
     	<item>In love with %s</item>
     </string-array>
-    
+
 	<string name="group_descr">Description</string>
 	<string name="group_site">Website</string>
 	<string name="group_start_date">Start time</string>
@@ -779,16 +776,16 @@
 	<string name="add_friend_notify">wants to add you as a friend</string>
 	<string name="sett_send_by_enter">Send messages using Enter</string>
 	<string name="sett_send_by_enter_summary">With hardware keyboard only</string>
-	
+
 	<string name="news_search_explain">Enter name or word</string>
 	<string name="delete_video">Delete video</string>
 	<string name="delete_video_confirm">Are you sure you want to delete this video file? This action can not be undone.</string>
 	<string name="audio_lyrics">Lyrics</string>
-	
+
 	<string name="groups_upcoming_events">Upcoming events</string>
-	
+
 	<string name="albums">Albums</string>
-	
+
 	<string-array name="leftmenu">
     	<item>Friends</item>
     	<item>Photos</item>
@@ -800,7 +797,7 @@
     	<item>Bookmarks</item>
     	<item>Settings</item>
 	</string-array>
-    
+
 	<string name="link_not_supported">This link is not supported in the app</string>
 	<string name="send_to_friend">Share with friend</string>
 	<string name="delete_msgs_title">Delete messages</string>
@@ -822,8 +819,8 @@
     <string name="sett_clear_audio_cache">Clear</string>
 	<string name="sett_audio_cache">Music cache</string>
 	<string name="clear_audio_cache_confirm">Are you sure you want to delete all saved audio files?</string>
-	<string name="sett_video_calls">Video calls</string>	
-	<string name="sett_accept_calls">Enable</string>	
+	<string name="sett_video_calls">Video calls</string>
+	<string name="sett_accept_calls">Enable</string>
 	<string name="sett_call_ringtone">Ringtone</string>
 	<string name="enable">Enable</string>
 	<string name="video_replay">Replay</string>
@@ -832,16 +829,16 @@
 	<string name="comment_deleted">Comment deleted.</string>
 	<string name="comment_restore">Undo</string>
 	<string name="contact_message_subtitle">Send a message</string>
-	<string name="sett_force_tablet_ui">Tablet UI</string>	
-	<string name="sett_app_restart_required">Application restart is required for this setting to take effect</string>	
+	<string name="sett_force_tablet_ui">Tablet UI</string>
+	<string name="sett_app_restart_required">Application restart is required for this setting to take effect</string>
 	<string name="followers_of">%s\'s followers</string>
 	<string name="hide_from_newsfeed">Don\'t show these news</string>
-	<string name="sett_news_banned">News filter</string>	
-	<string name="sett_news_banned_summary">Edit people &amp; communities that are hidden from the news feed</string>	
+	<string name="sett_news_banned">News filter</string>
+	<string name="sett_news_banned_summary">Edit people &amp; communities that are hidden from the news feed</string>
 	<string name="people">People</string>
-	<string name="news_banned_user">News from this user are now hidden from your feed. You can restore them in settings.</string>	
-	<string name="news_banned_group">News from this community are now hidden from your feed. You can restore them in settings.</string>	
-	<string name="news_unbanned_user">News from this user are now be visible in your news feed.</string>	
+	<string name="news_banned_user">News from this user are now hidden from your feed. You can restore them in settings.</string>
+	<string name="news_banned_group">News from this community are now hidden from your feed. You can restore them in settings.</string>
+	<string name="news_unbanned_user">News from this user are now be visible in your news feed.</string>
 	<string name="news_unbanned_group">News from this community are now be visible in your news feed.</string>
 	<string name="chat_title_change_ok">Chat title changed successfully</string>
 	<string name="delete_chat_user_confirm">Are you sure you want to remove this user from this chat?</string>
@@ -856,23 +853,23 @@
 	<string name="poll_open">Public poll</string>
 	<string name="poll_anonym">Anonymous poll</string>
 	<string name="recommendations">Recommendations</string>
-	
+
 	<string-array name="friends_tab_all">
     	<item>%d friend</item>
     	<item>%d friends</item>
-	</string-array>	
+	</string-array>
 	<string-array name="friends_tab_online">
     	<item>%d online</item>
     	<item>%d online</item>
-	</string-array>	
+	</string-array>
 	<string-array name="photos">
     	<item>%d photo</item>
     	<item>%d photos</item>
-	</string-array>	
-	
+	</string-array>
+
 	<string name="last_seen_profile_m">last seen %s</string>
 	<string name="last_seen_profile_f">last seen %s</string>
-	
+
 	<string name="profile_info_contacts">Contacts</string>
 	<string name="profile_telegram">Telegram</string>
 	<string name="profile_info_education">Education</string>
@@ -907,7 +904,7 @@
 	<string name="profile_friend_accept">Accept request</string>
 	<string name="profile_friend_cancel">Decline request</string>
 	<string name="profile_add_post">Post to wall</string>
-	
+
 	<string-array name="profile_friends">
 	    <item>friend</item>
 	    <item>friends</item>
@@ -1069,7 +1066,7 @@
 	<string name="post_show_full">Expand text...</string>
 	<string name="empty_list">This list is empty</string>
 	<string name="news_banlist_empty">You didn\'t exclude any sources from your newsfeed</string>
-	
+
 	<string name="personal">Beliefs</string>
 	<string name="personal_politics">Political views</string>
 	<string name="personal_religion">World view</string>
@@ -1154,7 +1151,7 @@
 	<string name="my_page">My page</string>
 	<string name="sett_alt_video_output">Alternative video output</string>
 	<string name="sett_alt_video_output_summary">Enable this if you see black screen instead of video</string>
-	
+
 	<string name="friend_request_canceled">Request has been cancelled</string>
 	<string name="save_to_album">Save to album</string>
 	<string name="add_photo_from_album">Choose from album</string>
@@ -1225,7 +1222,7 @@
 	<string name="app_ukr_translators">OpenVK Legacy Team</string>
     <string name="app_license_title">OpenVK Legacy License</string>
     <string name="app_license_text"><![CDATA[This program is free software: you may redistribute and/or modify it under the terms
-    <a href="https://www.gnu.org/licenses/agpl.txt">GNU (Affero) General Public License v3.0</a> published by the Free Software Foundation.
+    <a href="https://www.gnu.org/licenses/agpl.txt">GNU (Affero) General Public License v3.0</a> or a later version published by the Free Software Foundation.
     <br><br>WITHOUT ANY WARRANTY, NOT EVEN FOR MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.]]></string>
     <string name="wall_err_text">Hmmm, the wall broke in the instance. Please try again later.</string>
 </resources>
