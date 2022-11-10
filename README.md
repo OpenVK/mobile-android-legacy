@@ -18,7 +18,7 @@ _Updates come faster in their [own repository](https://repo.openvk.uk/repo/) and
 We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) along with Java 7 for perfect support of libraries (such as legacy resource format and Gradle 2.3.2) developed for Android 2.1 Eclair and above.
 
 ## OpenVK Legacy License
-[GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
+[GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING)
 
 ## Links
 [OpenVK API docs](https://docs.openvk.su/)\
