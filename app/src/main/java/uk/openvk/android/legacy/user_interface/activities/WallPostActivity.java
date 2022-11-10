@@ -225,7 +225,7 @@ public class WallPostActivity extends Activity {
                     if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount() > 4) {
                         ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(4);
                     } else {
-                        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount());
+                        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EditText) commentPanel.findViewById(R.id.message_edit)).getLineCount());
                     }
                     send_btn.setEnabled(true);
                 } else {
