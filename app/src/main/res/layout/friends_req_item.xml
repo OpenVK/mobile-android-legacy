@@ -53,8 +53,8 @@
             android:layout_below="@+id/friend_req_info"
             android:text="Message message message"
             android:textColor="#000"
-            android:textSize="16dip" >
-        </TextView>
+            android:textSize="16dip"
+            android:visibility="gone"></TextView>
 
         <TextView
             android:id="@+id/friend_req_nmutual"
@@ -65,8 +65,8 @@
             android:layout_toRightOf="@id/friend_req_photo"
             android:text="90 in common"
             android:textColor="#9ca0a6"
-            android:textSize="16dip" >
-        </TextView>
+            android:textSize="16dip"
+            android:visibility="gone"></TextView>
 
         <ImageView
             android:id="@+id/friend_req_mf1"
@@ -76,7 +76,8 @@
             android:layout_margin="3dip"
             android:layout_toRightOf="@id/friend_req_photo"
             android:scaleType="fitStart"
-            android:src="@drawable/photo_loading" />
+            android:src="@drawable/photo_loading"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/friend_req_mf2"
@@ -87,7 +88,8 @@
             android:layout_marginRight="3dip"
             android:layout_toRightOf="@+id/friend_req_mf1"
             android:scaleType="fitStart"
-            android:src="@drawable/photo_loading" />
+            android:src="@drawable/photo_loading"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/friend_req_mf3"
@@ -98,7 +100,8 @@
             android:layout_marginRight="3dip"
             android:layout_toRightOf="@+id/friend_req_mf2"
             android:scaleType="fitStart"
-            android:src="@drawable/photo_loading" />
+            android:src="@drawable/photo_loading"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/friend_req_mf4"
@@ -109,7 +112,8 @@
             android:layout_marginRight="3dip"
             android:layout_toRightOf="@+id/friend_req_mf3"
             android:scaleType="fitStart"
-            android:src="@drawable/photo_loading" />
+            android:src="@drawable/photo_loading"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/friend_req_mf5"
@@ -119,7 +123,8 @@
             android:layout_alignTop="@+id/friend_req_mf4"
             android:layout_toRightOf="@+id/friend_req_mf4"
             android:scaleType="fitStart"
-            android:src="@drawable/photo_loading" />
+            android:src="@drawable/photo_loading"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <ViewFlipper
@@ -171,7 +176,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:foreground="@drawable/card_btn" >
+                android:foreground="@drawable/card_btn"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"

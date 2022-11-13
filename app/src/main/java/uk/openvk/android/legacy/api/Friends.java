@@ -17,12 +17,14 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 public class Friends implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<Friend> friends;
+    public ArrayList<Friend> requests;
     private DownloadManager downloadManager;
     public int count;
 
     public Friends() {
         jsonParser = new JSONParser();
         friends = new ArrayList<Friend>();
+        requests = new ArrayList<Friend>();
     }
 
     public Friends(String response, DownloadManager downloadManager, boolean downloadPhoto) {
@@ -71,6 +73,32 @@ public class Friends implements Parcelable {
         }
     }
 
+    public void parseRequests(String response, DownloadManager downloadManager, boolean downloadPhoto) {
+        try {
+            this.requests.clear();
+            JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
+            if(json != null) {
+                count = json.getInt("count");
+                JSONArray users = json.getJSONArray("items");
+                ArrayList<PhotoAttachment> avatars;
+                avatars = new ArrayList<PhotoAttachment>();
+                for (int i = 0; i < users.length(); i++) {
+                    Friend friend = new Friend(users.getJSONObject(i));
+                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    photoAttachment.url = friend.avatar_url;
+                    photoAttachment.filename = String.format("avatar_%d", friend.id);
+                    avatars.add(photoAttachment);
+                    this.requests.add(friend);
+                }
+                if (downloadPhoto) {
+                    downloadManager.downloadPhotosToCache(avatars, "friend_avatars");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void get(OvkAPIWrapper ovk, int user_id, String where) {
         ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100", user_id), where);
     }
@@ -94,5 +122,9 @@ public class Friends implements Parcelable {
 
     public void delete(OvkAPIWrapper ovk, int user_id) {
         ovk.sendAPIMethod("Friends.delete", String.format("user_id=%d", user_id));
+    }
+
+    public void getRequests(OvkAPIWrapper ovk) {
+        ovk.sendAPIMethod("Friends.getRequests", String.format("fields=verified,online,photo_100"));
     }
 }

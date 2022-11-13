@@ -184,6 +184,9 @@ public class ProfileIntentActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.profile, menu);
         activity_menu = menu;
+        for (int i = 0; i < menu.size(); i++) {
+            menu.getItem(i).setVisible(false);
+        }
         return true;
     }
 
@@ -275,15 +278,24 @@ public class ProfileIntentActivity extends Activity {
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
                     profileLayout.hideHeaderButtons(this);
-                    activity_menu.getItem(0).setVisible(false);
+                    for (int i = 0; i < activity_menu.size(); i++) {
+                        if(i > 0) {
+                            activity_menu.getItem(i).setVisible(true);
+                        }
+                    }
                 } else {
                     if (user.friends_status == 0) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
                     } else if (user.friends_status == 1) {
+                        findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
                     } else if (user.friends_status == 2) {
+                        findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
+                    }
+                    for (int i = 0; i < activity_menu.size(); i++) {
+                        activity_menu.getItem(i).setVisible(true);
                     }
                 }
                 user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
@@ -294,6 +306,7 @@ public class ProfileIntentActivity extends Activity {
                 int status = response.getInt("response");
                 if(status == 1) {
                     user.friends_status = status;
+                    activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
                 } else if(status == 2) {
                     user.friends_status = 3;
                 }
@@ -304,6 +317,7 @@ public class ProfileIntentActivity extends Activity {
                 if(status == 1) {
                     user.friends_status = 0;
                 }
+                activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 users.parseSearch(data.getString("response"));

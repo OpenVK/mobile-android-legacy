@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -71,6 +72,7 @@ import uk.openvk.android.legacy.user_interface.layouts.NewsfeedLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.SlidingMenuLayout;
+import uk.openvk.android.legacy.user_interface.layouts.TabSelector;
 import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.SlidingMenuAdapter;
@@ -117,11 +119,13 @@ public class AppActivity extends Activity {
     private NotificationChannel notifChannel;
     private boolean inBackground;
     private ActionBarLayout ab_layout;
+    private int menu_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inBackground = true;
+        menu_id = R.menu.newsfeed;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         if(instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("server", "").length() == 0) {
@@ -247,8 +251,10 @@ public class AppActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.newsfeed, menu);
-        menu.getItem(0).setVisible(false);
+        inflater.inflate(menu_id, menu);
+        if(account == null || account.id == 0) {
+            menu.getItem(0).setVisible(false);
+        }
         activity_menu = menu;
         return true;
     }
@@ -343,6 +349,17 @@ public class AppActivity extends Activity {
         newsfeedLayout = (NewsfeedLayout) findViewById(R.id.newsfeed_layout);
         friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
         groupsLayout = (GroupsLayout) findViewById(R.id.groups_layout);
+        TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
+        setupTabHost(friends_tabhost, "friends");
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setLength(2);
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, getResources().getString(R.string.friends));
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, getResources().getString(R.string.friend_requests));
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setup(friends_tabhost, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         conversationsLayout = (ConversationsLayout) findViewById(R.id.conversations_layout);
         progressLayout.setVisibility(View.VISIBLE);
         newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
@@ -371,6 +388,20 @@ public class AppActivity extends Activity {
         }
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
+    }
+
+    private void setupTabHost(TabHost tabhost, String where) {
+        tabhost.setup();
+        if(where.equals("friends")) {
+            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
+            tabSpec.setContent(R.id.tab1);
+            tabSpec.setIndicator(getResources().getString(R.string.friends));
+            tabhost.addTab(tabSpec);
+            tabSpec = tabhost.newTabSpec("requests");
+            tabSpec.setContent(R.id.tab2);
+            tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
+            tabhost.addTab(tabSpec);
+        }
     }
 
     public void setActionBarTitle(String title) {
@@ -405,6 +436,7 @@ public class AppActivity extends Activity {
                 menu.toggle(true);
             }
         }
+        activity_menu.clear();
         if(position == 0) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.friends));
@@ -484,6 +516,8 @@ public class AppActivity extends Activity {
             groups.getGroups(ovk_api, account.id);
         } else if(position == 3) {
             setActionBar("custom_newsfeed");
+            menu_id = R.menu.newsfeed;
+            onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if(newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -657,16 +691,22 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     friendsLayout.setVisibility(View.VISIBLE);
                 }
-                friendsLayout.createAdapter(this, friendsList);
+                friendsLayout.createAdapter(this, friendsList, "friends");
+                friends.getRequests(ovk_api);
+                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%d)", getResources().getString(R.string.friends), friends.count));
             } else if(message == HandlerMessages.FRIENDS_ADD) {
-                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
-                int status = response.getInt("response");
-                if(status == 1) {
-                    user.friends_status = status;
-                } else if(status == 2) {
-                    user.friends_status = 3;
+                if(global_prefs.getString("current_screen", "").equals("friends")) {
+                    friends.requests.remove(friendsLayout.requests_cursor_index);
+                } else {
+                    JSONObject response = new JSONParser().parseJSON(data.getString("response"));
+                    int status = response.getInt("response");
+                    if (status == 1) {
+                        user.friends_status = status;
+                    } else if (status == 2) {
+                        user.friends_status = 3;
+                    }
+                    profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 }
-                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.FRIENDS_DELETE) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                 int status = response.getInt("response");
@@ -674,6 +714,15 @@ public class AppActivity extends Activity {
                     user.friends_status = 0;
                 }
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+            } else if (message == HandlerMessages.FRIENDS_REQUESTS) {
+                friends.parseRequests(data.getString("response"), downloadManager, true);
+                ArrayList<Friend> requestsList = friends.requests;
+                if (global_prefs.getString("current_screen", "").equals("friends")) {
+                    progressLayout.setVisibility(View.GONE);
+                    friendsLayout.setVisibility(View.VISIBLE);
+                }
+                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%d)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
+                friendsLayout.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.GROUPS_GET) {
                 groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true);
                 ArrayList<Group> groupsList = groups.getList();
@@ -921,10 +970,15 @@ public class AppActivity extends Activity {
         progressLayout.setVisibility(View.VISIBLE);
         global_prefs_editor.putString("current_screen", "profile");
         global_prefs_editor.commit();
+
         if(users == null) {
             users = new Users();
         }
         users.getUser(ovk_api, account.id);
+        menu_id = R.menu.profile;
+        activity_menu.clear();
+        onCreateOptionsMenu(activity_menu);
+        activity_menu.getItem(0).setVisible(false);
         setActionBar("");
         setActionBarTitle(getResources().getString(R.string.profile));
     }

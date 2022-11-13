@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.user_interface.list_adapters.FriendsListAdapter;
+import uk.openvk.android.legacy.user_interface.list_adapters.FriendsRequestsAdapter;
 
 public class FriendsLayout extends LinearLayout {
     public TextView titlebar_title;
@@ -25,7 +29,10 @@ public class FriendsLayout extends LinearLayout {
     public SharedPreferences global_sharedPreferences;
     private ListView friendsListView;
     private ArrayList<Friend> friends;
+    private ArrayList<Friend> requests;
     private FriendsListAdapter friendsAdapter;
+    private FriendsRequestsAdapter requestsAdapter;
+    public int requests_cursor_index;
 
     public FriendsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -42,10 +49,19 @@ public class FriendsLayout extends LinearLayout {
         friendsListView = (ListView) findViewById(R.id.friends_listview);
     }
 
-    public void createAdapter(Context ctx, ArrayList<Friend> friends) {
-        this.friends = friends;
-        friendsAdapter = new FriendsListAdapter(ctx, friends);
-        friendsListView.setAdapter(friendsAdapter);
+    public void createAdapter(Context ctx, ArrayList<Friend> friends, String where) {
+        if(where.equals("friends")) {
+            this.friends = friends;
+            friendsAdapter = new FriendsListAdapter(ctx, friends);
+            friendsListView.setAdapter(friendsAdapter);
+        } else {
+            this.requests = friends;
+            requestsAdapter = new FriendsRequestsAdapter(ctx, this, requests);
+            LinearLayoutManager llm = new LinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) findViewById(R.id.requests_view)).setLayoutManager(llm);
+            ((RecyclerView) findViewById(R.id.requests_view)).setAdapter(requestsAdapter);
+        }
     }
 
     public int getCount() {
@@ -75,8 +91,35 @@ public class FriendsLayout extends LinearLayout {
                     ex.printStackTrace();
                 }
             }
-            friendsAdapter = new FriendsListAdapter(getContext(), friends);
-            friendsListView.setAdapter(friendsAdapter);
+            if(requests != null) {
+                for (int i = 0; i < requests.size(); i++) {
+                    try {
+                        Friend item = requests.get(i);
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                        if (bitmap != null) {
+                            item.avatar = bitmap;
+                        }
+                        requests.set(i, item);
+                    } catch (OutOfMemoryError ex) {
+                        ex.printStackTrace();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                requestsAdapter.notifyDataSetChanged();
+            }
+            friendsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void refresh() {
+        if(friendsAdapter != null) {
+            friendsAdapter.notifyDataSetChanged();
+        }
+        if(requestsAdapter != null) {
+            requestsAdapter.notifyDataSetChanged();
         }
     }
 }

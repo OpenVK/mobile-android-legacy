@@ -293,8 +293,8 @@ public class ConversationActivity extends Activity {
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.message);
         if(!history.get(item_pos).isIncoming) {
-            functions.add(getResources().getString(R.string.delete));
             functions.add(getResources().getString(R.string.copy_text));
+            functions.add(getResources().getString(R.string.delete));
             ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
@@ -305,7 +305,6 @@ public class ConversationActivity extends Activity {
                                         long id) {
                     if (functions.get(position).equals(getResources().getString(R.string.delete))) {
                         showDeleteConfirmDialog(item_pos);
-                        dialog.dismiss();
                     } else if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
                         if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                             android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -316,6 +315,7 @@ public class ConversationActivity extends Activity {
                             clipboard.setPrimaryClip(clip);
                         }
                     }
+                    dialog.dismiss();
                 }
             });
         } else {

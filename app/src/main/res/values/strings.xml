@@ -250,6 +250,7 @@
 	<string name="wall_empty">This wall is empty</string>
 	<string name="msg_error">Error sending message</string>
 	<string name="comments">Comments</string>
+	<string name="no_comments">There are no comments, but you can send your own.</string>
 	<string-array name="ncomments_last">
 		<item>One comment</item>
 		<item>Last out of %d comments</item>

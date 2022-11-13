@@ -429,6 +429,8 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
                                 } else if (method.equals("Friends.areFriends")) {
                                     sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
+                                } else if (method.equals("Friends.getRequests")) {
+                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
                                 } else if (method.equals("Groups.get")) {
                                     sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                                 } else if (method.equals("Groups.getById")) {
@@ -646,6 +648,8 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
                                 } else if (method.equals("Friends.areFriends")) {
                                     sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
+                                }  else if (method.equals("Friends.getRequests")) {
+                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, response_body);
                                 } else if (method.equals("Groups.get")) {
                                     sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                                 } else if (method.equals("Groups.getById")) {
@@ -656,6 +660,8 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
                                 } else if (method.equals("Groups.leave")) {
                                     sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
+                                } else if (method.equals("Friends.getRequests")) {
+                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
                                 } else if (method.equals("Likes.add")) {
                                     sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
                                 } else if (method.equals("Likes.delete")) {
@@ -853,6 +859,8 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.FRIENDS_DELETE, method, response_body);
                                 } else if (method.equals("Friends.areFriends")) {
                                     sendMessage(HandlerMessages.FRIENDS_CHECK, method, response_body);
+                                } else if (method.equals("Friends.getRequests")) {
+                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, response_body);
                                 } else if (method.equals("Groups.get")) {
                                     sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
                                 } else if (method.equals("Groups.getById")) {

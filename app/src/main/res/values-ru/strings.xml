@@ -225,6 +225,7 @@
     <string name="wall_empty">На стене нет ни одной записи</string>
     <string name="msg_error">Ошибка при отправке сообщения</string>
     <string name="comments">Комментарии</string>
+    <string name="no_comments">Нет комментариев, но вы можете отправить свой.</string>
     <string-array name="ncomments_last">
     	<item>Последний из %d комментария</item>
     	<item>Последний из %d комментариев</item>

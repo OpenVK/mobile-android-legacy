@@ -19,6 +19,7 @@ public class HandlerMessages {
     public static int FRIENDS_ADD                       = 202;
     public static int FRIENDS_DELETE                    = 203;
     public static int FRIENDS_CHECK                     = 204;
+    public static int FRIENDS_REQUESTS                   = 205;
 
     // Groups
     public static int GROUPS_GET                        = 300;

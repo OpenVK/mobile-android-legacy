@@ -2,24 +2,75 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ffffff">
+    android:background="#ffffff"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <TabHost
+        android:id="@+id/friends_tabhost"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <ListView
-            android:id="@+id/friends_listview"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="1dp"
-            android:footerDividersEnabled="false"
-            android:headerDividersEnabled="false"
-            android:visibility="visible">
+            android:orientation="vertical">
 
-        </ListView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    </LinearLayout>
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
+                <uk.openvk.android.legacy.user_interface.layouts.TabSelector
+                    android:id="@+id/selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:id="@+id/tab1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <ListView
+                            android:id="@+id/friends_listview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:divider="@null"
+                            android:dividerHeight="1dp"
+                            android:footerDividersEnabled="false"
+                            android:headerDividersEnabled="false"
+                            android:visibility="visible">
+
+                        </ListView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tab2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/requests_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </TabHost>
 </LinearLayout>

@@ -85,6 +85,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final PollLayout pollLayout;
         private final ImageView original_post_photo;
         private final PollLayout original_post_poll;
+        private final TextView expand_text_btn;
 
         public Holder(View view) {
             super(view);
@@ -106,13 +107,68 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.original_post_text = ((TextView) convertView.findViewById(R.id.post_retweet_text));
             this.original_post_photo = (ImageView) view.findViewById(R.id.repost_photo);
             this.original_post_poll = (PollLayout) view.findViewById(R.id.repost_poll_layout);
+            this.expand_text_btn = (TextView) view.findViewById(R.id.expand_text_btn);
         }
 
         void bind(final int position) {
             final WallPost item = getItem(position);
             poster_name.setText(item.name);
             post_info.setText(item.info);
-            if(item.text.length() > 0) {
+            if(item.text.length() > 500) {
+                expand_text_btn.setVisibility(View.GONE);
+                post_text.setVisibility(View.VISIBLE);
+                Pattern pattern = Pattern.compile("\\[(.+?)\\]");
+                Matcher matcher = pattern.matcher(item.text);
+                boolean regexp_search = matcher.find();
+                String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                int regexp_results = 0;
+                while(regexp_search) {
+                    if(regexp_results == 0) {
+                        text = text.replace("\n", "<br>");
+                    }
+                    String block = matcher.group();
+                    OvkLink link = new OvkLink();
+                    String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                    link.screen_name = markup[0];
+                    if(markup.length == 2) {
+                        if (markup[0].startsWith("id")) {
+                            link.url = String.format("openvk://profile/%s", markup[0]);
+                            link.name = markup[1];
+                        } else if (markup[0].startsWith("club")) {
+                            link.url = String.format("openvk://group/%s", markup[0]);
+                            link.name = markup[1];
+                        }
+                        link.name = markup[1];
+                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                        }
+                    }
+                    regexp_results = regexp_results + 1;
+                    regexp_search = matcher.find();
+                }
+                text = text.substring(0, 500) + "...";
+                if(regexp_results > 0) {
+                    post_text.setText(Html.fromHtml(text));
+                    post_text.setAutoLinkMask(0);
+                } else {
+                    post_text.setText(text);
+                }
+                expand_text_btn.setVisibility(View.VISIBLE);
+                expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            ((AppActivity) ctx).openWallComments(position, null);
+                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                            ((ProfileIntentActivity) ctx).openWallComments(position, null);
+                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                            ((GroupIntentActivity) ctx).openWallComments(position, null);
+                        }
+                    }
+                });
+            } else if(item.text.length() > 0) {
+                expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]");
                 Matcher matcher = pattern.matcher(item.text);
@@ -152,6 +208,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
                 post_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
+                expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.GONE);
             }
 
@@ -159,7 +216,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 repost_info.setVisibility(View.VISIBLE);
                 original_poster_name.setText(item.repost.name);
                 original_post_info.setText(item.repost.time);
-                original_post_text.setText(item.repost.newsfeed_item.text);
+                original_post_text.setText(item.repost.newsfeed_item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\""));
                 for(int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
                     if (item.repost.newsfeed_item.attachments.get(i).status.equals("loading")) {
                         try {

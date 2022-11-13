@@ -89,6 +89,14 @@ public class MessagesListAdapter extends BaseAdapter {
             ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
         }
         if(item.isIncoming) {
+            (view.findViewById(R.id.incoming_msg)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                        ((ConversationActivity) ctx).getMsgContextMenu(position);
+                    }
+                }
+            });
             (view.findViewById(R.id.incoming_msg)).setVisibility(View.VISIBLE);
             (view.findViewById(R.id.outcoming_msg)).setVisibility(View.GONE);
         } else {

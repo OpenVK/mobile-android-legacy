@@ -83,8 +83,35 @@
                                     android:textColor="#9ca0a6"
                                     android:textSize="14dip"
                                     tools:ignore="HardcodedText,SpUsage" />
+
                             </LinearLayout>
                         </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/news_item_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/post_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_below="@+id/post_retweet_photo"
+                            android:layout_marginBottom="6dp"
+                            android:layout_marginLeft="10dip"
+                            android:layout_marginRight="10dip"
+                            android:autoLink="web|email"
+                            android:duplicateParentState="true"
+                            android:linksClickable="false"
+                            android:text="post text"
+                            android:textColor="@color/main_text"
+                            android:textColorHighlight="#802B587A"
+                            android:textColorLink="#2B587A"
+                            android:textSize="14dip"
+                            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage"></TextView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -188,32 +215,6 @@
                                 android:visibility="gone" />
                         </LinearLayout>
 
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/news_item_ll"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/post_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_below="@+id/post_retweet_photo"
-                            android:layout_marginBottom="6dp"
-                            android:layout_marginLeft="10dip"
-                            android:layout_marginRight="10dip"
-                            android:autoLink="web|email"
-                            android:duplicateParentState="true"
-                            android:linksClickable="false"
-                            android:text="post text"
-                            android:textColor="@color/main_text"
-                            android:textColorHighlight="#802B587A"
-                            android:textColorLink="#2B587A"
-                            android:textSize="14dip"
-                            tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage"></TextView>
                     </LinearLayout>
 
                     <ProgressBar
@@ -324,6 +325,19 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_post_comments_btm"
                     android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/no_comments_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="@string/no_comments"
+                        android:textColor="@color/timestamp_color"
+                        android:visibility="gone" />
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/comments_list"

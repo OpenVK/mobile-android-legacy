@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,17 +17,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
+import uk.openvk.android.legacy.api.models.OvkLink;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
@@ -61,9 +66,17 @@ public class WallPostLayout extends LinearLayout {
     }
 
     public void createAdapter(Context ctx, ArrayList<Comment> comments) {
+        TextView no_comments_text = findViewById(R.id.no_comments_text);
         this.comments = comments;
         commentsAdapter = new CommentsListAdapter(ctx, comments);
         commentsView = (RecyclerView) findViewById(R.id.comments_list);
+        if(comments.size() > 0) {
+            no_comments_text.setVisibility(GONE);
+            commentsView.setVisibility(VISIBLE);
+        } else {
+            no_comments_text.setVisibility(VISIBLE);
+            commentsView.setVisibility(GONE);
+        }
         llm = new LinearLayoutManager(ctx);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         commentsView.setLayoutManager(llm);
@@ -117,7 +130,39 @@ public class WallPostLayout extends LinearLayout {
     public void setPost(WallPost item) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
         if(item.text.length() > 0) {
-            ((TextView) findViewById(R.id.post_view)).setText(item.text);
+            int regexp_results = 0;
+            String text = item.text;
+            Pattern pattern = Pattern.compile("\\[(.+?)\\]");
+            Matcher matcher = pattern.matcher(item.text);
+            boolean regexp_search = matcher.find();
+            while(regexp_search) {
+                text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                if(regexp_results == 0) {
+                    text = text.replace("\n", "<br>");
+                }
+                String block = matcher.group();
+                OvkLink link = new OvkLink();
+                String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                link.screen_name = markup[0];
+                if(markup.length == 2) {
+                    if (markup[0].startsWith("id")) {
+                        link.url = String.format("openvk://profile/%s", markup[0]);
+                        link.name = markup[1];
+                    } else if (markup[0].startsWith("club")) {
+                        link.url = String.format("openvk://group/%s", markup[0]);
+                        link.name = markup[1];
+                    }
+                    link.name = markup[1];
+                    if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                    }
+                }
+                regexp_results = regexp_results + 1;
+                regexp_search = matcher.find();
+            }
+            ((TextView) findViewById(R.id.post_view)).setText(text);
+            ((TextView) findViewById(R.id.post_view)).setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             ((TextView) findViewById(R.id.post_view)).setVisibility(GONE);
         }
@@ -139,6 +184,7 @@ public class WallPostLayout extends LinearLayout {
             original_poster_name.setText(item.repost.newsfeed_item.name);
             original_post_info.setText(item.repost.newsfeed_item.info);
             original_post_text.setText(item.repost.newsfeed_item.text);
+            original_post_text.setMovementMethod(LinkMovementMethod.getInstance());
 
             repost_info.setOnClickListener(new View.OnClickListener() {
                 @Override

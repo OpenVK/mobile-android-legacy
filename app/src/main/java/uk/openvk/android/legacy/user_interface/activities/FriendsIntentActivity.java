@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TabHost;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.FriendsLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
+import uk.openvk.android.legacy.user_interface.layouts.TabSelector;
 import uk.openvk.android.legacy.user_interface.list_items.SlidingMenuItem;
 
 /**
@@ -118,6 +120,16 @@ public class FriendsIntentActivity extends Activity {
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
         friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
         progressLayout.setVisibility(View.VISIBLE);
+        TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
+        setupTabHost(friends_tabhost, "friends");
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setLength(1);
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, getResources().getString(R.string.friends));
+        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setup(friends_tabhost, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
@@ -145,6 +157,16 @@ public class FriendsIntentActivity extends Activity {
         }
     }
 
+    private void setupTabHost(TabHost tabhost, String where) {
+        tabhost.setup();
+        if(where.equals("friends")) {
+            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
+            tabSpec.setContent(R.id.tab1);
+            tabSpec.setIndicator(getResources().getString(R.string.friends));
+            tabhost.addTab(tabSpec);
+        }
+    }
+
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(item.getItemId() == android.R.id.home) {
@@ -160,7 +182,8 @@ public class FriendsIntentActivity extends Activity {
                 ArrayList<Friend> friendsList = friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.VISIBLE);
-                friendsLayout.createAdapter(this, friendsList);
+                friendsLayout.createAdapter(this, friendsList, "friends");
+                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%d)", getResources().getString(R.string.friends), friends.count));
             }  else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsLayout.loadAvatars();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
