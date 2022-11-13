@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
         private final View convertView;
         private final ImageView avatar;
         private final FrameLayout reg_btn;
+        private final RelativeLayout req_wrap;
 
         public Holder(View view) {
             super(view);
@@ -71,6 +73,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
             this.req_info = (TextView) view.findViewById(R.id.friend_req_info);
             this.avatar = (ImageView) view.findViewById(R.id.friend_req_photo);
             this.reg_btn = (FrameLayout) view.findViewById(R.id.friend_req_btn_add);
+            this.req_wrap = (RelativeLayout) view.findViewById(R.id.friend_req_wrap);
         }
 
         void bind(final int position) {
@@ -82,6 +85,16 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
             } else {
                 this.avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
             }
+
+            req_wrap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).showProfile(item.id);
+                    }
+                }
+            });
+
             reg_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

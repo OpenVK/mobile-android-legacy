@@ -436,7 +436,9 @@ public class AppActivity extends Activity {
                 menu.toggle(true);
             }
         }
-        activity_menu.clear();
+        if(activity_menu != null) {
+            activity_menu.clear();
+        }
         if(position == 0) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.friends));
@@ -976,7 +978,9 @@ public class AppActivity extends Activity {
         }
         users.getUser(ovk_api, account.id);
         menu_id = R.menu.profile;
-        activity_menu.clear();
+        if(activity_menu != null) {
+            activity_menu.clear();
+        }
         onCreateOptionsMenu(activity_menu);
         activity_menu.getItem(0).setVisible(false);
         setActionBar("");
@@ -1044,8 +1048,8 @@ public class AppActivity extends Activity {
         }
     }
 
-    public void showProfile(int position) {
-        String url = "openvk://profile/" + "id" + friends.getFriends().get(position).id;
+    public void showProfile(int user_id) {
+        String url = "openvk://profile/" + "id" + user_id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);

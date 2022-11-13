@@ -62,7 +62,7 @@ public class FriendsListAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.friend_list_item, parent, false);
         }
 
-        Friend item = getFriend(position);
+        final Friend item = getFriend(position);
         if(item.verified) {
             String name = String.format("%s %s  ", item.first_name, item.last_name);
             SpannableStringBuilder sb = new SpannableStringBuilder(name);
@@ -86,10 +86,10 @@ public class FriendsListAdapter extends BaseAdapter {
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
                     ((AppActivity) ctx).hideSelectedItemBackground(position);
-                    ((AppActivity) ctx).showProfile(position);
+                    ((AppActivity) ctx).showProfile(item.id);
                 } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
                     ((FriendsIntentActivity) ctx).hideSelectedItemBackground(position);
-                    ((FriendsIntentActivity) ctx).showProfile(position);
+                    ((FriendsIntentActivity) ctx).showProfile(item.id);
                 }
             }
         });

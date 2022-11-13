@@ -286,16 +286,24 @@ public class ProfileIntentActivity extends Activity {
                 } else {
                     if (user.friends_status == 0) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                        activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
+                        if(activity_menu != null) {
+                            activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
+                        }
                     } else if (user.friends_status == 1) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                        activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
+                        if(activity_menu != null) {
+                            activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
+                        }
                     } else if (user.friends_status == 2) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                        activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
+                        if(activity_menu != null) {
+                            activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
+                        }
                     }
-                    for (int i = 0; i < activity_menu.size(); i++) {
-                        activity_menu.getItem(i).setVisible(true);
+                    if(activity_menu != null) {
+                        for (int i = 0; i < activity_menu.size(); i++) {
+                            activity_menu.getItem(i).setVisible(true);
+                        }
                     }
                 }
                 user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
