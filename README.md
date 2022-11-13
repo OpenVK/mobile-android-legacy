@@ -21,5 +21,5 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
 
 ## Links
-[OpenVK API docs](https://docs.openvk.su/)\
+[OpenVK API docs](https://docs.openvk.su/openvk_engine/api/description/)\
 [OpenVK Mobile](https://openvk.uk/app)
