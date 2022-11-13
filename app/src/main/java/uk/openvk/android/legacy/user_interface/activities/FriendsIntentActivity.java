@@ -203,8 +203,8 @@ public class FriendsIntentActivity extends Activity {
         }
     }
 
-    public void showProfile(int position) {
-        String url = "openvk://profile/" + "id" + friends.getFriends().get(position).id;
+    public void showProfile(int user_id) {
+        String url = "openvk://profile/" + "id" + user_id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);

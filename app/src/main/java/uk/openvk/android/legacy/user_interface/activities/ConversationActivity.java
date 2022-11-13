@@ -338,6 +338,7 @@ public class ConversationActivity extends Activity {
                             clipboard.setPrimaryClip(clip);
                         }
                     }
+                    dialog.dismiss();
                 }
             });
         }
