@@ -52,7 +52,7 @@
             tools:ignore="NestedWeights,UselessParent">
 
             <TextView
-                android:id="@+id/tab_text"
+                android:id="@+id/tab_text2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/profile_selector"
@@ -67,7 +67,7 @@
                 tools:ignore="Deprecated,HardcodedText,NestedWeights,SpUsage,UnusedAttribute" />
 
             <View
-                android:id="@+id/tab_checked"
+                android:id="@+id/tab_checked2"
                 android:layout_width="match_parent"
                 android:layout_height="5dip"
                 android:layout_alignParentBottom="true"
@@ -84,7 +84,7 @@
             tools:ignore="NestedWeights,UselessParent">
 
             <TextView
-                android:id="@+id/tab_text"
+                android:id="@+id/tab_text3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/profile_selector"
@@ -99,7 +99,7 @@
                 tools:ignore="Deprecated,HardcodedText,NestedWeights,SpUsage,UnusedAttribute" />
 
             <View
-                android:id="@+id/tab_checked"
+                android:id="@+id/tab_checked3"
                 android:layout_width="match_parent"
                 android:layout_height="5dip"
                 android:layout_alignParentBottom="true"
