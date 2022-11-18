@@ -246,6 +246,20 @@
                         android:visibility="visible"
                         tools:ignore="HardcodedText,SpUsage" />
 
+                    <TextView
+                        android:id="@+id/repost_expand_text_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dip"
+                        android:layout_marginEnd="10dip"
+                        android:layout_marginLeft="10dip"
+                        android:text="@string/post_show_full"
+                        android:textColor="@color/ovk_color"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:ignore="RtlHardcoded"
+                        android:layout_marginRight="10dip" />
+
                     <ImageView
                         android:id="@+id/repost_photo"
                         android:layout_width="match_parent"

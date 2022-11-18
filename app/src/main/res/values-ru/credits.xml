@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_app_links">Ссылки</string>
+    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Исходный код</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
+    <string name="credits">Титры</string>
+    <string name="about_app_author">Автор</string>
+    <string name="app_author_value" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитрий Третьяков</a> (Tinelix)]]></string>
+    <string name="openvk_legacy_devteam">Команда разработки OpenVK Legacy</string>
+    <string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитрий Третьяков</a> (Tinelix)<br><a href=\"%s/id1\">Владимир Баринов</a> (Veselcraft)]]></string>
+    <string name="about_app_design">Дизайн</string>
+    <string name="app_design_value" formatted="false"><![CDATA[ВКонтакте 3.0.4 для Android<br>от <a href=\"https://grishka.me\">Григория Клюшникова</a>]]></string>
+    <string name="about_app_translations">Переводы</string>
+    <string name="app_eng_translators">Григорий Клюшников\nКоманда OpenVK Legacy</string>
+    <string name="app_rus_translators">Григорий Клюшников\nКоманда OpenVK Legacy</string>
+    <string name="app_ukr_translators">Команда OpenVK Legacy\r\nЯрослав Белоград (AlesAlte)</string>
+    <string name="app_license_title">Лицензия OpenVK Legacy</string>
+    <string name="app_license_text"><![CDATA[Эта программа является свободным програмнным обеспечением: вы можете распространять и/или изменять его в соответствии с условиями
+    <a href="https://www.gnu.org/licenses/agpl.txt">GNU (Affero) General Public License версии 3.0</a> или поздней версии, опубликованной Фондом свободного программного обеспечения.
+    <br><br>БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ ИЛИ ПРИГОДНОСТЬ ДЛЯ КОНКРЕТНЫХ ЦЕЛЕЙ.]]></string>
+</resources>

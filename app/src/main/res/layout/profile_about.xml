@@ -17,7 +17,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_marginBottom="8dp"
             android:background="@android:drawable/editbox_background"
             android:ems="10"
             android:focusable="false"
@@ -26,10 +25,10 @@
             android:paddingTop="14dp"
             android:paddingRight="18dp"
             android:paddingBottom="14dp"
-            android:singleLine="false"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <LinearLayout
+            android:id="@+id/about_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
@@ -61,7 +60,7 @@
                     android:id="@+id/birthdate_label2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="6 January 2004"
+                    android:text="Birthday date"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -74,10 +73,10 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/interests_category"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:id="@+id/interests_category">
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -287,10 +286,10 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/contacts_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/contacts_layout">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/contacts_info"
@@ -333,7 +332,7 @@
                         android:id="@+id/city_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Slavgorod"
+                        android:text="Your city"
                         android:textSize="18sp" />
 
                 </LinearLayout>

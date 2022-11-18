@@ -75,8 +75,8 @@ public class TabSelector extends LinearLayout {
                 selectionPos = 0;
                 host.setCurrentTab(selectionPos);
                 findViewById(R.id.tab_rl).findViewById(R.id.tab_checked).setVisibility(VISIBLE);
-                findViewById(R.id.tab_rl2).findViewById(R.id.tab_checked).setVisibility(GONE);
-                findViewById(R.id.tab_rl3).findViewById(R.id.tab_checked).setVisibility(GONE);
+                findViewById(R.id.tab_rl2).findViewById(R.id.tab_checked2).setVisibility(GONE);
+                findViewById(R.id.tab_rl3).findViewById(R.id.tab_checked3).setVisibility(GONE);
                 onClickListener.onClick(findViewById(R.id.tab_rl));
             }
         });
@@ -86,8 +86,8 @@ public class TabSelector extends LinearLayout {
                 selectionPos = 1;
                 host.setCurrentTab(selectionPos);
                 findViewById(R.id.tab_rl2).findViewById(R.id.tab_checked2).setVisibility(VISIBLE);
-                findViewById(R.id.tab_rl).findViewById(R.id.tab_checked2).setVisibility(GONE);
-                findViewById(R.id.tab_rl3).findViewById(R.id.tab_checked2).setVisibility(GONE);
+                findViewById(R.id.tab_rl).findViewById(R.id.tab_checked).setVisibility(GONE);
+                findViewById(R.id.tab_rl3).findViewById(R.id.tab_checked3).setVisibility(GONE);
                 onClickListener.onClick(findViewById(R.id.tab_rl2));
             }
         });
@@ -97,8 +97,8 @@ public class TabSelector extends LinearLayout {
                 selectionPos = 2;
                 host.setCurrentTab(selectionPos);
                 findViewById(R.id.tab_rl3).findViewById(R.id.tab_checked3).setVisibility(VISIBLE);
-                findViewById(R.id.tab_rl).findViewById(R.id.tab_checked3).setVisibility(GONE);
-                findViewById(R.id.tab_rl2).findViewById(R.id.tab_checked3).setVisibility(GONE);
+                findViewById(R.id.tab_rl).findViewById(R.id.tab_checked).setVisibility(GONE);
+                findViewById(R.id.tab_rl2).findViewById(R.id.tab_checked2).setVisibility(GONE);
                 onClickListener.onClick(findViewById(R.id.tab_rl3));
             }
         });

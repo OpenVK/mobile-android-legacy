@@ -48,21 +48,27 @@ public class ProfileLayout extends LinearLayout {
         ((ProfileCounterLayout) findViewById(R.id.friends_counter)).setOnCounterClickListener();
         ((ProfileCounterLayout) findViewById(R.id.mutual_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_mutual_friends)).get(2), "");
         ((ProfileCounterLayout) findViewById(R.id.mutual_counter)).setOnCounterClickListener();
-        ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setBirthdate("");
-        ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setInterests(user.interests, user.music, user.movies, user.tv, user.books);
-        ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setContacts(user.city);
-        header.findViewById(R.id.profile_head_highlight).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AboutProfileLayout aboutProfile = ((AboutProfileLayout) findViewById(R.id.about_profile_layout));
-                if(aboutProfile.getVisibility() == GONE) {
-                    aboutProfile.setVisibility(VISIBLE);
-                } else {
-                    aboutProfile.setVisibility(GONE);
+        if(user.deactivated == null) {
+            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setBirthdate("");
+            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setStatus(user.status);
+            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setInterests(user.interests, user.music, user.movies, user.tv, user.books);
+            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setContacts(user.city);
+            header.findViewById(R.id.profile_head_highlight).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AboutProfileLayout aboutProfile = ((AboutProfileLayout) findViewById(R.id.about_profile_layout));
+                    if (aboutProfile.getVisibility() == GONE) {
+                        aboutProfile.setVisibility(VISIBLE);
+                    } else {
+                        aboutProfile.setVisibility(GONE);
+                    }
                 }
-            }
-        });
-        ((ProfileWallSelector) findViewById(R.id.wall_selector)).setUserName(user.first_name);
+            });
+            ((ProfileWallSelector) findViewById(R.id.wall_selector)).setUserName(user.first_name);
+        } else {
+            findViewById(R.id.profile_counters).setVisibility(GONE);
+            ((TextView) findViewById(R.id.deactivated_info)).setVisibility(VISIBLE);
+        }
     }
 
     public void setDMButtonListener(final Context ctx, final int peer_id) {

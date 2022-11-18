@@ -37,6 +37,7 @@ public class User implements Parcelable {
     public String music;
     public String tv;
     public String books;
+    public String deactivated;
     private JSONParser jsonParser;
 
     public User(JSONObject user) {
@@ -142,51 +143,55 @@ public class User implements Parcelable {
                 } else if (user.has("photo_max_orig")) {
                     avatar_osize_url = user.getString("photo_max_orig");
                 }
-                friends_status = user.getInt("friend_status");
-                if(!user.isNull("interests")) {
-                    interests = user.getString("interests");
+                if(user.has("deactivated")) {
+                    deactivated = user.getString("deactivated");
                 } else {
-                    interests = "";
-                }
-                if(!user.isNull("movies")) {
-                    movies = user.getString("movies");
-                } else {
-                    movies = "";
-                }
-                if(!user.isNull("music")) {
-                    music = user.getString("music");
-                } else {
-                    music = "";
-                }
-                if(!user.isNull("tv")) {
-                    tv = user.getString("tv");
-                } else {
-                    tv = "";
-                }
-                if(!user.isNull("books")) {
-                    books = user.getString("books");
-                } else {
-                    books = "";
-                }
-                //birthdate = user.getString("bdate");
-                if(!user.isNull("city")) {
-                    city = user.getString("city");
-                } else {
-                    city = "";
-                }
-                //birthdate = user.getString("bdate");
-                if(!user.isNull("city")) {
-                    city = user.getString("city");
-                }
-                if(user.getInt("verified") == 1) {
-                    verified = true;
-                } else {
-                    verified = false;
-                }
-                if(user.getInt("online") == 1) {
-                    online = true;
-                } else {
-                    online = false;
+                    friends_status = user.getInt("friend_status");
+                    if (!user.isNull("interests")) {
+                        interests = user.getString("interests");
+                    } else {
+                        interests = "";
+                    }
+                    if (!user.isNull("movies")) {
+                        movies = user.getString("movies");
+                    } else {
+                        movies = "";
+                    }
+                    if (!user.isNull("music")) {
+                        music = user.getString("music");
+                    } else {
+                        music = "";
+                    }
+                    if (!user.isNull("tv")) {
+                        tv = user.getString("tv");
+                    } else {
+                        tv = "";
+                    }
+                    if (!user.isNull("books")) {
+                        books = user.getString("books");
+                    } else {
+                        books = "";
+                    }
+                    //birthdate = user.getString("bdate");
+                    if (!user.isNull("city")) {
+                        city = user.getString("city");
+                    } else {
+                        city = "";
+                    }
+                    //birthdate = user.getString("bdate");
+                    if (!user.isNull("city")) {
+                        city = user.getString("city");
+                    }
+                    if (user.getInt("verified") == 1) {
+                        verified = true;
+                    } else {
+                        verified = false;
+                    }
+                    if (user.getInt("online") == 1) {
+                        online = true;
+                    } else {
+                        online = false;
+                    }
                 }
             }
         } catch (JSONException e) {

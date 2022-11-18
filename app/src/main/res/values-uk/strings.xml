@@ -217,8 +217,9 @@
     <string name="date_ago_now">тільки що</string>
     <string name="message">Повідомлення</string>
     <string name="fsize_b">байт</string>
-    <string name="fsize_kb">кб</string>
-    <string name="fsize_mb">Мб</string>
+    <string name="fsize_kb">кБ</string>
+    <string name="fsize_mb">МБ</string>
+    <string name="fsize_gb">ГБ</string>
     <string name="delete">Видалити</string>
     <string name="confirm">Підтвердження</string>
     <string name="delete_confirm">Ви дійсно хочете видалити цей запис?</string>
@@ -293,7 +294,7 @@
     	<item>Тільки для друзів</item>
     	<!--item>Вказати місцезнаходження</item-->
     </string-array>
-    <string name="photo_save_ok">Фотографія збережена на карту пам\'яті</string>
+    <string name="photo_save_ok">Фотографія збережена в пам\'ять пристрою</string>
 
     <string name="share_wall">OpenVK - стіна</string>
     <string name="share_album">OpenVK - фотоальбом</string>
@@ -1088,7 +1089,7 @@
 	<string name="newpost_friends_only">Тільки для друзів</string>
     <string name="enter_topic_title">Введіть назву теми</string>
 	<string name="create_topic_explain">Для створення теми відправте перше повідомлення</string>
-	<string name="post_show_full">Показати повністю...</string>
+	<string name="post_show_full">Показати повністю…</string>
 	<string name="empty_list">Список порожній</string>
 	<string name="news_banlist_empty">Ви не приховали жодного джерела зі стрічки новин</string>
 	<string name="personal">Життєва позиція</string>
@@ -1241,22 +1242,6 @@
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Офіційна інстанція OpenVK</string>
-    <string name="about_app_links">Посилання</string>
-    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Вихідний код</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
-    <string name="credits">Титри</string>
-    <string name="about_app_author">Автор</string>
-    <string name="app_author_value" formatted="false"><![CDATA[<a href="%s/id2287">Дмитро Третьяков</a> (Tinelix)]]></string>
-    <string name="openvk_legacy_devteam">Команда розробки OpenVK Legacy</string>
-    <string name="app_devteam" formatted="false"><![CDATA[<a href=\"%s/id2287\">Дмитро Третьяков</a> (Tinelix)<br><a href=\"%s/id1\">Володимир Барiнов</a> (Veselcraft)]]></string>
-    <string name="about_app_design">Дизайн</string>
-    <string name="app_design_value" formatted="false"><![CDATA[ВКонтакте 3.0.4 для Android<br>вiд <a href=\"https://grishka.me\">Григорія Клюшнікова</a>]]></string>
-    <string name="about_app_translations">Переклади</string>
-    <string name="app_eng_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
-    <string name="app_rus_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
-    <string name="app_ukr_translators">Команда OpenVK Legacy</string>
-    <string name="app_license_title">Лiцензiя OpenVK Legacy</string>
-    <string name="app_license_text"><![CDATA[Ця програма є вільним програмним забезпеченням: ви можете розповсюджувати та/або змінювати його відповідно до умов
-    <a href="https://www.gnu.org/licenses/agpl.txt">GNU (Affero) General Public License версії 3.0</a> або пізнішої версії, опублікованої Фондом вільного програмного забезпечення.
-    <br><br>БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ, ВКЛЮЧАЮЧИ КОМЕРЦІЙНУ ЦІННІСТЬ АБО ПРИГОДНІ ДЛЯ КОНКРЕТНИХ ЦІЛІВ.]]></string>
     <string name="wall_err_text">Хмммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
+    <string name="invalid_session">Сесія недійсна. Будь ласка, авторизуйтесь ще раз.</string>
 </resources>

@@ -251,9 +251,13 @@ public class AppActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(menu_id, menu);
-        if(account == null || account.id == 0) {
-            menu.getItem(0).setVisible(false);
+        try {
+            inflater.inflate(menu_id, menu);
+            if (account == null || account.id == 0) {
+                menu.getItem(0).setVisible(false);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         activity_menu = menu;
         return true;
@@ -982,7 +986,11 @@ public class AppActivity extends Activity {
             activity_menu.clear();
         }
         onCreateOptionsMenu(activity_menu);
-        activity_menu.getItem(0).setVisible(false);
+        try {
+            activity_menu.getItem(0).setVisible(false);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         setActionBar("");
         setActionBarTitle(getResources().getString(R.string.profile));
     }

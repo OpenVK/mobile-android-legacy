@@ -127,6 +127,7 @@ public class NewPostActivity extends Activity {
                             connectionDialog.setMessage(getString(R.string.loading));
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
+                            wall.post(ovk_api, owner_id, statusEditText.getText().toString());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

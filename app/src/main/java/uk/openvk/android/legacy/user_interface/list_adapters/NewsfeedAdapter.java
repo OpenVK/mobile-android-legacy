@@ -86,6 +86,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final ImageView original_post_photo;
         private final PollLayout original_post_poll;
         private final TextView expand_text_btn;
+        private final TextView repost_expand_text_btn;
 
         public Holder(View view) {
             super(view);
@@ -108,6 +109,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.original_post_photo = (ImageView) view.findViewById(R.id.repost_photo);
             this.original_post_poll = (PollLayout) view.findViewById(R.id.repost_poll_layout);
             this.expand_text_btn = (TextView) view.findViewById(R.id.expand_text_btn);
+            this.repost_expand_text_btn = (TextView) view.findViewById(R.id.repost_expand_text_btn);
         }
 
         void bind(final int position) {
@@ -216,8 +218,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 repost_info.setVisibility(View.VISIBLE);
                 original_poster_name.setText(item.repost.name);
                 original_post_info.setText(item.repost.time);
-                original_post_text.setText(item.repost.newsfeed_item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\""));
+                String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                if(repost_text.length() > 500) {
+                    original_post_text.setText(String.format("%s...", repost_text.substring(0, 500)));
+                    repost_expand_text_btn.setVisibility(View.VISIBLE);
+                } else {
+                    original_post_text.setText(repost_text);
+                    repost_expand_text_btn.setVisibility(View.GONE);
+                }
                 for(int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
                     if (item.repost.newsfeed_item.attachments.get(i).status.equals("loading")) {
                         try {

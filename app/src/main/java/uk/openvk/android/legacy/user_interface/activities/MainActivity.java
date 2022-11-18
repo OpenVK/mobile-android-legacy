@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
     private SharedPreferences instance_prefs;
     private View warn_view;
     private Handler handler;
+    private AlertDialog warn_dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,14 +77,9 @@ public class MainActivity extends Activity {
         dialog_builder.setTitle(R.string.ovk_warning_title);
         warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
         dialog_builder.setView(warn_view);
-        dialog_builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                closeSplashScreen();
-            }
-        });
-        AlertDialog dialog = dialog_builder.create();
-        dialog.show();
+        dialog_builder.setNeutralButton(R.string.ok, null);
+        warn_dialog = dialog_builder.create();
+        warn_dialog.show();
         ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));
         ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
         ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -97,6 +93,12 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             setDialogStyle(warn_view, "ovk_warn");
         }
+        warn_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                closeSplashScreen();
+            }
+        });
     }
 
     private void closeSplashScreen() {

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -130,14 +131,14 @@ public class WallPostLayout extends LinearLayout {
     public void setPost(WallPost item) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
         if(item.text.length() > 0) {
-            int regexp_results = 0;
             String text = item.text;
             Pattern pattern = Pattern.compile("\\[(.+?)\\]");
-            Matcher matcher = pattern.matcher(item.text);
+            Matcher matcher = pattern.matcher(text);
             boolean regexp_search = matcher.find();
+            int regexp_results = 0;
+            text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                    .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
             while(regexp_search) {
-                text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
                 if(regexp_results == 0) {
                     text = text.replace("\n", "<br>");
                 }
@@ -161,7 +162,12 @@ public class WallPostLayout extends LinearLayout {
                 regexp_results = regexp_results + 1;
                 regexp_search = matcher.find();
             }
-            ((TextView) findViewById(R.id.post_view)).setText(text);
+            if(regexp_results > 0) {
+                ((TextView) findViewById(R.id.post_view)).setAutoLinkMask(0);
+                ((TextView) findViewById(R.id.post_view)).setText(Html.fromHtml(text));
+            } else {
+                ((TextView) findViewById(R.id.post_view)).setText(text);
+            }
             ((TextView) findViewById(R.id.post_view)).setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             ((TextView) findViewById(R.id.post_view)).setVisibility(GONE);

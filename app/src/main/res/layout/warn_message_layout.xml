@@ -8,13 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="18dp"
+        android:layout_weight="1"
         android:orientation="vertical"
-        tools:ignore="UselessParent">
+        tools:ignore="InefficientWeight,UselessParent">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            tools:ignore="NestedWeights">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,6 +44,7 @@
             android:text="@string/dont_show_warn"
             android:textSize="14sp"
             tools:ignore="HardcodedText,RtlHardcoded,RtlSymmetry" />
+
     </LinearLayout>
 
 </LinearLayout>

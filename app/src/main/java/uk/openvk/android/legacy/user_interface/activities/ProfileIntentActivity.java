@@ -278,10 +278,14 @@ public class ProfileIntentActivity extends Activity {
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
                     profileLayout.hideHeaderButtons(this);
-                    for (int i = 0; i < activity_menu.size(); i++) {
-                        if(i > 0) {
-                            activity_menu.getItem(i).setVisible(true);
+                    try {
+                        for (int i = 0; i < activity_menu.size(); i++) {
+                            if (i > 0) {
+                                activity_menu.getItem(i).setVisible(true);
+                            }
                         }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 } else {
                     if (user.friends_status == 0) {
@@ -306,9 +310,13 @@ public class ProfileIntentActivity extends Activity {
                         }
                     }
                 }
-                user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
-                wall.get(ovk_api, user.id, 50);
-                friends.get(ovk_api, user.id, "profile_counter");
+                if(user.deactivated == null) {
+                    user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
+                    wall.get(ovk_api, user.id, 50);
+                    friends.get(ovk_api, user.id, "profile_counter");
+                } else {
+                    profileLayout.hideHeaderButtons(this);
+                }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                 int status = response.getInt("response");

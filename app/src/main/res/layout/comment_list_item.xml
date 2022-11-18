@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LinearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -17,7 +18,8 @@
         android:layout_marginRight="10dip"
         android:layout_marginTop="10dip"
         android:scaleType="centerCrop"
-        android:src="@drawable/photo_loading" />
+        android:src="@drawable/photo_loading"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
     <TextView
         android:id="@+id/comm_author"
@@ -31,7 +33,8 @@
         android:singleLine="true"
         android:text="TextView"
         android:textColor="#000"
-        android:textSize="16dip"  />
+        android:textSize="16dip"
+        tools:ignore="Deprecated,HardcodedText,RtlHardcoded,SpUsage" />
 
     <TextView
         android:id="@+id/comment_text"
@@ -47,16 +50,31 @@
         android:textColor="#000"
         android:textColorHighlight="#802B587A"
         android:textColorLink="#2B587A"
-        android:textSize="14dip">
+        android:textSize="14dip"
+        tools:ignore="HardcodedText,RtlHardcoded,SpUsage">
 
     </TextView>
+
+    <TextView
+        android:id="@+id/expand_text_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/comm_author"
+        android:layout_below="@+id/comment_text"
+        android:layout_marginEnd="10dip"
+        android:layout_marginRight="10dip"
+        android:text="@string/post_show_full"
+        android:textColor="@color/ovk_color"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:ignore="RtlHardcoded" />
 
     <TextView
         android:id="@+id/comm_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/comm_author"
-        android:layout_below="@+id/comment_text"
+        android:layout_below="@+id/expand_text_btn"
         android:layout_gravity="left"
         android:duplicateParentState="true"
         android:ellipsize="marquee"
@@ -65,7 +83,8 @@
         android:paddingBottom="7dip"
         android:text="October 8, 2022"
         android:textColor="#9ca0a6"
-        android:textSize="14dip" />
+        android:textSize="14dip"
+        tools:ignore="HardcodedText,RtlHardcoded,SpUsage" />
 
     <TextView
         android:id="@+id/post_likes"
@@ -80,7 +99,8 @@
         android:ellipsize="marquee"
         android:text="0"
         android:textColor="#9ca0a6"
-        android:textSize="14dip" />
+        android:textSize="14dip"
+        tools:ignore="HardcodedText,RtlHardcoded,SpUsage" />
 
     <View
         android:id="@+id/divider"

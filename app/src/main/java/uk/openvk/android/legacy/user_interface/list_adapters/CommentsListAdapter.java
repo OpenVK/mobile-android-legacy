@@ -65,6 +65,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         public final View convertView;
         public final ImageView author_avatar;
         public final View divider;
+        private final TextView expand_text_btn;
 
         public Holder(View view) {
             super(view);
@@ -74,10 +75,11 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             this.comment_text = view.findViewById(R.id.comment_text);
             this.author_avatar = view.findViewById(R.id.author_avatar);
             this.divider = view.findViewById(R.id.divider);
+            this.expand_text_btn = view.findViewById(R.id.expand_text_btn);
         }
 
         void bind(final int position) {
-            Comment item = getItem(position);
+            final Comment item = getItem(position);
             author_name.setText(item.author);
             Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
             comment_info.setText(new SimpleDateFormat("d MMMM yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
@@ -113,11 +115,35 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     regexp_results = regexp_results + 1;
                     regexp_search = matcher.find();
                 }
-                if(regexp_results > 0) {
-                    comment_text.setText(Html.fromHtml(text));
-                    comment_text.setAutoLinkMask(0);
+
+                if(text.length() > 500) {
+                    if(regexp_results > 0) {
+                        comment_text.setText(Html.fromHtml(String.format("%s...", text.substring(0, 500))));
+                        comment_text.setAutoLinkMask(0);
+                    } else {
+                        comment_text.setText(String.format("%s...", text.substring(0, 500)));
+                    }
+                    expand_text_btn.setVisibility(View.VISIBLE);
+                    final int finalRegexp_results = regexp_results;
+                    expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(finalRegexp_results > 0) {
+                                comment_text.setText(Html.fromHtml(item.text));
+                                comment_text.setAutoLinkMask(0);
+                                expand_text_btn.setVisibility(View.GONE);
+                            } else {
+                                comment_text.setText(item.text);
+                            }
+                        }
+                    });
                 } else {
-                    comment_text.setText(text);
+                    if(regexp_results > 0) {
+                        comment_text.setText(Html.fromHtml(text));
+                        comment_text.setAutoLinkMask(0);
+                    } else {
+                        comment_text.setText(text);
+                    }
                 }
                 comment_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
