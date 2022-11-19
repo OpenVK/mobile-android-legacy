@@ -184,4 +184,8 @@ public class ProfileLayout extends LinearLayout {
         }
         ((ImageButton) findViewById(R.id.add_to_friends)).setVisibility(GONE);
     }
+
+    public void hideTabSelector() {
+        ((ProfileWallSelector) findViewById(R.id.wall_selector)).setVisibility(GONE);
+    }
 }

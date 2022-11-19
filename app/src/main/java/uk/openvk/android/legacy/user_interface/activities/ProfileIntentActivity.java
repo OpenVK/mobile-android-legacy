@@ -316,6 +316,7 @@ public class ProfileIntentActivity extends Activity {
                     friends.get(ovk_api, user.id, "profile_counter");
                 } else {
                     profileLayout.hideHeaderButtons(this);
+                    profileLayout.hideTabSelector();
                 }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));

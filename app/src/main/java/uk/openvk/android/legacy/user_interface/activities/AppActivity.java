@@ -277,7 +277,7 @@ public class AppActivity extends Activity {
     private void createSlidingMenu() {
         slidingmenuLayout = new SlidingMenuLayout(this);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
-            if(slidingmenuLayout == null) {
+            while(slidingmenuLayout == null) {
                 slidingmenuLayout = new SlidingMenuLayout(this);
             }
             menu = new SlidingMenu(this);
@@ -294,7 +294,7 @@ public class AppActivity extends Activity {
                 slidingmenuLayout.setAccountProfileListener(this);
                 slidingmenuLayout.setVisibility(View.VISIBLE);
             } catch (Exception ex) {
-                if(slidingmenuLayout == null) {
+                while(slidingmenuLayout == null) {
                     slidingmenuLayout = new SlidingMenuLayout(this);
                 }
                 ((OvkApplication) getApplicationContext()).isTablet = false;
