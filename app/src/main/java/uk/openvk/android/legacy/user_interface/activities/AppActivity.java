@@ -16,7 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -63,7 +62,6 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.user_interface.enumerations.UiMessages;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout;
@@ -126,6 +124,7 @@ public class AppActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.app_layout);
         inBackground = true;
         menu_id = R.menu.newsfeed;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -157,14 +156,15 @@ public class AppActivity extends Activity {
         last_longpoll_response = "";
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
-        setContentView(R.layout.app_layout);
+
+        installLayouts();
         Global global = new Global();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
-        handler = new Handler(Looper.myLooper()) {
+        handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
@@ -172,12 +172,24 @@ public class AppActivity extends Activity {
                 receiveState(message.what, data);
             }
         };
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessageDelayed(UiMessages.CREATE_MENU, 200);
-            }
-        }).start();
+        account = new Account(this);
+        account.getProfileInfo(ovk_api);
+        newsfeed = new Newsfeed();
+        user = new User();
+        likes = new Likes();
+        messages = new Messages();
+        users = new Users();
+        friends = new Friends();
+        groups = new Groups();
+        wall = new Wall();
+        global_prefs_editor.putString("current_screen", "newsfeed");
+        global_prefs_editor.commit();
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
+            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        }
+        Bundle data = new Bundle();
+        createSlidingMenu();
     }
 
     private void setActionBar(String layout_name) {
@@ -265,13 +277,16 @@ public class AppActivity extends Activity {
     private void createSlidingMenu() {
         slidingmenuLayout = new SlidingMenuLayout(this);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
+            if(slidingmenuLayout == null) {
+                slidingmenuLayout = new SlidingMenuLayout(this);
+            }
             menu = new SlidingMenu(this);
             menu.setMode(SlidingMenu.LEFT);
             menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
             menu.setMenu(slidingmenuLayout);
             menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
             menu.setFadeDegree(0.8f);
-            menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW, false);
+            menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
             menu.setSlidingEnabled(true);
         } else {
             try {
@@ -279,6 +294,9 @@ public class AppActivity extends Activity {
                 slidingmenuLayout.setAccountProfileListener(this);
                 slidingmenuLayout.setVisibility(View.VISIBLE);
             } catch (Exception ex) {
+                if(slidingmenuLayout == null) {
+                    slidingmenuLayout = new SlidingMenuLayout(this);
+                }
                 ((OvkApplication) getApplicationContext()).isTablet = false;
                 menu = new SlidingMenu(this);
                 menu.setMode(SlidingMenu.LEFT);
@@ -888,25 +906,6 @@ public class AppActivity extends Activity {
                         progressLayout.setVisibility(View.GONE);
                         errorLayout.setVisibility(View.VISIBLE);
                     }
-                }
-            } else if (message == UiMessages.CREATE_MENU) {
-                installLayouts();
-                createSlidingMenu();
-                account = new Account(this);
-                account.getProfileInfo(ovk_api);
-                newsfeed = new Newsfeed();
-                user = new User();
-                likes = new Likes();
-                messages = new Messages();
-                users = new Users();
-                friends = new Friends();
-                groups = new Groups();
-                wall = new Wall();
-                global_prefs_editor.putString("current_screen", "newsfeed");
-                global_prefs_editor.commit();
-                if(((OvkApplication) getApplicationContext()).isTablet) {
-                    newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
-                    ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
                 }
             }
         } catch (Exception ex) {

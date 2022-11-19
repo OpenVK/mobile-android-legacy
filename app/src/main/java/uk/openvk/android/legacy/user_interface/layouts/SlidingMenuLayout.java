@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,8 +21,7 @@ public class SlidingMenuLayout extends LinearLayout {
     public SlidingMenuLayout(final Context context) {
         super(context);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.sliding_menu_layout, null);
-
+                R.layout.sliding_menu_layout, this, false);
         this.addView(view);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -40,12 +40,21 @@ public class SlidingMenuLayout extends LinearLayout {
         profile_name.setText(getResources().getString(R.string.loading));
     }
 
-    public SlidingMenuLayout(Context context, AttributeSet attrs) {
+    public SlidingMenuLayout(final Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.sliding_menu_layout, null);
-
+                R.layout.sliding_menu_layout, this, false);
         this.addView(view);
+        ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(context.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) context).openAccountProfile();
+                }
+            }
+        });
+        TextView profile_name = (TextView) findViewById(R.id.profile_name);
+        profile_name.setText(getResources().getString(R.string.loading));
     }
 
     public void setSearchListener(OnClickListener onClickListener) {

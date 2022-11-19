@@ -71,8 +71,12 @@ public class CustomViewBehind extends ViewGroup {
 	public void setContent(View v) {
 		if (mContent != null)
 			removeView(mContent);
-		mContent = v;
-		addView(mContent);
+		if(v != null) {
+			mContent = v;
+			addView(mContent);
+		} else {
+			Log.e(TAG, "Empty view!");
+		}
 	}
 
 	public View getContent() {
