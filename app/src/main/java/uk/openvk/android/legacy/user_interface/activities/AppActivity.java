@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -62,6 +63,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.user_interface.enumerations.UiMessages;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout;
@@ -156,16 +158,13 @@ public class AppActivity extends Activity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setContentView(R.layout.app_layout);
-        createSlidingMenu();
-
-        installLayouts();
         Global global = new Global();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
@@ -173,23 +172,12 @@ public class AppActivity extends Activity {
                 receiveState(message.what, data);
             }
         };
-        account = new Account(this);
-        account.getProfileInfo(ovk_api);
-        newsfeed = new Newsfeed();
-        user = new User();
-        likes = new Likes();
-        messages = new Messages();
-        users = new Users();
-        friends = new Friends();
-        groups = new Groups();
-        wall = new Wall();
-        global_prefs_editor.putString("current_screen", "newsfeed");
-        global_prefs_editor.commit();
-        if(((OvkApplication) getApplicationContext()).isTablet) {
-            newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
-            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
-        }
-        Bundle data = new Bundle();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessageDelayed(UiMessages.CREATE_MENU, 200);
+            }
+        }).start();
     }
 
     private void setActionBar(String layout_name) {
@@ -283,7 +271,7 @@ public class AppActivity extends Activity {
             menu.setMenu(slidingmenuLayout);
             menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
             menu.setFadeDegree(0.8f);
-            menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+            menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW, false);
             menu.setSlidingEnabled(true);
         } else {
             try {
@@ -900,6 +888,25 @@ public class AppActivity extends Activity {
                         progressLayout.setVisibility(View.GONE);
                         errorLayout.setVisibility(View.VISIBLE);
                     }
+                }
+            } else if (message == UiMessages.CREATE_MENU) {
+                installLayouts();
+                createSlidingMenu();
+                account = new Account(this);
+                account.getProfileInfo(ovk_api);
+                newsfeed = new Newsfeed();
+                user = new User();
+                likes = new Likes();
+                messages = new Messages();
+                users = new Users();
+                friends = new Friends();
+                groups = new Groups();
+                wall = new Wall();
+                global_prefs_editor.putString("current_screen", "newsfeed");
+                global_prefs_editor.commit();
+                if(((OvkApplication) getApplicationContext()).isTablet) {
+                    newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
+                    ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
                 }
             }
         } catch (Exception ex) {
