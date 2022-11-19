@@ -1100,7 +1100,23 @@ public class OvkAPIWrapper {
     }
 
     public void checkHTTPS() {
-        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).followRedirects(false).followSslRedirects(false).build();
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+            BasicHttpParams basicHttpParams = new BasicHttpParams();
+            HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
+            HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
+            HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
+            HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
+            HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
+            SchemeRegistry schemeRegistry = new SchemeRegistry();
+            if (use_https) {
+                schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            } else {
+                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+            }
+            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+        } else {
+            httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).followRedirects(false).followSslRedirects(false).build();
+        }
         String url = "";
         url = String.format("http://%s", server);
         if(logging_enabled) Log.v("OpenVK API", String.format("Checking %s...", server));
