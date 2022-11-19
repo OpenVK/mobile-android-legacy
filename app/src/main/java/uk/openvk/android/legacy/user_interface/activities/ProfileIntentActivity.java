@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -39,6 +40,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
+import uk.openvk.android.legacy.user_interface.layouts.FriendsLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
@@ -92,6 +94,9 @@ public class ProfileIntentActivity extends Activity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
+        FriendsLayout friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
+        TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
+        setupTabHost(friends_tabhost, "friends");
 
         final Uri uri = intent.getData();
 
@@ -130,6 +135,20 @@ public class ProfileIntentActivity extends Activity {
             }
         }
         ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+    }
+
+    private void setupTabHost(TabHost tabhost, String where) {
+        tabhost.setup();
+        if(where.equals("friends")) {
+            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
+            tabSpec.setContent(R.id.tab1);
+            tabSpec.setIndicator(getResources().getString(R.string.friends));
+            tabhost.addTab(tabSpec);
+            tabSpec = tabhost.newTabSpec("requests");
+            tabSpec.setContent(R.id.tab2);
+            tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
+            tabhost.addTab(tabSpec);
+        }
     }
 
     @Override

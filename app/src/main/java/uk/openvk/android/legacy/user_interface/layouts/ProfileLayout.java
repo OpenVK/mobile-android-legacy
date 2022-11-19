@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -68,6 +69,20 @@ public class ProfileLayout extends LinearLayout {
         } else {
             findViewById(R.id.profile_counters).setVisibility(GONE);
             ((TextView) findViewById(R.id.deactivated_info)).setVisibility(VISIBLE);
+        }
+    }
+
+    private void setupTabHost(TabHost tabhost, String where) {
+        tabhost.setup();
+        if(where.equals("friends")) {
+            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
+            tabSpec.setContent(R.id.tab1);
+            tabSpec.setIndicator(getResources().getString(R.string.friends));
+            tabhost.addTab(tabSpec);
+            tabSpec = tabhost.newTabSpec("requests");
+            tabSpec.setContent(R.id.tab2);
+            tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
+            tabhost.addTab(tabSpec);
         }
     }
 
