@@ -87,8 +87,9 @@ public class LongPollWrapper {
             HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
             HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
             SchemeRegistry schemeRegistry = new SchemeRegistry();
-            if (use_https == true) {
+            if (use_https) {
                 schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
             } else {
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
             }
