@@ -108,7 +108,7 @@ public class NewPostActivity extends Activity {
         where.setText(String.format("%s %s", getResources().getString(R.string.wall), account_first_name));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             final ActionBarImitation actionbarImitation = findViewById(R.id.actionbar_imitation);
-            actionbarImitation.setHomeButtonVisibillity(true);
+            actionbarImitation.setHomeButtonVisibility(true);
             actionbarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

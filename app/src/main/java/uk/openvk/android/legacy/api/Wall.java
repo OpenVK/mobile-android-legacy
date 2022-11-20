@@ -253,6 +253,7 @@ public class Wall implements Parcelable {
                 if (attachment.getString("type").equals("photo")) {
                     JSONObject photo = attachment.getJSONObject("photo");
                     PhotoAttachment photoAttachment = new PhotoAttachment();
+                    photoAttachment.id = photo.getLong("id");
                     JSONArray photo_sizes = photo.getJSONArray("sizes");
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                     photo_high_size = photo_sizes.getJSONObject(8).getString("url");

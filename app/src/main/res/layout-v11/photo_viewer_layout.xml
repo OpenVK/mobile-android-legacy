@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical">
 
     <uk.openvk.android.legacy.user_interface.layouts.ZoomableImageView
         android:id="@+id/picture_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000" />
+
+    <uk.openvk.android.legacy.user_interface.layouts.ProgressLayout
+        android:id="@+id/progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+    </uk.openvk.android.legacy.user_interface.layouts.ProgressLayout>
 
 </LinearLayout>

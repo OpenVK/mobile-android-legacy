@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,11 +21,22 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v4.widget.PopupMenuCompat;
+import android.support.v4.widget.PopupWindowCompat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import java.io.File;
@@ -37,7 +51,9 @@ import java.nio.file.Files;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ZoomableImageView;
 
 public class PhotoViewerActivity extends Activity {
@@ -49,6 +65,9 @@ public class PhotoViewerActivity extends Activity {
     private Menu activity_menu;
     public Handler handler;
     private BitmapFactory.Options bfOptions;
+    private DownloadManager downloadManager;
+    private ActionBarImitation actionBarImitation;
+    private PopupWindow popupMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +88,8 @@ public class PhotoViewerActivity extends Activity {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.photo));
+                    getActionBar().hide();
+                    getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -79,9 +100,9 @@ public class PhotoViewerActivity extends Activity {
                 ex.printStackTrace();
             }
         } else {
-            ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibillity(true);
-            actionBarImitation.enableDarkTheme(true);
+            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation.setHomeButtonVisibility(true);
+            actionBarImitation.enableTransparentTheme(true);
             actionBarImitation.setTitle(getResources().getString(R.string.photo));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
@@ -89,23 +110,25 @@ public class PhotoViewerActivity extends Activity {
                     onBackPressed();
                 }
             });
+            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
+            activity_menu = p.getMenu();
+            getMenuInflater().inflate(R.menu.photo_viewer, activity_menu);
+            createActionPopupMenu(activity_menu);
+            actionBarImitation.setVisibility(View.GONE);
         }
+
+        ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.GONE);
+        ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.VISIBLE);
+        ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
                 finish();
             } else {
                 access_token = instance_prefs.getString("access_token", "");
-                if(extras.getString("local_photo_addr").length() > 0) {
-                    bfOptions = new BitmapFactory.Options();
-                    bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    try {
-                        bitmap = BitmapFactory.decodeFile(extras.getString("local_photo_addr"), bfOptions);
-                        ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
-                        ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
-                    } catch (OutOfMemoryError err) {
-                        finish();
-                    }
+                if(extras.getString("original_link").length() > 0) {
+                    downloadManager = new DownloadManager(this, true);
+                    downloadManager.downloadOnePhotoToCache(extras.getString("original_link"), String.format("original_photo_%d", extras.getLong("photo_id")), "original_photos");
                 } else {
                     finish();
                 }
@@ -115,9 +138,86 @@ public class PhotoViewerActivity extends Activity {
         }
     }
 
+    private void createActionPopupMenu(final Menu menu) {
+        final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+        popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupMenu.setOutsideTouchable(true);
+        popupMenu.setFocusable(true);
+        final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
+        actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
+            @SuppressLint("RtlHardcoded")
+            @Override
+            public void onClick(View v) {
+                if(popupMenu.isShowing()) {
+                    popupMenu.dismiss();
+                } else {
+                    menu_list.setAdapter(actionBarImitation.overflow_adapter);
+                    popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
+                }
+            }
+        });
+        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onMenuItemSelected(0, menu.getItem(position));
+                popupMenu.dismiss();
+            }
+        });
+        ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.dismiss();
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_MENU) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.ACCESS_DENIED_MARSHMALLOW) {
             allowPermissionDialog();
+        } else if(message == HandlerMessages.ORIGINAL_PHOTO) {
+            bfOptions = new BitmapFactory.Options();
+            bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            try {
+                Bundle extras = getIntent().getExtras();
+                bitmap = BitmapFactory.decodeFile(String.format("%s/original_photos/original_photo_%d", getCacheDir().getAbsolutePath(), extras.getLong("photo_id")), bfOptions);
+                ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
+                ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
+                ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.VISIBLE);
+                ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.GONE);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    getActionBar().show();
+                } else {
+                    actionBarImitation.setVisibility(View.VISIBLE);
+                }
+                ((ZoomableImageView) findViewById(R.id.picture_view)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            if(getActionBar().isShowing()) {
+                                getActionBar().hide();
+                            } else {
+                                getActionBar().show();
+                            }
+                        } else {
+                            if(actionBarImitation.getVisibility() == View.VISIBLE) {
+                                actionBarImitation.setVisibility(View.GONE);
+                            } else {
+                                actionBarImitation.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                });
+            } catch (OutOfMemoryError err) {
+                finish();
+            }
         }
     }
 
@@ -173,9 +273,9 @@ public class PhotoViewerActivity extends Activity {
     private void savePhoto() {
         Global global = new Global();
         final Bundle data = getIntent().getExtras();
-        String cache_path = data.getString("local_photo_addr");
+        String cache_path = String.format("%s/original_photos/original_photo_%d", getCacheDir().getAbsolutePath(), getIntent().getExtras().getLong("photo_id"));
         File file = new File(cache_path);
-        String[] path_array = data.getString("local_photo_addr").split("/");
+        String[] path_array = cache_path.split("/");
         String dest = String.format("%s/OpenVK/Photos/%s", Environment.getExternalStorageDirectory().getAbsolutePath(), path_array[path_array.length - 1]);
         String mime = bfOptions.outMimeType;
         if(bitmap != null) {
@@ -239,6 +339,9 @@ public class PhotoViewerActivity extends Activity {
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.photo_viewer, menu);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            createActionPopupMenu(menu);
+        }
         activity_menu = menu;
         return true;
     }

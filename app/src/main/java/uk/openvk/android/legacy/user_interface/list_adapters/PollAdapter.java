@@ -91,22 +91,25 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
         void bind(final int position) {
             final PollAnswer item = getItem(position);
             answer_name.setText(item.text);
+            int item_votes = item.votes;
             if(user_votes > 0) {
+                total_votes = total_votes_2 + 1;
                 if(item.is_voted) {
                     answer_name.setTypeface(Typeface.DEFAULT_BOLD);
                     answer_progress.setProgressDrawable(ctx.getResources().getDrawable(R.drawable.horizontal_progress));
                     answer_votes_count.setTextColor(ctx.getResources().getColor(R.color.ovk_color));
-                    answer_votes_count.setText(String.valueOf(item.votes + 1));
-                    total_votes = total_votes_2 + 1;
+                    item_votes = item.votes + 1;
+                    answer_votes_count.setText(String.valueOf(item_votes));
                 } else {
+                    item_votes = item.votes;
                     answer_name.setTypeface(Typeface.DEFAULT);
                     answer_progress.setProgressDrawable(ctx.getResources().getDrawable(R.drawable.horizontal_progress_2));
                     answer_votes_count.setTextColor(Color.parseColor("#6f6f6f"));
-                    answer_votes_count.setText(String.valueOf(item.votes));
+                    answer_votes_count.setText(String.valueOf(item_votes));
                 }
                 answer_progress.setMax(total_votes);
                 answer_progress.setProgress(item.votes);
-                double progress = (double) item.votes / (double) total_votes;
+                double progress = (double) item_votes / (double) total_votes;
                 answer_progress_value.setText(String.format("%d%%", (int)(progress * 100)));
                 answer_progress.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -123,6 +126,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                 });
             } else if(user_votes == 0) {
                 total_votes = total_votes_2;
+                item_votes = item.votes;
                 answer_name.setTypeface(Typeface.DEFAULT);
                 answer_progress.setMax(total_votes);
                 answer_progress.setProgress(0);

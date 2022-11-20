@@ -37,7 +37,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibillity(true);
+            actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
@@ -131,6 +131,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
         final TextView quality_comm = ((TextView) quality_choose_view.findViewById(R.id.comment_label));
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
         quality_seek.setMax(2);
+
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             quality_value.setTextColor(getResources().getColor(android.R.color.white));
         }
@@ -181,15 +182,17 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
             }
         });
 
+
+        final AlertDialog dialog = builder.create();
+
         if(global_prefs.getString("photos_quality", "").equals("medium")) {
+            quality_seek.setProgress(2);
             quality_seek.setProgress(0);
         } else if(global_prefs.getString("photos_quality", "").equals("high")) {
             quality_seek.setProgress(1);
-        } else {
+        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
             quality_seek.setProgress(2);
         }
-
-        final AlertDialog dialog = builder.create();
         dialog.show();
     }
 }

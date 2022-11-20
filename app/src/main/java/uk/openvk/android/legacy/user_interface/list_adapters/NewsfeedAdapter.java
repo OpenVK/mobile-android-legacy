@@ -5,7 +5,11 @@ import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +91,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final PollLayout original_post_poll;
         private final TextView expand_text_btn;
         private final TextView repost_expand_text_btn;
+        private boolean likeAdded = false;
+        private boolean likeDeleted = false;
 
         public Holder(View view) {
             super(view);
@@ -114,7 +120,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         void bind(final int position) {
             final WallPost item = getItem(position);
-            poster_name.setText(item.name);
+            if(item.verified_author) {
+                String name = item.name;
+                SpannableStringBuilder sb = new SpannableStringBuilder(name);
+                ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+                sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                poster_name.setText(item.name);
+            } else {
+                poster_name.setText(item.name);
+            }
             post_info.setText(item.info);
             if(item.text.length() > 500) {
                 expand_text_btn.setVisibility(View.GONE);
@@ -318,8 +332,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
             if(item.counters.enabled) {
                 likes_counter.setEnabled(true);
-                if(item.counters.isLiked) {
+                if(item.counters.isLiked && likeAdded) {
                     likes_counter.setText("" + (item.counters.likes + 1));
+                } else if(!item.counters.isLiked && likeDeleted) {
+                    likes_counter.setText("" + (item.counters.likes - 1));
                 } else {
                     likes_counter.setText("" + (item.counters.likes));
                 }
@@ -351,6 +367,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 @Override
                 public void onClick(View view) {
                     if (item.counters.isLiked) {
+                        if(!likeAdded) {
+                            likeDeleted = true;
+                        }
                         if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
                             ((ProfileIntentActivity) ctx).deleteLike(position, "post", view);
                         } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
@@ -359,6 +378,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             ((AppActivity) ctx).deleteLike(position, "post", view);
                         }
                     } else {
+                        if(!likeDeleted) {
+                            likeAdded = true;
+                        }
                         if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
                             ((ProfileIntentActivity) ctx).addLike(position, "post", view);
                         } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {

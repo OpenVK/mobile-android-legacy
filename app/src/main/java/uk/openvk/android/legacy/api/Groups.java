@@ -22,7 +22,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 public class Groups implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<Group> groups;
-
+    public int offset;
 
     public Groups() {
         jsonParser = new JSONParser();
@@ -107,13 +107,19 @@ public class Groups implements Parcelable {
         ovk.sendAPIMethod("Groups.getById", String.format("group_id=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count", id));
     }
 
-    public void getGroups(OvkAPIWrapper ovk, int user_id) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=50&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count&extended=1", user_id));
+    public void getGroups(OvkAPIWrapper ovk, int user_id, int count) {
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count&extended=1", user_id, count));
     }
 
-    public void parse(String response, DownloadManager downloadManager, String quality, boolean downloadPhoto) {
+    public void getGroups(OvkAPIWrapper ovk, int user_id, int count, int offset) {
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count&offset=%d&extended=1", user_id, count, offset), "more_groups");
+    }
+
+    public void parse(String response, DownloadManager downloadManager, String quality, boolean downloadPhoto, boolean clear) {
         try {
-            this.groups.clear();
+            if(clear) {
+                this.groups.clear();
+            }
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             JSONArray groups = json.getJSONArray("items");
             ArrayList<PhotoAttachment> avatars;

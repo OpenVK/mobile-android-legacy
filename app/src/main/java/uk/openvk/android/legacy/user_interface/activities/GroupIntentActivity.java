@@ -176,7 +176,7 @@ public class GroupIntentActivity extends Activity {
             }
         } else {
             ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibillity(true);
+            actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.group));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
@@ -202,7 +202,7 @@ public class GroupIntentActivity extends Activity {
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                    actionBarImitation.setHomeButtonVisibillity(true);
+                    actionBarImitation.setHomeButtonVisibility(true);
                     actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -533,6 +533,7 @@ public class GroupIntentActivity extends Activity {
                     if(item.attachments.get(i).type.equals("photo")) {
                         PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
+                        intent.putExtra("photo_id", photo.id);
                     }
                 }
             }

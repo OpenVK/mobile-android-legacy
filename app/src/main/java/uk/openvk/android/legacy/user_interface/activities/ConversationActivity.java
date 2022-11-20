@@ -110,7 +110,7 @@ public class ConversationActivity extends Activity {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayUseLogoEnabled(false);
                 } else {
-                    actionBarImitation.setHomeButtonVisibillity(true);
+                    actionBarImitation.setHomeButtonVisibility(true);
                     actionBarImitation.setTitle(conv_title);
                     if(peer_online == 1) {
                         actionBarImitation.setSubtitle(getResources().getString(R.string.online));
@@ -137,7 +137,7 @@ public class ConversationActivity extends Activity {
                 getActionBar().setDisplayShowHomeEnabled(true);
                 getActionBar().setDisplayUseLogoEnabled(false);
             } else {
-                actionBarImitation.setHomeButtonVisibillity(true);
+                actionBarImitation.setHomeButtonVisibility(true);
                 actionBarImitation.setTitle(conv_title);
                 actionBarImitation.setSubtitle(conv_title);
                 actionBarImitation.setOnBackClickListener(new View.OnClickListener() {

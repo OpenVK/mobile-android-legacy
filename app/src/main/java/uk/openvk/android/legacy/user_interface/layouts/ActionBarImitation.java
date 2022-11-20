@@ -3,15 +3,23 @@ package uk.openvk.android.legacy.user_interface.layouts;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 
 public class ActionBarImitation extends LinearLayout {                  // for pre-Honeycomb (pre-3.0) devices
     private boolean homeButtonisVisible;
+    public ArrayAdapter overflow_adapter;
+
     public ActionBarImitation(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
@@ -25,7 +33,7 @@ public class ActionBarImitation extends LinearLayout {                  // for p
         view.setLayoutParams(layoutParams);
     }
 
-    public void setHomeButtonVisibillity(boolean value) {
+    public void setHomeButtonVisibility(boolean value) {
         homeButtonisVisible = value;
         if(value) {
             ((LinearLayout) findViewById(R.id.titlebar)).setVisibility(GONE);
@@ -34,6 +42,35 @@ public class ActionBarImitation extends LinearLayout {                  // for p
             ((LinearLayout) findViewById(R.id.titlebar)).setVisibility(VISIBLE);
             ((LinearLayout) findViewById(R.id.titlebar2)).setVisibility(GONE);
         }
+    }
+
+    public void createOverflowMenu(boolean value, final Menu menu, final OnClickListener onClickListener) {
+        ArrayList<String> item_titles = new ArrayList<>();
+        ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_overflow_holo_dark));
+        try {
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem item = menu.getItem(i);
+                item_titles.add(item.getTitle().toString());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        overflow_adapter = new ArrayAdapter(getContext(), R.layout.popup_item, android.R.id.text1, item_titles);
+        ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onClick(v);
+            }
+        });
+        ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(VISIBLE);
+        ((ImageButton) findViewById(R.id.action_btn2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_overflow_holo_dark));
+        ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickListener.onClick(v);
+            }
+        });
+        ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
     }
 
     public void setTitle(String title) {
@@ -87,6 +124,22 @@ public class ActionBarImitation extends LinearLayout {                  // for p
                 ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(onClickListener);
                 ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
             }
+        } else if(icon.equals("download")) {
+            if(position == 0) {
+                ((ImageButton) findViewById(R.id.action_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_download_holo_dark));
+                ((ImageButton) findViewById(R.id.action_btn)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn)).setVisibility(VISIBLE);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_download_holo_dark));
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn_actionbar2)).setVisibility(VISIBLE);
+            } else {
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_download_holo_dark));
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(VISIBLE);
+                ((ImageButton) findViewById(R.id.action_btn2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_download_holo_dark));
+                ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(onClickListener);
+                ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
+            }
         } else {
             if(position == 0) {
                 ((ImageButton) findViewById(R.id.action_btn)).setVisibility(GONE);
@@ -137,6 +190,16 @@ public class ActionBarImitation extends LinearLayout {                  // for p
             return ((ActionBarLayout) findViewById(R.id.custom_layout2));
         } else {
             return ((ActionBarLayout) findViewById(R.id.custom_layout));
+        }
+    }
+
+    public void enableTransparentTheme(boolean value) {
+        if(value) {
+            ((LinearLayout) findViewById(R.id.titlebar)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black_transparent));
+            ((LinearLayout) findViewById(R.id.titlebar2)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black_transparent));
+        } else {
+            ((LinearLayout) findViewById(R.id.titlebar)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            ((LinearLayout) findViewById(R.id.titlebar2)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
         }
     }
 }

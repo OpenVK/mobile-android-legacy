@@ -474,7 +474,7 @@ public class AppActivity extends Activity {
             if(friends == null) {
                 friends = new Friends();
             }
-            friends.get(ovk_api, account.id, "friends_list");
+            friends.get(ovk_api, account.id, 25, "friends_list");
         } else if(position == 1) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));
@@ -525,7 +525,7 @@ public class AppActivity extends Activity {
             if(groups == null) {
                 groups = new Groups();
             }
-            groups.getGroups(ovk_api, account.id);
+            groups.getGroups(ovk_api, account.id, 25);
         } else if(position == 3) {
             setActionBar("custom_newsfeed");
             menu_id = R.menu.newsfeed;
@@ -558,6 +558,15 @@ public class AppActivity extends Activity {
         } else if(position == 4) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, MainSettingsActivity.class);
+            if(account != null) {
+                if (account.first_name != null && account.last_name != null) {
+                    intent.putExtra("account_name", String.format("%s %s", account.first_name, account.last_name));
+                } else {
+                    intent.putExtra("account_name", "");
+                }
+            } else {
+                intent.putExtra("account_name", "");
+            }
             startActivity(intent);
         } else {
             Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
@@ -637,7 +646,7 @@ public class AppActivity extends Activity {
                     ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
-                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
+                newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), false);
                 newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -687,7 +696,7 @@ public class AppActivity extends Activity {
                     }
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 50);
-                    friends.get(ovk_api, user.id, "profile_counter");
+                    friends.get(ovk_api, user.id, 25, "profile_counter");
                 }
             } else if (message == HandlerMessages.USERS_GET_ALT) {
                 users.parse(data.getString("response"));
@@ -697,7 +706,7 @@ public class AppActivity extends Activity {
                 wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
             } else if (message == HandlerMessages.FRIENDS_GET) {
-                friends.parse(data.getString("response"), downloadManager, true);
+                friends.parse(data.getString("response"), downloadManager, true, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
                     progressLayout.setVisibility(View.GONE);
@@ -706,6 +715,17 @@ public class AppActivity extends Activity {
                 friendsLayout.createAdapter(this, friendsList, "friends");
                 friends.getRequests(ovk_api);
                 ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%d)", getResources().getString(R.string.friends), friends.count));
+                friendsLayout.setScrollingPositions(this, true);
+            } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
+                int old_friends_size = friends.getFriends().size();
+                friends.parse(data.getString("response"), downloadManager, true, false);
+                ArrayList<Friend> friendsList = friends.getFriends();
+                friendsLayout.createAdapter(this, friendsList, "friends");
+                if(old_friends_size == friends.getFriends().size()) {
+                    friendsLayout.setScrollingPositions(this, false);
+                } else {
+                    friendsLayout.setScrollingPositions(this, true);
+                }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 if(global_prefs.getString("current_screen", "").equals("friends")) {
                     friends.requests.remove(friendsLayout.requests_cursor_index);
@@ -736,15 +756,30 @@ public class AppActivity extends Activity {
                 ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%d)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
                 friendsLayout.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.GROUPS_GET) {
-                groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true);
+                groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, true);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
                     groupsLayout.setVisibility(View.VISIBLE);
                 }
                 groupsLayout.createAdapter(this, groupsList);
+                groupsLayout.setScrollingPositions(this, true);
+            } else if (message == HandlerMessages.GROUPS_GET_MORE) {
+                int old_friends_size = groups.getList().size();
+                groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, false);
+                ArrayList<Group> groupsList = groups.getList();
+                if (global_prefs.getString("current_screen", "").equals("groups")) {
+                    progressLayout.setVisibility(View.GONE);
+                    groupsLayout.setVisibility(View.VISIBLE);
+                }
+                groupsLayout.createAdapter(this, groupsList);
+                if(old_friends_size == groups.getList().size()) {
+                    groupsLayout.setScrollingPositions(this, false);
+                } else {
+                    groupsLayout.setScrollingPositions(this, true);
+                }
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                friends.parse(data.getString("response"), downloadManager, false);
+                friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("profile")) {
                     profileLayout.setCounter(user, "friends",  friends.count);
@@ -1011,7 +1046,7 @@ public class AppActivity extends Activity {
         errorLayout.setVisibility(View.GONE);
         global_prefs_editor.putString("current_screen", "friends");
         global_prefs_editor.commit();
-        friends.get(ovk_api, account.id, "friends_list");
+        friends.get(ovk_api, account.id, 25, "friends_list");
     }
 
     public void retryConnection(String method, String args) {
@@ -1046,12 +1081,12 @@ public class AppActivity extends Activity {
                     if (friends == null) {
                         friends = new Friends();
                     }
-                    friends.get(ovk_api, account.id, "friends_list");
+                    friends.get(ovk_api, account.id, 25, "friends_list");
                 } else if (method.equals("Groups.get")) {
                     if (groups == null) {
                         groups = new Groups();
                     }
-                    groups.getGroups(ovk_api, account.id);
+                    groups.getGroups(ovk_api, 25, account.id);
                 } else if (method.equals("Users.get")) {
                     if (users == null) {
                         users = new Users();
@@ -1156,6 +1191,7 @@ public class AppActivity extends Activity {
                 intent.putExtra("post_text", item.text);
                 intent.putExtra("post_likes", item.counters.likes);
                 boolean contains_poll = false;
+                boolean contains_photo = false;
                 boolean is_repost = false;
                 if (item.attachments.size() > 0) {
                     for (int i = 0; i < item.attachments.size(); i++) {
@@ -1167,10 +1203,15 @@ public class AppActivity extends Activity {
                             //intent.putExtra("poll_answers", poll.answers);
                             intent.putExtra("poll_total_votes", poll.votes);
                             intent.putExtra("poll_user_votes", poll.user_votes);
+                        } else if(item.attachments.get(i).type.equals("photo")) {
+                            contains_photo = true;
+                            PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
+                            intent.putExtra("photo_id", photo.id);
                         }
                     }
                 }
                 intent.putExtra("contains_poll", contains_poll);
+                intent.putExtra("contains_photo", contains_photo);
                 if (item.repost != null) {
                     is_repost = true;
                     intent.putExtra("is_repost", is_repost);
@@ -1238,7 +1279,6 @@ public class AppActivity extends Activity {
                 pollAttachment.user_votes = 1;
                 if (!pollAttachment.answers.get(answer).is_voted) {
                     pollAttachment.answers.get(answer).is_voted = true;
-                    pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
                 }
                 if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     newsfeed.getWallPosts().set(item_pos, item);
@@ -1265,7 +1305,6 @@ public class AppActivity extends Activity {
                 for (int i = 0; i < pollAttachment.answers.size(); i++) {
                     if (pollAttachment.answers.get(i).is_voted) {
                         pollAttachment.answers.get(i).is_voted = false;
-                        pollAttachment.answers.get(i).votes = pollAttachment.answers.get(i).votes - 1;
                     }
                 }
                 if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
@@ -1309,6 +1348,28 @@ public class AppActivity extends Activity {
             intent.putExtra("post_info", item.repost.newsfeed_item.info);
             intent.putExtra("post_text", item.repost.newsfeed_item.text);
             intent.putExtra("post_likes", 0);
+            boolean contains_poll = false;
+            boolean contains_photo = false;
+            boolean is_repost = false;
+            if (item.repost.newsfeed_item.attachments.size() > 0) {
+                for (int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
+                    if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
+                        contains_poll = true;
+                        PollAttachment poll = ((PollAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
+                        intent.putExtra("poll_question", poll.question);
+                        intent.putExtra("poll_anonymous", poll.anonymous);
+                        //intent.putExtra("poll_answers", poll.answers);
+                        intent.putExtra("poll_total_votes", poll.votes);
+                        intent.putExtra("poll_user_votes", poll.user_votes);
+                    } else if(item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
+                        contains_photo = true;
+                        PhotoAttachment photo = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
+                        intent.putExtra("photo_id", photo.id);
+                    }
+                }
+            }
+            intent.putExtra("contains_poll", contains_poll);
+            intent.putExtra("contains_photo", contains_photo);
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1338,6 +1399,7 @@ public class AppActivity extends Activity {
                     if(item.attachments.get(i).type.equals("photo")) {
                         PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
+                        intent.putExtra("photo_id", photo.id);
                     }
                 }
             }
@@ -1384,5 +1446,17 @@ public class AppActivity extends Activity {
     protected void onResume() {
         inBackground = false;
         super.onResume();
+    }
+
+    public void loadMoreFriends() {
+        if(friends != null) {
+            friends.get(ovk_api, account.id, 25, friends.offset);
+        }
+    }
+
+    public void loadMoreGroups() {
+        if(groups != null) {
+            groups.getGroups(ovk_api, account.id, 25, groups.getList().size());
+        }
     }
 }

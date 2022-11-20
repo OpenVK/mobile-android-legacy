@@ -50,6 +50,8 @@ public class FriendsIntentActivity extends Activity {
     private Friends friends;
     private Users users;
     private String access_token;
+    private DownloadManager downloadManager;
+    private int user_id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class FriendsIntentActivity extends Activity {
         installLayouts();
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
+        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -99,7 +102,8 @@ public class FriendsIntentActivity extends Activity {
                     friends = new Friends();
                     if(args.startsWith("id")) {
                         try {
-                            friends.get(ovk_api, Integer.parseInt(args.substring(2)), "friends_list");
+                            user_id = Integer.parseInt(args.substring(2));
+                            friends.get(ovk_api, Integer.parseInt(args.substring(2)), 25, "friends_list");
                         } catch (Exception ex) {
                             users.search(ovk_api, args);
                         }
@@ -178,14 +182,25 @@ public class FriendsIntentActivity extends Activity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.FRIENDS_GET) {
-                friends.parse(data.getString("response"), new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true)), true);
+                friends.parse(data.getString("response"), downloadManager, true, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 friendsLayout.setVisibility(View.VISIBLE);
                 friendsLayout.createAdapter(this, friendsList, "friends");
                 ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%d)", getResources().getString(R.string.friends), friends.count));
-            }  else if (message == HandlerMessages.FRIEND_AVATARS) {
+                friendsLayout.setScrollingPositions(this, true);
+            } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsLayout.loadAvatars();
+            } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
+                int old_friends_size = friends.getFriends().size();
+                friends.parse(data.getString("response"), downloadManager, true, false);
+                ArrayList<Friend> friendsList = friends.getFriends();
+                friendsLayout.createAdapter(this, friendsList, "friends");
+                if(old_friends_size == friends.getFriends().size()) {
+                    friendsLayout.setScrollingPositions(this, false);
+                } else {
+                    friendsLayout.setScrollingPositions(this, true);
+                }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
@@ -212,5 +227,11 @@ public class FriendsIntentActivity extends Activity {
 
     public void hideSelectedItemBackground(int position) {
         ((ListView) friendsLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
+    }
+
+    public void loadMoreFriends() {
+        if(friends != null) {
+            friends.get(ovk_api, account.id, 25, friends.offset);
+        }
     }
 }

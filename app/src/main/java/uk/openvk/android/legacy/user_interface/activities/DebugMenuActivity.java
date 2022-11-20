@@ -61,7 +61,7 @@ public class DebugMenuActivity extends PreferenceActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibillity(true);
+            actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Group;
+import uk.openvk.android.legacy.user_interface.activities.AppActivity;
+import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.GroupsListAdapter;
 
 public class GroupsLayout extends LinearLayout {
@@ -26,6 +29,7 @@ public class GroupsLayout extends LinearLayout {
     private ListView groupsListView;
     private ArrayList<Group> groups;
     private GroupsListAdapter groupsAdapter;
+    private boolean loading_more_groups = false;
 
     public GroupsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,8 +48,12 @@ public class GroupsLayout extends LinearLayout {
 
     public void createAdapter(Context ctx, ArrayList<Group> groups) {
         this.groups = groups;
-        groupsAdapter = new GroupsListAdapter(ctx, groups);
-        groupsListView.setAdapter(groupsAdapter);
+        if (groupsAdapter == null) {
+            groupsAdapter = new GroupsListAdapter(ctx, groups);
+            groupsListView.setAdapter(groupsAdapter);
+        } else {
+            groupsAdapter.notifyDataSetChanged();
+        }
     }
 
     public int getCount() {
@@ -80,5 +88,29 @@ public class GroupsLayout extends LinearLayout {
         } catch (OutOfMemoryError ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
+        loading_more_groups = false;
+        groupsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(infinity_scroll) {
+                    if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
+                        if(!loading_more_groups) {
+                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                                loading_more_groups = true;
+                                ((AppActivity) ctx).loadMoreGroups();
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }

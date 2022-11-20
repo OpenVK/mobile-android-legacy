@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import uk.openvk.android.legacy.R;
 
@@ -23,5 +24,9 @@ public class ProgressLayout extends LinearLayout {
         layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+    }
+
+    public void enableDarkTheme() {
+        ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().getDrawable(R.drawable.progress_light));
     }
 }

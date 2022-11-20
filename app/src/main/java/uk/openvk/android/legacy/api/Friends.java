@@ -20,6 +20,7 @@ public class Friends implements Parcelable {
     public ArrayList<Friend> requests;
     private DownloadManager downloadManager;
     public int count;
+    public int offset = 0;
 
     public Friends() {
         jsonParser = new JSONParser();
@@ -29,7 +30,9 @@ public class Friends implements Parcelable {
 
     public Friends(String response, DownloadManager downloadManager, boolean downloadPhoto) {
         jsonParser = new JSONParser();
-        parse(response, downloadManager, downloadPhoto);
+        friends = new ArrayList<Friend>();
+        requests = new ArrayList<Friend>();
+        parse(response, downloadManager, downloadPhoto, true);
     }
 
     protected Friends(Parcel in) {
@@ -47,9 +50,11 @@ public class Friends implements Parcelable {
         }
     };
 
-    public void parse(String response, DownloadManager downloadManager, boolean downloadPhoto) {
+    public void parse(String response, DownloadManager downloadManager, boolean downloadPhoto, boolean clear) {
         try {
-            this.friends.clear();
+            if(clear) {
+                this.friends.clear();
+            }
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             if(json != null) {
                 count = json.getInt("count");
@@ -99,8 +104,13 @@ public class Friends implements Parcelable {
         }
     }
 
-    public void get(OvkAPIWrapper ovk, int user_id, String where) {
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100", user_id), where);
+    public void get(OvkAPIWrapper ovk, int user_id, int count, String where) {
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100&count=%d", user_id, count), where);
+    }
+
+    public void get(OvkAPIWrapper ovk, int user_id, int count, int offset) {
+        this.offset++;
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100&count=%d&offset=%d", user_id, count, this.offset), "more_friends");
     }
 
     public ArrayList<Friend> getFriends() {

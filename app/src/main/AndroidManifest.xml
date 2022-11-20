@@ -178,7 +178,7 @@
         <activity
             android:name=".user_interface.activities.PhotoViewerActivity"
             android:label="@string/photo"
-            android:theme="@style/BaseStyle.Dark"
+            android:theme="@style/BaseStyle.Dark.Transparent"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode">
         </activity>

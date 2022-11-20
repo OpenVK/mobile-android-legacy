@@ -93,6 +93,7 @@ public class Newsfeed implements Parcelable {
                     String owner_avatar_url = "";
                     String author_avatar_url = "";
                     String content = post.getString("text");
+                    boolean verified_author = false;
                     boolean isLiked = false;
                     if(likes.getInt("user_likes") > 0) {
                         isLiked = true;
@@ -124,9 +125,23 @@ public class Newsfeed implements Parcelable {
                                 if (profile.getInt("id") == author_id) {
                                     author_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
                                     author_avatar_url = profile.getString("photo_100");
+                                    if(profile.has("verified")) {
+                                        if (profile.getInt("verified") == 1) {
+                                            verified_author = true;
+                                        } else {
+                                            verified_author = false;
+                                        }
+                                    }
                                 } else if (profile.getInt("id") == owner_id) {
                                     owner_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
                                     owner_avatar_url = profile.getString("photo_100");
+                                    if(profile.has("verified")) {
+                                        if (profile.getInt("verified") == 1) {
+                                            verified_author = true;
+                                        } else {
+                                            verified_author = false;
+                                        }
+                                    }
                                 }
                             }
                             if(author_avatar_url.length() > 0)
@@ -140,6 +155,13 @@ public class Newsfeed implements Parcelable {
                                     if (-group.getInt("id") == owner_id) {
                                         owner_name = group.getString("name");
                                         avatar_url = group.getString("photo_100");
+                                        if(group.has("verified")) {
+                                            if (group.getInt("verified") == 1) {
+                                                verified_author = true;
+                                            } else {
+                                                verified_author = false;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -160,10 +182,18 @@ public class Newsfeed implements Parcelable {
                                 if (-group.getInt("id") == author_id) {
                                     item.name = group.getString("name");
                                     avatar_url = group.getString("photo_100");
+                                    if(group.has("verified")) {
+                                        if (group.getInt("verified") == 1) {
+                                            verified_author = true;
+                                        } else {
+                                            verified_author = false;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    item.verified_author = verified_author;
                     PhotoAttachment avatar = new PhotoAttachment();
                     avatar.url = avatar_url;
                     avatar.filename = String.format("avatar_%d", author_id);
@@ -212,6 +242,7 @@ public class Newsfeed implements Parcelable {
                 if (attachment.getString("type").equals("photo")) {
                     JSONObject photo = attachment.getJSONObject("photo");
                     PhotoAttachment photoAttachment = new PhotoAttachment();
+                    photoAttachment.id = photo.getLong("id");
                     JSONArray photo_sizes = photo.getJSONArray("sizes");
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                     photo_high_size = photo_sizes.getJSONObject(8).getString("url");

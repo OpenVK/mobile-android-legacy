@@ -105,7 +105,7 @@ public class WallPostActivity extends Activity {
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                 } else {
                     final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                    actionBarImitation.setHomeButtonVisibillity(true);
+                    actionBarImitation.setHomeButtonVisibility(true);
                     actionBarImitation.setTitle(getResources().getString(R.string.comments));
                     actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                         @Override
@@ -269,9 +269,12 @@ public class WallPostActivity extends Activity {
         Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
         intent.putExtra("where", "wall");
         try {
-            intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
-                    owner_id, post_id));
-            startActivity(intent);
+            if(getIntent().getExtras().getBoolean("contains_photo")) {
+                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                        owner_id, post_id));
+                intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
+                startActivity(intent);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

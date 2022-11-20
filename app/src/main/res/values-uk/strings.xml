@@ -186,6 +186,7 @@
     <string name="sett_notify_sound">Звук</string>
     <string name="sett_notify_vibrate">Вібрація</string>
     <string name="sett_notify_led">Світловий індикатор</string>
+    <string name="sett_notify_led_if_has">Якщо пристрій обладнано світловим індикатором для вхідних повідомлень</string>
     <string name="sett_other">Інше</string>
 
     <string name="sett_danger_zone">Небезпечна зона</string>
@@ -415,7 +416,7 @@
 
     <string name="friends_add">Додати</string>
     <string name="friends_decline">Приховати</string>
-    <string name="sett_ringtone">Звук оповіщення</string>
+    <string name="sett_ringtone">Сигнал сповіщення</string>
     <string-array name="num_mutual_friends_req">
         <item>%d спільний друг</item>
         <item>%d спільних друга</item>

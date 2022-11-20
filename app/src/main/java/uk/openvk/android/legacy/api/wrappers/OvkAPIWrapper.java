@@ -420,6 +420,8 @@ public class OvkAPIWrapper {
                                         sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
                                     } else if (where.equals("profile_counter")) {
                                         sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
+                                    } else if(where.equals("more_friends")) {
+                                        sendMessage(HandlerMessages.FRIENDS_GET_MORE, method, args, response_body);
                                     }
                                 } else if (method.equals("Friends.get")) {
                                     sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
@@ -432,7 +434,11 @@ public class OvkAPIWrapper {
                                 } else if (method.equals("Friends.getRequests")) {
                                     sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
                                 } else if (method.equals("Groups.get")) {
-                                    sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                    if(where.equals("more_groups")) {
+                                        sendMessage(HandlerMessages.GROUPS_GET_MORE, method, args, response_body);
+                                    } else {
+                                        sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                    }
                                 } else if (method.equals("Groups.getById")) {
                                     sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
                                 } else if (method.equals("Groups.search")) {

@@ -186,7 +186,7 @@ public class ProfileIntentActivity extends Activity {
             }
         } else {
             ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibillity(true);
+            actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.profile));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
@@ -273,7 +273,7 @@ public class ProfileIntentActivity extends Activity {
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                    actionBarImitation.setHomeButtonVisibillity(true);
+                    actionBarImitation.setHomeButtonVisibility(true);
                     actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -332,7 +332,7 @@ public class ProfileIntentActivity extends Activity {
                 if(user.deactivated == null) {
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 50);
-                    friends.get(ovk_api, user.id, "profile_counter");
+                    friends.get(ovk_api, user.id, 10, "profile_counter");
                 } else {
                     profileLayout.hideHeaderButtons(this);
                     profileLayout.hideTabSelector();
@@ -366,7 +366,7 @@ public class ProfileIntentActivity extends Activity {
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                friends.parse(data.getString("response"), downloadManager, false);
+                friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 profileLayout.setCounter(user, "friends",  friends.count);
             } else if(message == HandlerMessages.LIKES_ADD) {
@@ -662,6 +662,7 @@ public class ProfileIntentActivity extends Activity {
                     if(item.attachments.get(i).type.equals("photo")) {
                         PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
+                        intent.putExtra("photo_id", photo.id);
                     }
                 }
             }

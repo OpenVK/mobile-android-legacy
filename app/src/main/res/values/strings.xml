@@ -202,6 +202,7 @@
 	<string name="sett_notify_sound">Sound</string>
 	<string name="sett_notify_vibrate">Vibration</string>
 	<string name="sett_notify_led">Blinking LED</string>
+    <string name="sett_notify_led_if_has">If your device has an LED indicator for incoming notifications</string>
 	<string name="sett_other">Others</string>
 
     <string name="sett_danger_zone">Danger zone</string>
@@ -401,7 +402,7 @@
 
 	<string name="friends_add">Add friend</string>
     <string name="friends_decline">Hide</string>
-    <string name="sett_ringtone">Notification sound</string>
+    <string name="sett_ringtone">Notification tone</string>
     <string-array name="num_mutual_friends_req">
         <item>One mutual friend</item>
         <item>%d mutual friends</item>

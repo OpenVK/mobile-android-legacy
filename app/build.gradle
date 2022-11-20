@@ -9,8 +9,8 @@ android {
         minSdkVersion 7
         //noinspection OldTargetApi
         targetSdkVersion 27
-        versionCode 151
-        versionName "1.0.151-beta"
+        versionCode 152
+        versionName "1.0.152-beta"
     }
     buildTypes {
         release {
@@ -34,4 +34,8 @@ dependencies {
     //noinspection GradleDependency
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    //noinspection GradleCompatible
+    compile 'com.android.support:support-v4:24.0.0'
+    //noinspection GradleCompatible
+    compile 'com.android.support:appcompat-v7:24.0.0'
 }

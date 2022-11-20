@@ -44,7 +44,8 @@
 			android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/sett_notify_led"
 		 android:key="notifyLED"
-			android:defaultValue="true" />
+			android:defaultValue="true"
+			android:summary="@string/sett_notify_led_if_has"/>
 		<RingtonePreference android:ringtoneType="notification"
 			android:key="notifyRingtone" android:title="@string/sett_ringtone"
 			android:showDefault="true" android:showSilent="false"

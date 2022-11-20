@@ -49,6 +49,7 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
 import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.user_interface.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
@@ -415,6 +416,8 @@ public class DownloadManager {
                     sendMessage(HandlerMessages.FRIEND_AVATARS, where);
                 } else if (where.equals("comment_avatars")) {
                     sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                } else if(where.equals("original_photos")) {
+                    sendMessage(HandlerMessages.ORIGINAL_PHOTO, where);
                 }
             }
         };
@@ -441,6 +444,8 @@ public class DownloadManager {
             ((GroupIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
             ((WallPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("PhotoViewerActivity")) {
+            ((PhotoViewerActivity) ctx).handler.sendMessage(msg);
         }
     }
 

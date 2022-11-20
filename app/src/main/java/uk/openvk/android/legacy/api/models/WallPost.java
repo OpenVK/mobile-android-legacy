@@ -26,6 +26,7 @@ public class WallPost implements Parcelable {
     public int post_id;
     public PostCounters counters;
     public int author_id;
+    public boolean verified_author;
     public ArrayList<Attachment> attachments;
 
     public WallPost(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments, int o_id, int p_id, Context ctx) {

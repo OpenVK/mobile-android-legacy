@@ -49,6 +49,7 @@ public class MainSettingsActivity extends PreferenceActivity {
     private View about_instance_view;
     private Ovk ovk;
     private int danger_zone_multiple_tap;
+    private String account_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,16 @@ public class MainSettingsActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.preferences_2);
         }
         setContentView(R.layout.custom_preferences_layout);
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                account_name = "";
+            } else {
+                account_name = extras.getString("account_name");
+            }
+        } else {
+            account_name = (String) savedInstanceState.getSerializable("account_name");
+        }
         app = ((OvkApplication) getApplicationContext());
         setListeners();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
@@ -76,7 +87,7 @@ public class MainSettingsActivity extends PreferenceActivity {
             }
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibillity(true);
+            actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
@@ -183,6 +194,7 @@ public class MainSettingsActivity extends PreferenceActivity {
         });
         Preference logout_preference = findPreference("logOut");
         if(logout_preference != null) {
+            logout_preference.setSummary(account_name);
             logout_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {

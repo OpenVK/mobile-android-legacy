@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Friend;
+import uk.openvk.android.legacy.user_interface.activities.AppActivity;
+import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.user_interface.list_adapters.FriendsRequestsAdapter;
 
@@ -33,6 +36,7 @@ public class FriendsLayout extends LinearLayout {
     private FriendsListAdapter friendsAdapter;
     private FriendsRequestsAdapter requestsAdapter;
     public int requests_cursor_index;
+    public boolean loading_more_friends;
 
     public FriendsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,7 +44,7 @@ public class FriendsLayout extends LinearLayout {
                 R.layout.friends_layout, null);
 
         this.addView(view);
-
+        loading_more_friends = false;
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
@@ -52,8 +56,12 @@ public class FriendsLayout extends LinearLayout {
     public void createAdapter(Context ctx, ArrayList<Friend> friends, String where) {
         if(where.equals("friends")) {
             this.friends = friends;
-            friendsAdapter = new FriendsListAdapter(ctx, friends);
-            friendsListView.setAdapter(friendsAdapter);
+            if(friendsAdapter == null) {
+                friendsAdapter = new FriendsListAdapter(ctx, friends);
+                friendsListView.setAdapter(friendsAdapter);
+            } else {
+                friendsAdapter.notifyDataSetChanged();
+            }
         } else {
             this.requests = friends;
             requestsAdapter = new FriendsRequestsAdapter(ctx, this, requests);
@@ -121,5 +129,32 @@ public class FriendsLayout extends LinearLayout {
         if(requestsAdapter != null) {
             requestsAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
+        loading_more_friends = false;
+        friendsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(infinity_scroll) {
+                    if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
+                        if(!loading_more_friends) {
+                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                                loading_more_friends = true;
+                                ((AppActivity) ctx).loadMoreFriends();
+                            } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                                loading_more_friends = true;
+                                ((FriendsIntentActivity) ctx).loadMoreFriends();
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }

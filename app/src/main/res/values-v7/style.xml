@@ -38,6 +38,12 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="BaseStyle.Dark.Transparent" parent="android:style/Theme">
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <style name="SlidingMenu" parent="android:style/Widget.ListView">
         <item name="android:textColor">#FFFFFFFF</item>
     </style>
@@ -48,6 +54,10 @@
     
     <style name="ProgressBar" parent="android:Widget.ProgressBar">
         <item name="android:indeterminateDrawable">@drawable/progress_dark</item>
+    </style>
+
+    <style name="ProgressBar.Light" parent="android:Widget.ProgressBar">
+        <item name="android:indeterminateDrawable">@drawable/progress_light</item>
     </style>
     
     <style name="ActionBarTitleStyle" parent="android:style/Widget.Holo.Light.ActionBar.TabText.Inverse">
