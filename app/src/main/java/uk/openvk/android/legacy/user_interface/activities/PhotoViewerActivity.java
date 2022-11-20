@@ -126,10 +126,14 @@ public class PhotoViewerActivity extends Activity {
                 finish();
             } else {
                 access_token = instance_prefs.getString("access_token", "");
-                if(extras.getString("original_link").length() > 0) {
-                    downloadManager = new DownloadManager(this, true);
-                    downloadManager.downloadOnePhotoToCache(extras.getString("original_link"), String.format("original_photo_%d", extras.getLong("photo_id")), "original_photos");
-                } else {
+                try {
+                    if (extras.getString("original_link").length() > 0) {
+                        downloadManager = new DownloadManager(this, true);
+                        downloadManager.downloadOnePhotoToCache(extras.getString("original_link"), String.format("original_photo_%d", extras.getLong("photo_id")), "original_photos");
+                    } else {
+                        finish();
+                    }
+                } catch (Exception ex) {
                     finish();
                 }
             }
