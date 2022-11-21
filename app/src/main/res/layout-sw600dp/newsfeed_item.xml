@@ -144,6 +144,20 @@
                 tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
 
             <TextView
+                android:id="@+id/expand_text_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dip"
+                android:layout_marginEnd="10dip"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:text="@string/post_show_full"
+                android:textColor="@color/ovk_color"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:ignore="RtlHardcoded" />
+
+            <TextView
                 android:id="@+id/error_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

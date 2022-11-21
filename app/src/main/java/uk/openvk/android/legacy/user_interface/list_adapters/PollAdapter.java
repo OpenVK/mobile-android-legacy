@@ -108,7 +108,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                     answer_votes_count.setText(String.valueOf(item_votes));
                 }
                 answer_progress.setMax(total_votes);
-                answer_progress.setProgress(item.votes);
+                answer_progress.setProgress(item_votes);
                 double progress = (double) item_votes / (double) total_votes;
                 answer_progress_value.setText(String.format("%d%%", (int)(progress * 100)));
                 answer_progress.setOnLongClickListener(new View.OnLongClickListener() {
