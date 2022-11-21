@@ -15,6 +15,9 @@
 		<item name="android:fadingEdgeLength">0dip</item>
 		<item name="android:windowCloseOnTouchOutside">true</item>
 		<item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
+        <item name="android:actionButtonStyle">@style/ActionBarStyle.Button</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_ab_back_holo_dark</item>
 		<item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
 	</style>
 
@@ -28,14 +31,12 @@
 		<item name="android:windowNoTitle">true</item>
 	</style>
 
-	<style name="ActionBarStyle" parent="android:style/Widget.Holo.ActionBar.Solid">
+	<style name="ActionBarStyle" parent="android:style/Widget.Holo.ActionBar">
 		<item name="android:background">@drawable/bg_actionbar</item>
 		<item name="android:titleTextStyle">@style/ActionBarTitleStyle</item>
 		<item name="android:subtitleTextStyle">@style/ActionBarSubtitleStyle</item>
 		<item name="android:icon">@drawable/ic_ab_app</item>
 		<item name="android:progressBarStyle">@style/ActionBarProgress</item>
-		<item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
-		<item name="android:height">50dp</item>
 		<!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
         <item name="backgroundStacked">@drawable/action_bar_tabs_bg</item-->
 	</style>
@@ -45,13 +46,14 @@
 		<item name="android:fadingEdgeLength">0dip</item>
 		<item name="android:windowCloseOnTouchOutside">true</item>
 		<item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
+        <item name="android:actionButtonStyle">@style/ActionBarStyle.Button</item>
 	</style>
 
-	<style name="ActionBarStyle.Dark" parent="android:style/Widget.Holo.ActionBar.Solid">
+	<style name="ActionBarStyle.Dark" parent="android:style/Widget.Holo.ActionBar">
         <item name="android:background">@drawable/bg_actionbar_black</item>
         <item name="android:icon">@drawable/ic_ab_app</item>
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
-        <item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
         <item name="android:height">50dp</item>
 	</style>
 
@@ -67,12 +69,13 @@
 		<item name="android:background">@drawable/bg_actionbar_black_transparent</item>
 		<item name="android:icon">@drawable/ic_ab_app</item>
 		<item name="android:progressBarStyle">@style/ActionBarProgress</item>
-		<item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
 		<item name="android:height">50dp</item>
 	</style>
 
 	<style name="OverflowMenuStyle" parent="android:style/Widget.Holo.ActionButton.Overflow">
-		<item name="android:src">@drawable/ic_menu_moreoverflow_normal_holo_dark</item>
+        <item name="android:background">@drawable/highlight</item>
+        <item name="android:contentDescription">Overflow button</item>
+		<item name="android:src">@drawable/ic_overflow_holo_dark</item>
 	</style>
 
 	<style name="ActionBarProgress" parent="android:style/Widget.ProgressBar.Horizontal">
@@ -241,6 +244,10 @@
 	<style name="VideoPlayer2" parent="android:Theme.Holo.NoActionBar.Fullscreen">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/window_bg_black</item>
+    </style>
+
+    <style name="ActionBarStyle.Button" parent="android:style/Widget.Holo.ActionButton">
+        <item name="android:background">@drawable/highlight</item>
     </style>
 
 </resources>

@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.list_adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
@@ -18,6 +19,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.api.models.Group;
+import uk.openvk.android.legacy.user_interface.text.CenteredImageSpan;
 
 public class GroupsListAdapter extends BaseAdapter {
     Context ctx;
@@ -66,7 +68,12 @@ public class GroupsListAdapter extends BaseAdapter {
         if(item.verified) {
             String name = String.format("%s  ", item.name);
             SpannableStringBuilder sb = new SpannableStringBuilder(name);
-            ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+            ImageSpan imageSpan;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+            } else {
+                imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+            }
             sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ((TextView) view.findViewById(R.id.group_list_item_text)).setText(sb);
         } else {

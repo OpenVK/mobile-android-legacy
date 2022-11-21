@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.user_interface.list_adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -123,7 +124,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(item.verified_author) {
                 String name = item.name;
                 SpannableStringBuilder sb = new SpannableStringBuilder(name);
-                ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+                ImageSpan imageSpan;
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                    imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BOTTOM);
+                } else {
+                    imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
+                }
                 sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 poster_name.setText(item.name);
             } else {

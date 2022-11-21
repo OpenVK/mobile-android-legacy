@@ -1,12 +1,19 @@
 package uk.openvk.android.legacy;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageButton;
+
+import java.util.ArrayList;
 
 public class Global {
 

@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.layouts;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.user_interface.text.CenteredImageSpan;
 
 public class ProfileHeader extends RelativeLayout {
     private boolean online;
@@ -76,7 +78,14 @@ public class ProfileHeader extends RelativeLayout {
     public void setVerified(boolean verified, Context ctx) {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
-           ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.ic_verified, DynamicDrawableSpan.ALIGN_BASELINE);
+           ImageSpan imageSpan;
+           if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2) {
+               // Workaround for Android Honeycomb (3.0 - 3.2.7)
+               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
+               ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, -2, 0, 0);
+           } else {
+               imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon, DynamicDrawableSpan.ALIGN_BASELINE);
+           }
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }

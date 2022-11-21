@@ -26,6 +26,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TabHost;
@@ -200,8 +202,9 @@ public class AppActivity extends Activity {
                     getActionBar().setCustomView(ab_layout);
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
-                        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+                        getActionBar().setIcon(R.drawable.ic_left_menu);
                     }
+                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -214,8 +217,9 @@ public class AppActivity extends Activity {
                 try {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
-                        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+                        getActionBar().setIcon(R.drawable.ic_left_menu);
                     }
+                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -593,8 +597,12 @@ public class AppActivity extends Activity {
                     if(activity_menu == null) {
                         onPrepareOptionsMenu(activity_menu);
                     }
-                    MenuItem newpost = activity_menu.getItem(0);
-                    newpost.setVisible(true);
+                    try {
+                        MenuItem newpost = activity_menu.getItem(0);
+                        newpost.setVisible(true);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
                 account.getCounters(ovk_api);
                 users.getAccountUser(ovk_api, account.id);
