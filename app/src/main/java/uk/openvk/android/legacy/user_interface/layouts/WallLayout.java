@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
@@ -53,6 +55,27 @@ public class WallLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            Handler handler = new Handler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    requestLayout();
+                    if (getWidth() >= (int) (600 * getContext().getResources().getDisplayMetrics().density)) {
+                        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+                    } else {
+                        LinearLayout.LayoutParams layoutParams = new LayoutParams(getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT);
+                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                        wallView.setLayoutParams(layoutParams);
+                    }
+                }
+            });
+        }
     }
 
     @Override
