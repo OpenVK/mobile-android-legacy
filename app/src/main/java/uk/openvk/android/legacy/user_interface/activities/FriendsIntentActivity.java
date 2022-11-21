@@ -231,7 +231,7 @@ public class FriendsIntentActivity extends Activity {
 
     public void loadMoreFriends() {
         if(friends != null) {
-            friends.get(ovk_api, account.id, 25, friends.offset);
+            friends.get(ovk_api, user_id, 25, friends.offset);
         }
     }
 }

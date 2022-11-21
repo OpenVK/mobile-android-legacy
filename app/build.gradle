@@ -9,8 +9,8 @@ android {
         minSdkVersion 7
         //noinspection OldTargetApi
         targetSdkVersion 27
-        versionCode 153
-        versionName "1.0.153-beta"
+        versionCode 154
+        versionName "1.0.154-beta"
     }
     buildTypes {
         release {
