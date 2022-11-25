@@ -1,0 +1,2 @@
+1. Fixed a crash when trying to open a profile from the list of someone else's profile.
+2. Fixed minor bugs.

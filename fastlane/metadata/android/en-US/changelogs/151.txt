@@ -1,0 +1,2 @@
+1. Fixed a crash when trying to open a profile in Android 2.1 and 2.2. This was due to the ProfileIntentActivity class using the generic app_layout.xml layout without first setting the TabHost.
+2. Restored LongPoll service work in Android 2.1 and 2.2.

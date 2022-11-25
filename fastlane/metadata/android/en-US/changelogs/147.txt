@@ -1,0 +1,3 @@
+1. Added management of incoming friend requests.
+2. The text limit for viewing each news is 500 characters, this can be compensated by displaying the news completely in a separate window.
+3. After clicking on the item "Copy text" in the selection of the action with the message, the dialog box now disappears.

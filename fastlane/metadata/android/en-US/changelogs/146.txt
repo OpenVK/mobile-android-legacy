@@ -1,0 +1,2 @@
+1. Fixed a crash when trying to write a comment (alas, I just didn’t have time to finish the layout)
+2. If you frequently switch the feed, you will get the expected results, as it should be (showing the global feed if you switch to "All news")

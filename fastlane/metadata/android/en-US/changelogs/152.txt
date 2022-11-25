@@ -1,0 +1,5 @@
+1. Updated viewer interface with transparent action bar. It can be hidden or brought back with a single click.
+2. Now you can view photos in the viewer in original quality (without loss artifacts), as well as save them.
+3. Added infinity scrolling in the "Friends" and "Groups" sections.
+4. Fixed crashes in Android 2.x related to the opening of the "About instance" item.
+5. Of course, it was not without another fix of likes and polls counters, so try it.

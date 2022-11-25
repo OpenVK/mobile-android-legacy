@@ -1,0 +1,4 @@
+1. Fixed crashes when trying to change the list of menu items in Android below 3.0.
+2. Added abbreviations in reposts and comments.
+3. Improved the profile page: added a full status display and reassigned indents in the profile information.
+4. The structure of the app/src/main/res/values directory in the repository has changed: information about the developers is now in a separate credits.xml file, the instances list is in the instances.xml file, and custom_style.xml, which stores style and theme settings, is merged into a single style.xml file.

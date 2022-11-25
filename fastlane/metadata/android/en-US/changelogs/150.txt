@@ -1,0 +1,2 @@
+1. Fixed a crash if a variable with the SlidingMenuLayout class returned an empty value instead of the sliding menu layout. It could be played when running the app in landscape mode.
+2. Improvements in the deleted user profile.
