@@ -1,0 +1,7 @@
+Special for Android 3.x Honeycomb and above with Tablet UI.
+
+1. Fixed crashes related to the "Expand text..." imperfection.
+2. The theme of the application is almost completely adapted to Android 3.x.
+3. Names with verified badge through the CenteredImageSpan crutch align the badge icon strictly in the center and no longer "jump" anywhere.
+4. The wall fully resizes and is not clipped when showing the side menu and profile information at the same time.
+5. Progress bar display in polls has been completely fixed.

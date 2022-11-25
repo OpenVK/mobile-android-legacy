@@ -82,8 +82,12 @@ public class GroupsLayout extends LinearLayout {
                         ex.printStackTrace();
                     }
                 }
-                groupsAdapter = new GroupsListAdapter(getContext(), groups);
-                groupsListView.setAdapter(groupsAdapter);
+                if (groupsAdapter == null) {
+                    groupsAdapter = new GroupsListAdapter(getContext(), groups);
+                    groupsListView.setAdapter(groupsAdapter);
+                } else {
+                    groupsAdapter.notifyDataSetChanged();
+                }
             }
         } catch (OutOfMemoryError ex) {
             ex.printStackTrace();

@@ -1,0 +1,2 @@
+1. Fixed a crash when infinity-scrolling friends list of another user.
+2. Fixed an annoying feature since Android 9 Pie: restarting the application from the launcher even if it is running in the background.

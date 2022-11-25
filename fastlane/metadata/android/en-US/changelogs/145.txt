@@ -1,0 +1,1 @@
+1. Improvements requested by ZAZiOs (https://github.com/ZAZiOs): scroll up when switching feed, limit in confirmation dialog, copy message to clipboard, etc.

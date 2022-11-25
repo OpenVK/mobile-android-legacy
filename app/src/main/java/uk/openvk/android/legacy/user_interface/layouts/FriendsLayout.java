@@ -64,7 +64,11 @@ public class FriendsLayout extends LinearLayout {
             }
         } else {
             this.requests = friends;
-            requestsAdapter = new FriendsRequestsAdapter(ctx, this, requests);
+            if(requestsAdapter == null) {
+                requestsAdapter = new FriendsRequestsAdapter(ctx, this, requests);
+            } else {
+                requestsAdapter.notifyDataSetChanged();
+            }
             LinearLayoutManager llm = new LinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) findViewById(R.id.requests_view)).setLayoutManager(llm);
