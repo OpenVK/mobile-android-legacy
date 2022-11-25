@@ -4,39 +4,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/item_title"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="12dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
         android:layout_marginBottom="12dp"
-        android:background="@null"
-        android:clickable="false"
-        android:gravity="center_vertical"
-        android:text="Item title"
-        android:textColor="@color/window_bg_black"
-        android:textSize="16sp" />
+        android:layout_marginEnd="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/official_state"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="14dp"
-        android:layout_marginRight="14dp"
-        android:layout_marginBottom="14dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/official_state_shape"
-        android:clickable="false"
-        android:longClickable="true"
-        android:scaleType="center"
-        android:src="@drawable/verified_icon"
-        android:visibility="visible"
-        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:clickable="false"
+            android:gravity="center"
+            android:text="Item title"
+            android:textColor="@color/window_bg_black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/official_state"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="14dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="14dp"
+            android:adjustViewBounds="true"
+            android:clickable="false"
+            android:longClickable="true"
+            android:scaleType="center"
+            android:src="@drawable/verified_icon_black"
+            android:visibility="visible"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+    </LinearLayout>
 
 </LinearLayout>

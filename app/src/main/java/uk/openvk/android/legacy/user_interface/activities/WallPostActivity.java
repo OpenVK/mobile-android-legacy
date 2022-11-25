@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.attachments.Attachment;
@@ -81,7 +82,7 @@ public class WallPostActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

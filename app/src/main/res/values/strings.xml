@@ -1162,7 +1162,7 @@
 	<string name="posting_error">An error occurred while posting. Please try again later.</string>
     <string name="posting_access_denied">You are not allowed to post on this wall.</string>
 	<string name="posted_successfully">Post published.</string>
-	<string name="debug_menu">Debug menu</string>
+	<string name="debug_menu">Debug Menu</string>
 	<string name="api_logging">API logging</string>
 	<string name="write_logs_to_file">Write logs to file</string>
     <string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>

@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
@@ -241,7 +242,7 @@ public class DebugMenuActivity extends PreferenceActivity {
                         file.createNewFile();
                     }
                 }
-                Log.d("OpenVK Legacy", "Log file created!");
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK Legacy", "Log file created!");
                 FileWriter writer = null;
                 writer = new FileWriter(file);
                 OvkApplication ovk = ((OvkApplication) getApplicationContext());

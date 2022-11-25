@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:key="main_settings">
     
 	<PreferenceCategory
 		android:title="@string/sett_general"
-		android:layout="@layout/category_prefw">
+		android:layout="@layout/category_prefw"
+		android:key="general_settings">
 
 		<!-- maybe implement
 		<ListPreference android:entries="@array/sett_friends_order"
@@ -83,7 +85,8 @@
 
 	<PreferenceCategory
 		android:title="@string/sett_other"
-		android:layout="@layout/category_prefw">
+		android:layout="@layout/category_prefw"
+        android:key="cat_others">
 
         <Preference
             android:layout="@layout/pref_widget"

@@ -38,15 +38,13 @@ public class OvkApplication extends Application {
         }
         long heap_size = global.getHeapSize();
 
-        Log.d("OpenVK", String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
+        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
 
         if(!global_prefs.contains("photos_quality")) {
             if(heap_size <= 67108864L) {
                 global_prefs_editor.putString("photos_quality", "medium");
             } else if(heap_size <= 134217728L) {
                 global_prefs_editor.putString("photos_quality", "high");
-            } else {
-                global_prefs_editor.putString("photos_quality", "original");
             }
         }
 

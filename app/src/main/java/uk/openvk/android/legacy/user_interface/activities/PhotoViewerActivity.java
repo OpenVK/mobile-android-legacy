@@ -48,6 +48,7 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -78,7 +79,7 @@ public class PhotoViewerActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

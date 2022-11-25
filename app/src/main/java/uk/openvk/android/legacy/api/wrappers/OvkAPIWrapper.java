@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
@@ -74,6 +75,9 @@ public class OvkAPIWrapper {
     private boolean logging_enabled = true; // default for beta releases
 
     public OvkAPIWrapper(Context ctx, boolean use_https) {
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            logging_enabled = false;
+        }
         this.ctx = ctx;
         this.use_https = use_https;
         error = new Error();

@@ -1,6 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        def_signing {
+            storeFile file('OpenVK KeyStore.jks')
+            keyAlias 'ovk_default_key'
+            keyPassword 'GaF@421#'
+            storePassword 'GaF@421#'
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+    }
     compileSdkVersion 27
     buildToolsVersion "27.0.0"
     defaultConfig {
@@ -14,11 +25,28 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.def_signing
         }
     }
     productFlavors {
+        betaConfig {
+            applicationId "uk.openvk.android.legacy"
+            //noinspection MinSdkTooLow
+            minSdkVersion 7
+            //noinspection OldTargetApi
+            targetSdkVersion 27
+            versionCode 155
+            versionName "1.0.155-beta"
+        }
+        stableConfig {
+            minSdkVersion 7
+            applicationId 'uk.openvk.android.legacy'
+            targetSdkVersion 27
+            versionCode 155
+            versionName '1.0.155-stable'
+            proguardFile 'app/OpenVK KeyStore.jks'
+            signingConfig signingConfigs.def_signing
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7

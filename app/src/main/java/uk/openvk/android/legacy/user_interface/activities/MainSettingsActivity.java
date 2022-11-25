@@ -14,7 +14,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -100,7 +103,7 @@ public class MainSettingsActivity extends PreferenceActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -184,6 +187,8 @@ public class MainSettingsActivity extends PreferenceActivity {
     }
 
     private void setListeners() {
+        PreferenceScreen screen = (PreferenceScreen) findPreference("main_settings");
+        PreferenceGroup others = (PreferenceGroup) findPreference("cat_others");
         Preference about_preference = findPreference("about");
         about_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -217,12 +222,15 @@ public class MainSettingsActivity extends PreferenceActivity {
         }
 
         Preference debug_menu = findPreference("debug_menu");
-        danger_zone_multiple_tap = 0;
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            others.removePreference(debug_menu);
+        } else {
+            danger_zone_multiple_tap = 0;
             global_prefs.getBoolean("debugDangerZone", false);
             debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    if(instance_prefs.getString("access_token", "").length() > 0) {
+                    if (instance_prefs.getString("access_token", "").length() > 0) {
                         MainSettingsActivity.this.danger_zone_multiple_tap += 1;
                         if (MainSettingsActivity.this.danger_zone_multiple_tap == 1) {
                             Timer timer = new Timer();
@@ -246,6 +254,7 @@ public class MainSettingsActivity extends PreferenceActivity {
                     return false;
                 }
             });
+        }
 
         Preference network_settings = findPreference("network_settings");
         network_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

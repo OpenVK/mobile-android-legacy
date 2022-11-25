@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
@@ -94,7 +95,7 @@ public class GroupIntentActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

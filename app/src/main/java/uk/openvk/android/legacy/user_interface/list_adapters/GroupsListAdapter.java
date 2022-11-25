@@ -84,6 +84,8 @@ public class GroupsListAdapter extends BaseAdapter {
 
         if(item.avatar != null) {
             ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(item.avatar);
+        } else {
+            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.group_placeholder));
         }
 
         view.setOnClickListener(new View.OnClickListener() {

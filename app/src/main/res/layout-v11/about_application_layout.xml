@@ -24,11 +24,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:textColor="#4682b8"
             android:gravity="center"
+            android:text="@string/full_app_name"
+            android:textColor="#4682b8"
             android:textSize="18dp"
-            android:textStyle="bold"
-            android:text="Application title" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/app_version_text"

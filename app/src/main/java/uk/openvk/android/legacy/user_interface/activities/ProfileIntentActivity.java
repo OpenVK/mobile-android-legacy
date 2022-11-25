@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +12,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -23,6 +31,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
@@ -70,6 +79,7 @@ public class ProfileIntentActivity extends Activity {
     private int item_pos;
     private int poll_answer;
     private Menu activity_menu;
+    private ActionBarImitation actionBarImitation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +114,17 @@ public class ProfileIntentActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
+
+        if(activity_menu == null) {
+            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
+            activity_menu = p.getMenu();
+            getMenuInflater().inflate(R.menu.profile, activity_menu);
+            onCreateOptionsMenu(activity_menu);
+        }
 
         if (uri != null) {
             String path = uri.toString();
@@ -185,7 +202,7 @@ public class ProfileIntentActivity extends Activity {
                 ex.printStackTrace();
             }
         } else {
-            ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
             actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.profile));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
@@ -197,9 +214,45 @@ public class ProfileIntentActivity extends Activity {
         }
     }
 
+    private void createActionPopupMenu(final Menu menu) {
+        final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupMenu.setOutsideTouchable(true);
+        popupMenu.setFocusable(true);
+        final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
+        actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
+            @SuppressLint("RtlHardcoded")
+            @Override
+            public void onClick(View v) {
+                if(popupMenu.isShowing()) {
+                    popupMenu.dismiss();
+                } else {
+                    menu_list.setAdapter(actionBarImitation.overflow_adapter);
+                    popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
+                }
+            }
+        });
+        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onMenuItemSelected(0, menu.getItem(position));
+                popupMenu.dismiss();
+            }
+        });
+        ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.dismiss();
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        if(activity_menu != null) {
+            activity_menu.clear();
+        }
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.profile, menu);
         activity_menu = menu;
@@ -214,46 +267,8 @@ public class ProfileIntentActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
-            } else if(item.getItemId() == R.id.add_to_friends) {
-                if(user.friends_status == 0) {
-                    addToFriends(user.id);
-                } else if(user.friends_status == 1) {
-                    deleteFromFriends(user.id);
-                } else if(user.friends_status == 2) {
-                    addToFriends(user.id);
-                } else {
-                    deleteFromFriends(user.id);
-                }
-            } else if(item.getItemId() == R.id.copy_link) {
-                if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    if(user.screen_name != null && user.screen_name.length() > 0) {
-                        clipboard.setText(String.format("http://%s/%s", instance_prefs.getString("server", ""), user.screen_name));
-                    } else {
-                        clipboard.setText(String.format("http://%s/id%d", instance_prefs.getString("server", ""), user.id));
-                    }
-                } else {
-                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip;
-                    if(user.screen_name != null && user.screen_name.length() > 0) {
-                        clip = android.content.ClipData.newPlainText("OpenVK Profile URL", String.format("http://%s/%s", instance_prefs.getString("server", ""), user.screen_name));
-                    } else {
-                        clip = android.content.ClipData.newPlainText("OpenVK Profile URL", String.format("http://%s/id%d", instance_prefs.getString("server", ""), user.id));
-                    }
-                    clipboard.setPrimaryClip(clip);
-                }
-            } else if(item.getItemId() == R.id.open_in_browser) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                if(user.screen_name != null && user.screen_name.length() > 0) {
-                    i.setData(Uri.parse(String.format("http://%s/%s", instance_prefs.getString("server", ""), user.screen_name)));
-                } else {
-                    i.setData(Uri.parse(String.format("http://%s/id%d", instance_prefs.getString("server", ""), user.id)));
-                }
-                startActivity(i);
             }
-        }
-        if(item.getItemId() == R.id.newpost) {
-            openNewPostActivity();
+
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -274,18 +289,7 @@ public class ProfileIntentActivity extends Activity {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
                     actionBarImitation.setHomeButtonVisibility(true);
-                    actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            openNewPostActivity();
-                        }
-                    });
-                } else {
-                    if(activity_menu == null) {
-                        onPrepareOptionsMenu(activity_menu);
-                    }
-                    //MenuItem newpost = activity_menu.getItem(R.id.newpost);
-                    //newpost.setVisible(true);
+                    createActionPopupMenu(activity_menu);
                 }
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
@@ -303,6 +307,10 @@ public class ProfileIntentActivity extends Activity {
                                 activity_menu.getItem(i).setVisible(true);
                             }
                         }
+                        activity_menu.removeItem(0);
+                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                            createActionPopupMenu(activity_menu);
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -310,23 +318,21 @@ public class ProfileIntentActivity extends Activity {
                     if (user.friends_status == 0) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
-                            activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
+                            activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_add_friend);
                         }
                     } else if (user.friends_status == 1) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
-                            activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
+                            activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_friend_cancel);
                         }
                     } else if (user.friends_status == 2) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
-                            activity_menu.getItem(0).setTitle(R.string.profile_friend_accept);
+                            activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_friend_accept);
                         }
                     }
-                    if(activity_menu != null) {
-                        for (int i = 0; i < activity_menu.size(); i++) {
-                            activity_menu.getItem(i).setVisible(true);
-                        }
+                    for (int i = 0; i < activity_menu.size(); i++) {
+                        activity_menu.getItem(i).setVisible(true);
                     }
                 }
                 if(user.deactivated == null) {
@@ -335,7 +341,11 @@ public class ProfileIntentActivity extends Activity {
                     friends.get(ovk_api, user.id, 10, "profile_counter");
                 } else {
                     profileLayout.hideHeaderButtons(this);
+                    activity_menu.removeItem(0);
                     profileLayout.hideTabSelector();
+                }
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    createActionPopupMenu(activity_menu);
                 }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
@@ -458,7 +468,7 @@ public class ProfileIntentActivity extends Activity {
 
     public void openIntentfromCounters(String action) {
         String url = action;
-        Log.d("OpenVK", "Opening intent from " + action);
+        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", "Opening intent from " + action);
         if(action.length() > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));

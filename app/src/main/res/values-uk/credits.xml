@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_app_links">Посилання</string>
-    <string name="app_links_text"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Вихідний код</a> | <a href="%s/club181">OpenVK Mobile</a>]]></string>
+    <string name="app_links_text" formatted="false"><![CDATA[<a href="https://github.com/openvk/mobile-android-legacy">Вихідний код</a> | <a href="%s/club181">OpenVK Mobile</a> | <a href="%s/topic181_1">FAQ</a>]]></string>
     <string name="credits">Титри</string>
     <string name="about_app_author">Автор</string>
     <string name="app_author_value" formatted="false"><![CDATA[<a href="%s/id2287">Дмитро Третьяков</a> (Tinelix)]]></string>

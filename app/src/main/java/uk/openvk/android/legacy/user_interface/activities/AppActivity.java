@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -72,6 +73,7 @@ import uk.openvk.android.legacy.user_interface.layouts.FriendsLayout;
 import uk.openvk.android.legacy.user_interface.layouts.GroupsLayout;
 import uk.openvk.android.legacy.user_interface.layouts.NewsfeedLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProfileLayout;
+import uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.user_interface.layouts.TabSelector;
@@ -170,7 +172,7 @@ public class AppActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -258,7 +260,7 @@ public class AppActivity extends Activity {
         try {
             inflater.inflate(menu_id, menu);
             if (account == null || account.id == 0) {
-                menu.getItem(0).setVisible(false);
+                menu.findItem(R.id.newpost).setVisible(false);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -363,6 +365,13 @@ public class AppActivity extends Activity {
         newsfeedLayout = (NewsfeedLayout) findViewById(R.id.newsfeed_layout);
         friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
         groupsLayout = (GroupsLayout) findViewById(R.id.groups_layout);
+        ProfileWallSelector selector = profileLayout.findViewById(R.id.wall_selector);
+        (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNewPostActivity();
+            }
+        });
         TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
         setupTabHost(friends_tabhost, "friends");
         ((TabSelector) friendsLayout.findViewById(R.id.selector)).setLength(2);
@@ -374,6 +383,12 @@ public class AppActivity extends Activity {
 
             }
         });
+        if(activity_menu == null) {
+            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
+            activity_menu = p.getMenu();
+            getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
+            onCreateOptionsMenu(activity_menu);
+        }
         conversationsLayout = (ConversationsLayout) findViewById(R.id.conversations_layout);
         progressLayout.setVisibility(View.VISIBLE);
         newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
@@ -397,9 +412,6 @@ public class AppActivity extends Activity {
         }
         setActionBar("custom_newsfeed");
         setActionBarTitle(getResources().getString(R.string.newsfeed));
-        if(activity_menu == null) {
-            onPrepareOptionsMenu(activity_menu);
-        }
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
     }
@@ -598,7 +610,7 @@ public class AppActivity extends Activity {
                         onPrepareOptionsMenu(activity_menu);
                     }
                     try {
-                        MenuItem newpost = activity_menu.getItem(0);
+                        MenuItem newpost = activity_menu.findItem(R.id.newpost);
                         newpost.setVisible(true);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -1036,7 +1048,7 @@ public class AppActivity extends Activity {
         }
         onCreateOptionsMenu(activity_menu);
         try {
-            activity_menu.getItem(0).setVisible(false);
+            activity_menu.findItem(R.id.remove_friend).setVisible(false);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -38,7 +38,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:gravity="center"
-                    android:text="Application title"
+                    android:text="@string/full_app_name"
                     android:textColor="#4682b8"
                     android:textSize="18dp"
                     android:textStyle="bold"

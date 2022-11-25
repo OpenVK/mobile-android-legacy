@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:key="main_settings">
 
     
-	<PreferenceCategory android:title="@string/sett_general">
+	<PreferenceCategory android:title="@string/sett_general"
+		android:key="general_settings">
 		<!-- maybe implement
                 <ListPreference android:entries="@array/sett_friends_order"
                     android:entryValues="@array/sett_friends_order_v" android:title="@string/sett_flist_sort"
@@ -69,7 +71,7 @@
 			android:summary="" android:key="logOut"/>
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/sett_other">
+	<PreferenceCategory android:title="@string/sett_other" android:key="cat_others">
 
 		<Preference
 			android:id="@+id/network_settings"

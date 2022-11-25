@@ -67,7 +67,8 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/btn_light_blue"
                         android:src="@drawable/ic_ab_add"
-                        tools:ignore="ContentDescription,RtlHardcoded" />
+                        tools:ignore="ContentDescription,RtlHardcoded"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 

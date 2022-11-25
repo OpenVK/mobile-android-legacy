@@ -88,6 +88,8 @@ public class FriendsListAdapter extends BaseAdapter {
         }
         if(item.avatar != null) {
             ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageBitmap(item.avatar);
+        } else {
+            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
         }
 
         view.setOnClickListener(new View.OnClickListener() {

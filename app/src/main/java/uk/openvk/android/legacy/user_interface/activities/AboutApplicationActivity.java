@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -25,6 +27,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 public class AboutApplicationActivity extends Activity {
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
+    private int logo_longclicks;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,17 +50,27 @@ public class AboutApplicationActivity extends Activity {
             });
         }
 
-        ScrollView scrollView = findViewById(R.id.about_scrollview);
-        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-        scrollView.setFocusable(true);
-        scrollView.setFocusableInTouchMode(true);
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        setView();
+    }
+
+    private void setView() {
+        ImageView logo = findViewById(R.id.logo);
+        logo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.requestFocusFromTouch();
+            public boolean onLongClick(View v) {
+                if(logo_longclicks == 2) {
+                    Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                    startActivity(intent);
+                    logo_longclicks = 0;
+                } else {
+                    logo_longclicks++;
+                }
                 return false;
             }
         });
+
+        ScrollView scrollView = findViewById(R.id.about_scrollview);
+        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
         TextView app_title = findViewById(R.id.app_title);
         TextView app_version_label = findViewById(R.id.app_version_text);
@@ -73,16 +86,16 @@ public class AboutApplicationActivity extends Activity {
         if(instance_prefs.getString("server", "").equals("openvk.su") || instance_prefs.getString("server", "").equals("openvk.uk") || instance_prefs.getString("server", "").equals("openvk.co")) {
             app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "openvk://profile")));
             app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "openvk://profile", "openvk://profile")));
-            app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "openvk://group")));
+            app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "openvk://group", String.format("http://%s", instance_prefs.getString("server", "").equals("openvk.uk")))));
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "https://openvk.uk/")));
                 app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "https://openvk.uk/", "https://openvk.uk/")));
-                app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "https://openvk.uk")));
+                app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "https://openvk.uk", "https://openvk.uk")));
             } else {
                 app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "http://openvk.co/")));
                 app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "http://openvk.co/", "http://openvk.co/")));
-                app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "http://openvk.co")));
+                app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "http://openvk.co", "http://openvk.co")));
             }
         }
         app_design_label.setText(Html.fromHtml(getResources().getString(R.string.app_design_value)));
