@@ -1,0 +1,5 @@
+1. Groups list when updating avatars no longer scrolls up.
+2. Improvements for Android 2.x: top menu in profiles.
+3. Sending posts from your profile works again.
+
+⚠️ app-stable-release.apk build is required for release in various app stores, it cannot be installed on top of debug builds!
