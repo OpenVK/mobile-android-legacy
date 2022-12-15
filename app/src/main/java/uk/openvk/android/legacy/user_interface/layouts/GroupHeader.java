@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.user_interface.text.CenteredImageSpan;
 
 public class GroupHeader extends RelativeLayout {
     private boolean online;
@@ -43,7 +44,8 @@ public class GroupHeader extends RelativeLayout {
     public void setVerified(boolean verified, Context ctx) {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
-           ImageSpan imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.ic_verified, DynamicDrawableSpan.ALIGN_BASELINE);
+           ImageSpan imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
+           ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }

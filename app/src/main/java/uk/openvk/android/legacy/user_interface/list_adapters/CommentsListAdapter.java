@@ -131,10 +131,10 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                             if(finalRegexp_results > 0) {
                                 comment_text.setText(Html.fromHtml(item.text));
                                 comment_text.setAutoLinkMask(0);
-                                expand_text_btn.setVisibility(View.GONE);
                             } else {
                                 comment_text.setText(item.text);
                             }
+                            expand_text_btn.setVisibility(View.GONE);
                         }
                     });
                 } else {

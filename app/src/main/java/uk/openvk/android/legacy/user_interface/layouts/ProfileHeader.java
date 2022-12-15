@@ -79,13 +79,8 @@ public class ProfileHeader extends RelativeLayout {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
            ImageSpan imageSpan;
-           if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2) {
-               // Workaround for Android Honeycomb (3.0 - 3.2.7)
-               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
-               ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, -2, 0, 0);
-           } else {
-               imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon, DynamicDrawableSpan.ALIGN_BASELINE);
-           }
+           imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
+           ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }

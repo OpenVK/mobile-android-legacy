@@ -86,7 +86,7 @@ public class AboutApplicationActivity extends Activity {
         if(instance_prefs.getString("server", "").equals("openvk.su") || instance_prefs.getString("server", "").equals("openvk.uk") || instance_prefs.getString("server", "").equals("openvk.co")) {
             app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "openvk://profile")));
             app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "openvk://profile", "openvk://profile")));
-            app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "openvk://group", String.format("http://%s", instance_prefs.getString("server", "").equals("openvk.uk")))));
+            app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "openvk://group", String.format("http://%s", instance_prefs.getString("server", "")))));
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "https://openvk.uk/")));

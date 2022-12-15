@@ -537,6 +537,7 @@ public class GroupIntentActivity extends Activity {
                     if(item.attachments.get(i).type.equals("photo")) {
                         PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
+                        intent.putExtra("author_id", item.author_id);
                         intent.putExtra("photo_id", photo.id);
                     }
                 }
