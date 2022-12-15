@@ -209,7 +209,7 @@
 
 	<string name="sett_network">Network settings</string>
 	<string name="sett_https">Secure connection</string>
-	<string name="sett_https_summary">Force use HTTPS protocol</string>
+	<string name="sett_https_summary">Use HTTPS protocol when necessary</string>
 	<string name="sett_use_proxy">Use proxy server</string>
     <string name="sett_proxy_connection">Proxy connection settings</string>
 	<string name="sett_proxy_address">Proxy server address</string>

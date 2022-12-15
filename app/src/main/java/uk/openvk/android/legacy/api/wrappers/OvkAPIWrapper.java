@@ -97,8 +97,13 @@ public class OvkAPIWrapper {
             httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
             legacy_mode = true;
         } else {
-            httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                    .retryOnConnectionFailure(false).build();
+            if(use_https) {
+                httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                        .retryOnConnectionFailure(false).build();
+            } else {
+                httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                        .retryOnConnectionFailure(false).followSslRedirects(false).build();
+            }
             legacy_mode = false;
         }
     }
@@ -245,10 +250,13 @@ public class OvkAPIWrapper {
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (OutOfMemoryError e) {
                         e.printStackTrace();
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                     } catch (IOException e) {
                         e.printStackTrace();
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                     } catch (Exception e) {
                         e.printStackTrace();
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                     }
                 } catch (Exception ex) {
                     sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
@@ -352,10 +360,13 @@ public class OvkAPIWrapper {
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (OutOfMemoryError e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     } catch (IOException e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     } catch (Exception e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     }
                 } catch (Exception ex) {
@@ -581,10 +592,13 @@ public class OvkAPIWrapper {
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (OutOfMemoryError e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     } catch (IOException e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     } catch (Exception e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     }
                 } catch (Exception ex) {
@@ -792,10 +806,13 @@ public class OvkAPIWrapper {
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (OutOfMemoryError e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     } catch (IOException e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     } catch (Exception e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     }
                 } catch (Exception ex) {
@@ -1001,13 +1018,13 @@ public class OvkAPIWrapper {
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (IOException e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, error.description);
                     } catch (Exception e) {
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, error.description);
                     }
                 } catch (Exception ex) {
                     sendMessage(HandlerMessages.UNKNOWN_ERROR, "");

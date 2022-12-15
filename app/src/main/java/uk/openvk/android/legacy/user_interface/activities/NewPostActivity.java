@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -101,6 +102,9 @@ public class NewPostActivity extends Activity {
             if(item.getItemId() == android.R.id.home) {
                 onBackPressed();
             }
+        }
+        if(item.getItemId() == R.id.newpost) {
+
         }
         return super.onMenuItemSelected(featureId, item);
     }

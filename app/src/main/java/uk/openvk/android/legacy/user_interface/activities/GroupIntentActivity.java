@@ -145,6 +145,9 @@ public class GroupIntentActivity extends Activity {
                 onBackPressed();
             }
         }
+        if(item.getItemId() == R.id.newpost) {
+            openNewPostActivity();
+        }
         return super.onMenuItemSelected(featureId, item);
     }
 
