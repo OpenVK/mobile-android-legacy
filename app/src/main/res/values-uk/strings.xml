@@ -193,7 +193,7 @@
 
     <string name="sett_network">Налаштування мережі</string>
     <string name="sett_https">Захищене з\'єднання</string>
-    <string name="sett_https_summary">Примусово використовувати протокол HTTPS</string>
+    <string name="sett_https_summary">Використовувати протокол HTTPS за необхідності</string>
     <string name="sett_use_proxy">Використовувати проксі-сервер</string>
     <string name="sett_proxy_connection">Налаштування проксі-з\'єднання</string>
     <string name="sett_proxy_address">Адреса проксі-сервера</string>
@@ -1237,7 +1237,7 @@
     <string name="instance_links">Посилання:</string>
     <string name="connection_error">Помилка пiдключення</string>
     <string-array name="newsfeed_actionbar_items">
-        <item>Передплати</item>
+        <item>Пiдписки</item>
         <item>Всi новини</item>
     </string-array>
     <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>

@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -207,11 +208,14 @@ public class PhotoViewerActivity extends Activity {
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        WindowManager.LayoutParams attrs = getWindow().getAttributes();
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             if(getActionBar().isShowing()) {
                                 getActionBar().hide();
+                                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
                             } else {
                                 getActionBar().show();
+                                attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
                             }
                         } else {
                             if(actionBarImitation.getVisibility() == View.VISIBLE) {

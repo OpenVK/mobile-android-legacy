@@ -249,6 +249,20 @@ public class AppActivity extends Activity {
         }
         if(item.getItemId() == R.id.newpost) {
             openNewPostActivity();
+        } else if(item.getItemId() == R.id.copy_link) {
+            if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboard.setText(String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
+            } else {
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL", String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
+                clipboard.setPrimaryClip(clip);
+            }
+        } else if(item.getItemId() == R.id.open_in_browser) {
+            String user_url = String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(user_url));
+            startActivity(i);
         }
         return super.onMenuItemSelected(featureId, item);
     }

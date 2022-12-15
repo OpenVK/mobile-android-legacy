@@ -206,24 +206,25 @@ public class DownloadManager {
                             e.printStackTrace();
                         }
                     } else {
-                        filename = photoAttachment.filename;
-                        String short_address = "";
-                        if(photoAttachments.get(i).url.length() > 40) {
-                            short_address = photoAttachments.get(i).url.substring(0, 39);
-                        } else {
-                            short_address = photoAttachments.get(i).url;
-                        }
-                        //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photoAttachments.size()));
-                        url = photoAttachments.get(i).url;
-                        if (legacy_mode) {
-                            request_legacy = new HttpGet(url);
-                            request_legacy.getParams().setParameter("timeout", 30000);
-                        } else {
-                            request = new Request.Builder()
-                                    .url(url)
-                                    .build();
-                        }
                         try {
+                            filename = photoAttachment.filename;
+                            String short_address = "";
+                            if(photoAttachments.get(i).url.length() > 40) {
+                                short_address = photoAttachments.get(i).url.substring(0, 39);
+                            } else {
+                                short_address = photoAttachments.get(i).url;
+                            }
+                            //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photoAttachments.size()));
+                            url = photoAttachments.get(i).url;
+                            if (legacy_mode) {
+                                request_legacy = new HttpGet(url);
+                                request_legacy.getParams().setParameter("timeout", 30000);
+                            } else {
+                                request = new Request.Builder()
+                                        .url(url)
+                                        .build();
+                            }
+
                             if (legacy_mode) {
                                 HttpResponse response = httpClientLegacy.execute(request_legacy);
                                 StatusLine statusLine = response.getStatusLine();
