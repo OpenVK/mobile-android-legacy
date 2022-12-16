@@ -31,7 +31,7 @@
             android:layout_marginBottom="8dip"
             android:paddingBottom="20dip"
             android:paddingTop="20dip"
-            android:src="@drawable/login_logo_white" />
+            android:src="@drawable/login_logo_white_xmas" />
 
     </RelativeLayout>
 
