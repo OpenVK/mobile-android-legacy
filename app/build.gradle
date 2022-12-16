@@ -20,8 +20,8 @@ android {
         minSdkVersion 7
         //noinspection OldTargetApi
         targetSdkVersion 27
-        versionCode 157
-        versionName "1.0.157-beta"
+        versionCode 158
+        versionName "1.0.158-beta"
     }
     buildTypes {
         release {
@@ -35,15 +35,15 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 27
-            versionCode 157
-            versionName "1.0.157-beta"
+            versionCode 158
+            versionName "1.0.158-beta"
         }
         stableConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 27
-            versionCode 157
-            versionName '1.0.157-stable'
+            versionCode 158
+            versionName '1.0.158-stable'
             proguardFile 'app/OpenVK KeyStore.jks'
             signingConfig signingConfigs.def_signing
         }

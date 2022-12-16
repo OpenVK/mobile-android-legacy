@@ -87,6 +87,7 @@ public class PhotoViewerActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.photo));
@@ -210,10 +211,8 @@ public class PhotoViewerActivity extends Activity {
                     public void onClick(View v) {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             if(getActionBar().isShowing()) {
-                                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                                 getActionBar().hide();
                             } else {
-                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                                 getActionBar().show();
                             }
                         } else {
@@ -225,12 +224,6 @@ public class PhotoViewerActivity extends Activity {
                                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                             }
                         }
-                        getWindow().getDecorView().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                handler.sendEmptyMessage(40000);
-                            }
-                        });
                     }
                 });
             } catch (OutOfMemoryError err) {

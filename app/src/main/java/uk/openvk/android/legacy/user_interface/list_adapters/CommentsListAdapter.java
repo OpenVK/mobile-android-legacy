@@ -116,7 +116,38 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     regexp_search = matcher.find();
                 }
 
-                if(text.length() > 500) {
+                String[] lines = text.split("\r\n|\r|\n");
+                if(lines.length > 8 && text.length() <= 500) {
+                    String text_llines = "";
+                    for(int line_no = 0; line_no < 8; line_no++) {
+                        if(line_no == 7) {
+                            text_llines += String.format("%s...", lines[line_no]);
+                        } else {
+                            text_llines += String.format("%s\r\n", lines[line_no]);
+                        }
+                    }
+                    if(regexp_results > 0) {
+                        comment_text.setText(Html.fromHtml(text_llines));
+                        comment_text.setAutoLinkMask(0);
+                    } else {
+                        comment_text.setText(text_llines);
+                    }
+                    expand_text_btn.setVisibility(View.VISIBLE);
+                    final int finalRegexp_results = regexp_results;
+                    final String finalText = text;
+                    expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(finalRegexp_results > 0) {
+                                comment_text.setText(Html.fromHtml(finalText));
+                                comment_text.setAutoLinkMask(0);
+                            } else {
+                                comment_text.setText(finalText);
+                            }
+                            expand_text_btn.setVisibility(View.GONE);
+                        }
+                    });
+                } else if(text.length() > 500) {
                     if(regexp_results > 0) {
                         comment_text.setText(Html.fromHtml(String.format("%s...", text.substring(0, 500))));
                         comment_text.setAutoLinkMask(0);
@@ -125,14 +156,15 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     }
                     expand_text_btn.setVisibility(View.VISIBLE);
                     final int finalRegexp_results = regexp_results;
+                    final String finalText = text;
                     expand_text_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if(finalRegexp_results > 0) {
-                                comment_text.setText(Html.fromHtml(item.text));
+                                comment_text.setText(Html.fromHtml(finalText));
                                 comment_text.setAutoLinkMask(0);
                             } else {
-                                comment_text.setText(item.text);
+                                comment_text.setText(finalText);
                             }
                             expand_text_btn.setVisibility(View.GONE);
                         }

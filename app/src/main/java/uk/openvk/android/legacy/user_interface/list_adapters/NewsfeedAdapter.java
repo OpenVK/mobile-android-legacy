@@ -136,7 +136,70 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 poster_name.setText(item.name);
             }
             post_info.setText(item.info);
-            if(item.text.length() > 500) {
+            String[] lines = item.text.split("\r\n|\r|\n");
+            if(lines.length > 8 && item.text.length() <= 500) {
+                String text_llines = "";
+                post_text.setVisibility(View.VISIBLE);
+                Pattern pattern = Pattern.compile("\\[(.+?)\\]");
+                Matcher matcher = pattern.matcher(item.text);
+                boolean regexp_search = matcher.find();
+                String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                int regexp_results = 0;
+                while(regexp_search) {
+                    if(regexp_results == 0) {
+                        text = text.replace("\n", "<br>");
+                    }
+                    String block = matcher.group();
+                    OvkLink link = new OvkLink();
+                    String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                    link.screen_name = markup[0];
+                    if(markup.length == 2) {
+                        if (markup[0].startsWith("id")) {
+                            link.url = String.format("openvk://profile/%s", markup[0]);
+                            link.name = markup[1];
+                        } else if (markup[0].startsWith("club")) {
+                            link.url = String.format("openvk://group/%s", markup[0]);
+                            link.name = markup[1];
+                        }
+                        link.name = markup[1];
+                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                        }
+                    }
+                    regexp_results = regexp_results + 1;
+                    regexp_search = matcher.find();
+                }
+                lines = text.split("\r\n|\r|\n");
+                for(int line_no = 0; line_no < 8; line_no++) {
+                    if(line_no == 7) {
+                        if(lines[line_no].length() > 0)
+                        text_llines += String.format("%s...", lines[line_no]);
+                    } else if(line_no == 6) {
+                        if (lines[line_no + 1].length() == 0) {
+                            text_llines += String.format("%s", lines[line_no]);
+                        } else {
+                            text_llines += String.format("%s\r\n", lines[line_no]);
+                        }
+                    } else {
+                        text_llines += String.format("%s\r\n", lines[line_no]);
+                    }
+                }
+                post_text.setText(text_llines);
+                expand_text_btn.setVisibility(View.VISIBLE);
+                expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            ((AppActivity) ctx).openWallComments(position, null);
+                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                            ((ProfileIntentActivity) ctx).openWallComments(position, null);
+                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                            ((GroupIntentActivity) ctx).openWallComments(position, null);
+                        }
+                    }
+                });
+            } else if(item.text.length() > 500) {
                 expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]");
@@ -240,7 +303,19 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 original_post_info.setText(item.repost.time);
                 String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
                         .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
-                if(repost_text.length() > 500) {
+                String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
+                if(repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
+                    String text_llines = "";
+                    for(int line_no = 0; line_no < 8; line_no++) {
+                        if(line_no == 7) {
+                            text_llines += String.format("%s...", repost_lines[line_no]);
+                        } else {
+                            text_llines += String.format("%s\r\n", repost_lines[line_no]);
+                        }
+                    }
+                    original_post_text.setText(text_llines);
+                    repost_expand_text_btn.setVisibility(View.VISIBLE);
+                } else if(repost_text.length() > 500) {
                     original_post_text.setText(String.format("%s...", repost_text.substring(0, 500)));
                     repost_expand_text_btn.setVisibility(View.VISIBLE);
                 } else {

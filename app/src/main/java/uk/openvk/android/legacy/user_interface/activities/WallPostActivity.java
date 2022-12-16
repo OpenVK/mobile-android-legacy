@@ -18,7 +18,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,18 +27,17 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
-import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Comment;
-import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.models.RepostInfo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.CommentPanel;
-import uk.openvk.android.legacy.user_interface.layouts.WallPostLayout;
+import uk.openvk.android.legacy.user_interface.layouts.PostViewLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
 
@@ -56,23 +54,24 @@ public class WallPostActivity extends Activity {
     private int owner_id;
     private int post_id;
     private ArrayList<Comment> comments;
-    private WallPostLayout wallPostLayout;
+    private PostViewLayout postViewLayout;
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
     private String author_name;
     private int author_id;
     private int post_author_id;
+    private WallPost post;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.comments_layout);
+        setContentView(R.layout.wall_post_layout);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
-        wallPostLayout = findViewById(R.id.comments_layout);
-        wallPostLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
+        postViewLayout = findViewById(R.id.comments_layout);
+        postViewLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         commentPanel = findViewById(R.id.comment_panel);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if(((EditText)commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() == 0) {
@@ -97,7 +96,7 @@ public class WallPostActivity extends Activity {
             } else {
                 author_name = extras.getString("author_name");
                 author_id = extras.getInt("author_id");
-                WallPost post = new WallPost();
+                post = new WallPost();
                 getPost(post, extras);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -152,10 +151,10 @@ public class WallPostActivity extends Activity {
             post.repost.newsfeed_item.text = extras.getString("repost_text");
         }
 
-        wallPostLayout.setPost(post);
-        wallPostLayout.setPhotoListener(this);
-        wallPostLayout.loadWallAvatar(post_author_id, where);
-        wallPostLayout.loadWallPhoto(post, where);
+        postViewLayout.setPost(post, this);
+        postViewLayout.setPhotoListener(this);
+        postViewLayout.loadWallAvatar(post_author_id, where);
+        postViewLayout.loadWallPhoto(post, where);
     }
 
     private void setCommentsView() {
@@ -180,7 +179,7 @@ public class WallPostActivity extends Activity {
                         comments = new ArrayList<Comment>();
                     }
                     comments.add(comment);
-                    wallPostLayout.createAdapter(WallPostActivity.this, comments);
+                    postViewLayout.createAdapter(WallPostActivity.this, comments);
                     ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
                 } catch (OutOfMemoryError error) {
 
@@ -207,7 +206,7 @@ public class WallPostActivity extends Activity {
                         comments = new ArrayList<Comment>();
                     }
                     comments.add(comment);
-                    wallPostLayout.createAdapter(WallPostActivity.this, comments);
+                    postViewLayout.createAdapter(WallPostActivity.this, comments);
                     ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
                 } catch (OutOfMemoryError error) {
 
@@ -253,16 +252,16 @@ public class WallPostActivity extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        wallPostLayout.adjustLayoutSize(newConfig.orientation);
+        postViewLayout.adjustLayoutSize(newConfig.orientation);
         super.onConfigurationChanged(newConfig);
     }
 
     private void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
             comments = wall.parseComments(this, downloadManager, data.getString("response"));
-            wallPostLayout.createAdapter(this, comments);
+            postViewLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_AVATARS) {
-            wallPostLayout.loadAvatars();
+            postViewLayout.loadAvatars();
         }
     }
 
@@ -276,6 +275,46 @@ public class WallPostActivity extends Activity {
                 intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
                 startActivity(intent);
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void openWallRepostComments() {
+        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
+        try {
+            intent.putExtra("post_id", post.repost.newsfeed_item.post_id);
+            intent.putExtra("owner_id", post.repost.newsfeed_item.owner_id);
+            intent.putExtra("author_name", author_name);
+            intent.putExtra("author_id", author_id);
+            intent.putExtra("post_author_id", post.repost.newsfeed_item.author_id);
+            intent.putExtra("post_author_name", post.repost.newsfeed_item.name);
+            intent.putExtra("post_info", post.repost.newsfeed_item.info);
+            intent.putExtra("post_text", post.repost.newsfeed_item.text);
+            intent.putExtra("post_likes", 0);
+            boolean contains_poll = false;
+            boolean contains_photo = false;
+            boolean is_repost = false;
+            if (post.repost.newsfeed_item.attachments.size() > 0) {
+                for (int i = 0; i < post.repost.newsfeed_item.attachments.size(); i++) {
+                    if (post.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
+                        contains_poll = true;
+                        PollAttachment poll = ((PollAttachment) post.repost.newsfeed_item.attachments.get(i).getContent());
+                        intent.putExtra("poll_question", poll.question);
+                        intent.putExtra("poll_anonymous", poll.anonymous);
+                        //intent.putExtra("poll_answers", poll.answers);
+                        intent.putExtra("poll_total_votes", poll.votes);
+                        intent.putExtra("poll_user_votes", poll.user_votes);
+                    } else if(post.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
+                        contains_photo = true;
+                        PhotoAttachment photo = ((PhotoAttachment) post.repost.newsfeed_item.attachments.get(i).getContent());
+                        intent.putExtra("photo_id", photo.id);
+                    }
+                }
+            }
+            intent.putExtra("contains_poll", contains_poll);
+            intent.putExtra("contains_photo", contains_photo);
+            startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

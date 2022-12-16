@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -29,8 +28,6 @@ import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.OvkLink;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
@@ -40,7 +37,7 @@ import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
 
-public class WallPostLayout extends LinearLayout {
+public class PostViewLayout extends LinearLayout {
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -53,10 +50,10 @@ public class WallPostLayout extends LinearLayout {
     private LinearLayoutManager llm;
     private ArrayList<Comment> comments;
 
-    public WallPostLayout(Context context, AttributeSet attrs) {
+    public PostViewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.wall_post_layout, null);
+                R.layout.post_view_layout, null);
 
         this.addView(view);
 
@@ -128,7 +125,7 @@ public class WallPostLayout extends LinearLayout {
         }
     }
 
-    public void setPost(WallPost item) {
+    public void setPost(WallPost item, final Context ctx) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
         if(item.text.length() > 0) {
             String text = item.text;
@@ -184,6 +181,7 @@ public class WallPostLayout extends LinearLayout {
             TextView original_poster_name = ((TextView) findViewById(R.id.post_retweet_name));
             TextView original_post_info = ((TextView) findViewById(R.id.post_retweet_time));
             TextView original_post_text = ((TextView) findViewById(R.id.post_retweet_text));
+            TextView repost_expand_text_btn = ((TextView) findViewById(R.id.repost_expand_text_btn));
             ImageView original_post_photo = (ImageView) findViewById(R.id.repost_photo);
             PollLayout original_post_poll = (PollLayout) findViewById(R.id.repost_poll_layout);
             repost_info.setVisibility(View.VISIBLE);
@@ -191,11 +189,29 @@ public class WallPostLayout extends LinearLayout {
             original_post_info.setText(item.repost.newsfeed_item.info);
             original_post_text.setText(item.repost.newsfeed_item.text);
             original_post_text.setMovementMethod(LinkMovementMethod.getInstance());
-
+            String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
+            if(repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
+                String text_llines = "";
+                for(int line_no = 0; line_no < 8; line_no++) {
+                    if(line_no == 7) {
+                        text_llines += String.format("%s...", repost_lines[line_no]);
+                    } else {
+                        text_llines += String.format("%s\r\n", repost_lines[line_no]);
+                    }
+                }
+                original_post_text.setText(text_llines);
+                repost_expand_text_btn.setVisibility(View.VISIBLE);
+            } else if(item.repost.newsfeed_item.text.length() > 500) {
+                original_post_text.setText(String.format("%s...", item.repost.newsfeed_item.text.substring(0, 500)));
+                repost_expand_text_btn.setVisibility(View.VISIBLE);
+            } else {
+                original_post_text.setText(item.repost.newsfeed_item.text);
+                repost_expand_text_btn.setVisibility(View.GONE);
+            }
             repost_info.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    ((WallPostActivity) ctx).openWallRepostComments();
                 }
             });
         } else {
