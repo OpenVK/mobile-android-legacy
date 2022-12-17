@@ -295,7 +295,7 @@
     	<item>Только для друзей</item>
     	<item>Экспорт в Telegram</item>
     </string-array>
-    <string name="photo_save_ok">Фотография сохранена в паямть устройства</string>
+    <string name="photo_save_ok">Фотография сохранена в память устройства</string>
 
     <string name="share_wall">OpenVK - стена</string>
     <string name="share_album">OpenVK - фотоальбом</string>
