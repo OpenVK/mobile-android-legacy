@@ -40,6 +40,8 @@ import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.user_interface.layouts.AboutGroupLayout;
+import uk.openvk.android.legacy.user_interface.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.GroupHeader;
@@ -342,6 +344,18 @@ public class GroupIntentActivity extends Activity {
         header.setProfileName(String.format("%s  ", group.name));
         header.setVerified(group.verified, this);
         ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count, Arrays.asList(getResources().getStringArray(R.array.profile_members)).get(2), "");
+        ((AboutGroupLayout) findViewById(R.id.about_group_layout)).setGroupInfo(group.description, group.site);
+        header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AboutGroupLayout aboutGroup = ((AboutGroupLayout) findViewById(R.id.about_group_layout));
+                if (aboutGroup.getVisibility() == View.GONE) {
+                    aboutGroup.setVisibility(View.VISIBLE);
+                } else {
+                    aboutGroup.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     public void loadAvatar() {

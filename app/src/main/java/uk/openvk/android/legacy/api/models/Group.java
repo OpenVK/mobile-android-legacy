@@ -29,6 +29,8 @@ public class Group implements Parcelable {
     public String avatar_osize_url;
     public long members_count;
     public int is_member;
+    public String description;
+    public String site;
 
     public Group() {
         jsonParser = new JSONParser();
@@ -82,6 +84,12 @@ public class Group implements Parcelable {
                 }
                 if(group.has("members_count")) {
                     members_count = group.getLong("members_count");
+                }
+                if(group.has("description") && !group.isNull("description")) {
+                    description = group.getString("description");
+                }
+                if(group.has("site") && !group.isNull("site")) {
+                    site = group.getString("site");
                 }
             }
         } catch(Exception ex) {
