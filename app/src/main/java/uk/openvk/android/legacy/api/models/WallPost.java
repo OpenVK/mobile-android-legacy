@@ -22,14 +22,14 @@ public class WallPost implements Parcelable {
     public RepostInfo repost;
     public String info;
     public String text;
-    public int owner_id;
-    public int post_id;
+    public long owner_id;
+    public long post_id;
     public PostCounters counters;
-    public int author_id;
+    public long author_id;
     public boolean verified_author;
     public ArrayList<Attachment> attachments;
 
-    public WallPost(String author, int dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments, int o_id, int p_id, Context ctx) {
+    public WallPost(String author, long dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments, long o_id, long p_id, Context ctx) {
         name = author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
         Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
@@ -64,8 +64,8 @@ public class WallPost implements Parcelable {
         name = in.readString();
         info = in.readString();
         text = in.readString();
-        owner_id = in.readInt();
-        post_id = in.readInt();
+        owner_id = in.readLong();
+        post_id = in.readLong();
         author_id = in.readInt();
     }
 
@@ -93,8 +93,8 @@ public class WallPost implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(info);
         parcel.writeString(text);
-        parcel.writeInt(owner_id);
-        parcel.writeInt(post_id);
-        parcel.writeInt(author_id);
+        parcel.writeLong(owner_id);
+        parcel.writeLong(post_id);
+        parcel.writeLong(author_id);
     }
 }

@@ -1187,7 +1187,7 @@ public class AppActivity extends Activity {
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
     }
 
-    public void getConversationById(int peer_id) {
+    public void getConversationById(long peer_id) {
         Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
         try {
             intent.putExtra("peer_id", peer_id);
@@ -1351,12 +1351,12 @@ public class AppActivity extends Activity {
         }
     }
 
-    public void addToFriends(int user_id) {
+    public void addToFriends(long user_id) {
         if(user_id != account.id) {
             friends.add(ovk_api, user_id);
         }
     }
-    public void deleteFromFriends(int user_id) {
+    public void deleteFromFriends(long user_id) {
         if(user_id != account.id) {
             friends.delete(ovk_api, user_id);
         }

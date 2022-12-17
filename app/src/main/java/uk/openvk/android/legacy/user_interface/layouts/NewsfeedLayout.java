@@ -184,6 +184,7 @@ public class NewsfeedLayout extends LinearLayout {
                     } else {
                         Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getClass().getSimpleName()));
                     }
+                    ex.printStackTrace();
                 }
             }
             newsfeedAdapter.notifyDataSetChanged();

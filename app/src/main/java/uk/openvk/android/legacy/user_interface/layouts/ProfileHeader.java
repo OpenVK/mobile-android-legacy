@@ -44,7 +44,7 @@ public class ProfileHeader extends RelativeLayout {
         ((TextView) findViewById(R.id.profile_activity)).setText(status);
     }
 
-    public void setLastSeen(int date) {
+    public void setLastSeen(long date) {
         if(online) {
             ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
         } else {

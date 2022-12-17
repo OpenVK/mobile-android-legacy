@@ -226,7 +226,7 @@ public class PostViewLayout extends LinearLayout {
 
     }
 
-    public void loadWallAvatar(int author_id, String where) {
+    public void loadWallAvatar(long author_id, String where) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;

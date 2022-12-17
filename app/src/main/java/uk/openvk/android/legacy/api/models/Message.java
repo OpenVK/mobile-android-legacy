@@ -16,13 +16,13 @@ public class Message {
     public boolean isIncoming;
     public boolean isError;
     public String timestamp;
-    public int timestamp_int;
+    public long timestamp_int;
     public String text;
     public boolean sending;
     public long author_id;
     private JSONParser parser;
 
-    public Message(long id, boolean incoming, boolean error, int _timestamp, String _text, Context ctx) {
+    public Message(long id, boolean incoming, boolean error, long _timestamp, String _text, Context ctx) {
         this.id = id;
         isIncoming = incoming;
         isError = error;

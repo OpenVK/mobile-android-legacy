@@ -51,16 +51,17 @@ public class WallPostActivity extends Activity {
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
-    private int owner_id;
-    private int post_id;
+    private long owner_id;
+    private long post_id;
     private ArrayList<Comment> comments;
     private PostViewLayout postViewLayout;
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
     private String author_name;
     private int author_id;
-    private int post_author_id;
+    private long post_author_id;
     private WallPost post;
+    private String author_mention = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,17 +129,17 @@ public class WallPostActivity extends Activity {
     }
 
     private void getPost(WallPost post, Bundle extras) {
-        post.owner_id = extras.getInt("owner_id");
-        post.post_id = extras.getInt("post_id");
+        post.owner_id = extras.getLong("owner_id");
+        post.post_id = extras.getLong("post_id");
         post.name = extras.getString("post_author_name");
         post.info = extras.getString("post_info");
         post.text = extras.getString("post_text");
         post.counters = new PostCounters();
         post.counters.likes = extras.getInt("post_likes");
-        owner_id = extras.getInt("owner_id");
-        post_id = extras.getInt("post_id");
+        owner_id = extras.getLong("owner_id");
+        post_id = extras.getLong("post_id");
         String where = extras.getString("where");
-        post_author_id = extras.getInt("post_author_id");
+        post_author_id = extras.getLong("post_author_id");
         post.attachments = new ArrayList<>();
         if(extras.getBoolean("is_repost")) {
             post.repost = new RepostInfo(extras.getString("repost_author_name"), 0, this);
@@ -170,7 +171,7 @@ public class WallPostActivity extends Activity {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    Comment comment = new Comment(author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                    Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
@@ -197,7 +198,7 @@ public class WallPostActivity extends Activity {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    Comment comment = new Comment(author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                    Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
@@ -317,6 +318,22 @@ public class WallPostActivity extends Activity {
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void addAuthorMention(int position) {
+        Comment comment = comments.get(position);
+        String comment_text = commentPanel.getText();
+        String old_author_mention = author_mention;
+        if(comment.author_id > 0) {
+            author_mention = String.format("[id%s|%s], ", comment.author_id, comment.author);
+        } else {
+            author_mention = String.format("[club%s|%s], ", comment.author_id, comment.author);
+        }
+        if(comment_text.startsWith(old_author_mention)) {
+            commentPanel.setText(author_mention + comment_text.substring(old_author_mention.length()));
+        } else {
+            commentPanel.setText(author_mention + comment_text);
         }
     }
 }

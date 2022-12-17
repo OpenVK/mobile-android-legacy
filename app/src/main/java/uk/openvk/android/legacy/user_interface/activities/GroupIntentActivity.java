@@ -296,7 +296,7 @@ public class GroupIntentActivity extends Activity {
         }
     }
 
-    private void setJoinButtonListener(int id) {
+    private void setJoinButtonListener(long id) {
         if(((OvkApplication) getApplicationContext()).isTablet) {
             final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {

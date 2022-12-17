@@ -81,10 +81,10 @@ public class Newsfeed implements Parcelable {
                     JSONObject likes = post.getJSONObject("likes");
                     JSONObject reposts = post.getJSONObject("reposts");
                     JSONArray attachments = post.getJSONArray("attachments");
-                    int owner_id = post.getInt("owner_id");
-                    int post_id = post.getInt("id");
-                    int author_id = post.getInt("from_id");
-                    int dt_sec = post.getInt("date");
+                    long owner_id = post.getLong("owner_id");
+                    long post_id = post.getLong("id");
+                    long author_id = post.getLong("from_id");
+                    long dt_sec = post.getLong("date");
                     String original_author_name = "";
                     String original_author_avatar_url = "";
                     String author_name = "";
@@ -104,12 +104,12 @@ public class Newsfeed implements Parcelable {
 
                     ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality, attachments);
 
-                    WallPost item = new WallPost(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "", attachments_list, owner_id, post_id, ctx);
+                    WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec, null, content, counters, "", attachments_list, owner_id, post_id, ctx);
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
-                        WallPost repost_item = new WallPost(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), null, repost.getString("text"), null, "",
-                                null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
-                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), ctx);
+                        WallPost repost_item = new WallPost(String.format("(Unknown author: %s)", repost.getLong("from_id")), repost.getLong("date"), null, repost.getString("text"), null, "",
+                                null, repost.getLong("owner_id"), repost.getLong("id"), ctx);
+                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)", repost.getLong("from_id")), repost.getLong("date"), ctx);
                         repostInfo.newsfeed_item = repost_item;
                         item.repost = repostInfo;
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
@@ -122,7 +122,7 @@ public class Newsfeed implements Parcelable {
                             JSONArray profiles = newsfeed.getJSONArray("profiles");
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
-                                if (profile.getInt("id") == author_id) {
+                                if (profile.getLong("id") == author_id) {
                                     author_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
                                     author_avatar_url = profile.getString("photo_100");
                                     if(profile.has("verified")) {
@@ -152,7 +152,7 @@ public class Newsfeed implements Parcelable {
                                 JSONArray groups = newsfeed.getJSONArray("groups");
                                 for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
                                     JSONObject group = groups.getJSONObject(groups_index);
-                                    if (-group.getInt("id") == owner_id) {
+                                    if (-group.getLong("id") == owner_id) {
                                         owner_name = group.getString("name");
                                         avatar_url = group.getString("photo_100");
                                         if(group.has("verified")) {
@@ -196,7 +196,7 @@ public class Newsfeed implements Parcelable {
                     item.verified_author = verified_author;
                     PhotoAttachment avatar = new PhotoAttachment();
                     avatar.url = avatar_url;
-                    avatar.filename = String.format("avatar_%d", author_id);
+                    avatar.filename = String.format("avatar_%s", author_id);
                     avatars.add(avatar);
                     this.items.add(item);
                 }
@@ -215,22 +215,22 @@ public class Newsfeed implements Parcelable {
     }
 
     public void get(OvkAPIWrapper ovk, int count) {
-        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&extended=1", count));
+        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%s&extended=1", count));
     }
 
     public void get(OvkAPIWrapper ovk, int count, long start_from) {
-        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%d&start_from=%d&extended=1", count, start_from), "more_news");
+        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
     }
 
     public void getGlobal(OvkAPIWrapper ovk, int count) {
-        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%d&extended=1", count));
+        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&extended=1", count));
     }
 
     public void getGlobal(OvkAPIWrapper ovk, int count, long start_from) {
-        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%d&start_from=%d&extended=1", count, start_from), "more_news");
+        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
     }
 
-    public ArrayList<Attachment> createAttachmentsList(int owner_id, int post_id, String quality, JSONArray attachments) {
+    public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality, JSONArray attachments) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
@@ -255,7 +255,7 @@ public class Newsfeed implements Parcelable {
                         photoAttachment.url = photo_original_size;
                     }
                     photoAttachment.original_url = photo_original_size;
-                    photoAttachment.filename = String.format("newsfeed_attachment_o%dp%d", owner_id, post_id);
+                    photoAttachment.filename = String.format("newsfeed_attachment_o%sp%s", owner_id, post_id);
                     if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
                         attachment_status = "loading";
                     } else {

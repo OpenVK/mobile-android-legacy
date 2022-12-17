@@ -86,7 +86,7 @@ public class ProfileLayout extends LinearLayout {
         }
     }
 
-    public void setDMButtonListener(final Context ctx, final int peer_id) {
+    public void setDMButtonListener(final Context ctx, final long peer_id) {
         if(!((OvkApplication) ctx.getApplicationContext()).isTablet) {
             ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
                 @Override
@@ -112,7 +112,7 @@ public class ProfileLayout extends LinearLayout {
         }
     }
 
-    public void setAddToFriendsButtonListener(final Context ctx, final int user_id, final User user) {
+    public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {
         TextView friend_status = ((TextView) findViewById(R.id.friend_status));
         ImageButton add_to_friends_btn = ((ImageButton) findViewById(R.id.add_to_friends));
         if(user.friends_status == 0) {

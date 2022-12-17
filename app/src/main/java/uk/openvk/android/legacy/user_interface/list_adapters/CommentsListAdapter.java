@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 
 public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapter.Holder> {
 
@@ -66,6 +68,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         public final ImageView author_avatar;
         public final View divider;
         private final TextView expand_text_btn;
+        private final TextView reply_btn;
 
         public Holder(View view) {
             super(view);
@@ -76,13 +79,22 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             this.author_avatar = view.findViewById(R.id.author_avatar);
             this.divider = view.findViewById(R.id.divider);
             this.expand_text_btn = view.findViewById(R.id.expand_text_btn);
+            this.reply_btn = view.findViewById(R.id.post_reply);
         }
 
         void bind(final int position) {
             final Comment item = getItem(position);
             author_name.setText(item.author);
             Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
-            comment_info.setText(new SimpleDateFormat("d MMMM yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
+            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
+            reply_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                        ((WallPostActivity) ctx).addAuthorMention(position);
+                    }
+                }
+            });
             if(item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]");

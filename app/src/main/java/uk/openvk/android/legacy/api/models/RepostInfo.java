@@ -14,7 +14,7 @@ public class RepostInfo implements Parcelable {
     public String name;
     public String time;
     public WallPost newsfeed_item;
-    public RepostInfo(String original_author, int dt_sec, Context ctx) {
+    public RepostInfo(String original_author, long dt_sec, Context ctx) {
         name = original_author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
         Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);

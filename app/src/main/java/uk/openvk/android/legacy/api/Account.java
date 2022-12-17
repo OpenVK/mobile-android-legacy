@@ -16,7 +16,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 public class Account implements Parcelable {
     public String first_name;
     public String last_name;
-    public int id;
+    public long id;
     public String status;
     public String birthdate;
     public AccountCounters counters;
@@ -45,7 +45,7 @@ public class Account implements Parcelable {
         parse(response, ovk);
     }
 
-    public Account(String first_name, String last_name, int id, String status, String birthdate) {
+    public Account(String first_name, String last_name, long id, String status, String birthdate) {
         retryConnection = false;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -86,8 +86,8 @@ public class Account implements Parcelable {
                 user.first_name = account.getString("first_name");
                 last_name = account.getString("last_name");
                 user.last_name = account.getString("last_name");
-                id = account.getInt("id");
-                user.id = account.getInt("id");
+                id = account.getLong("id");
+                user.id = account.getLong("id");
                 status = account.getString("status");
                 user.status = account.getString("status");
                 birthdate = account.getString("bdate");
@@ -133,7 +133,7 @@ public class Account implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(first_name);
         parcel.writeString(last_name);
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeString(status);
         parcel.writeString(birthdate);
     }

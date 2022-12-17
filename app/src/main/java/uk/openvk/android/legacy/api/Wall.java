@@ -77,10 +77,10 @@ public class Wall implements Parcelable {
                     JSONObject likes = post.getJSONObject("likes");
                     JSONObject reposts = post.getJSONObject("reposts");
                     JSONArray attachments = post.getJSONArray("attachments");
-                    int owner_id = post.getInt("owner_id");
-                    int post_id = post.getInt("id");
-                    int author_id = post.getInt("from_id");
-                    int dt_sec = post.getInt("date");
+                    long owner_id = post.getLong("owner_id");
+                    long post_id = post.getLong("id");
+                    long author_id = post.getLong("from_id");
+                    long dt_sec = post.getLong("date");
                     String original_author_name = "";
                     String original_author_avatar_url = "";
                     String author_name = "";
@@ -189,10 +189,12 @@ public class Wall implements Parcelable {
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject item = items.getJSONObject(i);
                     String text = item.getString("text");
-                    int author_id = item.getInt("from_id");
-                    int date = item.getInt("date");
+                    long comment_id = item.getLong("id");
+                    long author_id = item.getLong("from_id");
+                    long date = item.getLong("date");
                     Comment comment = new Comment();
-                    comment.id = author_id;
+                    comment.id = comment_id;
+                    comment.author_id = author_id;
                     comment.text = text;
                     comment.author = String.format("(Unknown author: %d)", author_id);
                     comment.date = date;
@@ -204,7 +206,7 @@ public class Wall implements Parcelable {
                             JSONArray profiles = comments.getJSONArray("profiles");
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
-                                if (profile.getInt("id") == author_id) {
+                                if (profile.getLong("id") == author_id) {
                                     comment.author = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
                                     if(profile.has("photo_100")) {
                                         comment.avatar_url = profile.getString("photo_100");
@@ -219,7 +221,7 @@ public class Wall implements Parcelable {
                             JSONArray groups = comments.getJSONArray("groups");
                             for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
                                 JSONObject group = groups.getJSONObject(groups_index);
-                                if (group.getInt("id") == author_id) {
+                                if (group.getLong("id") == author_id) {
                                     comment.author = group.getString("name");
                                     if(group.has("photo_100")) {
                                         comment.avatar_url = group.getString("photo_100");
@@ -241,7 +243,7 @@ public class Wall implements Parcelable {
         return comments;
     }
 
-    public ArrayList<Attachment> createAttachmentsList(int owner_id, int post_id, String quality, JSONArray attachments) {
+    public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality, JSONArray attachments) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
@@ -321,7 +323,7 @@ public class Wall implements Parcelable {
         return attachments_list;
     }
 
-    public void get(OvkAPIWrapper ovk, int owner_id, int count) {
+    public void get(OvkAPIWrapper ovk, long owner_id, int count) {
         ovk.sendAPIMethod("Wall.get", String.format("owner_id=%d&count=%d&extended=1", owner_id, count));
     }
 
@@ -329,15 +331,15 @@ public class Wall implements Parcelable {
         return items;
     }
 
-    public void post(OvkAPIWrapper ovk, int owner_id, String post) {
+    public void post(OvkAPIWrapper ovk, long owner_id, String post) {
         ovk.sendAPIMethod("Wall.post", String.format("owner_id=%d&message=%s", owner_id, URLEncoder.encode(post)));
     }
 
-    public void getComments(OvkAPIWrapper ovk, int owner_id, int post_id) {
+    public void getComments(OvkAPIWrapper ovk, long owner_id, long post_id) {
         ovk.sendAPIMethod("Wall.getComments", String.format("owner_id=%d&post_id=%d&extended=1&count=50", owner_id, post_id));
     }
 
-    public void createComment(OvkAPIWrapper ovk, int owner_id, int post_id, String text) {
+    public void createComment(OvkAPIWrapper ovk, long owner_id, long post_id, String text) {
         ovk.sendAPIMethod("Wall.createComment", String.format("owner_id=%d&post_id=%d&message=%s", owner_id, post_id, URLEncoder.encode(text)));
     }
 

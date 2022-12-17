@@ -15,13 +15,13 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 public class Conversation {
     public String title;
-    public int peer_id;
+    public long peer_id;
     public int online;
     public Bitmap avatar;
     public Bitmap lastMsgAvatar;
-    public int lastMsgAuthorId;
+    public long lastMsgAuthorId;
     public String lastMsgText;
-    public int lastMsgTime;
+    public long lastMsgTime;
     public String avatar_url;
     private ArrayList<Message> history;
     private JSONParser jsonParser;
@@ -31,7 +31,7 @@ public class Conversation {
         history = new ArrayList<Message>();
     }
 
-    public void getHistory(OvkAPIWrapper ovk, int peer_id) {
+    public void getHistory(OvkAPIWrapper ovk, long peer_id) {
         this.peer_id = peer_id;
         ovk.sendAPIMethod("Messages.getHistory", String.format("peer_id=%d&count=150&rev=1", peer_id));
     }
@@ -50,8 +50,8 @@ public class Conversation {
                     } else {
                         incoming = true;
                     }
-                    Message message = new Message(item.getLong("id"), incoming, false, item.getInt("date"), item.getString("text"), ctx);
-                    message.author_id = item.getInt("from_id");
+                    Message message = new Message(item.getLong("id"), incoming, false, item.getLong("date"), item.getString("text"), ctx);
+                    message.author_id = item.getLong("from_id");
                     history.add(message);
                 }
             } catch(JSONException ex) {

@@ -26,7 +26,7 @@ public class ProfileCounterLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void setCounter(int count, String label, String action) {
+    public void setCounter(long count, String label, String action) {
         this.action = action;
         ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
         ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
