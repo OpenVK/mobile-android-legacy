@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Notification;
@@ -21,14 +22,19 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -124,6 +130,7 @@ public class AppActivity extends Activity {
     private boolean inBackground;
     private ActionBarLayout ab_layout;
     private int menu_id;
+    private ActionBarImitation actionBarImitation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +201,13 @@ public class AppActivity extends Activity {
         }
         Bundle data = new Bundle();
         createSlidingMenu();
+
+        if(activity_menu == null) {
+            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
+            activity_menu = p.getMenu();
+            getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
+            onCreateOptionsMenu(activity_menu);
+        }
     }
 
     private void setActionBar(String layout_name) {
@@ -211,7 +225,7 @@ public class AppActivity extends Activity {
                     e.printStackTrace();
                 }
             } else {
-                ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
+                actionBarImitation = findViewById(R.id.actionbar_imitation);
                 actionBarImitation.enableCustomView(true);
             }
         } else {
@@ -226,7 +240,7 @@ public class AppActivity extends Activity {
                     e.printStackTrace();
                 }
             } else {
-                ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
+                actionBarImitation = findViewById(R.id.actionbar_imitation);
                 actionBarImitation.enableCustomView(false);
             }
         }
@@ -414,7 +428,7 @@ public class AppActivity extends Activity {
                 getActionBar().setIcon(R.drawable.ic_left_menu);
             }
         } else {
-            ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
             actionBarImitation.setOnMenuClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -428,6 +442,47 @@ public class AppActivity extends Activity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
+    }
+
+    private void createActionPopupMenu(final Menu menu, boolean enable) {
+        if(enable) {
+            final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+            final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            popupMenu.setOutsideTouchable(true);
+            popupMenu.setFocusable(true);
+            final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
+            actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
+                @SuppressLint("RtlHardcoded")
+                @Override
+                public void onClick(View v) {
+                    if (popupMenu.isShowing()) {
+                        popupMenu.dismiss();
+                    } else {
+                        menu_list.setAdapter(actionBarImitation.overflow_adapter);
+                        popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
+                    }
+                }
+            });
+            menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(menu.getItem(position).isVisible()) {
+                        onMenuItemSelected(0, menu.getItem(position));
+                    } else {
+                        Toast.makeText(AppActivity.this, getResources().getString(R.string.not_supported), Toast.LENGTH_LONG).show();
+                    }
+                    popupMenu.dismiss();
+                }
+            });
+            ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupMenu.dismiss();
+                }
+            });
+        } else {
+            actionBarImitation.createOverflowMenu(false, menu, null);
+        }
     }
 
     private void setupTabHost(TabHost tabhost, String where) {
@@ -505,6 +560,10 @@ public class AppActivity extends Activity {
                 friends = new Friends();
             }
             friends.get(ovk_api, account.id, 25, "friends_list");
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBarImitation.setActionButton("", 0, null);
+                createActionPopupMenu(activity_menu, false);
+            }
         } else if(position == 1) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));
@@ -531,6 +590,10 @@ public class AppActivity extends Activity {
                 messages = new Messages();
             }
             messages.getConversations(ovk_api);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBarImitation.setActionButton("", 0, null);
+                createActionPopupMenu(activity_menu, false);
+            }
         } else if(position == 2) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.groups));
@@ -556,6 +619,10 @@ public class AppActivity extends Activity {
                 groups = new Groups();
             }
             groups.getGroups(ovk_api, account.id, 25);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBarImitation.setActionButton("", 0, null);
+                createActionPopupMenu(activity_menu, false);
+            }
         } else if(position == 3) {
             setActionBar("custom_newsfeed");
             menu_id = R.menu.newsfeed;
@@ -585,6 +652,15 @@ public class AppActivity extends Activity {
             }
             newsfeed_count = 25;
             newsfeed.get(ovk_api, newsfeed_count);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openNewPostActivity();
+                    }
+                });
+                createActionPopupMenu(activity_menu, false);
+            }
         } else if(position == 4) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, MainSettingsActivity.class);
@@ -739,6 +815,8 @@ public class AppActivity extends Activity {
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.showNewPostIcon();
             } else if (message == HandlerMessages.FRIENDS_GET) {
                 friends.parse(data.getString("response"), downloadManager, true, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
@@ -1068,6 +1146,10 @@ public class AppActivity extends Activity {
         }
         setActionBar("");
         setActionBarTitle(getResources().getString(R.string.profile));
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            actionBarImitation.setActionButton("", 0, null);
+            createActionPopupMenu(activity_menu, true);
+        }
     }
 
     public void openFriendsList() {

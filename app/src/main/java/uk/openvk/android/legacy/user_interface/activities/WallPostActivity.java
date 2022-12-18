@@ -328,7 +328,7 @@ public class WallPostActivity extends Activity {
         if(comment.author_id > 0) {
             author_mention = String.format("[id%s|%s], ", comment.author_id, comment.author);
         } else {
-            author_mention = String.format("[club%s|%s], ", comment.author_id, comment.author);
+            author_mention = String.format("[club%s|%s], ", -comment.author_id, comment.author);
         }
         if(comment_text.startsWith(old_author_mention)) {
             commentPanel.setText(author_mention + comment_text.substring(old_author_mention.length()));

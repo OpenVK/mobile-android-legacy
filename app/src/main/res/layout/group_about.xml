@@ -15,22 +15,21 @@
             android:id="@+id/about_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:background="@android:drawable/editbox_background"
             android:orientation="vertical"
-            android:paddingTop="14dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="14dp">
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <LinearLayout
                 android:id="@+id/description_ll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="4dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -54,10 +53,10 @@
                 android:id="@+id/site_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="4dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -74,6 +73,8 @@
                     android:layout_height="wrap_content"
                     android:autoLink="web"
                     android:text="Group website"
+                    android:textColorHighlight="@color/ovk_color"
+                    android:textColorLink="@color/ovk_color"
                     android:textSize="18sp" />
 
             </LinearLayout>

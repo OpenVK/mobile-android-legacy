@@ -2,7 +2,7 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     <!--item android:id="@+id/hide" android:title="@string/hide_fron_newsfeed" android:icon="@android:drawable/ic_menu_close_clear_cancel"></item-->
-    <item android:id="@+id/attach" android:title="" android:icon="@drawable/ic_ab_attach" android:showAsAction="always"></item>
+    <item android:id="@+id/attach" android:title="" android:icon="@drawable/ic_ab_attach"></item>
     <item android:id="@+id/edit" android:title="@string/edit" android:icon="@android:drawable/ic_menu_edit"></item>
     <item android:id="@+id/delete" android:title="@string/delete" android:icon="@android:drawable/ic_menu_delete"></item>
     <item android:id="@+id/show_original_post" android:title="@string/show_original_post"></item>

@@ -45,32 +45,37 @@ public class ActionBarImitation extends LinearLayout {                  // for p
     }
 
     public void createOverflowMenu(boolean value, final Menu menu, final OnClickListener onClickListener) {
-        ArrayList<String> item_titles = new ArrayList<>();
-        ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_overflow_holo_dark));
-        try {
-            for (int i = 0; i < menu.size(); i++) {
-                MenuItem item = menu.getItem(i);
-                item_titles.add(item.getTitle().toString());
+        if(value) {
+            ArrayList<String> item_titles = new ArrayList<>();
+            ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_overflow_holo_dark));
+            try {
+                for (int i = 0; i < menu.size(); i++) {
+                    MenuItem item = menu.getItem(i);
+                    item_titles.add(item.getTitle().toString());
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            overflow_adapter = new ArrayAdapter(getContext(), R.layout.popup_item, android.R.id.text1, item_titles);
+            ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onClick(v);
+                }
+            });
+            ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(VISIBLE);
+            ((ImageButton) findViewById(R.id.action_btn2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_overflow_holo_dark));
+            ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onClick(v);
+                }
+            });
+            ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
+        } else {
+            ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(GONE);
+            ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(GONE);
         }
-        overflow_adapter = new ArrayAdapter(getContext(), R.layout.popup_item, android.R.id.text1, item_titles);
-        ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickListener.onClick(v);
-            }
-        });
-        ((ImageButton) findViewById(R.id.action_btn2_actionbar2)).setVisibility(VISIBLE);
-        ((ImageButton) findViewById(R.id.action_btn2)).setImageDrawable(getResources().getDrawable(R.drawable.ic_overflow_holo_dark));
-        ((ImageButton) findViewById(R.id.action_btn2)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickListener.onClick(v);
-            }
-        });
-        ((ImageButton) findViewById(R.id.action_btn2)).setVisibility(VISIBLE);
     }
 
     public void setTitle(String title) {

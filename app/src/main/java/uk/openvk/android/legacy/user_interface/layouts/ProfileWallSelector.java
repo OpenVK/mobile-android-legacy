@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -26,14 +27,23 @@ public class ProfileWallSelector extends LinearLayout {
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
         view.setLayoutParams(layoutParams);
-        ((ProgressBar) findViewById(R.id.profile_wall_progress)).setVisibility(GONE);
+        ((ImageView) findViewById(R.id.profile_wall_post_btn)).setVisibility(GONE);
     }
 
     public void selectTab() {
         return;
     }
 
+    public void showNewPostIcon() {
+        ((ProgressBar) findViewById(R.id.profile_wall_progress)).setVisibility(GONE);
+        ((ImageView) findViewById(R.id.profile_wall_post_btn)).setVisibility(VISIBLE);
+    }
+
     public void setUserName(String username) {
         ((TextView) findViewById(R.id.profile_wall_owner_posts)).setText(getResources().getString(R.string.wall_owners_posts, username));
+    }
+
+    public void setToGroup() {
+        ((TextView) findViewById(R.id.profile_wall_owner_posts)).setVisibility(GONE);
     }
 }

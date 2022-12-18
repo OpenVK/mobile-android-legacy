@@ -92,6 +92,12 @@
 
             </LinearLayout>
 
+            <uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector
+                android:id="@+id/wall_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
             <uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
