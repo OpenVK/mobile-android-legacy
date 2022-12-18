@@ -50,6 +50,7 @@
 
                     </uk.openvk.android.legacy.user_interface.layouts.GroupHeader>
 
+
                     <ImageButton
                         android:id="@+id/join_to_comm"
                         android:layout_width="40dp"
@@ -90,6 +91,12 @@
 
             </LinearLayout>
 
+            <uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector
+                android:id="@+id/wall_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
             <uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -106,5 +113,15 @@
                 android:nestedScrollingEnabled="false" />
         </LinearLayout>
     </ScrollView>
+
+    <uk.openvk.android.legacy.user_interface.layouts.AboutGroupLayout
+        android:id="@+id/about_group_layout"
+        android:layout_width="288dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        android:background="#313743"
+        android:visibility="gone">
+
+    </uk.openvk.android.legacy.user_interface.layouts.AboutGroupLayout>
 
 </LinearLayout>

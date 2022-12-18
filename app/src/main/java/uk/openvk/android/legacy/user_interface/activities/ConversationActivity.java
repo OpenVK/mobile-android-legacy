@@ -55,7 +55,7 @@ public class ConversationActivity extends Activity {
     public String from;
     public String conv_title;
     public int peer_online;
-    public int peer_id;
+    public long peer_id;
     private int cursor_id;
     public ActionBarImitation actionBarImitation;
     private ArrayList<uk.openvk.android.legacy.api.models.Message> history;
@@ -97,7 +97,7 @@ public class ConversationActivity extends Activity {
                 finish();
                 return;
             } else {
-                peer_id = extras.getInt("peer_id");
+                peer_id = extras.getLong("peer_id");
                 conv_title = extras.getString("conv_title");
                 peer_online = extras.getInt("online");
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

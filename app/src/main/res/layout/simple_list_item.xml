@@ -10,8 +10,10 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:clickable="true"
+        android:ellipsize="marquee"
         android:gravity="center_vertical"
         android:padding="10dp"
+        android:singleLine="true"
         android:text="Item title"
         android:textColor="@color/window_bg_black"
         android:textSize="16sp" />

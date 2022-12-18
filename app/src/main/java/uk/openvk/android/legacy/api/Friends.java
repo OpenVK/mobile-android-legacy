@@ -104,11 +104,11 @@ public class Friends implements Parcelable {
         }
     }
 
-    public void get(OvkAPIWrapper ovk, int user_id, int count, String where) {
+    public void get(OvkAPIWrapper ovk, long user_id, int count, String where) {
         ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100&count=%d", user_id, count), where);
     }
 
-    public void get(OvkAPIWrapper ovk, int user_id, int count, int offset) {
+    public void get(OvkAPIWrapper ovk, long user_id, int count, int offset) {
         this.offset++;
         ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100&count=%d&offset=%d", user_id, count, this.offset), "more_friends");
     }
@@ -126,11 +126,11 @@ public class Friends implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
     }
 
-    public void add(OvkAPIWrapper ovk, int user_id) {
+    public void add(OvkAPIWrapper ovk, long user_id) {
         ovk.sendAPIMethod("Friends.add", String.format("user_id=%d", user_id));
     }
 
-    public void delete(OvkAPIWrapper ovk, int user_id) {
+    public void delete(OvkAPIWrapper ovk, long user_id) {
         ovk.sendAPIMethod("Friends.delete", String.format("user_id=%d", user_id));
     }
 

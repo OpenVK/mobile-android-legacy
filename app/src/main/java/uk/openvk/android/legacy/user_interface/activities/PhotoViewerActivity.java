@@ -87,6 +87,7 @@ public class PhotoViewerActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.photo));
@@ -131,9 +132,9 @@ public class PhotoViewerActivity extends Activity {
             } else {
                 access_token = instance_prefs.getString("access_token", "");
                 try {
-                    if (extras.getString("original_link").length() > 0) {
+                    if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
                         downloadManager = new DownloadManager(this, true);
-                        downloadManager.downloadOnePhotoToCache(extras.getString("original_link"), String.format("original_photo_%d", extras.getLong("photo_id")), "original_photos");
+                        downloadManager.downloadOnePhotoToCache(extras.getString("original_link"), String.format("original_photo_a%d_%d", extras.getLong("author_id"), extras.getLong("photo_id")), "original_photos");
                     } else {
                         finish();
                     }
@@ -195,7 +196,7 @@ public class PhotoViewerActivity extends Activity {
             bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
             try {
                 Bundle extras = getIntent().getExtras();
-                bitmap = BitmapFactory.decodeFile(String.format("%s/original_photos/original_photo_%d", getCacheDir().getAbsolutePath(), extras.getLong("photo_id")), bfOptions);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/original_photos/original_photo_a%d_%d", getCacheDir().getAbsolutePath(), extras.getLong("author_id"), extras.getLong("photo_id")), bfOptions);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.VISIBLE);
@@ -208,20 +209,19 @@ public class PhotoViewerActivity extends Activity {
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        WindowManager.LayoutParams attrs = getWindow().getAttributes();
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             if(getActionBar().isShowing()) {
                                 getActionBar().hide();
-                                attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
                             } else {
                                 getActionBar().show();
-                                attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
                             }
                         } else {
                             if(actionBarImitation.getVisibility() == View.VISIBLE) {
                                 actionBarImitation.setVisibility(View.GONE);
+                                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                             } else {
                                 actionBarImitation.setVisibility(View.VISIBLE);
+                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                             }
                         }
                     }
@@ -229,6 +229,8 @@ public class PhotoViewerActivity extends Activity {
             } catch (OutOfMemoryError err) {
                 finish();
             }
+        } else if(message == 40000) {
+            ((ZoomableImageView) findViewById(R.id.picture_view)).rescale();
         }
     }
 
@@ -284,7 +286,7 @@ public class PhotoViewerActivity extends Activity {
     private void savePhoto() {
         Global global = new Global();
         final Bundle data = getIntent().getExtras();
-        String cache_path = String.format("%s/original_photos/original_photo_%d", getCacheDir().getAbsolutePath(), getIntent().getExtras().getLong("photo_id"));
+        String cache_path = String.format("%s/original_photos/original_photo_a%d_%d", getCacheDir().getAbsolutePath(), getIntent().getExtras().getLong("author_id"), getIntent().getExtras().getLong("photo_id"));
         File file = new File(cache_path);
         String[] path_array = cache_path.split("/");
         String dest = String.format("%s/OpenVK/Photos/%s", Environment.getExternalStorageDirectory().getAbsolutePath(), path_array[path_array.length - 1]);
@@ -342,6 +344,8 @@ public class PhotoViewerActivity extends Activity {
                     }
                 }
             }
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_LONG).show();
         }
     }
 

@@ -19,10 +19,10 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 public class User implements Parcelable {
     public String first_name;
     public String last_name;
-    public int id;
+    public long id;
     public boolean verified;
     public boolean online;
-    public int ls_date;
+    public long ls_date;
     public String status;
     public String city;
     public String birthdate;
@@ -78,10 +78,10 @@ public class User implements Parcelable {
     protected User(Parcel in) {
         first_name = in.readString();
         last_name = in.readString();
-        id = in.readInt();
+        id = in.readLong();
         verified = in.readByte() != 0;
         online = in.readByte() != 0;
-        ls_date = in.readInt();
+        ls_date = in.readLong();
         status = in.readString();
         city = in.readString();
         birthdate = in.readString();
@@ -306,10 +306,10 @@ public class User implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(first_name);
         parcel.writeString(last_name);
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeByte((byte) (verified ? 1 : 0));
         parcel.writeByte((byte) (online ? 1 : 0));
-        parcel.writeInt(ls_date);
+        parcel.writeLong(ls_date);
         parcel.writeString(status);
         parcel.writeString(city);
         parcel.writeString(birthdate);

@@ -11,8 +11,8 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 public class Likes implements Parcelable {
     private JSONParser jsonParser;
-    public int owner_id;
-    public int item_id;
+    public long owner_id;
+    public long item_id;
     public int count;
     public int position;
 
@@ -39,14 +39,14 @@ public class Likes implements Parcelable {
         }
     };
 
-    public void add(OvkAPIWrapper ovk, int owner_id, int post_id, int position) {
+    public void add(OvkAPIWrapper ovk, long owner_id, long post_id, int position) {
         this.owner_id = owner_id;
         this.item_id = post_id;
         this.position = position;
         ovk.sendAPIMethod("Likes.add", String.format("type=post&owner_id=%d&item_id=%d", owner_id, post_id));
     }
 
-    public void delete(OvkAPIWrapper ovk, int owner_id, int post_id, int position) {
+    public void delete(OvkAPIWrapper ovk, long owner_id, long post_id, int position) {
         this.owner_id = owner_id;
         this.item_id = post_id;
         this.position = position;
@@ -72,8 +72,8 @@ public class Likes implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(owner_id);
-        parcel.writeInt(item_id);
+        parcel.writeLong(owner_id);
+        parcel.writeLong(item_id);
         parcel.writeInt(count);
         parcel.writeInt(position);
     }

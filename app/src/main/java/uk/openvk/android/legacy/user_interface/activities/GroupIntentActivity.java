@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -13,14 +15,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -40,6 +47,8 @@ import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.user_interface.layouts.AboutGroupLayout;
+import uk.openvk.android.legacy.user_interface.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.GroupHeader;
@@ -70,6 +79,7 @@ public class GroupIntentActivity extends Activity {
     private int item_pos;
     private int poll_answer;
     private Menu activity_menu;
+    private ActionBarImitation actionBarImitation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +109,13 @@ public class GroupIntentActivity extends Activity {
                 receiveState(message.what, data);
             }
         };
+
+        if(activity_menu == null) {
+            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
+            activity_menu = p.getMenu();
+            getMenuInflater().inflate(R.menu.group, activity_menu);
+            onCreateOptionsMenu(activity_menu);
+        }
 
         if (uri != null) {
             String path = uri.toString();
@@ -132,9 +149,15 @@ public class GroupIntentActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        if(activity_menu != null) {
+            activity_menu.clear();
+        }
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.newsfeed, menu);
+        inflater.inflate(R.menu.group, menu);
         activity_menu = menu;
+        for (int i = 0; i < menu.size(); i++) {
+            menu.getItem(i).setVisible(false);
+        }
         return true;
     }
 
@@ -147,6 +170,28 @@ public class GroupIntentActivity extends Activity {
         }
         if(item.getItemId() == R.id.newpost) {
             openNewPostActivity();
+        } else if(item.getItemId() == R.id.leave_group) {
+            if(group != null) {
+                if (group.is_member > 0) {
+                    group.leave(ovk_api);
+                } else {
+                    group.join(ovk_api);
+                }
+            }
+        } else if(item.getItemId() == R.id.copy_link) {
+            if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboard.setText(String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
+            } else {
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL", String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
+                clipboard.setPrimaryClip(clip);
+            }
+        } else if(item.getItemId() == R.id.open_in_browser) {
+            String user_url = String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(user_url));
+            startActivity(i);
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -155,6 +200,43 @@ public class GroupIntentActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
+    }
+
+    private void createActionPopupMenu(final Menu menu) {
+        final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupMenu.setOutsideTouchable(true);
+        popupMenu.setFocusable(true);
+        final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
+        actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
+            @SuppressLint("RtlHardcoded")
+            @Override
+            public void onClick(View v) {
+                if(popupMenu.isShowing()) {
+                    popupMenu.dismiss();
+                } else {
+                    menu_list.setAdapter(actionBarImitation.overflow_adapter);
+                    popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
+                }
+            }
+        });
+        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(activity_menu.getItem(position).isVisible()) {
+                    onMenuItemSelected(0, activity_menu.getItem(position));
+                } else {
+                    Toast.makeText(GroupIntentActivity.this, getResources().getString(R.string.not_supported), Toast.LENGTH_LONG).show();
+                }
+                popupMenu.dismiss();
+            }
+        });
+        ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.dismiss();
+            }
+        });
     }
 
     private void installLayouts() {
@@ -179,7 +261,7 @@ public class GroupIntentActivity extends Activity {
                 ex.printStackTrace();
             }
         } else {
-            ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
             actionBarImitation.setHomeButtonVisibility(true);
             actionBarImitation.setTitle(getResources().getString(R.string.group));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
@@ -207,19 +289,16 @@ public class GroupIntentActivity extends Activity {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
                     actionBarImitation.setHomeButtonVisibility(true);
-                    actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            openNewPostActivity();
-                        }
-                    });
-                } else {
-                    if(activity_menu == null) {
-                        onPrepareOptionsMenu(activity_menu);
-                    }
-                    //MenuItem newpost = activity_menu.getItem(R.id.newpost);
-                    //newpost.setVisible(true);
+                    createActionPopupMenu(activity_menu);
                 }
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openNewPostActivity();
+                    }
+                });
+                selector.setToGroup();
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
                 groups.parse(data.getString("response"));
                 group = groups.getList().get(0);
@@ -229,6 +308,20 @@ public class GroupIntentActivity extends Activity {
                 setJoinButtonListener(group.id);
                 group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 wall.get(ovk_api, -group.id, 50);
+                if(group.is_member > 0) {
+                    findViewById(R.id.join_to_comm).setVisibility(View.GONE);
+                    if(activity_menu != null) {
+                        activity_menu.findItem(R.id.leave_group).setTitle(R.string.leave_group);
+                    }
+                } else {
+                    findViewById(R.id.join_to_comm).setVisibility(View.VISIBLE);
+                    if(activity_menu != null) {
+                        activity_menu.findItem(R.id.leave_group).setTitle(R.string.join_group);
+                    }
+                }
+                for (int i = 0; i < activity_menu.size(); i++) {
+                    activity_menu.getItem(i).setVisible(true);
+                }
             } else if (message == HandlerMessages.GROUPS_SEARCH) {
                 groups.parseSearch(data.getString("response"));
                 groups.getGroupByID(ovk_api, groups.getList().get(0).id);
@@ -251,6 +344,8 @@ public class GroupIntentActivity extends Activity {
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager,  global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
@@ -296,7 +391,7 @@ public class GroupIntentActivity extends Activity {
         }
     }
 
-    private void setJoinButtonListener(int id) {
+    private void setJoinButtonListener(long id) {
         if(((OvkApplication) getApplicationContext()).isTablet) {
             final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {
@@ -342,6 +437,18 @@ public class GroupIntentActivity extends Activity {
         header.setProfileName(String.format("%s  ", group.name));
         header.setVerified(group.verified, this);
         ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count, Arrays.asList(getResources().getStringArray(R.array.profile_members)).get(2), "");
+        ((AboutGroupLayout) findViewById(R.id.about_group_layout)).setGroupInfo(group.description, group.site);
+        header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AboutGroupLayout aboutGroup = ((AboutGroupLayout) findViewById(R.id.about_group_layout));
+                if (aboutGroup.getVisibility() == View.GONE) {
+                    aboutGroup.setVisibility(View.VISIBLE);
+                } else {
+                    aboutGroup.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     public void loadAvatar() {
@@ -537,6 +644,7 @@ public class GroupIntentActivity extends Activity {
                     if(item.attachments.get(i).type.equals("photo")) {
                         PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
+                        intent.putExtra("author_id", item.author_id);
                         intent.putExtra("photo_id", photo.id);
                     }
                 }

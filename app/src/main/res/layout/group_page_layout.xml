@@ -45,6 +45,15 @@
 
                 </uk.openvk.android.legacy.user_interface.layouts.GroupHeader>
 
+                <uk.openvk.android.legacy.user_interface.layouts.AboutGroupLayout
+                    android:id="@+id/about_group_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="gone">
+
+                </uk.openvk.android.legacy.user_interface.layouts.AboutGroupLayout>
+
 
                 <Button
                     android:id="@+id/join_to_comm"
@@ -82,6 +91,12 @@
                 </TableRow>
 
             </LinearLayout>
+
+            <uk.openvk.android.legacy.user_interface.layouts.ProfileWallSelector
+                android:id="@+id/wall_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
             <uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout
                 android:layout_width="match_parent"

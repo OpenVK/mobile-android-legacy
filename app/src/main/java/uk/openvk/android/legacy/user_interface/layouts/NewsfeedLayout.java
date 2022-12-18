@@ -184,17 +184,20 @@ public class NewsfeedLayout extends LinearLayout {
                     } else {
                         Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getClass().getSimpleName()));
                     }
+                    ex.printStackTrace();
                 }
             }
+            newsfeedAdapter.notifyDataSetChanged();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        newsfeedAdapter.notifyDataSetChanged();
     }
 
     public void setScrollingPositions(final Context ctx, final boolean load_photos, final boolean infinity_scroll) {
-        loadPhotos();
         loading_more_posts = false;
+        if(load_photos) {
+            loadPhotos();
+        }
         newsfeedView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             int pastVisiblesItems, visibleItemCount, totalItemCount;
 

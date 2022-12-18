@@ -41,11 +41,11 @@ public class NewPostActivity extends Activity {
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
-    public int owner_id;
+    public long owner_id;
     public OvkAPIWrapper ovk_api;
     private Wall wall;
     public static Handler handler;
-    private int account_id;
+    private long account_id;
     private String account_first_name;
 
     @Override
@@ -64,8 +64,8 @@ public class NewPostActivity extends Activity {
                 finish();
                 return;
             } else {
-                owner_id = extras.getInt("owner_id");
-                account_id = extras.getInt("account_id");
+                owner_id = extras.getLong("owner_id");
+                account_id = extras.getLong("account_id");
                 account_first_name = extras.getString("account_first_name");
                 installLayouts();
                 wall = new Wall();

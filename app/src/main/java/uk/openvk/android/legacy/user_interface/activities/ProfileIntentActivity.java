@@ -235,7 +235,11 @@ public class ProfileIntentActivity extends Activity {
         menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onMenuItemSelected(0, menu.getItem(position));
+                if(activity_menu.getItem(position).isVisible()) {
+                    onMenuItemSelected(0, activity_menu.getItem(position));
+                } else {
+                    Toast.makeText(ProfileIntentActivity.this, getResources().getString(R.string.not_supported), Toast.LENGTH_LONG).show();
+                }
                 popupMenu.dismiss();
             }
         });
@@ -267,12 +271,6 @@ public class ProfileIntentActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
-            } else if(item.getItemId() == R.id.remove_friend) {
-                if(user.friends_status > 1) {
-                    deleteFromFriends(user.id);
-                } else {
-                    addToFriends(user.id);
-                }
             }
 
         }
@@ -290,6 +288,12 @@ public class ProfileIntentActivity extends Activity {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(user_url));
             startActivity(i);
+        } else if(item.getItemId() == R.id.remove_friend) {
+            if(user.friends_status > 1) {
+                deleteFromFriends(user.id);
+            } else {
+                addToFriends(user.id);
+            }
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -392,6 +396,8 @@ public class ProfileIntentActivity extends Activity {
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
@@ -513,7 +519,7 @@ public class ProfileIntentActivity extends Activity {
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
     }
 
-    public void getConversationById(int peer_id) {
+    public void getConversationById(long peer_id) {
         Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
         try {
             intent.putExtra("peer_id", peer_id);
@@ -647,13 +653,13 @@ public class ProfileIntentActivity extends Activity {
         }
     }
 
-    public void addToFriends(int user_id) {
+    public void addToFriends(long user_id) {
         if(user_id != account.id) {
             friends.add(ovk_api, user_id);
         }
     }
 
-    public void deleteFromFriends(int user_id) {
+    public void deleteFromFriends(long user_id) {
         if(user_id != account.id) {
             friends.delete(ovk_api, user_id);
         }
@@ -693,6 +699,7 @@ public class ProfileIntentActivity extends Activity {
                     if(item.attachments.get(i).type.equals("photo")) {
                         PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
+                        intent.putExtra("author_id", item.author_id);
                         intent.putExtra("photo_id", photo.id);
                     }
                 }

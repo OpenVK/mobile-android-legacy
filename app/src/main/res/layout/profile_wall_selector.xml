@@ -53,16 +53,17 @@
 
         <ImageView
             android:id="@+id/profile_wall_post_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="32dip"
             android:layout_height="32dip"
             android:contentDescription="@string/profile_add_post"
             android:paddingLeft="11dip"
             android:paddingRight="11dip"
+            android:scaleType="center"
             android:src="@drawable/ic_profile_addpost" />
 
         <ProgressBar
             android:id="@+id/profile_wall_progress"
-            android:layout_width="30dip"
+            android:layout_width="32dip"
             android:layout_height="30dip"
             android:layout_gravity="center" />
 

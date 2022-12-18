@@ -1,0 +1,38 @@
+<uk.openvk.android.legacy.user_interface.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/auth"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/background_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/xmas_splash_background" />
+
+        <ImageView
+            android:id="@+id/auth_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dip"
+            android:paddingBottom="20dip"
+            android:paddingTop="20dip"
+            android:src="@drawable/login_logo_white_xmas" />
+
+    </RelativeLayout>
+
+</uk.openvk.android.legacy.user_interface.layouts.XLinearLayout>

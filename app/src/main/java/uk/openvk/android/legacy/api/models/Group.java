@@ -19,7 +19,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 public class Group implements Parcelable {
     public String name;
-    public int id;
+    public long id;
     public boolean verified;
     private JSONParser jsonParser;
     public String screen_name;
@@ -27,8 +27,10 @@ public class Group implements Parcelable {
     public String avatar_msize_url;
     public String avatar_hsize_url;
     public String avatar_osize_url;
-    public int members_count;
+    public long members_count;
     public int is_member;
+    public String description;
+    public String site;
 
     public Group() {
         jsonParser = new JSONParser();
@@ -43,7 +45,7 @@ public class Group implements Parcelable {
         try {
             if (group != null) {
                 name = group.getString("name");
-                id = group.getInt("id");
+                id = group.getLong("id");
                 if(group.has("is_member")) {
                     is_member = group.getInt("is_member");
                 }
@@ -81,7 +83,13 @@ public class Group implements Parcelable {
                     avatar_osize_url = group.getString("photo_max_orig");
                 }
                 if(group.has("members_count")) {
-                    members_count = group.getInt("members_count");
+                    members_count = group.getLong("members_count");
+                }
+                if(group.has("description") && !group.isNull("description")) {
+                    description = group.getString("description");
+                }
+                if(group.has("site") && !group.isNull("site")) {
+                    site = group.getString("site");
                 }
             }
         } catch(Exception ex) {
@@ -91,11 +99,11 @@ public class Group implements Parcelable {
 
     public Group(Parcel in) {
         name = in.readString();
-        id = in.readInt();
+        id = in.readLong();
         verified = in.readByte() != 0;
         screen_name = in.readString();
         avatar = in.readParcelable(Bitmap.class.getClassLoader());
-        members_count = in.readInt();
+        members_count = in.readLong();
     }
 
     public static final Creator<Group> CREATOR = new Creator<Group>() {
@@ -118,14 +126,14 @@ public class Group implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(name);
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeByte((byte) (verified ? 1 : 0));
         parcel.writeString(screen_name);
         parcel.writeParcelable(avatar, i);
         parcel.writeString(avatar_msize_url);
         parcel.writeString(avatar_hsize_url);
         parcel.writeString(avatar_osize_url);
-        parcel.writeInt(members_count);
+        parcel.writeLong(members_count);
     }
 
 

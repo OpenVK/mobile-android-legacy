@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
 
 public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapter.Holder> {
 
@@ -66,6 +68,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         public final ImageView author_avatar;
         public final View divider;
         private final TextView expand_text_btn;
+        private final TextView reply_btn;
 
         public Holder(View view) {
             super(view);
@@ -76,13 +79,22 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             this.author_avatar = view.findViewById(R.id.author_avatar);
             this.divider = view.findViewById(R.id.divider);
             this.expand_text_btn = view.findViewById(R.id.expand_text_btn);
+            this.reply_btn = view.findViewById(R.id.post_reply);
         }
 
         void bind(final int position) {
             final Comment item = getItem(position);
             author_name.setText(item.author);
             Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
-            comment_info.setText(new SimpleDateFormat("d MMMM yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
+            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
+            reply_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                        ((WallPostActivity) ctx).addAuthorMention(position);
+                    }
+                }
+            });
             if(item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]");
@@ -116,7 +128,38 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     regexp_search = matcher.find();
                 }
 
-                if(text.length() > 500) {
+                String[] lines = text.split("\r\n|\r|\n");
+                if(lines.length > 8 && text.length() <= 500) {
+                    String text_llines = "";
+                    for(int line_no = 0; line_no < 8; line_no++) {
+                        if(line_no == 7) {
+                            text_llines += String.format("%s...", lines[line_no]);
+                        } else {
+                            text_llines += String.format("%s\r\n", lines[line_no]);
+                        }
+                    }
+                    if(regexp_results > 0) {
+                        comment_text.setText(Html.fromHtml(text_llines));
+                        comment_text.setAutoLinkMask(0);
+                    } else {
+                        comment_text.setText(text_llines);
+                    }
+                    expand_text_btn.setVisibility(View.VISIBLE);
+                    final int finalRegexp_results = regexp_results;
+                    final String finalText = text;
+                    expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(finalRegexp_results > 0) {
+                                comment_text.setText(Html.fromHtml(finalText));
+                                comment_text.setAutoLinkMask(0);
+                            } else {
+                                comment_text.setText(finalText);
+                            }
+                            expand_text_btn.setVisibility(View.GONE);
+                        }
+                    });
+                } else if(text.length() > 500) {
                     if(regexp_results > 0) {
                         comment_text.setText(Html.fromHtml(String.format("%s...", text.substring(0, 500))));
                         comment_text.setAutoLinkMask(0);
@@ -125,16 +168,17 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     }
                     expand_text_btn.setVisibility(View.VISIBLE);
                     final int finalRegexp_results = regexp_results;
+                    final String finalText = text;
                     expand_text_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if(finalRegexp_results > 0) {
-                                comment_text.setText(Html.fromHtml(item.text));
+                                comment_text.setText(Html.fromHtml(finalText));
                                 comment_text.setAutoLinkMask(0);
-                                expand_text_btn.setVisibility(View.GONE);
                             } else {
-                                comment_text.setText(item.text);
+                                comment_text.setText(finalText);
                             }
+                            expand_text_btn.setVisibility(View.GONE);
                         }
                     });
                 } else {

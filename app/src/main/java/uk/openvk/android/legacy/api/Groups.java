@@ -103,16 +103,16 @@ public class Groups implements Parcelable {
         parcel.writeTypedList(groups);
     }
 
-    public void getGroupByID(OvkAPIWrapper ovk, int id) {
-        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count", id));
+    public void getGroupByID(OvkAPIWrapper ovk, long id) {
+        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count,site,description,contacts", id));
     }
 
-    public void getGroups(OvkAPIWrapper ovk, int user_id, int count) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count&extended=1", user_id, count));
+    public void getGroups(OvkAPIWrapper ovk, long user_id, long count) {
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count,site,description,contacts&extended=1", user_id, count));
     }
 
-    public void getGroups(OvkAPIWrapper ovk, int user_id, int count, int offset) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count&offset=%d&extended=1", user_id, count, offset), "more_groups");
+    public void getGroups(OvkAPIWrapper ovk, long user_id, int count, int offset) {
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%d&count=%d&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count,site,description,contacts&offset=%d&extended=1", user_id, count, offset), "more_groups");
     }
 
     public void parse(String response, DownloadManager downloadManager, String quality, boolean downloadPhoto, boolean clear) {

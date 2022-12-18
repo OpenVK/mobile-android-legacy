@@ -15,37 +15,37 @@
             android:id="@+id/status_editor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:background="@android:drawable/editbox_background"
             android:ems="10"
             android:focusable="false"
             android:inputType="textMultiLine|textPersonName"
-            android:paddingLeft="18dp"
-            android:paddingTop="14dp"
-            android:paddingRight="18dp"
             android:paddingBottom="14dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:paddingTop="14dp"
             android:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/about_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:background="@android:drawable/editbox_background"
             android:orientation="vertical"
-            android:paddingTop="14dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="14dp">
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <LinearLayout
                 android:id="@+id/birthdate_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -69,7 +69,8 @@
                 android:id="@+id/interests_layout_all"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -93,9 +94,9 @@
                         android:id="@+id/divider2"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:layout_marginBottom="8dp"
                         android:background="#888888" />
 
                 </LinearLayout>
@@ -107,6 +108,7 @@
                     android:layout_marginBottom="4dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -266,8 +268,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical"
                     android:visibility="gone">
 
@@ -294,6 +296,8 @@
                 android:id="@+id/contacts_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -312,17 +316,19 @@
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="4dp"
-                    android:layout_marginBottom="8dp"
                     android:background="#888888" />
 
                 <LinearLayout
                     android:id="@+id/city_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="4dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -347,8 +353,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical"
                     android:visibility="gone">
 
