@@ -87,6 +87,12 @@ public class FriendsListAdapter extends BaseAdapter {
             ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
         }
 
+        if(item.from_mobile) {
+            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_online_mobile));
+        } else {
+            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_online));
+        }
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
