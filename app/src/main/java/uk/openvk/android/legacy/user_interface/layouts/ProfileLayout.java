@@ -41,7 +41,7 @@ public class ProfileLayout extends LinearLayout {
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
         header.setOnline(user.online);
         header.setStatus(user.status);
-        header.setLastSeen(user.ls_date);
+        header.setLastSeen(user.ls_date, user.ls_platform);
         header.setVerified(user.verified, getContext());
         ((ProfileCounterLayout) findViewById(R.id.photos_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_photos)).get(2), "");
         ((ProfileCounterLayout) findViewById(R.id.photos_counter)).setOnCounterClickListener();

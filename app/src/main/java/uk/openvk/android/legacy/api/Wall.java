@@ -17,6 +17,7 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.PollAnswer;
+import uk.openvk.android.legacy.api.models.WallPostSource;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -100,6 +101,13 @@ public class Wall implements Parcelable {
                     ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality, attachments);
 
                     WallPost item = new WallPost(String.format("(Unknown author: %d)", author_id), dt_sec, null, content, counters, "", attachments_list, owner_id, post_id, ctx);
+                    if(post.has("post_source") && !post.isNull("post_source")) {
+                        if(post.getJSONObject("post_source").getString("type").equals("api")) {
+                            item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"), post.getJSONObject("post_source").getString("platform"));
+                        } else {
+                            item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"), null);
+                        }
+                    }
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
                         WallPost repost_item = new WallPost(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), null, repost.getString("text"), null, "",

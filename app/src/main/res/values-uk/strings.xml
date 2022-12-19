@@ -1245,4 +1245,5 @@
     <string name="official_state">Офіційна інстанція OpenVK</string>
     <string name="wall_err_text">Хмммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
     <string name="invalid_session">Сесія недійсна. Будь ласка, авторизуйтесь ще раз.</string>
+    <string name="attachment_load_err">Помилка завантаження вкладення</string>
 </resources>

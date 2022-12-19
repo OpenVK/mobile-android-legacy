@@ -1201,4 +1201,5 @@
 	<string name="official_state">OpenVK official instance</string>
 	<string name="app_issues_link" untranslable="false" translatable="false">https://github.com/openvk/mobile-android-legacy/issues</string>
 	<string name="wall_err_text">Hmmm, the wall broke in the instance. Please try again later.</string>
+	<string name="attachment_load_err">Attachment loading error</string>
 </resources>

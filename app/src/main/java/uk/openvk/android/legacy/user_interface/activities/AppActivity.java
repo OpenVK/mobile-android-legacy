@@ -22,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -211,39 +212,54 @@ public class AppActivity extends Activity {
     }
 
     private void setActionBar(String layout_name) {
+        ab_layout.setOnHomeButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!((OvkApplication) getApplicationContext()).isTablet) {
+                    menu.toggle(true);
+                } else {
+                    if(slidingmenuLayout.getVisibility() == View.VISIBLE) {
+                        slidingmenuLayout.setVisibility(View.GONE);
+                    } else {
+                        slidingmenuLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
         if(layout_name.equals("custom_newsfeed")) {
             ab_layout.selectItem(0);
+            ab_layout.setMode("spinner");
+            int actionbar_height = 0;
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 try {
                     getActionBar().setCustomView(ab_layout);
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
-                        getActionBar().setIcon(R.drawable.ic_left_menu);
                     }
-                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 actionBarImitation = findViewById(R.id.actionbar_imitation);
-                actionBarImitation.enableCustomView(true);
             }
         } else {
+            ab_layout.setMode("title");
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 try {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);
-                        getActionBar().setIcon(R.drawable.ic_left_menu);
                     }
-                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_USE_LOGO | ActionBar.DISPLAY_SHOW_HOME);
+                    ab_layout.setNotificationCount(account.counters);
+                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 actionBarImitation = findViewById(R.id.actionbar_imitation);
-                actionBarImitation.enableCustomView(false);
             }
         }
+
     }
 
     @Override
@@ -424,17 +440,8 @@ public class AppActivity extends Activity {
             ab_layout = new ActionBarLayout(this);
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getActionBar().setIcon(R.drawable.ic_left_menu);
-            }
         } else {
             actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setOnMenuClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(!menu.isMenuShowing()) menu.showMenu(true);
-                }
-            });
             ab_layout = actionBarImitation.getLayout();
             ab_layout.createSpinnerAdapter(this);
         }
@@ -500,12 +507,7 @@ public class AppActivity extends Activity {
     }
 
     public void setActionBarTitle(String title) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().setTitle(title);
-        } else {
-            ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setTitle(title);
-        }
+        ab_layout.setAppTitle(title);
     }
 
     private void openNewPostActivity() {
@@ -729,6 +731,7 @@ public class AppActivity extends Activity {
                 } else {
                     ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
                 }
+                ab_layout.setNotificationCount(account.counters);
             } else if (message == HandlerMessages.NEWSFEED_GET) {
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));

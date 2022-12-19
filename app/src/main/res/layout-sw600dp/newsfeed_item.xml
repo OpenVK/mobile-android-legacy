@@ -87,20 +87,36 @@
                     android:textSize="16dip"
                     tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
 
-                <TextView
-                    android:id="@+id/post_info_view"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/poster_name_view"
+                    android:layout_height="match_parent"
                     android:layout_alignBottom="@+id/author_avatar"
+                    android:layout_below="@+id/poster_name_view"
                     android:layout_toRightOf="@+id/author_avatar"
-                    android:duplicateParentState="true"
-                    android:gravity="left"
-                    android:paddingLeft="12dip"
-                    android:text="post date"
-                    android:textColor="@color/hint"
-                    android:textSize="14dip"
-                    tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
+                    android:orientation="horizontal"
+                    android:paddingLeft="12dip">
+
+                    <TextView
+                        android:id="@+id/post_info_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:duplicateParentState="true"
+                        android:gravity="left"
+                        android:text="post date"
+                        android:textColor="@color/hint"
+                        android:textSize="14dip"
+                        tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
+
+                    <ImageView
+                        android:id="@+id/api_app_indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ic_api_android_app_indicator" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -19,6 +19,7 @@ import uk.openvk.android.legacy.R;
 public class ActionBarImitation extends LinearLayout {                  // for pre-Honeycomb (pre-3.0) devices
     private boolean homeButtonisVisible;
     public ArrayAdapter overflow_adapter;
+    private String title;
 
     public ActionBarImitation(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -79,21 +80,21 @@ public class ActionBarImitation extends LinearLayout {                  // for p
     }
 
     public void setTitle(String title) {
-        TextView title_view = (TextView) findViewById(R.id.titlebar_title);
+        this.title = title;
+        ((ActionBarLayout) findViewById(R.id.custom_layout)).setAppTitle(title);
         if(((LinearLayout) findViewById(R.id.titlebar)).getVisibility() == GONE) {
-            title_view = (TextView) findViewById(R.id.titlebar_title2);
+            TextView title_view = (TextView) findViewById(R.id.titlebar_title2);
+            title_view.setText(title);
         }
-        title_view.setText(title);
     }
 
     public void setSubtitle(String title) {
-        TextView title_view = (TextView) findViewById(R.id.titlebar_subtitle);
         if(((LinearLayout) findViewById(R.id.titlebar)).getVisibility() == GONE) {
-            title_view = (TextView) findViewById(R.id.titlebar_subtitle2);
+            TextView title_view = (TextView) findViewById(R.id.titlebar_subtitle2);
+            title_view.setText(title);
+            if(title.length() > 0)
+                title_view.setVisibility(VISIBLE);
         }
-        title_view.setText(title);
-        if(title.length() > 0)
-        title_view.setVisibility(VISIBLE);
     }
 
     public void setActionButton(String icon, int position, OnClickListener onClickListener) {
@@ -156,11 +157,6 @@ public class ActionBarImitation extends LinearLayout {                  // for p
         }
     }
 
-
-    public void setOnMenuClickListener(OnClickListener onClickListener) {
-        ((ImageButton) findViewById(R.id.menuButton)).setOnClickListener(onClickListener);
-    }
-
     public void setOnBackClickListener(OnClickListener onClickListener) {
         (findViewById(R.id.ovkButton)).setOnClickListener(onClickListener);
         (findViewById(R.id.backButton)).setOnClickListener(onClickListener);
@@ -176,16 +172,15 @@ public class ActionBarImitation extends LinearLayout {                  // for p
         }
     }
 
+    @Deprecated
     public void enableCustomView(boolean value) {
         if(value) {
             ((ActionBarLayout) findViewById(R.id.custom_layout)).setVisibility(VISIBLE);
             ((ActionBarLayout) findViewById(R.id.custom_layout2)).setVisibility(VISIBLE);
-            ((LinearLayout) findViewById(R.id.title_layout)).setVisibility(GONE);
             ((LinearLayout) findViewById(R.id.title_layout2)).setVisibility(GONE);
         } else {
             ((ActionBarLayout) findViewById(R.id.custom_layout)).setVisibility(GONE);
             ((ActionBarLayout) findViewById(R.id.custom_layout2)).setVisibility(GONE);
-            ((LinearLayout) findViewById(R.id.title_layout)).setVisibility(VISIBLE);
             ((LinearLayout) findViewById(R.id.title_layout2)).setVisibility(VISIBLE);
         }
     }
@@ -206,5 +201,9 @@ public class ActionBarImitation extends LinearLayout {                  // for p
             ((LinearLayout) findViewById(R.id.titlebar)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             ((LinearLayout) findViewById(R.id.titlebar2)).setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
         }
+    }
+
+    public String getTitle() {
+        return title;
     }
 }

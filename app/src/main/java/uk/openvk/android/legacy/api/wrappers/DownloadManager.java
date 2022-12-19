@@ -69,6 +69,7 @@ public class DownloadManager {
     private Context ctx;
     private Handler handler;
     private String access_token;
+    public ArrayList<PhotoAttachment> photoAttachments;
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
@@ -266,6 +267,7 @@ public class DownloadManager {
                         } catch (IOException e) {
                             //Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         } catch (Exception e) {
+                            photoAttachment.error = e.getClass().getSimpleName();
                             //Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         }
                     }

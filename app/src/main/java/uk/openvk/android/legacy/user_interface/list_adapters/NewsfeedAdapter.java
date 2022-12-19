@@ -92,6 +92,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final PollLayout original_post_poll;
         private final TextView expand_text_btn;
         private final TextView repost_expand_text_btn;
+        private final ImageView api_app_indicator;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
 
@@ -117,10 +118,23 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.original_post_poll = (PollLayout) view.findViewById(R.id.repost_poll_layout);
             this.expand_text_btn = (TextView) view.findViewById(R.id.expand_text_btn);
             this.repost_expand_text_btn = (TextView) view.findViewById(R.id.repost_expand_text_btn);
+            this.api_app_indicator = (ImageView) view.findViewById(R.id.api_app_indicator);
         }
 
         void bind(final int position) {
             final WallPost item = getItem(position);
+            if(item.post_source.type.equals("api")) {
+                api_app_indicator.setVisibility(View.VISIBLE);
+                if(item.post_source.platform.equals("android")) {
+                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
+                } else if(item.post_source.platform.equals("iphone")) {
+                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
+                } else if(item.post_source.platform.equals("mobile")) {
+                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
+                } else {
+                    api_app_indicator.setVisibility(View.GONE);
+                }
+            }
             if(item.verified_author) {
                 String name = item.name;
                 SpannableStringBuilder sb = new SpannableStringBuilder(name);
@@ -375,6 +389,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     post_photo.setImageBitmap(null);
                 } else if (item.attachments.get(i).status.equals("not_supported")) {
                     error_label.setText(ctx.getResources().getString(R.string.not_supported));
+                    error_label.setVisibility(View.VISIBLE);
+                } else if (item.attachments.get(i).status.equals("error")) {
+                    error_label.setText(ctx.getResources().getString(R.string.attachment_load_err));
                     error_label.setVisibility(View.VISIBLE);
                 } else if (item.attachments.get(i).status.equals("done") && item.attachments.get(i).type.equals("photo")) {
                     if (item.attachments.get(i).getContent() != null) {

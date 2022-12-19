@@ -9,27 +9,106 @@
     <LinearLayout
         android:id="@+id/actionbar_ll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Spinner
-            android:id="@+id/spinner"
-            style="@style/ActionBarSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="clip_vertical"
-            android:dropDownWidth="wrap_content"
-            android:spinnerMode="dropdown" />
-
-        <TextView
-            android:id="@+id/app_title"
-            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="TextView"
-            android:textSize="18sp"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:layout_height="match_parent">
 
+            <ImageButton
+                android:id="@+id/home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="false"
+                android:layout_centerInParent="false"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/highlight"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_left_menu" />
+
+            <TextView
+                android:id="@+id/notif_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentRight="false"
+                android:layout_alignRight="@+id/home_button"
+                android:layout_alignTop="@+id/home_button"
+                android:layout_centerHorizontal="false"
+                android:layout_centerInParent="false"
+                android:layout_centerVertical="false"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/badge_head"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:focusedByDefault="false"
+                android:gravity="center"
+                android:paddingBottom="1dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:text="120"
+                android:textColor="@color/ovk_color"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/custom_ab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="false"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/home_button"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/spinner_ab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <Spinner
+                        android:id="@+id/spinner"
+                        style="@style/ActionBarSpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="clip_vertical"
+                        android:dropDownWidth="wrap_content"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/title_ab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/ab_title"
+                        style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="Title"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 </LinearLayout>
