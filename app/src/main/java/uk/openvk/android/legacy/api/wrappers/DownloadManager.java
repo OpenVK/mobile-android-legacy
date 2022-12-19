@@ -77,49 +77,53 @@ public class DownloadManager {
     public DownloadManager(Context ctx, boolean use_https) {
         this.ctx = ctx;
         this.use_https = use_https;
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
-            BasicHttpParams basicHttpParams = new BasicHttpParams();
-            HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
-            HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
-            HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
-            HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
-            HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
-            SchemeRegistry schemeRegistry = new SchemeRegistry();
-            if (use_https == true) {
-                schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+                BasicHttpParams basicHttpParams = new BasicHttpParams();
+                HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
+                HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
+                HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
+                HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
+                HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
+                SchemeRegistry schemeRegistry = new SchemeRegistry();
+                if (use_https == true) {
+                    schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                    schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+                } else {
+                    schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+                }
+                httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+                legacy_mode = true;
             } else {
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            }
-            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
-            legacy_mode = true;
-        } else {
-            SSLContext sslContext = null;
-            try {
-                sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] trustAllCerts = new TrustManager[]{
-                        new X509TrustManager() {
-                            @Override
-                            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                            }
+                SSLContext sslContext = null;
+                try {
+                    sslContext = SSLContext.getInstance("SSL");
+                    TrustManager[] trustAllCerts = new TrustManager[]{
+                            new X509TrustManager() {
+                                @Override
+                                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                                }
 
-                            @Override
-                            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                            }
+                                @Override
+                                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                                }
 
-                            @Override
-                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                                return new java.security.cert.X509Certificate[]{};
+                                @Override
+                                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                    return new java.security.cert.X509Certificate[]{};
+                                }
                             }
-                        }
-                };
-                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-                javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory) sslContext.getSocketFactory();
-                httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory()).connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
-            } catch (Exception e) {
-                httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    };
+                    sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                    javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory) sslContext.getSocketFactory();
+                    httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory()).connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                } catch (Exception e) {
+                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                }
+                legacy_mode = false;
             }
-            legacy_mode = false;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

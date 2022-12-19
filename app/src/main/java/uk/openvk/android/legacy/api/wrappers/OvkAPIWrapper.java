@@ -82,30 +82,34 @@ public class OvkAPIWrapper {
         this.ctx = ctx;
         this.use_https = use_https;
         error = new Error();
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
-            BasicHttpParams basicHttpParams = new BasicHttpParams();
-            HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
-            HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
-            HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
-            HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
-            HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
-            SchemeRegistry schemeRegistry = new SchemeRegistry();
-            if (use_https) {
-                schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+        try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+                BasicHttpParams basicHttpParams = new BasicHttpParams();
+                HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
+                HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
+                HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
+                HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
+                HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
+                SchemeRegistry schemeRegistry = new SchemeRegistry();
+                if (use_https) {
+                    schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                } else {
+                    schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+                }
+                httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+                legacy_mode = true;
             } else {
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+                if (use_https) {
+                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(false).build();
+                } else {
+                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(false).followSslRedirects(false).build();
+                }
+                legacy_mode = false;
             }
-            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
-            legacy_mode = true;
-        } else {
-            if(use_https) {
-                httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                        .retryOnConnectionFailure(false).build();
-            } else {
-                httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                        .retryOnConnectionFailure(false).followSslRedirects(false).build();
-            }
-            legacy_mode = false;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
