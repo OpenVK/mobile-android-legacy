@@ -10,80 +10,29 @@
         android:layout_height="50dp"
         android:background="@drawable/bg_actionbar">
 
-        <ImageButton
-            android:id="@+id/menuButton"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:src="@drawable/ic_left_menu"
-            tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
+        <uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout
+            android:id="@+id/custom_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:visibility="visible"
+            tools:ignore="NestedWeights" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:orientation="horizontal"
+            android:visibility="visible"
             tools:ignore="InefficientWeight">
-
-            <ImageButton
-                android:id="@+id/title_menu_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:src="@drawable/ic_menu_moreoverflow_normal_holo_dark"
-                tools:ignore="ContentDescription,Suspicious0dp" />
-
-            <uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_weight="1"
-                tools:ignore="NestedWeights"
-                android:id="@+id/custom_layout"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="1"
-                android:visibility="visible"
-                android:orientation="vertical"
-                tools:ignore="NestedWeights"
-                android:id="@+id/title_layout">
-
-                <TextView
-                    android:id="@+id/titlebar_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="App title"
-                    android:textColor="@color/api_v8_ll_title_color"
-                    tools:ignore="HardcodedText,InefficientWeight" />
-
-                <TextView
-                    android:id="@+id/titlebar_subtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="App subtitle"
-                    android:textColor="@color/api_v8_ll_subtitle_color"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    tools:ignore="HardcodedText" />
-
-            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/action_btn"
                 android:layout_width="52dp"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:visibility="gone"
                 android:src="@drawable/ic_ab_write"
+                android:visibility="gone"
                 tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
             <ImageButton
@@ -91,8 +40,8 @@
                 android:layout_width="52dp"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:visibility="gone"
                 android:src="@drawable/ic_ab_write"
+                android:visibility="gone"
                 tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
         </LinearLayout>

@@ -37,7 +37,7 @@ public class PollLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void createAdapter(Context ctx, int item_pos, ArrayList<PollAnswer> answers, boolean multiple, int user_votes, int total_votes) {
+    public void createAdapter(Context ctx, int item_pos, ArrayList<PollAnswer> answers, boolean multiple, int user_votes, long total_votes) {
         pollAdapter = new PollAdapter(ctx, item_pos, answers, multiple, user_votes, total_votes);
         llm = new LinearLayoutManager(ctx);
         llm.setOrientation(LinearLayoutManager.VERTICAL);

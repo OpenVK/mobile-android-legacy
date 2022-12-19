@@ -152,13 +152,18 @@ public class WallLayout extends LinearLayout {
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             if(item.attachments.size() > 0) {
                                 if(item.attachments.get(0).type.equals("photo")) {
-                                    if (((PhotoAttachment) item.attachments.get(0).getContent()).url.length() > 0) {
+                                    PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
+                                    if (photoAttachment.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
                                             ((PhotoAttachment) item.attachments.get(0).getContent()).photo = bitmap;
                                             item.attachments.get(0).status = "done";
+                                        } else if(photoAttachment.url.length() > 0) {
+                                            item.attachments.get(0).status = "error";
                                         }
                                     }
+                                } else if(!item.attachments.get(0).type.equals("poll")) {
+                                    item.attachments.get(0).status = "not_supported";
                                 }
                             }
                         }

@@ -170,10 +170,14 @@ public class NewsfeedLayout extends LinearLayout {
                                         photoAttachment.photo = bitmap;
                                         attachment.status = "done";
                                         item.attachments.set(0, attachment);
+                                    } else if(photoAttachment.url.length() > 0) {
+                                        attachment.status = "error";
                                     }
                                 }
                             }
                             wallPosts.set(i, item);
+                        } else if(!item.attachments.get(0).type.equals("poll")) {
+                            item.attachments.get(0).status = "not_supported";
                         }
                     }
                 } catch (OutOfMemoryError error) {

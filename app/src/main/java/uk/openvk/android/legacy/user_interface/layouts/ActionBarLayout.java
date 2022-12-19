@@ -1,18 +1,24 @@
 package uk.openvk.android.legacy.user_interface.layouts;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.app.NavUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.counters.AccountCounters;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
 import uk.openvk.android.legacy.user_interface.list_adapters.ActionBarSpinnerAdapter;
 import uk.openvk.android.legacy.user_interface.list_items.SimpleListItem;
@@ -79,5 +85,36 @@ public class ActionBarLayout extends LinearLayout {
 
     public void selectItem(int i) {
         ((Spinner) findViewById(R.id.spinner)).setSelection(0);
+    }
+
+    public void setMode(String mode) {
+        if(mode.equals("spinner")) {
+            findViewById(R.id.spinner_ab).setVisibility(VISIBLE);
+            findViewById(R.id.title_ab).setVisibility(GONE);
+        } else {
+            findViewById(R.id.title_ab).setVisibility(VISIBLE);
+            findViewById(R.id.spinner_ab).setVisibility(GONE);
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void setNotificationCount(AccountCounters counters) {
+        long total_count = (counters.friends_requests + counters.new_messages);
+        if(total_count > 999) {
+            ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%.1fK", ((double)total_count / (double)1000)));
+        } else if(total_count > 9999) {
+            ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%sK+", (int)((double)total_count / (double)1000)));
+        } else {
+            ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%s", total_count));
+        }
+        ((TextView) findViewById(R.id.notif_badge)).setVisibility(VISIBLE);
+    }
+
+    public void setOnHomeButtonClickListener(OnClickListener listener) {
+        findViewById(R.id.home_button).setOnClickListener(listener);
+    }
+
+    public void setAppTitle(String title) {
+        ((TextView) findViewById(R.id.ab_title)).setText(title);
     }
 }

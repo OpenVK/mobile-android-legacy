@@ -9,6 +9,7 @@ import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -44,7 +45,7 @@ public class ProfileHeader extends RelativeLayout {
         ((TextView) findViewById(R.id.profile_activity)).setText(status);
     }
 
-    public void setLastSeen(long date) {
+    public void setLastSeen(long date, int ls_platform) {
         if(online) {
             ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
         } else {
@@ -68,6 +69,16 @@ public class ProfileHeader extends RelativeLayout {
                 ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
                         new SimpleDateFormat("d MMMM yyyy").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
             }
+        }
+        ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(VISIBLE);
+        if(ls_platform == 4) {
+            ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
+        } else if(ls_platform == 2) {
+            ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
+        } else if(ls_platform == 1) {
+            ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
+        } else {
+            ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(GONE);
         }
     }
 

@@ -6,7 +6,7 @@ import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 public class PollAttachment {
-    public int id;
+    public long id;
     public long end_date;
     public String question;
     public boolean can_vote;
@@ -14,8 +14,8 @@ public class PollAttachment {
     public boolean multiple;
     public ArrayList<PollAnswer> answers;
     public int user_votes;
-    public int votes;
-    public PollAttachment(String question, int id, long end_date, boolean multiple, boolean can_vote, boolean anonymous) {
+    public long votes;
+    public PollAttachment(String question, long id, long end_date, boolean multiple, boolean can_vote, boolean anonymous) {
         this.question = question;
         this.id = id;
         this.end_date = end_date;

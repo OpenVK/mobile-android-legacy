@@ -23,6 +23,7 @@ public class User implements Parcelable {
     public boolean verified;
     public boolean online;
     public long ls_date;
+    public int ls_platform;
     public String status;
     public String city;
     public String birthdate;
@@ -118,7 +119,8 @@ public class User implements Parcelable {
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
                 if(user.has("last_seen") && !user.isNull("last_seen")) {
-                    ls_date = user.getJSONObject("last_seen").getInt("time");
+                    ls_date = user.getJSONObject("last_seen").getLong("time");
+                    ls_platform = user.getJSONObject("last_seen").getInt("platform");
                 }
                 if(!user.isNull("status")) {
                     status = user.getString("status");

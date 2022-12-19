@@ -153,12 +153,6 @@ public class FriendsIntentActivity extends Activity {
         } else {
             ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
             actionBarImitation.setTitle(getResources().getString(R.string.friends));
-            actionBarImitation.setOnMenuClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onBackPressed();
-                }
-            });
         }
     }
 

@@ -27,15 +27,15 @@ import uk.openvk.android.legacy.api.models.PollAnswer;
 public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
 
     private int item_pos;
-    private int total_votes;
+    private long total_votes;
     private ArrayList<PollAnswer> items = new ArrayList<>();
     private Context ctx;
     private boolean multiple;
     public LruCache memCache;
     private int user_votes;
-    private int total_votes_2;
+    private long total_votes_2;
 
-    public PollAdapter(Context context, int item_pos, ArrayList<PollAnswer> answers, boolean multiple, int user_votes, int total_votes) {
+    public PollAdapter(Context context, int item_pos, ArrayList<PollAnswer> answers, boolean multiple, int user_votes, long total_votes) {
         ctx = context;
         this.item_pos = item_pos;
         items = answers;
@@ -107,10 +107,10 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                     answer_votes_count.setTextColor(Color.parseColor("#6f6f6f"));
                     answer_votes_count.setText(String.valueOf(item_votes));
                 }
-                answer_progress.setMax(total_votes);
+                answer_progress.setMax((int) total_votes);
                 answer_progress.setProgress(item_votes);
                 double progress = (double) item_votes / (double) total_votes;
-                answer_progress_value.setText(String.format("%d%%", (int)(progress * 100)));
+                answer_progress_value.setText(String.format("%s%%", (int)(progress * 100)));
                 answer_progress.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
@@ -128,7 +128,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                 total_votes = total_votes_2;
                 item_votes = item.votes;
                 answer_name.setTypeface(Typeface.DEFAULT);
-                answer_progress.setMax(total_votes);
+                answer_progress.setMax((int) total_votes);
                 answer_progress.setProgress(0);
                 answer_votes_count.setText(ctx.getResources().getString(R.string.poll_btn_vote));
                 answer_progress_value.setVisibility(View.GONE);
