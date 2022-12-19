@@ -105,12 +105,12 @@ public class Friends implements Parcelable {
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, String where) {
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100&count=%d", user_id, count), where);
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100,last_seen&count=%d", user_id, count), where);
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, int offset) {
         this.offset++;
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100&count=%d&offset=%d", user_id, count, this.offset), "more_friends");
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100,last_seen&count=%d&offset=%d", user_id, count, this.offset), "more_friends");
     }
 
     public ArrayList<Friend> getFriends() {

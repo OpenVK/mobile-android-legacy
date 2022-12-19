@@ -23,6 +23,7 @@ public class Friend implements Parcelable {
     public Bitmap avatar;
     public String avatar_url;
     private JSONParser jsonParser;
+    public boolean from_mobile;
 
     public Friend(JSONObject user) {
         parse(user);
@@ -87,6 +88,11 @@ public class Friend implements Parcelable {
                     }
                 } else {
                     online = false;
+                }
+                if (user.has("last_seen") && !user.isNull("last_seen")) {
+                    if(user.getJSONObject("last_seen").getInt("platform") != 7) {
+                        from_mobile = true;
+                    }
                 }
                 if (user.has("photo_50")) {
                     avatar_url = user.getString("photo_50");
