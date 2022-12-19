@@ -107,6 +107,7 @@ public class ActionBarLayout extends LinearLayout {
         } else {
             ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%s", total_count));
         }
+        if(total_count > 0)
         ((TextView) findViewById(R.id.notif_badge)).setVisibility(VISIBLE);
     }
 
