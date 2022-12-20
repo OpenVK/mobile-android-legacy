@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
@@ -57,11 +58,20 @@ public class ProfileLayout extends LinearLayout {
             header.findViewById(R.id.profile_head_highlight).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AboutProfileLayout aboutProfile = ((AboutProfileLayout) findViewById(R.id.about_profile_layout));
-                    if (aboutProfile.getVisibility() == GONE) {
-                        aboutProfile.setVisibility(VISIBLE);
+                    if(((OvkApplication)getContext().getApplicationContext()).isTablet) {
+                        View aboutGroup = findViewById(R.id.about_profile_ll);
+                        if (aboutGroup.getVisibility() == View.GONE) {
+                            aboutGroup.setVisibility(View.VISIBLE);
+                        } else {
+                            aboutGroup.setVisibility(View.GONE);
+                        }
                     } else {
-                        aboutProfile.setVisibility(GONE);
+                        View aboutGroup = findViewById(R.id.about_profile_layout);
+                        if (aboutGroup.getVisibility() == View.GONE) {
+                            aboutGroup.setVisibility(View.VISIBLE);
+                        } else {
+                            aboutGroup.setVisibility(View.GONE);
+                        }
                     }
                 }
             });

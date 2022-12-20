@@ -16,6 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/margin_adjust_zone"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_alignLeft="@+id/home_button"
+                android:layout_alignParentLeft="false"
+                android:layout_alignRight="@+id/home_button"
+                android:layout_centerVertical="true"
+                android:visibility="invisible" />
+
             <ImageButton
                 android:id="@+id/home_button"
                 android:layout_width="wrap_content"
@@ -23,8 +33,6 @@
                 android:layout_centerHorizontal="false"
                 android:layout_centerInParent="false"
                 android:layout_centerVertical="true"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
                 android:background="@drawable/highlight"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
@@ -39,12 +47,11 @@
                 android:layout_alignParentLeft="false"
                 android:layout_alignParentRight="false"
                 android:layout_alignRight="@+id/home_button"
-                android:layout_alignTop="@+id/home_button"
+                android:layout_alignTop="@+id/margin_adjust_zone"
                 android:layout_centerHorizontal="false"
                 android:layout_centerInParent="false"
                 android:layout_centerVertical="false"
                 android:layout_marginRight="4dp"
-                android:layout_marginTop="2dp"
                 android:layout_weight="1"
                 android:background="@drawable/badge_head"
                 android:focusable="false"

@@ -441,11 +441,20 @@ public class GroupIntentActivity extends Activity {
         header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AboutGroupLayout aboutGroup = ((AboutGroupLayout) findViewById(R.id.about_group_layout));
-                if (aboutGroup.getVisibility() == View.GONE) {
-                    aboutGroup.setVisibility(View.VISIBLE);
+                if(((OvkApplication)getApplicationContext()).isTablet) {
+                    View aboutGroup = findViewById(R.id.about_group_ll);
+                    if (aboutGroup.getVisibility() == View.GONE) {
+                        aboutGroup.setVisibility(View.VISIBLE);
+                    } else {
+                        aboutGroup.setVisibility(View.GONE);
+                    }
                 } else {
-                    aboutGroup.setVisibility(View.GONE);
+                    View aboutGroup = findViewById(R.id.about_group_layout);
+                    if (aboutGroup.getVisibility() == View.GONE) {
+                        aboutGroup.setVisibility(View.VISIBLE);
+                    } else {
+                        aboutGroup.setVisibility(View.GONE);
+                    }
                 }
             }
         });

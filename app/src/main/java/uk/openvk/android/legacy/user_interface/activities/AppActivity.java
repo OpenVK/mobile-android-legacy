@@ -532,9 +532,9 @@ public class AppActivity extends Activity {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
                 menu.toggle(true);
             }
-        }
-        if(activity_menu != null) {
-            activity_menu.clear();
+            if(activity_menu != null) {
+                activity_menu.clear();
+            }
         }
         if(position == 0) {
             setActionBar("");

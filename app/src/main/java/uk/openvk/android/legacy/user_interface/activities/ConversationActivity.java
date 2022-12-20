@@ -118,6 +118,12 @@ public class ConversationActivity extends Activity {
                     } else {
                         actionBarImitation.setSubtitle(getResources().getString(R.string.offline));
                     }
+                    actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            onBackPressed();
+                        }
+                    });
                 }
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
