@@ -122,7 +122,11 @@ public class ProfileLayout extends LinearLayout {
             friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));
             add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
         } else if(user.friends_status == 2) {
-            friend_status.setText(getResources().getString(R.string.friend_status_req_recv_m, user.first_name));
+            if(user.sex == 1) {
+                friend_status.setText(getResources().getString(R.string.friend_status_req_recv_f, user.first_name));
+            } else {
+                friend_status.setText(getResources().getString(R.string.friend_status_req_recv_m, user.first_name));
+            }
             add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
         } else if(user.friends_status == 3){
             friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
