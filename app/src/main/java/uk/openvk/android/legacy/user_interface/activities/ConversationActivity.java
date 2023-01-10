@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.inputmethodservice.Keyboard;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,12 +35,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Messages;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationPanel;
 import uk.openvk.android.legacy.user_interface.list_adapters.MessagesListAdapter;
@@ -61,6 +67,8 @@ public class ConversationActivity extends Activity {
     private ArrayList<uk.openvk.android.legacy.api.models.Message> history;
     private Messages messages;
     private uk.openvk.android.legacy.api.models.Message last_sended_message;
+    private LongPollReceiver lpReceiver;
+    private String last_lp_message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +83,7 @@ public class ConversationActivity extends Activity {
         installLayouts();
         setConversationView();
         messages = new Messages();
+        registerBroadcastReceiver();
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -155,6 +164,19 @@ public class ConversationActivity extends Activity {
         }
     }
 
+    private void registerBroadcastReceiver() {
+        lpReceiver = new LongPollReceiver(this) {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                super.onReceive(context, intent);
+                Bundle data = intent.getExtras();
+                receiveState(HandlerMessages.LONGPOLL, data);
+            }
+        };
+        registerReceiver(lpReceiver, new IntentFilter(
+                "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
+    }
+
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -170,31 +192,37 @@ public class ConversationActivity extends Activity {
         ((EditText) conversationPanel.findViewById(R.id.message_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
-                final String msg_text = ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
-                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    try {
-                        conversation.sendMessage(ovk_api, msg_text);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+                    final String msg_text = ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
+                    if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_DOWN) {
+                        try {
+                            conversation.sendMessage(ovk_api, msg_text);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false, false, (int) (System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                        last_sended_message.sending = true;
+                        last_sended_message.isError = false;
+                        if (history == null) {
+                            history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
+                        }
+                        history.add(last_sended_message);
+                        if (conversation_adapter == null) {
+                            conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history, peer_id);
+                            messagesList.setAdapter(conversation_adapter);
+                        } else {
+                            conversation_adapter.notifyDataSetChanged();
+                        }
+                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                        messagesList.smoothScrollToPosition(history.size() - 1);
+                    } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                            && event.getAction() == KeyEvent.ACTION_DOWN) {
+                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).clearFocus();
+                        messagesList.requestFocus();
                     }
-                    last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
-                    last_sended_message.sending = true;
-                    last_sended_message.isError = false;
-                    if(history == null) {
-                        history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
-                    }
-                    history.add(last_sended_message);
-                    if(conversation_adapter == null) {
-                        conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history, peer_id);
-                        messagesList.setAdapter(conversation_adapter);
-                    } else {
-                        conversation_adapter.notifyDataSetChanged();
-                    }
-                    ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
-                    messagesList.smoothScrollToPosition(history.size() - 1);
                 }
-                return false;
+                return true;
             }
         });
         final Button send_btn = (Button) conversationPanel.findViewById(R.id.send_btn);
@@ -234,11 +262,6 @@ public class ConversationActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString().length() > 0) {
-                    if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
-                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(4);
-                    } else {
-                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount());
-                    }
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);
@@ -247,7 +270,11 @@ public class ConversationActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
+                    ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(4);
+                } else {
+                    ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount());
+                }
             }
         });
     }
@@ -282,11 +309,22 @@ public class ConversationActivity extends Activity {
             last_sended_message.getSendedId(data.getString("response"));
             history.set(history.size() - 1, last_sended_message);
             conversation_adapter.notifyDataSetChanged();
+        } else if(message == HandlerMessages.LONGPOLL) {
+            if(!((OvkApplication) getApplicationContext()).notifMan.isRepeat(last_lp_message, data.getString("response"))) {
+                conversation.getHistory(ovk_api, peer_id);
+            }
+            last_lp_message = data.getString("response");
         }
     }
 
     public void hideSelectedItemBackground(int position) {
         messagesList.setBackgroundColor(getResources().getColor(R.color.transparent));
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(lpReceiver);
+        super.onDestroy();
     }
 
     public void getMsgContextMenu(final int item_pos) {

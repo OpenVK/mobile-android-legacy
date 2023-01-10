@@ -165,26 +165,36 @@ public class WallPostActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
                 try {
-                    final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
-                    try {
-                        wall.createComment(ovk_api, owner_id, post_id, msg_text);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+                        if ((event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                                && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                            final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                            try {
+                                wall.createComment(ovk_api, owner_id, post_id, msg_text);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                            Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                            comment.avatar = bitmap;
+                            if (comments == null) {
+                                comments = new ArrayList<Comment>();
+                            }
+                            comments.add(comment);
+                            postViewLayout.createAdapter(WallPostActivity.this, comments);
+                            ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
+                        } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                                && event.getAction() == KeyEvent.ACTION_DOWN) {
+                            ((EditText) commentPanel.findViewById(R.id.comment_edit)).clearFocus();
+                            postViewLayout.requestFocus();
+                        }
                     }
-                    Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
-                    comment.avatar = bitmap;
-                    if (comments == null) {
-                        comments = new ArrayList<Comment>();
-                    }
-                    comments.add(comment);
-                    postViewLayout.createAdapter(WallPostActivity.this, comments);
-                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
                 } catch (OutOfMemoryError error) {
 
                 }
+
                 return true;
             }
         });
@@ -223,11 +233,7 @@ public class WallPostActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() > 0) {
-                    if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount() > 4) {
-                        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(4);
-                    } else {
-                        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount());
-                    }
+
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);
@@ -236,7 +242,11 @@ public class WallPostActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount() > 4) {
+                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(4);
+                } else {
+                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount());
+                }
             }
         });
     }

@@ -152,6 +152,13 @@ public class FriendsIntentActivity extends Activity {
             }
         } else {
             ActionBarImitation actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation.setHomeButtonVisibility(true);
+            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
             actionBarImitation.setTitle(getResources().getString(R.string.friends));
         }
     }

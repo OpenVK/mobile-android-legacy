@@ -12,10 +12,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import uk.openvk.android.legacy.api.wrappers.NotificationManager;
+import uk.openvk.android.legacy.longpoll_api.LongPollService;
+
 public class OvkApplication extends Application {
 
     public String version;
     public boolean isTablet;
+    public LongPollService longPollService;
+    public NotificationManager notifMan;
 
     @Override
     public void onCreate() {

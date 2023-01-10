@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioAttributes;
@@ -72,6 +73,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout;
@@ -126,12 +128,13 @@ public class AppActivity extends Activity {
     private String last_longpoll_response;
     private int item_pos;
     private int poll_answer;
-    private NotificationManager notifMan;
+    private uk.openvk.android.legacy.api.wrappers.NotificationManager notifMan;
     private NotificationChannel notifChannel;
     private boolean inBackground;
     private ActionBarLayout ab_layout;
     private int menu_id;
     private ActionBarImitation actionBarImitation;
+    private LongPollReceiver lpReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,27 +147,7 @@ public class AppActivity extends Activity {
         if(instance_prefs.getString("access_token", "").length() == 0 || instance_prefs.getString("server", "").length() == 0) {
             finish();
         }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notifMan = getSystemService(NotificationManager.class);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            notifChannel = new NotificationChannel("lp_updates", "LongPoll Updates", importance);
-            notifChannel.enableLights(global_prefs.getBoolean("notifyLED", true));
-            notifChannel.enableVibration(global_prefs.getBoolean("notifyVibrate", true));
-            if(global_prefs.getBoolean("notifySound", true)) {
-                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                        .build();
-                if(!global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
-                    notifChannel.setSound(Uri.parse(global_prefs.getString("notifyRingtone", "")), audioAttributes);
-                } else {
-                    notifChannel.setSound(null, null);
-                }
-            }
-            notifMan.createNotificationChannel(notifChannel);
-        } else {
-            notifMan = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        }
+
         last_longpoll_response = "";
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
@@ -194,6 +177,7 @@ public class AppActivity extends Activity {
         friends = new Friends();
         groups = new Groups();
         wall = new Wall();
+        registerBroadcastReceiver();
         global_prefs_editor.putString("current_screen", "newsfeed");
         global_prefs_editor.commit();
         if(((OvkApplication) getApplicationContext()).isTablet) {
@@ -202,13 +186,30 @@ public class AppActivity extends Activity {
         }
         Bundle data = new Bundle();
         createSlidingMenu();
-
+        ((OvkApplication) getApplicationContext()).notifMan = new uk.openvk.android.legacy.api.wrappers.NotificationManager(AppActivity.this,
+                global_prefs.getBoolean("notifyLED", true), global_prefs.getBoolean("notifyVibrate", true), global_prefs.getBoolean("notifySound", true),
+                global_prefs.getString("notifyRingtone", ""));
+        notifMan = ((OvkApplication) getApplicationContext()).notifMan;
         if(activity_menu == null) {
             android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
             activity_menu = p.getMenu();
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
         }
+    }
+
+
+    private void registerBroadcastReceiver() {
+        lpReceiver = new LongPollReceiver(this) {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                super.onReceive(context, intent);
+                Bundle data = intent.getExtras();
+                receiveState(HandlerMessages.LONGPOLL, data);
+            }
+        };
+        registerReceiver(lpReceiver, new IntentFilter(
+                "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
     }
 
     private void setActionBar(String layout_name) {
@@ -778,9 +779,9 @@ public class AppActivity extends Activity {
                 newsfeedLayout.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
-                longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
-                longPollService.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
+                ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
+                ((OvkApplication) getApplicationContext()).longPollService.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+                ((OvkApplication) getApplicationContext()).longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
                 slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
@@ -945,28 +946,9 @@ public class AppActivity extends Activity {
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
                 conversationsLayout.loadAvatars(conversations);
             } else if(message == HandlerMessages.LONGPOLL) {
-                MessageEvent msg_event = new MessageEvent(data.getString("response"));
-                if(msg_event.peer_id > 0 && global_prefs.getBoolean("enableNotification", true)) {
-                    if (!last_longpoll_response.equals(data.getString("response"))) {
-                        String msg_author = String.format("Unknown ID %d", msg_event.peer_id);
-                        if(conversations != null) {
-                            for (int i = 0; i < conversations.size(); i++) {
-                                if (conversations.get(i).peer_id == msg_event.peer_id) {
-                                    msg_author = conversations.get(i).title;
-                                }
-                            }
-                        }
-                        notification_id = notification_id + 1;
-                        last_longpoll_response = data.getString("response");
-                        Notification notification = createNotification(notifMan, R.drawable.ic_stat_notify, msg_author, msg_event.msg_text);
-                        notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
-                        notifMan.notify(notification_id, notification);
-                        if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
-                            MediaPlayer mp = MediaPlayer.create(this, R.raw.notify);
-                            mp.start();
-                        }
-                    }
-                }
+                notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.getBoolean("enableNotification", true),
+                        notifMan.isRepeat(last_longpoll_response, data.getString("response")));
+                last_longpoll_response = data.getString("response");
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     WallPost item = newsfeed.getWallPosts().get(item_pos);
@@ -1034,7 +1016,9 @@ public class AppActivity extends Activity {
                         if (data.getString("method").equals("Account.getProfileInfo") ||
                                 (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
                                 (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
-                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0) ||
+                                (data.getString("method").equals("Users.get") && global_prefs.getString("current_screen", "").equals("profile")) ||
+                                (data.getString("method").equals("Groups.get") && groups.getList().size() == 0)) {
                             errorLayout.setReason(message);
                             errorLayout.setData(data);
                             errorLayout.setRetryAction(this);
@@ -1066,57 +1050,6 @@ public class AppActivity extends Activity {
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
-    }
-
-    public Notification createNotification(NotificationManager notifMan, int icon, String title, String description) {
-        Notification notification;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder builder =
-                    new Notification.Builder(this)
-                            .setSmallIcon(icon)
-                            .setContentTitle(title)
-                            .setContentText(description)
-                            .setChannelId("lp_updates");
-            notification = builder.build();
-            Intent notificationIntent = new Intent(this, ConversationActivity.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(this, 2, notificationIntent, 0);
-            notification.contentIntent = contentIntent;
-        } else {
-            NotificationCompat.Builder builder =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(icon)
-                            .setContentTitle(title)
-                            .setContentText(description);
-
-            notification = builder.build();
-
-            if(global_prefs.getBoolean("notifyLED", true)) {
-                notification.defaults = Notification.DEFAULT_LIGHTS;
-            }
-            if(global_prefs.getBoolean("notifyVibrate", true)) {
-                notification.defaults = Notification.DEFAULT_VIBRATE;
-            }
-
-            if(global_prefs.getBoolean("notifySound", true)) {
-                notification.defaults = Notification.DEFAULT_SOUND;
-                if(global_prefs.getString("notifyRingtone", "").equals("content://settings/system/notification_sound")) {
-                    MediaPlayer mp = MediaPlayer.create(this, R.raw.notify);
-                    mp.start();
-                } else {
-                    notification.sound = Uri.parse(global_prefs.getString("notifyRingtone", ""));
-                }
-            }
-        }
-        return notification;
-    }
-
-    public PendingIntent createConversationIntent(int peer_id, String title) {
-        Intent notificationIntent = new Intent(this, ConversationActivity.class);
-        notificationIntent.putExtra("peer_id", peer_id);
-        notificationIntent.putExtra("conv_title", title);
-        notificationIntent.putExtra("online", 1);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        return contentIntent;
     }
 
     public void openAccountProfile() {
@@ -1578,5 +1511,11 @@ public class AppActivity extends Activity {
         if(groups != null) {
             groups.getGroups(ovk_api, account.id, 25, groups.getList().size());
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(lpReceiver);
+        super.onDestroy();
     }
 }

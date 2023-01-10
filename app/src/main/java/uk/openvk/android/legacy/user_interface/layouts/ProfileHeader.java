@@ -45,7 +45,7 @@ public class ProfileHeader extends RelativeLayout {
         ((TextView) findViewById(R.id.profile_activity)).setText(status);
     }
 
-    public void setLastSeen(long date, int ls_platform) {
+    public void setLastSeen(int sex, long date, int ls_platform) {
         if(online) {
             ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.online));
         } else {
@@ -56,18 +56,41 @@ public class ProfileHeader extends RelativeLayout {
             long dt_sec = (TimeUnit.SECONDS.toMillis(date));
             Date dt = new Date(dt_sec);
             if((dt_midnight.getTime() - dt_sec) < 60000) {
-                ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_ago_now)));
+                if(sex == 1) {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, getResources().getString(R.string.date_ago_now)));
+                } else {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_ago_now)));
+                }
             } else if((dt_midnight.getTime() - dt_sec) < 86400000) {
-                ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, new SimpleDateFormat("HH:mm").format(dt)));
+                if(sex == 1) {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, new SimpleDateFormat("HH:mm").format(dt)));
+                } else {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, new SimpleDateFormat("HH:mm").format(dt)));
+                }
             } else if((dt_midnight.getTime() - dt_sec) < (86400000 * 2)) {
-                ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s",
-                        getResources().getString(R.string.yesterday_at), new SimpleDateFormat("HH:mm").format(dt))));
+                if(sex == 1) {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, String.format("%s %s",
+                            getResources().getString(R.string.yesterday_at), new SimpleDateFormat("HH:mm").format(dt))));
+                } else {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s",
+                            getResources().getString(R.string.yesterday_at), new SimpleDateFormat("HH:mm").format(dt))));
+                }
             } else if((dt_midnight.getTime() - dt_sec) < 31536000000L) {
-                ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
-                        new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                if(sex == 1) {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                } else {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                }
             } else {
-                ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
-                        new SimpleDateFormat("d MMMM yyyy").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                if(sex == 1) {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_f, String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM yyyy").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                } else {
+                    ((TextView) findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                }
             }
         }
         ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(VISIBLE);

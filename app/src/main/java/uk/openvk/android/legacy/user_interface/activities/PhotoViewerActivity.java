@@ -84,10 +84,10 @@ public class PhotoViewerActivity extends Activity {
                 receiveState(message.what, data);
             }
         };
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.photo));
@@ -218,10 +218,8 @@ public class PhotoViewerActivity extends Activity {
                         } else {
                             if(actionBarImitation.getVisibility() == View.VISIBLE) {
                                 actionBarImitation.setVisibility(View.GONE);
-                                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                             } else {
                                 actionBarImitation.setVisibility(View.VISIBLE);
-                                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                             }
                         }
                     }
