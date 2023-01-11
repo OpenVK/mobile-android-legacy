@@ -28,6 +28,7 @@ public class Users implements Parcelable {
         users = new ArrayList<User>();
     }
 
+
     public Users(String response) {
         jsonParser = new JSONParser();
         parse(response);
