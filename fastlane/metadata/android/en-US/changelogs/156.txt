@@ -1,0 +1,4 @@
+1. Fixed a crash when trying to download photos from the wrong URL.
+2. OkHttp3 no longer redirects requests via SSL when the "Secure connection" checkbox is disabled (for Android 2.3 and higher)
+3. The menu in profiles and groups is doing its job again.
+4. Fixed endless account login if an operation performed on network sockets failed.

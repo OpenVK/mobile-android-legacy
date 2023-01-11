@@ -1,0 +1,1 @@
+1. Fixed cosmetic bugs. For example: group information in Tablet UI mode occupied the entire screen, the notification counter was always displayed even if there were no notifications.

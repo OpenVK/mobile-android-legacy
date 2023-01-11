@@ -1,0 +1,4 @@
+1. Now, after launching the application, the image quality value is set, if it is not already specified, so the images from the posts will be loaded again. For devices where the VM heap size is greater than 128 MB.
+2. CenteredImageSpan, previously used as a workaround over ImageSpan in Android 3.0, has been used in all supported versions of Android.
+3. In the photo viewer, when you click on a photo once, the statusbar is immediately minimized along with the actionbar. Zoom limit increased up to 8 times.
+4. Corrected the link to the FAQ in the "About" screen.
