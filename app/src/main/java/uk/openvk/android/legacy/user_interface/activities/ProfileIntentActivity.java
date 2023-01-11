@@ -319,13 +319,13 @@ public class ProfileIntentActivity extends Activity {
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
-                profileLayout.updateLayout(user);
+                profileLayout.updateLayout(user, getWindowManager());
                 progressLayout.setVisibility(View.GONE);
                 profileLayout.setVisibility(View.VISIBLE);
-                profileLayout.setDMButtonListener(this, user.id);
+                profileLayout.setDMButtonListener(this, user.id, getWindowManager());
                 profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
-                    profileLayout.hideHeaderButtons(this);
+                    profileLayout.hideHeaderButtons(this, getWindowManager());
                     try {
                         for (int i = 0; i < activity_menu.size(); i++) {
                             if (i > 0) {
@@ -365,7 +365,7 @@ public class ProfileIntentActivity extends Activity {
                     wall.get(ovk_api, user.id, 50);
                     friends.get(ovk_api, user.id, 10, "profile_counter");
                 } else {
-                    profileLayout.hideHeaderButtons(this);
+                    profileLayout.hideHeaderButtons(this, getWindowManager());
                     activity_menu.removeItem(0);
                     profileLayout.hideTabSelector();
                 }

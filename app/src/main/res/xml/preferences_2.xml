@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="@string/sett_general"
+	<PreferenceCategory
+		android:title="@string/sett_general"
+		android:layout="@layout/category_prefw"
+		android:key="general_settings">
+
+		<CheckBoxPreference android:title="@string/sett_splash"
+			android:key="startupSplash"
+			android:layout="@layout/checkbox_prefw"
+			android:defaultValue="true"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/sett_other"
 		android:layout="@layout/category_prefw"
 		android:key="cat_others">
 		<Preference

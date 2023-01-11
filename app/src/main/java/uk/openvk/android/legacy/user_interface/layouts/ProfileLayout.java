@@ -3,9 +3,15 @@ package uk.openvk.android.legacy.user_interface.layouts;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.provider.ContactsContract;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -14,8 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.activities.AppActivity;
@@ -36,7 +44,7 @@ public class ProfileLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void updateLayout(User user) {
+    public void updateLayout(User user, final WindowManager wm) {
         ProfileHeader header = (ProfileHeader) findViewById(R.id.profile_header);
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
         header.setOnline(user.online);
@@ -57,11 +65,23 @@ public class ProfileLayout extends LinearLayout {
             header.findViewById(R.id.profile_head_highlight).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AboutProfileLayout aboutProfile = ((AboutProfileLayout) findViewById(R.id.about_profile_layout));
-                    if (aboutProfile.getVisibility() == GONE) {
-                        aboutProfile.setVisibility(VISIBLE);
+                    DisplayMetrics metrics = new DisplayMetrics();
+                    Display display = wm.getDefaultDisplay();
+                    display.getMetrics(metrics);
+                    if(((OvkApplication)getContext().getApplicationContext()).isTablet && getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
+                        View aboutProfile = findViewById(R.id.about_profile_ll);
+                        if (aboutProfile.getVisibility() == View.GONE) {
+                            aboutProfile.setVisibility(View.VISIBLE);
+                        } else {
+                            aboutProfile.setVisibility(View.GONE);
+                        }
                     } else {
-                        aboutProfile.setVisibility(GONE);
+                        View aboutProfile = findViewById(R.id.about_profile_layout);
+                        if (aboutProfile.getVisibility() == View.GONE) {
+                            aboutProfile.setVisibility(View.VISIBLE);
+                        } else {
+                            aboutProfile.setVisibility(View.GONE);
+                        }
                     }
                 }
             });
@@ -86,8 +106,20 @@ public class ProfileLayout extends LinearLayout {
         }
     }
 
-    public void setDMButtonListener(final Context ctx, final long peer_id) {
-        if(!((OvkApplication) ctx.getApplicationContext()).isTablet) {
+    public void setDMButtonListener(final Context ctx, final long peer_id, WindowManager wm) {
+        float smallestWidth = Global.getSmalledWidth(wm);
+        if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
+            ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).getConversationById(peer_id);
+                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+                    }
+                }
+            });
+        } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
             ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -195,8 +227,11 @@ public class ProfileLayout extends LinearLayout {
         }
     }
 
-    public void hideHeaderButtons(Context ctx) {
-        if(!((OvkApplication) ctx.getApplicationContext()).isTablet) {
+    public void hideHeaderButtons(Context ctx, WindowManager wm) {
+        float smallestWidth = Global.getSmalledWidth(wm);
+        if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
+            ((Button) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+        } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
             ((Button) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else {
             ((ImageButton) findViewById(R.id.send_direct_msg)).setVisibility(GONE);

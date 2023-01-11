@@ -62,7 +62,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     }
 
     public WallPost getItem(int position) {
-       return items.get(position);
+        return items.get(position);
     }
 
     @Override
@@ -134,6 +134,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 } else {
                     api_app_indicator.setVisibility(View.GONE);
                 }
+            } else {
+                api_app_indicator.setVisibility(View.GONE);
             }
             if(item.verified_author) {
                 String name = item.name;

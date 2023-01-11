@@ -58,6 +58,11 @@ public class AboutGroupLayout extends LinearLayout {
         } else {
             ((LinearLayout) findViewById(R.id.site_ll)).setVisibility(GONE);
         }
+        if(description == null && site == null) {
+            findViewById(R.id.about_group_layout).setVisibility(GONE);
+        } else if(description.length() == 0 && site.length() == 0) {
+            findViewById(R.id.about_group_layout).setVisibility(GONE);
+        }
     }
 
 /*  public void setContacts() {

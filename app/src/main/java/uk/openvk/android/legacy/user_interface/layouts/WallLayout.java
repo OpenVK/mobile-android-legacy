@@ -60,21 +60,25 @@ public class WallLayout extends LinearLayout {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            Handler handler = new Handler();
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    requestLayout();
-                    if (getWidth() >= (int) (600 * getContext().getResources().getDisplayMetrics().density)) {
-                        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
-                    } else {
-                        LinearLayout.LayoutParams layoutParams = new LayoutParams(getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT);
-                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                        wallView.setLayoutParams(layoutParams);
+        try {
+            if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                Handler handler = new Handler();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestLayout();
+                        if (getWidth() >= (int) (600 * getContext().getResources().getDisplayMetrics().density)) {
+                            adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+                        } else {
+                            LinearLayout.LayoutParams layoutParams = new LayoutParams(getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT);
+                            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                            wallView.setLayoutParams(layoutParams);
+                        }
                     }
-                }
-            });
+                });
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

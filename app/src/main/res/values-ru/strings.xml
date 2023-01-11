@@ -416,6 +416,7 @@
 
     <string name="friends_add">Добавить</string>
     <string name="friends_decline">Скрыть</string>
+    <string name="sett_splash">Заставка при запуске</string>
     <string name="sett_ringtone">Сигнал уведомления</string>
     <string-array name="num_mutual_friends_req">
         <item>%d общий друг</item>

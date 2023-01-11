@@ -533,9 +533,9 @@ public class AppActivity extends Activity {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
                 menu.toggle(true);
             }
-        }
-        if(activity_menu != null) {
-            activity_menu.clear();
+            if(activity_menu != null) {
+                activity_menu.clear();
+            }
         }
         if(position == 0) {
             setActionBar("");
@@ -799,14 +799,14 @@ public class AppActivity extends Activity {
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
-                profileLayout.updateLayout(user);
+                profileLayout.updateLayout(user, getWindowManager());
                 if (global_prefs.getString("current_screen", "").equals("profile")) {
                     progressLayout.setVisibility(View.GONE);
                     profileLayout.setVisibility(View.VISIBLE);
-                    profileLayout.setDMButtonListener(this, user.id);
+                    profileLayout.setDMButtonListener(this, user.id, getWindowManager());
                     profileLayout.setAddToFriendsButtonListener(this, user.id, user);
                     if(user.id == account.id) {
-                        profileLayout.hideHeaderButtons(this);
+                        profileLayout.hideHeaderButtons(this, getWindowManager());
                     }
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 50);

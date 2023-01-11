@@ -19,6 +19,11 @@
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
 			android:layout="@layout/checkbox_prefw"
 			android:defaultValue="true"/>
+
+		<CheckBoxPreference android:title="@string/sett_splash"
+			android:key="startupSplash"
+            android:layout="@layout/checkbox_prefw"
+			android:defaultValue="true"/>
 			
 		<CheckBoxPreference android:title="@string/sett_bdays" android:key="notifyBDays"
 			android:layout="@layout/checkbox_prefw"

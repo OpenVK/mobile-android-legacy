@@ -44,24 +44,30 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         int month = new Date().getMonth();
         int day = new Date().getDate();
-        if((month == 11 && day >= 1) || (month == 0 && day <= 15)) {
-            setContentView(R.layout.xmas_splash_activity);
-        } else {
-            setContentView(R.layout.splash_activity);
-        }
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if(msg.what == 0) {
-                    createOvkWarnDialogForBeginners();
-                }
+        if(global_prefs.getBoolean("startupSplash", true)) {
+            if ((month == 11 && day >= 1) || (month == 0 && day <= 15)) {
+                setContentView(R.layout.xmas_splash_activity);
+            } else {
+                setContentView(R.layout.splash_activity);
             }
-        };
-        Timer timer = new Timer();
-        timer.schedule(new AutoRun(), 1000);
+            handler = new Handler(Looper.myLooper()) {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what == 0) {
+                        createOvkWarnDialogForBeginners();
+                    }
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(new AutoRun(), 1000);
+        } else {
+            setTheme(R.style.BaseStyle);
+            Timer timer = new Timer();
+            timer.schedule(new AutoRun(), 0);
+        }
     }
 
     class AutoRun extends TimerTask {

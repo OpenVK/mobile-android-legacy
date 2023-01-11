@@ -14,7 +14,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +36,7 @@ import android.widget.Toast;
 import java.util.Arrays;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
@@ -98,6 +101,10 @@ public class GroupIntentActivity extends Activity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getMetrics(metrics);
 
         final Uri uri = getIntent().getData();
 
@@ -392,7 +399,9 @@ public class GroupIntentActivity extends Activity {
     }
 
     private void setJoinButtonListener(long id) {
-        if(((OvkApplication) getApplicationContext()).isTablet) {
+        View aboutGroup = findViewById(R.id.about_group_ll);
+        float smallestWidth = Global.getSmalledWidth(getWindowManager());
+        if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
             final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -441,11 +450,21 @@ public class GroupIntentActivity extends Activity {
         header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AboutGroupLayout aboutGroup = ((AboutGroupLayout) findViewById(R.id.about_group_layout));
-                if (aboutGroup.getVisibility() == View.GONE) {
-                    aboutGroup.setVisibility(View.VISIBLE);
+                float smallestWidth = Global.getSmalledWidth(getWindowManager());
+                if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
+                    View aboutGroup = findViewById(R.id.about_group_ll);
+                    if (aboutGroup.getVisibility() == View.GONE) {
+                        aboutGroup.setVisibility(View.VISIBLE);
+                    } else {
+                        aboutGroup.setVisibility(View.GONE);
+                    }
                 } else {
-                    aboutGroup.setVisibility(View.GONE);
+                    View aboutGroup = findViewById(R.id.about_group_layout);
+                    if (aboutGroup.getVisibility() == View.GONE) {
+                        aboutGroup.setVisibility(View.VISIBLE);
+                    } else {
+                        aboutGroup.setVisibility(View.GONE);
+                    }
                 }
             }
         });

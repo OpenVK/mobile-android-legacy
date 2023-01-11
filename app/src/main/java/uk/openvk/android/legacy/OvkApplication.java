@@ -81,6 +81,10 @@ public class OvkApplication extends Application {
             global_prefs_editor.putBoolean("hideOvkWarnForBeginners", false);
         }
 
+        if(!global_prefs.contains("startupSplash")) {
+            global_prefs_editor.putBoolean("startupSplash", true);
+        }
+
         global_prefs_editor.commit();
         instance_prefs_editor.commit();
 
