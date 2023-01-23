@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,10 +23,13 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,6 +43,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.InstanceLink;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class MainSettingsActivity extends PreferenceActivity {
     private boolean isQuiting;
@@ -186,6 +191,12 @@ public class MainSettingsActivity extends PreferenceActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
+    }
+
     private void setListeners() {
         PreferenceScreen screen = (PreferenceScreen) findPreference("main_settings");
         PreferenceGroup others = (PreferenceGroup) findPreference("cat_others");
@@ -256,6 +267,18 @@ public class MainSettingsActivity extends PreferenceActivity {
             });
         }
 
+        Preference interface_language = findPreference("interfaceLanguage");
+        interface_language.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Toast.makeText(MainSettingsActivity.this, R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
+                SharedPreferences.Editor editor = global_prefs.edit();
+                editor.putString("interfaceLanguage", (String) newValue);
+                editor.commit();
+                return false;
+            }
+        });
+
         Preference network_settings = findPreference("network_settings");
         network_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -321,6 +344,18 @@ public class MainSettingsActivity extends PreferenceActivity {
         ((LinearLayout) about_instance_view.findViewById(R.id.instance_statistics_ll)).setVisibility(View.GONE);
         ((LinearLayout) about_instance_view.findViewById(R.id.instance_links_ll)).setVisibility(View.GONE);
         server_name.setText(instance_prefs.getString("server", ""));
+        ((TextView) about_instance_view.findViewById(R.id.rules_link)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openWebAddress(String.format("http://%s/about", instance_prefs.getString("server", "")));
+            }
+        });
+        ((TextView) about_instance_view.findViewById(R.id.privacy_link)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openWebAddress(String.format("http://%s/privacy", instance_prefs.getString("server", "")));
+            }
+        });
         builder.setTitle(getResources().getString(R.string.about_instance));
         isQuiting = true;
         builder.setView(about_instance_view);
@@ -365,10 +400,18 @@ public class MainSettingsActivity extends PreferenceActivity {
                 ((TextView) view.findViewById(R.id.instance_links_label7)).setTextColor(Color.WHITE);
                 ((TextView) view.findViewById(R.id.instance_links_label8)).setTextColor(Color.WHITE);
                 ((TextView) view.findViewById(R.id.instance_links_label9)).setTextColor(Color.WHITE);
+                ((TextView) view.findViewById(R.id.rules_link)).setTextColor(Color.LTGRAY);
+                ((TextView) view.findViewById(R.id.privacy_link)).setTextColor(Color.LTGRAY);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void openWebAddress(String address) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(address));
+        startActivity(i);
     }
 
     private class HideDangerZone extends TimerTask {

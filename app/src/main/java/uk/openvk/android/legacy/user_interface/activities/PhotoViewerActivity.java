@@ -48,15 +48,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ZoomableImageView;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class PhotoViewerActivity extends Activity {
     private String access_token;
@@ -145,6 +148,12 @@ public class PhotoViewerActivity extends Activity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void createActionPopupMenu(final Menu menu) {

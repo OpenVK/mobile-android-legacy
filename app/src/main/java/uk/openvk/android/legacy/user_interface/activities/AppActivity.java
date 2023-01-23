@@ -47,6 +47,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
@@ -92,6 +93,7 @@ import uk.openvk.android.legacy.user_interface.list_adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.user_interface.list_items.SlidingMenuItem;
 import uk.openvk.android.legacy.longpoll_api.LongPollService;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class AppActivity extends Activity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
@@ -178,8 +180,20 @@ public class AppActivity extends Activity {
         groups = new Groups();
         wall = new Wall();
         registerBroadcastReceiver();
-        global_prefs_editor.putString("current_screen", "newsfeed");
-        global_prefs_editor.commit();
+        if(global_prefs.getBoolean("refreshOnOpen", true)) {
+            global_prefs_editor.putString("current_screen", "newsfeed");
+            global_prefs_editor.commit();
+        } else {
+            if(global_prefs.getString("current_screen", "newsfeed").equals("profile")) {
+                openAccountProfile();
+            } else if(global_prefs.getString("current_screen", "newsfeed").equals("friends")) {
+                onSlidingMenuItemClicked(0);
+            } if(global_prefs.getString("current_screen", "newsfeed").equals("messages")) {
+                onSlidingMenuItemClicked(1);
+            } if(global_prefs.getString("current_screen", "newsfeed").equals("groups")) {
+                onSlidingMenuItemClicked(2);
+            }
+        }
         if(((OvkApplication) getApplicationContext()).isTablet) {
             newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
             ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
@@ -198,6 +212,21 @@ public class AppActivity extends Activity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(lpReceiver != null) {
+            unregisterReceiver(lpReceiver);
+        }
+        finish();
+        System.exit(0);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
+    }
 
     private void registerBroadcastReceiver() {
         lpReceiver = new LongPollReceiver(this) {
@@ -529,13 +558,17 @@ public class AppActivity extends Activity {
 
     public void onSlidingMenuItemClicked(int position) {
         global_prefs_editor = global_prefs.edit();
-        if(position < 4) {
-            if (!((OvkApplication) getApplicationContext()).isTablet) {
-                menu.toggle(true);
+        try {
+            if (position < 4) {
+                if (!((OvkApplication) getApplicationContext()).isTablet) {
+                    menu.toggle(true);
+                }
+                if (activity_menu != null) {
+                    activity_menu.clear();
+                }
             }
-            if(activity_menu != null) {
-                activity_menu.clear();
-            }
+        } catch (Exception ignored) {
+
         }
         if(position == 0) {
             setActionBar("");
@@ -1010,7 +1043,7 @@ public class AppActivity extends Activity {
                     }
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
+                    message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.INSTANCE_UNAVAILABLE || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
                 if(data.containsKey("method")) {
                     try {
                         if (data.getString("method").equals("Account.getProfileInfo") ||

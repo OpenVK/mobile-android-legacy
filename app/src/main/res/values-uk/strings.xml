@@ -30,6 +30,7 @@
         <item>Перевищено час очікування відповіді</item>
         <item>Обрив захищеного з\'єднання</item>
         <item>Збій інстанції</item>
+        <item>Інстанція недоступна</item>
         <item>Невідома помилка</item>
     </string-array>
 
@@ -150,7 +151,7 @@
     <string name="pull_to_refresh">Потягніть, щоб оновити</string>
     <string name="pull_to_refresh_bottom">Потягніть, щоб оновити</string>
     <string name="release_to_refresh">Відпустіть, щоб оновити</string>
-    <string name="refreshing">Оновлення...</string>
+    <string name="refreshing">Оновлення…</string>
     <string name="updated">Оновлено</string>
     <string name="error">Помилка</string>
     <string name="attach_note">Нотатка</string>
@@ -430,6 +431,7 @@
     <string name="friend_deleted_m">%s був видалений з Вашого списку друзів</string>
     <string name="friend_deleted_f">%s була видалена з Вашого списку друзів</string>
     <string name="auth_error_unknown_error">Не вдалося підключитися до інстанції через невідомі причини. Повторіть спробу пізніше або виберіть іншу інстанцію.</string>
+    <string name="auth_instance_unavaliable">На даний момент ця інстанція недоступна. Повторіть спробу пізніше або виберіть іншу інстанцію.</string>
     <string name="auth_error_not_openvk_instance">Вказаний сервер не є OpenVK-сумісної інстанцією. Спробуйте вибрати іншу інстанцію.</string>
     <string name="auth_error_network">Не вдалося увійти через проблеми з інтернет-з\'єднанням. Перевірте підключення до мережі і повторіть спробу.</string>
     <string name="auth_error_ssl">Не вдалося увійти через проблеми із захищеним з\'єднанням. Спробуйте вибрати іншу інстанцію.</string>
@@ -1247,4 +1249,9 @@
     <string name="invalid_session">Сесія недійсна. Будь ласка, авторизуйтесь ще раз.</string>
     <string name="attachment_load_err">Помилка завантаження вкладення</string>
     <string name="sett_splash">Заставка під час запуску</string>
+    <string name="rules_link">Правила</string>
+    <string name="privacy_link">Приватність</string>
+    <string name="authdata_required">Будь ласка, введіть всі необхідні дані для авторизації та повторіть спробу.</string>
+    <string name="interface_category">Інтерфейс</string>
+    <string name="interface_language">Мова (Language)</string>
 </resources>

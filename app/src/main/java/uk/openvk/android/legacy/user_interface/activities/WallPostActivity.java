@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -23,8 +24,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
@@ -40,6 +43,7 @@ import uk.openvk.android.legacy.user_interface.layouts.CommentPanel;
 import uk.openvk.android.legacy.user_interface.layouts.PostViewLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 
 public class WallPostActivity extends Activity {
@@ -126,6 +130,12 @@ public class WallPostActivity extends Activity {
             finish();
             return;
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void getPost(WallPost post, Bundle extras) {

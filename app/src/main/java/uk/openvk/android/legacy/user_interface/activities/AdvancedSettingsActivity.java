@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,10 +15,14 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class AdvancedSettingsActivity extends PreferenceActivity {
     private DownloadManager dlManager;
@@ -92,6 +97,12 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
         } else if(global_prefs.getString("photos_quality", "").equals("original")) {
             image_quality.setSummary(quality_array[2]);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void openQualityChooseDialog() {

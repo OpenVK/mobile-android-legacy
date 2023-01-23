@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -19,12 +20,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class NewPostActivity extends Activity {
     public String server;
@@ -107,6 +112,12 @@ public class NewPostActivity extends Activity {
 
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void installLayouts() {

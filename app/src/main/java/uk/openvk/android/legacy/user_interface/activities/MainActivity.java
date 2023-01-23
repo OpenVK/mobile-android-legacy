@@ -23,11 +23,14 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 
 public class MainActivity extends Activity {
@@ -147,6 +150,12 @@ public class MainActivity extends Activity {
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void setDialogStyle(View view, String dialog_name) {

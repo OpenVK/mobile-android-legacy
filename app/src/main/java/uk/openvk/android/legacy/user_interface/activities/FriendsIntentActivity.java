@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -16,8 +17,10 @@ import android.widget.ListView;
 import android.widget.TabHost;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
@@ -32,6 +35,7 @@ import uk.openvk.android.legacy.user_interface.layouts.FriendsLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.TabSelector;
 import uk.openvk.android.legacy.user_interface.list_items.SlidingMenuItem;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 /**
  * Created by Dmitry on 30.09.2022.
@@ -118,6 +122,12 @@ public class FriendsIntentActivity extends Activity {
                 return;
             }
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void installLayouts() {

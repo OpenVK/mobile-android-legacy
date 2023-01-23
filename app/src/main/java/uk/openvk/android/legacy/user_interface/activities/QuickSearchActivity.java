@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -20,7 +21,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Users;
@@ -29,6 +33,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.FullListView;
 import uk.openvk.android.legacy.user_interface.layouts.SearchResultsLayout;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class QuickSearchActivity extends Activity {
     private OvkAPIWrapper ovk_api;
@@ -88,6 +93,12 @@ public class QuickSearchActivity extends Activity {
             }
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void receiveState(int message, Bundle data) {

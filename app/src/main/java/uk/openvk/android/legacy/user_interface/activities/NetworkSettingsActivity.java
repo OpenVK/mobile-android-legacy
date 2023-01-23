@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -23,10 +24,12 @@ import android.widget.Toast;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 /**
  * Created by Dmitry on 23.10.2022.
@@ -77,6 +80,12 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
+    }
+
     private void setListeners() {
         ((Preference) findPreference("proxySettings")).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -90,6 +99,13 @@ public class NetworkSettingsActivity extends PreferenceActivity {
                 ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
             }
         }
+        ((Preference) findPreference("useProxy")).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Toast.makeText(NetworkSettingsActivity.this, R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
+                return true;
+            }
+        });
     }
 
     private void openProxySettingsDialog() {

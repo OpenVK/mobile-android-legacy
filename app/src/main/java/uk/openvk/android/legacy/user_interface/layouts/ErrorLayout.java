@@ -45,8 +45,10 @@ public class ErrorLayout extends LinearLayout{
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
         } else if(message == HandlerMessages.INTERNAL_ERROR) {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(4));
-        } else if(message == HandlerMessages.UNKNOWN_ERROR) {
+        } else if(message == HandlerMessages.INSTANCE_UNAVAILABLE) {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(5));
+        } else if(message == HandlerMessages.UNKNOWN_ERROR) {
+            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(6));
         }
         if(description.length() > 0) {
             ((TextView) findViewById(R.id.reason_text)).setVisibility(VISIBLE);

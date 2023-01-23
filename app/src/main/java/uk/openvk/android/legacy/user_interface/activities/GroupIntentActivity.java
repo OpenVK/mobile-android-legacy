@@ -34,6 +34,7 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
@@ -61,6 +62,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class GroupIntentActivity extends Activity {
     private OvkAPIWrapper ovk_api;
@@ -166,6 +168,12 @@ public class GroupIntentActivity extends Activity {
             menu.getItem(i).setVisible(false);
         }
         return true;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     @Override
@@ -385,7 +393,8 @@ public class GroupIntentActivity extends Activity {
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION  || message == HandlerMessages.INSTANCE_UNAVAILABLE
+                    || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 if (data.getString("method").equals("Wall.get")) {
                     ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);

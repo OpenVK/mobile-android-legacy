@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.user_interface.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -14,10 +15,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.Html;
 import android.text.method.KeyListener;
+import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +30,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -39,6 +45,7 @@ import uk.openvk.android.legacy.user_interface.layouts.XLinearLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.InstancesListAdapter;
 import uk.openvk.android.legacy.user_interface.list_items.InstancesListItem;
 import uk.openvk.android.legacy.user_interface.listeners.OnKeyboardStateListener;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class AuthActivity extends Activity {
 
@@ -149,9 +156,43 @@ public class AuthActivity extends Activity {
         String instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
         String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
-        if(instance.equals("vkontakte.ru") || instance.equals("vk.com") || instance.equals("vk.ru")) {
-            Toast.makeText(this, "чел...", Toast.LENGTH_SHORT).show();
-        } else {
+        final EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
+        if (instance.startsWith("http://")) {
+            instance_edit.setText(instance.substring(7));
+            instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+        } else if (instance.startsWith("https://")) {
+            instance_edit.setText(instance.substring(8));
+            instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+        }
+        if (instance.contains("vkontakte.ru") || instance.contains("vk.com") || instance.contains("vk.ru")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                instance_edit.setText(getResources().getText(R.string.default_instance));
+            } else {
+                instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
+            }
+            if (!global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
+                AlertDialog.Builder dialog_builder = new AlertDialog.Builder(AuthActivity.this);
+                dialog_builder.setTitle(R.string.ovk_warning_title);
+                View warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
+                dialog_builder.setView(warn_view);
+                dialog_builder.setNeutralButton(R.string.ok, null);
+                AlertDialog warn_dialog = dialog_builder.create();
+                warn_dialog.show();
+                ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));
+                ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
+                ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
+                        global_prefs_editor.putBoolean("hideOvkWarnForBeginners", b);
+                        global_prefs_editor.commit();
+                    }
+                });
+            } else {
+                Toast.makeText(this, "А мы вас предупреждали, что сюда не следует тыкать в ваш ВК!", Toast.LENGTH_LONG).show();
+            }
+
+        } else if(username.length() > 0 && password.length() > 0) {
             ovk_api.requireHTTPS(global_prefs.getBoolean("useHTTPS", true));
             ovk_api.setServer(instance);
             ovk_api.authorize(username, password);
@@ -159,6 +200,8 @@ public class AuthActivity extends Activity {
             connectionDialog.setMessage(getString(R.string.loading));
             connectionDialog.setCancelable(false);
             connectionDialog.show();
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.authdata_required), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -202,6 +245,7 @@ public class AuthActivity extends Activity {
         }
     }
 
+    @SuppressLint("StringFormatInvalid")
     public void receiveState(int message, String response) {
         try {
             if (message == HandlerMessages.INVALID_USERNAME_OR_PASSWORD) {
@@ -257,7 +301,7 @@ public class AuthActivity extends Activity {
                 Authorization auth = new Authorization(response);
                 instance_editor.putString("access_token", auth.getAccessToken());
                 instance_editor.putString("server", ((EditTextAction) findViewById(R.id.instance_name)).getText());
-                instance_editor.putString("account_password", password);
+                instance_editor.putString("account_password_hash", Global.GetSHA256Hash(password));
                 instance_editor.commit();
                 if (connectionDialog != null) connectionDialog.cancel();
                 Context context = getApplicationContext();
@@ -294,6 +338,11 @@ public class AuthActivity extends Activity {
                 alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_not_openvk_instance))
                         .setNeutralButton(R.string.ok, null).create();
                 alertDialog.show();
+            } else if (message == HandlerMessages.INSTANCE_UNAVAILABLE) {
+                connectionDialog.cancel();
+                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_instance_unavaliable))
+                        .setNeutralButton(R.string.ok, null).create();
+                alertDialog.show();
             } else if (message == HandlerMessages.UNKNOWN_ERROR) {
                 connectionDialog.cancel();
                 alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_unknown_error))
@@ -327,6 +376,8 @@ public class AuthActivity extends Activity {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(2));
         } else if(message == HandlerMessages.INTERNAL_ERROR) {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
+        } else {
+            description = "No reason";
         }
         return description;
     }
@@ -336,4 +387,18 @@ public class AuthActivity extends Activity {
         i.setData(Uri.parse(address));
         startActivity(i);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        System.exit(0);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
+    }
+
 }

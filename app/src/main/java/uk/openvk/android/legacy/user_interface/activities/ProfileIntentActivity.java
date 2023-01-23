@@ -440,7 +440,8 @@ public class ProfileIntentActivity extends Activity {
                         ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION  || message == HandlerMessages.INSTANCE_UNAVAILABLE ||
+                    message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 try {
                     if (data.containsKey("method")) {

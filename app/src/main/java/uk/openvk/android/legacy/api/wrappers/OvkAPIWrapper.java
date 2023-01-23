@@ -213,6 +213,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
                             } else if (response_code == 200) {
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                            } else if (response_code == 503) {
+                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
                             } else {
                                 sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                             }
@@ -324,6 +326,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
                             } else if (response_code == 200) {
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                            } else if (response_code == 503) {
+                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
                             } else {
                                 sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                             }
@@ -557,6 +561,8 @@ public class OvkAPIWrapper {
                                 } else if (error.code == 100) {
                                     sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                                 }
+                            } else if (response_code == 503) {
+                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
                                 if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
@@ -771,7 +777,9 @@ public class OvkAPIWrapper {
                                 } else if(error.code == 945) {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
                                 }
-                            } else if (response_code >= 500 && response_code <= 526) {
+                            } else if (response_code == 503) {
+                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
+                            }  else if (response_code >= 500 && response_code <= 526) {
                                 if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
@@ -983,7 +991,9 @@ public class OvkAPIWrapper {
                                 } else if(error.code == 945) {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
                                 }
-                            } else if (response_code >= 500 && response_code <= 526) {
+                            } else if (response_code == 503) {
+                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
+                            }  else if (response_code >= 500 && response_code <= 526) {
                                 Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
