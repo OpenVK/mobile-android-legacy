@@ -42,6 +42,7 @@ public class AboutApplicationActivity extends Activity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(getResources().getString(R.string.menu_about));
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
             actionBarImitation.setHomeButtonVisibility(true);

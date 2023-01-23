@@ -58,6 +58,7 @@ public class QuickSearchActivity extends Activity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(getResources().getString(R.string.search_global));
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
             actionBarImitation.setHomeButtonVisibility(true);

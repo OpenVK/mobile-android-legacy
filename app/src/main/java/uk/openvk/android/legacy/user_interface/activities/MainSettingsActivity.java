@@ -90,6 +90,7 @@ public class MainSettingsActivity extends PreferenceActivity {
             try {
                 getActionBar().setDisplayShowHomeEnabled(true);
                 getActionBar().setDisplayHomeAsUpEnabled(true);
+                getActionBar().setTitle(getResources().getString(R.string.menu_settings));
             } catch (Exception ex) {
                 Log.e("OpenVK", "Cannot display home button.");
             }

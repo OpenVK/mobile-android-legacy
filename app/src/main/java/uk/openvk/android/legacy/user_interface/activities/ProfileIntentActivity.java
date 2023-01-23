@@ -30,8 +30,10 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
@@ -56,6 +58,7 @@ import uk.openvk.android.legacy.user_interface.layouts.ProgressLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class ProfileIntentActivity extends Activity {
 
@@ -172,6 +175,12 @@ public class ProfileIntentActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void installLayouts() {

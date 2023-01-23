@@ -62,6 +62,7 @@ public class NewPostActivity extends Activity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(getResources().getString(R.string.new_status));
         }
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();

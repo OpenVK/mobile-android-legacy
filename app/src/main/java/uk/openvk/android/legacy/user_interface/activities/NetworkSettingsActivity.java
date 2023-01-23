@@ -56,6 +56,7 @@ public class NetworkSettingsActivity extends PreferenceActivity {
             try {
                 getActionBar().setDisplayShowHomeEnabled(true);
                 getActionBar().setDisplayHomeAsUpEnabled(true);
+                getActionBar().setTitle(getResources().getString(R.string.sett_network));
             } catch (Exception ex) {
                 Log.e("OpenVK", "Cannot display home button.");
             }

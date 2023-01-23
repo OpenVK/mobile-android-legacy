@@ -40,10 +40,11 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(getResources().getString(R.string.sett_advanced));
         } else {
             final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
             actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
+            actionBarImitation.setTitle(getResources().getString(R.string.sett_advanced));
             actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

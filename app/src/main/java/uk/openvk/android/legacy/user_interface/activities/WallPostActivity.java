@@ -108,6 +108,7 @@ public class WallPostActivity extends Activity {
                         getActionBar().setHomeButtonEnabled(true);
                     }
                     getActionBar().setDisplayHomeAsUpEnabled(true);
+                    getActionBar().setTitle(getResources().getString(R.string.comments));
                 } else {
                     final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
                     actionBarImitation.setHomeButtonVisibility(true);
