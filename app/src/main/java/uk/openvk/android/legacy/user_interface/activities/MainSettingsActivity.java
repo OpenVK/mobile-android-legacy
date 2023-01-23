@@ -65,7 +65,7 @@ public class MainSettingsActivity extends PreferenceActivity {
         isQuiting = false;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-        if(instance_prefs.getString("account_password", "").length() > 0) {
+        if(instance_prefs.getString("account_password_hash", "").length() > 0) {
             addPreferencesFromResource(R.xml.preferences);
         } else {
             addPreferencesFromResource(R.xml.preferences_2);
