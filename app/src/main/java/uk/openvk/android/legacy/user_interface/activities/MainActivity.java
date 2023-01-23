@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
 
     private void closeSplashScreen() {
         if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 ||
-                instance_prefs.getString("account_password", "").length() == 0) {
+                instance_prefs.getString("account_password_hash", "").length() == 0) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, AuthActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

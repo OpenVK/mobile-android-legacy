@@ -1086,8 +1086,12 @@ public class AppActivity extends Activity {
     }
 
     public void openAccountProfile() {
-        if(!((OvkApplication) getApplicationContext()).isTablet) {
-            menu.toggle(true);
+        try {
+            if (!((OvkApplication) getApplicationContext()).isTablet) {
+                menu.toggle(true);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         profileLayout.setVisibility(View.GONE);
         newsfeedLayout.setVisibility(View.GONE);
