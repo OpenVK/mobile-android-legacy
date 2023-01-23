@@ -47,7 +47,8 @@
                     android:paddingBottom="2dip"
                     android:text="TextViewf"
                     android:textColor="#000"
-                    android:textSize="16dip" />
+                    android:textSize="16dip"
+                    android:autoLink="web|email"/>
 
                 <TextView
                     android:id="@+id/msg_time_right"
