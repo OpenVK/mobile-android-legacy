@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
             SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
             if ((instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 ||
-                    instance_prefs.getString("account_password", "").length() == 0) && !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
+                    instance_prefs.getString("account_password_hash", "").length() == 0) && !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 Message msg = new Message();
                 msg.what = 0;
                 handler.sendMessage(msg);
