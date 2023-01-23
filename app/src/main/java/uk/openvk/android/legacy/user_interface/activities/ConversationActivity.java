@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
@@ -46,6 +47,7 @@ import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationPanel;
 import uk.openvk.android.legacy.user_interface.list_adapters.MessagesListAdapter;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 public class ConversationActivity extends Activity {
 
@@ -181,6 +183,12 @@ public class ConversationActivity extends Activity {
         };
         registerReceiver(lpReceiver, new IntentFilter(
                 "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     @Override

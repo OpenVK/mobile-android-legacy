@@ -33,13 +33,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
+import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 import static uk.openvk.android.legacy.R.string.view;
 
@@ -82,6 +86,12 @@ public class DebugMenuActivity extends PreferenceActivity {
             }
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale languageType = OvkApplication.getLocale(newBase);
+        super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
     private void setListeners() {
@@ -155,20 +165,25 @@ public class DebugMenuActivity extends PreferenceActivity {
                     ok_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(instance_prefs.getString("account_password", "").equals(password_edit.getText().toString())) {
-                                if (target.equals("access_token")) {
-                                    if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                        clipboard.setText(instance_prefs.getString("access_token", ""));
-                                    } else {
-                                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                        android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
-                                        clipboard.setPrimaryClip(clip);
+                            try {
+                                if(instance_prefs.getString("account_password_hash", "").equals(Global.GetSHA256Hash(password_edit.getText().toString()))) {
+                                    if (target.equals("access_token")) {
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                            clipboard.setText(instance_prefs.getString("access_token", ""));
+                                        } else {
+                                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                            android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
+                                            clipboard.setPrimaryClip(clip);
+                                        }
                                     }
+                                    dialog.dismiss();
+                                    Toast.makeText(getApplicationContext(), R.string.copy_token_toast, Toast.LENGTH_LONG).show();
+                                } else {
+                                    password_edit.setError(getResources().getString(R.string.invalid_password));
+                                    ok_btn.setEnabled(false);
                                 }
-                                dialog.dismiss();
-                                Toast.makeText(getApplicationContext(), R.string.copy_token_toast, Toast.LENGTH_LONG).show();
-                            } else {
+                            } catch (NoSuchAlgorithmException e) {
                                 password_edit.setError(getResources().getString(R.string.invalid_password));
                                 ok_btn.setEnabled(false);
                             }

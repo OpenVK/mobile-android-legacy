@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -16,6 +17,8 @@ import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 
 import java.lang.reflect.Method;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class Global {
@@ -87,6 +90,16 @@ public class Global {
             heightDp = (float) heightPixels;
         }
         return Math.min(widthDp, heightDp);
+    }
+
+    public static String GetSHA256Hash(String text) throws NoSuchAlgorithmException {
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+        md.update(text.getBytes());
+        byte[] digest = md.digest();
+
+        return Base64.encodeToString(digest, Base64.DEFAULT);
     }
 
 }
