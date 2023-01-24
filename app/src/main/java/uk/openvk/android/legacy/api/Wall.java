@@ -220,7 +220,7 @@ public class Wall implements Parcelable {
                                         comment.avatar_url = profile.getString("photo_100");
                                     }
                                     photoAttachment.url = comment.avatar_url;
-                                    photoAttachment.filename = String.format("avatar_%d", author_id);
+                                    photoAttachment.filename = String.format("avatar_%s", author_id);
                                 }
                             }
                         }
@@ -235,7 +235,7 @@ public class Wall implements Parcelable {
                                         comment.avatar_url = group.getString("photo_100");
                                     }
                                     photoAttachment.url = comment.avatar_url;
-                                    photoAttachment.filename = String.format("avatar_%d", author_id);
+                                    photoAttachment.filename = String.format("avatar_%s", author_id);
                                 }
                             }
                         }

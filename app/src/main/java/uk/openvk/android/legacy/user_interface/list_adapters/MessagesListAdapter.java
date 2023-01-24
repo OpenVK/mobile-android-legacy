@@ -134,7 +134,7 @@ public class MessagesListAdapter extends BaseAdapter {
                     if (peer_id == item.author_id) {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
                         ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
                     }
                 } catch (OutOfMemoryError error) {
@@ -150,7 +150,7 @@ public class MessagesListAdapter extends BaseAdapter {
                     if (peer_id == item.author_id) {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
                         ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
                     }
                 } catch (OutOfMemoryError error) {
@@ -169,7 +169,7 @@ public class MessagesListAdapter extends BaseAdapter {
                 if (peer_id == item.author_id) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
                 }
             } catch (OutOfMemoryError error) {
 

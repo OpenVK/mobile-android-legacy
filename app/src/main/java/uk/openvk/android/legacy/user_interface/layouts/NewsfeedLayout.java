@@ -96,7 +96,7 @@ public class NewsfeedLayout extends LinearLayout {
                     WallPost item = wallPosts.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -138,7 +138,7 @@ public class NewsfeedLayout extends LinearLayout {
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                     if (photoAttachment.url.length() > 0) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(),
+                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(),
                                                 item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
                                         if (bitmap != null) {
                                             photoAttachment.photo = bitmap;
@@ -165,7 +165,7 @@ public class NewsfeedLayout extends LinearLayout {
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                 if (photoAttachment.url.length() > 0) {
-                                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
                                     if (bitmap != null) {
                                         photoAttachment.photo = bitmap;
                                         attachment.status = "done";

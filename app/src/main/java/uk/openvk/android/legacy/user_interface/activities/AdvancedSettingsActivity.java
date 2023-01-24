@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -69,15 +70,22 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
     private void setListeners() {
         final Preference clear_image_cache = findPreference("clearImageCache");
         long cache_size = dlManager.getCacheSize();
-        String cache_size_in_megabytes = String.format("%s %s", cache_size / 1024, getResources().getString(R.string.fsize_kb));
+        String cache_size_in_megabytes = String.format("%.2f %s", (double)cache_size / 1024, getResources().getString(R.string.fsize_mb));
         clear_image_cache.setSummary(cache_size_in_megabytes);
+        if(cache_size == 0) {
+            clear_image_cache.setEnabled(false);
+        }
         clear_image_cache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                dlManager.clearCache();
+                dlManager.clearCache(null);
                 long cache_size = dlManager.getCacheSize();
-                String cache_size_in_megabytes = String.format("%s %s", cache_size / 1024, getResources().getString(R.string.fsize_kb));
+                String cache_size_in_megabytes = String.format("%.2f %s", (double)cache_size / 1024, getResources().getString(R.string.fsize_mb));
                 clear_image_cache.setSummary(cache_size_in_megabytes);
+                if(cache_size == 0) {
+                    clear_image_cache.setEnabled(false);
+                }
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.img_cache_cleared), Toast.LENGTH_LONG).show();
                 return false;
             }
         });

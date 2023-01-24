@@ -188,7 +188,7 @@ public class ProfileLayout extends LinearLayout {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
+            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
             if(quality.equals("medium")) {
                 if (bitmap != null) {
                     user.avatar = bitmap;
