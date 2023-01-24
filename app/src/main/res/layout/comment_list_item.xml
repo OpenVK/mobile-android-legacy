@@ -67,20 +67,29 @@
         android:text="@string/post_show_full"
         android:textColor="@color/ovk_color"
         android:textStyle="bold"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:ignore="RtlHardcoded" />
+
+    <ImageView
+        android:id="@+id/comm_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/comment_text"
+        android:layout_alignRight="@+id/post_likes"
+        android:layout_below="@+id/expand_text_btn"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/comm_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/comm_author"
-        android:layout_below="@+id/expand_text_btn"
+        android:layout_below="@+id/comm_photo"
         android:layout_gravity="left"
+        android:layout_marginTop="-1dp"
         android:duplicateParentState="true"
         android:ellipsize="marquee"
         android:gravity="left"
-        android:layout_marginTop="-1dp"
         android:paddingBottom="7dip"
         android:text="October 8, 2022"
         android:textColor="#9ca0a6"
@@ -121,10 +130,10 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/comm_time"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="0dp"
+        android:layout_below="@+id/comm_time"
         android:layout_marginBottom="0dp"
+        android:layout_marginTop="0dp"
         android:background="?android:attr/listDivider" />
 
 </RelativeLayout>

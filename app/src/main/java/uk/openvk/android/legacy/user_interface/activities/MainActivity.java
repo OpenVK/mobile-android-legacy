@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Date;
 import java.util.Locale;
@@ -67,6 +68,15 @@ public class MainActivity extends Activity {
             Timer timer = new Timer();
             timer.schedule(new AutoRun(), 1000);
         } else {
+            handler = new Handler(Looper.myLooper()) {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what == 0) {
+                        createOvkWarnDialogForBeginners();
+                    }
+                }
+            };
             setTheme(R.style.BaseStyle);
             Timer timer = new Timer();
             timer.schedule(new AutoRun(), 0);
@@ -81,7 +91,12 @@ public class MainActivity extends Activity {
                     instance_prefs.getString("account_password_hash", "").length() == 0) && !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 Message msg = new Message();
                 msg.what = 0;
-                handler.sendMessage(msg);
+                Looper.prepare();
+                try {
+                    handler.sendMessage(msg);
+                } catch (Exception ex) {
+                    closeSplashScreen();
+                }
             } else {
                 closeSplashScreen();
             }
