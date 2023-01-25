@@ -334,6 +334,7 @@ public class AppActivity extends Activity {
         try {
             inflater.inflate(menu_id, menu);
             if (account == null || account.id == 0) {
+                if(menu.size() > 0 && menu.findItem(R.id.newpost) != null)
                 menu.findItem(R.id.newpost).setVisible(false);
             }
         } catch (Exception ex) {
@@ -389,6 +390,7 @@ public class AppActivity extends Activity {
             }
         }
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
+        //slidingmenuLayout.loadAccountAvatar();
         slidingMenuArray = new ArrayList<SlidingMenuItem>();
         if (slidingMenuArray != null) {
             for (int slider_menu_item_index = 0; slider_menu_item_index < getResources().getStringArray(R.array.leftmenu).length; slider_menu_item_index++) {
@@ -772,8 +774,16 @@ public class AppActivity extends Activity {
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
                     newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                        progressLayout.setVisibility(View.GONE);
-                        newsfeedLayout.setVisibility(View.VISIBLE);
+                        if(newsfeed.getWallPosts().size() > 0) {
+                            progressLayout.setVisibility(View.GONE);
+                            newsfeedLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            progressLayout.setVisibility(View.GONE);
+                            errorLayout.setVisibility(View.VISIBLE);
+                            errorLayout.setTitle(getResources().getString(R.string.local_newsfeed_no_posts));
+                            errorLayout.setReason(0);
+                            errorLayout.hideRetryButton();
+                        }
                     }
                     newsfeedLayout.loading_more_posts = true;
                     newsfeedLayout.setScrollingPositions(this, false, true);
@@ -1047,11 +1057,13 @@ public class AppActivity extends Activity {
                 if(data.containsKey("method")) {
                     try {
                         if (data.getString("method").equals("Account.getProfileInfo") ||
-                                (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
-                                (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
-                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0) ||
+                                (data.getString("method").equals("Newsfeed.get") && (newsfeed.getWallPosts() == null || newsfeed.getWallPosts().size() == 0)) ||
+                                (data.getString("method").equals("Messages.getConversations") && (conversations == null || conversations.size() == 0)) ||
+                                (data.getString("method").equals("Friends.get") && (friends.getFriends() == null || friends.getFriends().size() == 0)) ||
                                 (data.getString("method").equals("Users.get") && global_prefs.getString("current_screen", "").equals("profile")) ||
-                                (data.getString("method").equals("Groups.get") && groups.getList().size() == 0)) {
+                                (data.getString("method").equals("Groups.get") && (groups.getList() == null || groups.getList().size() == 0))) {
+                            slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                            errorLayout.setTitle(getResources().getString(R.string.err_text));
                             errorLayout.setReason(message);
                             errorLayout.setData(data);
                             errorLayout.setRetryAction(this);
@@ -1067,16 +1079,26 @@ public class AppActivity extends Activity {
                             }
                         }
                     } catch (Exception ex) {
+                        ex.printStackTrace();
                         errorLayout.setReason(message);
                         errorLayout.setData(data);
                         errorLayout.setRetryAction(this);
                         progressLayout.setVisibility(View.GONE);
                         errorLayout.setVisibility(View.VISIBLE);
                     }
+                } else {
+                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                    errorLayout.setTitle(getResources().getString(R.string.err_text));
+                    errorLayout.setReason(message);
+                    errorLayout.setData(data);
+                    errorLayout.hideRetryButton();
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            errorLayout.setTitle(getResources().getString(R.string.err_text));
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
             errorLayout.setData(data);
             errorLayout.setRetryAction(this);
@@ -1090,8 +1112,7 @@ public class AppActivity extends Activity {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
                 menu.toggle(true);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception ignored) {
         }
         profileLayout.setVisibility(View.GONE);
         newsfeedLayout.setVisibility(View.GONE);
@@ -1106,7 +1127,12 @@ public class AppActivity extends Activity {
         if(users == null) {
             users = new Users();
         }
-        users.getUser(ovk_api, account.id);
+        if(account.id != 0) {
+            users.getUser(ovk_api, account.id);
+        } else {
+            account.addQueue("Users.get", String.format("user_ids=%d&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", account.id));
+            account.getProfileInfo(ovk_api);
+        }
         menu_id = R.menu.profile;
         if(activity_menu != null) {
             activity_menu.clear();

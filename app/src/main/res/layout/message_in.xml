@@ -41,14 +41,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:paddingLeft="7dip"
-                    android:paddingTop="2dip"
-                    android:paddingRight="4dip"
+                    android:autoLink="web|email"
                     android:paddingBottom="2dip"
+                    android:paddingLeft="7dip"
+                    android:paddingRight="4dip"
+                    android:paddingTop="2dip"
                     android:text="TextViewf"
                     android:textColor="#000"
-                    android:textSize="16dip"
-                    android:autoLink="web|email"/>
+                    android:textColorHighlight="#802B587A"
+                    android:textColorLink="@color/ovk_color"
+                    android:textSize="16dip" />
 
                 <TextView
                     android:id="@+id/msg_time_right"
