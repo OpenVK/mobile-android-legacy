@@ -1252,4 +1252,5 @@
     <string name="authdata_required">Пожалуйста, введите все необходимые данные для авторизации и повторите попытку.</string>
     <string name="interface_category">Интерфейс</string>
     <string name="interface_language">Язык (Language)</string>
+    <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина. Вы можете узнать что-то новое в ленте всех новостей.</string>
 </resources>
