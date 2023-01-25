@@ -772,8 +772,17 @@ public class AppActivity extends Activity {
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
                     newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                        progressLayout.setVisibility(View.GONE);
-                        newsfeedLayout.setVisibility(View.VISIBLE);
+                        if(newsfeed.getWallPosts().size() > 0) {
+                            progressLayout.setVisibility(View.GONE);
+                            newsfeedLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            progressLayout.setVisibility(View.GONE);
+                            errorLayout.setVisibility(View.VISIBLE);
+                            errorLayout.setTitle(getResources().getString(R.string.local_newsfeed_no_posts));
+                            errorLayout.setIcon("ovk");
+                            errorLayout.setReason(0);
+                            errorLayout.hideRetryButton();
+                        }
                     }
                     newsfeedLayout.loading_more_posts = true;
                     newsfeedLayout.setScrollingPositions(this, false, true);
@@ -1051,7 +1060,10 @@ public class AppActivity extends Activity {
                                 (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
                                 (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0) ||
                                 (data.getString("method").equals("Users.get") && global_prefs.getString("current_screen", "").equals("profile")) ||
-                                (data.getString("method").equals("Groups.get") && groups.getList().size() == 0)) {
+                                (data.getString("method").equals("Groups.get") && (groups.getList() == null || groups.getList().size() == 0))) {
+                            slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                            errorLayout.setTitle(getResources().getString(R.string.err_text));
+                            errorLayout.setIcon("error");
                             errorLayout.setReason(message);
                             errorLayout.setData(data);
                             errorLayout.setRetryAction(this);
@@ -1067,12 +1079,24 @@ public class AppActivity extends Activity {
                             }
                         }
                     } catch (Exception ex) {
+                        ex.printStackTrace();
+                        errorLayout.setTitle(getResources().getString(R.string.err_text));
+                        errorLayout.setIcon("error");
                         errorLayout.setReason(message);
                         errorLayout.setData(data);
                         errorLayout.setRetryAction(this);
                         progressLayout.setVisibility(View.GONE);
                         errorLayout.setVisibility(View.VISIBLE);
                     }
+                } else {
+                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                    errorLayout.setTitle(getResources().getString(R.string.err_text));
+                    errorLayout.setIcon("error");
+                    errorLayout.setReason(message);
+                    errorLayout.setData(data);
+                    errorLayout.hideRetryButton();
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
                 }
             }
         } catch (Exception ex) {

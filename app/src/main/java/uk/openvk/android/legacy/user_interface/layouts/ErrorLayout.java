@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -69,6 +70,20 @@ public class ErrorLayout extends LinearLayout{
         });
     }
 
+    public void setTitle(String title) {
+        if(title.length() > 0) {
+            ((TextView) findViewById(R.id.error_text)).setText(title);
+        }
+    }
+
+    public void setIcon(String icon) {
+        if(icon.equals("error")) {
+            ((ImageView) findViewById(R.id.error_icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_warning_light));
+        } else if(icon.equals("ovk")) {
+            ((ImageView) findViewById(R.id.error_icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ovklogo_light));
+        }
+    }
+
     public void setData(Bundle data) {
         try {
             if(data.containsKey("method")) {
@@ -80,5 +95,13 @@ public class ErrorLayout extends LinearLayout{
         } catch (Exception ex) {
 
         }
+    }
+
+    public void hideRetryButton() {
+        findViewById(R.id.retry_btn).setVisibility(GONE);
+    }
+
+    public void showRetryButton() {
+        findViewById(R.id.retry_btn).setVisibility(VISIBLE);
     }
 }
