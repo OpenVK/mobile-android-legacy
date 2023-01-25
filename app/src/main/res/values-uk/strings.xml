@@ -1254,5 +1254,5 @@
     <string name="authdata_required">Будь ласка, введіть всі необхідні дані для авторизації та повторіть спробу.</string>
     <string name="interface_category">Інтерфейс</string>
     <string name="interface_language">Мова (Language)</string>
-    <string name="local_newsfeed_no_posts">У локальній стрічці поки що тиша. Ви можете дізнатися щось нове у стрічці всіх новин.</string>
+    <string name="local_newsfeed_no_posts">У локальній стрічці поки що тиша.\r\nВи можете дізнатися щось нове у стрічці всіх новин.</string>
 </resources>
