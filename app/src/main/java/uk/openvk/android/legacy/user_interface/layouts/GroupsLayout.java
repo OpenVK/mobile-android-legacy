@@ -73,7 +73,7 @@ public class GroupsLayout extends LinearLayout {
                         Group item = groups.get(i);
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/group_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/group_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
                         if (bitmap != null) {
                             item.avatar = bitmap;
                         }

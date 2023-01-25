@@ -112,9 +112,11 @@ public class PostViewLayout extends LinearLayout {
                     Comment item = comments.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/comment_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/comment_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
+                    } else {
+                        Log.e("OpenVK", String.format("'%s/photos_cache/comment_avatars/avatar_%d' not found", getContext().getCacheDir(), item.author_id));
                     }
                     comments.set(i, item);
                 } catch (Exception ex) {
@@ -237,12 +239,13 @@ public class PostViewLayout extends LinearLayout {
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = null;
             if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
             } else {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/wall_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
             }
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(bitmap);
+                Log.e("OpenVK", String.format("'%s/photos_cache/wall_avatars/avatar_%d' not found", getContext().getCacheDir(), author_id));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -257,15 +260,15 @@ public class PostViewLayout extends LinearLayout {
             Bitmap repost_bitmap = null;
             if(post.repost != null) {
                 if(where.equals("newsfeed")) {
-                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
+                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
                 } else {
-                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
+                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
                 }
             }
             if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
             } else {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
             }
             final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
             final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
@@ -274,7 +277,7 @@ public class PostViewLayout extends LinearLayout {
                 post_photo.setImageBitmap(bitmap);
                 post_photo.setVisibility(View.VISIBLE);
             } else {
-                Log.e("OpenVK", String.format("'%s/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), post.owner_id, post.post_id));
+                Log.e("OpenVK", String.format("'%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), post.owner_id, post.post_id));
                 post_photo.setVisibility(GONE);
             }
             if(repost_bitmap != null) {

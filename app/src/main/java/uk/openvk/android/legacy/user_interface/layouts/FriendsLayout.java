@@ -92,7 +92,7 @@ public class FriendsLayout extends LinearLayout {
                     Friend item = friends.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -109,7 +109,7 @@ public class FriendsLayout extends LinearLayout {
                         Friend item = requests.get(i);
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
                         if (bitmap != null) {
                             item.avatar = bitmap;
                         }

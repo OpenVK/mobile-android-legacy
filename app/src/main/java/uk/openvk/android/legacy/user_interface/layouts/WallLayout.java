@@ -134,7 +134,7 @@ public class WallLayout extends LinearLayout {
                                         BitmapFactory.Options options = new BitmapFactory.Options();
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                         if (photoAttachment.url.length() > 0) {
-                                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(),
+                                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(),
                                                     item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
                                                 photoAttachment.photo = bitmap;
@@ -158,7 +158,7 @@ public class WallLayout extends LinearLayout {
                                 if(item.attachments.get(0).type.equals("photo")) {
                                     PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
                                     if (photoAttachment.url.length() > 0) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
                                             ((PhotoAttachment) item.attachments.get(0).getContent()).photo = bitmap;
                                             item.attachments.get(0).status = "done";
@@ -252,7 +252,7 @@ public class WallLayout extends LinearLayout {
                     WallPost item = wallItems.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/wall_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
