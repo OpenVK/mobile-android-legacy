@@ -49,6 +49,8 @@ public class ErrorLayout extends LinearLayout{
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(5));
         } else if(message == HandlerMessages.UNKNOWN_ERROR) {
             description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(6));
+        } else {
+            ((TextView) findViewById(R.id.reason_text)).setVisibility(GONE);
         }
         if(description.length() > 0) {
             ((TextView) findViewById(R.id.reason_text)).setVisibility(VISIBLE);
@@ -59,6 +61,7 @@ public class ErrorLayout extends LinearLayout{
     }
 
     public void setRetryAction(final Context ctx) {
+        ((TextView) findViewById(R.id.retry_btn)).setVisibility(VISIBLE);
         ((TextView) findViewById(R.id.retry_btn)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,6 +70,12 @@ public class ErrorLayout extends LinearLayout{
                 }
             }
         });
+    }
+
+    public void setTitle(String title) {
+        if(title.length() > 0) {
+            ((TextView) findViewById(R.id.error_text)).setText(title);
+        }
     }
 
     public void setData(Bundle data) {
@@ -80,5 +89,13 @@ public class ErrorLayout extends LinearLayout{
         } catch (Exception ex) {
 
         }
+    }
+
+    public void hideRetryButton() {
+        findViewById(R.id.retry_btn).setVisibility(GONE);
+    }
+
+    public void showRetryButton() {
+        findViewById(R.id.retry_btn).setVisibility(VISIBLE);
     }
 }

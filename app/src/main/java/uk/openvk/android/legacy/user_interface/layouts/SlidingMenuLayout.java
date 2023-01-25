@@ -109,5 +109,7 @@ public class SlidingMenuLayout extends LinearLayout {
             }
         }
         if(account.user.avatar != null) ((ImageView) findViewById(R.id.avatar)).setImageBitmap(account.user.avatar);
+
     }
+    
 }

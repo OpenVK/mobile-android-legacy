@@ -126,7 +126,11 @@ public class MainSettingsActivity extends PreferenceActivity {
             } else if (message == HandlerMessages.OVK_VERSION) {
                 ovk.parseVersion(data.getString("response"));
                 TextView openvk_version_tv = (TextView) about_instance_view.findViewById(R.id.instance_version_label2);
-                openvk_version_tv.setText(String.format("OpenVK %s", ovk.version));
+                if(ovk.version.startsWith("OpenVK")) {
+                    openvk_version_tv.setText(ovk.version);
+                } else {
+                    openvk_version_tv.setText(String.format("OpenVK %s", ovk.version));
+                }
                 ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.VISIBLE);
             } else if(message == HandlerMessages.OVK_ABOUTINSTANCE) {
                 ovk.parseAboutInstance(data.getString("response"));
@@ -178,9 +182,13 @@ public class MainSettingsActivity extends PreferenceActivity {
                     }
                 }
                 ((LinearLayout) about_instance_view.findViewById(R.id.instance_links_ll)).setVisibility(View.VISIBLE);
+            } else {
+                TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+                connection_type.setText(getResources().getString(R.string.connection_error));
             }
         } catch (Exception ex) {
-
+            TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+            connection_type.setText(getResources().getString(R.string.connection_error));
         }
     }
 

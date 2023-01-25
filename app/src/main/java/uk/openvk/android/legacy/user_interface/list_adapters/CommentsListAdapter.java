@@ -97,7 +97,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             });
             if(item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
-                Pattern pattern = Pattern.compile("\\[(.+?)\\]");
+                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -108,21 +109,25 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                         text = text.replace("\n", "<br>");
                     }
                     String block = matcher.group();
-                    OvkLink link = new OvkLink();
-                    String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                    link.screen_name = markup[0];
-                    if(markup.length == 2) {
-                        if (markup[0].startsWith("id")) {
-                            link.url = String.format("openvk://profile/%s", markup[0]);
+                    if(block.startsWith("[") && block.endsWith("]")) {
+                        OvkLink link = new OvkLink();
+                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                        link.screen_name = markup[0];
+                        if (markup.length == 2) {
+                            if (markup[0].startsWith("id")) {
+                                link.url = String.format("openvk://profile/%s", markup[0]);
+                                link.name = markup[1];
+                            } else if (markup[0].startsWith("club")) {
+                                link.url = String.format("openvk://group/%s", markup[0]);
+                                link.name = markup[1];
+                            }
                             link.name = markup[1];
-                        } else if (markup[0].startsWith("club")) {
-                            link.url = String.format("openvk://group/%s", markup[0]);
-                            link.name = markup[1];
+                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                            }
                         }
-                        link.name = markup[1];
-                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
-                        }
+                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
                     }
                     regexp_results = regexp_results + 1;
                     regexp_search = matcher.find();

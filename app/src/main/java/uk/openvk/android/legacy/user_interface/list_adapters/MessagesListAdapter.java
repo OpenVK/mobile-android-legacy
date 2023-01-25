@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.user_interface.list_adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.models.OvkLink;
 import uk.openvk.android.legacy.user_interface.activities.ConversationActivity;
 import uk.openvk.android.legacy.api.models.Message;
 import uk.openvk.android.legacy.user_interface.layouts.IncomingMessageLayout;
@@ -63,6 +67,41 @@ public class MessagesListAdapter extends BaseAdapter {
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.message_item, parent, false);
+        }
+        Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
+                "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+        Matcher matcher = pattern.matcher(item.text);
+        boolean regexp_search = matcher.find();
+        String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+        int regexp_results = 0;
+        while(regexp_search) {
+            if(regexp_results == 0) {
+                text = text.replace("\n", "<br>");
+            }
+            String block = matcher.group();
+            if(block.startsWith("[") && block.endsWith("]")) {
+                OvkLink link = new OvkLink();
+                String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                link.screen_name = markup[0];
+                if (markup.length == 2) {
+                    if (markup[0].startsWith("id")) {
+                        link.url = String.format("openvk://profile/%s", markup[0]);
+                        link.name = markup[1];
+                    } else if (markup[0].startsWith("club")) {
+                        link.url = String.format("openvk://group/%s", markup[0]);
+                        link.name = markup[1];
+                    }
+                    link.name = markup[1];
+                    if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                    }
+                }
+            } else if(block.startsWith("https://") || block.startsWith("http://")) {
+                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
+            }
+            regexp_results = regexp_results + 1;
+            regexp_search = matcher.find();
         }
 
         view.findViewById(R.id.incoming_msg).setVisibility(View.GONE);
@@ -174,11 +213,22 @@ public class MessagesListAdapter extends BaseAdapter {
             } catch (OutOfMemoryError error) {
 
             }
+            if(regexp_results > 0) {
+                ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(Html.fromHtml(text));
+                ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setAutoLinkMask(0);
+            } else {
+                ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            }
             ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
             ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
             ((TextView) (view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
         } else {
-            ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            if(regexp_results > 0) {
+                ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(Html.fromHtml(text));
+                ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setAutoLinkMask(0);
+            } else {
+                ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_text)).setText(item.text);
+            }
             ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_right)).setText(item.timestamp);
             ((TextView) (view.findViewById(R.id.outcoming_msg)).findViewById(R.id.msg_time_bottom)).setText(item.timestamp);
         }
