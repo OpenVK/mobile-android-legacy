@@ -59,11 +59,11 @@ public class OvkAlertDialog extends AlertDialog {
                         .getIdentifier("android:id/buttonPanel", null, null);
                 View buttonBar = dialog.findViewById(buttonBarId);
                 buttonBar.setPadding(
-                        (int) (4 * getContext().getResources().getDisplayMetrics().scaledDensity),
-                        (int) (4 * getContext().getResources().getDisplayMetrics().scaledDensity),
-                        (int) (4 * getContext().getResources().getDisplayMetrics().scaledDensity),
-                        (int) (4 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (46 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
+                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
+                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
+                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (50 * getContext().getResources().getDisplayMetrics().scaledDensity));
             }
         }
     }
