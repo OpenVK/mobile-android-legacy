@@ -20,6 +20,7 @@ import android.text.method.KeyListener;
 import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -47,6 +48,7 @@ import uk.openvk.android.legacy.user_interface.list_items.InstancesListItem;
 import uk.openvk.android.legacy.user_interface.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
+@SuppressWarnings("ALL")
 public class AuthActivity extends Activity {
 
     private OvkApplication app;
@@ -245,6 +247,7 @@ public class AuthActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @SuppressLint("StringFormatInvalid")
     public void receiveState(int message, String response) {
         try {

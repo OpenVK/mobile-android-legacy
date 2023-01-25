@@ -15,11 +15,14 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,7 @@ import java.util.TimerTask;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
 
@@ -41,7 +45,7 @@ public class MainActivity extends Activity {
     private SharedPreferences instance_prefs;
     private View warn_view;
     private Handler handler;
-    private AlertDialog warn_dialog;
+    private OvkAlertDialog warn_dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,13 +108,15 @@ public class MainActivity extends Activity {
     }
 
     private void createOvkWarnDialogForBeginners() {
-        AlertDialog.Builder dialog_builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder dialog_builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.BaseStyle));
         dialog_builder.setTitle(R.string.ovk_warning_title);
         warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
         dialog_builder.setView(warn_view);
         dialog_builder.setNeutralButton(R.string.ok, null);
-        warn_dialog = dialog_builder.create();
+        warn_dialog = new OvkAlertDialog(this);
+        warn_dialog.build(dialog_builder);
         warn_dialog.show();
+        warn_dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));
         ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
         ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -122,7 +128,7 @@ public class MainActivity extends Activity {
             }
         });
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            setDialogStyle(warn_view, "ovk_warn");
+            setDialogStyle(warn_dialog, warn_view, "ovk_warn");
         }
         warn_dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -173,10 +179,11 @@ public class MainActivity extends Activity {
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
-    private void setDialogStyle(View view, String dialog_name) {
+    private void setDialogStyle(AlertDialog dialog, View view, String dialog_name) {
         if(dialog_name.equals("ovk_warn")) {
-            ((TextView) view.findViewById(R.id.warn_message_text)).setTextColor(Color.WHITE);
-            ((CheckBox) view.findViewById(R.id.do_not_show_messages)).setTextColor(Color.WHITE);
+            //((TextView) view.findViewById(R.id.warn_message_text)).setTextColor(Color.WHITE);
+            ((CheckBox) view.findViewById(R.id.do_not_show_messages)).setTextColor(Color.BLACK);
         }
+
     }
 }

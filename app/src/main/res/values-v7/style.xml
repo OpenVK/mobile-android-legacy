@@ -6,10 +6,7 @@
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
-    </style>
-
-    <style name="BaseStyle.Dialog" parent="android:style/Theme.Dialog">
-        <item name="android:textAppearance">@android:color/white</item>
+        <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
     </style>
 
     <style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light.DarkActionBar">
@@ -17,6 +14,22 @@
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
+        <item name="android:alertDialogTheme">@style/BaseStyle.DialogTheme</item>
+    </style>
+
+    <style name="BaseStyle.DialogStyle" parent="@android:style/Theme.Dialog">
+        <item name="android:layout_margin">0px</item>
+        <item name="android:bottomBright">@android:color/white</item>
+        <item name="android:bottomDark">@color/ovk_color</item>
+        <item name="android:bottomMedium">@color/ovk_color</item>
+        <item name="android:centerBright">@android:color/white</item>
+        <item name="android:centerDark">@android:color/white</item>
+        <item name="android:centerMedium">@android:color/primary_text_dark</item>
+        <item name="android:fullBright">@color/ovk_color</item>
+        <item name="android:fullDark">@color/ovk_color</item>
+        <item name="android:topDark">@drawable/bg_actionbar</item>
+        <item name="android:textAppearance">?android:attr/textColorPrimary</item>
     </style>
     
     <style name="ActionBarStyle" parent="android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
