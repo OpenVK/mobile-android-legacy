@@ -180,7 +180,7 @@ public class DownloadManager {
             @Override
             public void run() {
                 try {
-                    File directory = new File(ctx.getCacheDir().getAbsolutePath(), where);
+                    File directory = new File(String.format("%s/photos_cache", ctx.getCacheDir().getAbsolutePath()), where);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -199,7 +199,7 @@ public class DownloadManager {
                         filename = photoAttachment.filename;
                         //Log.e("DownloadManager", "Invalid address. Skipping...");
                         try {
-                            File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                            File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                             if(downloadedFile.exists()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 byte[] bytes = new byte[1];
@@ -235,7 +235,7 @@ public class DownloadManager {
                                 StatusLine statusLine = response.getStatusLine();
                                 response_in = response.getEntity().getContent();
                                 content_length = response.getEntity().getContentLength();
-                                File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                                File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -253,7 +253,7 @@ public class DownloadManager {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
                                 content_length = response.body().contentLength();
-                                File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                                File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -319,7 +319,7 @@ public class DownloadManager {
             public void run() {
                 Log.v("DownloadManager", String.format("Downloading %s...", url));
                 try {
-                    File directory = new File(ctx.getCacheDir().getAbsolutePath(), where);
+                    File directory = new File(String.format("%s/photos_cache", ctx.getCacheDir().getAbsolutePath()), where);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -330,7 +330,7 @@ public class DownloadManager {
                 if (url.length() == 0) {
                     //Log.e("DownloadManager", "Invalid address. Skipping...");
                     try {
-                        File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                        File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                         if(downloadedFile.exists()) {
                             FileOutputStream fos = new FileOutputStream(downloadedFile);
                             byte[] bytes = new byte[1];
@@ -363,7 +363,7 @@ public class DownloadManager {
                             StatusLine statusLine = response.getStatusLine();
                             response_in = response.getEntity().getContent();
                             content_length = response.getEntity().getContentLength();
-                            File downloadedFile = new File(ctx.getCacheDir(), String.format("%s/%s", ctx.getCacheDir(), where));
+                            File downloadedFile = new File(ctx.getCacheDir(), String.format("%s/photos_cache/%s", ctx.getCacheDir(), where));
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
@@ -380,7 +380,7 @@ public class DownloadManager {
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();
-                            File downloadedFile = new File(String.format("%s/%s", ctx.getCacheDir(), where), filename);
+                            File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
@@ -478,20 +478,38 @@ public class DownloadManager {
         }
     }
 
-    public void clearCache() {
-        try {
-            File cache_dir = new File(ctx.getCacheDir().getAbsolutePath());
-            if (cache_dir.isDirectory()) {
-                String[] children = cache_dir.list();
+    public boolean clearCache(File dir) {
+        if (dir == null) {
+            dir = ctx.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                String[] children = dir.list();
                 for (int i = 0; i < children.length; i++) {
-                    new File(cache_dir, children[i]).delete();
+                    boolean success = clearCache(new File(dir, children[i]));
+                    if (!success) {
+                        return false;
+                    }
                 }
-                Toast.makeText(ctx, R.string.img_cache_cleared, Toast.LENGTH_LONG).show();
+                return dir.delete();
+            } else if (dir != null && dir.isFile()) {
+                return dir.delete();
+            } else {
+                return false;
             }
-        } catch (Exception ex) {
-
+        } else if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = clearCache(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else if (dir != null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
         }
-    }
+    };
 
     public long getCacheSize() {
         final long[] size = {0};

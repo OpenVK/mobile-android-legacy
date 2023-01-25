@@ -62,7 +62,7 @@ public class WallPostActivity extends Activity {
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
     private String author_name;
-    private int author_id;
+    private long author_id;
     private long post_author_id;
     private WallPost post;
     private String author_mention = "";
@@ -100,7 +100,7 @@ public class WallPostActivity extends Activity {
                 return;
             } else {
                 author_name = extras.getString("author_name");
-                author_id = extras.getInt("author_id");
+                author_id = extras.getLong("author_id");
                 post = new WallPost();
                 getPost(post, extras);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -188,7 +188,7 @@ public class WallPostActivity extends Activity {
                             Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/account_avatar/avatar_%s", getCacheDir(), author_id), options);
                             comment.avatar = bitmap;
                             if (comments == null) {
                                 comments = new ArrayList<Comment>();
@@ -222,7 +222,7 @@ public class WallPostActivity extends Activity {
                     Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/account_avatar/avatar_%s", getCacheDir(), author_id), options);
                     comment.avatar = bitmap;
                     if (comments == null) {
                         comments = new ArrayList<Comment>();
@@ -292,7 +292,7 @@ public class WallPostActivity extends Activity {
         intent.putExtra("where", "wall");
         try {
             if(getIntent().getExtras().getBoolean("contains_photo")) {
-                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                intent.putExtra("local_photo_addr", String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
                         owner_id, post_id));
                 intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
                 startActivity(intent);
