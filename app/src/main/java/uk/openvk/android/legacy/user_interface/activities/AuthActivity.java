@@ -20,6 +20,7 @@ import android.text.method.KeyListener;
 import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -40,6 +41,7 @@ import uk.openvk.android.legacy.api.Authorization;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.EditTextAction;
 import uk.openvk.android.legacy.user_interface.layouts.XLinearLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.InstancesListAdapter;
@@ -47,12 +49,13 @@ import uk.openvk.android.legacy.user_interface.list_items.InstancesListItem;
 import uk.openvk.android.legacy.user_interface.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
+@SuppressWarnings("ALL")
 public class AuthActivity extends Activity {
 
     private OvkApplication app;
     private Global global = new Global();
-    private AlertDialog alertDialog;
-    private ProgressDialog connectionDialog;
+    private OvkAlertDialog alertDialog;
+    private OvkAlertDialog connectionDialog;
     private OvkAPIWrapper ovk_api;
     private Error error;
     public Handler handler;
@@ -196,9 +199,9 @@ public class AuthActivity extends Activity {
             ovk_api.requireHTTPS(global_prefs.getBoolean("useHTTPS", true));
             ovk_api.setServer(instance);
             ovk_api.authorize(username, password);
-            connectionDialog = new ProgressDialog(this);
-            connectionDialog.setMessage(getString(R.string.loading));
-            connectionDialog.setCancelable(false);
+            connectionDialog = new OvkAlertDialog(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            connectionDialog.build(builder, "", getString(R.string.loading), null, "progressDlg");
             connectionDialog.show();
         } else {
             Toast.makeText(this, getResources().getString(R.string.authdata_required), Toast.LENGTH_LONG).show();
@@ -210,13 +213,15 @@ public class AuthActivity extends Activity {
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
         String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
         ovk_api.authorize(username, password, code);
-        connectionDialog = new ProgressDialog(this);
-        connectionDialog.setMessage(getString(R.string.loading));
-        connectionDialog.setCancelable(false);
+        connectionDialog = new OvkAlertDialog(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        connectionDialog.build(builder, "", getString(R.string.loading), null, "progressDlg");
         connectionDialog.show();
     }
 
     private void showInstancesDialog() {
+        alertDialog = new OvkAlertDialog(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
         ArrayList<InstancesListItem> instances_list = new ArrayList<>();
         for(int instances_index = 0; instances_index < getResources().getStringArray(R.array.official_instances_list).length; instances_index++) {
@@ -226,10 +231,9 @@ public class AuthActivity extends Activity {
             instances_list.add(new InstancesListItem(getResources().getStringArray(R.array.instances_list)[instances_index], false, true));
         }
         InstancesListAdapter instancesAdapter = new InstancesListAdapter(AuthActivity.this, instances_list);
-        builder.setTitle(getResources().getString(R.string.instances_list_title));
         builder.setSingleChoiceItems(instancesAdapter, -1, null);
         builder.setNegativeButton(R.string.close, null);
-        alertDialog = builder.create();
+        alertDialog.build(builder, getResources().getString(R.string.instances_list_title), "", null);
         alertDialog.show();
     }
 
@@ -245,25 +249,28 @@ public class AuthActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @SuppressLint("StringFormatInvalid")
     public void receiveState(int message, String response) {
+        alertDialog = new OvkAlertDialog(this);
         try {
             if (message == HandlerMessages.INVALID_USERNAME_OR_PASSWORD) {
-                connectionDialog.cancel();
-                AlertDialog wrong_userdata_dlg;
+                connectionDialog.close();
+                OvkAlertDialog wrong_userdata_dlg;
+                wrong_userdata_dlg = new OvkAlertDialog(this);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
-                builder.setTitle(R.string.auth_error_title);
                 builder.setMessage(R.string.auth_error);
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 });
-                wrong_userdata_dlg = builder.create();
+                wrong_userdata_dlg.build(builder, getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error), null);
                 if (!AuthActivity.this.isFinishing()) wrong_userdata_dlg.show();
             } else if (message == HandlerMessages.TWOFACTOR_CODE_REQUIRED) {
-                connectionDialog.cancel();
-                final AlertDialog twofactor_dlg;
+                connectionDialog.close();
+                OvkAlertDialog twofactor_dlg;
+                twofactor_dlg = new OvkAlertDialog(this);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
                 View twofactor_view = getLayoutInflater().inflate(R.layout.twofactor_auth, null, false);
                 builder.setTitle(R.string.auth);
@@ -281,7 +288,7 @@ public class AuthActivity extends Activity {
 
                     }
                 });
-                twofactor_dlg = builder.create();
+                twofactor_dlg.build(builder, "", getResources().getString(R.string.auth), twofactor_view);
                 two_factor_code.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -295,7 +302,7 @@ public class AuthActivity extends Activity {
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {
-                connectionDialog.cancel();
+                connectionDialog.close();
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
                 SharedPreferences.Editor instance_editor = instance_prefs.edit();
                 Authorization auth = new Authorization(response);
@@ -309,50 +316,53 @@ public class AuthActivity extends Activity {
                 startActivity(intent);
                 finish();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(R.string.auth_error_network)
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error_network), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.INTERNAL_ERROR) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error, getReason(message)))
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.INVALID_JSON_RESPONSE) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error, getReason(message)))
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.CONNECTION_TIMEOUT) {
                 connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_network, getReason(message)))
-                        .setNeutralButton(R.string.ok, null).create();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.BROKEN_SSL_CONNECTION) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_ssl))
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.NOT_OPENVK_INSTANCE) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_not_openvk_instance))
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error_not_openvk_instance), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.INSTANCE_UNAVAILABLE) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_instance_unavaliable))
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_instance_unavaliable), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.UNKNOWN_ERROR) {
-                connectionDialog.cancel();
-                alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error_unknown_error))
-                        .setNeutralButton(R.string.ok, null).create();
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error_unknown_error), null);
                 alertDialog.show();
             }
         } catch (Exception e) {
-            connectionDialog.cancel();
-            alertDialog = new AlertDialog.Builder(this).setTitle(R.string.auth_error_title).setMessage(getResources().getString(R.string.auth_error, getReason(message)))
-                    .setNeutralButton(R.string.ok, null).create();
+            connectionDialog.close();
+            alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                    getResources().getString(R.string.auth_error_title),
+                    getResources().getString(R.string.auth_error, getReason(message)), null);
             alertDialog.show();
             e.printStackTrace();
         }
