@@ -6,11 +6,16 @@
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="BaseStyle.Dialog" parent="android:style/Theme.Dialog">
+        <item name="android:textAppearance">@android:color/white</item>
         <item name="android:alertDialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
         <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="android:dialogPreferenceStyle">@style/BaseStyle.DialogStyle</item>
         <item name="android:textAppearanceMedium">@color/window_bg_black</item>
+        <item name="android:listViewStyle">@style/BaseStyle.DialogStyle.List</item>
     </style>
 
     <style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light.DarkActionBar">
@@ -37,6 +42,32 @@
         <item name="android:textAppearanceMedium">@color/window_bg_black</item>
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:buttonStyle">@style/BaseStyle.DialogStyle.Button</item>
+    </style>
+
+    <style name="BaseStyle.DialogStyle.List" parent="@android:style/Widget.ListView">
+        <item name="android:background">@color/white</item>
+        <item name="android:cacheColorHint">@color/white</item>
+        <item name="android:listSelector">@drawable/highlight</item>
+    </style>
+
+    <style name="BaseStyle.DialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:textAppearanceMedium">@color/window_bg_black</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:indeterminateDrawable">@drawable/progress_light</item>
+        <item name="android:buttonStyle">@style/BaseStyle.DialogStyle.Button</item>
+    </style>
+
+    <style name="BaseStyle.DialogStyle.Button">
+        <item name="android:background">@drawable/btn_light_blue</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="BaseStyle.DialogStyle.Text" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="BaseStyle.DialogStyle.Title">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="BaseStyle.DialogTheme" parent="@android:style/Theme.Dialog">

@@ -73,10 +73,14 @@ public class OvkAlertDialog extends AlertDialog {
                     message_tv.setText(message);
                     builder.setView(dlg_view);
                 } else {
-                    dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
-                    TextView message_tv = dlg_view.findViewById(android.R.id.message);
-                    message_tv.setText(message);
-                    builder.setView(dlg_view);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
+                        TextView message_tv = dlg_view.findViewById(android.R.id.message);
+                        message_tv.setText(message);
+                        builder.setView(dlg_view);
+                    } else {
+                        builder.setMessage(message);
+                    }
                 }
             } catch (Exception ignored) {
 

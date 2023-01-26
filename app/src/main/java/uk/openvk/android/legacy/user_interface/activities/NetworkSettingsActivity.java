@@ -28,6 +28,7 @@ import java.util.Locale;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
@@ -113,7 +114,6 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
         proxy_settings_view = getLayoutInflater().inflate(R.layout.proxy_settings_layout, null, false);
-        builder.setTitle(getResources().getString(R.string.sett_proxy_connection));
         builder.setView(proxy_settings_view);
         final EditText proxy_address = ((EditText) proxy_settings_view.findViewById(R.id.proxy_address));
         final EditText proxy_port = ((EditText) proxy_settings_view.findViewById(R.id.proxy_port));
@@ -146,7 +146,8 @@ public class NetworkSettingsActivity extends PreferenceActivity {
             }
         });
         builder.setNegativeButton(R.string.cancel, null);
-        final AlertDialog dialog = builder.create();
+        final OvkAlertDialog dialog = new OvkAlertDialog(this);
+        dialog.build(builder, getResources().getString(R.string.sett_proxy_connection), "", proxy_settings_view);
         proxy_address.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -193,8 +194,8 @@ public class NetworkSettingsActivity extends PreferenceActivity {
     private void setDialogStyle(View view, String dialog_name) {
         try {
             if (dialog_name.equals("proxy_settings")) {
-                ((TextView) view.findViewById(R.id.proxy_address_label)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.proxy_type_label)).setTextColor(Color.WHITE);
+                //((TextView) view.findViewById(R.id.proxy_address_label)).setTextColor(Color.WHITE);
+                //((TextView) view.findViewById(R.id.proxy_type_label)).setTextColor(Color.WHITE);
             }
         } catch (Exception ex) {
 

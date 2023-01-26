@@ -115,7 +115,7 @@ public class OvkApplication extends Application {
             language_code = "en";
         } else if(language.equals("Русский")) {
             language_code = "ru";
-        } else if(language.equals("Украïньска")) {
+        } else if(language.equals("Украïнська")) {
             language_code = "uk";
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -124,6 +124,7 @@ public class OvkApplication extends Application {
                 language_code = ctx.getResources().getConfiguration().locale.getLanguage();
             }
         }
+
 
         Locale locale = new Locale(language_code);
         return locale;
