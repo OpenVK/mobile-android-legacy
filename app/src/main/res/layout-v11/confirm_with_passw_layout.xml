@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
             android:text="@string/confirm_with_password"
-            android:textColor="@android:color/black"
             tools:ignore="HardcodedText" />
 
         <EditText

@@ -42,6 +42,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
@@ -147,16 +148,13 @@ public class DebugMenuActivity extends PreferenceActivity {
 
     private void showConfirmDialog(final String target) {
         AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
-        builder.setTitle(getResources().getString(R.string.confirm));
         final View confirm_view = getLayoutInflater().inflate(R.layout.confirm_with_passw_layout, null, false);
         final EditText password_edit = ((EditText) confirm_view.findViewById(R.id.password_edit));
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            ((TextView) confirm_view.findViewById(R.id.enter_password_label)).setTextColor(Color.WHITE);
-        }
         builder.setView(confirm_view);
         builder.setPositiveButton(R.string.ok, null);
         builder.setNegativeButton(R.string.cancel, null);
-        final AlertDialog dialog = builder.create();
+        final OvkAlertDialog dialog = new OvkAlertDialog(this);
+        dialog.build(builder, getResources().getString(R.string.confirm), "", confirm_view);
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
