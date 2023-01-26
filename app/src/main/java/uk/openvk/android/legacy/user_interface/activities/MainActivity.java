@@ -109,12 +109,11 @@ public class MainActivity extends Activity {
 
     private void createOvkWarnDialogForBeginners() {
         AlertDialog.Builder dialog_builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.BaseStyle));
-        dialog_builder.setTitle(R.string.ovk_warning_title);
         warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
         dialog_builder.setView(warn_view);
         dialog_builder.setNeutralButton(R.string.ok, null);
         warn_dialog = new OvkAlertDialog(this);
-        warn_dialog.build(dialog_builder);
+        warn_dialog.build(dialog_builder, "", getResources().getString(R.string.ovk_warning_title), warn_view);
         warn_dialog.show();
         warn_dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));

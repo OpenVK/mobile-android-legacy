@@ -42,6 +42,7 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.InstanceLink;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
@@ -52,7 +53,7 @@ public class MainSettingsActivity extends PreferenceActivity {
     public OvkAPIWrapper ovk_api;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
-    private AlertDialog about_instance_dlg;
+    private OvkAlertDialog about_instance_dlg;
     public Handler handler;
     private View about_instance_view;
     private Ovk ovk;
@@ -316,16 +317,15 @@ public class MainSettingsActivity extends PreferenceActivity {
     }
 
     private void openLogoutConfirmationDialog() {
-        AlertDialog logout_dlg;
+        OvkAlertDialog logout_dlg;
         AlertDialog.Builder builder = new AlertDialog.Builder(MainSettingsActivity.this);
-        builder.setMessage(R.string.log_out_warning);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences("instance", 0).edit();
                 editor.putString("access_token", "");
                 editor.putString("server", "");
-                editor.putString("account_password", "");
+                editor.putString("account_password_hash", "");
                 editor.commit();
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -338,7 +338,8 @@ public class MainSettingsActivity extends PreferenceActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
-        logout_dlg = builder.create();
+        logout_dlg = new OvkAlertDialog(this);
+        logout_dlg.build(builder, "", getResources().getString(R.string.log_out_warning), null, "");
         logout_dlg.show();
     }
 
@@ -377,7 +378,8 @@ public class MainSettingsActivity extends PreferenceActivity {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             setDialogStyle(about_instance_view, "about_instance");
         }
-        about_instance_dlg = builder.create();
+        about_instance_dlg = new OvkAlertDialog(this);
+        about_instance_dlg.build(builder, getResources().getString(R.string.about_instance), "", about_instance_view);
         about_instance_dlg.show();
         ovk_api.checkHTTPS();
         ovk.getVersion(ovk_api);
@@ -386,32 +388,7 @@ public class MainSettingsActivity extends PreferenceActivity {
 
     private void setDialogStyle(View view, String dialog_name) {
         try {
-            if(dialog_name.equals("about_instance")) {
-                ((TextView) view.findViewById(R.id.server_addr_label)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.server_addr_label2)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.connection_type_label)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.connection_type_label2)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_version_label)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_version_label2)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_users_count)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_statistics_label)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_online_users_count)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_active_users_count)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_groups_count)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_admins_count)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_wall_posts_count)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label2)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label3)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label4)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label5)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label6)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label7)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label8)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.instance_links_label9)).setTextColor(Color.WHITE);
-                ((TextView) view.findViewById(R.id.rules_link)).setTextColor(Color.LTGRAY);
-                ((TextView) view.findViewById(R.id.privacy_link)).setTextColor(Color.LTGRAY);
-            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -22,6 +22,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
@@ -123,6 +124,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
         builder.setTitle(getResources().getString(R.string.sett_cache_quality_alt));
         builder.setView(quality_choose_view);
         builder.setNegativeButton(R.string.cancel, null);
+        final OvkAlertDialog dialog = new OvkAlertDialog(this);
         final SeekBar quality_seek = ((SeekBar) quality_choose_view.findViewById(R.id.quality_seek));
         final Preference image_quality = findPreference("imageCacheQuality");
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -145,16 +147,13 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
                 } else if(global_prefs.getString("photos_quality", "").equals("original")) {
                     image_quality.setSummary(quality_array[2]);
                 }
+                dialog.dismiss();
             }
         });
         final TextView quality_value = ((TextView) quality_choose_view.findViewById(R.id.quality_label));
         final TextView quality_comm = ((TextView) quality_choose_view.findViewById(R.id.comment_label));
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
         quality_seek.setMax(2);
-
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            quality_value.setTextColor(getResources().getColor(android.R.color.white));
-        }
 
         quality_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -203,7 +202,8 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
         });
 
 
-        final AlertDialog dialog = builder.create();
+        dialog.build(builder, getResources().getString(R.string.sett_cache_quality_alt), "", quality_choose_view);
+        dialog.show();
 
         if(global_prefs.getString("photos_quality", "").equals("medium")) {
             quality_seek.setProgress(2);

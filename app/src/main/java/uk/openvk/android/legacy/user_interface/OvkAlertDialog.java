@@ -3,6 +3,8 @@ package uk.openvk.android.legacy.user_interface;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,16 +13,22 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import uk.openvk.android.legacy.R;
 
 public class OvkAlertDialog extends AlertDialog {
     private AlertDialog dialog;
+    private AlertDialog.Builder builder;
+    private View dlg_view;
+    private String title;
 
     public OvkAlertDialog(Context context) {
         super(context);
@@ -32,7 +40,48 @@ public class OvkAlertDialog extends AlertDialog {
 
     }
 
-    public void build(AlertDialog.Builder builder) {
+    public void build(AlertDialog.Builder builder, String title, String message, View view) {
+        dlg_view = view;
+        this.builder = builder;
+        builder.setTitle(title);
+        this.title = title;
+        builder.setMessage(null);
+        if(dlg_view == null) {
+            try {
+                dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
+                TextView message_tv = dlg_view.findViewById(android.R.id.message);
+                message_tv.setText(message);
+                builder.setView(dlg_view);
+            } catch (Exception ignored) {
+
+            }
+        }
+        dialog = builder.create();
+    }
+
+    public void build(AlertDialog.Builder builder, String title, String message, View view, String type) {
+        dlg_view = view;
+        this.builder = builder;
+        builder.setMessage(null);
+        builder.setTitle(title);
+        this.title = title;
+        if(dlg_view == null) {
+            try {
+                if(type.equals("progressDlg")) {
+                    dlg_view = getLayoutInflater().inflate(R.layout.styled_progressdialog_layout, null, false);
+                    TextView message_tv = dlg_view.findViewById(android.R.id.message);
+                    message_tv.setText(message);
+                    builder.setView(dlg_view);
+                } else {
+                    dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
+                    TextView message_tv = dlg_view.findViewById(android.R.id.message);
+                    message_tv.setText(message);
+                    builder.setView(dlg_view);
+                }
+            } catch (Exception ignored) {
+
+            }
+        }
         dialog = builder.create();
     }
 
@@ -41,14 +90,34 @@ public class OvkAlertDialog extends AlertDialog {
         super.show();
         if(dialog != null) {
             dialog.show();
+            super.dismiss();
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                // some style attributes (for example: buttons background, margins, size and etc) in res/values-v7/styles.xml won't changed
                 LinearLayout parent = (LinearLayout) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getParent();
                 dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.login_btn);
                 ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
                 dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setBackgroundResource(R.drawable.login_btn);
+                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).setMargins(
+                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                        0,
+                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                        0
+                );
                 dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams()).setMargins(
+                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                        0,
+                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                        0
+                );
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setBackgroundResource(R.drawable.login_btn);
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams()).setMargins(
+                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                        0,
+                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                        0
+                );
                 parent.getLayoutParams().height = ((int) (38 * getContext().getResources().getDisplayMetrics().scaledDensity));
                 int divierId = getContext().getResources()
                         .getIdentifier("android:id/titleDivider", null, null);
@@ -63,6 +132,14 @@ public class OvkAlertDialog extends AlertDialog {
                         (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
                         (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
                         (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                int titleBarId = getContext().getResources()
+                        .getIdentifier("android:id/topPanel", null, null);
+                int customPanelId = getContext().getResources()
+                        .getIdentifier("android:id/customPanel", null, null);
+                if(title.length() == 0) {
+                    dialog.findViewById(titleBarId).setVisibility(View.GONE);
+                    dialog.findViewById(customPanelId).setBackgroundColor(Color.WHITE);
+                }
                 ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (50 * getContext().getResources().getDisplayMetrics().scaledDensity));
             }
         }
@@ -86,6 +163,7 @@ public class OvkAlertDialog extends AlertDialog {
 
     @Override
     public void cancel() {
+        super.cancel();
         dialog.cancel();
     }
 
@@ -162,5 +240,9 @@ public class OvkAlertDialog extends AlertDialog {
     @Override
     public void setOnDismissListener(@Nullable OnDismissListener listener) {
         dialog.setOnDismissListener(listener);
+    }
+
+    public void close() {
+        dialog.dismiss();
     }
 }
