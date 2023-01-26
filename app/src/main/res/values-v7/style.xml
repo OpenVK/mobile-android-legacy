@@ -70,26 +70,6 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="BaseStyle.DialogTheme" parent="@android:style/Theme.Dialog">
-        <item name="android:textAppearanceMedium">@color/window_bg_black</item>
-        <item name="android:progressBarStyle">@style/ProgressBar</item>
-        <item name="android:indeterminateDrawable">@drawable/progress_light</item>
-        <item name="android:buttonStyle">@style/BaseStyle.DialogStyle.Button</item>
-    </style>
-
-    <style name="BaseStyle.DialogStyle.Button">
-        <item name="android:background">@drawable/btn_light_blue</item>
-        <item name="android:textColor">@android:color/black</item>
-    </style>
-
-    <style name="BaseStyle.DialogStyle.Text" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">@android:color/black</item>
-    </style>
-
-    <style name="BaseStyle.DialogStyle.Title">
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
     <style name="ActionBarStyle" parent="android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@drawable/bg_actionbar</item>
         <item name="android:icon">@drawable/ic_ab_app</item>
