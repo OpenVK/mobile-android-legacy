@@ -165,10 +165,10 @@ public class OvkAPIWrapper {
         error.description = "";
         String url = "";
         if(use_https) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&client_name=%s&2fa_supported=1", server, username, URLEncoder.encode(password), client_name);
+            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), client_name);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s... (Secured)", server));
         } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&client_name=%s&2fa_supported=1", server, username, URLEncoder.encode(password), client_name);
+            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), client_name);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s...", server));
         }
         final String fUrl = url;
@@ -281,10 +281,10 @@ public class OvkAPIWrapper {
         error.description = "";
         String url = "";
         if(use_https) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, username, URLEncoder.encode(password), code, client_name);
+            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s (Secured)...", server));
         } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, username, URLEncoder.encode(password), code, client_name);
+            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s...", server));
         }
         final String fUrl = url;
