@@ -44,6 +44,7 @@ import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationPanel;
 import uk.openvk.android.legacy.user_interface.list_adapters.MessagesListAdapter;
@@ -401,14 +402,12 @@ public class ConversationActivity extends Activity {
         cursor_id = position;
         uk.openvk.android.legacy.api.models.Message msg = history.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.confirm);
         String text;
         if(msg.text.length() <= 200) {
             text = msg.text.replace("\n", " ");
         } else {
-            text = msg.text.substring(0, 200).replace("\n", " ") + "...";
+            text = msg.text.replace("\n", " ").substring(0, 200) + "...";
         }
-        builder.setMessage(getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", text)));
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -416,7 +415,8 @@ public class ConversationActivity extends Activity {
             }
         });
         builder.setNegativeButton(R.string.cancel, null);
-        AlertDialog dialog = builder.create();
+        OvkAlertDialog dialog = new OvkAlertDialog(this);
+        dialog.build(builder, getResources().getString(R.string.confirm), getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", text)), null);
         dialog.show();
     }
 }
