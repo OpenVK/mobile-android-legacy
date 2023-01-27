@@ -233,7 +233,7 @@ public class AuthActivity extends Activity {
         InstancesListAdapter instancesAdapter = new InstancesListAdapter(AuthActivity.this, instances_list);
         builder.setSingleChoiceItems(instancesAdapter, -1, null);
         builder.setNegativeButton(R.string.close, null);
-        alertDialog.build(builder, getResources().getString(R.string.instances_list_title), "", null);
+        alertDialog.build(builder, getResources().getString(R.string.instances_list_title), "", null, "listDlg");
         alertDialog.show();
     }
 

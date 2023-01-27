@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -479,6 +480,13 @@ public class AppActivity extends Activity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
+        ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setColorSchemeResources(R.color.ovk_color);
+        ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onSlidingMenuItemClicked(3);
+            }
+        });
     }
 
     private void createActionPopupMenu(final Menu menu, boolean enable) {
@@ -767,6 +775,7 @@ public class AppActivity extends Activity {
                 }
                 ab_layout.setNotificationCount(account.counters);
             } else if (message == HandlerMessages.NEWSFEED_GET) {
+                ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);

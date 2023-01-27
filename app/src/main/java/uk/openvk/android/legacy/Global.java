@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -92,14 +93,32 @@ public class Global {
         return Math.min(widthDp, heightDp);
     }
 
+    public static String bytesToHex(byte[] bytes) {
+        char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
     public static String GetSHA256Hash(String text) throws NoSuchAlgorithmException {
 
         MessageDigest md = MessageDigest.getInstance("SHA-256");
 
         md.update(text.getBytes());
         byte[] digest = md.digest();
-
-        return Base64.encodeToString(digest, Base64.DEFAULT);
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.ECLAIR_MR1) {
+            return Base64.encodeToString(digest, Base64.DEFAULT);
+        } else {
+            try {
+                return bytesToHex(digest);
+            } catch(Exception ex) {
+                return "";
+            }
+        }
     }
 
 }

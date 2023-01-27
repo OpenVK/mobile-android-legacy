@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:gravity="bottom|clip_vertical" >
+    android:gravity="bottom|clip_vertical"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/p2r_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/pull_to_refresh_bottom" />
+
+    <ImageView
+        android:id="@+id/p2r_arrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:srcCompat="@drawable/ic_pull_arrow_white" />
 
     <ProgressBar
         android:id="@+id/p2r_progressbar"
@@ -10,9 +28,9 @@
         android:layout_width="38dip"
         android:layout_height="38dip"
         android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
         android:indeterminateDrawable="@drawable/p2r_progress_anim"
         android:indeterminateDuration="700"
-        android:visibility="visible" >
-    </ProgressBar>
+        android:visibility="gone"></ProgressBar>
 
-</FrameLayout>
+</LinearLayout>
