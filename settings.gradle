@@ -1,1 +1,1 @@
-include ':app', ':slidingmenu'
+include ':app', ':slidingmenu', ':p2r-lib'

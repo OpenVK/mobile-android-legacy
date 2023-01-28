@@ -182,7 +182,7 @@ public class DebugMenuActivity extends PreferenceActivity {
                                     ok_btn.setEnabled(false);
                                 }
                             } catch (NoSuchAlgorithmException e) {
-                                password_edit.setError(getResources().getString(R.string.invalid_password));
+                                password_edit.setError(getResources().getString(R.string.error));
                                 ok_btn.setEnabled(false);
                             }
                         }

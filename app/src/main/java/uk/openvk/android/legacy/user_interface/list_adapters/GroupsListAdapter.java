@@ -77,6 +77,10 @@ public class GroupsListAdapter extends BaseAdapter {
             ((TextView) view.findViewById(R.id.group_list_item_text)).setText(String.format("%s", item.name));
         }
 
+        if(item.members_count > 0) {
+            ((TextView) view.findViewById(R.id.group_list_item_subtext)).setText(String.format("%s %s", item.members_count, ctx.getResources().getStringArray(R.array.profile_followers)[2]));
+        }
+
         if(item.avatar != null) {
             ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(item.avatar);
         } else {

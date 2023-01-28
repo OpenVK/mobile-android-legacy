@@ -351,6 +351,10 @@ public class Wall implements Parcelable {
         ovk.sendAPIMethod("Wall.createComment", String.format("owner_id=%d&post_id=%d&message=%s", owner_id, post_id, URLEncoder.encode(text)));
     }
 
+    public void repost(OvkAPIWrapper ovk, long owner_id, long post_id, String text) {
+        ovk.sendAPIMethod("Wall.repost", String.format("object=wall%s_%s&message=%s", owner_id, post_id, URLEncoder.encode(text)));
+    }
+
     @Override
     public int describeContents() {
         return 0;

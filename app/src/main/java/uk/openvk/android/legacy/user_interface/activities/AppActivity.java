@@ -3,11 +3,13 @@ package uk.openvk.android.legacy.user_interface.activities;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,15 +36,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import org.json.JSONObject;
@@ -76,6 +86,7 @@ import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
+import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout;
@@ -138,6 +149,7 @@ public class AppActivity extends Activity {
     private int menu_id;
     private ActionBarImitation actionBarImitation;
     private LongPollReceiver lpReceiver;
+    private Parcelable recyclerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -480,11 +492,20 @@ public class AppActivity extends Activity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
-        ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setColorSchemeResources(R.color.ovk_color);
-        ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        PullToRefreshScrollView p2r_news_view = newsfeedLayout.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ScrollView>() {
             @Override
-            public void onRefresh() {
-                onSlidingMenuItemClicked(3);
+            public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+                if(ab_layout.getNewsfeedSelection() == 0) {
+                    refreshPage("subscriptions_newsfeed");
+                } else {
+                    refreshPage("global_newsfeed");
+                }
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+
             }
         });
     }
@@ -561,6 +582,60 @@ public class AppActivity extends Activity {
             startActivity(intent);
         } catch (Exception ex) {
 
+        }
+    }
+
+    private void refreshPage(String screen) {
+        if(screen.equals("subscriptions_newsfeed")) {
+            menu_id = R.menu.newsfeed;
+            setActionBarTitle(getResources().getString(R.string.newsfeed));
+            if (newsfeedLayout.getCount() == 0) {
+                profileLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.VISIBLE);
+            } else {
+                profileLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
+            }
+            if (newsfeed == null) {
+                newsfeed = new Newsfeed();
+            }
+            newsfeed_count = 25;
+            newsfeed.get(ovk_api, newsfeed_count);
+        } else if(screen.equals("global_newsfeed")) {
+            menu_id = R.menu.newsfeed;
+            setActionBarTitle(getResources().getString(R.string.newsfeed));
+            if (newsfeedLayout.getCount() == 0) {
+                profileLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.VISIBLE);
+            } else {
+                profileLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
+            }
+            if (newsfeed == null) {
+                newsfeed = new Newsfeed();
+            }
+            newsfeed_count = 25;
+            newsfeed.getGlobal(ovk_api, newsfeed_count);
         }
     }
 
@@ -775,7 +850,7 @@ public class AppActivity extends Activity {
                 }
                 ab_layout.setNotificationCount(account.counters);
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
+                ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).onRefreshComplete();
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
@@ -798,6 +873,7 @@ public class AppActivity extends Activity {
                     ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
+                ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).onRefreshComplete();
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
@@ -1060,6 +1136,8 @@ public class AppActivity extends Activity {
                         }
                     }
                 }
+            } else if(message == HandlerMessages.WALL_REPOST) {
+                Toast.makeText(this, getResources().getString(R.string.repost_ok_wall), Toast.LENGTH_LONG).show();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.INSTANCE_UNAVAILABLE || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
                 if(data.containsKey("method")) {
@@ -1562,6 +1640,7 @@ public class AppActivity extends Activity {
     @Override
     protected void onPause() {
         inBackground = true;
+        ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.DISABLED);
         super.onPause();
     }
 
@@ -1587,5 +1666,80 @@ public class AppActivity extends Activity {
     protected void onDestroy() {
         unregisterReceiver(lpReceiver);
         super.onDestroy();
+    }
+
+    public void repost(int position) {
+        if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+            final WallPost post = newsfeed.getWallPosts().get(position);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final ArrayList<String> functions = new ArrayList<>();
+            builder.setTitle(R.string.repost_dlg_title);
+            functions.add(getResources().getString(R.string.repost_own_wall));
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            builder.setSingleChoiceItems(adapter, -1, null);
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
+                        openRepostDialog("own_wall", post);
+                    }
+                }
+            });
+        } else if(global_prefs.getString("current_screen", "").equals("profile")) {
+            final WallPost post = wall.getWallItems().get(position);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final ArrayList<String> functions = new ArrayList<>();
+            builder.setTitle(R.string.repost_dlg_title);
+            functions.add(getResources().getString(R.string.repost_own_wall));
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            builder.setSingleChoiceItems(adapter, -1, null);
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
+                        openRepostDialog("own_wall", post);
+                        dialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+    public void openRepostDialog(String where, final WallPost post) {
+        if(where.equals("own_wall")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final View repost_view = getLayoutInflater().inflate(R.layout.repost_msg_layout, null, false);
+            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
+            builder.setView(repost_view);
+            builder.setPositiveButton(R.string.ok, null);
+            builder.setNegativeButton(R.string.cancel, null);
+            final OvkAlertDialog dialog = new OvkAlertDialog(this);
+            dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialogInterface) {
+                    final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                    if(ok_btn != null) {
+                        ok_btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                try {
+                                    String msg_text = ((EditText)repost_view.findViewById(R.id.text_edit)).getText().toString();
+                                    wall.repost(ovk_api, post.owner_id, post.post_id, msg_text);
+                                    dialog.close();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            dialog.show();
+        }
     }
 }
