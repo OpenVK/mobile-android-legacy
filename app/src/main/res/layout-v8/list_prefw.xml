@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:focusable="false"
         android:gravity="center"
         android:minHeight="40dp"
         android:orientation="vertical"
@@ -36,28 +36,11 @@
             android:textColor="?android:attr/textColorSecondary" />
     </LinearLayout>
 
-    <!--
-     Они выглядят как говно, т. е. без текста зачем-то оставляется неравномерный отступ
-     в стрелках и чекбоксах, поэтому я сделал костыль к нему.
-
-     They look like shit, i.e. without text, for some reason, an uneven space is left
-     in arrows and checkboxes, so I made a workaround to it.
-    -->
-
-    <CheckBox
-        android:id="@android:id/checkbox"
+    <ImageView
+        android:id="@+id/arrow"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:button="@drawable/checkbox"
-        android:drawingCacheQuality="high"
-        tools:ignore="TouchTargetSizeCheck"
-        android:focusable="false"
-        android:clickable="false"
-        />
-
+        android:layout_marginRight="17dp"
+        android:src="@drawable/spinner" />
 
 </LinearLayout>

@@ -63,7 +63,11 @@ public class OvkAlertDialog extends AlertDialog {
         dlg_view = view;
         this.builder = builder;
         builder.setMessage(null);
-        builder.setTitle(title);
+        if(title.length() > 0) {
+            builder.setTitle(title);
+        } else {
+            builder.setTitle("OpenVK");
+        }
         this.title = title;
         if(dlg_view == null) {
             try {
@@ -72,6 +76,8 @@ public class OvkAlertDialog extends AlertDialog {
                     TextView message_tv = dlg_view.findViewById(android.R.id.message);
                     message_tv.setText(message);
                     builder.setView(dlg_view);
+                } else if(type.equals("listDlg")) {
+                    builder.setView(null);
                 } else {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
@@ -95,56 +101,75 @@ public class OvkAlertDialog extends AlertDialog {
         if(dialog != null) {
             dialog.show();
             super.dismiss();
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 // some style attributes (for example: buttons background, margins, size and etc) in res/values-v7/styles.xml won't changed
-                LinearLayout parent = (LinearLayout) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getParent();
-                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.login_btn);
-                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setBackgroundResource(R.drawable.login_btn);
-                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).setMargins(
-                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
-                        0,
-                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
-                        0
-                );
-                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams()).setMargins(
-                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
-                        0,
-                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
-                        0
-                );
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setBackgroundResource(R.drawable.login_btn);
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams()).setMargins(
-                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
-                        0,
-                        ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
-                        0
-                );
-                parent.getLayoutParams().height = ((int) (38 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                int divierId = getContext().getResources()
-                        .getIdentifier("android:id/titleDivider", null, null);
-                View divider = dialog.findViewById(divierId);
-                divider.setBackgroundColor(getContext().getResources().getColor(R.color.ovk_color_light));
-                divider.setVisibility(View.GONE);
-                int buttonBarId = getContext().getResources()
-                        .getIdentifier("android:id/buttonPanel", null, null);
-                View buttonBar = dialog.findViewById(buttonBarId);
-                buttonBar.setPadding(
-                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
-                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
-                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
-                        (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                int titleBarId = getContext().getResources()
-                        .getIdentifier("android:id/topPanel", null, null);
-                int customPanelId = getContext().getResources()
-                        .getIdentifier("android:id/customPanel", null, null);
-                if(title.length() == 0) {
-                    dialog.findViewById(titleBarId).setVisibility(View.GONE);
-                    dialog.findViewById(customPanelId).setBackgroundColor(Color.WHITE);
+                try {
+                    dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.login_btn);
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setBackgroundResource(R.drawable.login_btn);
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).setMargins(
+                            ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                            0,
+                            ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                            0
+                    );
+                } catch (Exception ignored) {
+
                 }
-                ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (50 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                try {
+                    dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams()).setMargins(
+                            ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                            0,
+                            ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                            0
+                    );
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setBackgroundResource(R.drawable.login_btn);
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams()).setMargins(
+                            ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                            0,
+                            ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
+                            0
+                    );
+                } catch (Exception ignored) {
+
+                }
+                try {
+                    LinearLayout parent = (LinearLayout) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getParent();
+                    parent.getLayoutParams().height = ((int) (38 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    int buttonBarId = getContext().getResources()
+                            .getIdentifier("android:id/buttonPanel", null, null);
+                    View buttonBar = dialog.findViewById(buttonBarId);
+                    buttonBar.setPadding(
+                            (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
+                            (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
+                            (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
+                            (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (50 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                } catch (Exception ignored) {
+
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+
+                try {
+                    int divierId = getContext().getResources()
+                            .getIdentifier("android:id/titleDivider", null, null);
+                    View divider = dialog.findViewById(divierId);
+                    divider.setBackgroundColor(getContext().getResources().getColor(R.color.ovk_color_light));
+                    divider.setVisibility(View.GONE);
+                    int titleBarId = getContext().getResources()
+                            .getIdentifier("android:id/topPanel", null, null);
+                    int customPanelId = getContext().getResources()
+                            .getIdentifier("android:id/customPanel", null, null);
+                    if (title.length() == 0) {
+                        dialog.findViewById(titleBarId).setVisibility(View.GONE);
+                        dialog.findViewById(customPanelId).setBackgroundColor(Color.WHITE);
+                    }
+                } catch (Exception ignored) {
+
+                }
             }
         }
     }

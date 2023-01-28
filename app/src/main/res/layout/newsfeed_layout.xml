@@ -10,6 +10,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/refreshable_layout">
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/news_listview"
             android:layout_width="match_parent"
@@ -21,6 +26,8 @@
             android:layout_weight="0.01">
 
         </android.support.v7.widget.RecyclerView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
 
     </LinearLayout>
 
