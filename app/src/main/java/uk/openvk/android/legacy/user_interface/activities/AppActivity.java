@@ -579,7 +579,6 @@ public class AppActivity extends Activity {
     private void refreshPage(String screen) {
         if(screen.equals("subscriptions_newsfeed")) {
             menu_id = R.menu.newsfeed;
-            onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if (newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
@@ -605,7 +604,6 @@ public class AppActivity extends Activity {
             newsfeed.get(ovk_api, newsfeed_count);
         } else if(screen.equals("global_newsfeed")) {
             menu_id = R.menu.newsfeed;
-            onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if (newsfeedLayout.getCount() == 0) {
                 profileLayout.setVisibility(View.GONE);
