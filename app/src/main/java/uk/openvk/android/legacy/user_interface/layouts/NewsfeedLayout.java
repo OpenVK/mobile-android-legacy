@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -17,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
 import org.json.JSONArray;
 
@@ -44,6 +49,8 @@ public class NewsfeedLayout extends LinearLayout {
     private LinearLayoutManager llm;
     private ArrayList<WallPost> wallPosts;
     public boolean loading_more_posts = false;
+    private int pastComplVisiblesItems;
+    private Parcelable recyclerViewState;
 
     public NewsfeedLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -71,6 +78,7 @@ public class NewsfeedLayout extends LinearLayout {
             newsfeedAdapter.setArray(wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
         }
+
     }
 
     public void updateItem(WallPost item, int position) {
@@ -221,6 +229,9 @@ public class NewsfeedLayout extends LinearLayout {
                         visibleItemCount = llm.getChildCount();
                         totalItemCount = llm.getItemCount();
                         pastVisiblesItems = llm.findFirstVisibleItemPosition();
+                        pastComplVisiblesItems = llm.findFirstCompletelyVisibleItemPosition();
+
+                        ((PullToRefreshScrollView) findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.PULL_FROM_START);
 
                         if (!loading_more_posts) {
                             if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {

@@ -185,7 +185,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
                             }
                         }
-                    } else if(block.startsWith("https://") || block.endsWith("http://")) {
+                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
                         text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
                     }
                     regexp_results = regexp_results + 1;
@@ -225,7 +225,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else if(item.text.length() > 500) {
                 expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.VISIBLE);
-                Pattern pattern = Pattern.compile("\\[(.+?)\\]");
+                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -236,21 +237,25 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         text = text.replace("\n", "<br>");
                     }
                     String block = matcher.group();
-                    OvkLink link = new OvkLink();
-                    String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                    link.screen_name = markup[0];
-                    if(markup.length == 2) {
-                        if (markup[0].startsWith("id")) {
-                            link.url = String.format("openvk://profile/%s", markup[0]);
+                    if(block.startsWith("[") && block.endsWith("]")) {
+                        OvkLink link = new OvkLink();
+                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                        link.screen_name = markup[0];
+                        if (markup.length == 2) {
+                            if (markup[0].startsWith("id")) {
+                                link.url = String.format("openvk://profile/%s", markup[0]);
+                                link.name = markup[1];
+                            } else if (markup[0].startsWith("club")) {
+                                link.url = String.format("openvk://group/%s", markup[0]);
+                                link.name = markup[1];
+                            }
                             link.name = markup[1];
-                        } else if (markup[0].startsWith("club")) {
-                            link.url = String.format("openvk://group/%s", markup[0]);
-                            link.name = markup[1];
+                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                            }
                         }
-                        link.name = markup[1];
-                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
-                        }
+                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
                     }
                     regexp_results = regexp_results + 1;
                     regexp_search = matcher.find();
@@ -278,7 +283,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else if(item.text.length() > 0) {
                 expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.VISIBLE);
-                Pattern pattern = Pattern.compile("\\[(.+?)\\]");
+                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -289,21 +295,25 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         text = text.replace("\n", "<br>");
                     }
                     String block = matcher.group();
-                    OvkLink link = new OvkLink();
-                    String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                    link.screen_name = markup[0];
-                    if(markup.length == 2) {
-                        if (markup[0].startsWith("id")) {
-                            link.url = String.format("openvk://profile/%s", markup[0]);
+                    if(block.startsWith("[") && block.endsWith("]")) {
+                        OvkLink link = new OvkLink();
+                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                        link.screen_name = markup[0];
+                        if (markup.length == 2) {
+                            if (markup[0].startsWith("id")) {
+                                link.url = String.format("openvk://profile/%s", markup[0]);
+                                link.name = markup[1];
+                            } else if (markup[0].startsWith("club")) {
+                                link.url = String.format("openvk://group/%s", markup[0]);
+                                link.name = markup[1];
+                            }
                             link.name = markup[1];
-                        } else if (markup[0].startsWith("club")) {
-                            link.url = String.format("openvk://group/%s", markup[0]);
-                            link.name = markup[1];
+                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                            }
                         }
-                        link.name = markup[1];
-                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
-                        }
+                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
                     }
                     regexp_results = regexp_results + 1;
                     regexp_search = matcher.find();
@@ -495,6 +505,19 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
                             ((AppActivity) ctx).addLike(position, "post", view);
                         }
+                    }
+                }
+            });
+
+            reposts_counter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).repost(position);
+                    } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                        ((GroupIntentActivity) ctx).repost(position);
+                    } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).repost(position);
                     }
                 }
             });

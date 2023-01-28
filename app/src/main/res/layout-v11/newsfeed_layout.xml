@@ -13,7 +13,9 @@
         android:layout_height="match_parent"
         android:id="@+id/refreshable_layout"
         ptr:ptrAnimationStyle="flip"
-        ptr:ptrMode="pullDownFromTop">
+        ptr:ptrMode="pullDownFromTop"
+        android:fillViewport="true"
+        android:layout_weight="0.01">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,8 +29,7 @@
             android:persistentDrawingCache="all"
             android:theme="@style/NewsItemTransparentBackground"
             android:visibility="visible"
-            android:layout_weight="0.01"
-            tools:ignore="InefficientWeight"/>
+            tools:ignore="InefficientWeight" />
 
         </LinearLayout>
 

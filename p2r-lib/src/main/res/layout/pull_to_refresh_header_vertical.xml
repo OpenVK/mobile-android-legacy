@@ -8,7 +8,7 @@
         android:paddingBottom="4dp"
         android:paddingLeft="@dimen/header_footer_left_right_padding"
         android:paddingRight="@dimen/header_footer_left_right_padding"
-        android:paddingTop="@dimen/header_footer_top_bottom_padding" >
+        android:paddingTop="@dimen/header_footer_top_bottom_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
