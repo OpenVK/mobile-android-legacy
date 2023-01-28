@@ -1647,6 +1647,7 @@ public class AppActivity extends Activity {
     @Override
     protected void onResume() {
         inBackground = false;
+        ((PullToRefreshScrollView) findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         super.onResume();
     }
 

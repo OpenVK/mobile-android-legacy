@@ -231,7 +231,7 @@ public class NewsfeedLayout extends LinearLayout {
                         pastVisiblesItems = llm.findFirstVisibleItemPosition();
                         pastComplVisiblesItems = llm.findFirstCompletelyVisibleItemPosition();
 
-                        ((PullToRefreshScrollView) findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        ((PullToRefreshScrollView) findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.DISABLED);
 
                         if (!loading_more_posts) {
                             if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
