@@ -118,4 +118,8 @@ public class ActionBarLayout extends LinearLayout {
     public void setAppTitle(String title) {
         ((TextView) findViewById(R.id.ab_title)).setText(title);
     }
+
+    public int getNewsfeedSelection() {
+        return ((Spinner) findViewById(R.id.spinner)).getSelectedItemPosition();
+    }
 }

@@ -28,9 +28,13 @@ int dimen indicator_internal_padding 0x7f060003
 int dimen indicator_right_padding 0x7f060004
 int drawable default_ptr_flip 0x7f020000
 int drawable default_ptr_rotate 0x7f020001
-int drawable indicator_arrow 0x7f020002
-int drawable indicator_bg_bottom 0x7f020003
-int drawable indicator_bg_top 0x7f020004
+int drawable ic_pull_arrow 0x7f020002
+int drawable ic_pull_arrow_white 0x7f020003
+int drawable indicator_arrow 0x7f020004
+int drawable indicator_bg_bottom 0x7f020005
+int drawable indicator_bg_top 0x7f020006
+int drawable p2r_progress 0x7f020007
+int drawable p2r_progress_white 0x7f020008
 int id both 0x7f070003
 int id disabled 0x7f070004
 int id fl_inner 0x7f07000c

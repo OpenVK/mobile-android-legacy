@@ -38,10 +38,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import org.json.JSONObject;
@@ -480,13 +483,22 @@ public class AppActivity extends Activity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
-        //((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setColorSchemeResources(R.color.ovk_color);
-        //((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            //@Override
-            //public void onRefresh() {
-                //onSlidingMenuItemClicked(3);
-            //}
-        //});
+        PullToRefreshScrollView p2r_news_view = newsfeedLayout.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ScrollView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+                if(ab_layout.getNewsfeedSelection() == 0) {
+                    refreshPage("subscriptions_newsfeed");
+                } else {
+                    refreshPage("global_newsfeed");
+                }
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+
+            }
+        });
     }
 
     private void createActionPopupMenu(final Menu menu, boolean enable) {
@@ -561,6 +573,62 @@ public class AppActivity extends Activity {
             startActivity(intent);
         } catch (Exception ex) {
 
+        }
+    }
+
+    private void refreshPage(String screen) {
+        if(screen.equals("subscriptions_newsfeed")) {
+            menu_id = R.menu.newsfeed;
+            onCreateOptionsMenu(activity_menu);
+            setActionBarTitle(getResources().getString(R.string.newsfeed));
+            if (newsfeedLayout.getCount() == 0) {
+                profileLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.VISIBLE);
+            } else {
+                profileLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
+            }
+            if (newsfeed == null) {
+                newsfeed = new Newsfeed();
+            }
+            newsfeed_count = 25;
+            newsfeed.get(ovk_api, newsfeed_count);
+        } else if(screen.equals("global_newsfeed")) {
+            menu_id = R.menu.newsfeed;
+            onCreateOptionsMenu(activity_menu);
+            setActionBarTitle(getResources().getString(R.string.newsfeed));
+            if (newsfeedLayout.getCount() == 0) {
+                profileLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                progressLayout.setVisibility(View.VISIBLE);
+            } else {
+                profileLayout.setVisibility(View.GONE);
+                friendsLayout.setVisibility(View.GONE);
+                groupsLayout.setVisibility(View.GONE);
+                conversationsLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.GONE);
+                newsfeedLayout.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
+            }
+            if (newsfeed == null) {
+                newsfeed = new Newsfeed();
+            }
+            newsfeed_count = 25;
+            newsfeed.getGlobal(ovk_api, newsfeed_count);
         }
     }
 
@@ -775,7 +843,7 @@ public class AppActivity extends Activity {
                 }
                 ab_layout.setNotificationCount(account.counters);
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                //((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
+                ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).onRefreshComplete();
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
@@ -798,6 +866,7 @@ public class AppActivity extends Activity {
                     ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
+                ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).onRefreshComplete();
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);

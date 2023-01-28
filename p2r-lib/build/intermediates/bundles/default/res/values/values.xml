@@ -25,7 +25,7 @@
     <string name="pull_to_refresh_from_bottom_pull_label">@string/pull_to_refresh_pull_label</string>
     <string name="pull_to_refresh_from_bottom_refreshing_label">@string/pull_to_refresh_refreshing_label</string>
     <string name="pull_to_refresh_from_bottom_release_label">@string/pull_to_refresh_release_label</string>
-    <string name="pull_to_refresh_pull_label">Pull to refresh…</string>
-    <string name="pull_to_refresh_refreshing_label">Loading…</string>
-    <string name="pull_to_refresh_release_label">Release to refresh…</string>
+    <string name="pull_to_refresh_pull_label">Pull down to refresh</string>
+    <string name="pull_to_refresh_refreshing_label">Refreshing…</string>
+    <string name="pull_to_refresh_release_label">Release to refresh</string>
 </resources>
