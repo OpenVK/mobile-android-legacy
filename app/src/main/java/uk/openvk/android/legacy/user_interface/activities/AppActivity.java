@@ -491,7 +491,7 @@ public class AppActivity extends Activity {
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
         SwipeRefreshLayout p2r_news_view = newsfeedLayout.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setBackgroundColor(getResources().getColor(R.color.ovk_color));
+        p2r_news_view.setProgressBackgroundColorSchemeResource(R.color.ovk_color);
         p2r_news_view.setColorSchemeResources(android.R.color.white);
         p2r_news_view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
