@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "D:\\Stuff\\GitHub\\mobile-android-legacy\\p2r-lib\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_horizontal.xml",
+        "source": "D:\\Stuff\\GitHub\\mobile-android-legacy\\p2r-lib\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_horizontal.xml"
+    },
+    {
+        "merged": "D:\\Stuff\\GitHub\\mobile-android-legacy\\p2r-lib\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_vertical.xml",
+        "source": "D:\\Stuff\\GitHub\\mobile-android-legacy\\p2r-lib\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_vertical.xml"
+    }
+]

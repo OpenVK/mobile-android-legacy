@@ -274,4 +274,9 @@ public class OvkAlertDialog extends AlertDialog {
     public void close() {
         dialog.dismiss();
     }
+
+    @Override
+    public void setOnShowListener(@Nullable OnShowListener listener) {
+        dialog.setOnShowListener(listener);
+    }
 }

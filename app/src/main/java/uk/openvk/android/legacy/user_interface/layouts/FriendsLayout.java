@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -103,26 +104,28 @@ public class FriendsLayout extends LinearLayout {
                     ex.printStackTrace();
                 }
             }
-            if(requests != null) {
-                for (int i = 0; i < requests.size(); i++) {
-                    try {
-                        Friend item = requests.get(i);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
-                        if (bitmap != null) {
-                            item.avatar = bitmap;
-                        }
-                        requests.set(i, item);
-                    } catch (OutOfMemoryError ex) {
-                        ex.printStackTrace();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                requestsAdapter.notifyDataSetChanged();
-            }
             friendsAdapter.notifyDataSetChanged();
+        }
+        if(requests != null) {
+            for (int i = 0; i < requests.size(); i++) {
+                try {
+                    Friend item = requests.get(i);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id), options);
+                    if (bitmap != null) {
+                        item.avatar = bitmap;
+                    } else {
+                        Log.e("OpenVK", String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id));
+                    }
+                    requests.set(i, item);
+                } catch (OutOfMemoryError ex) {
+                    ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            requestsAdapter.notifyDataSetChanged();
         }
     }
 
