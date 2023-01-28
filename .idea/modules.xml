@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile-android-legacy.iml" filepath="$PROJECT_DIR$/mobile-android-legacy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/p2r-lib/p2r-lib.iml" filepath="$PROJECT_DIR$/p2r-lib/p2r-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/slidingmenu/slidingmenu.iml" filepath="$PROJECT_DIR$/slidingmenu/slidingmenu.iml" />
     </modules>
   </component>
