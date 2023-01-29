@@ -20,8 +20,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
 import org.json.JSONArray;
 
@@ -230,8 +228,6 @@ public class NewsfeedLayout extends LinearLayout {
                         totalItemCount = llm.getItemCount();
                         pastVisiblesItems = llm.findFirstVisibleItemPosition();
                         pastComplVisiblesItems = llm.findFirstCompletelyVisibleItemPosition();
-
-                        ((PullToRefreshScrollView) findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.PULL_FROM_START);
 
                         if (!loading_more_posts) {
                             if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {

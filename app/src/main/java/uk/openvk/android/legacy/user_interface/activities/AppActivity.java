@@ -50,8 +50,6 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import org.json.JSONObject;
@@ -492,20 +490,17 @@ public class AppActivity extends Activity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
-        PullToRefreshScrollView p2r_news_view = newsfeedLayout.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ScrollView>() {
+        SwipeRefreshLayout p2r_news_view = newsfeedLayout.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setProgressBackgroundColorSchemeResource(R.color.ovk_color);
+        p2r_news_view.setColorSchemeResources(android.R.color.white);
+        p2r_news_view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onPullDownToRefresh(PullToRefreshBase<ScrollView> refreshView) {
+            public void onRefresh() {
                 if(ab_layout.getNewsfeedSelection() == 0) {
                     refreshPage("subscriptions_newsfeed");
                 } else {
                     refreshPage("global_newsfeed");
                 }
-            }
-
-            @Override
-            public void onPullUpToRefresh(PullToRefreshBase<ScrollView> refreshView) {
-
             }
         });
     }
@@ -850,7 +845,7 @@ public class AppActivity extends Activity {
                 }
                 ab_layout.setNotificationCount(account.counters);
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).onRefreshComplete();
+                ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
@@ -873,7 +868,7 @@ public class AppActivity extends Activity {
                     ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
-                ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).onRefreshComplete();
+                ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
@@ -1640,7 +1635,6 @@ public class AppActivity extends Activity {
     @Override
     protected void onPause() {
         inBackground = true;
-        ((PullToRefreshScrollView) newsfeedLayout.findViewById(R.id.refreshable_layout)).setMode(PullToRefreshBase.Mode.DISABLED);
         super.onPause();
     }
 
