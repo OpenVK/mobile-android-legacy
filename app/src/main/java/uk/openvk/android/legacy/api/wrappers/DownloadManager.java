@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.wrappers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
@@ -43,6 +44,7 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
@@ -56,20 +58,18 @@ import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
 /**
- * Created by Dmitry on 27.09.2022.
+ * File created by Dmitry on 27.09.2022.
  */
-@SuppressWarnings("ALL")
+
+@SuppressWarnings({"ResultOfMethodCallIgnored", "StatementWithEmptyBody"})
 public class DownloadManager {
 
     public String server;
     public boolean use_https;
     public boolean legacy_mode;
-    private String status;
-    private uk.openvk.android.legacy.api.models.Error error;
     private Context ctx;
-    private Handler handler;
-    private String access_token;
     public ArrayList<PhotoAttachment> photoAttachments;
+    private boolean logging_enabled = true; // default for beta releases
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
@@ -77,22 +77,25 @@ public class DownloadManager {
     public DownloadManager(Context ctx, boolean use_https) {
         this.ctx = ctx;
         this.use_https = use_https;
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            logging_enabled = false;
+        }
         try {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 BasicHttpParams basicHttpParams = new BasicHttpParams();
-                HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
-                HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
-                HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
-                HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
-                HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
+                HttpProtocolParams.setUseExpectContinue(basicHttpParams, false);
+                HttpProtocolParams.setUserAgent(basicHttpParams, generateUserAgent(ctx));
+                HttpConnectionParams.setSocketBufferSize(basicHttpParams, 8192);
+                HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);
+                HttpConnectionParams.setSoTimeout(basicHttpParams, 30000);
                 SchemeRegistry schemeRegistry = new SchemeRegistry();
-                if (use_https == true) {
+                if (use_https) {
                     schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
                     schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 } else {
                     schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 }
-                httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+                httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams, schemeRegistry), basicHttpParams);
                 legacy_mode = true;
             } else {
                 SSLContext sslContext = null;
@@ -100,10 +103,12 @@ public class DownloadManager {
                     sslContext = SSLContext.getInstance("SSL");
                     TrustManager[] trustAllCerts = new TrustManager[]{
                             new X509TrustManager() {
+                                @SuppressLint("TrustAllX509TrustManager")
                                 @Override
                                 public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                                 }
 
+                                @SuppressLint("TrustAllX509TrustManager")
                                 @Override
                                 public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                                 }
@@ -157,7 +162,7 @@ public class DownloadManager {
             OvkApplication app = ((OvkApplication) ctx.getApplicationContext());
             version_name = app.version;
         } finally {
-            user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %d; %s; %s %s; %s)", version_name,
+            user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %s; %s; %s %s; %s)", version_name,
                     Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language"));
         }
         return user_agent;
@@ -245,7 +250,7 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    //Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response_in.close();
                                 response_code = statusLine.getStatusCode();
@@ -263,40 +268,51 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    //Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response.body().byteStream().close();
                             }
-                            //Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.d("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
                         } catch (IOException e) {
-                            //Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         } catch (Exception e) {
                             photoAttachment.error = e.getClass().getSimpleName();
-                            //Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         }
                     }
                 }
-                Log.v("DownloadManager", String.format("Downloaded!"));
-                if (where.equals("account_avatar")) {
-                    sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
-                } else if (where.equals("profile_avatars")) {
-                    sendMessage(HandlerMessages.PROFILE_AVATARS, where);
-                } else if (where.equals("newsfeed_avatars")) {
-                    sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
-                } else if (where.equals("group_avatars")) {
-                    sendMessage(HandlerMessages.GROUP_AVATARS, where);
-                } else if (where.equals("newsfeed_photo_attachments")) {
-                    sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
-                } else if (where.equals("wall_photo_attachments")) {
-                    sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
-                } else if (where.equals("wall_avatars")) {
-                    sendMessage(HandlerMessages.WALL_AVATARS, where);
-                } else if (where.equals("friend_avatars")) {
-                    sendMessage(HandlerMessages.FRIEND_AVATARS, where);
-                } else if (where.equals("comment_avatars")) {
-                    sendMessage(HandlerMessages.COMMENT_AVATARS, where);
-                } else if (where.equals("conversations_avatars")) {
-                    sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
+                Log.v("DownloadManager", "Downloaded!");
+                switch (where) {
+                    case "account_avatar":
+                        sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
+                        break;
+                    case "profile_avatars":
+                        sendMessage(HandlerMessages.PROFILE_AVATARS, where);
+                        break;
+                    case "newsfeed_avatars":
+                        sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
+                        break;
+                    case "group_avatars":
+                        sendMessage(HandlerMessages.GROUP_AVATARS, where);
+                        break;
+                    case "newsfeed_photo_attachments":
+                        sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
+                        break;
+                    case "wall_photo_attachments":
+                        sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
+                        break;
+                    case "wall_avatars":
+                        sendMessage(HandlerMessages.WALL_AVATARS, where);
+                        break;
+                    case "friend_avatars":
+                        sendMessage(HandlerMessages.FRIEND_AVATARS, where);
+                        break;
+                    case "comment_avatars":
+                        sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                        break;
+                    case "conversations_avatars":
+                        sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
+                        break;
                 }
             }
         };
@@ -328,7 +344,7 @@ public class DownloadManager {
                 }
                 filesize = 0;
                 if (url.length() == 0) {
-                    //Log.e("DownloadManager", "Invalid address. Skipping...");
+                    if(logging_enabled) Log.e("DownloadManager", "Invalid address. Skipping...");
                     try {
                         File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                         if(downloadedFile.exists()) {
@@ -348,7 +364,7 @@ public class DownloadManager {
                     } else {
                         short_address = url;
                     }
-                    //Log.v("DownloadManager", String.format("Downloading %s...", short_address));
+                    if(logging_enabled) Log.v("DownloadManager", String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
                         request_legacy = new HttpGet(url);
                         request_legacy.getParams().setParameter("timeout", 30000);
@@ -373,7 +389,7 @@ public class DownloadManager {
                                 }
                                 fos.close();
                             } else {
-                                //Log.w("DownloadManager", "Filesizes match, skipping...");
+                                if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response_in.close();
                             response_code = statusLine.getStatusCode();
@@ -390,41 +406,50 @@ public class DownloadManager {
                                 }
                                 fos.close();
                             } else {
-                                //Log.w("DownloadManager", "Filesizes match, skipping...");
+                                if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response.body().byteStream().close();
                             if (response != null){
                                 response.close();
                             }
                         }
-                        //Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
-                    } catch (IOException e) {
-                        //Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                        if(logging_enabled) Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
                     } catch (Exception e) {
-                        //Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
                     }
                 }
                 Log.v("DownloadManager", String.format("Downloaded!"));
-                if (where.equals("account_avatar")) {
-                    sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
-                } else if (where.equals("profile_avatars")) {
-                    sendMessage(HandlerMessages.PROFILE_AVATARS, where);
-                } else if (where.equals("newsfeed_avatars")) {
-                    sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
-                } else if (where.equals("newsfeed_photo_attachments")) {
-                    sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
-                } else if (where.equals("group_avatars")) {
-                    sendMessage(HandlerMessages.GROUP_AVATARS, where);
-                } else if (where.equals("wall_photo_attachments")) {
-                    sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
-                } else if (where.equals("wall_avatars")) {
-                    sendMessage(HandlerMessages.WALL_AVATARS, where);
-                } else if (where.equals("friend_avatars")) {
-                    sendMessage(HandlerMessages.FRIEND_AVATARS, where);
-                } else if (where.equals("comment_avatars")) {
-                    sendMessage(HandlerMessages.COMMENT_AVATARS, where);
-                } else if(where.equals("original_photos")) {
-                    sendMessage(HandlerMessages.ORIGINAL_PHOTO, where);
+                switch (where) {
+                    case "account_avatar":
+                        sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
+                        break;
+                    case "profile_avatars":
+                        sendMessage(HandlerMessages.PROFILE_AVATARS, where);
+                        break;
+                    case "newsfeed_avatars":
+                        sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
+                        break;
+                    case "newsfeed_photo_attachments":
+                        sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
+                        break;
+                    case "group_avatars":
+                        sendMessage(HandlerMessages.GROUP_AVATARS, where);
+                        break;
+                    case "wall_photo_attachments":
+                        sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
+                        break;
+                    case "wall_avatars":
+                        sendMessage(HandlerMessages.WALL_AVATARS, where);
+                        break;
+                    case "friend_avatars":
+                        sendMessage(HandlerMessages.FRIEND_AVATARS, where);
+                        break;
+                    case "comment_avatars":
+                        sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                        break;
+                    case "original_photos":
+                        sendMessage(HandlerMessages.ORIGINAL_PHOTO, where);
+                        break;
                 }
             }
         };

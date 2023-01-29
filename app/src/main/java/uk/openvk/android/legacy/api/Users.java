@@ -84,11 +84,11 @@ public class Users implements Parcelable {
     }
 
     public void getUser(OvkAPIWrapper ovk, long user_id) {
-        ovk.sendAPIMethod("Users.get", String.format("user_ids=%d&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", user_id));
+        ovk.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", user_id));
     }
 
     public void getAccountUser(OvkAPIWrapper ovk, long user_id) {
-        ovk.sendAPIMethod("Users.get", String.format("user_ids=%d&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", user_id), "account_user");
+        ovk.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", user_id), "account_user");
     }
 
     public void getPeerUsers(OvkAPIWrapper ovk, ArrayList<Conversation> conversations) {
@@ -99,7 +99,7 @@ public class Users implements Parcelable {
         StringBuilder ids_list = new StringBuilder();
         for(int i = 0; i < user_ids.size(); i++) {
             if(i < user_ids.size() - 1) {
-                ids_list.append(String.format("%d,", user_ids.get(i)));
+                ids_list.append(String.format("%s,", user_ids.get(i)));
             } else {
                 ids_list.append(user_ids.get(i));
             }
@@ -111,12 +111,12 @@ public class Users implements Parcelable {
         StringBuilder ids_list = new StringBuilder();
         for(int i = 0; i < user_ids.size(); i++) {
             if(i < user_ids.size() - 1) {
-                ids_list.append(String.format("%d,", user_ids.get(i)));
+                ids_list.append(String.format("%s,", user_ids.get(i)));
             } else {
                 ids_list.append(user_ids.get(i));
             }
         }
-        ovk.sendAPIMethod("Users.get", String.format("user_ids=%d&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", ids_list.toString()));
+        ovk.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city", ids_list.toString()));
     }
 
     public ArrayList<User> getList() {

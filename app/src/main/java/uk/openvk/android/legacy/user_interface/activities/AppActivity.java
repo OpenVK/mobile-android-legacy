@@ -4,18 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,13 +18,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,15 +31,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -66,23 +54,24 @@ import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.Friends;
 import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Likes;
+import uk.openvk.android.legacy.api.Messages;
+import uk.openvk.android.legacy.api.Newsfeed;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Group;
-import uk.openvk.android.legacy.api.models.LongPollServer;
-import uk.openvk.android.legacy.api.Messages;
-import uk.openvk.android.legacy.api.Newsfeed;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.models.Friend;
+import uk.openvk.android.legacy.api.models.Group;
+import uk.openvk.android.legacy.api.models.LongPollServer;
 import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.models.User;
-import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.longpoll_api.MessageEvent;
+import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
+import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.longpoll_api.LongPollService;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.user_interface.OvkAlertDialog;
 import uk.openvk.android.legacy.user_interface.layouts.ActionBarImitation;
@@ -100,11 +89,10 @@ import uk.openvk.android.legacy.user_interface.layouts.TabSelector;
 import uk.openvk.android.legacy.user_interface.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.user_interface.layouts.WallLayout;
 import uk.openvk.android.legacy.user_interface.list_adapters.SlidingMenuAdapter;
-import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.user_interface.list_items.SlidingMenuItem;
-import uk.openvk.android.legacy.longpoll_api.LongPollService;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
+@SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends Activity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
@@ -136,18 +124,15 @@ public class AppActivity extends Activity {
     private Menu activity_menu;
     private GroupsLayout groupsLayout;
     private int newsfeed_count = 25;
-    private int notification_id = 200;
     private String last_longpoll_response;
     private int item_pos;
     private int poll_answer;
     private uk.openvk.android.legacy.api.wrappers.NotificationManager notifMan;
-    private NotificationChannel notifChannel;
     private boolean inBackground;
     private ActionBarLayout ab_layout;
     private int menu_id;
     private ActionBarImitation actionBarImitation;
     private LongPollReceiver lpReceiver;
-    private Parcelable recyclerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -444,12 +429,12 @@ public class AppActivity extends Activity {
     }
 
     private void installLayouts() {
-        progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
-        errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        profileLayout = (ProfileLayout) findViewById(R.id.profile_layout);
-        newsfeedLayout = (NewsfeedLayout) findViewById(R.id.newsfeed_layout);
-        friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
-        groupsLayout = (GroupsLayout) findViewById(R.id.groups_layout);
+        progressLayout = findViewById(R.id.progress_layout);
+        errorLayout = findViewById(R.id.error_layout);
+        profileLayout = findViewById(R.id.profile_layout);
+        newsfeedLayout = findViewById(R.id.newsfeed_layout);
+        friendsLayout = findViewById(R.id.friends_layout);
+        groupsLayout = findViewById(R.id.groups_layout);
         ProfileWallSelector selector = profileLayout.findViewById(R.id.wall_selector);
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -474,7 +459,7 @@ public class AppActivity extends Activity {
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
         }
-        conversationsLayout = (ConversationsLayout) findViewById(R.id.conversations_layout);
+        conversationsLayout = findViewById(R.id.conversations_layout);
         progressLayout.setVisibility(View.VISIBLE);
         newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -482,7 +467,7 @@ public class AppActivity extends Activity {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
-            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+            actionBarImitation = findViewById(R.id.actionbar_imitation);
             ab_layout = actionBarImitation.getLayout();
             ab_layout.createSpinnerAdapter(this);
         }
@@ -507,11 +492,11 @@ public class AppActivity extends Activity {
 
     private void createActionPopupMenu(final Menu menu, boolean enable) {
         if(enable) {
-            final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+            final View menu_container = getLayoutInflater().inflate(R.layout.popup_menu, null);
             final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             popupMenu.setOutsideTouchable(true);
             popupMenu.setFocusable(true);
-            final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
+            final ListView menu_list = popupMenu.getContentView().findViewById(R.id.popup_menulist);
             actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
                 @SuppressLint("RtlHardcoded")
                 @Override
@@ -535,7 +520,7 @@ public class AppActivity extends Activity {
                     popupMenu.dismiss();
                 }
             });
-            ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
+            (popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     popupMenu.dismiss();
@@ -991,7 +976,7 @@ public class AppActivity extends Activity {
                     progressLayout.setVisibility(View.GONE);
                     friendsLayout.setVisibility(View.VISIBLE);
                 }
-                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%d)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
+                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%s)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
                 friendsLayout.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.GROUPS_GET) {
                 groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, true);
@@ -1408,8 +1393,7 @@ public class AppActivity extends Activity {
                 intent.putExtra("contains_poll", contains_poll);
                 intent.putExtra("contains_photo", contains_photo);
                 if (item.repost != null) {
-                    is_repost = true;
-                    intent.putExtra("is_repost", is_repost);
+                    intent.putExtra("is_repost", true);
                     intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
                     intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
                     intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
@@ -1417,7 +1401,7 @@ public class AppActivity extends Activity {
                     intent.putExtra("repost_info", item.repost.newsfeed_item.info);
                     intent.putExtra("repost_text", item.repost.newsfeed_item.text);
                 } else {
-                    intent.putExtra("is_repost", is_repost);
+                    intent.putExtra("is_repost", false);
                 }
                 startActivity(intent);
             } catch (Exception ex) {
@@ -1583,10 +1567,10 @@ public class AppActivity extends Activity {
         }
         try {
             if (global_prefs.getString("current_screen", "").equals("profile")) {
-                intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
+                intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
                         item.owner_id, item.post_id));
             } else {
-                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getCacheDir(),
                         item.owner_id, item.post_id));
             }
             if(item.attachments != null) {

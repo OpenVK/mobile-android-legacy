@@ -56,18 +56,17 @@ import uk.openvk.android.legacy.user_interface.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Error;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("deprecation")
 public class OvkAPIWrapper {
 
     public String server;
-    public boolean use_https;
-    public boolean legacy_mode;
+    private boolean use_https;
+    private boolean legacy_mode;
     public boolean proxy_connection;
     public String proxy_type;
     private String status;
     public Error error;
     private Context ctx;
-    private Handler handler;
     private String access_token;
 
     private OkHttpClient httpClient = null;
@@ -135,7 +134,7 @@ public class OvkAPIWrapper {
 
     private String generateUserAgent(Context ctx) {
         String version_name = "";
-        String user_agent = "";
+        String user_agent;
         try {
             PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getApplicationContext().getPackageName(), 0);
             version_name = packageInfo.versionName;
@@ -143,7 +142,7 @@ public class OvkAPIWrapper {
             OvkApplication app = ((OvkApplication) ctx.getApplicationContext());
             version_name = app.version;
         } finally {
-            user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %d; %s; %s %s; %s)", version_name,
+            user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %s; %s; %s %s; %s)", version_name,
                     Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language"));
         }
         return user_agent;
@@ -163,7 +162,7 @@ public class OvkAPIWrapper {
 
     public void authorize(String username, String password) {
         error.description = "";
-        String url = "";
+        String url;
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), client_name);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s... (Secured)", server));
@@ -175,13 +174,11 @@ public class OvkAPIWrapper {
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
-            StatusLine statusLine = null;
             int response_code = 0;
-            boolean isHttps = false;
             private String response_body = "";
 
             @Override
-            public void run() {
+            public void run() throws OutOfMemoryError {
                 try {
                     if (legacy_mode) {
                         request_legacy = new HttpGet(fUrl);
@@ -213,21 +210,16 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
                             } else if (response_code == 200) {
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
-                            } else if (response_code == 503) {
+                            } else if (response_code == 502) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
-                            }  else if (response_code == 503) {
+                            } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
                             } else {
                                 sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                             }
                         }
                         ;
-                    } catch (ProtocolException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (ConnectException e) {
+                    } catch (ProtocolException | UnknownHostException | ConnectException e) {
                         if (logging_enabled)
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
@@ -237,32 +229,6 @@ public class OvkAPIWrapper {
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
-                    } catch (UnknownHostException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (javax.net.ssl.SSLProtocolException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (javax.net.ssl.SSLHandshakeException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (javax.net.ssl.SSLException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (OutOfMemoryError e) {
-                        e.printStackTrace();
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                     } catch (Exception e) {
                         e.printStackTrace();
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
@@ -279,7 +245,7 @@ public class OvkAPIWrapper {
 
     public void authorize(String username, String password, String code) {
         error.description = "";
-        String url = "";
+        String url;
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s (Secured)...", server));
@@ -335,12 +301,7 @@ public class OvkAPIWrapper {
                             }
                         }
                         ;
-                    } catch (ProtocolException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (ConnectException e) {
+                    } catch (ProtocolException | ConnectException | javax.net.ssl.SSLProtocolException | UnknownHostException e) {
                         if (logging_enabled)
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
@@ -350,32 +311,11 @@ public class OvkAPIWrapper {
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
-                    } catch (UnknownHostException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (javax.net.ssl.SSLProtocolException e) {
+                    } catch (javax.net.ssl.SSLException | OutOfMemoryError e) {
                         if (logging_enabled)
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (javax.net.ssl.SSLHandshakeException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (javax.net.ssl.SSLException e) {
-                        if (logging_enabled)
-                            Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (OutOfMemoryError e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                        e.printStackTrace();
                     } catch (Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
@@ -392,7 +332,7 @@ public class OvkAPIWrapper {
 
     public void sendAPIMethod(final String method, final String args, final String where) {
         error.description = "";
-        String url = "";
+        String url;
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
             if(logging_enabled) Log.v("OpenVK API", String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
@@ -433,122 +373,171 @@ public class OvkAPIWrapper {
                         if (response_body.length() > 0) {
                             if (response_code == 200) {
                                 if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                                if (method.equals("Account.getProfileInfo")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
-                                } else if (method.equals("Account.setOnline")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
-                                } else if (method.equals("Account.setOffline")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
-                                } else if (method.equals("Account.getCounters")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
-                                } else if (method.equals("Friends.get")) {
-                                    if (where.equals("friends_list")) {
-                                        sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                    } else if (where.equals("profile_counter")) {
-                                        sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
-                                    } else if(where.equals("more_friends")) {
-                                        sendMessage(HandlerMessages.FRIENDS_GET_MORE, method, args, response_body);
-                                    }
-                                } else if (method.equals("Friends.get")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                } else if (method.equals("Friends.add")) {
-                                    sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
-                                } else if (method.equals("Friends.delete")) {
-                                    sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
-                                } else if (method.equals("Friends.areFriends")) {
-                                    sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
-                                } else if (method.equals("Friends.getRequests")) {
-                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
-                                } else if (method.equals("Groups.get")) {
-                                    if(where.equals("more_groups")) {
-                                        sendMessage(HandlerMessages.GROUPS_GET_MORE, method, args, response_body);
-                                    } else {
-                                        sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
-                                    }
-                                } else if (method.equals("Groups.getById")) {
-                                    sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
-                                } else if (method.equals("Groups.search")) {
-                                    sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                                } else if (method.equals("Groups.join")) {
-                                    sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                                } else if (method.equals("Groups.leave")) {
-                                    sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                                } else if (method.equals("Likes.add")) {
-                                    sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
-                                } else if (method.equals("Likes.delete")) {
-                                    sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
-                                } else if (method.equals("Likes.isLiked")) {
-                                    sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
-                                } else if (method.equals("Messages.getById")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
-                                } else if (method.equals("Messages.send")) {
-                                    sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
-                                } else if (method.equals("Messages.delete")) {
-                                    sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
-                                } else if (method.equals("Messages.restore")) {
-                                    sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
-                                } else if (method.equals("Messages.getConverstaions")) {
-                                    sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
-                                } else if (method.equals("Messages.getConverstaionsByID")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
-                                } else if (method.equals("Messages.getHistory")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
-                                } else if (method.equals("Messages.getLongPollHistory")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
-                                } else if (method.equals("Messages.getLongPollServer")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
-                                } else if (method.equals("Ovk.version")) {
-                                    sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
-                                } else if (method.equals("Ovk.test")) {
-                                    sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
-                                } else if (method.equals("Ovk.chickenWings")) {
-                                    sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
-                                } else if (method.equals("Ovk.aboutInstance")) {
-                                    sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
-                                } else if (method.equals("Users.getFollowers")) {
-                                    sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
-                                } else if (method.equals("Users.search")) {
-                                    sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
-                                } else if (method.equals("Users.get")) {
-                                    if (where.equals("profile")) {
-                                        sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                                    } else if (where.equals("account_user")) {
-                                        sendMessage(HandlerMessages.USERS_GET_ALT, method, args, response_body);
-                                    } else if (where.equals("peers")) {
-                                        sendMessage(HandlerMessages.USERS_GET_ALT2, method, args, response_body);
-                                    }
-                                } else if (method.equals("Wall.get")) {
-                                    sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
-                                } else if (method.equals("Wall.getById")) {
-                                    sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
-                                } else if (method.equals("Wall.post")) {
-                                    sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
-                                } else if (method.equals("Wall.repost")) {
-                                    sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
-                                } else if (method.equals("Wall.createComment")) {
-                                    sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, args, response_body);
-                                } else if (method.equals("Wall.createComment")) {
-                                    sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
-                                } else if (method.equals("Wall.getComment")) {
-                                    sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
-                                } else if (method.equals("Wall.getComments")) {
-                                    sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
-                                } else if (method.equals("Newsfeed.get")) {
-                                    if(where.equals("more_news")) {
-                                        sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
-                                    } else {
-                                        sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
-                                    }
-                                } else if (method.equals("Newsfeed.getGlobal")) {
-                                    if(where.equals("more_news")) {
-                                        sendMessage(HandlerMessages.NEWSFEED_GET_MORE_GLOBAL, method, args, response_body);
-                                    } else {
-                                        sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
-                                    }
-                                } else if (method.equals("Polls.addVote")) {
-                                    sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
-                                } else if (method.equals("Polls.deleteVote")) {
-                                    sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
+                                switch (method) {
+                                    case "Account.getProfileInfo":
+                                        sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
+                                        break;
+                                    case "Account.setOnline":
+                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
+                                        break;
+                                    case "Account.setOffline":
+                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
+                                        break;
+                                    case "Account.getCounters":
+                                        sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
+                                        break;
+                                    case "Friends.get":
+                                        switch (where) {
+                                            case "friends_list":
+                                                sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
+                                                break;
+                                            case "profile_counter":
+                                                sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
+                                                break;
+                                            case "more_friends":
+                                                sendMessage(HandlerMessages.FRIENDS_GET_MORE, method, args, response_body);
+                                                break;
+                                        }
+                                        break;
+                                    case "Friends.add":
+                                        sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
+                                        break;
+                                    case "Friends.delete":
+                                        sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
+                                        break;
+                                    case "Friends.areFriends":
+                                        sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
+                                        break;
+                                    case "Friends.getRequests":
+                                        sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
+                                        break;
+                                    case "Groups.get":
+                                        if (where.equals("more_groups")) {
+                                            sendMessage(HandlerMessages.GROUPS_GET_MORE, method, args, response_body);
+                                        } else {
+                                            sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                        }
+                                        break;
+                                    case "Groups.getById":
+                                        sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Groups.search":
+                                        sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                                        break;
+                                    case "Groups.join":
+                                        sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                                        break;
+                                    case "Groups.leave":
+                                        sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
+                                        break;
+                                    case "Likes.add":
+                                        sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
+                                        break;
+                                    case "Likes.delete":
+                                        sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
+                                        break;
+                                    case "Likes.isLiked":
+                                        sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
+                                        break;
+                                    case "Messages.getById":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Messages.send":
+                                        sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
+                                        break;
+                                    case "Messages.delete":
+                                        sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
+                                        break;
+                                    case "Messages.restore":
+                                        sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
+                                        break;
+                                    case "Messages.getConverstaions":
+                                        sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
+                                        break;
+                                    case "Messages.getConverstaionsByID":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Messages.getHistory":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
+                                        break;
+                                    case "Messages.getLongPollHistory":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
+                                        break;
+                                    case "Messages.getLongPollServer":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
+                                        break;
+                                    case "Ovk.version":
+                                        sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
+                                        break;
+                                    case "Ovk.test":
+                                        sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
+                                        break;
+                                    case "Ovk.chickenWings":
+                                        sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
+                                        break;
+                                    case "Ovk.aboutInstance":
+                                        sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
+                                        break;
+                                    case "Users.getFollowers":
+                                        sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
+                                        break;
+                                    case "Users.search":
+                                        sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
+                                        break;
+                                    case "Users.get":
+                                        switch (where) {
+                                            case "profile":
+                                                sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
+                                                break;
+                                            case "account_user":
+                                                sendMessage(HandlerMessages.USERS_GET_ALT, method, args, response_body);
+                                                break;
+                                            case "peers":
+                                                sendMessage(HandlerMessages.USERS_GET_ALT2, method, args, response_body);
+                                                break;
+                                        }
+                                        break;
+                                    case "Wall.get":
+                                        sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
+                                        break;
+                                    case "Wall.getById":
+                                        sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Wall.post":
+                                        sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
+                                        break;
+                                    case "Wall.repost":
+                                        sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
+                                        break;
+                                    case "Wall.createComment":
+                                        sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
+                                        break;
+                                    case "Wall.getComment":
+                                        sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
+                                        break;
+                                    case "Wall.getComments":
+                                        sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
+                                        break;
+                                    case "Newsfeed.get":
+                                        if (where.equals("more_news")) {
+                                            sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
+                                        } else {
+                                            sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                        }
+                                        break;
+                                    case "Newsfeed.getGlobal":
+                                        if (where.equals("more_news")) {
+                                            sendMessage(HandlerMessages.NEWSFEED_GET_MORE_GLOBAL, method, args, response_body);
+                                        } else {
+                                            sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
+                                        }
+                                        break;
+                                    case "Polls.addVote":
+                                        sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
+                                        break;
+                                    case "Polls.deleteVote":
+                                        sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
+                                        break;
                                 }
                             } else if (response_code == 400) {
                                 error = new Error();
@@ -569,12 +558,8 @@ public class OvkAPIWrapper {
                                 if(logging_enabled) Log.e("OpenVK API", String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
-                        };
-                    } catch (ConnectException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (ProtocolException e) {
+                        }
+                    } catch (ConnectException | ProtocolException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
@@ -592,25 +577,11 @@ public class OvkAPIWrapper {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
-                    } catch(javax.net.ssl.SSLProtocolException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch(javax.net.ssl.SSLHandshakeException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch(javax.net.ssl.SSLException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (OutOfMemoryError e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                        e.printStackTrace();
-                    } catch (Exception e) {
+                    } catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
                     }
@@ -667,102 +638,139 @@ public class OvkAPIWrapper {
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
                                 if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                                if (method.equals("Account.getProfileInfo")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
-                                } else if (method.equals("Account.setOnline")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
-                                } else if (method.equals("Account.setOffline")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
-                                } else if (method.equals("Account.getCounters")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
-                                } else if (method.equals("Friends.get")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                } else if (method.equals("Friends.get")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                } else if (method.equals("Friends.add")) {
-                                    sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
-                                } else if (method.equals("Friends.delete")) {
-                                    sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
-                                } else if (method.equals("Friends.areFriends")) {
-                                    sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
-                                }  else if (method.equals("Friends.getRequests")) {
-                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
-                                } else if (method.equals("Groups.get")) {
-                                    sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
-                                } else if (method.equals("Groups.getById")) {
-                                    sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
-                                } else if (method.equals("Groups.search")) {
-                                    sendMessage(HandlerMessages.GROUPS_SEARCH, method, args, response_body);
-                                } else if (method.equals("Groups.join")) {
-                                    sendMessage(HandlerMessages.GROUPS_JOIN, method, args, response_body);
-                                } else if (method.equals("Groups.leave")) {
-                                    sendMessage(HandlerMessages.GROUPS_LEAVE, method, args, response_body);
-                                } else if (method.equals("Friends.getRequests")) {
-                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
-                                } else if (method.equals("Likes.add")) {
-                                    sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
-                                } else if (method.equals("Likes.delete")) {
-                                    sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
-                                } else if (method.equals("Likes.isLiked")) {
-                                    sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
-                                } else if (method.equals("Messages.getById")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
-                                } else if (method.equals("Messages.send")) {
-                                    sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
-                                } else if (method.equals("Messages.delete")) {
-                                    sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
-                                } else if (method.equals("Messages.restore")) {
-                                    sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
-                                } else if (method.equals("Messages.getConversations")) {
-                                    sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
-                                } else if (method.equals("Messages.getConverstaionsByID")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
-                                } else if (method.equals("Messages.getHistory")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
-                                } else if (method.equals("Messages.getLongPollHistory")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
-                                } else if (method.equals("Messages.getLongPollServer")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
-                                } else if (method.equals("Ovk.version")) {
-                                    sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
-                                } else if (method.equals("Ovk.test")) {
-                                    sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
-                                } else if (method.equals("Ovk.chickenWings")) {
-                                    sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
-                                } else if (method.equals("Ovk.aboutInstance")) {
-                                    sendMessage(HandlerMessages.OVK_ABOUTINSTANCE,  method, args, response_body);
-                                } else if (method.equals("Users.get")) {
-                                    sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                                } else if (method.equals("Users.getFollowers")) {
-                                    sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
-                                } else if (method.equals("Users.search")) {
-                                    sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
-                                } else if (method.equals("Users.get")) {
-                                    sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                                } else if (method.equals("Wall.get")) {
-                                    sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
-                                } else if (method.equals("Wall.getById")) {
-                                    sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
-                                } else if (method.equals("Wall.post")) {
-                                    sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
-                                } else if (method.equals("Wall.repost")) {
-                                    sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
-                                } else if (method.equals("Wall.createComment")) {
-                                    sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, args, response_body);
-                                } else if (method.equals("Wall.createComment")) {
-                                    sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
-                                } else if (method.equals("Wall.getComment")) {
-                                    sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
-                                } else if (method.equals("Wall.getComments")) {
-                                    sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
-                                } else if (method.equals("Newsfeed.get")) {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
-                                } else if (method.equals("Newsfeed.getGlobal")) {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
-                                } else if (method.equals("Polls.addVote")) {
-                                    sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
-                                } else if (method.equals("Polls.deleteVote")) {
-                                    sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
+                                switch (method) {
+                                    case "Account.getProfileInfo":
+                                        sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
+                                        break;
+                                    case "Account.setOnline":
+                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
+                                        break;
+                                    case "Account.setOffline":
+                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
+                                        break;
+                                    case "Account.getCounters":
+                                        sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
+                                        break;
+                                    case "Friends.get":
+                                        sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
+                                        break;
+                                    case "Friends.add":
+                                        sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
+                                        break;
+                                    case "Friends.delete":
+                                        sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
+                                        break;
+                                    case "Friends.areFriends":
+                                        sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
+                                        break;
+                                    case "Groups.get":
+                                        sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
+                                        break;
+                                    case "Groups.getById":
+                                        sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Groups.search":
+                                        sendMessage(HandlerMessages.GROUPS_SEARCH, method, args, response_body);
+                                        break;
+                                    case "Groups.join":
+                                        sendMessage(HandlerMessages.GROUPS_JOIN, method, args, response_body);
+                                        break;
+                                    case "Groups.leave":
+                                        sendMessage(HandlerMessages.GROUPS_LEAVE, method, args, response_body);
+                                        break;
+                                    case "Friends.getRequests":
+                                        sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
+                                        break;
+                                    case "Likes.add":
+                                        sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
+                                        break;
+                                    case "Likes.delete":
+                                        sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
+                                        break;
+                                    case "Likes.isLiked":
+                                        sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
+                                        break;
+                                    case "Messages.getById":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Messages.send":
+                                        sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
+                                        break;
+                                    case "Messages.delete":
+                                        sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
+                                        break;
+                                    case "Messages.restore":
+                                        sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
+                                        break;
+                                    case "Messages.getConversations":
+                                        sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
+                                        break;
+                                    case "Messages.getConverstaionsByID":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Messages.getHistory":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
+                                        break;
+                                    case "Messages.getLongPollHistory":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
+                                        break;
+                                    case "Messages.getLongPollServer":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
+                                        break;
+                                    case "Ovk.version":
+                                        sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
+                                        break;
+                                    case "Ovk.test":
+                                        sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
+                                        break;
+                                    case "Ovk.chickenWings":
+                                        sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
+                                        break;
+                                    case "Ovk.aboutInstance":
+                                        sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
+                                        break;
+                                    case "Users.getFollowers":
+                                        sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
+                                        break;
+                                    case "Users.search":
+                                        sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
+                                        break;
+                                    case "Users.get":
+                                        sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
+                                        break;
+                                    case "Wall.get":
+                                        sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
+                                        break;
+                                    case "Wall.getById":
+                                        sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Wall.post":
+                                        sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
+                                        break;
+                                    case "Wall.repost":
+                                        sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
+                                        break;
+                                    case "Wall.createComment":
+                                        sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
+                                        break;
+                                    case "Wall.getComment":
+                                        sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
+                                        break;
+                                    case "Wall.getComments":
+                                        sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
+                                        break;
+                                    case "Newsfeed.get":
+                                        sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
+                                        break;
+                                    case "Newsfeed.getGlobal":
+                                        sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
+                                        break;
+                                    case "Polls.addVote":
+                                        sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
+                                        break;
+                                    case "Polls.deleteVote":
+                                        sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
+                                        break;
                                 }
                             } else if(response_code == 400) {
                                 error = new Error();
@@ -786,11 +794,7 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
                         };
-                    } catch (ConnectException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
-                    } catch (ProtocolException e) {
+                    } catch (ConnectException | ProtocolException | UnknownHostException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
@@ -804,29 +808,11 @@ public class OvkAPIWrapper {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
-                    } catch (UnknownHostException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
-                    } catch(javax.net.ssl.SSLProtocolException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, error.description);
-                    } catch(javax.net.ssl.SSLHandshakeException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, error.description);
                     } catch(javax.net.ssl.SSLException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, error.description);
-                    } catch (OutOfMemoryError e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
-                        e.printStackTrace();
-                    } catch (Exception e) {
+                    } catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
                         e.printStackTrace();
                     }
@@ -883,100 +869,139 @@ public class OvkAPIWrapper {
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
                                 if(logging_enabled) Log.v("OpenVK API", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                                if (method.equals("Account.getProfileInfo")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, response_body);
-                                } else if (method.equals("Account.setOnline")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, response_body);
-                                } else if (method.equals("Account.setOffline")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, response_body);
-                                } else if (method.equals("Account.getCounters")) {
-                                    sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, response_body);
-                                } else if (method.equals("Friends.get")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
-                                } else if (method.equals("Friends.get")) {
-                                    sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
-                                } else if (method.equals("Friends.add")) {
-                                    sendMessage(HandlerMessages.FRIENDS_ADD, method, response_body);
-                                } else if (method.equals("Friends.delete")) {
-                                    sendMessage(HandlerMessages.FRIENDS_DELETE, method, response_body);
-                                } else if (method.equals("Friends.areFriends")) {
-                                    sendMessage(HandlerMessages.FRIENDS_CHECK, method, response_body);
-                                } else if (method.equals("Friends.getRequests")) {
-                                    sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, response_body);
-                                } else if (method.equals("Groups.get")) {
-                                    sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
-                                } else if (method.equals("Groups.getById")) {
-                                    sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
-                                } else if (method.equals("Groups.search")) {
-                                    sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                                } else if (method.equals("Groups.join")) {
-                                    sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                                } else if (method.equals("Groups.leave")) {
-                                    sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                                } else if (method.equals("Likes.add")) {
-                                    sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
-                                } else if (method.equals("Likes.delete")) {
-                                    sendMessage(HandlerMessages.LIKES_DELETE, method, response_body);
-                                } else if (method.equals("Likes.isLiked")) {
-                                    sendMessage(HandlerMessages.LIKES_CHECK, method, response_body);
-                                } else if (method.equals("Messages.getById")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, response_body);
-                                } else if (method.equals("Messages.send")) {
-                                    sendMessage(HandlerMessages.MESSAGES_SEND, method, response_body);
-                                } else if (method.equals("Messages.delete")) {
-                                    sendMessage(HandlerMessages.MESSAGES_DELETE, method, response_body);
-                                } else if (method.equals("Messages.restore")) {
-                                    sendMessage(HandlerMessages.MESSAGES_RESTORE, method, response_body);
-                                } else if (method.equals("Messages.getConverstaions")) {
-                                    sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, response_body);
-                                } else if (method.equals("Messages.getConverstaionsByID")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, response_body);
-                                } else if (method.equals("Messages.getHistory")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, response_body);
-                                } else if (method.equals("Messages.getLongPollHistory")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, response_body);
-                                } else if (method.equals("Messages.getLongPollServer")) {
-                                    sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, response_body);
-                                } else if (method.equals("Ovk.version")) {
-                                    sendMessage(HandlerMessages.OVK_VERSION, method, response_body);
-                                } else if (method.equals("Ovk.test")) {
-                                    sendMessage(HandlerMessages.OVK_TEST, method, response_body);
-                                } else if (method.equals("Ovk.chickenWings")) {
-                                    sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, response_body);
-                                } else if (method.equals("Ovk.aboutInstance")) {
-                                    sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, response_body);
-                                } else if (method.equals("Users.get")) {
-                                    sendMessage(HandlerMessages.USERS_GET, method, response_body);
-                                } else if (method.equals("Users.getFollowers")) {
-                                    sendMessage(HandlerMessages.USERS_FOLLOWERS, method, response_body);
-                                } else if (method.equals("Users.search")) {
-                                    sendMessage(HandlerMessages.USERS_SEARCH, method, response_body);
-                                } else if (method.equals("Users.get")) {
-                                    sendMessage(HandlerMessages.USERS_GET, method, response_body);
-                                } else if (method.equals("Wall.get")) {
-                                    sendMessage(HandlerMessages.WALL_GET, method, response_body);
-                                } else if (method.equals("Wall.getById")) {
-                                    sendMessage(HandlerMessages.WALL_GET_BY_ID, method, response_body);
-                                } else if (method.equals("Wall.post")) {
-                                    sendMessage(HandlerMessages.WALL_POST, method, response_body);
-                                } else if (method.equals("Wall.repost")) {
-                                    sendMessage(HandlerMessages.WALL_REPOST, method, response_body);
-                                } else if (method.equals("Wall.createComment")) {
-                                    sendMessage(HandlerMessages.WALL_CREATE_COMMENT, method, response_body);
-                                } else if (method.equals("Wall.createComment")) {
-                                    sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, response_body);
-                                } else if (method.equals("Wall.getComment")) {
-                                    sendMessage(HandlerMessages.WALL_COMMENT, method, response_body);
-                                } else if (method.equals("Wall.getComments")) {
-                                    sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
-                                } else if (method.equals("Newsfeed.get")) {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
-                                } else if (method.equals("Newsfeed.getGlobal")) {
-                                    sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, response_body);
-                                } else if (method.equals("Polls.addVote")) {
-                                    sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
-                                } else if (method.equals("Polls.deleteVote")) {
-                                    sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, response_body);
+                                switch (method) {
+                                    case "Account.getProfileInfo":
+                                        sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, response_body);
+                                        break;
+                                    case "Account.setOnline":
+                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, response_body);
+                                        break;
+                                    case "Account.setOffline":
+                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, response_body);
+                                        break;
+                                    case "Account.getCounters":
+                                        sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, response_body);
+                                        break;
+                                    case "Friends.get":
+                                        sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
+                                        break;
+                                    case "Friends.add":
+                                        sendMessage(HandlerMessages.FRIENDS_ADD, method, response_body);
+                                        break;
+                                    case "Friends.delete":
+                                        sendMessage(HandlerMessages.FRIENDS_DELETE, method, response_body);
+                                        break;
+                                    case "Friends.areFriends":
+                                        sendMessage(HandlerMessages.FRIENDS_CHECK, method, response_body);
+                                        break;
+                                    case "Friends.getRequests":
+                                        sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, response_body);
+                                        break;
+                                    case "Groups.get":
+                                        sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
+                                        break;
+                                    case "Groups.getById":
+                                        sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
+                                        break;
+                                    case "Groups.search":
+                                        sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
+                                        break;
+                                    case "Groups.join":
+                                        sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
+                                        break;
+                                    case "Groups.leave":
+                                        sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
+                                        break;
+                                    case "Likes.add":
+                                        sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
+                                        break;
+                                    case "Likes.delete":
+                                        sendMessage(HandlerMessages.LIKES_DELETE, method, response_body);
+                                        break;
+                                    case "Likes.isLiked":
+                                        sendMessage(HandlerMessages.LIKES_CHECK, method, response_body);
+                                        break;
+                                    case "Messages.getById":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, response_body);
+                                        break;
+                                    case "Messages.send":
+                                        sendMessage(HandlerMessages.MESSAGES_SEND, method, response_body);
+                                        break;
+                                    case "Messages.delete":
+                                        sendMessage(HandlerMessages.MESSAGES_DELETE, method, response_body);
+                                        break;
+                                    case "Messages.restore":
+                                        sendMessage(HandlerMessages.MESSAGES_RESTORE, method, response_body);
+                                        break;
+                                    case "Messages.getConverstaions":
+                                        sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, response_body);
+                                        break;
+                                    case "Messages.getConverstaionsByID":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, response_body);
+                                        break;
+                                    case "Messages.getHistory":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, response_body);
+                                        break;
+                                    case "Messages.getLongPollHistory":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, response_body);
+                                        break;
+                                    case "Messages.getLongPollServer":
+                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, response_body);
+                                        break;
+                                    case "Ovk.version":
+                                        sendMessage(HandlerMessages.OVK_VERSION, method, response_body);
+                                        break;
+                                    case "Ovk.test":
+                                        sendMessage(HandlerMessages.OVK_TEST, method, response_body);
+                                        break;
+                                    case "Ovk.chickenWings":
+                                        sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, response_body);
+                                        break;
+                                    case "Ovk.aboutInstance":
+                                        sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, response_body);
+                                        break;
+                                    case "Users.getFollowers":
+                                        sendMessage(HandlerMessages.USERS_FOLLOWERS, method, response_body);
+                                        break;
+                                    case "Users.search":
+                                        sendMessage(HandlerMessages.USERS_SEARCH, method, response_body);
+                                        break;
+                                    case "Users.get":
+                                        sendMessage(HandlerMessages.USERS_GET, method, response_body);
+                                        break;
+                                    case "Wall.get":
+                                        sendMessage(HandlerMessages.WALL_GET, method, response_body);
+                                        break;
+                                    case "Wall.getById":
+                                        sendMessage(HandlerMessages.WALL_GET_BY_ID, method, response_body);
+                                        break;
+                                    case "Wall.post":
+                                        sendMessage(HandlerMessages.WALL_POST, method, response_body);
+                                        break;
+                                    case "Wall.repost":
+                                        sendMessage(HandlerMessages.WALL_REPOST, method, response_body);
+                                        break;
+                                    case "Wall.createComment":
+                                        sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, response_body);
+                                        break;
+                                    case "Wall.getComment":
+                                        sendMessage(HandlerMessages.WALL_COMMENT, method, response_body);
+                                        break;
+                                    case "Wall.getComments":
+                                        sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
+                                        break;
+                                    case "Newsfeed.get":
+                                        sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
+                                        break;
+                                    case "Newsfeed.getGlobal":
+                                        sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, response_body);
+                                        break;
+                                    case "Polls.addVote":
+                                        sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
+                                        break;
+                                    case "Polls.deleteVote":
+                                        sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, response_body);
+                                        break;
                                 }
                             } else if(response_code == 400) {
                                 error = new Error();
@@ -1000,11 +1025,7 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
                         };
-                    } catch (ConnectException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (ProtocolException e) {
+                    } catch (ConnectException | ProtocolException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
@@ -1022,22 +1043,10 @@ public class OvkAPIWrapper {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
-                    } catch(javax.net.ssl.SSLProtocolException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch(javax.net.ssl.SSLHandshakeException e) {
-                        if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch(javax.net.ssl.SSLException e) {
                         if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (IOException e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                        e.printStackTrace();
-                        error.description = e.getMessage();
                     } catch (Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
@@ -1146,24 +1155,23 @@ public class OvkAPIWrapper {
     public void checkHTTPS() {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             BasicHttpParams basicHttpParams = new BasicHttpParams();
-            HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
-            HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
-            HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
-            HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
-            HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
+            HttpProtocolParams.setUseExpectContinue(basicHttpParams, false);
+            HttpProtocolParams.setUserAgent(basicHttpParams, generateUserAgent(ctx));
+            HttpConnectionParams.setSocketBufferSize(basicHttpParams, 8192);
+            HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);
+            HttpConnectionParams.setSoTimeout(basicHttpParams, 30000);
             SchemeRegistry schemeRegistry = new SchemeRegistry();
             if (use_https) {
                 schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
             } else {
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
             }
-            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+            httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
         } else {
-            if (use_https) {
+            if (use_https)
                 httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).followRedirects(false).followSslRedirects(true).build();
-            } else {
+            else
                 httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).followRedirects(false).followSslRedirects(false).build();
-            }
         }
         String url = "";
         url = String.format("http://%s", server);
@@ -1210,8 +1218,6 @@ public class OvkAPIWrapper {
                     if(logging_enabled) Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

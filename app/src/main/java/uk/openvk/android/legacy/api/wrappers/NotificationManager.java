@@ -61,7 +61,7 @@ public class NotificationManager {
         MessageEvent msg_event = new MessageEvent(data.getString("response"));
         if(msg_event.peer_id > 0 && notify) {
             if (!is_repeat) {
-                String msg_author = String.format("Unknown ID %d", msg_event.peer_id);
+                String msg_author = String.format("Unknown ID %s", msg_event.peer_id);
                 if(conversations != null) {
                     for (int i = 0; i < conversations.size(); i++) {
                         if (conversations.get(i).peer_id == msg_event.peer_id) {
@@ -101,8 +101,7 @@ public class NotificationManager {
                             .setChannelId("lp_updates");
             notification = builder.build();
             Intent notificationIntent = new Intent(ctx, ConversationActivity.class);
-            PendingIntent contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
-            notification.contentIntent = contentIntent;
+            notification.contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
         } else {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(ctx)
@@ -137,7 +136,6 @@ public class NotificationManager {
         notificationIntent.putExtra("peer_id", peer_id);
         notificationIntent.putExtra("conv_title", title);
         notificationIntent.putExtra("online", 1);
-        PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
-        return contentIntent;
+        return PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
     }
 }

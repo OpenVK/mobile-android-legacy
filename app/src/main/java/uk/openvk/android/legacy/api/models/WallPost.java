@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.models;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -30,6 +31,7 @@ public class WallPost implements Parcelable {
     public ArrayList<Attachment> attachments;
     public WallPostSource post_source;
 
+    @SuppressLint("SimpleDateFormat")
     public WallPost(String author, long dt_sec, RepostInfo repostInfo, String post_text, PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments, long o_id, long p_id, Context ctx) {
         name = author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));

@@ -49,7 +49,7 @@ public class NewPostActivity extends Activity {
     public long owner_id;
     public OvkAPIWrapper ovk_api;
     private Wall wall;
-    public static Handler handler;
+    public Handler handler;
     private long account_id;
     private String account_first_name;
 
@@ -108,9 +108,6 @@ public class NewPostActivity extends Activity {
             if(item.getItemId() == android.R.id.home) {
                 onBackPressed();
             }
-        }
-        if(item.getItemId() == R.id.newpost) {
-
         }
         return super.onMenuItemSelected(featureId, item);
     }
