@@ -55,7 +55,7 @@ public class ConversationsLayout extends LinearLayout {
                 if (conversation.avatar_url.length() > 0) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%d", getContext().getCacheDir(),
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/conversations_avatars/avatar_%s", getContext().getCacheDir(),
                             conversation.peer_id), options);
                     if (bitmap != null) {
                         conversation.avatar = bitmap;

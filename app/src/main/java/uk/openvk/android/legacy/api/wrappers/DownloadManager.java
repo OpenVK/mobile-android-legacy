@@ -379,7 +379,7 @@ public class DownloadManager {
                             StatusLine statusLine = response.getStatusLine();
                             response_in = response.getEntity().getContent();
                             content_length = response.getEntity().getContentLength();
-                            File downloadedFile = new File(ctx.getCacheDir(), String.format("%s/photos_cache/%s", ctx.getCacheDir(), where));
+                            File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;

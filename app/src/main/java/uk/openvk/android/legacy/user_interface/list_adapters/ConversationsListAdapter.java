@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.user_interface.list_adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ public class ConversationsListAdapter extends BaseAdapter {
         return ((Conversation) getItem(position));
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;

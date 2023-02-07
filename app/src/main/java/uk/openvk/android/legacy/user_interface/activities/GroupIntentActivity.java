@@ -488,7 +488,7 @@ public class GroupIntentActivity extends Activity {
     public void loadAvatar() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/group_avatars/avatar_%s", getCacheDir(), group.id), options);
+        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/group_avatars/avatar_%s", getCacheDir(), group.id), options);
         if (bitmap != null) {
             group.avatar = bitmap;
         } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0 || group.avatar_osize_url.length() > 0) {

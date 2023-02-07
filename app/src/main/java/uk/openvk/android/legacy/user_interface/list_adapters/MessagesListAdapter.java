@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.user_interface.list_adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -61,6 +62,7 @@ public class MessagesListAdapter extends BaseAdapter {
         return ((Message) getItem(position));
     }
 
+    @SuppressLint("SimpleDateFormat")
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         Message item = getMessagesListItem(position);
@@ -121,11 +123,11 @@ public class MessagesListAdapter extends BaseAdapter {
                 (view.findViewById(R.id.date_separator)).setVisibility(View.GONE);
             } else {
                 (view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
-                ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
+                ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("d MMMM yyyy").format(startOfDay));
             }
         } else {
             (view.findViewById(R.id.date_separator)).setVisibility(View.VISIBLE);
-            ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("dd MMMM yyyy").format(startOfDay));
+            ((TextView) (view.findViewById(R.id.date_separator)).findViewById(R.id.date_text)).setText(new SimpleDateFormat("d MMMM yyyy").format(startOfDay));
         }
         if(item.isIncoming) {
             (view.findViewById(R.id.incoming_msg)).setOnClickListener(new View.OnClickListener() {
