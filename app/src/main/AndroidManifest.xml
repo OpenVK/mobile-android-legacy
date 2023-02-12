@@ -22,7 +22,8 @@
         android:label="@string/app_name"
         android:theme="@style/BaseStyleNoTitle"
         android:largeHeap="true"
-        tools:ignore="UnusedAttribute">
+        tools:ignore="UnusedAttribute"
+        android:usesCleartextTraffic="true">
 
         <receiver android:name=".longpoll_api.receivers.LongPollReceiver"
             android:exported="true">
