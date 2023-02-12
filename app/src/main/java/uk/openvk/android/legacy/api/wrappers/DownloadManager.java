@@ -5,17 +5,14 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -25,7 +22,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
 import java.io.File;
@@ -46,15 +42,14 @@ import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.user_interface.activities.AppActivity;
-import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
-import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
-import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.AppActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.AuthActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.user_interface.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
 /**

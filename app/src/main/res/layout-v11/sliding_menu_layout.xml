@@ -7,7 +7,7 @@
     android:background="#1B1D26">
 
 
-    <uk.openvk.android.legacy.user_interface.layouts.SlidingMenuSearch
+    <uk.openvk.android.legacy.user_interface.view.layouts.SlidingMenuSearch
         android:id="@+id/sliding_menu_search"
         android:layout_width="match_parent"
         android:layout_height="48dp"

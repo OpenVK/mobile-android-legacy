@@ -21,7 +21,7 @@ android {
         //noinspection OldTargetApi
         targetSdkVersion 27
         versionCode 173
-        versionName "1.0.173-stable"
+        versionName "1.1.173-stable"
     }
     buildTypes {
         release {
@@ -29,6 +29,15 @@ android {
         }
     }
     productFlavors {
+        alphaConfig {
+            applicationId "uk.openvk.android.legacy"
+            //noinspection MinSdkTooLow
+            minSdkVersion 7
+            //noinspection OldTargetApi
+            targetSdkVersion 27
+            versionCode 174
+            versionName "1.1.174-alpha.m1"
+        }
         betaConfig {
             applicationId "uk.openvk.android.legacy"
             //noinspection MinSdkTooLow
@@ -36,14 +45,14 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 27
             versionCode 173
-            versionName "1.0.173-beta"
+            versionName "1.1.174-beta"
         }
         stableConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 27
             versionCode 173
-            versionName '1.0.173-stable'
+            versionName '1.1.174-stable'
             proguardFile 'app/OpenVK KeyStore.jks'
             signingConfig signingConfigs.def_signing
         }
@@ -66,4 +75,5 @@ dependencies {
     compile 'com.android.support:support-v4:24.0.0'
     //noinspection GradleDependency,GradleCompatible
     compile 'com.android.support:appcompat-v7:24.0.0'
+    compile project(':emoji-view')
 }

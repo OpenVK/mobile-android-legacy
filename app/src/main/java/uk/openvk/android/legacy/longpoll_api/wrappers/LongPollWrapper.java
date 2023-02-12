@@ -2,13 +2,9 @@ package uk.openvk.android.legacy.longpoll_api.wrappers;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 import org.apache.http.HttpHost;
@@ -33,7 +29,6 @@ import org.apache.http.util.EntityUtils;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -46,18 +41,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
-import uk.openvk.android.legacy.user_interface.activities.AppActivity;
-import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
-import uk.openvk.android.legacy.user_interface.activities.ConversationActivity;
-import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.MainSettingsActivity;
-import uk.openvk.android.legacy.user_interface.activities.NewPostActivity;
-import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
