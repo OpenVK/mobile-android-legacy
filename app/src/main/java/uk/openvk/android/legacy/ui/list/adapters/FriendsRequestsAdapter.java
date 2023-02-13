@@ -16,16 +16,16 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.view.layouts.FriendsLayout;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 
 public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequestsAdapter.Holder> {
 
     private ArrayList<Friend> items = new ArrayList<>();
     private Context ctx;
-    private View parent;
+    private FriendsFragment parent;
     public LruCache memCache;
 
-    public FriendsRequestsAdapter(Context context, View parent, ArrayList<Friend> friends) {
+    public FriendsRequestsAdapter(Context context, FriendsFragment parent, ArrayList<Friend> friends) {
         ctx = context;
         this.parent = parent;
         items = friends;
@@ -97,7 +97,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
                 @Override
                 public void onClick(View v) {
                     if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((FriendsLayout) parent).requests_cursor_index = position;
+                        ((FriendsFragment) parent).requests_cursor_index = position;
                         ((AppActivity) ctx).addToFriends(item.id);
                     }
                 }

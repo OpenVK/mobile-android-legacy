@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -54,10 +56,10 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.FriendsLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ProfileLayout;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
@@ -65,7 +67,7 @@ import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-public class ProfileIntentActivity extends Activity {
+public class ProfileIntentActivity extends FragmentActivity {
 
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
@@ -75,7 +77,7 @@ public class ProfileIntentActivity extends Activity {
     private SharedPreferences.Editor global_prefs_editor;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private ProfileLayout profileLayout;
+    private ProfileFragment profileFragment;
     private Users users;
     private Friends friends;
     private Account account;
@@ -88,6 +90,7 @@ public class ProfileIntentActivity extends Activity {
     private int poll_answer;
     private Menu activity_menu;
     private ActionBarImitation actionBarImitation;
+    private FragmentTransaction ft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +115,8 @@ public class ProfileIntentActivity extends Activity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
-        FriendsLayout friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
-        TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
-        setupTabHost(friends_tabhost, "friends");
+
+        FriendsFragment friendsFragment = new FriendsFragment();
 
         final Uri uri = intent.getData();
 
@@ -159,26 +161,11 @@ public class ProfileIntentActivity extends Activity {
                 return;
             }
         }
-        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
-    }
-
-    private void setupTabHost(TabHost tabhost, String where) {
-        tabhost.setup();
-        if(where.equals("friends")) {
-            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
-            tabSpec.setContent(R.id.tab1);
-            tabSpec.setIndicator(getResources().getString(R.string.friends));
-            tabhost.addTab(tabSpec);
-            tabSpec = tabhost.newTabSpec("requests");
-            tabSpec.setContent(R.id.tab2);
-            tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
-            tabhost.addTab(tabSpec);
-        }
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
     }
 
@@ -188,17 +175,17 @@ public class ProfileIntentActivity extends Activity {
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
+    @SuppressLint("CommitTransaction")
     private void installLayouts() {
-        ProfileWallSelector selector = findViewById(R.id.wall_selector);
-        (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNewPostActivity();
-            }
-        });
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        profileLayout = (ProfileLayout) findViewById(R.id.profile_layout);
+        profileFragment = new ProfileFragment();
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.app_fragment, profileFragment, "profile");
+        ft.commit();
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.show(profileFragment);
+        ft.commit();
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
@@ -333,13 +320,13 @@ public class ProfileIntentActivity extends Activity {
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
-                profileLayout.updateLayout(user, getWindowManager());
+                profileFragment.updateLayout(user, getWindowManager());
                 progressLayout.setVisibility(View.GONE);
-                profileLayout.setVisibility(View.VISIBLE);
-                profileLayout.setDMButtonListener(this, user.id, getWindowManager());
-                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                profileFragment.setDMButtonListener(this, user.id, getWindowManager());
+                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
                 if(user.id == account.id) {
-                    profileLayout.hideHeaderButtons(this, getWindowManager());
+                    profileFragment.hideHeaderButtons(this, getWindowManager());
                     try {
                         for (int i = 0; i < activity_menu.size(); i++) {
                             if (i > 0) {
@@ -379,9 +366,9 @@ public class ProfileIntentActivity extends Activity {
                     wall.get(ovk_api, user.id, 50);
                     friends.get(ovk_api, user.id, 10, "profile_counter");
                 } else {
-                    profileLayout.hideHeaderButtons(this, getWindowManager());
+                    profileFragment.hideHeaderButtons(this, getWindowManager());
                     activity_menu.removeItem(0);
-                    profileLayout.hideTabSelector();
+                    profileFragment.hideTabSelector();
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     createActionPopupMenu(activity_menu);
@@ -395,7 +382,7 @@ public class ProfileIntentActivity extends Activity {
                 } else if(status == 2) {
                     user.friends_status = 3;
                 }
-                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.FRIENDS_DELETE) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                 int status = response.getInt("response");
@@ -403,29 +390,29 @@ public class ProfileIntentActivity extends Activity {
                     user.friends_status = 0;
                 }
                 activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
-                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 users.parseSearch(data.getString("response"));
                 users.getUser(ovk_api, users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
-                profileLayout.setCounter(user, "friends",  friends.count);
+                profileFragment.setCounter(user, "friends",  friends.count);
             } else if(message == HandlerMessages.LIKES_ADD) {
                 likes.parse(data.getString("response"));
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 likes.parse(data.getString("response"));
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 WallPost item = wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
@@ -451,7 +438,7 @@ public class ProfileIntentActivity extends Activity {
                         poll.answers.set(poll_answer, answer);
                         item.attachments.get(attachment_index).setContent(poll);
                         wall.getWallItems().set(item_pos, item);
-                        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+                        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION  || message == HandlerMessages.INSTANCE_UNAVAILABLE ||
@@ -470,7 +457,7 @@ public class ProfileIntentActivity extends Activity {
                             errorLayout.setVisibility(View.VISIBLE);
                         } else {
                             if (data.getString("method").equals("Wall.get")) {
-                                ((WallErrorLayout) profileLayout.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                                ((WallErrorLayout) profileFragment.getView().findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
                             }
@@ -486,15 +473,15 @@ public class ProfileIntentActivity extends Activity {
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 if(global_prefs.getString("photos_quality", "").equals("medium")) {
                     if (user.avatar_msize_url.length() > 0) {
-                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 } else if(global_prefs.getString("photos_quality", "").equals("high")) {
                     if (user.avatar_hsize_url.length() > 0) {
-                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 } else {
                     if (user.avatar_osize_url.length() > 0) {
-                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 }
             }
@@ -520,7 +507,7 @@ public class ProfileIntentActivity extends Activity {
 
     public void addLike(int position, String post, View view) {
         WallPost item;
-        WallLayout wallLayout = ((WallLayout) profileLayout.findViewById(R.id.wall_layout));
+        WallLayout wallLayout = ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout));
         item = wall.getWallItems().get(position);
         wallLayout.select(position, "likes", "add");
         likes.add(ovk_api, item.owner_id, item.post_id, position);
@@ -528,7 +515,7 @@ public class ProfileIntentActivity extends Activity {
 
     public void deleteLike(int position, String post, View view) {
         WallPost item;
-        WallLayout wallLayout = ((WallLayout) profileLayout.findViewById(R.id.wall_layout));
+        WallLayout wallLayout = ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout));
         item = wall.getWallItems().get(position);
         wallLayout.select(0, "likes", "delete");
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
@@ -707,7 +694,7 @@ public class ProfileIntentActivity extends Activity {
         item = wall.getWallItems().get(position);
         intent.putExtra("where", "wall");
         try {
-            intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
+            intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
                     item.owner_id, item.post_id));
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {

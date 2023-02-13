@@ -1,12 +1,16 @@
-package uk.openvk.android.legacy.ui.view.layouts;
+package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,7 +24,7 @@ import uk.openvk.android.legacy.api.models.Group;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 
-public class GroupsLayout extends LinearLayout {
+public class GroupsFragment extends Fragment {
     public TextView titlebar_title;
     public String state;
     public String send_request;
@@ -29,20 +33,14 @@ public class GroupsLayout extends LinearLayout {
     private ArrayList<Group> groups;
     private GroupsListAdapter groupsAdapter;
     private boolean loading_more_groups = false;
+    private View view;
 
-    public GroupsLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.groups_layout, null);
-
-        this.addView(view);
-
-        LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-        layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
-
-        groupsListView = (ListView) findViewById(R.id.groups_listview);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.groups_layout, container, false);
+        groupsListView = view.findViewById(R.id.groups_listview);
+        return view;
     }
 
     public void createAdapter(Context ctx, ArrayList<Group> groups) {
@@ -66,7 +64,7 @@ public class GroupsLayout extends LinearLayout {
     public void loadAvatars() {
         try {
             if(groupsAdapter != null) {
-                groupsListView = (ListView) findViewById(R.id.groups_listview);
+                groupsListView = (ListView) view.findViewById(R.id.groups_listview);
                 for (int i = 0; i < getCount(); i++) {
                     try {
                         Group item = groups.get(i);

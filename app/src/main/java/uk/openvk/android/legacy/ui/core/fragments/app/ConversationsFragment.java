@@ -1,11 +1,15 @@
-package uk.openvk.android.legacy.ui.view.layouts;
+package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -17,24 +21,19 @@ import uk.openvk.android.legacy.api.Account;
 import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
 
-public class ConversationsLayout extends LinearLayout {
+public class ConversationsFragment extends Fragment {
     private ArrayList<Conversation> conversations;
     private ConversationsListAdapter conversationsAdapter;
     private ListView convListView;
     private Account account;
+    private View view;
 
-    public ConversationsLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.conversations_layout, null);
-
-        this.addView(view);
-
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
-        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
-
-        convListView = (ListView) findViewById(R.id.conversations_listview);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.conversations_layout, container, false);
+        convListView = view.findViewById(R.id.conversations_listview);
+        return view;
     }
 
     public void createAdapter(Context ctx, ArrayList<Conversation> conversations, Account account) {
@@ -66,8 +65,6 @@ public class ConversationsLayout extends LinearLayout {
             conversations = conversations_list;
             conversationsAdapter = new ConversationsListAdapter(getContext(), conversations, account);
             convListView.setAdapter(conversationsAdapter);
-        } catch (OutOfMemoryError err) {
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }

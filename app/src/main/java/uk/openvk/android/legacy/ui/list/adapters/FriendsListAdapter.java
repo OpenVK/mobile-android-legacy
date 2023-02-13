@@ -17,15 +17,18 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.api.models.Friend;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 public class FriendsListAdapter extends BaseAdapter {
+    private final FriendsFragment friendsFragment;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Friend> objects;
     public boolean opened_sliding_menu;
 
-    public FriendsListAdapter(Context context, ArrayList<Friend> items) {
+    public FriendsListAdapter(Context context, FriendsFragment friendsFragment, ArrayList<Friend> items) {
+        this.friendsFragment = friendsFragment;
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -95,10 +98,10 @@ public class FriendsListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).hideSelectedItemBackground(position);
+                    friendsFragment.hideSelectedItemBackground(position);
                     ((AppActivity) ctx).showProfile(item.id);
                 } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-                    ((FriendsIntentActivity) ctx).hideSelectedItemBackground(position);
+                    friendsFragment.hideSelectedItemBackground(position);
                     ((FriendsIntentActivity) ctx).showProfile(item.id);
                 }
             }

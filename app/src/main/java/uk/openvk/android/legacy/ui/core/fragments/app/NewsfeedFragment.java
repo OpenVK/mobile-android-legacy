@@ -1,11 +1,15 @@
-package uk.openvk.android.legacy.ui.view.layouts;
+package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -34,7 +38,7 @@ import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 
-public class NewsfeedLayout extends LinearLayout {
+public class NewsfeedFragment extends Fragment {
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -50,23 +54,19 @@ public class NewsfeedLayout extends LinearLayout {
     public boolean loading_more_posts = false;
     private int pastComplVisiblesItems;
     private Parcelable recyclerViewState;
+    private View view;
 
-    public NewsfeedLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.newsfeed_layout, null);
-
-        this.addView(view);
-
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
-        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-        layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.newsfeed_layout, container, false);
+        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+        return view;
     }
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts) {
         this.wallPosts = wallPosts;
-        newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+        newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
         if(newsfeedAdapter == null) {
             newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts);
             llm = new LinearLayoutManager(ctx);
@@ -77,11 +77,26 @@ public class NewsfeedLayout extends LinearLayout {
             newsfeedAdapter.setArray(wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
         }
+        SwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setProgressBackgroundColorSchemeResource(R.color.ovk_color);
+        p2r_news_view.setColorSchemeResources(android.R.color.white);
+        p2r_news_view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(getActivity().getClass().getSimpleName().equals("AppActivity")) {
+                    if (((AppActivity) getActivity()).ab_layout.getNewsfeedSelection() == 0) {
+                        ((AppActivity) getActivity()).refreshPage("subscriptions_newsfeed");
+                    } else {
+                        ((AppActivity) getActivity()).refreshPage("global_newsfeed");
+                    }
+                }
+            }
+        });
     }
 
     public void updateItem(WallPost item, int position) {
         if(newsfeedAdapter != null) {
-            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
             wallPosts.set(position, item);
             newsfeedAdapter.notifyItemChanged(position);
         }
@@ -89,14 +104,14 @@ public class NewsfeedLayout extends LinearLayout {
 
     public void updateAllItems() {
         if(newsfeedAdapter != null) {
-            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
             newsfeedAdapter.notifyDataSetChanged();
         }
     }
 
     public void loadAvatars() {
         if(newsfeedAdapter != null) {
-            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
             for (int i = 0; i < getCount(); i++) {
                 try {
                     WallPost item = wallPosts.get(i);
@@ -116,7 +131,7 @@ public class NewsfeedLayout extends LinearLayout {
     }
 
     private void loadPhotos() {
-        newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+        newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
         try {
             if(llm == null) {
                 llm = new LinearLayoutManager(getContext());
@@ -208,7 +223,7 @@ public class NewsfeedLayout extends LinearLayout {
         if(load_photos) {
             loadPhotos();
         }
-        final InfinityScrollView scrollView = findViewById(R.id.scrollView);
+        final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
         scrollView.setOnScrollListener(new OnScrollListener() {
             @Override
             public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
@@ -260,24 +275,24 @@ public class NewsfeedLayout extends LinearLayout {
     public void adjustLayoutSize(int orientation) {
         if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                newsfeedView = view.findViewById(R.id.news_listview);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 newsfeedView.setLayoutParams(layoutParams);
             } else {
-                newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                newsfeedView = view.findViewById(R.id.news_listview);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 newsfeedView.setLayoutParams(layoutParams);
             }
         } else {
-            newsfeedView = (RecyclerView) findViewById(R.id.news_listview);
+            newsfeedView = view.findViewById(R.id.news_listview);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 newsfeedView.setLayoutParams(layoutParams);
             } else {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 newsfeedView.setLayoutParams(layoutParams);
             }

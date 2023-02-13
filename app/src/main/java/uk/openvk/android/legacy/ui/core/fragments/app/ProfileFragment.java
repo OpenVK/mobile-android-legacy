@@ -1,13 +1,17 @@
-package uk.openvk.android.legacy.ui.view.layouts;
+package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -25,87 +29,87 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
+import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
+import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
+import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
+import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
+import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
-public class ProfileLayout extends LinearLayout {
-    public ProfileLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.profile_layout, null);
+import static android.view.View.GONE;
 
-        this.addView(view);
+public class ProfileFragment extends Fragment {
+    private View view;
 
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
-        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-        layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.profile_layout, container, false);
+        ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
+        (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(getActivity().getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) getActivity()).openNewPostActivity();
+                }
+            }
+        });
+        ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        return view;
     }
 
     public void updateLayout(User user, final WindowManager wm) {
-        ProfileHeader header = (ProfileHeader) findViewById(R.id.profile_header);
+        ProfileHeader header = (ProfileHeader) view.findViewById(R.id.profile_header);
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
         header.setOnline(user.online);
         header.setStatus(user.status);
         header.setLastSeen(user.sex, user.ls_date, user.ls_platform);
         header.setVerified(user.verified, getContext());
-        ((ProfileCounterLayout) findViewById(R.id.photos_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_photos)).get(2), "");
-        ((ProfileCounterLayout) findViewById(R.id.photos_counter)).setOnCounterClickListener();
-        ((ProfileCounterLayout) findViewById(R.id.friends_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
-        ((ProfileCounterLayout) findViewById(R.id.friends_counter)).setOnCounterClickListener();
-        ((ProfileCounterLayout) findViewById(R.id.mutual_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_mutual_friends)).get(2), "");
-        ((ProfileCounterLayout) findViewById(R.id.mutual_counter)).setOnCounterClickListener();
+        ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_photos)).get(2), "");
+        ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setOnCounterClickListener();
+        ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
+        ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setOnCounterClickListener();
+        ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_mutual_friends)).get(2), "");
+        ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
         if(user.deactivated == null) {
-            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setBirthdate("");
-            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setStatus(user.status);
-            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setInterests(user.interests, user.music, user.movies, user.tv, user.books);
-            ((AboutProfileLayout) findViewById(R.id.about_profile_layout)).setContacts(user.city);
-            header.findViewById(R.id.profile_head_highlight).setOnClickListener(new OnClickListener() {
+            ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setBirthdate("");
+            ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setStatus(user.status);
+            ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setInterests(user.interests, user.music, user.movies, user.tv, user.books);
+            ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setContacts(user.city);
+            header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
                     if(((OvkApplication)getContext().getApplicationContext()).isTablet && getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
-                        View aboutProfile = findViewById(R.id.about_profile_ll);
-                        if (aboutProfile.getVisibility() == View.GONE) {
+                        View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_ll);
+                        if (aboutProfile.getVisibility() == GONE) {
                             aboutProfile.setVisibility(View.VISIBLE);
                         } else {
-                            aboutProfile.setVisibility(View.GONE);
+                            aboutProfile.setVisibility(GONE);
                         }
                     } else {
-                        View aboutProfile = findViewById(R.id.about_profile_layout);
-                        if (aboutProfile.getVisibility() == View.GONE) {
+                        View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_layout);
+                        if (aboutProfile.getVisibility() == GONE) {
                             aboutProfile.setVisibility(View.VISIBLE);
                         } else {
-                            aboutProfile.setVisibility(View.GONE);
+                            aboutProfile.setVisibility(GONE);
                         }
                     }
                 }
             });
-            ((ProfileWallSelector) findViewById(R.id.wall_selector)).setUserName(user.first_name);
+            ((ProfileWallSelector) view.findViewById(R.id.wall_selector)).setUserName(user.first_name);
         } else {
-            findViewById(R.id.profile_counters).setVisibility(GONE);
-            ((TextView) findViewById(R.id.deactivated_info)).setVisibility(VISIBLE);
-        }
-    }
-
-    private void setupTabHost(TabHost tabhost, String where) {
-        tabhost.setup();
-        if(where.equals("friends")) {
-            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
-            tabSpec.setContent(R.id.tab1);
-            tabSpec.setIndicator(getResources().getString(R.string.friends));
-            tabhost.addTab(tabSpec);
-            tabSpec = tabhost.newTabSpec("requests");
-            tabSpec.setContent(R.id.tab2);
-            tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
-            tabhost.addTab(tabSpec);
+            view.findViewById(R.id.profile_counters).setVisibility(GONE);
+            (view.findViewById(R.id.deactivated_info)).setVisibility(View.VISIBLE);
         }
     }
 
     public void setDMButtonListener(final Context ctx, final long peer_id, WindowManager wm) {
         float smallestWidth = Global.getSmalledWidth(wm);
         if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
-            ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
+            ((Button) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (ctx.getClass().getSimpleName().equals("AppActivity")) {
@@ -116,7 +120,7 @@ public class ProfileLayout extends LinearLayout {
                 }
             });
         } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
-            ((Button) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
+            ((Button) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (ctx.getClass().getSimpleName().equals("AppActivity")) {
@@ -127,7 +131,7 @@ public class ProfileLayout extends LinearLayout {
                 }
             });
         } else {
-            ((ImageButton) findViewById(R.id.send_direct_msg)).setOnClickListener(new OnClickListener() {
+            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (ctx.getClass().getSimpleName().equals("AppActivity")) {
@@ -141,8 +145,8 @@ public class ProfileLayout extends LinearLayout {
     }
 
     public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {
-        TextView friend_status = ((TextView) findViewById(R.id.friend_status));
-        ImageButton add_to_friends_btn = ((ImageButton) findViewById(R.id.add_to_friends));
+        TextView friend_status = ((TextView) view.findViewById(R.id.friend_status));
+        ImageButton add_to_friends_btn = ((ImageButton) view.findViewById(R.id.add_to_friends));
         if(user.friends_status == 0) {
             friend_status.setVisibility(GONE);
             add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
@@ -160,7 +164,7 @@ public class ProfileLayout extends LinearLayout {
             friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
             add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
         }
-        add_to_friends_btn.setOnClickListener(new OnClickListener() {
+        add_to_friends_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (user.friends_status == 0 || user.friends_status == 2) {
@@ -211,7 +215,7 @@ public class ProfileLayout extends LinearLayout {
                 }
             }
             if (user.avatar != null)
-                ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
+                ((ImageView) view.findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
         } catch (OutOfMemoryError ex) {
             ex.printStackTrace();
         }
@@ -219,23 +223,23 @@ public class ProfileLayout extends LinearLayout {
 
     public void setCounter(User user, String where, int count) {
         if(where.equals("friends")) {
-            ((ProfileCounterLayout) findViewById(R.id.friends_counter)).setCounter(count, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
+            ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(count, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
         }
     }
 
     public void hideHeaderButtons(Context ctx, WindowManager wm) {
         float smallestWidth = Global.getSmalledWidth(wm);
         if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
-            ((Button) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
-            ((Button) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else {
-            ((ImageButton) findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         }
-        ((ImageButton) findViewById(R.id.add_to_friends)).setVisibility(GONE);
+        ((ImageButton) view.findViewById(R.id.add_to_friends)).setVisibility(GONE);
     }
 
     public void hideTabSelector() {
-        ((ProfileWallSelector) findViewById(R.id.wall_selector)).setVisibility(GONE);
+        ((ProfileWallSelector) view.findViewById(R.id.wall_selector)).setVisibility(GONE);
     }
 }

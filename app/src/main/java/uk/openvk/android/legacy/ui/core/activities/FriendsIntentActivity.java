@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +33,7 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.FriendsLayout;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
@@ -40,7 +42,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 /**
  * Created by Dmitry on 30.09.2022.
  */
-public class FriendsIntentActivity extends Activity {
+public class FriendsIntentActivity extends FragmentActivity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
@@ -51,12 +53,13 @@ public class FriendsIntentActivity extends Activity {
     private SharedPreferences.Editor global_prefs_editor;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private FriendsLayout friendsLayout;
+    private FriendsFragment friendsFragment;
     private Friends friends;
     private Users users;
     private String access_token;
     private DownloadManager downloadManager;
     private int user_id = 0;
+    private FragmentTransaction ft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,18 +136,14 @@ public class FriendsIntentActivity extends Activity {
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        friendsLayout = (FriendsLayout) findViewById(R.id.friends_layout);
-        progressLayout.setVisibility(View.VISIBLE);
-        TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
-        setupTabHost(friends_tabhost, "friends");
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setLength(1);
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, getResources().getString(R.string.friends));
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setup(friends_tabhost, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        friendsFragment = new FriendsFragment();
 
-            }
-        });
+        friendsFragment.setActivityContext(this);
+
+        progressLayout.setVisibility(View.VISIBLE);
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.app_fragment, friendsFragment, "friends");
+        ft.commit();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
@@ -173,16 +172,6 @@ public class FriendsIntentActivity extends Activity {
         }
     }
 
-    private void setupTabHost(TabHost tabhost, String where) {
-        tabhost.setup();
-        if(where.equals("friends")) {
-            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
-            tabSpec.setContent(R.id.tab1);
-            tabSpec.setIndicator(getResources().getString(R.string.friends));
-            tabhost.addTab(tabSpec);
-        }
-    }
-
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(item.getItemId() == android.R.id.home) {
@@ -197,21 +186,25 @@ public class FriendsIntentActivity extends Activity {
                 friends.parse(data.getString("response"), downloadManager, true, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.VISIBLE);
-                friendsLayout.createAdapter(this, friendsList, "friends");
-                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%d)", getResources().getString(R.string.friends), friends.count));
-                friendsLayout.setScrollingPositions(this, true);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                friendsFragment.createAdapter(this, friendsList, "friends");
+                try {
+                    ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
+                } catch (Exception ignored) {
+
+                }
+                friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                friendsLayout.loadAvatars();
+                friendsFragment.loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 int old_friends_size = friends.getFriends().size();
                 friends.parse(data.getString("response"), downloadManager, true, false);
                 ArrayList<Friend> friendsList = friends.getFriends();
-                friendsLayout.createAdapter(this, friendsList, "friends");
+                friendsFragment.createAdapter(this, friendsList, "friends");
                 if(old_friends_size == friends.getFriends().size()) {
-                    friendsLayout.setScrollingPositions(this, false);
+                    friendsFragment.setScrollingPositions(this, false);
                 } else {
-                    friendsLayout.setScrollingPositions(this, true);
+                    friendsFragment.setScrollingPositions(this, true);
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
@@ -235,10 +228,6 @@ public class FriendsIntentActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
-    }
-
-    public void hideSelectedItemBackground(int position) {
-        ((ListView) friendsLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void loadMoreFriends() {

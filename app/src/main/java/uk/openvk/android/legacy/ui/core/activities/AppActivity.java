@@ -2,7 +2,6 @@ package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +15,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -71,14 +74,14 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.LongPollService;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ConversationsLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.FriendsLayout;
-import uk.openvk.android.legacy.ui.view.layouts.GroupsLayout;
-import uk.openvk.android.legacy.ui.view.layouts.NewsfeedLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ProfileLayout;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.SlidingMenuLayout;
@@ -90,7 +93,7 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
-public class AppActivity extends Activity {
+public class AppActivity extends FragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
     private LongPollService longPollService;
@@ -103,10 +106,10 @@ public class AppActivity extends Activity {
     private SlidingMenu menu;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private NewsfeedLayout newsfeedLayout;
-    private ProfileLayout profileLayout;
-    private FriendsLayout friendsLayout;
-    private ConversationsLayout conversationsLayout;
+    private NewsfeedFragment newsfeedFragment;
+    private ProfileFragment profileFragment;
+    private FriendsFragment friendsFragment;
+    private ConversationsFragment conversationsFragment;
     private SlidingMenuLayout slidingmenuLayout;
     private Account account;
     private Newsfeed newsfeed;
@@ -119,17 +122,19 @@ public class AppActivity extends Activity {
     private User user;
     private Likes likes;
     private Menu activity_menu;
-    private GroupsLayout groupsLayout;
+    private GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
     private String last_longpoll_response;
     private int item_pos;
     private int poll_answer;
     private uk.openvk.android.legacy.api.wrappers.NotificationManager notifMan;
     private boolean inBackground;
-    private ActionBarLayout ab_layout;
+    public ActionBarLayout ab_layout;
     private int menu_id;
     private ActionBarImitation actionBarImitation;
     private LongPollReceiver lpReceiver;
+    private FragmentTransaction ft;
+    private Fragment selectedFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,8 +193,8 @@ public class AppActivity extends Activity {
             }
         }
         if(((OvkApplication) getApplicationContext()).isTablet) {
-            newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
-            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+            newsfeedFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
+            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
         }
         Bundle data = new Bundle();
         createSlidingMenu();
@@ -338,8 +343,8 @@ public class AppActivity extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        newsfeedLayout.adjustLayoutSize(newConfig.orientation);
-        ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).adjustLayoutSize(newConfig.orientation);
+        newsfeedFragment.adjustLayoutSize(newConfig.orientation);
+        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(newConfig.orientation);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
             menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
@@ -425,40 +430,43 @@ public class AppActivity extends Activity {
         });
     }
 
+    @SuppressLint("CommitTransaction")
     private void installLayouts() {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
-        profileLayout = findViewById(R.id.profile_layout);
-        newsfeedLayout = findViewById(R.id.newsfeed_layout);
-        friendsLayout = findViewById(R.id.friends_layout);
-        groupsLayout = findViewById(R.id.groups_layout);
-        ProfileWallSelector selector = profileLayout.findViewById(R.id.wall_selector);
-        (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNewPostActivity();
-            }
-        });
-        TabHost friends_tabhost = friendsLayout.findViewById(R.id.friends_tabhost);
-        setupTabHost(friends_tabhost, "friends");
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setLength(2);
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, getResources().getString(R.string.friends));
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, getResources().getString(R.string.friend_requests));
-        ((TabSelector) friendsLayout.findViewById(R.id.selector)).setup(friends_tabhost, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        profileFragment = new ProfileFragment();
+        newsfeedFragment = new NewsfeedFragment();
+        friendsFragment = new FriendsFragment();
+        groupsFragment = new GroupsFragment();
 
-            }
-        });
+        friendsFragment.setActivityContext(this);
+
         if(activity_menu == null) {
             android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
             activity_menu = p.getMenu();
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
         }
-        conversationsLayout = findViewById(R.id.conversations_layout);
+        conversationsFragment = new ConversationsFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
+        ft.add(R.id.app_fragment, newsfeedFragment, "newsfeed");
+        ft.add(R.id.app_fragment, friendsFragment, "friends");
+        ft.add(R.id.app_fragment, groupsFragment, "groups");
+        ft.add(R.id.app_fragment, conversationsFragment, "messages");
+        ft.add(R.id.app_fragment, profileFragment, "profile");
+        ft.commit();
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.hide(friendsFragment);
+        ft.hide(groupsFragment);
+        ft.hide(conversationsFragment);
+        ft.hide(profileFragment);
+        selectedFragment = newsfeedFragment;
+        ft.show(newsfeedFragment);
+        ft.commit();
+        selectedFragment = newsfeedFragment;
         progressLayout.setVisibility(View.VISIBLE);
-        newsfeedLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             ab_layout = new ActionBarLayout(this);
             getActionBar().setDisplayShowHomeEnabled(true);
@@ -472,19 +480,6 @@ public class AppActivity extends Activity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
         //MenuItem newpost = activity_menu.findItem(R.id.newpost);
         //newpost.setVisible(false);
-        SwipeRefreshLayout p2r_news_view = newsfeedLayout.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setProgressBackgroundColorSchemeResource(R.color.ovk_color);
-        p2r_news_view.setColorSchemeResources(android.R.color.white);
-        p2r_news_view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(ab_layout.getNewsfeedSelection() == 0) {
-                    refreshPage("subscriptions_newsfeed");
-                } else {
-                    refreshPage("global_newsfeed");
-                }
-            }
-        });
     }
 
     private void createActionPopupMenu(final Menu menu, boolean enable) {
@@ -528,25 +523,11 @@ public class AppActivity extends Activity {
         }
     }
 
-    private void setupTabHost(TabHost tabhost, String where) {
-        tabhost.setup();
-        if(where.equals("friends")) {
-            TabHost.TabSpec tabSpec = tabhost.newTabSpec("main");
-            tabSpec.setContent(R.id.tab1);
-            tabSpec.setIndicator(getResources().getString(R.string.friends));
-            tabhost.addTab(tabSpec);
-            tabSpec = tabhost.newTabSpec("requests");
-            tabSpec.setContent(R.id.tab2);
-            tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
-            tabhost.addTab(tabSpec);
-        }
-    }
-
     public void setActionBarTitle(String title) {
         ab_layout.setAppTitle(title);
     }
 
-    private void openNewPostActivity() {
+    public void openNewPostActivity() {
         try {
             Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
             if (global_prefs.getString("current_screen", "").equals("profile")) {
@@ -562,25 +543,17 @@ public class AppActivity extends Activity {
         }
     }
 
-    private void refreshPage(String screen) {
+    public void refreshPage(String screen) {
         if(screen.equals("subscriptions_newsfeed")) {
             menu_id = R.menu.newsfeed;
             setActionBarTitle(getResources().getString(R.string.newsfeed));
-            if (newsfeedLayout.getCount() == 0) {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+            if (newsfeedFragment.getCount() == 0) {
+                findViewById(R.id.app_fragment).setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
-                profileLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 errorLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
             }
             if (newsfeed == null) {
@@ -591,21 +564,13 @@ public class AppActivity extends Activity {
         } else if(screen.equals("global_newsfeed")) {
             menu_id = R.menu.newsfeed;
             setActionBarTitle(getResources().getString(R.string.newsfeed));
-            if (newsfeedLayout.getCount() == 0) {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+            if (newsfeedFragment.getCount() == 0) {
+                findViewById(R.id.app_fragment).setVisibility(View.GONE);
                 errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
-                profileLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 errorLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
             }
             if (newsfeed == null) {
@@ -616,6 +581,7 @@ public class AppActivity extends Activity {
         }
     }
 
+    @SuppressLint("CommitTransaction")
     public void onSlidingMenuItemClicked(int position) {
         global_prefs_editor = global_prefs.edit();
         try {
@@ -630,26 +596,25 @@ public class AppActivity extends Activity {
         } catch (Exception ignored) {
 
         }
+        ft = getSupportFragmentManager().beginTransaction();
         if(position == 0) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.friends));
-            if(friendsLayout.getCount() == 0) {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+            if(friendsFragment.getCount() == 0) {
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("friends"));
                 errorLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("friends"));
                 errorLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.VISIBLE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
             }
+            ft.commit();
+            selectedFragment = friendsFragment;
             global_prefs_editor.putString("current_screen", "friends");
             global_prefs_editor.commit();
             if(friends == null) {
@@ -663,23 +628,21 @@ public class AppActivity extends Activity {
         } else if(position == 1) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));
-            if(conversationsLayout.getCount() == 0) {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+            if(conversationsFragment.getCount() == 0) {
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("messages"));
                 errorLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.VISIBLE);
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("messages"));
                 errorLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
             }
+            ft.commit();
+            selectedFragment = conversationsFragment;
             global_prefs_editor.putString("current_screen", "messages");
             global_prefs_editor.commit();
             if(messages == null) {
@@ -693,22 +656,21 @@ public class AppActivity extends Activity {
         } else if(position == 2) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.groups));
-            if(groupsLayout.getCount() == 0) {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+            if(groupsFragment.getCount() == 0) {
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("groups"));
                 errorLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.VISIBLE);
-                conversationsLayout.setVisibility(View.GONE);
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("groups"));
                 errorLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
             }
+            ft.commit();
+            selectedFragment = groupsFragment;
             global_prefs_editor.putString("current_screen", "groups");
             global_prefs_editor.commit();
             if(groups == null) {
@@ -724,23 +686,21 @@ public class AppActivity extends Activity {
             menu_id = R.menu.newsfeed;
             onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
-            if(newsfeedLayout.getCount() == 0) {
-                profileLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+            if(newsfeedFragment.getCount() == 0) {
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("newsfeed"));
                 errorLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
-                profileLayout.setVisibility(View.GONE);
-                friendsLayout.setVisibility(View.GONE);
-                groupsLayout.setVisibility(View.GONE);
-                conversationsLayout.setVisibility(View.GONE);
+                ft.hide(selectedFragment);
+                ft.show(getSupportFragmentManager().findFragmentByTag("newsfeed"));
                 errorLayout.setVisibility(View.GONE);
-                newsfeedLayout.setVisibility(View.VISIBLE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
             }
+            ft.commit();
+            selectedFragment = newsfeedFragment;
             global_prefs_editor.putString("current_screen", "newsfeed");
             global_prefs_editor.commit();
             if(newsfeed == null) {
@@ -827,15 +787,15 @@ public class AppActivity extends Activity {
                 }
                 ab_layout.setNotificationCount(account.counters);
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
+                ((SwipeRefreshLayout) newsfeedFragment.getView().findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
-                    newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                    newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         if(newsfeed.getWallPosts().size() > 0) {
                             progressLayout.setVisibility(View.GONE);
-                            newsfeedLayout.setVisibility(View.VISIBLE);
+                            findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                         } else {
                             progressLayout.setVisibility(View.GONE);
                             errorLayout.setVisibility(View.VISIBLE);
@@ -845,42 +805,42 @@ public class AppActivity extends Activity {
                             errorLayout.hideRetryButton();
                         }
                     }
-                    newsfeedLayout.loading_more_posts = true;
-                    newsfeedLayout.setScrollingPositions(this, false, true);
-                    ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
+                    newsfeedFragment.loading_more_posts = true;
+                    newsfeedFragment.setScrollingPositions(this, false, true);
+                    ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
-                ((SwipeRefreshLayout) newsfeedLayout.findViewById(R.id.refreshable_layout)).setRefreshing(false);
+                ((SwipeRefreshLayout) newsfeedFragment.getView().findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
                     newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
-                    newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                    newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         progressLayout.setVisibility(View.GONE);
-                        newsfeedLayout.setVisibility(View.VISIBLE);
+                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     }
-                    newsfeedLayout.loading_more_posts = true;
-                    newsfeedLayout.setScrollingPositions(this, false, true);
-                    ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
+                    newsfeedFragment.loading_more_posts = true;
+                    newsfeedFragment.setScrollingPositions(this, false, true);
+                    ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
                 newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), false);
-                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
-                    newsfeedLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                newsfeedLayout.loading_more_posts = true;
-                newsfeedLayout.setScrollingPositions(this, false, true);
+                newsfeedFragment.loading_more_posts = true;
+                newsfeedFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
                 newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
-                newsfeedLayout.createAdapter(this, newsfeed.getWallPosts());
+                newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
-                    newsfeedLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                newsfeedLayout.loading_more_posts = true;
-                newsfeedLayout.setScrollingPositions(this, false, true);
+                newsfeedFragment.loading_more_posts = true;
+                newsfeedFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
                 ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
@@ -889,28 +849,28 @@ public class AppActivity extends Activity {
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
                 slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
-                newsfeedLayout.setScrollingPositions(this, true, true);
+                newsfeedFragment.setScrollingPositions(this, true, true);
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
-                newsfeedLayout.loadAvatars();
+                newsfeedFragment.loadAvatars();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).setScrollingPositions();
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).loadAvatars();
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).loadAvatars();
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                friendsLayout.loadAvatars();
+                friendsFragment.loadAvatars();
             } else if (message == HandlerMessages.GROUP_AVATARS) {
-                groupsLayout.loadAvatars();
+                groupsFragment.loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
-                profileLayout.updateLayout(user, getWindowManager());
+                profileFragment.updateLayout(user, getWindowManager());
                 if (global_prefs.getString("current_screen", "").equals("profile")) {
                     progressLayout.setVisibility(View.GONE);
-                    profileLayout.setVisibility(View.VISIBLE);
-                    profileLayout.setDMButtonListener(this, user.id, getWindowManager());
-                    profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    profileFragment.setDMButtonListener(this, user.id, getWindowManager());
+                    profileFragment.setAddToFriendsButtonListener(this, user.id, user);
                     if(user.id == account.id) {
-                        profileLayout.hideHeaderButtons(this, getWindowManager());
+                        profileFragment.hideHeaderButtons(this, getWindowManager());
                     }
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 50);
@@ -922,7 +882,7 @@ public class AppActivity extends Activity {
                 account.user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""), "account_avatar");
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
-                ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.FRIENDS_GET) {
@@ -930,25 +890,25 @@ public class AppActivity extends Activity {
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
                     progressLayout.setVisibility(View.GONE);
-                    friendsLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                friendsLayout.createAdapter(this, friendsList, "friends");
+                friendsFragment.createAdapter(this, friendsList, "friends");
                 friends.getRequests(ovk_api);
-                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%d)", getResources().getString(R.string.friends), friends.count));
-                friendsLayout.setScrollingPositions(this, true);
+                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
+                friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 int old_friends_size = friends.getFriends().size();
                 friends.parse(data.getString("response"), downloadManager, true, false);
                 ArrayList<Friend> friendsList = friends.getFriends();
-                friendsLayout.createAdapter(this, friendsList, "friends");
+                friendsFragment.createAdapter(this, friendsList, "friends");
                 if(old_friends_size == friends.getFriends().size()) {
-                    friendsLayout.setScrollingPositions(this, false);
+                    friendsFragment.setScrollingPositions(this, false);
                 } else {
-                    friendsLayout.setScrollingPositions(this, true);
+                    friendsFragment.setScrollingPositions(this, true);
                 }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 if(global_prefs.getString("current_screen", "").equals("friends")) {
-                    friends.requests.remove(friendsLayout.requests_cursor_index);
+                    friends.requests.remove(friendsFragment.requests_cursor_index);
                 } else {
                     JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                     int status = response.getInt("response");
@@ -957,7 +917,7 @@ public class AppActivity extends Activity {
                     } else if (status == 2) {
                         user.friends_status = 3;
                     }
-                    profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+                    profileFragment.setAddToFriendsButtonListener(this, user.id, user);
                 }
             } else if(message == HandlerMessages.FRIENDS_DELETE) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
@@ -965,65 +925,65 @@ public class AppActivity extends Activity {
                 if(status == 1) {
                     user.friends_status = 0;
                 }
-                profileLayout.setAddToFriendsButtonListener(this, user.id, user);
+                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if (message == HandlerMessages.FRIENDS_REQUESTS) {
                 friends.parseRequests(data.getString("response"), downloadManager, true);
                 ArrayList<Friend> requestsList = friends.requests;
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
                     progressLayout.setVisibility(View.GONE);
-                    friendsLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                ((TabSelector) friendsLayout.findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%s)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
-                friendsLayout.createAdapter(this, requestsList, "requests");
+                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%s)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
+                friendsFragment.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.GROUPS_GET) {
                 groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, true);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
-                    groupsLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                groupsLayout.createAdapter(this, groupsList);
-                groupsLayout.setScrollingPositions(this, true);
+                groupsFragment.createAdapter(this, groupsList);
+                groupsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET_MORE) {
                 int old_friends_size = groups.getList().size();
                 groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, false);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
-                    groupsLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                groupsLayout.createAdapter(this, groupsList);
+                groupsFragment.createAdapter(this, groupsList);
                 if(old_friends_size == groups.getList().size()) {
-                    groupsLayout.setScrollingPositions(this, false);
+                    groupsFragment.setScrollingPositions(this, false);
                 } else {
-                    groupsLayout.setScrollingPositions(this, true);
+                    groupsFragment.setScrollingPositions(this, true);
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    profileLayout.setCounter(user, "friends",  friends.count);
+                    profileFragment.setCounter(user, "friends",  friends.count);
                 }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 conversations = messages.parseConversationsList(data.getString("response"), downloadManager);
-                conversationsLayout.createAdapter(this, conversations, account);
+                conversationsFragment.createAdapter(this, conversations, account);
                 if (global_prefs.getString("current_screen", "").equals("messages")) {
                     progressLayout.setVisibility(View.GONE);
-                    conversationsLayout.setVisibility(View.VISIBLE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
             } else if(message == HandlerMessages.LIKES_ADD) {
                 likes.parse(data.getString("response"));
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    newsfeedLayout.select(likes.position, "likes", 1);
+                    newsfeedFragment.select(likes.position, "likes", 1);
                 } else if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
                 }
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 likes.parse(data.getString("response"));
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    newsfeedLayout.select(likes.position, "likes", 0);
+                    newsfeedFragment.select(likes.position, "likes", 0);
                 } else if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
                 }
             } else if(message == HandlerMessages.INVALID_TOKEN) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
@@ -1036,19 +996,19 @@ public class AppActivity extends Activity {
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 if(global_prefs.getString("photos_quality", "").equals("medium")) {
                     if (user.avatar_msize_url.length() > 0) {
-                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 } else if(global_prefs.getString("photos_quality", "").equals("high")) {
                     if (user.avatar_hsize_url.length() > 0) {
-                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 } else {
                     if (user.avatar_osize_url.length() > 0) {
-                        profileLayout.loadAvatar(user, global_prefs.getString("photos_quality", ""));
+                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 }
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
-                conversationsLayout.loadAvatars(conversations);
+                conversationsFragment.loadAvatars(conversations);
             } else if(message == HandlerMessages.LONGPOLL) {
                 notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.getBoolean("enableNotification", true),
                         notifMan.isRepeat(last_longpoll_response, data.getString("response")));
@@ -1065,7 +1025,7 @@ public class AppActivity extends Activity {
                             poll.answers.set(poll_answer, answer);
                             item.attachments.get(attachment_index).setContent(poll);
                             newsfeed.getWallPosts().set(item_pos, item);
-                            newsfeedLayout.updateItem(item, item_pos);
+                            newsfeedFragment.updateItem(item, item_pos);
                         }
                     }
                 } else if(global_prefs.getString("current_screen", "").equals("profile")) {
@@ -1079,7 +1039,7 @@ public class AppActivity extends Activity {
                             poll.answers.set(poll_answer, answer);
                             item.attachments.get(attachment_index).setContent(poll);
                             wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                         }
                     }
                 }
@@ -1095,7 +1055,7 @@ public class AppActivity extends Activity {
                             poll.answers.set(poll_answer, answer);
                             item.attachments.get(attachment_index).setContent(poll);
                             newsfeed.getWallPosts().set(item_pos, item);
-                            newsfeedLayout.updateItem(item, item_pos);
+                            newsfeedFragment.updateItem(item, item_pos);
                         }
                     }
                 } else if(global_prefs.getString("current_screen", "").equals("profile")) {
@@ -1109,7 +1069,7 @@ public class AppActivity extends Activity {
                             poll.answers.set(poll_answer, answer);
                             item.attachments.get(attachment_index).setContent(poll);
                             wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                         }
                     }
                 }
@@ -1135,7 +1095,7 @@ public class AppActivity extends Activity {
                             errorLayout.setVisibility(View.VISIBLE);
                         } else {
                             if(data.getString("method").equals("Wall.get") && global_prefs.getString("current_screen", "").equals("profile")) {
-                                ((WallErrorLayout) profileLayout.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                                ((WallErrorLayout) profileFragment.getView().findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                             } else {
                                 if(!inBackground) {
                                     Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
@@ -1173,6 +1133,7 @@ public class AppActivity extends Activity {
         }
     }
 
+    @SuppressLint("CommitTransaction")
     public void openAccountProfile() {
         try {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
@@ -1181,11 +1142,12 @@ public class AppActivity extends Activity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        profileLayout.setVisibility(View.GONE);
-        newsfeedLayout.setVisibility(View.GONE);
-        friendsLayout.setVisibility(View.GONE);
-        groupsLayout.setVisibility(View.GONE);
-        conversationsLayout.setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.hide(selectedFragment);
+        ft.show(getSupportFragmentManager().findFragmentByTag("profile"));
+        ft.commit();
+        selectedFragment = profileFragment;
         errorLayout.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         global_prefs_editor.putString("current_screen", "profile");
@@ -1214,11 +1176,11 @@ public class AppActivity extends Activity {
     }
 
     public void openFriendsList() {
-        profileLayout.setVisibility(View.GONE);
-        newsfeedLayout.setVisibility(View.GONE);
-        friendsLayout.setVisibility(View.GONE);
-        conversationsLayout.setVisibility(View.GONE);
-        groupsLayout.setVisibility(View.GONE);
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.hide(selectedFragment);
+        ft.show(getSupportFragmentManager().findFragmentByTag("friends"));
+        ft.commit();
+        selectedFragment = friendsFragment;
         progressLayout.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
         global_prefs_editor.putString("current_screen", "friends");
@@ -1227,11 +1189,7 @@ public class AppActivity extends Activity {
     }
 
     public void retryConnection(String method, String args) {
-        profileLayout.setVisibility(View.GONE);
-        newsfeedLayout.setVisibility(View.GONE);
-        friendsLayout.setVisibility(View.GONE);
-        groupsLayout.setVisibility(View.GONE);
-        conversationsLayout.setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         errorLayout.setVisibility(View.GONE);
         if(account.id == 0) {
@@ -1282,7 +1240,7 @@ public class AppActivity extends Activity {
     }
 
     public void hideSelectedItemBackground(int position) {
-        ((ListView) friendsLayout.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
+        ((ListView) friendsFragment.getView().findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void openIntentfromCounters(String action) {
@@ -1310,10 +1268,10 @@ public class AppActivity extends Activity {
         WallPost item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
-            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(position, "likes", "add");
+            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(position, "likes", "add");
         } else {
             item = newsfeed.getWallPosts().get(position);
-            newsfeedLayout.select(position, "likes", "add");
+            newsfeedFragment.select(position, "likes", "add");
         }
         likes.add(ovk_api, item.owner_id, item.post_id, position);
     }
@@ -1322,10 +1280,10 @@ public class AppActivity extends Activity {
         WallPost item;
         if (global_prefs.getString("current_screen", "").equals("profile")) {
             item = wall.getWallItems().get(position);
-            ((WallLayout) profileLayout.findViewById(R.id.wall_layout)).select(0, "likes", "delete");
+            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(0, "likes", "delete");
         } else {
             item = newsfeed.getWallPosts().get(position);
-            newsfeedLayout.select(0, "likes", "delete");
+            newsfeedFragment.select(0, "likes", "delete");
         }
         likes.delete(ovk_api, item.owner_id, item.post_id, position);
     }
@@ -1607,8 +1565,8 @@ public class AppActivity extends Activity {
             } else {
                 newsfeed.getGlobal(ovk_api, 50);
             }
-            newsfeedLayout.setVisibility(View.GONE);
-            ((RecyclerView) newsfeedLayout.findViewById(R.id.news_listview)).scrollToPosition(0);
+            findViewById(R.id.app_fragment).setVisibility(View.GONE);
+            ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview)).scrollToPosition(0);
             progressLayout.setVisibility(View.VISIBLE);
         }
     }
