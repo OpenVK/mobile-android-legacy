@@ -453,4 +453,13 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
     public void onEmojiconBackspaceClicked(View v) {
         EmojiconsFragment.backspace((EditText) findViewById(R.id.conversation_panel).findViewById(R.id.message_edit));
     }
+
+    @Override
+    public void onBackPressed() {
+        if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
+            super.onBackPressed();
+        } else {
+            findViewById(R.id.emojicons).setVisibility(View.GONE);
+        }
+    }
 }
