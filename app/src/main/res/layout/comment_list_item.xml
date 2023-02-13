@@ -37,7 +37,7 @@
         android:textSize="16dip"
         tools:ignore="Deprecated,HardcodedText,RtlHardcoded,SpUsage" />
 
-    <TextView
+    <com.rockerhieu.emojicon.EmojiconTextView
         android:id="@+id/comment_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
         android:textSize="14dip"
         tools:ignore="HardcodedText,RtlHardcoded,SpUsage">
 
-    </TextView>
+    </com.rockerhieu.emojicon.EmojiconTextView>
 
     <TextView
         android:id="@+id/expand_text_btn"

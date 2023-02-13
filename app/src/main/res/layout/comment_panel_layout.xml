@@ -21,7 +21,7 @@
         android:text="@string/send_b"
         android:textSize="14sp" />
 
-    <EditText
+    <com.rockerhieu.emojicon.EmojiconEditText
         android:id="@+id/comment_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

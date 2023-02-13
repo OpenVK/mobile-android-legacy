@@ -7,37 +7,6 @@
     android:background="@drawable/bg_post"
     android:orientation="vertical">
 
-    <!--
-        LinearLayout android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:orientation="vertical"
-		android:duplicateParentState="true" android:layout_marginRight="7dip" android:layout_marginBottom="7dip" android:layout_marginTop="4dip"
-    -->
-
-    <!--
-            LinearLayout android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:id="@+id/post_retweet"
-			android:gravity="center_vertical" android:visibility="gone"
-			android:duplicateParentState="true"
-    -->
-
-
-    <!--
-    ImageView
-        android:id="@+id/post_retweet_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/post_retweet_text"
-        android:layout_marginTop="3dip"
-        android:layout_alignParentLeft="true"
-        android:duplicateParentState="true"
-        android:paddingLeft="1dip"
-        android:paddingRight="3dip"
-        android:paddingTop="1dip"
-        android:src="@drawable/ic_retweet"
-        android:visibility="visible" >
-    </ImageView
-    -->
-
     <LinearLayout
         android:id="@+id/poster_ll"
         android:layout_width="match_parent"
@@ -90,7 +59,7 @@
                 android:paddingLeft="12dip"
                 tools:ignore="ObsoleteLayoutParam">
 
-                <com.rockerhieu.emojicon.EmojiconTextView
+                <TextView
                     android:id="@+id/post_info_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -128,49 +97,6 @@
             tools:ignore="ContentDescription,ObsoleteLayoutParam,RtlHardcoded" />
 
     </LinearLayout>
-    <!-- /LinearLayout -->
-
-    <!--
-        LinearLayout android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:id="@+id/post_attach_info"
-			android:visibility="gone" android:gravity="center_vertical"
-			android:layout_marginTop="3dip"
-			android:duplicateParentState="true">
-			<ImageView android:src="@null" android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:duplicateParentState="true"
-				android:id="@+id/post_attach_icon"></ImageView>
-			<TextView android:textColorHighlight="#802B587A"
-				android:text="TextView" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/post_attach_view"
-				android:linksClickable="true" android:textColor="@color/hint"
-				android:textColorLink="#2B587A" android:singleLine="true"
-				android:ellipsize="marquee" android:layout_marginLeft="3dip"
-				android:duplicateParentState="true"></TextView>
-		</LinearLayout
-    -->
-    <!--
-            LinearLayout android:layout_height="wrap_content"
-			android:id="@+id/linearLayout1" android:layout_width="fill_parent"
-			android:layout_marginTop="5dip"
-			android:duplicateParentState="true" android:gravity="center_vertical"
-			android:layout_toRightOf="@id/user_photo" android:layout_below="@id/post_attach_container"
-    -->
-
-    <!-- /LinearLayout -->
-    <!-- /LinearLayout -->
-
-    <!--
-        View
-        android:id="@+id/view2"
-        android:background="@drawable/post_shadow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/user_photo"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" /
-    -->
 
     <LinearLayout
         android:id="@+id/news_item_ll"
@@ -178,7 +104,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <com.rockerhieu.emojicon.EmojiconTextView
             android:id="@+id/post_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -291,7 +217,7 @@
                     android:textSize="14dip"
                     tools:ignore="HardcodedText,SpUsage" />
 
-                <TextView
+                <com.rockerhieu.emojicon.EmojiconTextView
                     android:id="@+id/post_retweet_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

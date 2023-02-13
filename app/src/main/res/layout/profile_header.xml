@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#313743"
@@ -62,7 +63,7 @@
             app:srcCompat="@drawable/ic_api_android_app_indicator" />
     </LinearLayout>
 
-    <TextView
+    <com.rockerhieu.emojicon.EmojiconTextView
         android:id="@+id/profile_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,7 +79,8 @@
         android:paddingBottom="12dip"
         android:text="Status status status"
         android:textColor="#d8d8d9"
-        android:textSize="15dip" />
+        android:textSize="15dip"
+        tools:ignore="NotSibling" />
 
     <TextView
         android:id="@+id/profile_name"

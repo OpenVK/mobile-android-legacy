@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 
@@ -29,8 +30,10 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.user_interface.core.activities.AppActivity;
+import uk.openvk.android.legacy.user_interface.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.user_interface.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.user_interface.view.InfinityScrollView;
 
 public class NewsfeedLayout extends LinearLayout {
     private View headerView;
@@ -101,7 +104,7 @@ public class NewsfeedLayout extends LinearLayout {
                     WallPost item = wallPosts.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%s", getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -143,7 +146,7 @@ public class NewsfeedLayout extends LinearLayout {
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                     if (photoAttachment.url.length() > 0) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(),
+                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getContext().getCacheDir(),
                                                 item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
                                         if (bitmap != null) {
                                             photoAttachment.photo = bitmap;
@@ -170,7 +173,7 @@ public class NewsfeedLayout extends LinearLayout {
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                 if (photoAttachment.url.length() > 0) {
-                                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getContext().getCacheDir(), item.owner_id, item.post_id), options);
                                     if (bitmap != null) {
                                         photoAttachment.photo = bitmap;
                                         attachment.status = "done";
@@ -207,34 +210,17 @@ public class NewsfeedLayout extends LinearLayout {
         if(load_photos) {
             loadPhotos();
         }
-        newsfeedView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            int pastVisiblesItems, visibleItemCount, totalItemCount;
-
+        final InfinityScrollView scrollView = findViewById(R.id.scrollView);
+        scrollView.setOnScrollListener(new OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(load_photos) {
-                    loadPhotos();
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if(infinity_scroll) {
-                    if (dy > 0) {
-                        visibleItemCount = llm.getChildCount();
-                        totalItemCount = llm.getItemCount();
-                        pastVisiblesItems = llm.findFirstVisibleItemPosition();
-                        pastComplVisiblesItems = llm.findFirstCompletelyVisibleItemPosition();
-
-                        if (!loading_more_posts) {
-                            if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                    loading_more_posts = true;
-                                    ((AppActivity) ctx).loadMoreNews();
-                                }
-                            }
+            public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                if (!loading_more_posts) {
+                    if (diff == 0) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            loading_more_posts = true;
+                            ((AppActivity) ctx).loadMoreNews();
                         }
                     }
                 }

@@ -123,7 +123,7 @@
                         android:textColor="#888888"
                         android:textSize="12sp" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/interests_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -151,7 +151,7 @@
                         android:textColor="#888888"
                         android:textSize="12sp" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/music_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -179,7 +179,7 @@
                         android:textColor="#888888"
                         android:textSize="12sp" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/movies_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -207,7 +207,7 @@
                         android:textColor="#888888"
                         android:textSize="12sp" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/tvshows_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -235,7 +235,7 @@
                         android:textColor="#888888"
                         android:textSize="12sp" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/books_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -262,7 +262,7 @@
                         android:textAllCaps="true"
                         android:textColor="#888888" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/quotes_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -289,7 +289,7 @@
                         android:textAllCaps="true"
                         android:textColor="#888888" />
 
-                    <TextView
+                    <com.rockerhieu.emojicon.EmojiconTextView
                         android:id="@+id/about_label2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

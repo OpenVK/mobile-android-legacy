@@ -27,18 +27,14 @@
                 <uk.openvk.android.legacy.user_interface.view.layouts.ProfileHeader
                     android:id="@+id/profile_header"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                </uk.openvk.android.legacy.user_interface.view.layouts.ProfileHeader>
+                    android:layout_height="wrap_content"/>
 
                 <uk.openvk.android.legacy.user_interface.view.layouts.AboutProfileLayout
                     android:id="@+id/about_profile_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="4dp"
-                    android:visibility="gone">
-
-                </uk.openvk.android.legacy.user_interface.view.layouts.AboutProfileLayout>
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -108,18 +104,14 @@
                         android:layout_height="match_parent"
                         android:layout_marginEnd="4dp"
                         android:layout_marginRight="4dp"
-                        android:visibility="gone">
-
-                    </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+                        android:visibility="gone"/>
 
                     <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
                         android:id="@+id/friends_counter"
                         android:layout_width="110dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp">
-
-                    </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+                        android:layout_marginRight="4dp"/>
 
                     <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
                         android:id="@+id/mutual_counter"
@@ -127,9 +119,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
                         android:layout_marginLeft="4dp"
-                        android:visibility="gone">
-
-                    </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+                        android:visibility="gone"/>
                 </TableRow>
 
             </LinearLayout>
