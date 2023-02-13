@@ -247,6 +247,12 @@ public class MessagesListAdapter extends BaseAdapter {
         return view;
     }
 
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
+
     public void setArray(ArrayList<Message> array) {
         objects = array;
     }

@@ -11,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.Account;
@@ -37,6 +40,11 @@ public class SlidingMenuLayout extends LinearLayout {
         });
         TextView profile_name = (TextView) findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
+        TextView version_name = findViewById(R.id.version_label);
+        version_name.setText(getResources().getString(R.string.app_version_text, BuildConfig.VERSION_NAME));
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            version_name.setVisibility(GONE);
+        }
     }
 
     public SlidingMenuLayout(final Context context, AttributeSet attrs) {
@@ -44,6 +52,8 @@ public class SlidingMenuLayout extends LinearLayout {
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.sliding_menu_layout, this, false);
         this.addView(view);
+        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(getResources().getColor(R.color.transparent));
+        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(getResources().getColor(R.color.transparent));
         ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,8 +62,13 @@ public class SlidingMenuLayout extends LinearLayout {
                 }
             }
         });
-        TextView profile_name = (TextView) findViewById(R.id.profile_name);
+        TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
+        TextView version_name = findViewById(R.id.version_label);
+        version_name.setText(getResources().getString(R.string.app_version_text, BuildConfig.VERSION_NAME));
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            version_name.setVisibility(GONE);
+        }
     }
 
     public void setSearchListener(OnClickListener onClickListener) {

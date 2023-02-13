@@ -59,11 +59,23 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
+        android:layout_weight="1"
         android:divider="@android:drawable/divider_horizontal_textfield"
         android:entries="@array/leftmenu"
         android:fitsSystemWindows="true"
         android:theme="@style/SlidingMenu">
 
     </ListView>
+
+    <TextView
+        android:id="@+id/version_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:gravity="right"
+        android:padding="4dp"
+        android:text="@string/app_version_text"
+        android:textColor="#8fffffff"
+        android:textSize="12sp" />
 
 </LinearLayout>
