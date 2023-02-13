@@ -220,7 +220,7 @@
                                 android:visibility="gone"
                                 tools:ignore="ContentDescription" />
 
-                            <uk.openvk.android.legacy.user_interface.view.layouts.PollLayout
+                            <uk.openvk.android.legacy.ui.view.layouts.PollLayout
                                 android:id="@+id/repost_poll_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -254,7 +254,7 @@
                         android:visibility="gone"
                         tools:ignore="ContentDescription" />
 
-                    <uk.openvk.android.legacy.user_interface.view.layouts.PollLayout
+                    <uk.openvk.android.legacy.ui.view.layouts.PollLayout
                         android:id="@+id/poll_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

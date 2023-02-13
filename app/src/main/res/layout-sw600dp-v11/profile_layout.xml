@@ -24,12 +24,12 @@
                 android:background="#313743"
                 android:orientation="vertical">
 
-                <uk.openvk.android.legacy.user_interface.view.layouts.ProfileHeader
+                <uk.openvk.android.legacy.ui.view.layouts.ProfileHeader
                     android:id="@+id/profile_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <uk.openvk.android.legacy.user_interface.view.layouts.AboutProfileLayout
+                <uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout
                     android:id="@+id/about_profile_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -98,7 +98,7 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                    <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/photos_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
@@ -106,14 +106,14 @@
                         android:layout_marginRight="4dp"
                         android:visibility="gone"/>
 
-                    <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                    <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/friends_counter"
                         android:layout_width="110dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"/>
 
-                    <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                    <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/mutual_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
@@ -124,18 +124,18 @@
 
             </LinearLayout>
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.ProfileWallSelector
+            <uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector
                 android:id="@+id/wall_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.WallLayout
+            <uk.openvk.android.legacy.ui.view.layouts.WallLayout
                 android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#e3e4e6" />
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.WallErrorLayout
+            <uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout
                 android:id="@+id/wall_error_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

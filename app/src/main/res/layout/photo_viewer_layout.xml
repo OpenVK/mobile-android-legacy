@@ -17,23 +17,23 @@
             android:orientation="vertical">
 
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.ZoomableImageView
+            <uk.openvk.android.legacy.ui.view.layouts.ZoomableImageView
                 android:id="@+id/picture_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#000000"
                 android:visibility="visible" />
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
+            <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
                 android:id="@+id/progress_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone">
 
-            </uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout>
+            </uk.openvk.android.legacy.ui.view.layouts.ProgressLayout>
         </LinearLayout>
 
-        <uk.openvk.android.legacy.user_interface.view.layouts.ActionBarImitation
+        <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
             android:id="@+id/actionbar_imitation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

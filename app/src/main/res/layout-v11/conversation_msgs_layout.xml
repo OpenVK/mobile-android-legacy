@@ -34,7 +34,7 @@
 
         </RelativeLayout>
 
-        <uk.openvk.android.legacy.user_interface.view.layouts.ConversationPanel
+        <uk.openvk.android.legacy.ui.view.layouts.ConversationPanel
             android:id="@+id/conversation_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -5,7 +5,7 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ActionBarImitation
+    <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/actionbar_imitation"/>
@@ -28,10 +28,10 @@
         android:paddingRight="12dp"
         android:paddingBottom="8dp" />
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.SearchResultsLayout
+    <uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout
         android:id="@+id/sr_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </uk.openvk.android.legacy.user_interface.view.layouts.SearchResultsLayout>
+    </uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout>
 </LinearLayout>

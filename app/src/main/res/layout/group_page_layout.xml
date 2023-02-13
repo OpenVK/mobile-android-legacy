@@ -3,18 +3,18 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ActionBarImitation
+    <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/actionbar_imitation"/>
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ErrorLayout
+    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
@@ -38,21 +38,21 @@
                 android:background="#313743"
                 android:orientation="vertical">
 
-                <uk.openvk.android.legacy.user_interface.view.layouts.GroupHeader
+                <uk.openvk.android.legacy.ui.view.layouts.GroupHeader
                     android:id="@+id/group_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                </uk.openvk.android.legacy.user_interface.view.layouts.GroupHeader>
+                </uk.openvk.android.legacy.ui.view.layouts.GroupHeader>
 
-                <uk.openvk.android.legacy.user_interface.view.layouts.AboutGroupLayout
+                <uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout
                     android:id="@+id/about_group_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:visibility="gone">
 
-                </uk.openvk.android.legacy.user_interface.view.layouts.AboutGroupLayout>
+                </uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout>
 
                 <Button
                     android:id="@+id/join_to_comm"
@@ -79,24 +79,24 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                    <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/members_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1">
 
-                    </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+                    </uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout>
                 </TableRow>
 
             </LinearLayout>
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.ProfileWallSelector
+            <uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector
                 android:id="@+id/wall_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.WallErrorLayout
+            <uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#ffffff"
@@ -104,7 +104,7 @@
                 android:id="@+id/wall_error_layout"
                 />
 
-            <uk.openvk.android.legacy.user_interface.view.layouts.WallLayout
+            <uk.openvk.android.legacy.ui.view.layouts.WallLayout
                 android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

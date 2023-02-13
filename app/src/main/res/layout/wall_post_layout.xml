@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ActionBarImitation
+    <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/actionbar_imitation"/>
@@ -16,27 +16,27 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <uk.openvk.android.legacy.user_interface.view.layouts.PostViewLayout
+        <uk.openvk.android.legacy.ui.view.layouts.PostViewLayout
             android:id="@+id/comments_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             tools:ignore="InefficientWeight" />
 
-        <uk.openvk.android.legacy.user_interface.view.layouts.CommentPanel
+        <uk.openvk.android.legacy.ui.view.layouts.CommentPanel
             android:id="@+id/comment_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/background_light" />
     </LinearLayout>
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.view.layouts.ErrorLayout
+    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
