@@ -1,6 +1,5 @@
 package uk.openvk.android.legacy.user_interface.core.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,18 +14,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.rockerhieu.emojicon.EmojiconGridFragment;
+import com.rockerhieu.emojicon.EmojiconsFragment;
+import com.rockerhieu.emojicon.emoji.Emojicon;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -45,7 +51,7 @@ import uk.openvk.android.legacy.user_interface.view.layouts.ConversationPanel;
 import uk.openvk.android.legacy.user_interface.list.adapters.MessagesListAdapter;
 import uk.openvk.android.legacy.user_interface.wrappers.LocaleContextWrapper;
 
-public class ConversationActivity extends Activity {
+public class ConversationActivity extends FragmentActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener {
 
     private OvkAPIWrapper ovk_api;
     public Handler handler;
@@ -82,6 +88,7 @@ public class ConversationActivity extends Activity {
         setConversationView();
         messages = new Messages();
         registerBroadcastReceiver();
+        setEmojiconFragment(false);
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -199,6 +206,21 @@ public class ConversationActivity extends Activity {
 
     private void setConversationView() {
         final ConversationPanel conversationPanel = (ConversationPanel) findViewById(R.id.conversation_panel);
+        ((ImageButton) conversationPanel.findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
+                    View view = ConversationActivity.this.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                    findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.emojicons).setVisibility(View.GONE);
+                }
+            }
+        });
         ((EditText) conversationPanel.findViewById(R.id.message_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
@@ -344,7 +366,7 @@ public class ConversationActivity extends Activity {
         if(!history.get(item_pos).isIncoming) {
             functions.add(getResources().getString(R.string.copy_text));
             functions.add(getResources().getString(R.string.delete));
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -369,7 +391,7 @@ public class ConversationActivity extends Activity {
             });
         } else {
             functions.add(getResources().getString(R.string.copy_text));
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -413,5 +435,22 @@ public class ConversationActivity extends Activity {
         OvkAlertDialog dialog = new OvkAlertDialog(this);
         dialog.build(builder, getResources().getString(R.string.confirm), getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", text)), null);
         dialog.show();
+    }
+
+    private void setEmojiconFragment(boolean useSystemDefault) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.emojicons, EmojiconsFragment.newInstance(useSystemDefault))
+                .commit();
+    }
+
+    @Override
+    public void onEmojiconClicked(Emojicon emojicon) {
+        EmojiconsFragment.input((EditText) findViewById(R.id.conversation_panel).findViewById(R.id.message_edit), emojicon);
+    }
+
+    @Override
+    public void onEmojiconBackspaceClicked(View v) {
+        EmojiconsFragment.backspace((EditText) findViewById(R.id.conversation_panel).findViewById(R.id.message_edit));
     }
 }

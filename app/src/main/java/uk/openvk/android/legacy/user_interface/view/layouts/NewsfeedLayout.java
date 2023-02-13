@@ -78,7 +78,6 @@ public class NewsfeedLayout extends LinearLayout {
             newsfeedAdapter.setArray(wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
         }
-
     }
 
     public void updateItem(WallPost item, int position) {

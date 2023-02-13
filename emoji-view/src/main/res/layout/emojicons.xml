@@ -15,24 +15,24 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/keyboard_background_holo"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#e5151515">
 
     <LinearLayout
         android:id="@+id/emojis_tab"
         android:layout_width="match_parent"
-        android:layout_height="50dip"
+        android:layout_height="42dip"
         android:layout_alignParentTop="true"
         android:orientation="horizontal">
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_tab_0_recents"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@null"
             android:scaleType="center"
-            android:id="@+id/emojis_tab_0_recents"
             android:src="@drawable/ic_emoji_recent_light" />
 
         <View
@@ -41,12 +41,12 @@
             android:background="@color/horizontal_vertical" />
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_tab_1_people"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@null"
             android:scaleType="center"
-            android:id="@+id/emojis_tab_1_people"
             android:src="@drawable/ic_emoji_people_light" />
 
         <View
@@ -55,12 +55,12 @@
             android:background="@color/horizontal_vertical" />
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_tab_2_nature"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@null"
             android:scaleType="center"
-            android:id="@+id/emojis_tab_2_nature"
             android:src="@drawable/ic_emoji_nature_light" />
 
         <View
@@ -69,12 +69,12 @@
             android:background="@color/horizontal_vertical" />
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_tab_3_objects"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@null"
             android:scaleType="center"
-            android:id="@+id/emojis_tab_3_objects"
             android:src="@drawable/ic_emoji_objects_light" />
 
         <View
@@ -83,12 +83,12 @@
             android:background="@color/horizontal_vertical" />
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_tab_4_cars"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@null"
             android:scaleType="center"
-            android:id="@+id/emojis_tab_4_cars"
             android:src="@drawable/ic_emoji_places_light" />
 
         <View
@@ -97,12 +97,12 @@
             android:background="@color/horizontal_vertical" />
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_tab_5_punctuation"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@null"
             android:scaleType="center"
-            android:id="@+id/emojis_tab_5_punctuation"
             android:src="@drawable/ic_emoji_symbols_light" />
 
         <View
@@ -111,20 +111,20 @@
             android:background="@color/horizontal_vertical" />
 
         <ImageButton
-            android:background="@null"
+            android:id="@+id/emojis_backspace"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/emojis_backspace"
+            android:background="@null"
             android:src="@drawable/sym_keyboard_delete_holo_dark" />
     </LinearLayout>
 
     <android.support.v4.view.ViewPager
-        android:layout_below="@id/emojis_tab"
         android:id="@+id/emojis_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/emojis_tab" />
 
     <View
         android:layout_width="match_parent"
