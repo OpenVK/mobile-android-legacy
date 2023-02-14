@@ -20,15 +20,15 @@ import uk.openvk.android.legacy.ui.list.adapters.PollAdapter;
  * Created by Dmitry on 16.10.2022.
  */
 
-public class PollLayout extends LinearLayout {
+public class PollAttachView extends LinearLayout {
 
     private PollAdapter pollAdapter;
     private LinearLayoutManager llm;
 
-    public PollLayout(Context context, AttributeSet attrs) {
+    public PollAttachView(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.poll_layout, null);
+                R.layout.attach_poll, null);
 
         this.addView(view);
 

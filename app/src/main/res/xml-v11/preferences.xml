@@ -9,7 +9,7 @@
                 <ListPreference android:entries="@array/sett_friends_order"
                     android:entryValues="@array/sett_friends_order_v" android:title="@string/sett_flist_sort"
                     android:dialogTitle="@string/sett_flist_sort" android:key="friendsOrderNew"
-                    android:layout="@layout/list_prefw"
+                    android:layout="@layout/pref_list"
                     android:defaultValue="0" />
         -->
 

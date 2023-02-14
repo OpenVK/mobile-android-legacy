@@ -178,20 +178,6 @@ public class AppActivity extends FragmentActivity {
         groups = new Groups();
         wall = new Wall();
         registerBroadcastReceiver();
-        if(global_prefs.getBoolean("refreshOnOpen", true)) {
-            global_prefs_editor.putString("current_screen", "newsfeed");
-            global_prefs_editor.commit();
-        } else {
-            if(global_prefs.getString("current_screen", "newsfeed").equals("profile")) {
-                openAccountProfile();
-            } else if(global_prefs.getString("current_screen", "newsfeed").equals("friends")) {
-                onSlidingMenuItemClicked(0);
-            } if(global_prefs.getString("current_screen", "newsfeed").equals("messages")) {
-                onSlidingMenuItemClicked(1);
-            } if(global_prefs.getString("current_screen", "newsfeed").equals("groups")) {
-                onSlidingMenuItemClicked(2);
-            }
-        }
         if(((OvkApplication) getApplicationContext()).isTablet) {
             newsfeedFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
             ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
@@ -464,6 +450,26 @@ public class AppActivity extends FragmentActivity {
         selectedFragment = newsfeedFragment;
         ft.show(newsfeedFragment);
         ft.commit();
+        if(global_prefs.getBoolean("refreshOnOpen", true)) {
+            global_prefs_editor.putString("current_screen", "newsfeed");
+            global_prefs_editor.commit();
+        } else {
+            try {
+                if (global_prefs.getString("current_screen", "newsfeed").equals("profile")) {
+                    openAccountProfile();
+                } else if (global_prefs.getString("current_screen", "newsfeed").equals("friends")) {
+                    onSlidingMenuItemClicked(0);
+                }
+                if (global_prefs.getString("current_screen", "newsfeed").equals("messages")) {
+                    onSlidingMenuItemClicked(1);
+                }
+                if (global_prefs.getString("current_screen", "newsfeed").equals("groups")) {
+                    onSlidingMenuItemClicked(2);
+                }
+            } catch (Exception ignored) {
+
+            }
+        }
         selectedFragment = newsfeedFragment;
         progressLayout.setVisibility(View.VISIBLE);
 
@@ -1137,41 +1143,48 @@ public class AppActivity extends FragmentActivity {
     public void openAccountProfile() {
         try {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
+                if(menu == null) {
+                    menu = new SlidingMenu(this);
+                }
                 menu.toggle(true);
+            }
+
+            findViewById(R.id.app_fragment).setVisibility(View.GONE);
+            ft = getSupportFragmentManager().beginTransaction();
+            if(selectedFragment != null) {
+                ft.hide(selectedFragment);
+            } else {
+                ft.hide(newsfeedFragment);
+            }
+            ft.show(profileFragment);
+            ft.commit();
+            selectedFragment = profileFragment;
+            errorLayout.setVisibility(View.GONE);
+            progressLayout.setVisibility(View.VISIBLE);
+            global_prefs_editor.putString("current_screen", "profile");
+            global_prefs_editor.commit();
+
+            if(users == null) {
+                users = new Users();
+            }
+            users.getUser(ovk_api, account.id);
+            menu_id = R.menu.profile;
+            if(activity_menu != null) {
+                activity_menu.clear();
+            }
+            try {
+                activity_menu.findItem(R.id.remove_friend).setVisible(false);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            setActionBar("");
+            setActionBarTitle(getResources().getString(R.string.profile));
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBarImitation.setActionButton("", 0, null);
+                createActionPopupMenu(activity_menu, true);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-        findViewById(R.id.app_fragment).setVisibility(View.GONE);
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.hide(selectedFragment);
-        ft.show(getSupportFragmentManager().findFragmentByTag("profile"));
-        ft.commit();
-        selectedFragment = profileFragment;
-        errorLayout.setVisibility(View.GONE);
-        progressLayout.setVisibility(View.VISIBLE);
-        global_prefs_editor.putString("current_screen", "profile");
-        global_prefs_editor.commit();
-
-        if(users == null) {
-            users = new Users();
-        }
-        users.getUser(ovk_api, account.id);
-        menu_id = R.menu.profile;
-        if(activity_menu != null) {
-            activity_menu.clear();
-        }
-        onCreateOptionsMenu(activity_menu);
-        try {
-            activity_menu.findItem(R.id.remove_friend).setVisible(false);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        setActionBar("");
-        setActionBarTitle(getResources().getString(R.string.profile));
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            actionBarImitation.setActionButton("", 0, null);
-            createActionPopupMenu(activity_menu, true);
         }
     }
 

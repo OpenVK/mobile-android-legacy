@@ -3,7 +3,7 @@
     
 	<PreferenceCategory
 		android:title="@string/sett_general"
-		android:layout="@layout/category_prefw">
+		android:layout="@layout/pref_category">
 
 		<CheckBoxPreference android:title="@string/sett_https"
 			android:summary="@string/sett_https_summary" android:key="useHTTPS"

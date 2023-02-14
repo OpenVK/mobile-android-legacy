@@ -187,7 +187,7 @@ public class PostViewLayout extends LinearLayout {
             TextView original_post_text = ((TextView) findViewById(R.id.post_retweet_text));
             TextView repost_expand_text_btn = ((TextView) findViewById(R.id.repost_expand_text_btn));
             ImageView original_post_photo = (ImageView) findViewById(R.id.repost_photo);
-            PollLayout original_post_poll = (PollLayout) findViewById(R.id.repost_poll_layout);
+            PollAttachView original_post_poll = (PollAttachView) findViewById(R.id.repost_poll_layout);
             repost_info.setVisibility(View.VISIBLE);
             original_poster_name.setText(item.repost.newsfeed_item.name);
             original_post_info.setText(item.repost.newsfeed_item.info);
@@ -226,7 +226,7 @@ public class PostViewLayout extends LinearLayout {
             ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s", item.counters.likes));
         }
 
-        PollLayout pollLayout = findViewById(R.id.poll_layout);
+        PollAttachView pollAttachView = findViewById(R.id.poll_layout);
 
     }
 

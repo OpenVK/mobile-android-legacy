@@ -15,6 +15,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.models.WallPostSource;
@@ -293,6 +294,18 @@ public class Wall implements Parcelable {
                     } else if(quality.equals("original")) {
                         photos_osize.add(photoAttachment);
                     }
+                } else if (attachment.getString("type").equals("video")) {
+                    JSONObject video = attachment.getJSONObject("video");
+                    VideoAttachment videoAttachment = new VideoAttachment();
+                    videoAttachment.id = video.getLong("id");
+                    videoAttachment.title = video.getString("title");
+                    //videoAttachment.url = video.getString("url");
+                    videoAttachment.duration = video.getInt("duration");
+                    attachment_status = "done";
+                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                    attachment_obj.status = attachment_status;
+                    attachment_obj.setContent(videoAttachment);
+                    attachments_list.add(attachment_obj);
                 } else if (attachment.getString("type").equals("poll")) {
                     JSONObject poll_attachment = attachment.getJSONObject("poll");
                     PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"), poll_attachment.getInt("id"), poll_attachment.getLong("end_date"), poll_attachment.getBoolean("multiple"), poll_attachment.getBoolean("can_vote"),

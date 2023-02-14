@@ -26,12 +26,14 @@ import java.util.regex.Pattern;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.models.OvkLink;
-import uk.openvk.android.legacy.ui.view.layouts.PollLayout;
+import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
@@ -87,12 +89,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         public final ImageView avatar;
         private final ProgressBar photo_progress;
         private final TextView error_label;
-        private final PollLayout pollLayout;
+        private final PollAttachView pollAttachView;
         private final ImageView original_post_photo;
-        private final PollLayout original_post_poll;
+        private final PollAttachView original_post_poll;
         private final TextView expand_text_btn;
         private final TextView repost_expand_text_btn;
         private final ImageView api_app_indicator;
+        private final VideoAttachView post_video;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
 
@@ -103,19 +106,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.post_info = (TextView) view.findViewById(R.id.post_info_view);
             this.post_text = (TextView) view.findViewById(R.id.post_view);
             this.post_photo = (ImageView) view.findViewById(R.id.post_photo);
+            this.post_video = view.findViewById(R.id.post_video);
             this.likes_counter = (TextView) view.findViewById(R.id.post_likes);
             this.reposts_counter = (TextView) view.findViewById(R.id.post_reposts);
             this.comments_counter = (TextView) view.findViewById(R.id.post_comments);
             this.avatar = (ImageView) view.findViewById(R.id.author_avatar);
             this.photo_progress = ((ProgressBar) view.findViewById(R.id.photo_progress));
             this.error_label = ((TextView) convertView.findViewById(R.id.error_label));
-            this.pollLayout = ((PollLayout) convertView.findViewById(R.id.poll_layout));
+            this.pollAttachView = ((PollAttachView) convertView.findViewById(R.id.poll_layout));
             this.repost_info = ((LinearLayout) convertView.findViewById(R.id.post_attach_container));
             this.original_poster_name = ((TextView) convertView.findViewById(R.id.post_retweet_name));
             this.original_post_info = ((TextView) convertView.findViewById(R.id.post_retweet_time));
             this.original_post_text = ((TextView) convertView.findViewById(R.id.post_retweet_text));
             this.original_post_photo = (ImageView) view.findViewById(R.id.repost_photo);
-            this.original_post_poll = (PollLayout) view.findViewById(R.id.repost_poll_layout);
+            this.original_post_poll = (PollAttachView) view.findViewById(R.id.repost_poll_layout);
             this.expand_text_btn = (TextView) view.findViewById(R.id.expand_text_btn);
             this.repost_expand_text_btn = (TextView) view.findViewById(R.id.repost_expand_text_btn);
             this.api_app_indicator = (ImageView) view.findViewById(R.id.api_app_indicator);
@@ -398,7 +402,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             error_label.setVisibility(View.GONE);
             photo_progress.setVisibility(View.GONE);
             post_photo.setVisibility(View.GONE);
-            pollLayout.setVisibility(View.GONE);
+            post_video.setVisibility(View.GONE);
+            pollAttachView.setVisibility(View.GONE);
 
             for(int i = 0; i < item.attachments.size(); i++) {
                 if (item.attachments.get(i).status.equals("loading")) {
@@ -427,12 +432,17 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             }
                         });
                     }
+                } else if (item.attachments.get(i).status.equals("done") && item.attachments.get(i).type.equals("video")) {
+                    if (item.attachments.get(i).getContent() != null) {
+                        post_video.setAttachment((VideoAttachment) item.attachments.get(i).getContent());
+                        post_video.setVisibility(View.VISIBLE);
+                    }
                 } else if (item.attachments.get(i).type.equals("poll")) {
                     if (item.attachments.get(i).getContent() != null) {
                         PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(i).getContent());
-                        pollLayout.createAdapter(ctx, position, pollAttachment.answers, pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
-                        pollLayout.setPollInfo(pollAttachment.question, pollAttachment.anonymous, pollAttachment.end_date);
-                        pollLayout.setVisibility(View.VISIBLE);
+                        pollAttachView.createAdapter(ctx, position, pollAttachment.answers, pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                        pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous, pollAttachment.end_date);
+                        pollAttachView.setVisibility(View.VISIBLE);
                     }
                 }
             }

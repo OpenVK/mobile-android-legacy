@@ -165,7 +165,7 @@ public class WallLayout extends LinearLayout {
                                             item.attachments.get(0).status = "error";
                                         }
                                     }
-                                } else if(!item.attachments.get(0).type.equals("poll")) {
+                                } else if(!item.attachments.get(0).type.equals("poll") && !item.attachments.get(0).type.equals("video")) {
                                     item.attachments.get(0).status = "not_supported";
                                 }
                             }

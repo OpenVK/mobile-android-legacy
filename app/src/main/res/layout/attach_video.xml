@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.openvk.android.legacy.VideoAttachView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/video_att_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="180dp"
     android:clickable="true"
     android:focusable="true"
-    android:focusableInTouchMode="false" >
+    android:focusableInTouchMode="false">
 
     <ImageView
         android:id="@+id/video_preview"
-        android:layout_width="160dip"
-        android:layout_height="120dip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:background="#000"
-        android:scaleType="fitCenter" android:layout_weight="1"/>
+        android:scaleType="fitCenter" />
 
     <ImageView
         android:id="@+id/video_play_icon"
@@ -26,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:gravity="right" >
+        android:gravity="right">
 
         <TextView
             android:id="@+id/attach_title"
@@ -34,10 +35,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#66000000"
-            android:padding="7dip"
-            android:text="TextView"
-            android:singleLine="true"
             android:ellipsize="marquee"
+            android:padding="7dip"
+            android:singleLine="true"
+            android:text="TextView"
             android:textColor="#FFF" />
 
         <TextView
@@ -46,10 +47,10 @@
             android:layout_height="wrap_content"
             android:background="#66000000"
             android:padding="7dip"
-            android:text="TextView"
             android:singleLine="true"
+            android:text="TextView"
             android:textColor="#BFffffff" />
 
     </LinearLayout>
 
-</uk.openvk.android.legacy.VideoAttachView>
+</FrameLayout>

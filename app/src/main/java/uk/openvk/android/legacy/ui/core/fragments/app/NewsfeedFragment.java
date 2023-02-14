@@ -197,7 +197,7 @@ public class NewsfeedFragment extends Fragment {
                                 }
                             }
                             wallPosts.set(i, item);
-                        } else if(!item.attachments.get(0).type.equals("poll")) {
+                        } else if(!item.attachments.get(0).type.equals("poll") && !item.attachments.get(0).type.equals("video")) {
                             item.attachments.get(0).status = "not_supported";
                         }
                     }

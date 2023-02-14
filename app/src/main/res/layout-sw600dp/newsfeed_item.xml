@@ -303,7 +303,7 @@
                         android:visibility="gone"
                         tools:ignore="ContentDescription" />
 
-                    <uk.openvk.android.legacy.ui.view.layouts.PollLayout
+                    <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
                         android:id="@+id/repost_poll_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -338,7 +338,16 @@
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
 
-        <uk.openvk.android.legacy.ui.view.layouts.PollLayout
+            <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
+                android:id="@+id/post_video"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_marginBottom="10dip"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:visibility="gone" />
+
+        <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
             android:id="@+id/poll_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

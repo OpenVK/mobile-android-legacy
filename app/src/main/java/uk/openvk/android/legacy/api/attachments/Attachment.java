@@ -11,6 +11,9 @@ public class Attachment {
             case "photo":
                 content = new PhotoAttachment();
                 break;
+            case "video":
+                content = new VideoAttachment();
+                break;
             case "poll":
                 content = new PollAttachment();
                 break;

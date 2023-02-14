@@ -4,14 +4,14 @@
     
 	<PreferenceCategory
 		android:title="@string/sett_general"
-		android:layout="@layout/category_prefw"
+		android:layout="@layout/pref_category"
 		android:key="general_settings">
 
 		<!-- maybe implement
 		<ListPreference android:entries="@array/sett_friends_order"
 			android:entryValues="@array/sett_friends_order_v" android:title="@string/sett_flist_sort"
 			android:dialogTitle="@string/sett_flist_sort" android:key="friendsOrderNew"
-			android:layout="@layout/list_prefw"
+			android:layout="@layout/pref_list"
 			android:defaultValue="0" />
 		-->
 
@@ -32,7 +32,7 @@
 
 	<PreferenceCategory
 		android:title="@string/sett_notifications"
-		android:layout="@layout/category_prefw"
+		android:layout="@layout/pref_category"
 		android:key="cat_notify">
 
         <CheckBoxPreference android:title="@string/sett_push"
@@ -54,7 +54,7 @@
 			android:defaultValue="true"
 			android:summary="@string/sett_notify_led_if_has"/>
 		<RingtonePreference android:ringtoneType="notification"
-			android:layout="@layout/list_prefw"
+			android:layout="@layout/pref_list"
 			android:key="notifyRingtone" android:title="@string/sett_ringtone"
 			android:showDefault="true" android:showSilent="false"
 			android:defaultValue="content://settings/system/notification_sound"/>
@@ -69,7 +69,7 @@
 
 
 	<PreferenceCategory
-		android:layout="@layout/category_prefw"
+		android:layout="@layout/pref_category"
 		android:title="@string/sett_account">
         <!-- maybe implement
             <Preference android:title="@string/sett_news_banned"
@@ -83,14 +83,14 @@
 			android:title="@string/log_out" />
 	</PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/interface_category"  android:layout="@layout/category_prefw">
+    <PreferenceCategory android:title="@string/interface_category"  android:layout="@layout/pref_category">
 
         <ListPreference android:title="@string/interface_language"
             android:key="interfaceLanguage"
             android:entries="@array/interface_languages"
             android:entryValues="@array/interface_languages"
             android:defaultValue="System"
-            android:layout="@layout/list_prefw"/>
+            android:layout="@layout/pref_list"/>
 
         <CheckBoxPreference android:title="@string/sett_splash"
             android:key="startupSplash"
@@ -101,7 +101,7 @@
 
 	<PreferenceCategory
 		android:title="@string/sett_other"
-		android:layout="@layout/category_prefw"
+		android:layout="@layout/pref_category"
         android:key="cat_others">
 
         <Preference
