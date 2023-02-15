@@ -193,6 +193,14 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
         />
 
+        <activity
+            android:name=".ui.core.activities.VideoPlayerActivity"
+            android:label="@string/video"
+            android:theme="@style/BaseStyle.Dark.Transparent"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            />
+
         <!--suppress AndroidDomInspection -->
         <service android:name=".longpoll_api.LongPollService" android:enabled="true" android:exported="true"/>
     </application>

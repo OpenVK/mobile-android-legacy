@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v4.util.LruCache;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -31,6 +33,7 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
@@ -436,6 +439,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     if (item.attachments.get(i).getContent() != null) {
                         post_video.setAttachment((VideoAttachment) item.attachments.get(i).getContent());
                         post_video.setVisibility(View.VISIBLE);
+                        final int posFinal = i;
+                        post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ctx, VideoPlayerActivity.class);
+                                intent.putExtra("file", ((VideoAttachment) item.attachments.get(posFinal).getContent()));
+                                ctx.startActivity(intent);
+                            }
+                        });
                     }
                 } else if (item.attachments.get(i).type.equals("poll")) {
                     if (item.attachments.get(i).getContent() != null) {

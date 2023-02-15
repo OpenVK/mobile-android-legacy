@@ -113,6 +113,8 @@
                     android:layout_marginRight="-6dp"
                     android:maxHeight="2dip"
                     android:minHeight="2dip"
+                    android:paddingLeft="16dip"
+                    android:paddingRight="16dip"
                     android:progressDrawable="@drawable/progress_player"
                     android:thumb="@drawable/audio_seeker_compact_v2">
 

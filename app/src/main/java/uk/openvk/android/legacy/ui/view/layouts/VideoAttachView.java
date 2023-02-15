@@ -16,7 +16,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 
-public class VideoAttachView extends FrameLayout implements View.OnClickListener {
+public class VideoAttachView extends FrameLayout {
     private VideoAttachment attachment;
     public VideoAttachView(@NonNull Context context) {
         super(context);
@@ -44,22 +44,5 @@ public class VideoAttachView extends FrameLayout implements View.OnClickListener
                 ((TextView) findViewById(R.id.attach_duration)).setText(String.format("%d:%02d", attachment.duration / 60, (attachment.duration % 60)));
             }
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if(attachment != null && attachment.url.length() > 0) {
-            Intent intent = new Intent(getContext(), VideoPlayerActivity.class);
-            intent.putExtra("file", this.attachment);
-            getContext().startActivity(intent);
-        } else {
-            Toast.makeText(getContext(), getResources().getString(R.string.link_not_supported), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void init() {
-        setOnClickListener(this);
-        setFocusable(false);
-        setFocusableInTouchMode(false);
     }
 }

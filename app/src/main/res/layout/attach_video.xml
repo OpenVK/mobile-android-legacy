@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/video_att_view"
     android:layout_width="match_parent"
     android:layout_height="180dp"
@@ -15,18 +15,31 @@
         android:background="#000"
         android:scaleType="fitCenter" />
 
-    <ImageView
-        android:id="@+id/video_play_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:duplicateParentState="true"
-        android:src="@drawable/ic_video_ov_play" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_above="@+id/title_bar"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/video_play_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="false"
+            android:layout_centerInParent="false"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_video_ov_play" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:gravity="right">
 
         <TextView
@@ -53,4 +66,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</RelativeLayout>
