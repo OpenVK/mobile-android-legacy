@@ -1,0 +1,3 @@
+1. Added a notification counter near the "Menu" button.
+2. Added online indicators in posts, profiles and friends lists.
+3. The missing function of sending a post in groups has been returned.

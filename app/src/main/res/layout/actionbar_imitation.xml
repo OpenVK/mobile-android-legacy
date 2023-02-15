@@ -10,7 +10,7 @@
         android:layout_height="50dp"
         android:background="@drawable/bg_actionbar">
 
-        <uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout
+        <uk.openvk.android.legacy.user_interface.view.layouts.ActionBarLayout
             android:id="@+id/custom_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
 
         </LinearLayout>
 
-        <uk.openvk.android.legacy.user_interface.layouts.ActionBarLayout
+        <uk.openvk.android.legacy.user_interface.view.layouts.ActionBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"

@@ -53,7 +53,7 @@ public class Messages {
                                     if(profile.has("photo_100")) {
                                         conversation.avatar_url = profile.getString("photo_100");
                                         photoAttachment.url = conversation.avatar_url;
-                                        photoAttachment.filename = String.format("avatar_%d", peer_id);
+                                        photoAttachment.filename = String.format("avatar_%s", peer_id);
                                     }
                                 }
                             }
@@ -68,7 +68,7 @@ public class Messages {
                                     if(group.has("photo_100")) {
                                         conversation.avatar_url = group.getString("photo_100");
                                         photoAttachment.url = conversation.avatar_url;
-                                        photoAttachment.filename = String.format("avatar_%d", peer_id);
+                                        photoAttachment.filename = String.format("avatar_%s", peer_id);
                                     }
                                 }
                             }

@@ -1,0 +1,3 @@
+1. Reverted changes from build 161 because build 162 was out of sync and ended up based on commit bf484cb.
+2. For tablets with a resolution of 1024x600, as well as for tablets with Android 3.x (because layout adaptation works best on 4.x), profiles and groups are forced to use the interface for phones.
+3. In the settings, you can now disable splash screen when the application starts - this will save time.

@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="@string/sett_general"
+	<PreferenceCategory android:title="@string/interface_category">
+
+		<ListPreference android:title="@string/interface_language"
+			android:key="interfaceLanguage"
+			android:entries="@array/interface_languages"
+            android:entryValues="@array/interface_languages"
+			android:defaultValue="System" />
+
+		<CheckBoxPreference android:title="@string/sett_splash"
+			android:key="startupSplash"
+			android:defaultValue="true"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/sett_other"
 		android:key="cat_others">
 		<Preference
 			android:id="@+id/debug_menu"

@@ -242,10 +242,10 @@ public class Newsfeed implements Parcelable {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
-                String photo_medium_size = "";
-                String photo_high_size = "";
-                String photo_original_size = "";
-                String attachment_status = "";
+                String photo_medium_size;
+                String photo_high_size;
+                String photo_original_size;
+                String attachment_status;
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
                 if (attachment.getString("type").equals("photo")) {
                     JSONObject photo = attachment.getJSONObject("photo");
@@ -273,12 +273,16 @@ public class Newsfeed implements Parcelable {
                     attachment_obj.status = attachment_status;
                     attachment_obj.setContent(photoAttachment);
                     attachments_list.add(attachment_obj);
-                    if(quality.equals("medium")) {
-                        photos_msize.add(photoAttachment);
-                    } else if(quality.equals("high")) {
-                        photos_hsize.add(photoAttachment);
-                    } else if(quality.equals("original")) {
-                        photos_osize.add(photoAttachment);
+                    switch (quality) {
+                        case "medium":
+                            photos_msize.add(photoAttachment);
+                            break;
+                        case "high":
+                            photos_hsize.add(photoAttachment);
+                            break;
+                        case "original":
+                            photos_osize.add(photoAttachment);
+                            break;
                     }
                 } else if (attachment.getString("type").equals("poll")) {
                     JSONObject poll_attachment = attachment.getJSONObject("poll");

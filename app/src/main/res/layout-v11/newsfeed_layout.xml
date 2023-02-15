@@ -7,17 +7,24 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/news_listview"
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/window_bg_transparent"
-        android:persistentDrawingCache="all"
-        android:theme="@style/NewsItemTransparentBackground"
-        android:visibility="visible"
-        android:layout_weight="0.01"
-        tools:ignore="InefficientWeight">
+        android:id="@+id/refreshable_layout"
+        android:fitsSystemWindows="true">
 
-    </android.support.v7.widget.RecyclerView>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/news_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/window_bg_transparent"
+            android:persistentDrawingCache="all"
+            android:theme="@style/NewsItemTransparentBackground"
+            android:visibility="visible"
+            tools:ignore="InefficientWeight" />
+
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

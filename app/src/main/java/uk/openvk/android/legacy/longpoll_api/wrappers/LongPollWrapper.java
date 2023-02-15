@@ -1,11 +1,10 @@
 package uk.openvk.android.legacy.longpoll_api.wrappers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import org.apache.http.HttpHost;
@@ -30,7 +29,6 @@ import org.apache.http.util.EntityUtils;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -43,17 +41,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.user_interface.activities.AppActivity;
-import uk.openvk.android.legacy.user_interface.activities.AuthActivity;
-import uk.openvk.android.legacy.user_interface.activities.ConversationActivity;
-import uk.openvk.android.legacy.user_interface.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.GroupIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.MainSettingsActivity;
-import uk.openvk.android.legacy.user_interface.activities.NewPostActivity;
-import uk.openvk.android.legacy.user_interface.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.user_interface.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.user_interface.activities.WallPostActivity;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
@@ -70,7 +57,7 @@ public class LongPollWrapper {
     private Handler handler;
     private String access_token;
     private boolean isActivated;
-    private boolean logging_enabled;
+    private boolean logging_enabled = true;
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
@@ -78,6 +65,7 @@ public class LongPollWrapper {
 
     public LongPollWrapper(Context ctx, boolean use_https) {
         this.ctx = ctx;
+
         this.use_https = use_https;
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             BasicHttpParams basicHttpParams = new BasicHttpParams();
@@ -117,6 +105,10 @@ public class LongPollWrapper {
         return user_agent;
     }
 
+    public void log(boolean value) {
+        this.logging_enabled = value;
+    }
+
     public void setServer(String server) {
         this.server = server;
     }
@@ -151,7 +143,9 @@ public class LongPollWrapper {
                                 .build();
                 }
                 try {
-                    Log.v("OpenVK LPW", String.format("LongPoll activated."));
+                    if(isActivated) {
+                        Log.v("OpenVK LPW", String.format("LongPoll activated."));
+                    }
                     while(isActivated) {
                         if (legacy_mode) {
                             HttpResponse response = httpClientLegacy.execute(request_legacy);
@@ -164,50 +158,32 @@ public class LongPollWrapper {
                             response_code = response.code();
                         }
                         if (response_code == 200) {
-                           // Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                            if(logging_enabled) Log.v("OpenVK LPW", String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
                             sendLongPollMessageToActivity(response_body);
                         } else {
-                            //Log.v("OpenVK LPW", String.format("Getting response from %s (%s)", server, response_code));
+                            if(logging_enabled) Log.v("OpenVK LPW", String.format("Getting response from %s (%s)", server, response_code));
                         }
                         Thread.sleep(2000);
                     }
-                } catch(ConnectException ex) {
-                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
+                } catch(ConnectException | SocketTimeoutException | UnknownHostException ex) {
+                    if(logging_enabled) Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     try {
-                        Log.v("OpenVK LPW", "Retrying in 60 seconds...");
-                        Thread.sleep(60000);
-                        run();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } catch(SocketTimeoutException ex) {
-                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
-                    try {
-                        Log.v("OpenVK LPW", "Retrying in 60 seconds...");
-                        Thread.sleep(60000);
-                        run();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } catch(UnknownHostException ex) {
-                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
-                    try {
-                        Log.v("OpenVK LPW", "Retrying in 60 seconds...");
+                        if(logging_enabled) Log.v("OpenVK LPW", "Retrying in 60 seconds...");
                         Thread.sleep(60000);
                         run();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 } catch(SSLProtocolException ex) {
-                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled) Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     isActivated = false;
-                    Log.v("OpenVK LPW", "LongPoll service stopped.");
+                    if(logging_enabled) Log.v("OpenVK LPW", "LongPoll service stopped.");
                 } catch(SSLHandshakeException ex) {
-                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
-                    Log.v("OpenVK LPW", "LongPoll service stopped.");
+                    if(logging_enabled) Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled) Log.v("OpenVK LPW", "LongPoll service stopped.");
                     isActivated = false;
                 } catch(SSLException ex) {
-                    Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled) Log.v("OpenVK LPW", String.format("Connection error: %s", ex.getMessage()));
                     Log.v("OpenVK LPW", "LongPoll service stopped.");
                     isActivated = false;
                 } catch (Exception ex) {
@@ -240,33 +216,20 @@ public class LongPollWrapper {
         }
     }
 
-    private void sendLongPollMessageToActivity(String response) {
-        Message msg = new Message();
-        msg.what = HandlerMessages.LONGPOLL;
-        Bundle bundle = new Bundle();
-        bundle.putString("response", response);
-        msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
-            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
-            ((ConversationActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
-            ((NewPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        }
+    private void sendLongPollMessageToActivity(final String response) {
+        handler = new Handler();
+        Log.d("OK", "OK! LongPolling 1...");
+        Runnable sendLongPoll = new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent();
+                intent.setAction("uk.openvk.android.legacy.LONGPOLL_RECEIVE");
+                intent.putExtra("response", response);
+                ctx.sendBroadcast(intent);
+                Log.d("OK", "OK! LongPolling 2...");
+            }
+        };
+        handler.post(sendLongPoll);
     }
 
     public void updateCounters(final OvkAPIWrapper ovk) {

@@ -1,0 +1,4 @@
+1. Taken additions and bug fixes from past beta builds.
+2. Now the group ID in mentions with quick response to comments is positive. Also, as a link to a group that can be opened.
+3. Implemented context menu in the group page.
+4. Fully implemented context menu for Android 2.x.

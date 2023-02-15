@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.models;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,6 +15,7 @@ public class RepostInfo implements Parcelable {
     public String name;
     public String time;
     public WallPost newsfeed_item;
+    @SuppressLint("SimpleDateFormat")
     public RepostInfo(String original_author, long dt_sec, Context ctx) {
         name = original_author;
         Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:ignore="DisableBaselineAlignment">
+
+    <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_layout"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.user_interface.view.layouts.ErrorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/error_layout"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#e3e4e6"
+        tools:ignore="InefficientWeight,UselessParent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/profile_ext_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#313743"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <uk.openvk.android.legacy.user_interface.view.layouts.ProfileHeader
+                            android:id="@+id/profile_header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                        </uk.openvk.android.legacy.user_interface.view.layouts.ProfileHeader>
+
+                        <ImageButton
+                            android:id="@+id/send_direct_msg"
+                            android:layout_width="40dp"
+                            android:layout_height="38dp"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginRight="4dp"
+                            android:background="@drawable/btn_light_blue"
+                            android:src="@drawable/ic_ab_send"
+                            tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                        <ImageButton
+                            android:id="@+id/add_to_friends"
+                            android:layout_width="40dp"
+                            android:layout_height="38dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/btn_light_blue"
+                            android:src="@drawable/ic_ab_add"
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/friend_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text="@string/friend_status_friend"
+                        android:textColor="#bdffffff"
+                        android:textSize="18sp"
+                        android:textStyle="italic" />
+
+                    <TableRow
+                        android:id="@+id/profile_counters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                            android:id="@+id/photos_counter"
+                            android:layout_width="110dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="4dp"
+                            android:layout_weight="1"
+                            android:visibility="gone"
+                            tools:ignore="RtlHardcoded">
+
+                        </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+
+                        <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                            android:id="@+id/friends_counter"
+                            android:layout_width="110dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginRight="4dp"
+                            android:layout_weight="1"
+                            tools:ignore="RtlHardcoded">
+
+                        </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+
+                        <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                            android:id="@+id/mutual_counter"
+                            android:layout_width="110dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginLeft="4dp"
+                            android:layout_weight="1"
+                            android:visibility="gone">
+
+                        </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+                    </TableRow>
+
+                </LinearLayout>
+
+                <uk.openvk.android.legacy.user_interface.view.layouts.ProfileWallSelector
+                    android:id="@+id/wall_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <uk.openvk.android.legacy.user_interface.view.layouts.WallLayout
+                    android:id="@+id/wall_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#e3e4e6"
+                    android:descendantFocusability="blocksDescendants" />
+
+                <uk.openvk.android.legacy.user_interface.view.layouts.WallErrorLayout
+                    android:id="@+id/wall_error_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#ffffff"
+                    android:visibility="gone">
+
+                </uk.openvk.android.legacy.user_interface.view.layouts.WallErrorLayout>
+
+                <TextView
+                    android:id="@+id/deactivated_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/profile_inactive_deleted"
+                    android:textColor="@color/timestamp_color"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="240dp"
+        android:id="@+id/about_profile_ll"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#313743"
+        android:visibility="gone">
+
+        <uk.openvk.android.legacy.user_interface.view.layouts.AboutProfileLayout
+            android:layout_width="240dp"
+            android:id="@+id/about_profile_layout"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dp"
+            android:background="#313743">
+
+        </uk.openvk.android.legacy.user_interface.view.layouts.AboutProfileLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

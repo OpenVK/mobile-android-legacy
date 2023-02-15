@@ -7,12 +7,16 @@ public class Attachment {
     private Object content;
     public Attachment(String type) {
         this.type = type;
-        if(type.equals("photo")) {
-            content = new PhotoAttachment();
-        } else if(type.equals("poll")) {
-            content = new PollAttachment();
-        } else {
-            content = null;
+        switch (type) {
+            case "photo":
+                content = new PhotoAttachment();
+                break;
+            case "poll":
+                content = new PollAttachment();
+                break;
+            default:
+                content = null;
+                break;
         }
     }
 

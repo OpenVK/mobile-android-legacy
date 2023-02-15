@@ -65,7 +65,7 @@ public class Friends implements Parcelable {
                     Friend friend = new Friend(users.getJSONObject(i));
                     PhotoAttachment photoAttachment = new PhotoAttachment();
                     photoAttachment.url = friend.avatar_url;
-                    photoAttachment.filename = String.format("avatar_%d", friend.id);
+                    photoAttachment.filename = String.format("avatar_%s", friend.id);
                     avatars.add(photoAttachment);
                     this.friends.add(friend);
                 }
@@ -90,9 +90,11 @@ public class Friends implements Parcelable {
                 for (int i = 0; i < users.length(); i++) {
                     Friend friend = new Friend(users.getJSONObject(i));
                     PhotoAttachment photoAttachment = new PhotoAttachment();
-                    photoAttachment.url = friend.avatar_url;
-                    photoAttachment.filename = String.format("avatar_%d", friend.id);
-                    avatars.add(photoAttachment);
+                    if(friend.avatar_url != null && friend.avatar_url.length() > 0) {
+                        photoAttachment.url = friend.avatar_url;
+                        photoAttachment.filename = String.format("avatar_%s", friend.id);
+                        avatars.add(photoAttachment);
+                    }
                     this.requests.add(friend);
                 }
                 if (downloadPhoto) {
@@ -105,12 +107,12 @@ public class Friends implements Parcelable {
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, String where) {
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100,last_seen&count=%d", user_id, count), where);
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100,photo_200_orig,photo_200,last_seen&count=%s", user_id, count), where);
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, int offset) {
         this.offset++;
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%d&fields=verified,online,photo_100,last_seen&count=%d&offset=%d", user_id, count, this.offset), "more_friends");
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100,photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset), "more_friends");
     }
 
     public ArrayList<Friend> getFriends() {
@@ -135,6 +137,6 @@ public class Friends implements Parcelable {
     }
 
     public void getRequests(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Friends.getRequests", String.format("fields=verified,online,photo_100"));
+        ovk.sendAPIMethod("Friends.getRequests", String.format("fields=verified,online,photo_100,photo_200_orig,photo_200"));
     }
 }

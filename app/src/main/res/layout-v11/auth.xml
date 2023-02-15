@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <uk.openvk.android.legacy.user_interface.layouts.XLinearLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.XLinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/auth_layout"
@@ -47,7 +47,7 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-                        <uk.openvk.android.legacy.user_interface.layouts.EditTextAction
+                        <uk.openvk.android.legacy.user_interface.view.layouts.EditTextAction
                             android:id="@+id/instance_name"
                             android:layout_width="match_parent"
                             android:layout_height="50dip"
@@ -61,7 +61,7 @@
                             ctrl:ignore="InefficientWeight,SpUsage"
                             ctrl:textHint="@string/instance">
 
-                        </uk.openvk.android.legacy.user_interface.layouts.EditTextAction>
+                        </uk.openvk.android.legacy.user_interface.view.layouts.EditTextAction>
 
                     </LinearLayout>
 
@@ -199,6 +199,6 @@
             android:textSize="17dip"
             ctrl:ignore="SpUsage" />
 
-    </uk.openvk.android.legacy.user_interface.layouts.XLinearLayout>
+    </uk.openvk.android.legacy.user_interface.view.layouts.XLinearLayout>
 
 </LinearLayout>

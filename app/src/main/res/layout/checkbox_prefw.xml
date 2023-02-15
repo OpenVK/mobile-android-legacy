@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingTop="12dp"
-        android:paddingRight="16dp"
+        android:paddingRight="8dp"
         android:paddingBottom="12dp">
 
         <TextView
@@ -36,21 +36,28 @@
             android:textColor="?android:attr/textColorSecondary" />
     </LinearLayout>
 
+    <!--
+     Они выглядят как говно, т. е. без текста зачем-то оставляется неравномерный отступ
+     в стрелках и чекбоксах, поэтому я сделал костыль к нему.
+
+     They look like shit, i.e. without text, for some reason, an uneven space is left
+     in arrows and checkboxes, so I made a workaround to it.
+    -->
+
     <CheckBox
         android:id="@android:id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
         android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginRight="0dp"
         android:layout_marginBottom="0dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
         android:button="@drawable/checkbox"
         android:drawingCacheQuality="high"
         tools:ignore="TouchTargetSizeCheck"
         android:focusable="false"
         android:clickable="false"
         />
+
 
 </LinearLayout>

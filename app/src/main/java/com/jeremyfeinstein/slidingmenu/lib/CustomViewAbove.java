@@ -473,7 +473,11 @@ public class CustomViewAbove extends ViewGroup {
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		final int width = r - l;
 		final int height = b - t;
-		mContent.layout(0, 0, width, height);
+		try {
+			mContent.layout(0, 0, width, height);
+		} catch (Exception ignored) {
+
+		}
 	}
 
 	public void setAboveOffset(int i) {

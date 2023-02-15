@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.models;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -22,6 +23,7 @@ public class Message {
     public long author_id;
     private JSONParser parser;
 
+    @SuppressLint("SimpleDateFormat")
     public Message(long id, boolean incoming, boolean error, long _timestamp, String _text, Context ctx) {
         this.id = id;
         isIncoming = incoming;

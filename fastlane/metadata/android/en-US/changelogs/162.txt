@@ -1,0 +1,4 @@
+1. Gender (male or female) is now taken into account in localization. You can see it in profiles.
+2. After clicking on the "Send" button in the message and comment screens (provided that the number of lines is more than one), the empty space at the bottom is no longer left.
+3. Simplified receipt of LongPoll-server messages already on broadcast receivers, so that the list of personal messages is updated automatically without switching to the same screen. It's the same with notifications.
+4. When you press the Tab key in physical keyboards, the focus immediately moves to the list of messages or comments for easy scrolling.

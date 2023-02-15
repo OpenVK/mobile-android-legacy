@@ -35,6 +35,7 @@
         <item>Response timed out</item>
 		<item>Secure connection failure</item>
         <item>Instance failure</item>
+        <item>Instance unavailable</item>
         <item>Unknown error</item>
     </string-array>
 
@@ -416,6 +417,7 @@
     <string name="friend_deleted_m">%s has been removed from your friend list</string>
     <string name="friend_deleted_f">%s has been removed from your friend list</string>
 	<string name="auth_error_unknown_error">Failed to connect to the instance for unknown reasons. Please try again later or choose another instance.</string>
+    <string name="auth_instance_unavaliable">This instance is currently unavailable. Please try again later or choose another instance.</string>
 	<string name="auth_error_not_openvk_instance">The specified server is not an OpenVK-compatible instance. Try to choose another instance.</string>
     <string name="auth_error_network">Unable to log in due to problems with a network. Please check your connection and try again.</string>
 	<string name="auth_error_ssl">Unable to sign in due to problems with a secure connection. Try to choose another instance.</string>
@@ -1202,4 +1204,11 @@
 	<string name="app_issues_link" untranslable="false" translatable="false">https://github.com/openvk/mobile-android-legacy/issues</string>
 	<string name="wall_err_text">Hmmm, the wall broke in the instance. Please try again later.</string>
 	<string name="attachment_load_err">Attachment loading error</string>
+    <string name="sett_splash">Startup splash screen</string>
+    <string name="rules_link">Rules</string>
+	<string name="privacy_link">Privacy</string>
+	<string name="authdata_required">Please enter all required authorization data and try again.</string>
+    <string name="interface_category">Interface</string>
+    <string name="interface_language">Language</string>
+    <string name="local_newsfeed_no_posts">Silence in the local feed so far.\r\nYou can learn something new in the all news feed.</string>
 </resources>

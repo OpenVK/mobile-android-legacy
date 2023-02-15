@@ -996,7 +996,7 @@ public class SlidingMenu extends RelativeLayout {
 		int bottomPadding = insets.bottom;
         int navigation_height = 0;
         int navigation_width = 0;
-        if(Build.VERSION.SDK_INT >= 30) {
+        if(Build.VERSION.SDK_INT >= 29) {
             Resources resources = getContext().getResources();
             int nav_height_id = resources.getIdentifier("navigation_bar_height", "dimen", "android");
             int nav_width_id = resources.getIdentifier("navigation_bar_width", "dimen", "android");

@@ -83,6 +83,22 @@
 			android:title="@string/log_out" />
 	</PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/interface_category"  android:layout="@layout/category_prefw">
+
+        <ListPreference android:title="@string/interface_language"
+            android:key="interfaceLanguage"
+            android:entries="@array/interface_languages"
+            android:entryValues="@array/interface_languages"
+            android:defaultValue="System"
+            android:layout="@layout/list_prefw"/>
+
+        <CheckBoxPreference android:title="@string/sett_splash"
+            android:key="startupSplash"
+            android:layout="@layout/checkbox_prefw"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
 	<PreferenceCategory
 		android:title="@string/sett_other"
 		android:layout="@layout/category_prefw"

@@ -5,18 +5,18 @@
     android:background="#000000"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.user_interface.layouts.ZoomableImageView
+    <uk.openvk.android.legacy.user_interface.view.layouts.ZoomableImageView
         android:id="@+id/picture_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.ProgressLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
-    </uk.openvk.android.legacy.user_interface.layouts.ProgressLayout>
+    </uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout>
 
 </LinearLayout>

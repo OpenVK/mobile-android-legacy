@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="interface_languages">
+        <item>System</item>
+        <item>English</item>
+        <item>Русский</item>
+        <item>Украïнська</item>
+    </array>
+</resources>

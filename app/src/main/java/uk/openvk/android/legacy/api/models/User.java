@@ -40,6 +40,7 @@ public class User implements Parcelable {
     public String books;
     public String deactivated;
     private JSONParser jsonParser;
+    public int sex;
 
     public User(JSONObject user) {
         parse(user);
@@ -193,6 +194,9 @@ public class User implements Parcelable {
                         online = true;
                     } else {
                         online = false;
+                    }
+                    if(user.has("sex")) {
+                        sex = user.getInt("sex");
                     }
                 }
             }

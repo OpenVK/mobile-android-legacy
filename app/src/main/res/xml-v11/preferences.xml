@@ -22,21 +22,22 @@
 		<CheckBoxPreference android:title="@string/sett_update_on_open"
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
 			android:defaultValue="true"/>
-			
-		<CheckBoxPreference android:title="@string/sett_bdays" android:key="notifyBDays"
-			android:defaultValue="true"/>
-			
-		<Preference android:title="@string/sett_advanced"
-			android:summary="" android:key="advanced"/>
+		<!-- maybe implement
+            <CheckBoxPreference android:title="@string/sett_bdays" android:key="notifyBDays"
+                android:defaultValue="true"/>
+		!-->
+
+    <Preference android:title="@string/sett_advanced"
+        android:summary="" android:key="advanced"/>
 
 	</PreferenceCategory>
 
 
 	<PreferenceCategory android:title="@string/sett_notifications" android:key="cat_notify">
 
-        <CheckBoxPreference android:title="@string/sett_push"
-            android:summary="@string/sett_push_summary" android:key="enableNotification"
-            android:defaultValue="true" android:disableDependentsState="true"/>
+		<CheckBoxPreference android:title="@string/sett_push"
+			android:summary="@string/sett_push_summary" android:key="enableNotification"
+			android:defaultValue="true" android:disableDependentsState="true"/>
 
 		<CheckBoxPreference android:title="@string/sett_notify_sound"
 		 android:key="notifySound"
@@ -53,11 +54,11 @@
 			android:showDefault="true" android:showSilent="false"
 			android:defaultValue="content://settings/system/notification_sound"/>
 		<!-- maybe implement
-            <Preference
-                android:key="doNotDistrib"
-                android:layout="@layout/pref_widget"
-                android:title="@string/dnd_mode" />
-        !-->
+			<Preference
+				android:key="doNotDistrib"
+				android:layout="@layout/pref_widget"
+				android:title="@string/dnd_mode" />
+		!-->
 
 	</PreferenceCategory>
 
@@ -69,6 +70,18 @@
 	
 		<Preference android:title="@string/log_out"
 			android:summary="" android:key="logOut"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/interface_category">
+		<ListPreference android:title="@string/interface_language"
+			android:key="interfaceLanguage"
+            android:entryValues="@array/interface_languages"
+			android:entries="@array/interface_languages"
+			android:defaultValue="System" />
+
+        <CheckBoxPreference android:title="@string/sett_splash"
+            android:key="startupSplash"
+            android:defaultValue="true"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/sett_other" android:key="cat_others">

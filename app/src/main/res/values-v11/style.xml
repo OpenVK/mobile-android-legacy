@@ -21,6 +21,10 @@
 		<item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
 	</style>
 
+	<style name="BaseStyle.DialogStyle.Title">
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+
 	<style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light">
 		<item name="android:actionBarStyle">@style/ActionBarStyle</item>
 		<item name="android:fadingEdgeLength">0dip</item>

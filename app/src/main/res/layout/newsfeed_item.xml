@@ -63,7 +63,7 @@
             android:orientation="vertical"
             tools:ignore="InefficientWeight">
 
-            <TextView
+            <com.rockerhieu.emojicon.EmojiconTextView
                 android:id="@+id/poster_name_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -87,9 +87,10 @@
                 android:layout_below="@+id/poster_name_view"
                 android:layout_toRightOf="@+id/author_avatar"
                 android:orientation="horizontal"
-                android:paddingLeft="12dip">
+                android:paddingLeft="12dip"
+                tools:ignore="ObsoleteLayoutParam">
 
-                <TextView
+                <com.rockerhieu.emojicon.EmojiconTextView
                     android:id="@+id/post_info_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -337,7 +338,7 @@
                     android:visibility="gone"
                     tools:ignore="ContentDescription" />
 
-                <uk.openvk.android.legacy.user_interface.layouts.PollLayout
+                <uk.openvk.android.legacy.user_interface.view.layouts.PollLayout
                     android:id="@+id/repost_poll_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -373,7 +374,7 @@
         android:visibility="gone"
         tools:ignore="ContentDescription" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.PollLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.PollLayout
         android:id="@+id/poll_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

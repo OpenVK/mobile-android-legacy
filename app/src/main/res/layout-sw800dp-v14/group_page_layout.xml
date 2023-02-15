@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_layout"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.user_interface.view.layouts.ErrorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/error_layout"
+        android:visibility="gone" />
+
+
+    <ScrollView
+        android:id="@+id/group_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#e3e4e6"
+        android:descendantFocusability="blocksDescendants">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/profile_ext_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#313743"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <uk.openvk.android.legacy.user_interface.view.layouts.GroupHeader
+                            android:id="@+id/group_header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                        </uk.openvk.android.legacy.user_interface.view.layouts.GroupHeader>
+
+
+                        <ImageButton
+                            android:id="@+id/join_to_comm"
+                            android:layout_width="40dp"
+                            android:layout_height="38dp"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/btn_light_blue"
+                            android:src="@drawable/ic_ab_add"
+                            android:visibility="gone"
+                            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                    </LinearLayout>
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp">
+
+                        <uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout
+                            android:id="@+id/members_counter"
+                            android:layout_width="110dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1">
+
+                        </uk.openvk.android.legacy.user_interface.view.layouts.ProfileCounterLayout>
+
+                    </TableRow>
+
+                </LinearLayout>
+
+                <uk.openvk.android.legacy.user_interface.view.layouts.ProfileWallSelector
+                    android:id="@+id/wall_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <uk.openvk.android.legacy.user_interface.view.layouts.WallErrorLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#ffffff"
+                    android:visibility="gone"
+                    android:id="@+id/wall_error_layout"
+                    />
+
+                <uk.openvk.android.legacy.user_interface.view.layouts.WallLayout
+                    android:id="@+id/wall_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#e3e4e6"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/about_group_ll"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#313743"
+        android:visibility="gone">
+        <uk.openvk.android.legacy.user_interface.view.layouts.AboutGroupLayout
+            android:id="@+id/about_group_layout"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dp"
+            android:background="#313743" />
+
+    </LinearLayout>
+
+</LinearLayout>

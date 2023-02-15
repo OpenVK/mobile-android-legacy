@@ -109,6 +109,7 @@ public class HandlerMessages {
     public static int ACCESS_DENIED_MARSHMALLOW         =  -9;
     public static int BROKEN_SSL_CONNECTION             =  -10;
     public static int INTERNAL_ERROR                    =  -11;
-    public static int NOT_OPENVK_INSTANCE               =  -12;
-    public static int UNKNOWN_ERROR                     =  -13;
+    public static int INSTANCE_UNAVAILABLE              =  -12;
+    public static int NOT_OPENVK_INSTANCE               =  -13;
+    public static int UNKNOWN_ERROR                     =  -14;
 }

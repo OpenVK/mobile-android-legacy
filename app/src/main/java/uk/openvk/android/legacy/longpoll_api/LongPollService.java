@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.longpoll_api.wrappers.LongPollWrapper;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -48,10 +49,12 @@ public class LongPollService extends Service {
         ovk_api = new OvkAPIWrapper(ctx, use_https);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);
+        if(BuildConfig.BUILD_TYPE.equals("release")) ovk_api.log(false);
         runLongPull(lp_server, key, ts, use_https);
     }
 
     private void runLongPull(String lp_server, String key, int ts, boolean use_https) {
+        if(BuildConfig.BUILD_TYPE.equals("release")) lpW.log(false);
         lpW.updateCounters(ovk_api);
         lpW.keepUptime(ovk_api);
         if(lp_server != null && key != null) {

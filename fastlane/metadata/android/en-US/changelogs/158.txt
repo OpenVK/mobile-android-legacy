@@ -1,0 +1,5 @@
+1. When a user writes a post or/and logs in online in the mobile application, an indicator will be displayed in the web version of OpenVK (works only after a restart).
+2. By switching some of the integer variables to 64 bits, the client can work with dates after January 19, 2038, as well as with numbers greater than 2,147,483,647. Useful for supporting 64-bit architectures like arm64 for years to come.
+3. Added viewing information about the group.
+4. Added a quick response to a comment.
+5. Xmas mood in the splash screen.

@@ -5,16 +5,15 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <uk.openvk.android.legacy.user_interface.layouts.SlidingMenuLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.SlidingMenuLayout
         android:id="@+id/sliding_menu"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:background="#1B1D26"
         android:fitsSystemWindows="true"
         android:visibility="gone" />
-    />
 
-    <uk.openvk.android.legacy.user_interface.layouts.ProgressLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.ProgressLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,14 +21,14 @@
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.ErrorLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.ErrorLayout
         android:id="@+id/error_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.NewsfeedLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.NewsfeedLayout
         android:id="@+id/newsfeed_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -38,7 +37,7 @@
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.ProfileLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.ProfileLayout
         android:id="@+id/profile_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -46,7 +45,7 @@
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.FriendsLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.FriendsLayout
         android:id="@+id/friends_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -54,7 +53,7 @@
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.GroupsLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.GroupsLayout
         android:id="@+id/groups_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -62,7 +61,7 @@
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.user_interface.layouts.ConversationsLayout
+    <uk.openvk.android.legacy.user_interface.view.layouts.ConversationsLayout
         android:id="@+id/conversations_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
