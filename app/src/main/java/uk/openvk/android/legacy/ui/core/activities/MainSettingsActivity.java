@@ -40,7 +40,6 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-
 /** type @Deprecated Replaced to MainSettingsFragment **/
 @Deprecated
 public class MainSettingsActivity extends PreferenceActivity {
