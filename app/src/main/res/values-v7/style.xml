@@ -10,6 +10,7 @@
         <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:listViewStyle">@style/BaseStyle.DialogStyle.List</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
 
@@ -21,6 +22,7 @@
         <item name="android:alertDialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
         <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="BaseStyle.DialogStyle" parent="@android:style/Theme.Dialog">

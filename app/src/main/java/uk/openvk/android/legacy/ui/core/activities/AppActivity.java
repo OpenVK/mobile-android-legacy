@@ -76,6 +76,7 @@ import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.MainSettingsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarLayout;
@@ -110,6 +111,7 @@ public class AppActivity extends FragmentActivity {
     private ProfileFragment profileFragment;
     private FriendsFragment friendsFragment;
     private ConversationsFragment conversationsFragment;
+    private MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
     private Account account;
     private Newsfeed newsfeed;
@@ -151,8 +153,7 @@ public class AppActivity extends FragmentActivity {
         last_longpoll_response = "";
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
-
-        installLayouts();
+        installFragments();
         Global global = new Global();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
@@ -421,14 +422,14 @@ public class AppActivity extends FragmentActivity {
     }
 
     @SuppressLint("CommitTransaction")
-    private void installLayouts() {
+    private void installFragments() {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
         profileFragment = new ProfileFragment();
         newsfeedFragment = new NewsfeedFragment();
         friendsFragment = new FriendsFragment();
         groupsFragment = new GroupsFragment();
-
+        mainSettingsFragment = new MainSettingsFragment();
         friendsFragment.setActivityContext(this);
 
         if(activity_menu == null) {
@@ -445,6 +446,7 @@ public class AppActivity extends FragmentActivity {
         ft.add(R.id.app_fragment, groupsFragment, "groups");
         ft.add(R.id.app_fragment, conversationsFragment, "messages");
         ft.add(R.id.app_fragment, profileFragment, "profile");
+        ft.add(R.id.app_fragment, mainSettingsFragment, "settings");
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
         ft.hide(friendsFragment);
@@ -453,6 +455,7 @@ public class AppActivity extends FragmentActivity {
         ft.hide(profileFragment);
         selectedFragment = newsfeedFragment;
         ft.show(newsfeedFragment);
+        ft.hide(mainSettingsFragment);
         ft.commit();
         if(global_prefs.getBoolean("refreshOnOpen", true)) {
             global_prefs_editor.putString("current_screen", "newsfeed");
@@ -729,17 +732,17 @@ public class AppActivity extends FragmentActivity {
             }
         } else if(position == 4) {
             Context context = getApplicationContext();
-            Intent intent = new Intent(context, MainSettingsActivity.class);
-            if(account != null) {
-                if (account.first_name != null && account.last_name != null) {
-                    intent.putExtra("account_name", String.format("%s %s", account.first_name, account.last_name));
-                } else {
-                    intent.putExtra("account_name", "");
-                }
-            } else {
-                intent.putExtra("account_name", "");
-            }
-            startActivity(intent);
+            setActionBar("");
+            setActionBarTitle(getResources().getString(R.string.menu_settings));
+            ft.hide(selectedFragment);
+            ft.show(getSupportFragmentManager().findFragmentByTag("settings"));
+            errorLayout.setVisibility(View.GONE);
+            progressLayout.setVisibility(View.GONE);
+            findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+            ft.commit();
+            selectedFragment = mainSettingsFragment;
+            global_prefs_editor.putString("current_screen", "settings");
+            global_prefs_editor.commit();
         } else {
             Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
         }
