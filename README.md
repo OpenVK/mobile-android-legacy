@@ -25,7 +25,7 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2) (Apache License 2.0)
-7. [Android Support Preferences v24 for 2.1+ with design fixes](https://github.com/Gericop/Android-Support-Preference-V7-Fix/commit/4c2bb2896895dbedb37b659b36bd2a96b33c1605#diff-740c49bd9c25f04cd6c78cdb944972ac678c8f197bc5a94e9e4bdb77a2e003b8) (Apache License 2.0)
+7. [Android Support Preferences v24 for 2.1+ with design fixes](https://github.com/Gericop/Android-Support-Preference-V7-Fix/commit/4c2bb2896895dbedb37b659b36bd2a96b33c1605) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
