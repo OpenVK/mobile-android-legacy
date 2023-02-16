@@ -18,6 +18,16 @@ _Updates come faster in their [own repository](https://repo.openvk.uk/repo/) and
 ## Building
 We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) along with Java 7 for perfect support of libraries (such as legacy resource format and Gradle 2.3.2) developed for Android 2.1 Eclair and above.
 
+## Used Library
+_OpenVK API client and some UI layouts based on [OpenVK Legacy](https://github.com/openvk/mobile-android-legacy) (GNU Affero GPL 3.0+)_
+
+1. [Android Support Library v24 for 1.6+](https://developer.android.com/topic/libraries/support-library) (Apache License 2.0)
+2. [Apache Wrapped HTTP Client 4.1.2](https://mvnrepository.com/artifact/org.jbundle.util.osgi.wrapped/org.jbundle.util.osgi.wrapped.org.apache.http.client/4.1.2#gradle) (Apache License 2.0)
+3. [PhotoView 1.2.6](https://square.github.io/okhttp/) (Apache License 2.0)
+4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
+5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
+6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2)
+
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
 
