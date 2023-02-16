@@ -527,7 +527,7 @@
 	<string name="text_copied">Текст скопирован в буфер обмена</string>
 
 	<string name="video_err_network">Произошла ошибка, связанная с подключением к серверу. Проверьте соединение и повотрите попытку.</string>
-	<string name="video_err_os">Для просмотра этой видеозаписи требуется Android 2.0 или выше.</string>
+	<string name="video_err_os">Для просмотра этой видеозаписи требуется Android 2.3 или выше.</string>
 	<string name="video_err_decode">Ваше устройство не может воспроизвести это видео. Попробуйте выбрать более низкое качество.</string>
 
 	<string-array name="video_views">

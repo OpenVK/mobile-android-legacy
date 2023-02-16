@@ -509,7 +509,7 @@
 	<string name="text_copied">Text has been copied to the clipboard</string>
 
 	<string name="video_err_network">There are some problems with your network connection.</string>
-	<string name="video_err_os">Android 2.0 or higher is required in order to view this video.</string>
+	<string name="video_err_os">Android 2.3 or higher is required in order to view this video.</string>
 	<string name="video_err_decode">Your device can not play this video. Try selecting lower quality.</string>
 
 	<string-array name="video_views">

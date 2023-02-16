@@ -180,7 +180,11 @@ public class AppActivity extends FragmentActivity {
         registerBroadcastReceiver();
         if(((OvkApplication) getApplicationContext()).isTablet) {
             newsfeedFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
-            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+            try {
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
         Bundle data = new Bundle();
         createSlidingMenu();

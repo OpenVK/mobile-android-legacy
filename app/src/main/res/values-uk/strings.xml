@@ -526,7 +526,7 @@
 	<string name="text_copied">Текст скопійований в буфер обміну</string>
 
 	<string name="video_err_network">Сталася помилка, пов\'язана з підключенням до сервера. Перевірте з\'єднання і повторіть спробу.</string>
-	<string name="video_err_os">Для перегляду цього відеозапису потрібнен Android 2.0 або вище.</string>
+	<string name="video_err_os">Для перегляду цього відеозапису потрібнен Android 2.3 або вище.</string>
 	<string name="video_err_decode">Ваш пристрій не може відтворити це відео. Спробуйте вибрати більш низьку якість.</string>
 
 	<string-array name="video_views">
