@@ -26,7 +26,7 @@ _OpenVK API client and some UI layouts based on [OpenVK Legacy](https://github.c
 3. [PhotoView 1.2.6](https://square.github.io/okhttp/) (Apache License 2.0)
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
-6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2)
+6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
