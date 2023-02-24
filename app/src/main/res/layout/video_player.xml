@@ -5,25 +5,17 @@
     android:layout_height="fill_parent"
     android:background="#000" >
 
-    <!--
-    SurfaceView
+    <SurfaceView
         android:id="@+id/video_surface_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-    </SurfaceView
-    -->
+        android:layout_height="fill_parent"
+        android:layout_gravity="center">
+    </SurfaceView>
 
     <View
         android:id="@+id/video_click"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-    <VideoView
-        android:id="@+id/video_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerInside"
-        android:layout_gravity="center"/>
 
     <FrameLayout
         android:id="@+id/video_progress_wrap"
