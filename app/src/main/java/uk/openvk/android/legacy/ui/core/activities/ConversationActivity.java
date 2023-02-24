@@ -46,12 +46,14 @@ import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ConversationPanel;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesListAdapter;
+import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-public class ConversationActivity extends FragmentActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener {
+public class ConversationActivity extends FragmentActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 
     private OvkAPIWrapper ovk_api;
     public Handler handler;
@@ -89,6 +91,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         messages = new Messages();
         registerBroadcastReceiver();
         setEmojiconFragment(false);
+        ((XLinearLayout) findViewById(R.id.conversation_view)).setOnKeyboardStateListener(this);
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -214,8 +217,13 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                     if (view != null) {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        view.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                            }
+                        }, 200);
                     }
-                    findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                 } else {
                     findViewById(R.id.emojicons).setVisibility(View.GONE);
                 }
@@ -461,5 +469,10 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         } else {
             findViewById(R.id.emojicons).setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onKeyboardStateChanged(boolean param1Boolean) {
+        if(param1Boolean) findViewById(R.id.emojicons).setVisibility(View.GONE);
     }
 }

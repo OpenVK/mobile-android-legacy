@@ -528,7 +528,7 @@
 
 	<string name="video_err_network">Произошла ошибка, связанная с подключением к серверу. Проверьте соединение и повотрите попытку.</string>
 	<string name="video_err_os">Для просмотра этой видеозаписи требуется Android 2.3 или выше.</string>
-	<string name="video_err_decode">Ваше устройство не может воспроизвести это видео. Попробуйте выбрать более низкое качество.</string>
+	<string name="video_err_decode">Ваше устройство не может воспроизвести это видео. Попробуйте выбрать более низкое качество или воспроизвести видео в стороннем плеере.</string>
 
 	<string-array name="video_views">
     	<item>%d просмотр</item>
@@ -1253,4 +1253,5 @@
     <string name="interface_category">Интерфейс</string>
     <string name="interface_language">Язык (Language)</string>
     <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина.\r\nВы можете узнать что-то новое в ленте всех новостей.</string>
+    <string name="retry_short">Повторить</string>
 </resources>

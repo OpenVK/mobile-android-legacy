@@ -96,6 +96,7 @@ public class HandlerMessages {
     public static int CONVERSATIONS_AVATARS             = 1110;
     public static int LONGPOLL                          = 1111;
     public static int ORIGINAL_PHOTO                    = 1112;
+    public static int VIDEO_THUMBNAILS                  = 1113;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;

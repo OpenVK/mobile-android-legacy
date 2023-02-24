@@ -320,6 +320,10 @@ public class Wall implements Parcelable {
                         }
                     }
                     videoAttachment.files = files;
+                    if(video.has("image")) {
+                        JSONArray thumb_array = video.getJSONArray("image");
+                        videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
+                    }
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));

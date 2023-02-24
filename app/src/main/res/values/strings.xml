@@ -516,7 +516,7 @@
     	<item>%d view</item>
     	<item>%d views</item>
     </string-array>
-    <string name="page_deleted">This profile was deleted or banned. Information on this profile is unavailable.</string>
+    <string name="page_deleted">This profile was deleted or banned. Information on this profile is unavailable or play the video in a third party player.</string>
 	<string name="page_blacklist">Access denied</string>
 	<string name="sett_push">Push notifications</string>
 	<string name="sett_push_summary">Receive notifications even outside the app</string>
@@ -1211,4 +1211,5 @@
     <string name="interface_category">Interface</string>
     <string name="interface_language">Language</string>
     <string name="local_newsfeed_no_posts">Silence in the local feed so far.\r\nYou can learn something new in the all news feed.</string>
+	<string name="retry_short">Retry</string>
 </resources>

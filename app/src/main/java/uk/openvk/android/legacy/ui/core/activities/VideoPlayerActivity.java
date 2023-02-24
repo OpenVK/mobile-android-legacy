@@ -5,6 +5,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -44,6 +46,7 @@ public class VideoPlayerActivity extends Activity {
     private VideoView video_view;
     private MediaPlayer mp;
     private FFmpegMediaPlayer fmp;
+    private boolean ready;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,11 +56,17 @@ public class VideoPlayerActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();
         }
-        loadVideo();
     }
 
     private void loadVideo() {
         Bundle data = getIntent().getExtras();
+        showPlayControls();
+        findViewById(R.id.video_surface_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPlayControls();
+            }
+        });
         if(data != null) {
             if(data.containsKey("attachment")) {
                 video = data.getParcelable("attachment");
@@ -84,15 +93,10 @@ public class VideoPlayerActivity extends Activity {
                 if(url == null) {
                     url = "";
                 }
-                createMediaPlayer();
-                new Handler(Looper.myLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateControlPanel();
-                        new Handler(Looper.myLooper()).postDelayed(this, 200);
-                    }
-                });
-                findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
+
+                Uri uri = Uri.parse(url);
+
+                createMediaPlayer(uri);
                 ((ImageButton) findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -105,19 +109,28 @@ public class VideoPlayerActivity extends Activity {
         }
     }
 
-    private void createMediaPlayer() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+    private void createMediaPlayer(Uri uri) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             fmp = new FFmpegMediaPlayer();
             fmp.setOnPreparedListener(new FFmpegMediaPlayer.OnPreparedListener() {
 
                 @Override
                 public void onPrepared(FFmpegMediaPlayer mp) {
-                    SurfaceView vsv = VideoPlayerActivity.this.findViewById(R.id.video_surface_view);
+                    ready = true;
+                    findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
+                    SurfaceView vsv = findViewById(R.id.video_surface_view);
                     SurfaceHolder vsh = vsv.getHolder();
-                    vsh.setFixedSize(mp.getVideoWidth(), mp.getVideoHeight());
+                    rescaleVideo(vsv, vsh);
                     vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
                     mp.setDisplay(vsh);
                     mp.start();
+                    new Handler(Looper.myLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateControlPanel();
+                            new Handler(Looper.myLooper()).postDelayed(this, 200);
+                        }
+                    });
                 }
             });
             fmp.setOnErrorListener(new FFmpegMediaPlayer.OnErrorListener() {
@@ -125,12 +138,33 @@ public class VideoPlayerActivity extends Activity {
                 @Override
                 public boolean onError(FFmpegMediaPlayer mp, int what, int extra) {
                     fmp.release();
+                    OvkAlertDialog err_dlg;
+                    err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+                    builder.setMessage(R.string.error);
+                    builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    });
+                    builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent tp_player = new Intent(Intent.ACTION_VIEW);
+                            tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
+                            startActivity(tp_player);
+                            finish();
+                        }
+                    });
+                    err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode), null);
+                    err_dlg.show();
                     return false;
                 }
             });
 
             try {
-                fmp.setDataSource(url);
+                fmp.setDataSource(this, uri);
                 fmp.prepareAsync();
             } catch (IllegalArgumentException | IOException | IllegalStateException | SecurityException e) {
                 e.printStackTrace();
@@ -138,15 +172,23 @@ public class VideoPlayerActivity extends Activity {
         } else {
             mp = new MediaPlayer();
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    ready = true;
+                    findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
                     SurfaceView vsv = VideoPlayerActivity.this.findViewById(R.id.video_surface_view);
                     SurfaceHolder vsh = vsv.getHolder();
-                    vsh.setFixedSize(mp.getVideoWidth(), mp.getVideoHeight());
+                    rescaleVideo(vsv, vsh);
                     vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
                     mp.setDisplay(vsh);
                     mp.start();
+                    new Handler(Looper.myLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateControlPanel();
+                            new Handler(Looper.myLooper()).postDelayed(this, 200);
+                        }
+                    });
                 }
             });
             mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -154,12 +196,33 @@ public class VideoPlayerActivity extends Activity {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     mp.release();
+                    OvkAlertDialog err_dlg;
+                    err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+                    builder.setMessage(R.string.error);
+                    builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    });
+                    builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent tp_player = new Intent(Intent.ACTION_VIEW);
+                            tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
+                            startActivity(tp_player);
+                            finish();
+                        }
+                    });
+                    err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode), null);
+                    err_dlg.show();
                     return false;
                 }
             });
 
             try {
-                mp.setDataSource(url);
+                mp.setDataSource(this, uri);
                 mp.prepareAsync();
             } catch (IllegalArgumentException | IOException | IllegalStateException | SecurityException e) {
                 e.printStackTrace();
@@ -167,42 +230,126 @@ public class VideoPlayerActivity extends Activity {
         }
     }
 
-    private void playVideo() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            if (isPlaying()) {
-                fmp.pause();
+    private void rescaleVideo(SurfaceView vsv, SurfaceHolder vsh) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            vsh.setFixedSize(fmp.getVideoWidth(), fmp.getVideoHeight());
+            // Get the width of the frame
+            int videoWidth = fmp.getVideoWidth();
+            int videoHeight = fmp.getVideoHeight();
+            float videoProportion = (float) videoWidth / (float) videoHeight;
+
+            // Get the width of the screen
+            int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+            int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+            float screenProportion = (float) screenWidth / (float) screenHeight;
+
+            android.view.ViewGroup.LayoutParams lp = vsv.getLayoutParams();
+            if (videoProportion > screenProportion) {
+                lp.width = screenWidth;
+                lp.height = (int) ((float) screenWidth / videoProportion);
             } else {
-                fmp.start();
+                lp.width = (int) (videoProportion * (float) screenHeight);
+                lp.height = screenHeight;
             }
+            vsv.setLayoutParams(lp);
         } else {
-            if (isPlaying()) {
-                mp.pause();
+            vsh.setFixedSize(mp.getVideoWidth(), mp.getVideoHeight());
+            // Get the width of the frame
+            int videoWidth = mp.getVideoWidth();
+            int videoHeight = mp.getVideoHeight();
+            float videoProportion = (float) videoWidth / (float) videoHeight;
+
+            // Get the width of the screen
+            int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+            int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+            float screenProportion = (float) screenWidth / (float) screenHeight;
+
+            android.view.ViewGroup.LayoutParams lp = vsv.getLayoutParams();
+            if (videoProportion > screenProportion) {
+                lp.width = screenWidth;
+                lp.height = (int) ((float) screenWidth / videoProportion);
             } else {
-                mp.start();
+                lp.width = (int) (videoProportion * (float) screenHeight);
+                lp.height = screenHeight;
             }
+            vsv.setLayoutParams(lp);
+        }
+    }
+
+    public void showPlayControls() {
+        findViewById(R.id.video_bottombar).setVisibility(View.VISIBLE);
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.video_bottombar).setVisibility(View.GONE);
+            }
+        }, 5000);
+    }
+
+    private void playVideo() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                if (isPlaying()) {
+                    fmp.pause();
+                } else {
+                    fmp.start();
+                }
+            } else {
+                if (isPlaying()) {
+                    mp.pause();
+                } else {
+                    mp.start();
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     private boolean isPlaying() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            return fmp.isPlaying();
-        } else {
-            return mp.isPlaying();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                return fmp.isPlaying();
+            } else {
+                return mp.isPlaying();
+            }
+        } catch (Exception ex) {
+            return false;
         }
     }
 
     @SuppressLint("DefaultLocale")
     private void updateControlPanel() {
-        int pos = video_view.getCurrentPosition() / 1000;
-        int duration = video_view.getDuration() / 1000;
-        if(video_view.isPlaying()) {
-            ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d", pos / 60, pos % 60));
-            ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d", duration / 60, duration % 60));
-            ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(pos);
-            ((SeekBar) findViewById(R.id.video_seekbar)).setMax(duration);
-            ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_video_pause));
-        } else {
-            ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_video_play));
+        if(ready) {
+            int pos = 0;
+            int duration = 0;
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                    pos = fmp.getCurrentPosition() / 1000;
+                    duration = fmp.getDuration() / 1000;
+                } else {
+                    pos = mp.getCurrentPosition() / 1000;
+                    duration = mp.getDuration() / 1000;
+                }
+            } catch (Exception ignored) {
+            }
+            if (isPlaying()) {
+                ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d", pos / 60, pos % 60));
+                ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d", duration / 60, duration % 60));
+                ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(pos);
+                ((SeekBar) findViewById(R.id.video_seekbar)).setMax(duration);
+                ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_video_pause));
+            } else {
+                ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_video_play));
+            }
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        SurfaceView vsv = VideoPlayerActivity.this.findViewById(R.id.video_surface_view);
+        SurfaceHolder vsh = vsv.getHolder();
+        rescaleVideo(vsv, vsh);
     }
 }

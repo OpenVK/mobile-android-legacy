@@ -1,1 +1,1 @@
-include ':app', ':slidingmenu', ':emoji-view', ':ffmp-arm'
+include ':app', ':slidingmenu', ':emoji-view', ':fmp'

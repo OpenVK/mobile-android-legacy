@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.ui.core.activities.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainSettingsActivity;
+import uk.openvk.android.legacy.ui.core.activities.NetworkSettingsActivity;
 
 /**
  * File created by Dmitry on 16.02.2023.
@@ -87,6 +88,33 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     private void setListeners() {
         PreferenceScreen screen = (PreferenceScreen) findPreference("main_settings");
         PreferenceGroup others = (PreferenceGroup) findPreference("cat_others");
+
+        Preference language = findPreference("interfaceLanguage");
+        if (language != null) {
+            // Not implemented yet
+            language.setEnabled(false);
+            language.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Toast.makeText(getContext(), getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            });
+        }
+
+        Preference notif_ringtone = findPreference("notifyRingtone");
+        if (notif_ringtone != null) {
+            // Not implemented yet
+            notif_ringtone.setEnabled(false);
+            notif_ringtone.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Toast.makeText(getContext(), getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            });
+        }
+
         Preference about_preference = findPreference("about");
         about_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -102,6 +130,18 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     openLogoutConfirmationDialog();
+                    return false;
+                }
+            });
+        }
+
+        Preference network_settings = findPreference("network_settings");
+        if (network_settings != null) {
+            network_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(getContext().getApplicationContext(), NetworkSettingsActivity.class);
+                    startActivity(intent);
                     return false;
                 }
             });

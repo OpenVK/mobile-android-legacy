@@ -21,7 +21,9 @@
         android:id="@+id/video_progress_wrap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" android:padding="10dip" android:background="@drawable/video_btn_bg">
+        android:layout_gravity="center"
+        android:padding="10dip"
+        android:background="@drawable/video_btn_bg">
 
         <ProgressBar
             android:id="@+id/video_progress"

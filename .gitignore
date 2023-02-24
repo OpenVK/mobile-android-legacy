@@ -5,3 +5,4 @@
 .DS_Store
 /build
 app/.externalNativeBuild
+ffmp-arm/build.gradle

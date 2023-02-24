@@ -7,6 +7,7 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp" />
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:divider="@null"/>
 </LinearLayout>

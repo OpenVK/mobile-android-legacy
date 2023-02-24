@@ -437,15 +437,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 } else if (item.attachments.get(i).status.equals("done") && item.attachments.get(i).type.equals("video")) {
                     if (item.attachments.get(i).getContent() != null) {
-                        post_video.setAttachment((VideoAttachment) item.attachments.get(i).getContent());
+                        final VideoAttachment videoAttachment = (VideoAttachment) item.attachments.get(i).getContent();
+                        post_video.setAttachment(videoAttachment);
                         post_video.setVisibility(View.VISIBLE);
                         final int posFinal = i;
                         post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent intent = new Intent(ctx, VideoPlayerActivity.class);
-                                intent.putExtra("attachment", ((VideoAttachment) item.attachments.get(posFinal).getContent()));
-                                intent.putExtra("files", ((VideoAttachment) item.attachments.get(posFinal).getContent()).files);
+                                intent.putExtra("attachment", videoAttachment);
+                                intent.putExtra("files", videoAttachment.files);
                                 ctx.startActivity(intent);
                             }
                         });

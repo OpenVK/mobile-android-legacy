@@ -7,7 +7,19 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="BaseStyle.PreferenceThemeOverlay" parent="PreferenceThemeOverlay">
+        <item name="preferenceFragmentListStyle">@style/BaseStyle.PreferenceThemeOverlay.FragmentList</item>
+        <item name="preferenceStyle">@style/BaseStyle.PreferenceThemeOverlay.Preference</item>
+    </style>
+
+    <!-- Fix L+R padding issue !-->
+    <style name="BaseStyle.PreferenceThemeOverlay.FragmentList">
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="preferenceStyle">@style/BaseStyle.PreferenceThemeOverlay.Preference</item>
     </style>
 
     <style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light.DarkActionBar">

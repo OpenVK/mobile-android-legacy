@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/emoji-view/emoji-view.iml" filepath="$PROJECT_DIR$/emoji-view/emoji-view.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ffmp-arm/ffmp-arm.iml" filepath="$PROJECT_DIR$/ffmp-arm/ffmp-arm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fmp/fmp.iml" filepath="$PROJECT_DIR$/fmp/fmp.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile-android-legacy.iml" filepath="$PROJECT_DIR$/mobile-android-legacy.iml" />
       <module fileurl="file://$PROJECT_DIR$/slidingmenu/slidingmenu.iml" filepath="$PROJECT_DIR$/slidingmenu/slidingmenu.iml" />
     </modules>

@@ -14,7 +14,7 @@
         android:minHeight="40dp"
         android:orientation="vertical"
         android:paddingBottom="12dp"
-        android:paddingLeft="16dp"
+        android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="12dp">
 
@@ -35,6 +35,14 @@
             android:focusable="false"
             android:text="Subtitle"
             android:textColor="?android:attr/textColorSecondary" />
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:background="#3f000000" />
 
 </LinearLayout>

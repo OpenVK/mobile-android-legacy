@@ -37,6 +37,8 @@ public class Newsfeed implements Parcelable {
     private ArrayList<PhotoAttachment> photos_osize;
 
     public long next_from;
+    private DownloadManager dlm;
+
     public Newsfeed(String response, DownloadManager downloadManager, String quality, Context ctx) {
         jsonParser = new JSONParser();
         if(items == null) {
@@ -65,6 +67,7 @@ public class Newsfeed implements Parcelable {
     };
 
     public void parse(Context ctx, DownloadManager downloadManager, String response, String quality, boolean clear) {
+        this.dlm = downloadManager;
         if(clear) {
             items = new ArrayList<WallPost>();
             photos_osize = new ArrayList<PhotoAttachment>();
@@ -311,6 +314,11 @@ public class Newsfeed implements Parcelable {
                         }
                     }
                     videoAttachment.files = files;
+                    if(video.has("image")) {
+                        JSONArray thumb_array = video.getJSONArray("image");
+                        videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
+                        dlm.downloadOnePhotoToCache(videoAttachment.url_thumb, String.format("thumbnail_%s", video.getLong("id")), "video_thumbnails");
+                    }
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
