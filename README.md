@@ -21,11 +21,11 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 ## Used Library
 1. [Android Support Library v24 for 1.6+](https://developer.android.com/topic/libraries/support-library) (Apache License 2.0)
 2. [Apache Wrapped HTTP Client 4.1.2](https://mvnrepository.com/artifact/org.jbundle.util.osgi.wrapped/org.jbundle.util.osgi.wrapped.org.apache.http.client/4.1.2#gradle) (Apache License 2.0)
-3. [PhotoView 1.2.6](https://github.com/Baseflow/PhotoView/tree/1.2.6) (Apache License 2.0)
+3. [PhotoView 1.2.6](https://square.github.io/okhttp/) (Apache License 2.0)
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2) (Apache License 2.0)
-7. [Android Support Preferences v24 for 2.1+ with design fixes](https://github.com/Gericop/Android-Support-Preference-V7-Fix/tree/4c2bb2896895dbedb37b659b36bd2a96b33c1605) (Apache License 2.0)
+7. [FFmpegMediaPlayer 1.0.1](https://github.com/wseemann/FFmpegMediaPlayer) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.

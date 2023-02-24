@@ -22,7 +22,7 @@ android {
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
         versionCode 176
-        versionName "1.1.176-stable"
+        versionName "1.1.176-stable.ffmp-av"
     }
     buildTypes {
         release {
@@ -37,7 +37,7 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 176
-            versionName "1.1.176-alpha.m2"
+            versionName "1.1.176-alpha.m2.ffmp-av"
         }
         betaConfig {
             applicationId "uk.openvk.android.legacy"
@@ -46,14 +46,14 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 176
-            versionName "1.1.176-beta"
+            versionName "1.1.176-beta.ffmp-av"
         }
         stableConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 175
-            versionName '1.1.176-stable'
+            versionCode 176
+            versionName '1.1.176-stable.ffmp-av'
             proguardFile 'app/OpenVK KeyStore.jks'
             signingConfig signingConfigs.def_signing
         }
@@ -79,4 +79,5 @@ dependencies {
     //noinspection GradleDependency
     compile 'com.takisoft.fix:preference-v7:24.0.0.1'
     compile project(':emoji-view')
+    compile project(':ffmp-arm')
 }

@@ -15,6 +15,8 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-sdk tools:overrideLibrary="wseemann.media.ffmpegmediaplayer"/>
+
     <application
         android:name=".OvkApplication"
         android:allowBackup="true"

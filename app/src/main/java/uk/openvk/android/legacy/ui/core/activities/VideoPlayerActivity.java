@@ -2,9 +2,8 @@ package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +20,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import java.io.IOException;
+
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import wseemann.media.FFmpegMediaPlayer;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 
 /**
@@ -38,6 +41,33 @@ public class VideoPlayerActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_player);
+        loadVideo();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            FFmpegMediaPlayer mp = new FFmpegMediaPlayer();
+            mp.setOnPreparedListener(new FFmpegMediaPlayer.OnPreparedListener() {
+
+                @Override
+                public void onPrepared(FFmpegMediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mp.setOnErrorListener(new FFmpegMediaPlayer.OnErrorListener() {
+
+                @Override
+                public boolean onError(FFmpegMediaPlayer mp, int what, int extra) {
+                    mp.release();
+                    return false;
+                }
+            });
+
+            try {
+                mp.setDataSource("<some path or URL>");
+                mp.prepareAsync();
+            } catch (IllegalArgumentException | IOException | IllegalStateException | SecurityException e) {
+                e.printStackTrace();
+            }
+        } else {
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();
         }
