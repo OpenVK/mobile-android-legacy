@@ -33,7 +33,7 @@
         </ProgressBar>
     </FrameLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/video_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -83,13 +83,13 @@
                         android:ellipsize="marquee"
                         android:text="0:00"
                         android:textColor="#9fff"
-                        android:textSize="12dip"></TextView>
+                        android:textSize="12dip"/>
 
                     <View
                         android:id="@+id/view1"
                         android:layout_width="wrap_content"
                         android:layout_height="10dip"
-                        android:layout_weight="1"></View>
+                        android:layout_weight="1"/>
 
                     <TextView
                         android:id="@+id/video_time2"
@@ -98,7 +98,7 @@
                         android:ellipsize="marquee"
                         android:text="0:00"
                         android:textColor="#9fff"
-                        android:textSize="12dip"></TextView>
+                        android:textSize="12dip"/>
                 </LinearLayout>
 
                 <SeekBar
@@ -125,8 +125,8 @@
                 android:layout_marginRight="16dip"
                 android:background="@null"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_video_expand"></ImageButton>
+                android:src="@drawable/ic_video_expand"/>
         </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
 </FrameLayout>

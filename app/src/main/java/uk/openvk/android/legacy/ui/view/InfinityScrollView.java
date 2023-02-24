@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;

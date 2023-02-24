@@ -276,18 +276,15 @@ public class NewsfeedFragment extends Fragment {
         try {
             if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    newsfeedView = view.findViewById(R.id.news_listview);
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                     layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                     newsfeedView.setLayoutParams(layoutParams);
                 } else {
-                    newsfeedView = view.findViewById(R.id.news_listview);
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                     newsfeedView.setLayoutParams(layoutParams);
                 }
             } else {
-                newsfeedView = view.findViewById(R.id.news_listview);
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                     layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
