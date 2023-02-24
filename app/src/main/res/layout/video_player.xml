@@ -19,9 +19,11 @@
         android:layout_height="wrap_content" />
 
     <VideoView
-        android:id="@+id/videoView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerInside"
+        android:layout_gravity="center"/>
 
     <FrameLayout
         android:id="@+id/video_progress_wrap"
@@ -76,8 +78,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="-10dip"
-                    android:layout_marginLeft="10dip"
-                    android:layout_marginRight="10dip">
+                    android:layout_marginLeft="16dip"
+                    android:layout_marginRight="16dip">
 
                     <TextView
                         android:id="@+id/video_time1"
@@ -110,7 +112,6 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dip"
-                    android:layout_marginRight="-6dp"
                     android:maxHeight="2dip"
                     android:minHeight="2dip"
                     android:paddingLeft="16dip"

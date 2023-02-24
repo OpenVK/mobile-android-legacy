@@ -18,6 +18,7 @@ import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.PollAnswer;
+import uk.openvk.android.legacy.api.models.VideoFiles;
 import uk.openvk.android.legacy.api.models.WallPostSource;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
@@ -299,7 +300,26 @@ public class Wall implements Parcelable {
                     VideoAttachment videoAttachment = new VideoAttachment();
                     videoAttachment.id = video.getLong("id");
                     videoAttachment.title = video.getString("title");
-                    //videoAttachment.url = video.getString("url");
+                    VideoFiles files = new VideoFiles();
+                    if(video.has("files")) {
+                        JSONObject videoFiles = video.getJSONObject("files");
+                        if(videoFiles.has("mp4_144")) {
+                            files.mp4_144 = videoFiles.getString("mp4_144");
+                        } if(videoFiles.has("mp4_240")) {
+                            files.mp4_240 = videoFiles.getString("mp4_240");
+                        } if(videoFiles.has("mp4_360")) {
+                            files.mp4_360 = videoFiles.getString("mp4_360");
+                        } if(videoFiles.has("mp4_480")) {
+                            files.mp4_480 = videoFiles.getString("mp4_480");
+                        } if(videoFiles.has("mp4_720")) {
+                            files.mp4_720 = videoFiles.getString("mp4_720");
+                        } if(videoFiles.has("mp4_1080")) {
+                            files.mp4_1080 = videoFiles.getString("mp4_1080");
+                        } if(videoFiles.has("ogv_480")) {
+                            files.ogv_480 = videoFiles.getString("ogv_480");
+                        }
+                    }
+                    videoAttachment.files = files;
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));

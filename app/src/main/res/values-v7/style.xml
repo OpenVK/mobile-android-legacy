@@ -9,10 +9,25 @@
         <item name="android:alertDialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:listViewStyle">@style/BaseStyle.DialogStyle.List</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
     </style>
 
+    <style name="BaseStyle.PreferenceThemeOverlay" parent="PreferenceThemeOverlay">
+        <item name="preferenceFragmentListStyle">@style/BaseStyle.PreferenceThemeOverlay.FragmentList</item>
+        <item name="preferenceStyle">@style/BaseStyle.PreferenceThemeOverlay.Preference</item>
+    </style>
+
+    <!-- Fix L+R padding issue !-->
+    <style name="BaseStyle.PreferenceThemeOverlay.FragmentList">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="preferenceStyle">@style/BaseStyle.PreferenceThemeOverlay.Preference</item>
+    </style>
+
+    <style name="BaseStyle.PreferenceThemeOverlay.Preference">
+        <item name="android:background">@drawable/highlight</item>
+        <item name="android:windowBackground">@drawable/highlight</item>
+    </style>
 
     <style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light.DarkActionBar">
         <item name="android:fadingEdgeLength">0dip</item>
@@ -23,6 +38,7 @@
         <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
         <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:listDivider">@android:color/transparent</item>
     </style>
 
     <style name="BaseStyle.DialogStyle" parent="@android:style/Theme.Dialog">
@@ -44,7 +60,6 @@
     <style name="BaseStyle.DialogStyle.List" parent="@android:style/Widget.ListView">
         <item name="android:background">@color/white</item>
         <item name="android:cacheColorHint">@color/white</item>
-        <item name="android:listSelector">@drawable/highlight</item>
     </style>
 
     <style name="BaseStyle.DialogTheme" parent="@android:style/Theme.Dialog">

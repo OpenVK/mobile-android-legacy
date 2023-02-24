@@ -35,7 +35,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -75,22 +74,22 @@ import uk.openvk.android.legacy.longpoll_api.LongPollService;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.MainSettingsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
+import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.SlidingMenuLayout;
 import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
-import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})

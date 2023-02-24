@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +18,9 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
+import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +36,9 @@ import java.util.Timer;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.Ovk;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.models.InstanceLink;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AboutApplicationActivity;
@@ -66,11 +75,13 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try {
-            return super.onCreateView(inflater, container, savedInstanceState);
-        } finally {
-            setDividerPreferences(DIVIDER_PADDING_CHILD | DIVIDER_CATEGORY_AFTER_LAST | DIVIDER_CATEGORY_BETWEEN);
-        }
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setDividerPreferences(DIVIDER_PADDING_CHILD | DIVIDER_CATEGORY_AFTER_LAST | DIVIDER_CATEGORY_BETWEEN);
     }
 
     private void setListeners() {
@@ -228,5 +239,80 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     }
 
     private void openWebAddress(String server) {
+    }
+
+    public void setAboutInstanceData(Ovk ovk) {
+        TextView users_counter = (TextView) about_instance_view.findViewById(R.id.instance_users_count);
+        users_counter.setText(getResources().getString(R.string.instance_users_count, ovk.instance_stats.users_count));
+        TextView online_users_counter = (TextView) about_instance_view.findViewById(R.id.instance_online_users_count);
+        online_users_counter.setText(getResources().getString(R.string.instance_online_users_count, ovk.instance_stats.online_users_count));
+        TextView active_users_counter = (TextView) about_instance_view.findViewById(R.id.instance_active_users_count);
+        active_users_counter.setText(getResources().getString(R.string.instance_active_users_count, ovk.instance_stats.active_users_count));
+        TextView groups_counter = (TextView) about_instance_view.findViewById(R.id.instance_groups_count);
+        groups_counter.setText(getResources().getString(R.string.instance_groups_count, ovk.instance_stats.groups_count));
+        TextView wall_posts_counter = (TextView) about_instance_view.findViewById(R.id.instance_wall_posts_count);
+        wall_posts_counter.setText(getResources().getString(R.string.instance_wall_posts_count, ovk.instance_stats.wall_posts_count));
+        TextView admins_counter = (TextView) about_instance_view.findViewById(R.id.instance_admins_count);
+        admins_counter.setText(getResources().getString(R.string.instance_admins_count, ovk.instance_admins.size()));
+        ((LinearLayout) about_instance_view.findViewById(R.id.instance_statistics_ll)).setVisibility(View.VISIBLE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label2)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label3)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label4)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label5)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label6)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label7)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label8)).setVisibility(View.GONE);
+        ((TextView) about_instance_view.findViewById(R.id.instance_links_label9)).setVisibility(View.GONE);
+        for(int i = 0; i < ovk.instance_links.size(); i++) {
+            InstanceLink link = ovk.instance_links.get(i);
+            TextView textView = null;
+            if(i == 0) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label2));
+            } else if(i == 1) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label3));
+            } else if(i == 2) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label4));
+            } else if(i == 3) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label5));
+            } else if(i == 4) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label6));
+            } else if(i == 5) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label7));
+            } else if(i == 6) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label8));
+            } else if(i == 7) {
+                textView = ((TextView) about_instance_view.findViewById(R.id.instance_links_label9));
+            }
+            if(textView != null) {
+                textView.setText(Html.fromHtml(String.format("<a href=\"%s\">%s</a>", link.url, link.name)));
+                textView.setVisibility(View.VISIBLE);
+                textView.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        }
+        ((LinearLayout) about_instance_view.findViewById(R.id.instance_links_ll)).setVisibility(View.VISIBLE);
+    }
+
+
+    public void setInstanceVersion(Ovk ovk) {
+        TextView openvk_version_tv = (TextView) about_instance_view.findViewById(R.id.instance_version_label2);
+        if(ovk.version.startsWith("OpenVK")) {
+            openvk_version_tv.setText(ovk.version);
+        } else {
+            openvk_version_tv.setText(String.format("OpenVK %s", ovk.version));
+        }
+        ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.VISIBLE);
+    }
+
+    public void setConnectionType(int message) {
+        if(message == HandlerMessages.OVK_CHECK_HTTP) {
+            TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+            connection_type.setText(getResources().getString(R.string.default_connection));
+        } else if(message == HandlerMessages.OVK_CHECK_HTTPS){
+            TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+            connection_type.setText(getResources().getString(R.string.secured_connection));
+        } else {
+            TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
+            connection_type.setText(getResources().getString(R.string.connection_error));
+        }
     }
 }

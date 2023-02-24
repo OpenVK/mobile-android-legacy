@@ -3,11 +3,14 @@ package uk.openvk.android.legacy.api.attachments;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import uk.openvk.android.legacy.api.models.VideoFiles;
+
 /**
  * File created by Dmitry on 14.02.2023.
  */
 
 public class VideoAttachment implements Parcelable {
+    public VideoFiles files;
     public long id;
     public String title;
     public String url;
@@ -19,10 +22,10 @@ public class VideoAttachment implements Parcelable {
 
     }
 
-    public VideoAttachment(long id, String title, String url, String url_thumb, int duration, String filename) {
+    public VideoAttachment(long id, String title, VideoFiles files, String url_thumb, int duration, String filename) {
         this.id = id;
         this.title = title;
-        this.url = url;
+        this.files = files;
         this.url_thumb = url_thumb;
         this.duration = duration;
         this.filename = filename;
@@ -31,7 +34,7 @@ public class VideoAttachment implements Parcelable {
     protected VideoAttachment(Parcel in) {
         id = in.readLong();
         title = in.readString();
-        url = in.readString();
+        files = in.readParcelable(VideoFiles.class.getClassLoader());
         url_thumb = in.readString();
         duration = in.readInt();
         filename = in.readString();
@@ -41,7 +44,7 @@ public class VideoAttachment implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
         dest.writeString(title);
-        dest.writeString(url);
+        dest.writeParcelable(files, flags);
         dest.writeString(url_thumb);
         dest.writeInt(duration);
         dest.writeString(filename);
