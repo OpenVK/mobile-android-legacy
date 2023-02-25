@@ -336,8 +336,10 @@ public class VideoPlayerActivity extends Activity {
             if (isPlaying()) {
                 ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d", pos / 60, pos % 60));
                 ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d", duration / 60, duration % 60));
-                ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(pos);
-                ((SeekBar) findViewById(R.id.video_seekbar)).setMax(duration);
+                if(!((SeekBar) findViewById(R.id.video_seekbar)).isFocused()) {
+                    ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(pos);
+                    ((SeekBar) findViewById(R.id.video_seekbar)).setMax(duration);
+                }
                 ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_video_pause));
             } else {
                 ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().getDrawable(R.drawable.ic_video_play));
