@@ -79,5 +79,5 @@ dependencies {
     //noinspection GradleDependency
     compile 'com.takisoft.fix:preference-v7:24.0.0.1'
     compile project(':emoji-view')
-    compile project(':fmp')
+    compile 'com.github.wseemann:FFmpegMediaPlayer:1.0.4'
 }
