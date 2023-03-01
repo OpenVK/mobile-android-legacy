@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    xmlns:emojicon="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -51,7 +52,7 @@
             android:layout_toRightOf="@+id/attach_btn"
             android:background="@null"
             android:ems="10"
-            android:gravity="start|top"
+            android:gravity="start|center"
             android:hint="@string/message"
             android:inputType="textMultiLine"
             android:padding="8dp"

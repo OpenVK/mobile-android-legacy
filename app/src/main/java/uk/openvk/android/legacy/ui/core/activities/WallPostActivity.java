@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,9 +21,16 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.rockerhieu.emojicon.EmojiconEditText;
+import com.rockerhieu.emojicon.EmojiconGridFragment;
+import com.rockerhieu.emojicon.EmojiconsFragment;
+import com.rockerhieu.emojicon.emoji.Emojicon;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -38,15 +47,17 @@ import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.RepostInfo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.CommentPanel;
 import uk.openvk.android.legacy.ui.view.layouts.PostViewLayout;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 
-public class WallPostActivity extends Activity {
+public class WallPostActivity extends FragmentActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     private Wall wall;
@@ -67,6 +78,7 @@ public class WallPostActivity extends Activity {
     private WallPost post;
     private String author_mention = "";
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,12 +87,14 @@ public class WallPostActivity extends Activity {
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
+        ((XLinearLayout) findViewById(R.id.comments_view)).setOnKeyboardStateListener(this);
+        setEmojiconFragment(false);
         postViewLayout = findViewById(R.id.comments_layout);
         postViewLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         commentPanel = findViewById(R.id.comment_panel);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        if(((EditText)commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() == 0) {
-            ((Button) commentPanel.findViewById(R.id.send_btn)).setEnabled(false);
+        if(((EmojiconEditText)commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() == 0) {
+            (commentPanel.findViewById(R.id.send_btn)).setEnabled(false);
         }
         handler = new Handler() {
             @Override
@@ -170,8 +184,28 @@ public class WallPostActivity extends Activity {
     }
 
     private void setCommentsView() {
-        final CommentPanel commentPanel = (CommentPanel) findViewById(R.id.comment_panel);
-        final Button send_btn = ((Button) commentPanel.findViewById(R.id.send_btn));
+        final CommentPanel commentPanel = findViewById(R.id.comment_panel);
+        final Button send_btn = (commentPanel.findViewById(R.id.send_btn));
+        ((ImageButton) commentPanel.findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
+                    View view = WallPostActivity.this.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        view.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                            }
+                        }, 200);
+                    }
+                } else {
+                    findViewById(R.id.emojicons).setVisibility(View.GONE);
+                }
+            }
+        });
         ((EditText) commentPanel.findViewById(R.id.comment_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
@@ -179,7 +213,7 @@ public class WallPostActivity extends Activity {
                     if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
                         if ((event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                                 && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                            final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                            final String msg_text = ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
                             try {
                                 wall.createComment(ovk_api, owner_id, post_id, msg_text);
                             } catch (Exception ex) {
@@ -195,10 +229,10 @@ public class WallPostActivity extends Activity {
                             }
                             comments.add(comment);
                             postViewLayout.createAdapter(WallPostActivity.this, comments);
-                            ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
+                            ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
                         } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
                                 && event.getAction() == KeyEvent.ACTION_DOWN) {
-                            ((EditText) commentPanel.findViewById(R.id.comment_edit)).clearFocus();
+                            (commentPanel.findViewById(R.id.comment_edit)).clearFocus();
                             postViewLayout.requestFocus();
                         }
                     }
@@ -213,7 +247,7 @@ public class WallPostActivity extends Activity {
             @Override
             public void onClick(View view) {
                 try {
-                    final String msg_text = ((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                    final String msg_text = ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
                     try {
                         wall.createComment(ovk_api, owner_id, post_id, msg_text);
                     } catch (Exception ex) {
@@ -229,13 +263,13 @@ public class WallPostActivity extends Activity {
                     }
                     comments.add(comment);
                     postViewLayout.createAdapter(WallPostActivity.this, comments);
-                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
+                    ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
                 } catch (OutOfMemoryError error) {
 
                 }
             }
         });
-        ((EditText) commentPanel.findViewById(R.id.comment_edit)).addTextChangedListener(new TextWatcher() {
+        ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -243,8 +277,7 @@ public class WallPostActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() > 0) {
-
+                if(((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() > 0) {
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);
@@ -253,10 +286,10 @@ public class WallPostActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount() > 4) {
-                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(4);
+                if(((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount() > 4) {
+                    ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setLines(4);
                 } else {
-                    ((EditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount());
+                    ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount());
                 }
             }
         });
@@ -292,7 +325,7 @@ public class WallPostActivity extends Activity {
         intent.putExtra("where", "wall");
         try {
             if(getIntent().getExtras().getBoolean("contains_photo")) {
-                intent.putExtra("local_photo_addr", String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getCacheDir(),
+                intent.putExtra("local_photo_addr", String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getCacheDir(),
                         owner_id, post_id));
                 intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
                 startActivity(intent);
@@ -359,4 +392,34 @@ public class WallPostActivity extends Activity {
     }
 
 
+    private void setEmojiconFragment(boolean useSystemDefault) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.emojicons, EmojiconsFragment.newInstance(useSystemDefault))
+                .commit();
+    }
+
+    @Override
+    public void onEmojiconClicked(Emojicon emojicon) {
+        EmojiconsFragment.input((EditText) findViewById(R.id.comment_panel).findViewById(R.id.comment_edit), emojicon);
+    }
+
+    @Override
+    public void onEmojiconBackspaceClicked(View v) {
+        EmojiconsFragment.backspace((EditText) findViewById(R.id.comment_panel).findViewById(R.id.comment_edit));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
+            super.onBackPressed();
+        } else {
+            findViewById(R.id.emojicons).setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onKeyboardStateChanged(boolean param1Boolean) {
+        if(param1Boolean) findViewById(R.id.emojicons).setVisibility(View.GONE);
+    }
 }

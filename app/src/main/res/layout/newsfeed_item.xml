@@ -47,6 +47,7 @@
                 android:text="Poster Name"
                 android:textColor="@color/main_text"
                 android:textSize="16dip"
+                android:gravity="start|center"
                 tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
 
             <LinearLayout
@@ -121,6 +122,7 @@
             android:textColorHighlight="#802B587A"
             android:textColorLink="@color/ovk_color"
             android:textSize="14dip"
+            android:gravity="start|center"
             tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
 
         <TextView
@@ -183,7 +185,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <com.rockerhieu.emojicon.EmojiconTextView
                     android:id="@+id/post_retweet_name"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -201,6 +203,7 @@
                     android:textColor="@color/main_text"
                     android:textSize="16dip"
                     android:visibility="visible"
+                    android:gravity="start|center"
                     tools:ignore="Deprecated,HardcodedText,SpUsage" />
 
                 <TextView

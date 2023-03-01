@@ -30,7 +30,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.rockerhieu.emojicon.EmojiconEditText;
 import com.rockerhieu.emojicon.EmojiconGridFragment;
+import com.rockerhieu.emojicon.EmojiconTextView;
 import com.rockerhieu.emojicon.EmojiconsFragment;
 import com.rockerhieu.emojicon.emoji.Emojicon;
 
@@ -229,7 +231,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                 }
             }
         });
-        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
                 if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
@@ -254,11 +256,11 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                         } else {
                             conversation_adapter.notifyDataSetChanged();
                         }
-                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
                         messagesList.smoothScrollToPosition(history.size() - 1);
                     } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        ((EditText) conversationPanel.findViewById(R.id.message_edit)).clearFocus();
+                        (conversationPanel.findViewById(R.id.message_edit)).clearFocus();
                         messagesList.requestFocus();
                     }
                 }
@@ -270,7 +272,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String msg_text = ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
+                final String msg_text = ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
                 try {
                     conversation.sendMessage(ovk_api, msg_text);
                 } catch (Exception ex) {
@@ -289,11 +291,11 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                 } else {
                     conversation_adapter.notifyDataSetChanged();
                 }
-                ((EditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
                 messagesList.smoothScrollToPosition(history.size() -1);
             }
         });
-        ((EditText) conversationPanel.findViewById(R.id.message_edit)).addTextChangedListener(new TextWatcher() {
+        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -301,7 +303,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString().length() > 0) {
+                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString().length() > 0) {
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);
@@ -310,10 +312,10 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
-                    ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(4);
+                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
+                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setLines(4);
                 } else {
-                    ((EditText) conversationPanel.findViewById(R.id.message_edit)).setLines(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount());
+                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setLines(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount());
                 }
             }
         });

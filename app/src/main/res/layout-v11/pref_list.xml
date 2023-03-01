@@ -43,6 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_weight="1"
-        android:background="#3f000000" />
+        android:background="#3f000000"
+        android:visibility="gone" />
 
 </LinearLayout>

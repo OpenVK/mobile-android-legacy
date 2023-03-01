@@ -63,7 +63,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_weight="1"
-        android:background="#3f000000" />
+        android:background="#3f000000"
+        android:visibility="gone" />
 
     <!--
      Они выглядят как говно, т. е. без текста зачем-то оставляется неравномерный отступ

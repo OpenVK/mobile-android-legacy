@@ -33,9 +33,11 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 
 public class NewsfeedFragment extends Fragment {
@@ -224,10 +226,10 @@ public class NewsfeedFragment extends Fragment {
         if(load_photos) {
             loadPhotos();
         }
-        final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
-        scrollView.setOnScrollListener(new OnScrollListener() {
+        final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+        scrollView.setOnScrollListener(new OnNestedScrollListener() {
             @Override
-            public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
                 View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
                 int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                 if (!loading_more_posts) {
