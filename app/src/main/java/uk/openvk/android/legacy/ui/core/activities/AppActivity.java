@@ -45,6 +45,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -132,7 +133,7 @@ public class AppActivity extends FragmentActivity {
     private boolean inBackground;
     public ActionBarLayout ab_layout;
     private int menu_id;
-    private ActionBarImitation actionBarImitation;
+    private dev.tinelix.retro_ab.ActionBar actionBar;
     private LongPollReceiver lpReceiver;
     private FragmentTransaction ft;
     private Fragment selectedFragment;
@@ -230,54 +231,57 @@ public class AppActivity extends FragmentActivity {
     }
 
     private void setActionBar(String layout_name) {
-        ab_layout.setOnHomeButtonClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!((OvkApplication) getApplicationContext()).isTablet) {
-                    menu.toggle(true);
-                } else {
-                    if(slidingmenuLayout.getVisibility() == View.VISIBLE) {
-                        slidingmenuLayout.setVisibility(View.GONE);
+        try {
+            ab_layout.setOnHomeButtonClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!((OvkApplication) getApplicationContext()).isTablet) {
+                        menu.toggle(true);
                     } else {
-                        slidingmenuLayout.setVisibility(View.VISIBLE);
+                        if (slidingmenuLayout.getVisibility() == View.VISIBLE) {
+                            slidingmenuLayout.setVisibility(View.GONE);
+                        } else {
+                            slidingmenuLayout.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
-            }
-        });
-        if(layout_name.equals("custom_newsfeed")) {
-            ab_layout.selectItem(0);
-            ab_layout.setMode("spinner");
-            int actionbar_height = 0;
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                try {
-                    getActionBar().setCustomView(ab_layout);
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                        getActionBar().setHomeButtonEnabled(true);
+            });
+            if(layout_name.equals("custom_newsfeed")) {
+                ab_layout.selectItem(0);
+                ab_layout.setMode("spinner");
+                int actionbar_height = 0;
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    try {
+                        getActionBar().setCustomView(ab_layout);
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            getActionBar().setHomeButtonEnabled(true);
+                        }
+                        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                actionBarImitation = findViewById(R.id.actionbar_imitation);
-            }
-        } else {
-            ab_layout.setMode("title");
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                try {
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                        getActionBar().setHomeButtonEnabled(true);
-                    }
-                    ab_layout.setNotificationCount(account.counters);
-                    getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    actionBar = findViewById(R.id.actionbar_imitation);
                 }
             } else {
-                actionBarImitation = findViewById(R.id.actionbar_imitation);
+                ab_layout.setMode("title");
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    try {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            getActionBar().setHomeButtonEnabled(true);
+                        }
+                        ab_layout.setNotificationCount(account.counters);
+                        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    actionBar = findViewById(R.id.actionbar_imitation);
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
     }
 
     @Override
@@ -484,9 +488,9 @@ public class AppActivity extends FragmentActivity {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
-            actionBarImitation = findViewById(R.id.actionbar_imitation);
-            ab_layout = actionBarImitation.getLayout();
-            ab_layout.createSpinnerAdapter(this);
+            actionBar = findViewById(R.id.actionbar);
+            //ab_layout = actionBar.getLayout();
+            //ab_layout.createSpinnerAdapter(this);
         }
         setActionBar("custom_newsfeed");
         setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -501,26 +505,15 @@ public class AppActivity extends FragmentActivity {
             popupMenu.setOutsideTouchable(true);
             popupMenu.setFocusable(true);
             final ListView menu_list = popupMenu.getContentView().findViewById(R.id.popup_menulist);
-            actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
-                @SuppressLint("RtlHardcoded")
+            actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
                 @Override
-                public void onClick(View v) {
-                    if (popupMenu.isShowing()) {
-                        popupMenu.dismiss();
-                    } else {
-                        menu_list.setAdapter(actionBarImitation.overflow_adapter);
-                        popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
-                    }
+                public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                    onMenuItemSelected(0, menu.getItem(item.getItemId()));
                 }
-            });
+            }));
             menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(menu.getItem(position).isVisible()) {
-                        onMenuItemSelected(0, menu.getItem(position));
-                    } else {
-                        Toast.makeText(AppActivity.this, getResources().getString(R.string.not_supported), Toast.LENGTH_LONG).show();
-                    }
                     popupMenu.dismiss();
                 }
             });
@@ -531,12 +524,16 @@ public class AppActivity extends FragmentActivity {
                 }
             });
         } else {
-            actionBarImitation.createOverflowMenu(false, menu, null);
+
         }
     }
 
     public void setActionBarTitle(String title) {
-        ab_layout.setAppTitle(title);
+        try {
+            ab_layout.setAppTitle(title);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void openNewPostActivity() {
@@ -634,7 +631,7 @@ public class AppActivity extends FragmentActivity {
             }
             friends.get(ovk_api, account.id, 25, "friends_list");
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBarImitation.setActionButton("", 0, null);
+                actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, false);
             }
         } else if(position == 1) {
@@ -662,7 +659,7 @@ public class AppActivity extends FragmentActivity {
             }
             messages.getConversations(ovk_api);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBarImitation.setActionButton("", 0, null);
+                actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, false);
             }
         } else if(position == 2) {
@@ -690,7 +687,7 @@ public class AppActivity extends FragmentActivity {
             }
             groups.getGroups(ovk_api, account.id, 25);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBarImitation.setActionButton("", 0, null);
+                actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, false);
             }
         } else if(position == 3) {
@@ -721,9 +718,14 @@ public class AppActivity extends FragmentActivity {
             newsfeed_count = 25;
             newsfeed.get(ovk_api, newsfeed_count);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
+                actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
                     @Override
-                    public void onClick(View view) {
+                    public int getDrawable() {
+                        return R.drawable.post_btn;
+                    }
+
+                    @Override
+                    public void performAction(View view) {
                         openNewPostActivity();
                     }
                 });
@@ -756,10 +758,15 @@ public class AppActivity extends FragmentActivity {
                 newsfeed.get(ovk_api, newsfeed_count);
                 messages.getLongPollServer(ovk_api);
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                    actionBarImitation.setActionButton("new_post", 0, new View.OnClickListener() {
+                    dev.tinelix.retro_ab.ActionBar actionBar = findViewById(R.id.actionbar);
+                    actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
                         @Override
-                        public void onClick(View view) {
+                        public int getDrawable() {
+                            return R.drawable.post_btn;
+                        }
+
+                        @Override
+                        public void performAction(View view) {
                             openNewPostActivity();
                         }
                     });
@@ -797,7 +804,11 @@ public class AppActivity extends FragmentActivity {
                 } else {
                     ((ListView) slidingmenuLayout.findViewById(R.id.menu_view)).setAdapter(slidingMenuAdapter);
                 }
-                ab_layout.setNotificationCount(account.counters);
+                try {
+                    ab_layout.setNotificationCount(account.counters);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
                 ((SwipeRefreshLayout) newsfeedFragment.getView().findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
@@ -1186,7 +1197,7 @@ public class AppActivity extends FragmentActivity {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.profile));
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBarImitation.setActionButton("", 0, null);
+                actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, true);
             }
         } catch (Exception ex) {

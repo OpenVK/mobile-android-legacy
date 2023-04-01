@@ -1,0 +1,43 @@
+apply plugin: 'android-library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion '25.0.0'
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            res.srcDirs = ['res']
+        }
+    }
+}
+
+task makeJavadoc (type: Exec) {
+    commandLine (
+            'javadoc',
+            '-d', "${buildDir}/javadoc",
+            '-sourcepath', './src/main/java',
+            '-subpackages', 'com',
+            '-encoding', 'UTF-8'
+    )
+    standardOutput = new ByteArrayOutputStream()
+    errorOutput = new ByteArrayOutputStream()
+
+    ext.output = {
+        return standardOutput.toString()
+    }
+    ext.error = {
+        return errorOutput.toString()
+    }
+}
+
+task javadocJar (type : Jar, dependsOn: makeJavadoc) {
+    classifier = 'javadoc'
+    from "${buildDir}/javadoc"
+}
+
+signing {
+    sign configurations.archives
+}

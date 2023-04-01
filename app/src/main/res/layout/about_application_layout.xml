@@ -11,10 +11,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
-            android:id="@+id/actionbar_imitation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <dev.tinelix.retro_ab.ActionBar
+            android:id="@+id/actionbar"
+            app:title="@string/app_name"
+            style="@style/ActionBar"
+            />
 
         <ImageView
             android:id="@+id/logo"

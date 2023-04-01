@@ -2,13 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/actionbar_imitation"/>
+    <dev.tinelix.retro_ab.ActionBar
+        android:id="@+id/actionbar"
+        app:title="@string/app_name"
+        style="@style/ActionBar"
+        />
 
     <EditText
         android:id="@+id/search_edit"

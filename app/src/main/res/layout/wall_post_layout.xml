@@ -3,13 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/comments_view"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/actionbar_imitation"/>
+    <dev.tinelix.retro_ab.ActionBar
+        android:id="@+id/actionbar"
+        app:title="@string/app_name"
+        style="@style/ActionBar"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

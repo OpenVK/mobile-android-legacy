@@ -8,9 +8,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/actionbar" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/emoji-view" />
             <option value="$PROJECT_DIR$/fmp" />
+            <option value="$PROJECT_DIR$/popupmenu" />
             <option value="$PROJECT_DIR$/slidingmenu" />
           </set>
         </option>
