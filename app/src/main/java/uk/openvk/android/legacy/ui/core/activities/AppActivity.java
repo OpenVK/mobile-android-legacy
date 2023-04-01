@@ -482,15 +482,15 @@ public class AppActivity extends FragmentActivity {
         }
         selectedFragment = newsfeedFragment;
         progressLayout.setVisibility(View.VISIBLE);
-
+        ab_layout = new ActionBarLayout(this);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ab_layout = new ActionBarLayout(this);
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
             actionBar = findViewById(R.id.actionbar);
-            //ab_layout = actionBar.getLayout();
-            //ab_layout.createSpinnerAdapter(this);
+            actionBar.setCustomView(ab_layout);
+            ab_layout.createSpinnerAdapter(this);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
         }
         setActionBar("custom_newsfeed");
         setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -759,17 +759,18 @@ public class AppActivity extends FragmentActivity {
                 messages.getLongPollServer(ovk_api);
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     dev.tinelix.retro_ab.ActionBar actionBar = findViewById(R.id.actionbar);
-                    actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
+                    dev.tinelix.retro_ab.ActionBar.Action newpost = new dev.tinelix.retro_ab.ActionBar.Action() {
                         @Override
                         public int getDrawable() {
-                            return R.drawable.post_btn;
+                            return R.drawable.ic_ab_write;
                         }
 
                         @Override
                         public void performAction(View view) {
                             openNewPostActivity();
                         }
-                    });
+                    };
+                    actionBar.addAction(newpost);
                 } else {
                     if(activity_menu == null) {
                         onPrepareOptionsMenu(activity_menu);
