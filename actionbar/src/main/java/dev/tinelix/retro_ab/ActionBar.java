@@ -128,6 +128,9 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
     public void setSubtitle(int resid) {
         mSubtitleView.setText(resid);
+        if(getResources().getString(resid).length() > 0)
+            mSubtitleView.setVisibility(VISIBLE);
+        else mSubtitleView.setVisibility(GONE);
     }
 
     /**
@@ -319,19 +322,21 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
         @Override
         public void performAction(View view) {
-            try {
-                if(mContext != null) {
-                    PopupMenu menu = new PopupMenu(mContext);
-                    menu.setHeaderTitle(mTitle);
-                    menu.setOnItemSelectedListener(mItemListener);
-                    menu.add(0, R.string.app_name);
-                    menu.show(view);
-                }
-            } catch (Exception e) {
-                Toast.makeText(mContext,
-                        mContext.getText(R.string.actionbar_activity_not_found),
-                        Toast.LENGTH_SHORT).show();
-            }
+//            doesn't not work yet
+//
+//            try {
+//                if(mContext != null) {
+//                    PopupMenu menu = new PopupMenu(mContext);
+//                    menu.setHeaderTitle(mTitle);
+//                    menu.setOnItemSelectedListener(mItemListener);
+//                    menu.add(0, R.string.app_name);
+//                    menu.show(view);
+//                }
+//            } catch (Exception e) {
+//                Toast.makeText(mContext,
+//                        mContext.getText(R.string.actionbar_activity_not_found),
+//                        Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 

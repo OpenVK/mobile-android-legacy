@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -28,7 +29,6 @@ import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.FullListView;
 import uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -58,12 +58,19 @@ public class QuickSearchActivity extends Activity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.search_global));
         } else {
-            final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.search_global));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setTitle(getResources().getString(R.string.search_global));
+            actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return R.drawable.ic_ab_app;
+                }
+
+                @Override
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });

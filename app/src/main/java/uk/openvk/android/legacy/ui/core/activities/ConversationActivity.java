@@ -32,13 +32,13 @@ import android.widget.TextView;
 
 import com.rockerhieu.emojicon.EmojiconEditText;
 import com.rockerhieu.emojicon.EmojiconGridFragment;
-import com.rockerhieu.emojicon.EmojiconTextView;
 import com.rockerhieu.emojicon.EmojiconsFragment;
 import com.rockerhieu.emojicon.emoji.Emojicon;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -49,7 +49,6 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ConversationPanel;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesListAdapter;
 import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
@@ -71,7 +70,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
     public int peer_online;
     public long peer_id;
     private int cursor_id;
-    public ActionBarImitation actionBarImitation;
+    public ActionBar actionBar;
     private ArrayList<uk.openvk.android.legacy.api.models.Message> history;
     private Messages messages;
     private uk.openvk.android.legacy.api.models.Message last_sended_message;
@@ -130,16 +129,19 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayUseLogoEnabled(false);
                 } else {
-                    actionBarImitation.setHomeButtonVisibility(true);
-                    actionBarImitation.setTitle(conv_title);
+                    ActionBar actionBar = findViewById(R.id.actionbar);
+                    actionBar.setTitle(conv_title);
                     if(peer_online == 1) {
-                        actionBarImitation.setSubtitle(getResources().getString(R.string.online));
+                        actionBar.setSubtitle(R.string.online);
                     } else {
-                        actionBarImitation.setSubtitle(getResources().getString(R.string.offline));
+                        actionBar.setSubtitle(R.string.offline);
                     }
-                    actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+                    actionBar.setHomeLogo(R.drawable.ic_ab_app);
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                    actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
                         @Override
-                        public void onClick(View view) {
+                        public void performAction(View view) {
                             onBackPressed();
                         }
                     });
@@ -163,12 +165,19 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                 getActionBar().setDisplayShowHomeEnabled(true);
                 getActionBar().setDisplayUseLogoEnabled(false);
             } else {
-                actionBarImitation.setHomeButtonVisibility(true);
-                actionBarImitation.setTitle(conv_title);
-                actionBarImitation.setSubtitle(conv_title);
-                actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+                ActionBar actionBar = findViewById(R.id.actionbar);
+                actionBar.setTitle(conv_title);
+                if(peer_online == 1) {
+                    actionBar.setSubtitle(R.string.online);
+                } else {
+                    actionBar.setSubtitle(R.string.offline);
+                }
+                actionBar.setHomeLogo(R.drawable.ic_ab_app);
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
                     @Override
-                    public void onClick(View view) {
+                    public void performAction(View view) {
                         onBackPressed();
                     }
                 });
@@ -330,7 +339,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
     }
 
     private void installLayouts() {
-        actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
+        actionBar = (ActionBar) findViewById(R.id.actionbar);
     }
 
     private void receiveState(int message, Bundle data) {

@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,10 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -38,6 +33,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -57,7 +53,6 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
@@ -89,7 +84,7 @@ public class ProfileIntentActivity extends FragmentActivity {
     private int item_pos;
     private int poll_answer;
     private Menu activity_menu;
-    private ActionBarImitation actionBarImitation;
+    private ActionBar actionBar;
     private FragmentTransaction ft;
 
     @Override
@@ -203,15 +198,22 @@ public class ProfileIntentActivity extends FragmentActivity {
                 ex.printStackTrace();
             }
         } else {
-            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.profile));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return 0;
+                }
+
+                @Override
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });
+            actionBar.setTitle(getResources().getString(R.string.profile));
         }
     }
 
@@ -220,36 +222,7 @@ public class ProfileIntentActivity extends FragmentActivity {
         final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         popupMenu.setOutsideTouchable(true);
         popupMenu.setFocusable(true);
-        final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
-        actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
-            @SuppressLint("RtlHardcoded")
-            @Override
-            public void onClick(View v) {
-                if(popupMenu.isShowing()) {
-                    popupMenu.dismiss();
-                } else {
-                    menu_list.setAdapter(actionBarImitation.overflow_adapter);
-                    popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
-                }
-            }
-        });
-        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(activity_menu.getItem(position).isVisible()) {
-                    onMenuItemSelected(0, activity_menu.getItem(position));
-                } else {
-                    Toast.makeText(ProfileIntentActivity.this, getResources().getString(R.string.not_supported), Toast.LENGTH_LONG).show();
-                }
-                popupMenu.dismiss();
-            }
-        });
-        ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupMenu.dismiss();
-            }
-        });
+        final ActionBar actionBar = findViewById(R.id.actionbar);
     }
 
     @Override
@@ -313,8 +286,7 @@ public class ProfileIntentActivity extends FragmentActivity {
                     users.search(ovk_api, args);
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                    actionBarImitation.setHomeButtonVisibility(true);
+                    ActionBar actionBar = findViewById(R.id.actionbar);
                     createActionPopupMenu(activity_menu);
                 }
             } else if (message == HandlerMessages.USERS_GET) {

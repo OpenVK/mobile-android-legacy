@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <uk.openvk.android.legacy.ui.view.layouts.AboutprofileFragment
+                <uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout
                     android:id="@+id/about_profile_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

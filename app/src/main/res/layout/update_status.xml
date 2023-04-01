@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/newpost_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/actionbar_imitation"/>
+    <dev.tinelix.retro_ab.ActionBar
+        android:id="@+id/actionbar"
+        app:title="@string/app_name"
+        style="@style/ActionBar" />
 
     <ScrollView
         android:id="@+id/newpost_scroll"

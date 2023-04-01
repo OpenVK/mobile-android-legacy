@@ -37,7 +37,7 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 176
-            versionName "1.1.176-alpha.m2"
+            versionName "1.1.177-alpha.m2"
         }
         betaConfig {
             applicationId "uk.openvk.android.legacy"
@@ -46,14 +46,14 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 176
-            versionName "1.1.176-beta"
+            versionName "1.1.177-beta"
         }
         stableConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
             versionCode 176
-            versionName '1.1.176-stable'
+            versionName '1.1.177-stable'
             proguardFile 'app/OpenVK KeyStore.jks'
             signingConfig signingConfigs.def_signing
         }

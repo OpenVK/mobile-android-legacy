@@ -21,13 +21,13 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class NewPostActivity extends Activity {
@@ -121,17 +121,29 @@ public class NewPostActivity extends Activity {
         TextView where = findViewById(R.id.newpost_location_address);
         where.setText(String.format("%s %s", getResources().getString(R.string.wall), account_first_name));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            final ActionBarImitation actionbarImitation = findViewById(R.id.actionbar_imitation);
-            actionbarImitation.setHomeButtonVisibility(true);
-            actionbarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return 0;
+                }
+
+                @Override
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });
-            actionbarImitation.setActionButton("done", 0, new View.OnClickListener() {
+            actionBar.addAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return R.drawable.ic_ab_done;
+                }
+
+                @Override
+                public void performAction(View view) {
                     EditText statusEditText = findViewById(R.id.status_text_edit);
                     if (statusEditText.getText().toString().length() == 0) {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
@@ -148,8 +160,7 @@ public class NewPostActivity extends Activity {
                     }
                 }
             });
-            actionbarImitation.setTitle(getResources().getString(R.string.new_status));
-
+            actionBar.setTitle(getResources().getString(R.string.new_status));
         }
 
     }

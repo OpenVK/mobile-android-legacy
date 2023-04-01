@@ -17,10 +17,10 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /**
@@ -43,15 +43,22 @@ public class AboutApplicationActivity extends Activity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.menu_about));
         } else {
-            final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.menu_about));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return 0;
+                }
+
+                @Override
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });
+            actionBar.setTitle(getResources().getString(R.string.menu_about));
         }
 
         setView();

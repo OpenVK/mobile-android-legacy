@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,18 +18,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -41,13 +35,13 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ZoomableImageView;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -62,7 +56,7 @@ public class PhotoViewerActivity extends Activity {
     public Handler handler;
     private BitmapFactory.Options bfOptions;
     private DownloadManager downloadManager;
-    private ActionBarImitation actionBarImitation;
+    private ActionBar actionBar;
     private PopupWindow popupMenu;
 
     @Override
@@ -78,6 +72,7 @@ public class PhotoViewerActivity extends Activity {
                 receiveState(message.what, data);
             }
         };
+        actionBar = findViewById(R.id.actionbar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
@@ -99,21 +94,18 @@ public class PhotoViewerActivity extends Activity {
                 ex.printStackTrace();
             }
         } else {
-            actionBarImitation = (ActionBarImitation) findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.enableTransparentTheme(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.photo));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setTitle(R.string.photo);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black_transparent));
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
                 @Override
-                public void onClick(View view) {
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });
-            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
-            activity_menu = p.getMenu();
-            getMenuInflater().inflate(R.menu.photo_viewer, activity_menu);
             createActionPopupMenu(activity_menu);
-            actionBarImitation.setVisibility(View.GONE);
         }
 
         ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.GONE);
@@ -149,35 +141,7 @@ public class PhotoViewerActivity extends Activity {
 
     private void createActionPopupMenu(final Menu menu) {
         final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
-        popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        popupMenu.setOutsideTouchable(true);
-        popupMenu.setFocusable(true);
-        final ListView menu_list = (ListView) popupMenu.getContentView().findViewById(R.id.popup_menulist);
-        actionBarImitation.createOverflowMenu(true, menu, new View.OnClickListener() {
-            @SuppressLint("RtlHardcoded")
-            @Override
-            public void onClick(View v) {
-                if(popupMenu.isShowing()) {
-                    popupMenu.dismiss();
-                } else {
-                    menu_list.setAdapter(actionBarImitation.overflow_adapter);
-                    popupMenu.showAtLocation(actionBarImitation.findViewById(R.id.action_btn2_actionbar2), Gravity.TOP | Gravity.RIGHT, 0, 100);
-                }
-            }
-        });
-        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onMenuItemSelected(0, menu.getItem(position));
-                popupMenu.dismiss();
-            }
-        });
-        ((LinearLayout) popupMenu.getContentView().findViewById(R.id.overlay_layout)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupMenu.dismiss();
-            }
-        });
+        final ActionBar actionBar = findViewById(R.id.actionbar);
     }
 
     @Override
@@ -204,7 +168,7 @@ public class PhotoViewerActivity extends Activity {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     getActionBar().show();
                 } else {
-                    actionBarImitation.setVisibility(View.VISIBLE);
+                    actionBar.setVisibility(View.VISIBLE);
                 }
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -216,10 +180,10 @@ public class PhotoViewerActivity extends Activity {
                                 getActionBar().show();
                             }
                         } else {
-                            if(actionBarImitation.getVisibility() == View.VISIBLE) {
-                                actionBarImitation.setVisibility(View.GONE);
+                            if(actionBar.getVisibility() == View.VISIBLE) {
+                                actionBar.setVisibility(View.GONE);
                             } else {
-                                actionBarImitation.setVisibility(View.VISIBLE);
+                                actionBar.setVisibility(View.VISIBLE);
                             }
                         }
                     }

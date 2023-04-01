@@ -22,7 +22,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -82,7 +81,6 @@ import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
@@ -261,7 +259,7 @@ public class AppActivity extends FragmentActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    actionBar = findViewById(R.id.actionbar_imitation);
+                    actionBar = findViewById(R.id.actionbar);
                 }
             } else {
                 ab_layout.setMode("title");
@@ -276,7 +274,7 @@ public class AppActivity extends FragmentActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    actionBar = findViewById(R.id.actionbar_imitation);
+                    actionBar = findViewById(R.id.actionbar);
                 }
             }
         } catch (Exception ex) {
@@ -631,6 +629,7 @@ public class AppActivity extends FragmentActivity {
             }
             friends.get(ovk_api, account.id, 25, "friends_list");
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBar = findViewById(R.id.actionbar);
                 actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, false);
             }
@@ -659,6 +658,7 @@ public class AppActivity extends FragmentActivity {
             }
             messages.getConversations(ovk_api);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBar = findViewById(R.id.actionbar);
                 actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, false);
             }
@@ -687,6 +687,7 @@ public class AppActivity extends FragmentActivity {
             }
             groups.getGroups(ovk_api, account.id, 25);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBar = findViewById(R.id.actionbar);
                 actionBar.removeAllActions();
                 createActionPopupMenu(activity_menu, false);
             }
@@ -718,10 +719,11 @@ public class AppActivity extends FragmentActivity {
             newsfeed_count = 25;
             newsfeed.get(ovk_api, newsfeed_count);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBar = findViewById(R.id.actionbar);
                 actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
                     @Override
                     public int getDrawable() {
-                        return R.drawable.post_btn;
+                        return R.drawable.ic_ab_write;
                     }
 
                     @Override

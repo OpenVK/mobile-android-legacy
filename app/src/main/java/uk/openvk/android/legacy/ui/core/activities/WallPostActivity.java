@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +34,7 @@ import com.rockerhieu.emojicon.emoji.Emojicon;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -48,7 +48,6 @@ import uk.openvk.android.legacy.api.models.RepostInfo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.view.layouts.CommentPanel;
 import uk.openvk.android.legacy.ui.view.layouts.PostViewLayout;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
@@ -124,15 +123,22 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.comments));
                 } else {
-                    final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-                    actionBarImitation.setHomeButtonVisibility(true);
-                    actionBarImitation.setTitle(getResources().getString(R.string.comments));
-                    actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+                    final ActionBar actionBar = findViewById(R.id.actionbar);
+                    actionBar.setHomeLogo(R.drawable.ic_ab_app);
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    actionBar.setHomeAction(new ActionBar.Action() {
                         @Override
-                        public void onClick(View view) {
+                        public int getDrawable() {
+                            return 0;
+                        }
+
+                        @Override
+                        public void performAction(View view) {
                             onBackPressed();
                         }
                     });
+                    actionBar.setTitle(getResources().getString(R.string.comments));
                 }
                 wall = new Wall();
                 ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));

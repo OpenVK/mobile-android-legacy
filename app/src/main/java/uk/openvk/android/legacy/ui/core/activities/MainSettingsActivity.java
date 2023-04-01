@@ -15,6 +15,7 @@ import android.view.View;
 
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -24,7 +25,6 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.fragments.app.MainSettingsFragment;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class MainSettingsActivity extends FragmentActivity {
@@ -73,15 +73,22 @@ public class MainSettingsActivity extends FragmentActivity {
                 Log.e("OpenVK", "Cannot display home button.");
             }
         } else {
-            final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return 0;
+                }
+
+                @Override
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });
+            actionBar.setTitle(getResources().getString(R.string.menu_settings));
         }
         handler = new Handler() {
             @Override

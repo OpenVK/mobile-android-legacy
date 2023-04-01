@@ -18,12 +18,12 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class AdvancedSettingsActivity extends PreferenceActivity {
@@ -44,12 +44,19 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.sett_advanced));
         } else {
-            final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.sett_advanced));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setTitle(getResources().getString(R.string.sett_advanced));
+            actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
-                public void onClick(View view) {
+                public int getDrawable() {
+                    return R.drawable.ic_ab_app;
+                }
+
+                @Override
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });

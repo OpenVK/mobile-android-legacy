@@ -35,12 +35,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarImitation;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class DebugMenuActivity extends PreferenceActivity {
@@ -61,12 +61,14 @@ public class DebugMenuActivity extends PreferenceActivity {
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
         } else {
-            final ActionBarImitation actionBarImitation = findViewById(R.id.actionbar_imitation);
-            actionBarImitation.setHomeButtonVisibility(true);
-            actionBarImitation.setTitle(getResources().getString(R.string.menu_settings));
-            actionBarImitation.setOnBackClickListener(new View.OnClickListener() {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setTitle(R.string.debug_menu);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
                 @Override
-                public void onClick(View view) {
+                public void performAction(View view) {
                     onBackPressed();
                 }
             });

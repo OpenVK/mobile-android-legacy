@@ -17,7 +17,7 @@ android {
 }
 
 dependencies {
-    //noinspection GradleCompatible,GradleDependency
+    //noinspection GradleDependency
     compile 'com.android.support:support-v4:24.0.0'
     compile project(':popupmenu')
 }
