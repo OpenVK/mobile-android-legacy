@@ -9,8 +9,9 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 ![featureGraphic](https://github.com/openvk/mobile-android-legacy/blob/main/fastlane/metadata/android/en-US/images/featureGraphic.png)
 
 ## Download APK
-* **via [F-Droid](https://f-droid.org/packages/uk.openvk.android.legacy/)**\
-_Updates come faster in their [own repository](https://repo.openvk.uk/repo/) and [non-TLS mirror](http://repo.openvk.co/repo/)._
+* **via F-Droid**
+  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
+  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (much faster, mirror [without TLS](http://repo.openvk.co/repo/))
 * **via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **via [Releases page](https://github.com/openvk/mobile-android-legacy/releases/latest)**
 * **via [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(for Russian phones kinda 😂)_
