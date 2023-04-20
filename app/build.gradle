@@ -71,7 +71,7 @@ dependencies {
     compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     //noinspection GradleDependency
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
-    compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    compile 'com.commit451:PhotoView:1.2.6'
     //noinspection GradleDependency,GradleCompatible
     compile 'com.android.support:support-v4:24.0.0'
     //noinspection GradleDependency,GradleCompatible
