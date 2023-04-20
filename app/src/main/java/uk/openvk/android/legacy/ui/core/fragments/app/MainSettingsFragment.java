@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -278,7 +279,10 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         //ovk.aboutInstance(ovk_api);
     }
 
-    private void openWebAddress(String server) {
+    private void openWebAddress(String address) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(address));
+        startActivity(i);
     }
 
     public void setAboutInstanceData(Ovk ovk) {
