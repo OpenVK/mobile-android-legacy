@@ -18,6 +18,8 @@ _Updates come faster in their [own repository](https://repo.openvk.uk/repo/) and
 ## Building
 We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) along with Java 7 for perfect support of libraries (such as legacy resource format and Gradle 2.3.2) developed for Android 2.1 Eclair and above.
 
+**ATTENTION!** After an ZipException error occurs in the `:[project_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
+
 ## Used Library
 1. [Android Support Library v24 for 1.6+](https://developer.android.com/topic/libraries/support-library) (Apache License 2.0)
 2. [Apache Wrapped HTTP Client 4.1.2](https://mvnrepository.com/artifact/org.jbundle.util.osgi.wrapped/org.jbundle.util.osgi.wrapped.org.apache.http.client/4.1.2#gradle) (Apache License 2.0)
