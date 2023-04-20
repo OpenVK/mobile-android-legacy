@@ -9,8 +9,9 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 ![featureGraphic](https://github.com/openvk/mobile-android-legacy/blob/main/fastlane/metadata/android/en-US/images/featureGraphic.png)
 
 ## Download APK
-* **via [F-Droid](https://f-droid.org/packages/uk.openvk.android.legacy/)**\
-_Updates come faster in their [own repository](https://repo.openvk.uk/repo/) and [non-TLS mirror](http://repo.openvk.co/repo/)._
+* **via F-Droid**
+  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
+  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (much faster, mirror [without TLS](http://repo.openvk.co/repo/))
 * **via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **via [Releases page](https://github.com/openvk/mobile-android-legacy/releases/latest)**
 * **via [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(for Russian phones kinda 😂)_
@@ -19,12 +20,12 @@ _Updates come faster in their [own repository](https://repo.openvk.uk/repo/) and
 ## Building
 We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) along with Java 7 for perfect support of libraries (such as legacy resource format and Gradle 2.3.2) developed for Android 2.1 Eclair and above.
 
-**ATTENTION!** After an ZipException error occurs in the `:[project_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
+**ATTENTION!** After an ZipException error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
 ## Used Library
 1. [Android Support Library v24 for 1.6+](https://developer.android.com/topic/libraries/support-library) (Apache License 2.0)
 2. [Apache Wrapped HTTP Client 4.1.2](https://mvnrepository.com/artifact/org.jbundle.util.osgi.wrapped/org.jbundle.util.osgi.wrapped.org.apache.http.client/4.1.2#gradle) (Apache License 2.0)
-3. [PhotoView 1.2.6](https://square.github.io/okhttp/) (Apache License 2.0)
+3. [PhotoView 1.2.5](https://github.com/Baseflow/PhotoView/tree/v1.2.5) (Apache License 2.0)
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2) (Apache License 2.0)
