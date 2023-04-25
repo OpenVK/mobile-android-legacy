@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,9 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 
 import org.json.JSONArray;
 
@@ -32,13 +29,26 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
-import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
-import uk.openvk.android.legacy.api.models.WallPost;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
-import uk.openvk.android.legacy.ui.view.InfinityScrollView;
+
+/** OPENVK LEGACY LICENSE NOTIFICATION
+ *
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ **/
 
 public class NewsfeedFragment extends Fragment {
     private View headerView;
