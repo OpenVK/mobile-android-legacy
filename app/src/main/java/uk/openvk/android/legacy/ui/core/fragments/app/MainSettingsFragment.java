@@ -4,25 +4,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +36,6 @@ import uk.openvk.android.legacy.ui.core.activities.AboutApplicationActivity;
 import uk.openvk.android.legacy.ui.core.activities.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
-import uk.openvk.android.legacy.ui.core.activities.MainSettingsActivity;
 import uk.openvk.android.legacy.ui.core.activities.NetworkSettingsActivity;
 
 /**
@@ -242,7 +231,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     private void openAboutInstanceDialog() {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(getContext());
-        about_instance_view = getLayoutInflater(null).inflate(R.layout.about_instance_layout, null, false);
+        about_instance_view = getLayoutInflater(null).inflate(R.layout.layout_about_instance, null, false);
         TextView server_name = (TextView) about_instance_view.findViewById(R.id.server_addr_label2);
         ((TextView) about_instance_view.findViewById(R.id.connection_type_label2)).setText(getResources().getString(R.string.loading));
         ((TextView) about_instance_view.findViewById(R.id.instance_version_label2)).setText(getResources().getString(R.string.loading));

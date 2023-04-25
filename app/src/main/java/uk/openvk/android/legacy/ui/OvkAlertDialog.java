@@ -45,7 +45,7 @@ public class OvkAlertDialog extends AlertDialog {
         builder.setMessage(null);
         if(dlg_view == null) {
             try {
-                dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
+                dlg_view = getLayoutInflater().inflate(R.layout.layout_styled_dialog, null, false);
                 TextView message_tv = dlg_view.findViewById(android.R.id.message);
                 message_tv.setText(message);
                 builder.setView(dlg_view);
@@ -69,7 +69,7 @@ public class OvkAlertDialog extends AlertDialog {
         if(dlg_view == null) {
             try {
                 if(type.equals("progressDlg")) {
-                    dlg_view = getLayoutInflater().inflate(R.layout.styled_progressdialog_layout, null, false);
+                    dlg_view = getLayoutInflater().inflate(R.layout.dialog_styled_progress, null, false);
                     TextView message_tv = dlg_view.findViewById(android.R.id.message);
                     message_tv.setText(message);
                     builder.setView(dlg_view);
@@ -77,7 +77,7 @@ public class OvkAlertDialog extends AlertDialog {
                     builder.setView(null);
                 } else {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        dlg_view = getLayoutInflater().inflate(R.layout.styled_dialog_layout, null, false);
+                        dlg_view = getLayoutInflater().inflate(R.layout.layout_styled_dialog, null, false);
                         TextView message_tv = dlg_view.findViewById(android.R.id.message);
                         message_tv.setText(message);
                         builder.setView(dlg_view);

@@ -16,7 +16,7 @@ public class ProgressLayout extends LinearLayout {
     public ProgressLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.progress_layout, null);
+                R.layout.layout_progress, null);
 
         this.addView(view);
 

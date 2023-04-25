@@ -50,7 +50,7 @@ public class PostViewLayout extends LinearLayout {
     public PostViewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.post_view_layout, null);
+                R.layout.layout_post_view, null);
 
         this.addView(view);
 
@@ -113,7 +113,7 @@ public class PostViewLayout extends LinearLayout {
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     } else {
-                        Log.e("OpenVK", String.format("'%s/photos_cache/comment_avatars/avatar_%d' not found", getContext().getCacheDir(), item.author_id));
+                        Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/comment_avatars/avatar_%d' not found", getContext().getCacheDir(), item.author_id));
                     }
                     comments.set(i, item);
                 } catch (Exception ex) {
@@ -242,7 +242,7 @@ public class PostViewLayout extends LinearLayout {
             }
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(bitmap);
-                Log.e("OpenVK", String.format("'%s/photos_cache/wall_avatars/avatar_%d' not found", getContext().getCacheDir(), author_id));
+                Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/wall_avatars/avatar_%d' not found", getContext().getCacheDir(), author_id));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -274,7 +274,7 @@ public class PostViewLayout extends LinearLayout {
                 post_photo.setImageBitmap(bitmap);
                 post_photo.setVisibility(View.VISIBLE);
             } else {
-                Log.e("OpenVK", String.format("'%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), post.owner_id, post.post_id));
+                Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), post.owner_id, post.post_id));
                 post_photo.setVisibility(GONE);
             }
             if(repost_bitmap != null) {

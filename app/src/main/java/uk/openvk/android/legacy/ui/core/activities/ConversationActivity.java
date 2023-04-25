@@ -83,7 +83,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
-        setContentView(R.layout.conversation_msgs_layout);
+        setContentView(R.layout.layout_conversation_msgs);
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         conversation = new Conversation();
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
@@ -105,7 +105,7 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

@@ -34,7 +34,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.custom_preferences_layout);
+        setContentView(R.layout.layout_custom_preferences);
         addPreferencesFromResource(R.xml.advanced_preferences);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -127,7 +127,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
         final long heap_size = global.getHeapSize();
         final AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        quality_choose_view = getLayoutInflater().inflate(R.layout.imgcache_quality_layout, null, false);
+        quality_choose_view = getLayoutInflater().inflate(R.layout.dialog_imgcache_quality, null, false);
         builder.setTitle(getResources().getString(R.string.sett_cache_quality_alt));
         builder.setView(quality_choose_view);
         builder.setNegativeButton(R.string.cancel, null);

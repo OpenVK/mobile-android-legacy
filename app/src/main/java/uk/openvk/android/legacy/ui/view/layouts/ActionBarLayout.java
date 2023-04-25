@@ -29,7 +29,7 @@ public class ActionBarLayout extends LinearLayout {
     public ActionBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view = LayoutInflater.from(getContext()).inflate(
-                R.layout.custom_actionbar_layout, null);
+                R.layout.ab_layout_custom, null);
 
         this.addView(view);
 
@@ -46,7 +46,7 @@ public class ActionBarLayout extends LinearLayout {
     public ActionBarLayout(Context context) {
         super(context);
         View view = LayoutInflater.from(getContext()).inflate(
-                R.layout.custom_actionbar_layout, null);
+                R.layout.ab_layout_custom, null);
 
         this.addView(view);
 

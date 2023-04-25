@@ -45,7 +45,7 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         addPreferencesFromResource(R.xml.network_preferences);
-        setContentView(R.layout.custom_preferences_layout);
+        setContentView(R.layout.layout_custom_preferences);
         app = ((OvkApplication) getApplicationContext());
         setListeners();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -54,7 +54,7 @@ public class NetworkSettingsActivity extends PreferenceActivity {
                 getActionBar().setDisplayHomeAsUpEnabled(true);
                 getActionBar().setTitle(getResources().getString(R.string.sett_network));
             } catch (Exception ex) {
-                Log.e("OpenVK", "Cannot display home button.");
+                Log.e(OvkApplication.APP_TAG, "Cannot display home button.");
             }
         } else {
             final ActionBar actionBar = findViewById(R.id.actionbar);
@@ -110,7 +110,7 @@ public class NetworkSettingsActivity extends PreferenceActivity {
     private void openProxySettingsDialog() {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(this);
-        proxy_settings_view = getLayoutInflater().inflate(R.layout.proxy_settings_layout, null, false);
+        proxy_settings_view = getLayoutInflater().inflate(R.layout.dialog_proxy_settings, null, false);
         builder.setView(proxy_settings_view);
         final EditText proxy_address = ((EditText) proxy_settings_view.findViewById(R.id.proxy_address));
         final EditText proxy_port = ((EditText) proxy_settings_view.findViewById(R.id.proxy_port));

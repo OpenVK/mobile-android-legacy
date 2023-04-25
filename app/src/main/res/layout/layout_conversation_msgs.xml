@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/conversation_view">
+
+    <dev.tinelix.retro_ab.ActionBar
+        android:id="@+id/actionbar"
+        app:title="@string/app_name"
+        style="@style/ActionBar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:fitsSystemWindows="false">
+
+        <ListView
+            android:id="@+id/conversation_msgs_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:divider="@null"
+            android:stackFromBottom="true">
+
+        </ListView>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/bottom_shadow" />
+
+    </RelativeLayout>
+
+    <uk.openvk.android.legacy.ui.view.layouts.ConversationPanel
+        android:id="@+id/conversation_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>

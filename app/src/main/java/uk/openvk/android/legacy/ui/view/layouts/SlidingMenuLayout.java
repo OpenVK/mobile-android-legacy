@@ -11,8 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
@@ -23,7 +21,7 @@ public class SlidingMenuLayout extends LinearLayout {
     public SlidingMenuLayout(final Context context) {
         super(context);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.sliding_menu_layout, this, false);
+                R.layout.layout_sliding_menu, this, false);
         this.addView(view);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -50,7 +48,7 @@ public class SlidingMenuLayout extends LinearLayout {
     public SlidingMenuLayout(final Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.sliding_menu_layout, this, false);
+                R.layout.layout_sliding_menu, this, false);
         this.addView(view);
         ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(getResources().getColor(R.color.transparent));
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(getResources().getColor(R.color.transparent));

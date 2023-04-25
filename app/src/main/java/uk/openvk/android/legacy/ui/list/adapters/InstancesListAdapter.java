@@ -49,7 +49,7 @@ public class InstancesListAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = inflater.inflate(R.layout.instance_item, parent, false);
+            view = inflater.inflate(R.layout.list_item_instance, parent, false);
             InstancesListItem item = getListItem(position);
             TextView item_name = (TextView) view.findViewById(R.id.item_title);
             item_name.setText(item.server);

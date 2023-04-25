@@ -13,7 +13,7 @@ public class CommentPanel extends RelativeLayout {
     public CommentPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.comment_panel_layout, null);
+                R.layout.layout_comment_panel, null);
 
         this.addView(view);
 

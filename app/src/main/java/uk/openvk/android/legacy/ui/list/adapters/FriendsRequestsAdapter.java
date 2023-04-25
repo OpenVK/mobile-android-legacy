@@ -33,7 +33,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(LayoutInflater.from(ctx).inflate(R.layout.friends_req_item, parent, false));
+        return new Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_friends_req, parent, false));
     }
 
     @Override

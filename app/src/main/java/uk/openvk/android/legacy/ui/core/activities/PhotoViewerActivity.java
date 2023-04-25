@@ -63,12 +63,12 @@ public class PhotoViewerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance_prefs = getSharedPreferences("instance", 0);
-        setContentView(R.layout.photo_viewer_layout);
+        setContentView(R.layout.activity_photo_viewer);
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -140,7 +140,7 @@ public class PhotoViewerActivity extends Activity {
     }
 
     private void createActionPopupMenu(final Menu menu) {
-        final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+        final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
         final ActionBar actionBar = findViewById(R.id.actionbar);
     }
 

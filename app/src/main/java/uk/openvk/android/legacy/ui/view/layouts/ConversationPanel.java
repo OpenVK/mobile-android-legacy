@@ -12,7 +12,7 @@ public class ConversationPanel extends RelativeLayout {
     public ConversationPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.conversation_panel_layout, null);
+                R.layout.layout_conversation_panel, null);
 
         this.addView(view);
 

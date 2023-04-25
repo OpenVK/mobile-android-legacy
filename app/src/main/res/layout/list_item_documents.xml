@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/HLRelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/docs_item_type"
+        android:layout_width="55dip"
+        android:layout_height="42dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="11dip"
+        android:background="#0C000000"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:padding="5dip"
+        android:singleLine="true"
+        android:text="docx"
+        android:textStyle="bold"
+        android:textSize="16dip"
+        android:textColor="#44020e1a" />
+
+    <TextView
+        android:id="@+id/docs_item_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="7dip"
+        android:layout_marginTop="5dip"
+        android:layout_toRightOf="@+id/docs_item_type"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="#000"
+        android:textSize="18dip" />
+
+    <TextView
+        android:id="@+id/docs_item_info"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/docs_item_title"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/docs_item_title"
+        android:layout_marginRight="7dip"
+        android:layout_marginTop="2dip"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textSize="16dip"
+        android:paddingBottom="11dip"
+        android:textColor="#59000000" />
+
+    <ImageView
+        android:id="@+id/docs_item_thumb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/docs_item_type"
+        android:layout_alignLeft="@+id/docs_item_type"
+        android:layout_alignRight="@+id/docs_item_type"
+        android:layout_alignTop="@+id/docs_item_type"
+        android:scaleType="centerCrop" />
+
+</RelativeLayout>

@@ -34,7 +34,7 @@ public class AboutApplicationActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.about_application_layout);
+        setContentView(R.layout.activity_about_application);
         instance_prefs = getSharedPreferences("instance", 0);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {

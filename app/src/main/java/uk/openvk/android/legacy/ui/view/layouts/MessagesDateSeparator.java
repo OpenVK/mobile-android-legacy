@@ -13,7 +13,7 @@ public class MessagesDateSeparator extends LinearLayout {
     public MessagesDateSeparator(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.messages_date_separator, null);
+                R.layout.separator_messages_date, null);
         this.addView(view);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;

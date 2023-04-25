@@ -21,14 +21,14 @@ public class XLinearLayout extends LinearLayout implements OnKeyboardStateListen
     super(paramContext);
       LayoutInflater inflater = (LayoutInflater) paramContext
               .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      inflater.inflate(R.layout.blank_layout, this, false);
+      inflater.inflate(R.layout.layout_blank, this, false);
   }
   
   public XLinearLayout(Context paramContext, AttributeSet paramAttributeSet) {
     super(paramContext, paramAttributeSet);
       LayoutInflater inflater = (LayoutInflater) paramContext
               .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      inflater.inflate(R.layout.blank_layout, this, false);
+      inflater.inflate(R.layout.layout_blank, this, false);
   }
 
   public void setOnKeyboardStateListener(final OnKeyboardStateListener listener) {

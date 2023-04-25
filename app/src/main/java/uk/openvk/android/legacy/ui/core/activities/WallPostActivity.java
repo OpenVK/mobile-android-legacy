@@ -81,7 +81,7 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.wall_post_layout);
+        setContentView(R.layout.activity_wall_post);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
@@ -99,7 +99,7 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

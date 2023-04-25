@@ -45,7 +45,7 @@ public class WallLayout extends LinearLayout {
     public WallLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.wall_layout, null);
+                R.layout.layout_wall, null);
 
         this.addView(view);
 

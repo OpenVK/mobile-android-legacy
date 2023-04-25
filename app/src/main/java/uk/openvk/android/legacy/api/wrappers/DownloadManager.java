@@ -194,10 +194,10 @@ public class DownloadManager {
                         photoAttachment.url = "";
                     }
                     if(filename.equals(photoAttachment.filename)) {
-                        //Log.e("DownloadManager", "Duplicated filename. Skipping...");
+                        //Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping...");
                     } else if (photoAttachment.url.length() == 0) {
                         filename = photoAttachment.filename;
-                        //Log.e("DownloadManager", "Invalid address. Skipping...");
+                        //Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                         try {
                             File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                             if(downloadedFile.exists()) {
@@ -267,12 +267,12 @@ public class DownloadManager {
                                 }
                                 response.body().byteStream().close();
                             }
-                            if(logging_enabled) Log.d("DownloadManager", String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.d(OvkApplication.DL_TAG, String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
                         } catch (IOException e) {
-                            if(logging_enabled) Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.e(OvkApplication.DL_TAG, String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         } catch (Exception e) {
                             photoAttachment.error = e.getClass().getSimpleName();
-                            if(logging_enabled) Log.e("DownloadManager", String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.e(OvkApplication.DL_TAG, String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
                         }
                     }
                 }
@@ -339,7 +339,7 @@ public class DownloadManager {
                 }
                 filesize = 0;
                 if (url.length() == 0) {
-                    if(logging_enabled) Log.e("DownloadManager", "Invalid address. Skipping...");
+                    if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                     try {
                         File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
                         if(downloadedFile.exists()) {
@@ -410,7 +410,7 @@ public class DownloadManager {
                         }
                         if(logging_enabled) Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
                     } catch (Exception e) {
-                        if(logging_enabled) Log.e("DownloadManager", String.format("Download error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e(OvkApplication.DL_TAG, String.format("Download error: %s", e.getMessage()));
                     }
                 }
                 Log.v("DownloadManager", String.format("Downloaded!"));

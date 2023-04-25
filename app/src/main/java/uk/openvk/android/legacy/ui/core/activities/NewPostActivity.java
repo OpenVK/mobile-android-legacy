@@ -55,7 +55,7 @@ public class NewPostActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.update_status);
+        setContentView(R.layout.activity_new_post);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);
@@ -89,7 +89,7 @@ public class NewPostActivity extends Activity {
                     @Override
                     public void handleMessage(Message message) {
                         Bundle data = message.getData();
-                        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                         receiveState(message.what, data);
                     }
                 };

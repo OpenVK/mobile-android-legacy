@@ -27,6 +27,10 @@ public class OvkApplication extends Application {
     public boolean isTablet;
     public LongPollService longPollService;
     public NotificationManager notifMan;
+    public static String APP_TAG = "OpenVK";
+    public static String API_TAG = "OVK-API";
+    public static String DL_TAG = "OVK-DLM";
+    public static String LP_TAG = "OVK-LP";
 
     @Override
     public void onCreate() {
@@ -49,7 +53,7 @@ public class OvkApplication extends Application {
         }
         long heap_size = global.getHeapSize();
 
-        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
+        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
 
         if(!global_prefs.contains("photos_quality")) {
             if(heap_size <= 67108864L) {

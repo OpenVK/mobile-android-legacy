@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -14,13 +13,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.SeekBar;
@@ -51,7 +46,7 @@ public class VideoPlayerActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.video_player);
+        setContentView(R.layout.activity_video_player);
         loadVideo();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();

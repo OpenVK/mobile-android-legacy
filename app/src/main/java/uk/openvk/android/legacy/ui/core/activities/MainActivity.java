@@ -53,9 +53,9 @@ public class MainActivity extends Activity {
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         if(global_prefs.getBoolean("startupSplash", true)) {
             if ((month == 11 && day >= 1) || (month == 0 && day <= 15)) {
-                setContentView(R.layout.xmas_splash_activity);
+                setContentView(R.layout.activity_splash_xmas);
             } else {
-                setContentView(R.layout.splash_activity);
+                setContentView(R.layout.activity_splash);
             }
             handler = new Handler(Looper.myLooper()) {
                 @Override
@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
 
     private void createOvkWarnDialogForBeginners() {
         AlertDialog.Builder dialog_builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.BaseStyle));
-        warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
+        warn_view = getLayoutInflater().inflate(R.layout.dialog_warn_message, null, false);
         dialog_builder.setView(warn_view);
         dialog_builder.setNeutralButton(R.string.ok, null);
         warn_dialog = new OvkAlertDialog(this);

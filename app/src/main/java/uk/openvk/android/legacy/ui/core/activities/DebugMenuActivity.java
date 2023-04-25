@@ -51,7 +51,7 @@ public class DebugMenuActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.custom_preferences_layout);
+        setContentView(R.layout.layout_custom_preferences);
         addPreferencesFromResource(R.xml.debug_preferences);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getSharedPreferences("instance", 0);
@@ -145,7 +145,7 @@ public class DebugMenuActivity extends PreferenceActivity {
 
     private void showConfirmDialog(final String target) {
         AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
-        final View confirm_view = getLayoutInflater().inflate(R.layout.confirm_with_passw_layout, null, false);
+        final View confirm_view = getLayoutInflater().inflate(R.layout.dialog_confirm_with_passw, null, false);
         final EditText password_edit = ((EditText) confirm_view.findViewById(R.id.password_edit));
         builder.setView(confirm_view);
         builder.setPositiveButton(R.string.ok, null);

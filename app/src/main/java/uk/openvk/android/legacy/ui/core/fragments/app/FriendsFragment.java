@@ -9,15 +9,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -49,7 +46,7 @@ public class FriendsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.friends_layout, container, false);
+        view = inflater.inflate(R.layout.layout_friends, container, false);
         friendsListView = view.findViewById(R.id.friends_listview);
         TabHost friends_tabhost = view.findViewById(R.id.friends_tabhost);
         if(activity_ctx == null) {
@@ -135,7 +132,7 @@ public class FriendsFragment extends Fragment {
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     } else {
-                        Log.e("OpenVK", String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id));
+                        Log.e(OvkApplication.APP_TAG, String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id));
                     }
                     requests.set(i, item);
                 } catch (OutOfMemoryError | Exception ex) {

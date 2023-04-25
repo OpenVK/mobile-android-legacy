@@ -63,7 +63,7 @@ public class AuthActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.auth);
+        setContentView(R.layout.activity_auth);
         app = ((OvkApplication) getApplicationContext());
         XLinearLayout auth_layout = ((XLinearLayout) findViewById(R.id.auth_layout));
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -172,7 +172,7 @@ public class AuthActivity extends Activity {
             if (!global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 AlertDialog.Builder dialog_builder = new AlertDialog.Builder(AuthActivity.this);
                 dialog_builder.setTitle(R.string.ovk_warning_title);
-                View warn_view = getLayoutInflater().inflate(R.layout.warn_message_layout, null, false);
+                View warn_view = getLayoutInflater().inflate(R.layout.dialog_warn_message, null, false);
                 dialog_builder.setView(warn_view);
                 dialog_builder.setNeutralButton(R.string.ok, null);
                 AlertDialog warn_dialog = dialog_builder.create();
@@ -268,7 +268,7 @@ public class AuthActivity extends Activity {
                 OvkAlertDialog twofactor_dlg;
                 twofactor_dlg = new OvkAlertDialog(this);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
-                View twofactor_view = getLayoutInflater().inflate(R.layout.twofactor_auth, null, false);
+                View twofactor_view = getLayoutInflater().inflate(R.layout.dialog_twofactor_auth, null, false);
                 builder.setTitle(R.string.auth);
                 builder.setView(twofactor_view);
                 final EditText two_factor_code = (EditText) twofactor_view.findViewById(R.id.two_factor_code);

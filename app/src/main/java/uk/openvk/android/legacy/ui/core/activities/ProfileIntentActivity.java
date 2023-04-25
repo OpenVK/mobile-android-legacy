@@ -93,7 +93,7 @@ public class ProfileIntentActivity extends FragmentActivity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
-        setContentView(R.layout.app_layout);
+        setContentView(R.layout.activity_app);
         installLayouts();
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -119,7 +119,7 @@ public class ProfileIntentActivity extends FragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -218,7 +218,7 @@ public class ProfileIntentActivity extends FragmentActivity {
     }
 
     private void createActionPopupMenu(final Menu menu) {
-        final View menu_container = (View) getLayoutInflater().inflate(R.layout.popup_menu, null);
+        final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
         final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         popupMenu.setOutsideTouchable(true);
         popupMenu.setFocusable(true);
@@ -469,7 +469,7 @@ public class ProfileIntentActivity extends FragmentActivity {
 
     public void openIntentfromCounters(String action) {
         String url = action;
-        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", "Opening intent from " + action);
+        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
         if(action.length() > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
@@ -708,7 +708,7 @@ public class ProfileIntentActivity extends FragmentActivity {
     public void openRepostDialog(String where, final WallPost post) {
         if(where.equals("own_wall")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.repost_msg_layout, null, false);
+            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg, null, false);
             final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
             builder.setView(repost_view);
             builder.setPositiveButton(R.string.ok, null);

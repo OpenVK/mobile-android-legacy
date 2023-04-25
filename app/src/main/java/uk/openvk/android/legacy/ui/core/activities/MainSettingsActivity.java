@@ -49,7 +49,7 @@ public class MainSettingsActivity extends FragmentActivity {
         isQuiting = false;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-        setContentView(R.layout.app_layout);
+        setContentView(R.layout.activity_app);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -70,7 +70,7 @@ public class MainSettingsActivity extends FragmentActivity {
                 getActionBar().setDisplayHomeAsUpEnabled(true);
                 getActionBar().setTitle(getResources().getString(R.string.menu_settings));
             } catch (Exception ex) {
-                Log.e("OpenVK", "Cannot display home button.");
+                Log.e(OvkApplication.APP_TAG, "Cannot display home button.");
             }
         } else {
             final ActionBar actionBar = findViewById(R.id.actionbar);
@@ -94,7 +94,7 @@ public class MainSettingsActivity extends FragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK", String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

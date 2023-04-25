@@ -23,7 +23,7 @@ public class ErrorLayout extends LinearLayout{
     public ErrorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.error_layout, null);
+                R.layout.layout_error, null);
 
         this.addView(view);
 

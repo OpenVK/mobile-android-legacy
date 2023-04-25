@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -16,9 +15,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TabHost;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -33,7 +29,6 @@ import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
-import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
 import static android.view.View.GONE;
@@ -44,7 +39,7 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.profile_layout, container, false);
+        view = inflater.inflate(R.layout.layout_profile, container, false);
         ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override

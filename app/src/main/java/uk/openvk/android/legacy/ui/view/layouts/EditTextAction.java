@@ -17,7 +17,7 @@ public class EditTextAction extends LinearLayout {
     public EditTextAction(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.editaction_layout, null);
+                R.layout.layout_editaction, null);
 
         this.addView(view);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();

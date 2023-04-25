@@ -47,7 +47,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
 
     @Override
     public PollAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PollAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.poll_answer_layout, parent, false));
+        return new PollAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.layout_poll_answer, parent, false));
     }
 
     @Override
