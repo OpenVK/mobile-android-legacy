@@ -11,7 +11,7 @@
 
         <CheckBoxPreference android:title="@string/sett_splash"
             android:key="startupSplash"
-            android:layout="@layout/prefw_checkbox"
+            android:layout="@layout/pref_widget_checkbox"
             android:defaultValue="true"/>
 	</PreferenceCategory>
 

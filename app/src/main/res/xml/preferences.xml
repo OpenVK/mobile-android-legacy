@@ -17,11 +17,11 @@
 
 		<CheckBoxPreference android:title="@string/sett_update_on_open"
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
-			android:layout="@layout/prefw_checkbox"
+			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true"/>
 			
 		<CheckBoxPreference android:title="@string/sett_bdays" android:key="notifyBDays"
-			android:layout="@layout/prefw_checkbox"
+			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true"/>
 			
 		<Preference android:title="@string/sett_advanced"
@@ -37,20 +37,20 @@
 
         <CheckBoxPreference android:title="@string/sett_push"
             android:summary="@string/sett_push_summary" android:key="enableNotification"
-            android:layout="@layout/prefw_checkbox"
+            android:layout="@layout/pref_widget_checkbox"
             android:defaultValue="true" android:disableDependentsState="true"/>
 
 		<CheckBoxPreference android:title="@string/sett_notify_sound"
 		 	android:key="notifySound"
-			android:layout="@layout/prefw_checkbox"
+			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/sett_notify_vibrate"
 		 	android:key="notifyVibrate"
-			android:layout="@layout/prefw_checkbox"
+			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/sett_notify_led"
 		 	android:key="notifyLED"
-			android:layout="@layout/prefw_checkbox"
+			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true"
 			android:summary="@string/sett_notify_led_if_has"/>
 		<Preference
@@ -95,7 +95,7 @@
 
         <CheckBoxPreference android:title="@string/sett_splash"
             android:key="startupSplash"
-            android:layout="@layout/prefw_checkbox"
+            android:layout="@layout/pref_widget_checkbox"
             android:defaultValue="true"/>
 
     </PreferenceCategory>
