@@ -44,7 +44,7 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         isQuiting = false;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-        addPreferencesFromResource(R.xml.network_preferences);
+        addPreferencesFromResource(R.xml.preferences_network);
         setContentView(R.layout.layout_custom_preferences);
         app = ((OvkApplication) getApplicationContext());
         setListeners();

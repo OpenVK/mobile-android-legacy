@@ -35,7 +35,7 @@ public class AdvancedSettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_custom_preferences);
-        addPreferencesFromResource(R.xml.advanced_preferences);
+        addPreferencesFromResource(R.xml.preferences_advanced);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {

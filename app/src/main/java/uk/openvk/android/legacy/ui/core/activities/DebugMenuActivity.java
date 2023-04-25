@@ -52,7 +52,7 @@ public class DebugMenuActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_custom_preferences);
-        addPreferencesFromResource(R.xml.debug_preferences);
+        addPreferencesFromResource(R.xml.preferences_debug);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getSharedPreferences("instance", 0);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
