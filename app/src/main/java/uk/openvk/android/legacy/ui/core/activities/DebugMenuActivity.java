@@ -295,7 +295,7 @@ public class DebugMenuActivity extends PreferenceActivity {
                                 "\r\nDEVICE" +
                                 "\r\nDevice: %s %s (codename: %s)" +
                                 "\r\nAndroid: %s (API %s)\r\n" +
-                                "==============================================\r\n" +
+                                "==============================================" +
                                 "\r\nAPP SETTINGS" +
                                 "\r\nInstance: %s" +
                                 "\r\nHTTPS: %s" +
