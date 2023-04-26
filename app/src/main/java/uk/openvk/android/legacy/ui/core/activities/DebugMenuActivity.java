@@ -291,10 +291,10 @@ public class DebugMenuActivity extends PreferenceActivity {
                 }
                 writer.append(String.format(
                         "OpenVK Legacy %s\r\n" +
-                                "==============================================\r\n" +
+                                "==============================================" +
                                 "\r\nDEVICE" +
                                 "\r\nDevice: %s %s (codename: %s)" +
-                                "\r\nAndroid: %s (API %s)" +
+                                "\r\nAndroid: %s (API %s)\r\n" +
                                 "==============================================\r\n" +
                                 "\r\nAPP SETTINGS" +
                                 "\r\nInstance: %s" +
