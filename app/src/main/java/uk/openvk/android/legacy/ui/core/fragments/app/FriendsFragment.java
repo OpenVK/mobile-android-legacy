@@ -62,7 +62,7 @@ public class FriendsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.layout_friends, container, false);
+        view = inflater.inflate(R.layout.fragment_friends, container, false);
         friendsListView = view.findViewById(R.id.friends_listview);
         TabHost friends_tabhost = view.findViewById(R.id.friends_tabhost);
         if(activity_ctx == null) {

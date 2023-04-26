@@ -1,10 +1,12 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +20,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -83,6 +93,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         public final View divider;
         private final TextView expand_text_btn;
         private final TextView reply_btn;
+        private final ImageView comment_photo;
 
         public Holder(View view) {
             super(view);
@@ -94,6 +105,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             this.divider = view.findViewById(R.id.divider);
             this.expand_text_btn = view.findViewById(R.id.expand_text_btn);
             this.reply_btn = view.findViewById(R.id.post_reply);
+            this.comment_photo = view.findViewById(R.id.comm_photo);
         }
 
         void bind(final int position) {
@@ -219,6 +231,27 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 divider.setVisibility(View.GONE);
             } else {
                 divider.setVisibility(View.VISIBLE);
+            }
+
+            for(int i = 0; i < item.attachments.size(); i++) {
+                if (item.attachments.get(i).type.equals("photo")) {
+                    if (item.attachments.get(i).getContent() != null) {
+                        comment_photo.setImageBitmap(((PhotoAttachment) item.attachments.get(i).getContent()).photo);
+                        comment_photo.setVisibility(View.VISIBLE);
+                        comment_photo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+//                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+//                                    ((AppActivity) ctx).viewPhotoAttachment(position);
+//                                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+//                                    ((ProfileIntentActivity) ctx).viewPhotoAttachment(position);
+//                                } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+//                                    ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
+//                                }
+                            }
+                        });
+                    }
+                }
             }
         }
     }

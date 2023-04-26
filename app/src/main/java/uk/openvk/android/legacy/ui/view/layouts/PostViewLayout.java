@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
@@ -345,5 +347,41 @@ public class PostViewLayout extends LinearLayout {
                 }
             }
         });
+    }
+
+    public void loadPhotos() {
+        if(commentsAdapter != null) {
+            commentsView = (RecyclerView) findViewById(R.id.comments_list);
+            for (int i = 0; i < getCount(); i++) {
+                try {
+                    Comment item = comments.get(i);
+                    if(item.attachments.size() > 0) {
+                        if(item.attachments.get(i).type.equals("photo")) {
+                            PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
+                            Attachment attachment = item.attachments.get(0);
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                            if (photoAttachment.url.length() > 0) {
+                                Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/comment_photos/comment_photo_o%sp%s", getContext().getCacheDir(), item.author_id, item.id), options);
+                                if (bitmap != null) {
+                                    photoAttachment.photo = bitmap;
+                                    attachment.status = "done";
+                                    item.attachments.set(i, attachment);
+                                } else if(photoAttachment.url.length() > 0) {
+                                    Log.e(OvkApplication.APP_TAG, "Loading photo error in comments");
+                                    attachment.status = "error";
+                                }
+                            }
+                            comments.set(i, item);
+                        } else {
+                            item.attachments.get(0).status = "not_supported";
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            commentsAdapter.notifyDataSetChanged();
+        }
     }
 }

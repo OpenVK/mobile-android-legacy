@@ -165,6 +165,10 @@ public class DownloadManager {
 
 
     public void downloadPhotosToCache(final ArrayList<PhotoAttachment> photoAttachments, final String where) {
+        if(photoAttachments == null) {
+            Log.e(OvkApplication.DL_TAG, "Attachments array is empty. Download canceled.");
+            return;
+        }
         Log.v("DownloadManager", String.format("Downloading %d photos...", photoAttachments.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
@@ -305,6 +309,9 @@ public class DownloadManager {
                     case "comment_avatars":
                         sendMessage(HandlerMessages.COMMENT_AVATARS, where);
                         break;
+                    case "comment_photos":
+                        sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
+                        break;
                     case "conversations_avatars":
                         sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
                         break;
@@ -317,6 +324,10 @@ public class DownloadManager {
     }
 
     public void downloadOnePhotoToCache(final String url, final String filename, final String where) {
+        if(photoAttachments == null) {
+            Log.e(OvkApplication.DL_TAG, "Attachments array is empty. Download canceled.");
+            return;
+        }
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
@@ -441,6 +452,9 @@ public class DownloadManager {
                         break;
                     case "comment_avatars":
                         sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                        break;
+                    case "comment_photos":
+                        sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
                         break;
                     case "original_photos":
                         sendMessage(HandlerMessages.ORIGINAL_PHOTO, where);

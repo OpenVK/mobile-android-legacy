@@ -50,7 +50,7 @@ public class GroupsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.layout_groups, container, false);
+        view = inflater.inflate(R.layout.fragment_groups, container, false);
         groupsListView = view.findViewById(R.id.groups_listview);
         return view;
     }

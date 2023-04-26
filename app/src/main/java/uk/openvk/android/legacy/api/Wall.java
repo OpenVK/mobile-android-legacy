@@ -112,7 +112,7 @@ public class Wall implements Parcelable {
                     }
                     PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), isLiked, false);
 
-                    ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality, attachments);
+                    ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality, attachments, "wall_attachment");
 
                     WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec, null, content, counters, "", attachments_list, owner_id, post_id, ctx);
                     if(post.has("post_source") && !post.isNull("post_source")) {
@@ -130,7 +130,7 @@ public class Wall implements Parcelable {
                         repostInfo.newsfeed_item = repost_item;
                         item.repost = repostInfo;
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
-                        attachments_list = createAttachmentsList(owner_id, post_id, quality, repost_attachments);
+                        attachments_list = createAttachmentsList(owner_id, post_id, quality, repost_attachments, "wall_attachment");
                         repost_item.attachments = attachments_list;
                     }
                     item.author_id = author_id;
@@ -200,8 +200,11 @@ public class Wall implements Parcelable {
         }
     }
 
-    public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String response) {
+    public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality, String response) {
         comments = new ArrayList<Comment>();
+        photos_msize = new ArrayList<PhotoAttachment>();
+        photos_hsize = new ArrayList<PhotoAttachment>();
+        photos_osize = new ArrayList<PhotoAttachment>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if (json != null) {
@@ -214,6 +217,8 @@ public class Wall implements Parcelable {
                     long comment_id = item.getLong("id");
                     long author_id = item.getLong("from_id");
                     long date = item.getLong("date");
+                    JSONArray attachments = items.getJSONObject(i).getJSONArray("attachments");
+                    ArrayList<Attachment> attachments_list = createAttachmentsList(author_id, comment_id, quality, attachments, "comment_photo");
                     Comment comment = new Comment();
                     comment.id = comment_id;
                     comment.author_id = author_id;
@@ -254,8 +259,20 @@ public class Wall implements Parcelable {
                             }
                         }
                     }
+                    comment.attachments = attachments_list;
                     avatars.add(photoAttachment);
                     this.comments.add(comment);
+                }
+                switch (quality) {
+                    case "medium":
+                        downloadManager.downloadPhotosToCache(photos_msize, "comment_photos");
+                        break;
+                    case "high":
+                        downloadManager.downloadPhotosToCache(photos_hsize, "comment_photos");
+                        break;
+                    case "original":
+                        downloadManager.downloadPhotosToCache(photos_osize, "comment_photos");
+                        break;
                 }
                 downloadManager.downloadPhotosToCache(avatars, "comment_avatars");
             }
@@ -265,7 +282,7 @@ public class Wall implements Parcelable {
         return comments;
     }
 
-    public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality, JSONArray attachments) {
+    public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality, JSONArray attachments, String prefix) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
@@ -282,14 +299,18 @@ public class Wall implements Parcelable {
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                     photo_high_size = photo_sizes.getJSONObject(8).getString("url");
                     photo_original_size = photo_sizes.getJSONObject(10).getString("url");
-                    if(quality.equals("medium")) {
-                        photoAttachment.url = photo_medium_size;
-                    } else if(quality.equals("high")) {
-                        photoAttachment.url = photo_high_size;
-                    } else if(quality.equals("original")) {
-                        photoAttachment.url = photo_original_size;
+                    switch (quality) {
+                        case "medium":
+                            photoAttachment.url = photo_medium_size;
+                            break;
+                        case "high":
+                            photoAttachment.url = photo_high_size;
+                            break;
+                        case "original":
+                            photoAttachment.url = photo_original_size;
+                            break;
                     }
-                    photoAttachment.filename = String.format("wall_attachment_o%sp%s", owner_id, post_id);
+                    photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
                     photoAttachment.original_url = photo_original_size;
                     if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
                         attachment_status = "loading";

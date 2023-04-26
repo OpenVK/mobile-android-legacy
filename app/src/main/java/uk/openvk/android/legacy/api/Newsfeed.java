@@ -225,12 +225,16 @@ public class Newsfeed implements Parcelable {
                     avatars.add(avatar);
                     this.items.add(item);
                 }
-                if(quality.equals("medium")) {
-                    downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
-                } else if(quality.equals("high")) {
-                    downloadManager.downloadPhotosToCache(photos_hsize, "newsfeed_photo_attachments");
-                } else if(quality.equals("original")) {
-                    downloadManager.downloadPhotosToCache(photos_osize, "newsfeed_photo_attachments");
+                switch (quality) {
+                    case "medium":
+                        downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
+                        break;
+                    case "high":
+                        downloadManager.downloadPhotosToCache(photos_hsize, "newsfeed_photo_attachments");
+                        break;
+                    case "original":
+                        downloadManager.downloadPhotosToCache(photos_osize, "newsfeed_photo_attachments");
+                        break;
                 }
                 downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatars");
             }

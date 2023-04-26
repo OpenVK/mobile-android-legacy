@@ -239,7 +239,7 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                            Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text, null);
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/account_avatar/avatar_%s", getCacheDir(), author_id), options);
@@ -273,7 +273,7 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text);
+                    Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text, null);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/account_avatar/avatar_%s", getCacheDir(), author_id), options);
@@ -333,8 +333,10 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
 
     private void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
-            comments = wall.parseComments(this, downloadManager, data.getString("response"));
+            comments = wall.parseComments(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
             postViewLayout.createAdapter(this, comments);
+        } else if (message == HandlerMessages.COMMENT_PHOTOS) {
+            postViewLayout.loadPhotos();
         } else if (message == HandlerMessages.COMMENT_AVATARS) {
             postViewLayout.loadAvatars();
         }

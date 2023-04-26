@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import org.apache.http.HttpHost;
@@ -41,6 +43,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.models.Message;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -73,6 +77,7 @@ public class LongPollWrapper {
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
+    private boolean looper_prepared;
 
 
     public LongPollWrapper(Context ctx, boolean use_https) {
@@ -229,19 +234,30 @@ public class LongPollWrapper {
     }
 
     private void sendLongPollMessageToActivity(final String response) {
-        handler = new Handler();
-        Log.d("OK", "OK! LongPolling 1...");
-        Runnable sendLongPoll = new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent();
-                intent.setAction("uk.openvk.android.legacy.LONGPOLL_RECEIVE");
-                intent.putExtra("response", response);
-                ctx.sendBroadcast(intent);
-                Log.d("OK", "OK! LongPolling 2...");
-            }
-        };
-        handler.post(sendLongPoll);
+        if(!looper_prepared) {
+            Looper.prepare();
+            looper_prepared = true;
+            handler = new Handler(Looper.myLooper()) {
+                @Override
+                public void handleMessage(android.os.Message msg) {
+                    super.handleMessage(msg);
+                    if(msg.what == HandlerMessages.LONGPOLL) {
+                        Log.d("OK", "OK! LongPolling 2...");
+                        Intent intent = new Intent();
+                        intent.setAction("uk.openvk.android.legacy.LONGPOLL_RECEIVE");
+                        intent.putExtra("response", response);
+                        ctx.sendBroadcast(intent);
+                    }
+                }
+            };
+        }
+        Log.d(OvkApplication.LP_TAG, "OK! LongPolling 1...");
+        android.os.Message msg = new android.os.Message();
+        msg.what = HandlerMessages.LONGPOLL;
+        Bundle data = new Bundle();
+        data.putString("response", response);
+        msg.setData(data);
+        handler.sendMessage(msg);
     }
 
     public void updateCounters(final OvkAPIWrapper ovk) {

@@ -26,5 +26,5 @@
         android:name="uk.openvk.android.legacy.fragments.NewsfeedFragment"
         android:id="@+id/fragment"
         android:layout_gravity="center"
-        tools:layout="@layout/newsfeed_layout" />
+        tools:layout="@layout/fragment_newsfeed" />
 </FrameLayout>

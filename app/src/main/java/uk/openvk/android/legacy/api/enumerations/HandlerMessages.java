@@ -93,7 +93,7 @@ public class HandlerMessages {
     public static int OVK_CHECK_HTTP                    = 904;
     public static int OVK_CHECK_HTTPS                   = 905;
 
-    // PollAttachment
+    // Poll
     public static int POLL_ADD_VOTE                     = 1000;
     public static int POLL_DELETE_VOTE                  = 1001;
 
@@ -108,10 +108,12 @@ public class HandlerMessages {
     public static int GROUP_AVATARS_ALT                 = 1107;
     public static int FRIEND_AVATARS                    = 1108;
     public static int COMMENT_AVATARS                   = 1109;
-    public static int CONVERSATIONS_AVATARS             = 1110;
-    public static int LONGPOLL                          = 1111;
-    public static int ORIGINAL_PHOTO                    = 1112;
-    public static int VIDEO_THUMBNAILS                  = 1113;
+    public static int COMMENT_PHOTOS                    = 1110;
+    public static int COMMENT_VIDEO_THUMBNAILS          = 1111;
+    public static int CONVERSATIONS_AVATARS             = 1112;
+    public static int LONGPOLL                          = 1113;
+    public static int ORIGINAL_PHOTO                    = 1114;
+    public static int VIDEO_THUMBNAILS                  = 1115;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;

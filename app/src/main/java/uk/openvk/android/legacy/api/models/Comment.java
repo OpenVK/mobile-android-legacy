@@ -2,6 +2,10 @@ package uk.openvk.android.legacy.api.models;
 
 import android.graphics.Bitmap;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -28,16 +32,18 @@ public class Comment {
     public Bitmap avatar;
     public String avatar_url;
     private JSONParser jsonParser;
+    public ArrayList<Attachment> attachments;
 
     public Comment() {
         jsonParser = new JSONParser();
     }
 
-    public Comment(int id, long author_id, String author, int date, String text) {
+    public Comment(int id, long author_id, String author, int date, String text, ArrayList<Attachment> attachments) {
         this.author_id = author_id;
         this.author = author;
         this.date = date;
         this.text = text;
         this.id = id;
+        this.attachments = attachments;
     }
 }

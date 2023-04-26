@@ -54,7 +54,7 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.layout_profile, container, false);
+        view = inflater.inflate(R.layout.fragment_profile, container, false);
         ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
