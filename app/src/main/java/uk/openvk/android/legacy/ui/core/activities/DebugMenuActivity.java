@@ -297,8 +297,8 @@ public class DebugMenuActivity extends PreferenceActivity {
                                 "\r\nAndroid: %s (API %s)" +
                                 "==============================================\r\n" +
                                 "\r\nAPP SETTINGS" +
-                                "\r\nInstance: %s",
-                                "\r\nHTTPS: %s",
+                                "\r\nInstance: %s" +
+                                "\r\nHTTPS: %s" +
                                 "\r\nTablet UI?: %s\r\n" +
                                 "==============================================\r\n",
                         ovk.version, Build.BRAND, Build.MODEL, Build.DEVICE,
