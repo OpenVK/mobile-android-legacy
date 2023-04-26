@@ -290,9 +290,9 @@ public class DebugMenuActivity extends PreferenceActivity {
                     usingHTTPS = "No";
                 }
                 writer.append(String.format(
-                        "OpenVK Legacy %s" +
+                        "OpenVK Legacy %s\r\n" +
                                 "==============================================\r\n" +
-                                "DEVICE" +
+                                "\r\nDEVICE" +
                                 "\r\nDevice: %s %s (codename: %s)" +
                                 "\r\nAndroid: %s (API %s)" +
                                 "==============================================\r\n" +
