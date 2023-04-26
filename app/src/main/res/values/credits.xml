@@ -30,6 +30,9 @@
     <string name="app_ukr_translators">OpenVK Legacy Team\r\nYaroslav Belograd (AlesAlte)</string>
     <string name="app_license_title">OpenVK Legacy License</string>
     <string name="app_license_text"><![CDATA[This program is free software: you may redistribute and/or modify it under the terms
-    <a href="https://www.gnu.org/licenses/agpl.txt">GNU (Affero) General Public License v3.0</a> or a later version published by the Free Software Foundation.
+    <a href="https://www.gnu.org/licenses/agpl.txt">GNU Affero General Public License v3.0</a> or later version published by the Free Software Foundation.
     <br><br>WITHOUT ANY WARRANTY, NOT EVEN FOR MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.]]></string>
+    <string name="app_disclaimer_title">Disclaimer</string>
+    <string name="app_disclaimer"><![CDATA[OpenVK is not affiliated with or endorsed by VK LLC. The application is intended
+    to work with OpenVK instances <b>only</b>, <a href="%s/topic181_1">see the FAQ</a>.]]></string>
 </resources>

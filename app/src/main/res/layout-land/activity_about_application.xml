@@ -364,6 +364,33 @@
                         android:textColorLink="@color/ovk_color"
                         android:visibility="visible" />
 
+                    <TextView
+                        android:id="@+id/app_disclaimer_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center"
+                        android:text="@string/app_disclaimer_title"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/app_disclaimer_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/app_disclaimer"
+                        android:textColorHighlight="@color/ovk_color"
+                        android:textColorLink="@color/ovk_color"
+                        android:visibility="visible" />
+
+
                 </LinearLayout>
 
             </LinearLayout>

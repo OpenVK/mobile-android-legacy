@@ -107,23 +107,33 @@ public class AboutApplicationActivity extends Activity {
         TextView app_devteam_label = findViewById(R.id.app_development_text);
         TextView app_links = findViewById(R.id.app_links_text);
         TextView app_license_label = findViewById(R.id.app_license_text);
+        TextView app_disclaimer_label = findViewById(R.id.app_disclaimer_text);
         OvkApplication app = ((OvkApplication) getApplicationContext());
 
         app_title.setText(getResources().getString(R.string.full_app_name));
         app_version_label.setText(getResources().getString(R.string.app_version_text, BuildConfig.VERSION_NAME));
-        if(instance_prefs.getString("server", "").equals("openvk.su") || instance_prefs.getString("server", "").equals("openvk.uk") || instance_prefs.getString("server", "").equals("openvk.co")) {
+        if(instance_prefs.getString("server", "").equals("openvk.su") ||
+                instance_prefs.getString("server", "").equals("openvk.uk") ||
+                instance_prefs.getString("server", "").equals("openvk.co")) {
             app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "openvk://profile")));
             app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "openvk://profile", "openvk://profile")));
-            app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "openvk://group", String.format("http://%s", instance_prefs.getString("server", "")))));
+            app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text,
+                    "openvk://group", String.format("http://%s", instance_prefs.getString("server", "")))));
+            app_disclaimer_label.setText(Html.fromHtml(getResources().getString(R.string.app_disclaimer,
+                    String.format("http://%s", instance_prefs.getString("server", "")))));
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "https://openvk.uk/")));
                 app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "https://openvk.uk/", "https://openvk.uk/")));
                 app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "https://openvk.uk", "https://openvk.uk")));
+                app_disclaimer_label.setText(Html.fromHtml(getResources().getString(R.string.app_disclaimer,
+                        "https://openvk.uk")));
             } else {
                 app_author_label.setText(Html.fromHtml(getResources().getString(R.string.app_author_value, "http://openvk.co/")));
                 app_devteam_label.setText(Html.fromHtml(getResources().getString(R.string.app_devteam, "http://openvk.co/", "http://openvk.co/")));
                 app_links.setText(Html.fromHtml(getResources().getString(R.string.app_links_text, "http://openvk.co", "http://openvk.co")));
+                app_disclaimer_label.setText(Html.fromHtml(getResources().getString(R.string.app_disclaimer,
+                        "http://openvk.co")));
             }
         }
         app_design_label.setText(Html.fromHtml(getResources().getString(R.string.app_design_value)));
@@ -134,6 +144,7 @@ public class AboutApplicationActivity extends Activity {
         app_design_label.setMovementMethod(LinkMovementMethod.getInstance());
         app_devteam_label.setMovementMethod(LinkMovementMethod.getInstance());
         app_license_label.setMovementMethod(LinkMovementMethod.getInstance());
+        app_disclaimer_label.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
