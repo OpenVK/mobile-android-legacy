@@ -239,7 +239,7 @@ public class NewsfeedFragment extends Fragment {
         if(load_photos) {
             loadPhotos();
         }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
             scrollView.setOnScrollListener(new OnScrollListener() {
                 @Override
