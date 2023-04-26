@@ -22,11 +22,15 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -81,7 +85,7 @@ public class SlidingMenu extends RelativeLayout {
 
 	private OnCloseListener mCloseListener;
 
-	/**
+    /**
 	 * The listener interface for receiving onOpen events.
 	 * The class that is interested in processing a onOpen
 	 * event implements this interface, and the object created
@@ -1002,11 +1006,14 @@ public class SlidingMenu extends RelativeLayout {
             int nav_width_id = resources.getIdentifier("navigation_bar_width", "dimen", "android");
             int rotation = ((WindowManager) getContext().getSystemService(
                     Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-            if (nav_height_id > 0) {
-                navigation_height = resources.getDimensionPixelSize(nav_height_id);
-            }
-            if(nav_width_id > 0) {
-                navigation_width = resources.getDimensionPixelSize(nav_width_id);
+
+            if(visibleNavBar()) {
+                if (nav_height_id > 0) {
+                    navigation_height = resources.getDimensionPixelSize(nav_height_id);
+                }
+                if (nav_width_id > 0) {
+                    navigation_width = resources.getDimensionPixelSize(nav_width_id);
+                }
             }
             if (!mActionbarOverlay) {
                 Log.v(TAG, "setting padding!");
@@ -1034,7 +1041,25 @@ public class SlidingMenu extends RelativeLayout {
 		return true;
 	}
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private boolean visibleNavBar() {
+        Display d = getDisplay();
+
+        DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+        d.getRealMetrics(realDisplayMetrics);
+
+        int realHeight = realDisplayMetrics.heightPixels;
+        int realWidth = realDisplayMetrics.widthPixels;
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        d.getMetrics(displayMetrics);
+
+        int displayHeight = displayMetrics.heightPixels;
+        int displayWidth = displayMetrics.widthPixels;
+
+        return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void manageLayers(float percentOpen) {
 		if (Build.VERSION.SDK_INT < 11) return;
 
