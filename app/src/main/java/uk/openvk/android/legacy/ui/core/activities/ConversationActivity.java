@@ -69,7 +69,9 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ConversationActivity extends FragmentActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
+public class ConversationActivity extends FragmentActivity implements
+        EmojiconGridFragment.OnEmojiconClickedListener,
+        EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 
     private OvkAPIWrapper ovk_api;
     public Handler handler;
@@ -111,7 +113,8 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/conversations_avatars/avatar_%s", getCacheDir(), peer_id), options);
+            Bitmap bitmap = BitmapFactory.decodeFile(
+                    String.format("%s/conversations_avatars/avatar_%s", getCacheDir(), peer_id), options);
             conversation.avatar = bitmap;
         } catch (OutOfMemoryError error) {
 
@@ -120,7 +123,8 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -234,14 +238,16 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
     }
 
     private void setConversationView() {
-        final ConversationPanel conversationPanel = (ConversationPanel) findViewById(R.id.conversation_panel);
+        final ConversationPanel conversationPanel = (ConversationPanel)
+                findViewById(R.id.conversation_panel);
         ((ImageButton) conversationPanel.findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
                     View view = ConversationActivity.this.getCurrentFocus();
                     if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm =
+                                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         view.postDelayed(new Runnable() {
                             @Override
@@ -255,7 +261,8 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                 }
             }
         });
-        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
+                .setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
                 if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
@@ -267,7 +274,9 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                        last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false, false, (int) (System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                        last_sended_message = new uk.openvk.android.legacy.api.models.Message(0,
+                                false, false, (int) (System.currentTimeMillis() / 1000), msg_text,
+                                ConversationActivity.this);
                         last_sended_message.sending = true;
                         last_sended_message.isError = false;
                         if (history == null) {
@@ -296,13 +305,15 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String msg_text = ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
+                final String msg_text = ((EmojiconEditText) conversationPanel
+                        .findViewById(R.id.message_edit)).getText().toString();
                 try {
                     conversation.sendMessage(ovk_api, msg_text);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false, false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
+                last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false,
+                        false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
                 last_sended_message.sending = true;
                 last_sended_message.isError = false;
                 if(history == null) {
@@ -319,7 +330,8 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                 messagesList.smoothScrollToPosition(history.size() -1);
             }
         });
-        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).addTextChangedListener(new TextWatcher() {
+        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
+                .addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -336,10 +348,14 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount() > 4) {
-                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setLines(4);
+                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
+                        .getLineCount() > 4) {
+                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
+                            .setLines(4);
                 } else {
-                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setLines(((EditText) conversationPanel.findViewById(R.id.message_edit)).getLineCount());
+                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setLines(
+                            ((EditText) conversationPanel.findViewById(R.id.message_edit))
+                                    .getLineCount());
                 }
             }
         });
@@ -376,7 +392,8 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
             history.set(history.size() - 1, last_sended_message);
             conversation_adapter.notifyDataSetChanged();
         } else if(message == HandlerMessages.LONGPOLL) {
-            if(!((OvkApplication) getApplicationContext()).notifMan.isRepeat(last_lp_message, data.getString("response"))) {
+            if(!((OvkApplication) getApplicationContext()).notifMan.isRepeat(last_lp_message,
+                    data.getString("response"))) {
                 conversation.getHistory(ovk_api, peer_id);
             }
             last_lp_message = data.getString("response");
@@ -412,11 +429,17 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                         showDeleteConfirmDialog(item_pos);
                     } else if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
                         if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.text.ClipboardManager clipboard =
+                                    (android.text.ClipboardManager)
+                                            getSystemService(Context.CLIPBOARD_SERVICE);
                             clipboard.setText(history.get(item_pos).text);
                         } else {
-                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                            android.content.ClipData clip = android.content.ClipData.newPlainText("Message text", history.get(item_pos).text);
+                            android.content.ClipboardManager clipboard =
+                                    (android.content.ClipboardManager)
+                                            getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.content.ClipData clip =
+                                    android.content.ClipData.newPlainText("Message text",
+                                            history.get(item_pos).text);
                             clipboard.setPrimaryClip(clip);
                         }
                     }
@@ -425,7 +448,8 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
             });
         } else {
             functions.add(getResources().getString(R.string.copy_text));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -435,11 +459,14 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
                                         long id) {
                     if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
                         if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                                    getSystemService(Context.CLIPBOARD_SERVICE);
                             clipboard.setText(history.get(item_pos).text);
                         } else {
-                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                            android.content.ClipData clip = android.content.ClipData.newPlainText("Message text", history.get(item_pos).text);
+                            android.content.ClipboardManager clipboard =
+                                    (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.content.ClipData clip = android.content.ClipData.
+                                    newPlainText("Message text", history.get(item_pos).text);
                             clipboard.setPrimaryClip(clip);
                         }
                     }
@@ -467,7 +494,9 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
         });
         builder.setNegativeButton(R.string.cancel, null);
         OvkAlertDialog dialog = new OvkAlertDialog(this);
-        dialog.build(builder, getResources().getString(R.string.confirm), getResources().getString(R.string.delete_msgs_confirm, String.format("\"%s\"", text)), null);
+        dialog.build(builder, getResources().getString(R.string.confirm),
+                getResources().getString(R.string.delete_msgs_confirm,
+                        String.format("\"%s\"", text)), null);
         dialog.show();
     }
 
@@ -480,12 +509,14 @@ public class ConversationActivity extends FragmentActivity implements EmojiconGr
 
     @Override
     public void onEmojiconClicked(Emojicon emojicon) {
-        EmojiconsFragment.input((EditText) findViewById(R.id.conversation_panel).findViewById(R.id.message_edit), emojicon);
+        EmojiconsFragment.input((EditText) findViewById(R.id.conversation_panel)
+                .findViewById(R.id.message_edit), emojicon);
     }
 
     @Override
     public void onEmojiconBackspaceClicked(View v) {
-        EmojiconsFragment.backspace((EditText) findViewById(R.id.conversation_panel).findViewById(R.id.message_edit));
+        EmojiconsFragment.backspace((EditText) findViewById(R.id.conversation_panel)
+                .findViewById(R.id.message_edit));
     }
 
     @Override

@@ -86,11 +86,13 @@ public class FriendsListAdapter extends BaseAdapter {
             SpannableStringBuilder sb = new SpannableStringBuilder(name);
             ImageSpan imageSpan;
             imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
-            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
+            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
+                    ctx.getResources().getDisplayMetrics().density));
             sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ((TextView) view.findViewById(R.id.flist_item_text)).setText(sb);
         } else {
-            ((TextView) view.findViewById(R.id.flist_item_text)).setText(String.format("%s %s", item.first_name, item.last_name));
+            ((TextView) view.findViewById(R.id.flist_item_text)).setText(
+                    String.format("%s %s", item.first_name, item.last_name));
         }
         if(item.online) {
             ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.VISIBLE);
@@ -100,13 +102,16 @@ public class FriendsListAdapter extends BaseAdapter {
         if(item.avatar != null) {
             ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageBitmap(item.avatar);
         } else {
-            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageDrawable(
+                    ctx.getResources().getDrawable(R.drawable.photo_loading));
         }
 
         if(item.from_mobile) {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_online_mobile));
+            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(
+                    ctx.getResources().getDrawable(R.drawable.ic_online_mobile));
         } else {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_online));
+            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(
+                    ctx.getResources().getDrawable(R.drawable.ic_online));
         }
 
         view.setOnClickListener(new View.OnClickListener() {

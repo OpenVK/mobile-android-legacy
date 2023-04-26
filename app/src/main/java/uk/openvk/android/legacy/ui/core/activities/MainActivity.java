@@ -100,10 +100,14 @@ public class MainActivity extends Activity {
 
     class AutoRun extends TimerTask {
         public void run() {
-            SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-            if ((instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 ||
-                    instance_prefs.getString("account_password_hash", "").length() == 0) && !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
+            SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(
+                    getApplicationContext());
+            SharedPreferences instance_prefs = getApplicationContext().
+                    getSharedPreferences("instance", 0);
+            if ((instance_prefs.getString("server", "").length() == 0 ||
+                    instance_prefs.getString("access_token", "").length() == 0 ||
+                    instance_prefs.getString("account_password_hash", "").length() == 0) &&
+                    !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 Message msg = new Message();
                 msg.what = 0;
                 Looper.prepare();
@@ -119,7 +123,8 @@ public class MainActivity extends Activity {
     }
 
     private void createOvkWarnDialogForBeginners() {
-        AlertDialog.Builder dialog_builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.BaseStyle));
+        AlertDialog.Builder dialog_builder = new AlertDialog.Builder(new ContextThemeWrapper(
+                MainActivity.this, R.style.BaseStyle));
         warn_view = getLayoutInflater().inflate(R.layout.dialog_warn_message, null, false);
         dialog_builder.setView(warn_view);
         dialog_builder.setNeutralButton(R.string.ok, null);
@@ -127,9 +132,12 @@ public class MainActivity extends Activity {
         warn_dialog.build(dialog_builder, "", getResources().getString(R.string.ovk_warning_title), warn_view);
         warn_dialog.show();
         warn_dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));
-        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
-        ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(
+                Html.fromHtml(getResources().getString(R.string.ovk_warning)));
+        ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(
+                LinkMovementMethod.getInstance());
+        ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
@@ -149,7 +157,8 @@ public class MainActivity extends Activity {
     }
 
     private void closeSplashScreen() {
-        if (instance_prefs.getString("server", "").length() == 0 || instance_prefs.getString("access_token", "").length() == 0 ||
+        if (instance_prefs.getString("server", "").length() == 0 ||
+                instance_prefs.getString("access_token", "").length() == 0 ||
                 instance_prefs.getString("account_password_hash", "").length() == 0) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, AuthActivity.class);

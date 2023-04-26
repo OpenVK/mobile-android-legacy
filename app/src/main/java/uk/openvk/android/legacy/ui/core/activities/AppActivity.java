@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -42,6 +44,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import dev.tinelix.retro_pm.PopupMenu;
@@ -1155,7 +1158,9 @@ public class AppActivity extends FragmentActivity {
                         errorLayout.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                    if(account.first_name == null && account.last_name == null) {
+                        slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                    }
                     errorLayout.setTitle(getResources().getString(R.string.err_text));
                     errorLayout.setIcon("error");
                     errorLayout.setReason(message);
@@ -1281,10 +1286,33 @@ public class AppActivity extends FragmentActivity {
         }
     }
 
+    public void showGroup(int position) {
+        String url = "openvk://group/" + "club" + groups.getList().get(position).id;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        final PackageManager pm = getPackageManager();
+        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> activityList = pm.queryIntentActivities(i, 0);
+        for (int index = 0; index < activityList.size(); index++) {
+            ResolveInfo app = activityList.get(index);
+            if (app.activityInfo.name.contains("uk.openvk.android.legacy")) {
+                i.setClassName(app.activityInfo.packageName, app.activityInfo.name);
+            }
+        }
+        startActivity(i);
+    }
+
     public void showProfile(int user_id) {
         String url = "openvk://profile/" + "id" + user_id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
+        final PackageManager pm = getPackageManager();
+        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> activityList = pm.queryIntentActivities(i, 0);
+        for (int index = 0; index < activityList.size(); index++) {
+            ResolveInfo app = activityList.get(index);
+            if (app.activityInfo.name.contains("uk.openvk.android.legacy")) {
+                i.setClassName(app.activityInfo.packageName, app.activityInfo.name);
+            }
+        }
         startActivity(i);
     }
 
@@ -1414,12 +1442,7 @@ public class AppActivity extends FragmentActivity {
         }
     }
 
-    public void showGroup(int position) {
-        String url = "openvk://group/" + "club" + groups.getList().get(position).id;
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        startActivity(i);
-    }
+
 
     public void showAuthorPage(int position) {
         WallPost item;

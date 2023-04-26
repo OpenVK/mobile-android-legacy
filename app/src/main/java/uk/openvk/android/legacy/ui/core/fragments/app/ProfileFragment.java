@@ -53,7 +53,8 @@ public class ProfileFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
+            Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
@@ -64,7 +65,8 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-        ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources()
+                .getConfiguration().orientation);
         return view;
     }
 
@@ -75,16 +77,21 @@ public class ProfileFragment extends Fragment {
         header.setStatus(user.status);
         header.setLastSeen(user.sex, user.ls_date, user.ls_platform);
         header.setVerified(user.verified, getContext());
-        ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_photos)).get(2), "");
+        ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setCounter(0,
+                Arrays.asList(getResources().getStringArray(R.array.profile_photos)).get(2), "");
         ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setOnCounterClickListener();
-        ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
+        ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(0,
+                Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2),
+                "openvk://friends/id" + user.id);
         ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setOnCounterClickListener();
-        ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0, Arrays.asList(getResources().getStringArray(R.array.profile_mutual_friends)).get(2), "");
+        ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0,
+                Arrays.asList(getResources().getStringArray(R.array.profile_mutual_friends)).get(2), "");
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
         if(user.deactivated == null) {
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setBirthdate("");
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setStatus(user.status);
-            ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setInterests(user.interests, user.music, user.movies, user.tv, user.books);
+            ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setInterests(
+                    user.interests, user.music, user.movies, user.tv, user.books);
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setContacts(user.city);
             header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -92,7 +99,8 @@ public class ProfileFragment extends Fragment {
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
-                    if(((OvkApplication)getContext().getApplicationContext()).isTablet && getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
+                    if(((OvkApplication)getContext().getApplicationContext()).isTablet &&
+                            getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
                         View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_ll);
                         if (aboutProfile.getVisibility() == GONE) {
                             aboutProfile.setVisibility(View.VISIBLE);
@@ -198,31 +206,37 @@ public class ProfileFragment extends Fragment {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/profile_avatars/avatar_%s", getContext().getCacheDir(), user.id), options);
-            if(quality.equals("medium")) {
-                if (bitmap != null) {
-                    user.avatar = bitmap;
-                } else if (user.avatar_msize_url.length() > 0) {
-                    user.avatar = null;
-                } else {
-                    user.avatar = null;
-                }
-            } else if(quality.equals("high")) {
-                if (bitmap != null) {
-                    user.avatar = bitmap;
-                } else if (user.avatar_hsize_url.length() > 0) {
-                    user.avatar = null;
-                } else {
-                    user.avatar = null;
-                }
-            } else {
-                if (bitmap != null) {
-                    user.avatar = bitmap;
-                } else if (user.avatar_osize_url.length() > 0) {
-                    user.avatar = null;
-                } else {
-                    user.avatar = null;
-                }
+            Bitmap bitmap = BitmapFactory.decodeFile(
+                    String.format("%s/photos_cache/profile_avatars/avatar_%s",
+                            getContext().getCacheDir(), user.id), options);
+            switch (quality) {
+                case "medium":
+                    if (bitmap != null) {
+                        user.avatar = bitmap;
+                    } else if (user.avatar_msize_url.length() > 0) {
+                        user.avatar = null;
+                    } else {
+                        user.avatar = null;
+                    }
+                    break;
+                case "high":
+                    if (bitmap != null) {
+                        user.avatar = bitmap;
+                    } else if (user.avatar_hsize_url.length() > 0) {
+                        user.avatar = null;
+                    } else {
+                        user.avatar = null;
+                    }
+                    break;
+                default:
+                    if (bitmap != null) {
+                        user.avatar = bitmap;
+                    } else if (user.avatar_osize_url.length() > 0) {
+                        user.avatar = null;
+                    } else {
+                        user.avatar = null;
+                    }
+                    break;
             }
             if (user.avatar != null)
                 ((ImageView) view.findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
@@ -233,7 +247,9 @@ public class ProfileFragment extends Fragment {
 
     public void setCounter(User user, String where, int count) {
         if(where.equals("friends")) {
-            ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(count, Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2), "openvk://friends/id" + user.id);
+            ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(count,
+                    Arrays.asList(getResources().getStringArray(R.array.profile_friends)).get(2),
+                    "openvk://friends/id" + user.id);
         }
     }
 
@@ -241,7 +257,8 @@ public class ProfileFragment extends Fragment {
         float smallestWidth = Global.getSmalledWidth(wm);
         if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
             ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
-        } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
+        } else if(((OvkApplication)getContext().getApplicationContext()).isTablet &&
+                smallestWidth < 800) {
             ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else {
             ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);

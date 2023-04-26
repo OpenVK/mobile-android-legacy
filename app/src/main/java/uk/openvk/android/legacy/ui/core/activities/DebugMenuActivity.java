@@ -272,17 +272,43 @@ public class DebugMenuActivity extends PreferenceActivity {
                 writer = new FileWriter(file);
                 OvkApplication ovk = ((OvkApplication) getApplicationContext());
                 String isTablet;
+                String server;
+                String usingHTTPS;
                 if(ovk.isTablet) {
                     isTablet = "Yes";
                 } else {
                     isTablet = "No";
                 }
-                writer.append(String.format("OpenVK Legacy %s\r\nAndroid version: %s (API %s)\r\nTablet UI?: %s\r\n" +
-                        "==============================================\r\n", ovk.version, Build.VERSION.RELEASE, Build.VERSION.SDK_INT, isTablet));
+                if(instance_prefs.contains("server")) {
+                    server = instance_prefs.getString("server", "");
+                } else {
+                    server = "N/A";
+                }
+                if(global_prefs.getBoolean("useHTTPS", false)) {
+                    usingHTTPS = "Yes";
+                } else {
+                    usingHTTPS = "No";
+                }
+                writer.append(String.format(
+                        "OpenVK Legacy %s" +
+                                "==============================================\r\n" +
+                                "DEVICE" +
+                                "\r\nDevice: %s %s (codename: %s)" +
+                                "\r\nAndroid: %s (API %s)" +
+                                "==============================================\r\n" +
+                                "\r\nAPP SETTINGS" +
+                                "\r\nInstance: %s",
+                                "\r\nHTTPS: %s",
+                                "\r\nTablet UI?: %s\r\n" +
+                                "==============================================\r\n",
+                        ovk.version, Build.BRAND, Build.MODEL, Build.DEVICE,
+                        Build.VERSION.RELEASE, Build.VERSION.SDK_INT, server, usingHTTPS, isTablet));
                 writer.append(log);
                 writer.flush();
                 writer.close();
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.saved_logs_successfully, "OpenVK/App Logs"), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getResources().getString(
+                        R.string.saved_logs_successfully,
+                        "OpenVK/App Logs"), Toast.LENGTH_LONG).show();
                 return true;
             } catch (Exception e) {
                 Log.e("OpenVK Legacy", "Could not save log to file: " + e.getMessage());
@@ -290,13 +316,15 @@ public class DebugMenuActivity extends PreferenceActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     allowPermissionDialog();
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.debug_on_pre_jellybean, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),
+                            R.string.debug_on_pre_jellybean, Toast.LENGTH_LONG).show();
                 }
                 return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.debug_on_pre_jellybean, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),
+                    R.string.debug_on_pre_jellybean, Toast.LENGTH_LONG).show();
             return false;
         }
     }

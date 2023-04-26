@@ -136,7 +136,8 @@ public class AuthActivity extends Activity {
             }
         });
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                global_prefs.getString("proxy_address", ""));
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -192,9 +193,11 @@ public class AuthActivity extends Activity {
                 dialog_builder.setNeutralButton(R.string.ok, null);
                 AlertDialog warn_dialog = dialog_builder.create();
                 warn_dialog.show();
-                ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(Html.fromHtml(getResources().getString(R.string.ovk_warning)));
+                ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(
+                        Html.fromHtml(getResources().getString(R.string.ovk_warning)));
                 ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
-                ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages))
+                        .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
@@ -203,7 +206,8 @@ public class AuthActivity extends Activity {
                     }
                 });
             } else {
-                Toast.makeText(this, "А мы вас предупреждали, что сюда не следует тыкать в ваш ВК!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "А мы вас предупреждали, что сюда не следует тыкать в ваш ВК!",
+                        Toast.LENGTH_LONG).show();
             }
 
         } else if(username.length() > 0 && password.length() > 0) {
@@ -215,7 +219,8 @@ public class AuthActivity extends Activity {
             connectionDialog.build(builder, "", getString(R.string.loading), null, "progressDlg");
             connectionDialog.show();
         } else {
-            Toast.makeText(this, getResources().getString(R.string.authdata_required), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.authdata_required),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -235,13 +240,18 @@ public class AuthActivity extends Activity {
         alertDialog = new OvkAlertDialog(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
         ArrayList<InstancesListItem> instances_list = new ArrayList<>();
-        for(int instances_index = 0; instances_index < getResources().getStringArray(R.array.official_instances_list).length; instances_index++) {
-            instances_list.add(new InstancesListItem(getResources().getStringArray(R.array.official_instances_list)[instances_index], true, true));
+        for(int instances_index = 0; instances_index < getResources().getStringArray(
+                R.array.official_instances_list).length; instances_index++) {
+            instances_list.add(new InstancesListItem(getResources().getStringArray(
+                    R.array.official_instances_list)[instances_index], true, true));
         }
-        for(int instances_index = 0; instances_index < getResources().getStringArray(R.array.instances_list).length; instances_index++) {
-            instances_list.add(new InstancesListItem(getResources().getStringArray(R.array.instances_list)[instances_index], false, true));
+        for(int instances_index = 0; instances_index < getResources().getStringArray(
+                R.array.instances_list).length; instances_index++) {
+            instances_list.add(new InstancesListItem(getResources().getStringArray(
+                    R.array.instances_list)[instances_index], false, true));
         }
-        InstancesListAdapter instancesAdapter = new InstancesListAdapter(AuthActivity.this, instances_list);
+        InstancesListAdapter instancesAdapter = new InstancesListAdapter(
+                AuthActivity.this, instances_list);
         builder.setSingleChoiceItems(instancesAdapter, -1, null);
         builder.setNegativeButton(R.string.close, null);
         alertDialog.build(builder, getResources().getString(R.string.instances_list_title), "", null, "listDlg");
@@ -276,14 +286,16 @@ public class AuthActivity extends Activity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 });
-                wrong_userdata_dlg.build(builder, getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error), null);
+                wrong_userdata_dlg.build(builder, getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error), null);
                 if (!AuthActivity.this.isFinishing()) wrong_userdata_dlg.show();
             } else if (message == HandlerMessages.TWOFACTOR_CODE_REQUIRED) {
                 connectionDialog.close();
                 OvkAlertDialog twofactor_dlg;
                 twofactor_dlg = new OvkAlertDialog(this);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
-                View twofactor_view = getLayoutInflater().inflate(R.layout.dialog_twofactor_auth, null, false);
+                View twofactor_view = getLayoutInflater().inflate(R.layout
+                        .dialog_twofactor_auth, null, false);
                 builder.setTitle(R.string.auth);
                 builder.setView(twofactor_view);
                 final EditText two_factor_code = (EditText) twofactor_view.findViewById(R.id.two_factor_code);

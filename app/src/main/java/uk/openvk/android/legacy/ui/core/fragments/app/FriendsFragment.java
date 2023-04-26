@@ -61,7 +61,8 @@ public class FriendsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_friends, container, false);
         friendsListView = view.findViewById(R.id.friends_listview);
         TabHost friends_tabhost = view.findViewById(R.id.friends_tabhost);
@@ -77,7 +78,8 @@ public class FriendsFragment extends Fragment {
         }
         ((TabSelector) view.findViewById(R.id.selector)).setTabTitle(0, getResources().getString(R.string.friends));
         ((TabSelector) view.findViewById(R.id.selector)).setTabTitle(1, getResources().getString(R.string.friend_requests));
-        ((TabSelector) view.findViewById(R.id.selector)).setup(friends_tabhost, new View.OnClickListener() {
+        ((TabSelector) view.findViewById(R.id.selector)).setup(friends_tabhost, new
+                View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -127,7 +129,9 @@ public class FriendsFragment extends Fragment {
                     Friend item = friends.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/friend_avatars/avatar_%s", getContext().getCacheDir(), item.id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/friend_avatars/avatar_%s",
+                                    getContext().getCacheDir(), item.id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -144,11 +148,15 @@ public class FriendsFragment extends Fragment {
                     Friend item = requests.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/friend_avatars/avatar_%s", getContext().getCacheDir(), item.id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile
+                            (String.format("%s/photos_cache/friend_avatars/avatar_%s",
+                                    getContext().getCacheDir(), item.id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     } else {
-                        Log.e(OvkApplication.APP_TAG, String.format("%s/photos_cache/friend_avatars/avatar_%d", getContext().getCacheDir(), item.id));
+                        Log.e(OvkApplication.APP_TAG,
+                                String.format("%s/photos_cache/friend_avatars/avatar_%d",
+                                        getContext().getCacheDir(), item.id));
                     }
                     requests.set(i, item);
                 } catch (OutOfMemoryError | Exception ex) {
@@ -177,7 +185,8 @@ public class FriendsFragment extends Fragment {
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                 int totalItemCount) {
                 if(infinity_scroll) {
                     if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
                         if(!loading_more_friends) {
