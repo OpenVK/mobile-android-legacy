@@ -35,6 +35,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -200,7 +201,7 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if (logging_enabled)
-                                Log.e(OvkApplication.API_TAG, String.format("Connected (%d)", response_code));
+                                Log.d(OvkApplication.API_TAG, String.format("Connected (%d)", response_code));
                             if (response_code == 400) {
                                 sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                             } else if (response_code == 401) {
@@ -208,6 +209,17 @@ public class OvkAPIWrapper {
                             } else if (response_code == 404) {
                                 sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
                             } else if (response_code == 200) {
+                                if(!(response_body.startsWith("{") && response_body.endsWith("}"))) {
+                                    if(response_body.length() > 16) {
+                                        throw new java.text.ParseException(String.format("Response data " +
+                                                "must be in JSON format only. Start of response: [%s...]",
+                                                response_body.replace("\r", "").replace("\n", "").substring(0, 16)), 0);
+                                    } else {
+                                        throw new java.text.ParseException(String.format("Response data " +
+                                                        "must be in JSON format only. Start of response: [%s]",
+                                                response_body.replace("\r", "").replace("\n", "")), 0);
+                                    }
+                                }
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
                             } else if (response_code == 502) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
@@ -228,6 +240,9 @@ public class OvkAPIWrapper {
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
                     } catch (IOException ignored) {
 
                     } catch (Exception e) {
@@ -249,7 +264,7 @@ public class OvkAPIWrapper {
         String url;
         if(use_https) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
-            if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)...", server));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)...", server));
         } else {
             url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
             if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s...", server));
@@ -294,6 +309,17 @@ public class OvkAPIWrapper {
                             } else if (response_code == 404) {
                                 sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
                             } else if (response_code == 200) {
+                                if(!(response_body.startsWith("{") && response_body.endsWith("}"))) {
+                                    if(response_body.length() > 16) {
+                                        throw new java.text.ParseException(String.format("Response data " +
+                                                        "must be in JSON format only. Start of response: [%s...]",
+                                                response_body.substring(0, 16)), 0);
+                                    } else {
+                                        throw new java.text.ParseException(String.format("Response data " +
+                                                        "must be in JSON format only. Start of response: [%s]",
+                                                response_body), 0);
+                                    }
+                                }
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
@@ -317,6 +343,9 @@ public class OvkAPIWrapper {
                             Log.e("OpenVK API", String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
                     } catch (IOException ignored) {
 
                     } catch (Exception e) {
