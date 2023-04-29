@@ -38,6 +38,7 @@ public class ProgressLayout extends LinearLayout {
     }
 
     public void enableDarkTheme() {
-        ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().getDrawable(R.drawable.progress_light));
+        ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
+                getDrawable(R.drawable.progress_light));
     }
 }

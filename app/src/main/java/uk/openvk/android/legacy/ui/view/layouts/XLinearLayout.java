@@ -27,6 +27,12 @@ import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+ /* Reverse-engineered from VK 3.0.4
+  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\XLinearLayout.class
+  * Java compiler version: 6 (50.0)
+  * JD-Core Version:       1.1.3
+  */
+
 public class XLinearLayout extends LinearLayout implements OnKeyboardStateListener {
 
   private OnKeyboardStateListener listener;
@@ -76,9 +82,3 @@ public class XLinearLayout extends LinearLayout implements OnKeyboardStateListen
         this.listener.onKeyboardStateChanged(param1Boolean);
     }
 }
-
-
-/* Location:              C:\Users\Dmitry\vk.3.0.4.jar!\com\vkontakte\androi\\ui\XLinearLayout.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       1.1.3
- */

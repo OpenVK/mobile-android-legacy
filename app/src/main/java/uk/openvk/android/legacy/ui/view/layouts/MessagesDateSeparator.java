@@ -33,8 +33,10 @@ public class MessagesDateSeparator extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        layoutParams.setMargins((int)(8 * getResources().getDisplayMetrics().scaledDensity), (int)(4 * getResources().getDisplayMetrics().scaledDensity),
-                (int)(4 * getResources().getDisplayMetrics().scaledDensity), (int)(4 * getResources().getDisplayMetrics().scaledDensity));
+        layoutParams.setMargins((int)(8 * getResources().getDisplayMetrics().scaledDensity),
+                (int)(4 * getResources().getDisplayMetrics().scaledDensity),
+                (int)(4 * getResources().getDisplayMetrics().scaledDensity), (int)(4 *
+                        getResources().getDisplayMetrics().scaledDensity));
         ((TextView) view.findViewById(R.id.date_text)).setLayoutParams(layoutParams);
     }
 }

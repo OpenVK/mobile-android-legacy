@@ -148,7 +148,8 @@ public class WallLayout extends LinearLayout {
                                         BitmapFactory.Options options = new BitmapFactory.Options();
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                         if (photoAttachment.url.length() > 0) {
-                                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(),
+                                            Bitmap bitmap = BitmapFactory.decodeFile(
+                                                    String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s", getContext().getCacheDir(),
                                                     item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
                                                 photoAttachment.photo = bitmap;
@@ -172,7 +173,9 @@ public class WallLayout extends LinearLayout {
                                 if(item.attachments.get(0).type.equals("photo")) {
                                     PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
                                     if (photoAttachment.url.length() > 0) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                        Bitmap bitmap = BitmapFactory.decodeFile(
+                                                String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                                        getContext().getCacheDir(), item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
                                             ((PhotoAttachment) item.attachments.get(0).getContent()).photo = bitmap;
                                             item.attachments.get(0).status = "done";
@@ -266,7 +269,9 @@ public class WallLayout extends LinearLayout {
                     WallPost item = wallItems.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/wall_avatars/avatar_%s",
+                                    getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -291,23 +296,27 @@ public class WallLayout extends LinearLayout {
         if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 wallView = (RecyclerView) findViewById(R.id.wall_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
+                        (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             } else {
                 wallView = (RecyclerView) findViewById(R.id.wall_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             }
         } else {
             wallView = (RecyclerView) findViewById(R.id.wall_listview);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
+                        (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             } else {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             }

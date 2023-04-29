@@ -19,6 +19,12 @@ import android.text.style.ImageSpan;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+ /* Reverse-engineered from VK 3.0.4
+  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\XImageSpan.class
+  * Java compiler version: 6 (50.0)
+  * JD-Core Version:       1.1.3
+  */
+
 public class XImageSpan extends ImageSpan {
   public XImageSpan(Drawable paramDrawable, int paramInt) {
     super(paramDrawable, paramInt);
@@ -34,9 +40,3 @@ public class XImageSpan extends ImageSpan {
     return paramInt1;
   }
 }
-
-
-/* Location:              C:\Users\Dmitry\vk.3.0.4.jar!\com\vkontakte\androi\\ui\XImageSpan.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       1.1.3
- */

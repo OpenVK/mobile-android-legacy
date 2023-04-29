@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -19,6 +20,13 @@ import android.widget.ImageView;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+ /* Reverse-engineered from VK 3.0.4
+  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\XImageView.class
+  * Java compiler version: 6 (50.0)
+  * JD-Core Version:       1.1.3
+  */
+
+@SuppressLint("AppCompatCustomView")
 public class XImageView extends ImageView {
   public XImageView(Context paramContext) {
     super(paramContext);
@@ -32,9 +40,3 @@ public class XImageView extends ImageView {
     super(paramContext, paramAttributeSet, paramInt);
   }
 }
-
-
-/* Location:              C:\Users\Dmitry\vk.3.0.4.jar!\com\vkontakte\androi\\ui\XImageView.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       1.1.3
- */

@@ -71,16 +71,21 @@ public class ActionBarLayout extends LinearLayout {
     public void createSpinnerAdapter(Context ctx) {
         if(spinnerActionBarArray != null) {
             spinnerActionBarArray.clear();
-            for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
-                spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(R.array.newsfeed_actionbar_items)[spinner_action_bar_index]));
+            for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().
+                    getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
+                spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(
+                        R.array.newsfeed_actionbar_items)[spinner_action_bar_index]));
             }
             spinnerAdapter.notifyDataSetChanged();
         } else {
             spinnerActionBarArray = new ArrayList<SimpleListItem>();
-            for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
-                spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(R.array.newsfeed_actionbar_items)[spinner_action_bar_index]));
+            for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().
+                    getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
+                spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(
+                        R.array.newsfeed_actionbar_items)[spinner_action_bar_index]));
             }
-            spinnerAdapter = new ActionBarSpinnerAdapter(ctx, spinnerActionBarArray, Color.BLACK, Color.WHITE, "newsfeed_actionbar");
+            spinnerAdapter = new ActionBarSpinnerAdapter(ctx, spinnerActionBarArray, Color.BLACK,
+                    Color.WHITE, "newsfeed_actionbar");
             ((Spinner) findViewById(R.id.spinner)).setAdapter(spinnerAdapter);
         }
     }

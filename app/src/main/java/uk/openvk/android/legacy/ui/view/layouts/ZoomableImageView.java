@@ -54,6 +54,7 @@ public class ZoomableImageView extends ImageView {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 userScale = photoAttacher.getScale();
+                assert l != null;
                 l.onClick(getRootView());
                 return true;
             }

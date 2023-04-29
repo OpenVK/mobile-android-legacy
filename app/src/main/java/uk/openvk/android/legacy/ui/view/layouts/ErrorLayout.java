@@ -52,19 +52,26 @@ public class ErrorLayout extends LinearLayout{
     public void setReason(int message) {
         String description = "";
         if(message == HandlerMessages.NO_INTERNET_CONNECTION) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(0));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(0));
         } else if(message == HandlerMessages.INVALID_JSON_RESPONSE) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(1));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(1));
         } else if(message == HandlerMessages.CONNECTION_TIMEOUT) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(2));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(2));
         } else if(message == HandlerMessages.BROKEN_SSL_CONNECTION) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
         } else if(message == HandlerMessages.INTERNAL_ERROR) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(4));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(4));
         } else if(message == HandlerMessages.INSTANCE_UNAVAILABLE) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(5));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(5));
         } else if(message == HandlerMessages.UNKNOWN_ERROR) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(6));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(6));
         }
         if(description.length() > 0) {
             ((TextView) findViewById(R.id.reason_text)).setVisibility(VISIBLE);
@@ -93,9 +100,11 @@ public class ErrorLayout extends LinearLayout{
 
     public void setIcon(String icon) {
         if(icon.equals("error")) {
-            ((ImageView) findViewById(R.id.error_icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_warning_light));
+            ((ImageView) findViewById(R.id.error_icon)).setImageDrawable(getResources().getDrawable(
+                    R.drawable.ic_warning_light));
         } else if(icon.equals("ovk")) {
-            ((ImageView) findViewById(R.id.error_icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_ovklogo_light));
+            ((ImageView) findViewById(R.id.error_icon)).setImageDrawable(getResources().getDrawable(
+                    R.drawable.ic_ovklogo_light));
         }
     }
 

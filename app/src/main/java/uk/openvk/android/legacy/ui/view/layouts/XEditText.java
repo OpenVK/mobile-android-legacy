@@ -1,10 +1,13 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.EditText;
+
+import uk.openvk.android.legacy.OvkApplication;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -21,6 +24,13 @@ import android.widget.EditText;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+ /* Reverse-engineered from VK 3.0.4
+  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\XEditText.class
+  * Java compiler version: 6 (50.0)
+  * JD-Core Version:       1.1.3
+  */
+
+@SuppressLint("AppCompatCustomView")
 public class XEditText extends EditText {
   public XEditText(Context paramContext) {
     super(paramContext);
@@ -35,13 +45,7 @@ public class XEditText extends EditText {
   }
   
   public boolean onKeyDown(int paramInt, KeyEvent paramKeyEvent) {
-    Log.i("vk", "keyEvent " + paramKeyEvent.getKeyCode() + " | " + paramKeyEvent.getMetaState());
+    Log.i(OvkApplication.APP_TAG, "keyEvent " + paramKeyEvent.getKeyCode() + " | " + paramKeyEvent.getMetaState());
     return super.onKeyDown(paramInt, paramKeyEvent);
   }
 }
-
-
-/* Location:              C:\Users\Dmitry\vk.3.0.4.jar!\com\vkontakte\androi\\ui\XEditText.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       1.1.3
- */

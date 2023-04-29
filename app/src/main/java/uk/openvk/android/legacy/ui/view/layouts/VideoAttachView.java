@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
@@ -49,14 +50,18 @@ public class VideoAttachView extends FrameLayout {
         this.addView(view);
     }
 
+    @SuppressLint("DefaultLocale")
     public void setAttachment(VideoAttachment attachment) {
         this.attachment = attachment;
         if(attachment != null) {
             ((TextView) findViewById(R.id.attach_title)).setText(attachment.title);
             if (attachment.duration >= 3600) {
-                ((TextView) findViewById(R.id.attach_duration)).setText(String.format("%d:%02d:%02d", attachment.duration / 3600, (attachment.duration % 3600) / 60, (attachment.duration % 60)));
+                ((TextView) findViewById(R.id.attach_duration)).setText(
+                        String.format("%d:%02d:%02d", attachment.duration / 3600,
+                                (attachment.duration % 3600) / 60, (attachment.duration % 60)));
             } else {
-                ((TextView) findViewById(R.id.attach_duration)).setText(String.format("%d:%02d", attachment.duration / 60, (attachment.duration % 60)));
+                ((TextView) findViewById(R.id.attach_duration)).setText(
+                        String.format("%d:%02d", attachment.duration / 60, (attachment.duration % 60)));
             }
         }
     }

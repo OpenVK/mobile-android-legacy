@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -62,6 +63,7 @@ public class AboutProfileLayout extends LinearLayout {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     public void setBirthdate(String bdate) {
         if(bdate.length() > 0) {
             SimpleDateFormat originalFormat = new SimpleDateFormat("d.m.yyyy");
@@ -149,7 +151,7 @@ public class AboutProfileLayout extends LinearLayout {
                 ((LinearLayout) findViewById(R.id.city_layout)).setVisibility(VISIBLE);
                 if(interests == null && music == null && movies == null && tv == null && books == null) {
                     ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
-                } else if(interests.length() == 0 && music.length() == 0 && movies.length() == 0 && tv.length() == 0 && books.length() == 0) {
+                        && tv.length() == 0 && books.length() == 0) {
                     ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
                 }
             } else {
@@ -159,7 +161,8 @@ public class AboutProfileLayout extends LinearLayout {
         } else {
             if(interests == null && music == null && movies == null && tv == null && books == null) {
                 ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
-            } else if(interests.length() == 0 && music.length() == 0 && movies.length() == 0 && tv.length() == 0 && books.length() == 0) {
+            } else if(interests.length() == 0 && music.length() == 0 && movies.length() == 0
+                    && tv.length() == 0 && books.length() == 0) {
                 ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
             }
         }

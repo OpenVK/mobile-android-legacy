@@ -126,11 +126,15 @@ public class PostViewLayout extends LinearLayout {
                     Comment item = comments.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/comment_avatars/avatar_%d", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/comment_avatars/avatar_%s",
+                                    getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     } else {
-                        Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/comment_avatars/avatar_%d' not found", getContext().getCacheDir(), item.author_id));
+                        Log.e(OvkApplication.APP_TAG, String.format(
+                                "'%s/photos_cache/comment_avatars/avatar_%d' not found",
+                                getContext().getCacheDir(), item.author_id));
                     }
                     comments.set(i, item);
                 } catch (Exception ex) {
@@ -223,7 +227,8 @@ public class PostViewLayout extends LinearLayout {
                 original_post_text.setText(text_llines);
                 repost_expand_text_btn.setVisibility(View.VISIBLE);
             } else if(item.repost.newsfeed_item.text.length() > 500) {
-                original_post_text.setText(String.format("%s...", item.repost.newsfeed_item.text.substring(0, 500)));
+                original_post_text.setText(String.format("%s...",
+                        item.repost.newsfeed_item.text.substring(0, 500)));
                 repost_expand_text_btn.setVisibility(View.VISIBLE);
             } else {
                 original_post_text.setText(item.repost.newsfeed_item.text);
@@ -253,13 +258,16 @@ public class PostViewLayout extends LinearLayout {
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = null;
             if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%s",
+                        getContext().getCacheDir(), author_id), options);
             } else {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_avatars/avatar_%d", getContext().getCacheDir(), author_id), options);
+                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_avatars/avatar_%s",
+                        getContext().getCacheDir(), author_id), options);
             }
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(bitmap);
-                Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/wall_avatars/avatar_%d' not found", getContext().getCacheDir(), author_id));
+                Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/wall_avatars/avatar_%d' not found",
+                        getContext().getCacheDir(), author_id));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -274,15 +282,25 @@ public class PostViewLayout extends LinearLayout {
             Bitmap repost_bitmap = null;
             if(post.repost != null) {
                 if(where.equals("newsfeed")) {
-                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
+                    repost_bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                    getContext().getCacheDir(), post.repost.newsfeed_item.owner_id,
+                                    post.repost.newsfeed_item.post_id), options);
                 } else {
-                    repost_bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.repost.newsfeed_item.owner_id, post.repost.newsfeed_item.post_id), options);
+                    repost_bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                            getContext().getCacheDir(), post.repost.newsfeed_item.owner_id,
+                                    post.repost.newsfeed_item.post_id), options);
                 }
             }
             if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
+                bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                getContext().getCacheDir(), post.owner_id, post.post_id), options);
             } else {
-                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d", getContext().getCacheDir(), post.owner_id, post.post_id), options);
+                bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                getContext().getCacheDir(), post.owner_id, post.post_id), options);
             }
             final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
             final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
@@ -291,7 +309,9 @@ public class PostViewLayout extends LinearLayout {
                 post_photo.setImageBitmap(bitmap);
                 post_photo.setVisibility(View.VISIBLE);
             } else {
-                Log.e(OvkApplication.APP_TAG, String.format("'%s/photos_cache/wall_photo_attachments/wall_attachment_o%dp%d' not found", getContext().getCacheDir(), post.owner_id, post.post_id));
+                Log.e(OvkApplication.APP_TAG,
+                        String.format("'%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s' not found",
+                                getContext().getCacheDir(), post.owner_id, post.post_id));
                 post_photo.setVisibility(GONE);
             }
             if(repost_bitmap != null) {
@@ -309,21 +329,25 @@ public class PostViewLayout extends LinearLayout {
     public void adjustLayoutSize(int orientation) {
         if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
+                        (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
             } else {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
             }
         } else {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
+                        (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
             } else {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
             }
@@ -362,7 +386,9 @@ public class PostViewLayout extends LinearLayout {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             if (photoAttachment.url.length() > 0) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/comment_photos/comment_photo_o%sp%s", getContext().getCacheDir(), item.author_id, item.id), options);
+                                Bitmap bitmap = BitmapFactory.decodeFile(
+                                        String.format("%s/photos_cache/comment_photos/comment_photo_o%sp%s",
+                                                getContext().getCacheDir(), item.author_id, item.id), options);
                                 if (bitmap != null) {
                                     photoAttachment.photo = bitmap;
                                     attachment.status = "done";

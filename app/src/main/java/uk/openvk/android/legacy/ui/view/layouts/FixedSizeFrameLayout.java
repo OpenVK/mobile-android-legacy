@@ -19,6 +19,12 @@ import android.widget.FrameLayout;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+ /* Reverse-engineered from VK 3.0.4
+  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\FixedSizeFrameLayout.class
+  * Java compiler version: 6 (50.0)
+  * JD-Core Version:       1.1.3
+  */
+
 public class FixedSizeFrameLayout extends FrameLayout {
   private int h;
   
@@ -46,9 +52,3 @@ public class FixedSizeFrameLayout extends FrameLayout {
     requestLayout();
   }
 }
-
-
-/* Location:              C:\Users\Dmitry\vk.3.0.4.jar!\com\vkontakte\androi\\ui\FixedSizeFrameLayout.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       1.1.3
- */

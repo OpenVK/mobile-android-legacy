@@ -59,7 +59,8 @@ public class GroupHeader extends RelativeLayout {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
            ImageSpan imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
-           ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
+           ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
+                   ctx.getResources().getDisplayMetrics().density));
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }
