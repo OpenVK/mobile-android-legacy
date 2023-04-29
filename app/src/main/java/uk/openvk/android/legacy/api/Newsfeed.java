@@ -151,20 +151,20 @@ public class Newsfeed implements Parcelable {
                                     author_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
                                     author_avatar_url = profile.getString("photo_100");
                                     if(profile.has("verified")) {
-                                        if (profile.getInt("verified") == 1) {
-                                            verified_author = true;
+                                        if(profile.get("verified") instanceof Integer) {
+                                            verified_author = profile.getInt("verified") == 1;
                                         } else {
-                                            verified_author = false;
+                                            verified_author = profile.getBoolean("verified");
                                         }
                                     }
                                 } else if (profile.getInt("id") == owner_id) {
                                     owner_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
                                     owner_avatar_url = profile.getString("photo_100");
                                     if(profile.has("verified")) {
-                                        if (profile.getInt("verified") == 1) {
-                                            verified_author = true;
+                                        if(profile.get("verified") instanceof Integer) {
+                                            verified_author = profile.getInt("verified") == 1;
                                         } else {
-                                            verified_author = false;
+                                            verified_author = profile.getBoolean("verified");
                                         }
                                     }
                                 }
@@ -181,10 +181,10 @@ public class Newsfeed implements Parcelable {
                                         owner_name = group.getString("name");
                                         avatar_url = group.getString("photo_100");
                                         if(group.has("verified")) {
-                                            if (group.getInt("verified") == 1) {
-                                                verified_author = true;
+                                            if(group.get("verified") instanceof Integer) {
+                                                verified_author = group.getInt("verified") == 1;
                                             } else {
-                                                verified_author = false;
+                                                verified_author = group.getBoolean("verified");
                                             }
                                         }
                                     }
