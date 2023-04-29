@@ -21,7 +21,7 @@ import android.widget.ImageView;
  **/
 
  /* Reverse-engineered from VK 3.0.4
-  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\XImageView.class
+  * Location:              vk.3.0.4.apk/com/vkontakte/android/ui/XImageView.class
   * Java compiler version: 6 (50.0)
   * JD-Core Version:       1.1.3
   */

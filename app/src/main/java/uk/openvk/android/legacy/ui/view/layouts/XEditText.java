@@ -25,7 +25,7 @@ import uk.openvk.android.legacy.OvkApplication;
  **/
 
  /* Reverse-engineered from VK 3.0.4
-  * Location:              vk.3.0.4.jar!\com\vkontakte\android\ui\XEditText.class
+  * Location:              vk.3.0.4.apk/com/vkontakte/android/ui/XEditText.class
   * Java compiler version: 6 (50.0)
   * JD-Core Version:       1.1.3
   */
