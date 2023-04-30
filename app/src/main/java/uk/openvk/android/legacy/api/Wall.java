@@ -105,28 +105,35 @@ public class Wall implements Parcelable {
                     String author_avatar_url = "";
                     String content = post.getString("text");
                     boolean isLiked = false;
+                    boolean verified_author = false;
                     if(likes.getInt("user_likes") > 0) {
                         isLiked = true;
                     } else {
                         isLiked = false;
                     }
-                    PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"), reposts.getInt("count"), isLiked, false);
+                    PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"),
+                            reposts.getInt("count"), isLiked, false);
 
-                    ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality, attachments, "wall_attachment");
+                    ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                            attachments, "wall_attachment");
 
-                    WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec, null, content, counters, "", attachments_list, owner_id, post_id, ctx);
+                    WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec, null,
+                            content, counters, "", attachments_list, owner_id, post_id, ctx);
                     if(post.has("post_source") && !post.isNull("post_source")) {
                         if(post.getJSONObject("post_source").getString("type").equals("api")) {
-                            item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"), post.getJSONObject("post_source").getString("platform"));
+                            item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"),
+                                    post.getJSONObject("post_source").getString("platform"));
                         } else {
                             item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"), null);
                         }
                     }
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
-                        WallPost repost_item = new WallPost(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), null, repost.getString("text"), null, "",
+                        WallPost repost_item = new WallPost(String.format("(Unknown author: %s)", repost.getInt("from_id")),
+                                repost.getInt("date"), null, repost.getString("text"), null, "",
                                 null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
-                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %d)", repost.getInt("from_id")), repost.getInt("date"), ctx);
+                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)", repost.getInt("from_id")),
+                                repost.getInt("date"), ctx);
                         repostInfo.newsfeed_item = repost_item;
                         item.repost = repostInfo;
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
@@ -140,11 +147,27 @@ public class Wall implements Parcelable {
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if (profile.getInt("id") == author_id) {
-                                    author_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    author_name = String.format("%s %s", profile.getString("first_name"),
+                                            profile.getString("last_name"));
                                     author_avatar_url = profile.getString("photo_50");
+                                    if(profile.has("verified")) {
+                                        if(profile.get("verified") instanceof Integer) {
+                                            verified_author = profile.getInt("verified") == 1;
+                                        } else {
+                                            verified_author = profile.getBoolean("verified");
+                                        }
+                                    }
                                 } else if (profile.getInt("id") == owner_id) {
-                                    owner_name = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    owner_name = String.format("%s %s", profile.getString("first_name"),
+                                            profile.getString("last_name"));
                                     owner_avatar_url = profile.getString("photo_50");
+                                    if(profile.has("verified")) {
+                                        if(profile.get("verified") instanceof Integer) {
+                                            verified_author = profile.getInt("verified") == 1;
+                                        } else {
+                                            verified_author = profile.getBoolean("verified");
+                                        }
+                                    }
                                 }
                             }
                             if(author_avatar_url.length() > 0)
@@ -158,6 +181,19 @@ public class Wall implements Parcelable {
                                     if (-group.getInt("id") == owner_id) {
                                         owner_name = group.getString("name");
                                         avatar_url = group.getString("photo_50");
+                                        if(group.get("verified") instanceof Integer) {
+                                            if (group.getInt("verified") == 1) {
+                                                verified_author = true;
+                                            } else {
+                                                verified_author = false;
+                                            }
+                                        } else {
+                                            if (group.getBoolean("verified")) {
+                                                verified_author = true;
+                                            } else {
+                                                verified_author = false;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -176,6 +212,21 @@ public class Wall implements Parcelable {
                                 if (-group.getInt("id") == author_id) {
                                     item.name = group.getString("name");
                                     avatar_url = group.getString("photo_50");
+                                    if(group.has("verified")) {
+                                        if(group.get("verified") instanceof Integer) {
+                                            if (group.getInt("verified") == 1) {
+                                                verified_author = true;
+                                            } else {
+                                                verified_author = false;
+                                            }
+                                        } else {
+                                            if (group.getBoolean("verified")) {
+                                                verified_author = true;
+                                            } else {
+                                                verified_author = false;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -184,14 +235,19 @@ public class Wall implements Parcelable {
                     avatar.url = avatar_url;
                     avatar.filename = String.format("avatar_%s", author_id);
                     avatars.add(avatar);
+                    item.verified_author = verified_author;
                     this.items.add(item);
                 }
-                if(quality.equals("medium")) {
-                    downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
-                } else if(quality.equals("high")) {
-                    downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
-                } else if(quality.equals("original")) {
-                    downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
+                switch (quality) {
+                    case "medium":
+                        downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
+                        break;
+                    case "high":
+                        downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
+                        break;
+                    case "original":
+                        downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
+                        break;
                 }
                 downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
             }
@@ -218,7 +274,8 @@ public class Wall implements Parcelable {
                     long author_id = item.getLong("from_id");
                     long date = item.getLong("date");
                     JSONArray attachments = items.getJSONObject(i).getJSONArray("attachments");
-                    ArrayList<Attachment> attachments_list = createAttachmentsList(author_id, comment_id, quality, attachments, "comment_photo");
+                    ArrayList<Attachment> attachments_list = createAttachmentsList(author_id, comment_id,
+                            quality, attachments, "comment_photo");
                     Comment comment = new Comment();
                     comment.id = comment_id;
                     comment.author_id = author_id;
@@ -234,7 +291,8 @@ public class Wall implements Parcelable {
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if (profile.getLong("id") == author_id) {
-                                    comment.author = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    comment.author = String.format("%s %s", profile.getString("first_name"),
+                                            profile.getString("last_name"));
                                     if(profile.has("photo_100")) {
                                         comment.avatar_url = profile.getString("photo_100");
                                     }
@@ -282,7 +340,8 @@ public class Wall implements Parcelable {
         return comments;
     }
 
-    public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality, JSONArray attachments, String prefix) {
+    public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality,
+                                                       JSONArray attachments, String prefix) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
@@ -365,7 +424,10 @@ public class Wall implements Parcelable {
                     attachments_list.add(attachment_obj);
                 } else if (attachment.getString("type").equals("poll")) {
                     JSONObject poll_attachment = attachment.getJSONObject("poll");
-                    PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"), poll_attachment.getInt("id"), poll_attachment.getLong("end_date"), poll_attachment.getBoolean("multiple"), poll_attachment.getBoolean("can_vote"),
+                    PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"),
+                            poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
+                            poll_attachment.getBoolean("multiple"),
+                            poll_attachment.getBoolean("can_vote"),
                             poll_attachment.getBoolean("anonymous"));
                     JSONArray answers = poll_attachment.getJSONArray("answers");
                     JSONArray votes = poll_attachment.getJSONArray("answer_ids");
@@ -375,7 +437,8 @@ public class Wall implements Parcelable {
                     pollAttachment.votes = poll_attachment.getInt("votes");
                     for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
                         JSONObject answer = answers.getJSONObject(answers_index);
-                        PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"), answer.getInt("votes"), answer.getString("text"));
+                        PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"),
+                                answer.getInt("votes"), answer.getString("text"));
                         for (int votes_index = 0; votes_index < votes.length(); votes_index++) {
                             if (answer.getInt("id") == votes.getInt(votes_index)) {
                                 pollAnswer.is_voted = true;
@@ -402,7 +465,8 @@ public class Wall implements Parcelable {
     }
 
     public void get(OvkAPIWrapper ovk, long owner_id, int count) {
-        ovk.sendAPIMethod("Wall.get", String.format("owner_id=%s&count=%s&extended=1", owner_id, count));
+        ovk.sendAPIMethod("Wall.get", String.format("owner_id=%s&count=%s&extended=1",
+                owner_id, count));
     }
 
     public ArrayList<WallPost> getWallItems() {
@@ -410,19 +474,23 @@ public class Wall implements Parcelable {
     }
 
     public void post(OvkAPIWrapper ovk, long owner_id, String post) {
-        ovk.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s", owner_id, URLEncoder.encode(post)));
+        ovk.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s",
+                owner_id, URLEncoder.encode(post)));
     }
 
     public void getComments(OvkAPIWrapper ovk, long owner_id, long post_id) {
-        ovk.sendAPIMethod("Wall.getComments", String.format("owner_id=%s&post_id=%s&extended=1&count=50", owner_id, post_id));
+        ovk.sendAPIMethod("Wall.getComments", String.format("owner_id=%s&post_id=%s&extended=1&count=50",
+                owner_id, post_id));
     }
 
     public void createComment(OvkAPIWrapper ovk, long owner_id, long post_id, String text) {
-        ovk.sendAPIMethod("Wall.createComment", String.format("owner_id=%s&post_id=%s&message=%s", owner_id, post_id, URLEncoder.encode(text)));
+        ovk.sendAPIMethod("Wall.createComment", String.format("owner_id=%s&post_id=%s&message=%s", owner_id,
+                post_id, URLEncoder.encode(text)));
     }
 
     public void repost(OvkAPIWrapper ovk, long owner_id, long post_id, String text) {
-        ovk.sendAPIMethod("Wall.repost", String.format("object=wall%s_%s&message=%s", owner_id, post_id, URLEncoder.encode(text)));
+        ovk.sendAPIMethod("Wall.repost", String.format("object=wall%s_%s&message=%s", owner_id,
+                post_id, URLEncoder.encode(text)));
     }
 
     @Override

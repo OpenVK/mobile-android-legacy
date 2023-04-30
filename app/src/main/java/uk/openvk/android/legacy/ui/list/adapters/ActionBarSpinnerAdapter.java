@@ -41,7 +41,8 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
     public int textColor;
     public int selectedTextColor;
     public String from;
-    public ActionBarSpinnerAdapter(Context context, ArrayList<SimpleListItem> items, int _color, int _selectedColor, String from) {
+    public ActionBarSpinnerAdapter(Context context, ArrayList<SimpleListItem> items, int _color,
+                                   int _selectedColor, String from) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -84,31 +85,37 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 if(global.isTablet()) {
                     TextView item_name = view.findViewById(R.id.item_title);
-                    LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
+                    LinearLayout.LayoutParams ll_layoutParams =
+                            (LinearLayout.LayoutParams) item_name.getLayoutParams();
                     ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
                     item_name.setLayoutParams(ll_layoutParams);
                     TextView app_title = view.findViewById(R.id.app_title);
                     ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
-                    ll_layoutParams.setMargins(0, ((int)(-4 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                    ll_layoutParams.setMargins(0, ((int)(-4 *
+                            ctx.getResources().getDisplayMetrics().density)), 0, 0);
                     item_name.setLayoutParams(ll_layoutParams);
                 } else if (ctx.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     TextView item_name = view.findViewById(R.id.item_title);
                     LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
-                    ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                    ll_layoutParams.setMargins(0, ((int)(-2 *
+                            ctx.getResources().getDisplayMetrics().density)), 0, 0);
                     item_name.setLayoutParams(ll_layoutParams);
                     TextView app_title = view.findViewById(R.id.app_title);
                     ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
-                    ll_layoutParams.setMargins(0, ((int)(-4 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                    ll_layoutParams.setMargins(0, ((int)(-4 *
+                            ctx.getResources().getDisplayMetrics().density)), 0, 0);
                     item_name.setLayoutParams(ll_layoutParams);
                 }
             } else {
                 TextView item_name = view.findViewById(R.id.item_title);
                 LinearLayout.LayoutParams ll_layoutParams = (LinearLayout.LayoutParams) item_name.getLayoutParams();
-                ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                ll_layoutParams.setMargins(0, ((int)(-2 *
+                        ctx.getResources().getDisplayMetrics().density)), 0, 0);
                 item_name.setLayoutParams(ll_layoutParams);
                 TextView app_title = view.findViewById(R.id.app_title);
                 ll_layoutParams = (LinearLayout.LayoutParams) app_title.getLayoutParams();
-                ll_layoutParams.setMargins(0, ((int)(-2 * ctx.getResources().getDisplayMetrics().density)), 0, 0);
+                ll_layoutParams.setMargins(0, ((int)(-2 *
+                        ctx.getResources().getDisplayMetrics().density)), 0, 0);
                 item_name.setLayoutParams(ll_layoutParams);
             }
         }
@@ -129,7 +136,8 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
         View view;
         view = convertView;
         if (convertView == null){
-            LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater layoutInflater = (LayoutInflater)
+                    ctx.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.simple_list_item, null);// layout for spinner list
         }
         SimpleListItem item = getListItem(position);

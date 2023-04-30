@@ -68,7 +68,8 @@ public class OvkApplication extends Application {
         }
         long heap_size = global.getHeapSize();
 
-        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
+        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
 
         if(!global_prefs.contains("photos_quality")) {
             if(heap_size <= 67108864L) {
@@ -95,7 +96,8 @@ public class OvkApplication extends Application {
         }
 
         if(!global_prefs.contains("notifyRingtone")) {
-            global_prefs_editor.putString("notifyRingtone", "content://settings/system/notification_sound");
+            global_prefs_editor.putString("notifyRingtone",
+                    "content://settings/system/notification_sound");
         }
 
         if(!global_prefs.contains("debugDangerZone")) {
@@ -112,7 +114,8 @@ public class OvkApplication extends Application {
 
         if(global_prefs.contains("account_password") && global_prefs.getString("account_password", "").length() > 0) {
             try {
-                global_prefs_editor.putString("encrypted_account_password", Global.GetSHA256Hash(global_prefs.getString("account_password", "")));
+                global_prefs_editor.putString("encrypted_account_password",
+                        Global.GetSHA256Hash(global_prefs.getString("account_password", "")));
             } catch (NoSuchAlgorithmException e) {
                 global_prefs_editor.putString("encrypted_account_password", "");
             }

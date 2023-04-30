@@ -39,7 +39,8 @@ public class Message {
     private JSONParser parser;
 
     @SuppressLint("SimpleDateFormat")
-    public Message(long id, boolean incoming, boolean error, long _timestamp, String _text, Context ctx) {
+    public Message(long id, boolean incoming, boolean error, long _timestamp, String _text,
+                   Context ctx) {
         this.id = id;
         isIncoming = incoming;
         isError = error;

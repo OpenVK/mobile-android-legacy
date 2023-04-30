@@ -131,7 +131,8 @@ public class GroupIntentActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -212,11 +213,14 @@ public class GroupIntentActivity extends Activity {
             }
         } else if(item.getItemId() == R.id.copy_link) {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                        getSystemService(Context.CLIPBOARD_SERVICE);
                 clipboard.setText(String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
             } else {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL", String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                        getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL",
+                        String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
                 clipboard.setPrimaryClip(clip);
             }
         } else if(item.getItemId() == R.id.open_in_browser) {
@@ -236,7 +240,8 @@ public class GroupIntentActivity extends Activity {
 
     private void createActionPopupMenu(final Menu menu) {
         final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
-        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
         popupMenu.setOutsideTouchable(true);
         popupMenu.setFocusable(true);
         final ActionBar actionBar = findViewById(R.id.actionbar);
@@ -351,7 +356,8 @@ public class GroupIntentActivity extends Activity {
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 loadAvatar();
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager,  global_prefs.getString("photos_quality", ""), data.getString("response"));
+                wall.parse(this, downloadManager,  global_prefs.getString("photos_quality", ""),
+                        data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
@@ -387,13 +393,16 @@ public class GroupIntentActivity extends Activity {
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION  || message == HandlerMessages.INSTANCE_UNAVAILABLE
-                    || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
+                    || message == HandlerMessages.INSTANCE_UNAVAILABLE
+                    || message == HandlerMessages.INVALID_JSON_RESPONSE
+                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 if (data.getString("method").equals("Wall.get")) {
                     ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                 } else {
-                    Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getResources().getString(R.string.err_text),
+                            Toast.LENGTH_LONG).show();
                 }
             }
         } catch (Exception ex) {
@@ -448,7 +457,8 @@ public class GroupIntentActivity extends Activity {
         GroupHeader header = (GroupHeader) findViewById(R.id.group_header);
         header.setProfileName(String.format("%s  ", group.name));
         header.setVerified(group.verified, this);
-        ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count, Arrays.asList(getResources().getStringArray(R.array.profile_members)).get(2), "");
+        ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count,
+                Arrays.asList(getResources().getStringArray(R.array.profile_members)).get(2), "");
         ((AboutGroupLayout) findViewById(R.id.about_group_layout)).setGroupInfo(group.description, group.site);
         header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -476,10 +486,12 @@ public class GroupIntentActivity extends Activity {
     public void loadAvatar() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/group_avatars/avatar_%s", getCacheDir(), group.id), options);
+        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/group_avatars/avatar_%s",
+                getCacheDir(), group.id), options);
         if (bitmap != null) {
             group.avatar = bitmap;
-        } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0 || group.avatar_osize_url.length() > 0) {
+        } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0
+                || group.avatar_osize_url.length() > 0) {
             group.avatar = null;
         } else {
             group.avatar = null;
@@ -601,7 +613,8 @@ public class GroupIntentActivity extends Activity {
         WallPost item = wall.getWallItems().get(item_pos);
         for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
             if (item.attachments.get(attachment_index).type.equals("poll")) {
-                PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                PollAttachment pollAttachment = ((PollAttachment)
+                        item.attachments.get(attachment_index).getContent());
                 pollAttachment.user_votes = 1;
                 if (!pollAttachment.answers.get(answer).is_voted) {
                     pollAttachment.answers.get(answer).is_voted = true;
@@ -618,7 +631,8 @@ public class GroupIntentActivity extends Activity {
         WallPost item = wall.getWallItems().get(item_pos);
         for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
             if(item.attachments.get(attachment_index).type.equals("poll")) {
-                PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                PollAttachment pollAttachment = ((PollAttachment)
+                        item.attachments.get(attachment_index).getContent());
                 for (int i = 0; i < pollAttachment.answers.size(); i++) {
                     if (pollAttachment.answers.get(i).is_voted) {
                         pollAttachment.answers.get(i).is_voted = false;
@@ -659,7 +673,8 @@ public class GroupIntentActivity extends Activity {
         item = wall.getWallItems().get(position);
         intent.putExtra("where", "wall");
         try {
-            intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
+            intent.putExtra("local_photo_addr",
+                    String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
                     item.owner_id, item.post_id));
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {
@@ -717,7 +732,9 @@ public class GroupIntentActivity extends Activity {
                             @Override
                             public void onClick(View view) {
                                 try {
-                                    String msg_text = ((EditText)repost_view.findViewById(R.id.text_edit)).getText().toString();
+                                    String msg_text =
+                                            ((EditText)repost_view.findViewById(R.id.text_edit))
+                                                    .getText().toString();
                                     wall.repost(ovk_api, post.owner_id, post.post_id, msg_text);
                                     dialog.close();
                                 } catch (Exception ex) {

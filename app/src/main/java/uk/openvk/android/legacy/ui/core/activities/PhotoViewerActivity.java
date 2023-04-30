@@ -87,7 +87,8 @@ public class PhotoViewerActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -114,7 +115,8 @@ public class PhotoViewerActivity extends Activity {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setTitle(R.string.photo);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black_transparent));
+            actionBar.setBackgroundDrawable(getResources().
+                    getDrawable(R.drawable.bg_actionbar_black_transparent));
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
                 @Override
@@ -138,7 +140,8 @@ public class PhotoViewerActivity extends Activity {
                     if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
                         downloadManager = new DownloadManager(this, true);
                         downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
-                                String.format("original_photo_a%s_%s", extras.getLong("author_id"), extras.getLong("photo_id")), "original_photos");
+                                String.format("original_photo_a%s_%s", extras.getLong("author_id"),
+                                        extras.getLong("photo_id")), "original_photos");
                     } else {
                         finish();
                     }
@@ -178,8 +181,10 @@ public class PhotoViewerActivity extends Activity {
             bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
             try {
                 Bundle extras = getIntent().getExtras();
-                bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/original_photos/original_photo_a%s_%s",
-                        getCacheDir().getAbsolutePath(), extras.getLong("author_id"), extras.getLong("photo_id")), bfOptions);
+                bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/photos_cache/original_photos/original_photo_a%s_%s",
+                        getCacheDir().getAbsolutePath(), extras.getLong("author_id"),
+                        extras.getLong("photo_id")), bfOptions);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.VISIBLE);
@@ -252,11 +257,14 @@ public class PhotoViewerActivity extends Activity {
             Bundle data = getIntent().getExtras();
             if(data.containsKey("original_link")) {
                 if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
                     clipboard.setText(data.getString("original_link"));
                 } else {
-                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("Photo URL", data.getString("original_link"));
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("Photo URL",
+                            data.getString("original_link"));
                     clipboard.setPrimaryClip(clip);
                 }
             }
@@ -268,10 +276,12 @@ public class PhotoViewerActivity extends Activity {
         Global global = new Global();
         final Bundle data = getIntent().getExtras();
         String cache_path = String.format("%s/photos_cache/original_photos/original_photo_a%s_%s",
-                getCacheDir().getAbsolutePath(), getIntent().getExtras().getLong("author_id"), getIntent().getExtras().getLong("photo_id"));
+                getCacheDir().getAbsolutePath(), getIntent().getExtras().getLong("author_id"),
+                getIntent().getExtras().getLong("photo_id"));
         File file = new File(cache_path);
         String[] path_array = cache_path.split("/");
-        String dest = String.format("%s/OpenVK/Photos/%s", Environment.getExternalStorageDirectory().getAbsolutePath(), path_array[path_array.length - 1]);
+        String dest = String.format("%s/OpenVK/Photos/%s", Environment.getExternalStorageDirectory()
+                .getAbsolutePath(), path_array[path_array.length - 1]);
         String mime = bfOptions.outMimeType;
         if(bitmap != null) {
             FileChannel sourceChannel = null;
@@ -300,7 +310,8 @@ public class PhotoViewerActivity extends Activity {
                     destChannel = new FileOutputStream(dest).getChannel();
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        if (getApplicationContext().checkSelfPermission(
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
                         } else {
                             allowPermissionDialog();
@@ -308,7 +319,8 @@ public class PhotoViewerActivity extends Activity {
                     } else {
                         destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
                     }
-                    Toast.makeText(getApplicationContext(), R.string.photo_save_ok, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),
+                            R.string.photo_save_ok, Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         allowPermissionDialog();

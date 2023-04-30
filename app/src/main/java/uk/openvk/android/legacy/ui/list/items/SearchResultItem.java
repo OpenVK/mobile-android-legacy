@@ -24,7 +24,8 @@ public class SearchResultItem {
     public Bitmap avatar;
     public int online;
 
-    public SearchResultItem(int ovk_id, String item_title, String item_subtitle, Bitmap author_avatar, int user_online) {
+    public SearchResultItem(int ovk_id, String item_title, String item_subtitle, Bitmap author_avatar,
+                            int user_online) {
         id = ovk_id;
         title = item_title;
         subtitle = item_subtitle;

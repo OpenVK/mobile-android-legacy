@@ -115,15 +115,19 @@ public class Groups implements Parcelable {
     }
 
     public void getGroupByID(OvkAPIWrapper ovk, long id) {
-        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%s&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count,site,description,contacts", id));
+        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%s&fields=verified,photo_200," +
+                "photo_400,photo_max_orig,is_member,members_count,site,description,contacts", id));
     }
 
     public void getGroups(OvkAPIWrapper ovk, long user_id, long count) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count,site,description,contacts&extended=1", user_id, count));
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+                "photo_400,photo_max_orig,is_member,members_count,site,description,contacts&extended=1", user_id, count));
     }
 
     public void getGroups(OvkAPIWrapper ovk, long user_id, int count, int offset) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200,photo_400,photo_max_orig,is_member,members_count,site,description,contacts&offset=%s&extended=1", user_id, count, offset), "more_groups");
+        ovk.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+                "photo_400,photo_max_orig,is_member,members_count,site,description,contacts&offset=%s" +
+                "&extended=1", user_id, count, offset), "more_groups");
     }
 
     public void parse(String response, DownloadManager downloadManager, String quality, boolean downloadPhoto, boolean clear) {
@@ -149,7 +153,7 @@ public class Groups implements Parcelable {
                 if(photoAttachment.url.length() == 0) {
                     photoAttachment.url = group.avatar_msize_url;
                 }
-                photoAttachment.filename = String.format("avatar_%d", group.id);
+                photoAttachment.filename = String.format("avatar_%s", group.id);
                 avatars.add(photoAttachment);
                 this.groups.add(group);
             }

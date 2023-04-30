@@ -41,7 +41,8 @@ public class JSONParser {
         if(json != null) {
             try {
                 JSONObject response = json.getJSONObject("response");
-                account = new Account(response.getString("first_name"), response.getString("last_name"), response.getInt("id"), response.getString("status"), response.getString("birthday"));
+                account = new Account(response.getString("first_name"), response.getString("last_name"),
+                        response.getInt("id"), response.getString("status"), response.getString("birthday"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

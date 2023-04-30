@@ -81,26 +81,42 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 tools:ignore="InefficientWeight">
 
-                <com.rockerhieu.emojicon.EmojiconTextView
-                    android:id="@+id/poster_name_view"
-                    android:layout_width="fill_parent"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginTop="10dip"
-                    android:layout_toLeftOf="@+id/post_options_btn"
-                    android:layout_toRightOf="@id/author_avatar"
-                    android:ellipsize="marquee"
-                    android:paddingLeft="12dip"
-                    android:paddingTop="3.5dip"
-                    android:singleLine="true"
-                    android:text="Poster Name"
-                    android:textColor="@color/main_text"
-                    android:textSize="16dip"
-                    tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
+                    android:layout_marginLeft="12dip"
+                    android:layout_marginTop="13dip"
+                    android:gravity="start|center"
+                    android:orientation="horizontal">
+
+                    <com.rockerhieu.emojicon.EmojiconTextView
+                        android:id="@+id/poster_name_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_toLeftOf="@+id/post_options_btn"
+                        android:layout_toRightOf="@id/author_avatar"
+                        android:ellipsize="marquee"
+                        android:singleLine="true"
+                        android:text="Poster Name"
+                        android:textColor="@color/main_text"
+                        android:textSize="16dip"
+                        tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
+
+                    <ImageView
+                        android:id="@+id/verified_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dip"
+                        android:src="@drawable/verified_icon_black"
+                        android:visibility="gone" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -44,7 +44,8 @@ public class Friend implements Parcelable {
         parse(response, position);
     }
 
-    public Friend(String first_name, String last_name, int id, String status, String city, String screen_name, String avatar_url, int friends_status, int ls_date, String birthdate,
+    public Friend(String first_name, String last_name, int id, String status, String city,
+                  String screen_name, String avatar_url, int friends_status, int ls_date, String birthdate,
                   String interests, String movies, String music, String tv, String books, boolean verified) {
         this.first_name = first_name;
         this.last_name = last_name;
@@ -176,7 +177,7 @@ public class Friend implements Parcelable {
     }
 
     public void downloadAvatar(DownloadManager downloadManager) {
-        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%d", id), "friend_avatars");
+        downloadManager.downloadOnePhotoToCache(avatar_url, String.format("avatar_%s", id), "friend_avatars");
     }
 
     @Override

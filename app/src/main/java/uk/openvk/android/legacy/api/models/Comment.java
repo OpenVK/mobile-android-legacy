@@ -38,7 +38,8 @@ public class Comment {
         jsonParser = new JSONParser();
     }
 
-    public Comment(int id, long author_id, String author, int date, String text, ArrayList<Attachment> attachments) {
+    public Comment(int id, long author_id, String author, int date, String text,
+                   ArrayList<Attachment> attachments) {
         this.author_id = author_id;
         this.author = author;
         this.date = date;

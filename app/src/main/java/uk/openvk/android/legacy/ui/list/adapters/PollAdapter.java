@@ -46,7 +46,8 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
     private int user_votes;
     private long total_votes_2;
 
-    public PollAdapter(Context context, int item_pos, ArrayList<PollAnswer> answers, boolean multiple, int user_votes, long total_votes) {
+    public PollAdapter(Context context, int item_pos, ArrayList<PollAnswer> answers, boolean multiple,
+                       int user_votes, long total_votes) {
         ctx = context;
         this.item_pos = item_pos;
         items = answers;
@@ -58,7 +59,8 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
 
     @Override
     public PollAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PollAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.layout_poll_answer, parent, false));
+        return new PollAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.layout_poll_answer,
+                parent, false));
     }
 
     @Override
@@ -107,14 +109,16 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                 total_votes = total_votes_2 + 1;
                 if(item.is_voted) {
                     answer_name.setTypeface(Typeface.DEFAULT_BOLD);
-                    answer_progress.setProgressDrawable(ctx.getResources().getDrawable(R.drawable.horizontal_progress));
+                    answer_progress.setProgressDrawable(ctx.getResources().getDrawable(
+                            R.drawable.horizontal_progress));
                     answer_votes_count.setTextColor(ctx.getResources().getColor(R.color.ovk_color));
                     item_votes = item.votes + 1;
                     answer_votes_count.setText(String.valueOf(item_votes));
                 } else {
                     item_votes = item.votes;
                     answer_name.setTypeface(Typeface.DEFAULT);
-                    answer_progress.setProgressDrawable(ctx.getResources().getDrawable(R.drawable.horizontal_progress_2));
+                    answer_progress.setProgressDrawable(ctx.getResources().
+                            getDrawable(R.drawable.horizontal_progress_2));
                     answer_votes_count.setTextColor(Color.parseColor("#6f6f6f"));
                     answer_votes_count.setText(String.valueOf(item_votes));
                 }

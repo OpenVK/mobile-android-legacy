@@ -122,12 +122,15 @@ public class Friends implements Parcelable {
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, String where) {
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100,photo_200_orig,photo_200,last_seen&count=%s", user_id, count), where);
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
+                "photo_200_orig,photo_200,last_seen&count=%s", user_id, count), where);
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, int offset) {
         this.offset++;
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100,photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset), "more_friends");
+        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
+                "photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset),
+                "more_friends");
     }
 
     public ArrayList<Friend> getFriends() {
@@ -144,11 +147,11 @@ public class Friends implements Parcelable {
     }
 
     public void add(OvkAPIWrapper ovk, long user_id) {
-        ovk.sendAPIMethod("Friends.add", String.format("user_id=%d", user_id));
+        ovk.sendAPIMethod("Friends.add", String.format("user_id=%s", user_id));
     }
 
     public void delete(OvkAPIWrapper ovk, long user_id) {
-        ovk.sendAPIMethod("Friends.delete", String.format("user_id=%d", user_id));
+        ovk.sendAPIMethod("Friends.delete", String.format("user_id=%s", user_id));
     }
 
     public void getRequests(OvkAPIWrapper ovk) {

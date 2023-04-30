@@ -155,6 +155,7 @@ public class AppActivity extends FragmentActivity {
     private Fragment selectedFragment;
     private static String TAG = "OpenVK";
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -320,15 +321,19 @@ public class AppActivity extends FragmentActivity {
             openNewPostActivity();
         } else if(item.getItemId() == R.id.copy_link) {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                        getSystemService(Context.CLIPBOARD_SERVICE);
                 clipboard.setText(String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
             } else {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL", String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                        getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL",
+                        String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
                 clipboard.setPrimaryClip(clip);
             }
         } else if(item.getItemId() == R.id.open_in_browser) {
-            String user_url = String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id);
+            String user_url = String.format("http://%s/id%s",
+                    instance_prefs.getString("server", ""), user.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(user_url));
             startActivity(i);
@@ -400,25 +405,45 @@ public class AppActivity extends FragmentActivity {
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
         slidingMenuArray = new ArrayList<SlidingMenuItem>();
         if (slidingMenuArray != null) {
-            for (int slider_menu_item_index = 0; slider_menu_item_index < getResources().getStringArray(R.array.leftmenu).length; slider_menu_item_index++) {
+            for (int slider_menu_item_index = 0;
+                 slider_menu_item_index < getResources().getStringArray(R.array.leftmenu).length;
+                 slider_menu_item_index++) {
                 if (slider_menu_item_index == 0) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_friends)));
+                    slidingMenuArray.add(new SlidingMenuItem(
+                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                            0, getResources().getDrawable(R.drawable.ic_left_friends)));
                 } else if (slider_menu_item_index == 1) {
-                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_photos)));
+                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
+                    // R.array.leftmenu)[slider_menu_item_index], 0,
+                    // getResources().getDrawable(R.drawable.ic_left_photos)));
                 } else if (slider_menu_item_index == 2) {
-                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_video)));
+                    //slidingMenuArray.add(new SlidingMenuItem(
+                    // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                    // 0, getResources().getDrawable(R.drawable.ic_left_video)));
                 } else if (slider_menu_item_index == 3) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_messages)));
+                    slidingMenuArray.add(new SlidingMenuItem(
+                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                            0, getResources().getDrawable(R.drawable.ic_left_messages)));
                 } else if (slider_menu_item_index == 4) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_groups)));
+                    slidingMenuArray.add(new SlidingMenuItem(
+                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                            0, getResources().getDrawable(R.drawable.ic_left_groups)));
                 } else if (slider_menu_item_index == 5) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_news)));
+                    slidingMenuArray.add(new SlidingMenuItem(
+                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                            0, getResources().getDrawable(R.drawable.ic_left_news)));
                 } else if (slider_menu_item_index == 6) {
-                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_feedback)));
+                    //slidingMenuArray.add(new SlidingMenuItem(
+                    // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                    // 0, getResources().getDrawable(R.drawable.ic_left_feedback)));
                 } else if (slider_menu_item_index == 7) {
-                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_fave)));
+                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
+                    // R.array.leftmenu)[slider_menu_item_index],
+                    // 0, getResources().getDrawable(R.drawable.ic_left_fave)));
                 } else if (slider_menu_item_index == 8) {
-                    slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index], 0, getResources().getDrawable(R.drawable.ic_left_settings)));
+                    slidingMenuArray.add(new SlidingMenuItem(
+                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                            0, getResources().getDrawable(R.drawable.ic_left_settings)));
                 }
             }
             SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
@@ -518,7 +543,8 @@ public class AppActivity extends FragmentActivity {
     private void createActionPopupMenu(final Menu menu, boolean enable) {
         if(enable) {
             final View menu_container = getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
-            final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
             popupMenu.setOutsideTouchable(true);
             popupMenu.setFocusable(true);
             final ListView menu_list = popupMenu.getContentView().findViewById(R.id.popup_menulist);
@@ -832,10 +858,13 @@ public class AppActivity extends FragmentActivity {
                     ex.printStackTrace();
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                ((SwipeRefreshLayout) newsfeedFragment.getView().findViewById(R.id.refreshable_layout)).setRefreshing(false);
+                ((SwipeRefreshLayout) newsfeedFragment.getView().
+                        findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
-                    downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                    newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
+                    downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                            global_prefs.getString("proxy_address", ""));
+                    newsfeed.parse(this, downloadManager, data.getString("response"),
+                            global_prefs.getString("photos_quality", ""), true);
                     newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         if(newsfeed.getWallPosts().size() > 0) {
@@ -857,8 +886,10 @@ public class AppActivity extends FragmentActivity {
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
                 ((SwipeRefreshLayout) newsfeedFragment.getView().findViewById(R.id.refreshable_layout)).setRefreshing(false);
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
-                    downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                    newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), true);
+                    downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                            global_prefs.getString("proxy_address", ""));
+                    newsfeed.parse(this, downloadManager, data.getString("response"),
+                            global_prefs.getString("photos_quality", ""), true);
                     newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         progressLayout.setVisibility(View.GONE);
@@ -869,7 +900,8 @@ public class AppActivity extends FragmentActivity {
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview)).scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
-                newsfeed.parse(this, downloadManager, data.getString("response"), global_prefs.getString("photos_quality", ""), false);
+                newsfeed.parse(this, downloadManager, data.getString("response"),
+                        global_prefs.getString("photos_quality", ""), false);
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -878,7 +910,8 @@ public class AppActivity extends FragmentActivity {
                 newsfeedFragment.loading_more_posts = true;
                 newsfeedFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
-                newsfeed.parse(this, downloadManager, data.getString("response"),  global_prefs.getString("photos_quality", ""), false);
+                newsfeed.parse(this, downloadManager, data.getString("response"),
+                        global_prefs.getString("photos_quality", ""), false);
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -888,9 +921,13 @@ public class AppActivity extends FragmentActivity {
                 newsfeedFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 LongPollServer longPollServer = messages.parseLongPollServer(data.getString("response"));
-                ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this, instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
-                ((OvkApplication) getApplicationContext()).longPollService.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-                ((OvkApplication) getApplicationContext()).longPollService.run(instance_prefs.getString("server", ""), longPollServer.address, longPollServer.key, longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
+                ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this,
+                        instance_prefs.getString("access_token", ""), global_prefs.getBoolean("use_https", true));
+                ((OvkApplication) getApplicationContext()).longPollService.setProxyConnection(
+                        global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+                ((OvkApplication) getApplicationContext()).longPollService.run(instance_prefs.
+                        getString("server", ""), longPollServer.address, longPollServer.key,
+                        longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
                 slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
@@ -924,10 +961,13 @@ public class AppActivity extends FragmentActivity {
             } else if (message == HandlerMessages.USERS_GET_ALT) {
                 users.parse(data.getString("response"));
                 account.user = users.getList().get(0);
-                account.user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""), "account_avatar");
+                account.user.downloadAvatar(downloadManager, global_prefs.
+                        getString("photos_quality", ""), "account_avatar");
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""),
+                        data.getString("response"));
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).
+                        createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.FRIENDS_GET) {
@@ -939,7 +979,8 @@ public class AppActivity extends FragmentActivity {
                 }
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 friends.getRequests(ovk_api);
-                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
+                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(0,
+                        String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
                 friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 int old_friends_size = friends.getFriends().size();
@@ -978,10 +1019,12 @@ public class AppActivity extends FragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(1, String.format("%s (%s)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
+                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(1,
+                        String.format("%s (%s)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
                 friendsFragment.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.GROUPS_GET) {
-                groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, true);
+                groups.parse(data.getString("response"), downloadManager,
+                        global_prefs.getString("photos_quality", ""), true, true);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
@@ -991,7 +1034,8 @@ public class AppActivity extends FragmentActivity {
                 groupsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET_MORE) {
                 int old_friends_size = groups.getList().size();
-                groups.parse(data.getString("response"), downloadManager, global_prefs.getString("photos_quality", ""), true, false);
+                groups.parse(data.getString("response"), downloadManager,
+                        global_prefs.getString("photos_quality", ""), true, false);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
@@ -1021,14 +1065,16 @@ public class AppActivity extends FragmentActivity {
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     newsfeedFragment.select(likes.position, "likes", 1);
                 } else if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                            .select(likes.position, "likes", 1);
                 }
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 likes.parse(data.getString("response"));
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     newsfeedFragment.select(likes.position, "likes", 0);
                 } else if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                            .select(likes.position, "likes", 0);
                 }
             } else if(message == HandlerMessages.INVALID_TOKEN) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
@@ -1055,7 +1101,8 @@ public class AppActivity extends FragmentActivity {
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
                 conversationsFragment.loadAvatars(conversations);
             } else if(message == HandlerMessages.LONGPOLL) {
-                notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.getBoolean("enableNotification", true),
+                notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.
+                                getBoolean("enableNotification", true),
                         notifMan.isRepeat(last_longpoll_response, data.getString("response")));
                 last_longpoll_response = data.getString("response");
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
@@ -1077,14 +1124,16 @@ public class AppActivity extends FragmentActivity {
                     WallPost item = wall.getWallItems().get(item_pos);
                     for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
-                            PollAttachment poll = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                            PollAttachment poll = ((PollAttachment) item.attachments.
+                                    get(attachment_index).getContent());
                             poll.user_votes = 1;
                             PollAnswer answer = poll.answers.get(poll_answer);
                             answer.is_voted = true;
                             poll.answers.set(poll_answer, answer);
                             item.attachments.get(attachment_index).setContent(poll);
                             wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                                    .updateItem(item, item_pos);
                         }
                     }
                 }
@@ -1093,7 +1142,8 @@ public class AppActivity extends FragmentActivity {
                     WallPost item = newsfeed.getWallPosts().get(item_pos);
                     for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
-                            PollAttachment poll = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                            PollAttachment poll = ((PollAttachment) item.attachments
+                                    .get(attachment_index).getContent());
                             poll.user_votes = 0;
                             PollAnswer answer = poll.answers.get(poll_answer);
                             answer.is_voted = false;
@@ -1114,22 +1164,35 @@ public class AppActivity extends FragmentActivity {
                             poll.answers.set(poll_answer, answer);
                             item.attachments.get(attachment_index).setContent(poll);
                             wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                                    .updateItem(item, item_pos);
                         }
                     }
                 }
             } else if(message == HandlerMessages.WALL_REPOST) {
                 Toast.makeText(this, getResources().getString(R.string.repost_ok_wall), Toast.LENGTH_LONG).show();
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR || message == HandlerMessages.INSTANCE_UNAVAILABLE || message == HandlerMessages.BROKEN_SSL_CONNECTION || message == HandlerMessages.UNKNOWN_ERROR) {
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION ||
+                    message == HandlerMessages.INVALID_JSON_RESPONSE ||
+                    message == HandlerMessages.CONNECTION_TIMEOUT ||
+                    message == HandlerMessages.INTERNAL_ERROR ||
+                    message == HandlerMessages.INSTANCE_UNAVAILABLE ||
+                    message == HandlerMessages.BROKEN_SSL_CONNECTION ||
+                    message == HandlerMessages.UNKNOWN_ERROR) {
                 if(data.containsKey("method")) {
                     try {
                         if (data.getString("method").equals("Account.getProfileInfo") ||
-                                (data.getString("method").equals("Newsfeed.get") && newsfeed.getWallPosts().size() == 0) ||
-                                (data.getString("method").equals("Messages.getConversations") && conversations.size() == 0) ||
-                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0) ||
-                                (data.getString("method").equals("Users.get") && global_prefs.getString("current_screen", "").equals("profile")) ||
-                                (data.getString("method").equals("Groups.get") && (groups.getList() == null || groups.getList().size() == 0))) {
+                                ((data.getString("method").equals("Newsfeed.get") &&
+                                        newsfeed.getWallPosts() == null) ||
+                                        (data.getString("method").equals("Newsfeed.get") &&
+                                        newsfeed.getWallPosts().size() == 0)) ||
+                                (data.getString("method").equals("Messages.getConversations")
+                                        && conversations.size() == 0) ||
+                                (data.getString("method").equals("Friends.get") &&
+                                        friends.getFriends().size() == 0) ||
+                                (data.getString("method").equals("Users.get") &&
+                                        global_prefs.getString("current_screen", "").equals("profile")) ||
+                                (data.getString("method").equals("Groups.get") &&
+                                        (groups.getList() == null || groups.getList().size() == 0))) {
                             slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                             errorLayout.setTitle(getResources().getString(R.string.err_text));
                             errorLayout.setIcon("error");
@@ -1139,8 +1202,10 @@ public class AppActivity extends FragmentActivity {
                             progressLayout.setVisibility(View.GONE);
                             errorLayout.setVisibility(View.VISIBLE);
                         } else {
-                            if(data.getString("method").equals("Wall.get") && global_prefs.getString("current_screen", "").equals("profile")) {
-                                ((WallErrorLayout) profileFragment.getView().findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                            if(data.getString("method").equals("Wall.get") &&
+                                    global_prefs.getString("current_screen", "").equals("profile")) {
+                                ((WallErrorLayout) profileFragment.getView().
+                                        findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                             } else {
                                 if(!inBackground) {
                                     Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
@@ -1561,7 +1626,8 @@ public class AppActivity extends FragmentActivity {
                 for (int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
                     if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
                         contains_poll = true;
-                        PollAttachment poll = ((PollAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
+                        PollAttachment poll =
+                                ((PollAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
                         intent.putExtra("poll_question", poll.question);
                         intent.putExtra("poll_anonymous", poll.anonymous);
                         //intent.putExtra("poll_answers", poll.answers);
@@ -1569,7 +1635,8 @@ public class AppActivity extends FragmentActivity {
                         intent.putExtra("poll_user_votes", poll.user_votes);
                     } else if(item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
                         contains_photo = true;
-                        PhotoAttachment photo = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
+                        PhotoAttachment photo =
+                                ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
                         intent.putExtra("photo_id", photo.id);
                     }
                 }
@@ -1594,10 +1661,12 @@ public class AppActivity extends FragmentActivity {
         }
         try {
             if (global_prefs.getString("current_screen", "").equals("profile")) {
-                intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
+                intent.putExtra("local_photo_addr",
+                        String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
                         item.owner_id, item.post_id));
             } else {
-                intent.putExtra("local_photo_addr", String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getCacheDir(),
+                intent.putExtra("local_photo_addr",
+                        String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getCacheDir(),
                         item.owner_id, item.post_id));
             }
             if(item.attachments != null) {
@@ -1680,7 +1749,8 @@ public class AppActivity extends FragmentActivity {
             final ArrayList<String> functions = new ArrayList<>();
             builder.setTitle(R.string.repost_dlg_title);
             functions.add(getResources().getString(R.string.repost_own_wall));
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            ArrayAdapter adapter =
+                    new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -1698,7 +1768,8 @@ public class AppActivity extends FragmentActivity {
             final ArrayList<String> functions = new ArrayList<>();
             builder.setTitle(R.string.repost_dlg_title);
             functions.add(getResources().getString(R.string.repost_own_wall));
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+            ArrayAdapter adapter =
+                    new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -1733,7 +1804,8 @@ public class AppActivity extends FragmentActivity {
                             @Override
                             public void onClick(View view) {
                                 try {
-                                    String msg_text = ((EditText)repost_view.findViewById(R.id.text_edit)).getText().toString();
+                                    String msg_text = ((EditText)
+                                            repost_view.findViewById(R.id.text_edit)).getText().toString();
                                     wall.repost(ovk_api, post.owner_id, post.post_id, msg_text);
                                     dialog.close();
                                 } catch (Exception ex) {

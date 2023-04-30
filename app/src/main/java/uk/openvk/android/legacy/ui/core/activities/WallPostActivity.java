@@ -70,7 +70,9 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class WallPostActivity extends FragmentActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
+public class WallPostActivity extends FragmentActivity
+        implements EmojiconGridFragment.OnEmojiconClickedListener,
+        EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     private Wall wall;
@@ -106,14 +108,16 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
         postViewLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         commentPanel = findViewById(R.id.comment_panel);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        if(((EmojiconEditText)commentPanel.findViewById(R.id.comment_edit)).getText().toString().length() == 0) {
+        if(((EmojiconEditText)commentPanel.findViewById(R.id.comment_edit))
+                .getText().toString().length() == 0) {
             (commentPanel.findViewById(R.id.send_btn)).setEnabled(false);
         }
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(
+                        OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -226,23 +230,28 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                 }
             }
         });
-        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        ((EditText) commentPanel.findViewById(R.id.comment_edit)).setOnEditorActionListener(
+                new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
                 try {
                     if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
                         if ((event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                                 && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                            final String msg_text = ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                            final String msg_text = ((EmojiconEditText) commentPanel
+                                    .findViewById(R.id.comment_edit)).getText().toString();
                             try {
                                 wall.createComment(ovk_api, owner_id, post_id, msg_text);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text, null);
+                            Comment comment = new Comment(0, author_id, author_name,
+                                    (int) (System.currentTimeMillis() / 1000), msg_text, null);
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                            Bitmap bitmap = BitmapFactory.decodeFile(
+                                    String.format("%s/photos_cache/account_avatar/avatar_%s",
+                                            getCacheDir(), author_id), options);
                             comment.avatar = bitmap;
                             if (comments == null) {
                                 comments = new ArrayList<Comment>();
@@ -267,16 +276,20 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
             @Override
             public void onClick(View view) {
                 try {
-                    final String msg_text = ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getText().toString();
+                    final String msg_text = ((EmojiconEditText) commentPanel.
+                            findViewById(R.id.comment_edit)).getText().toString();
                     try {
                         wall.createComment(ovk_api, owner_id, post_id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    Comment comment = new Comment(0, author_id, author_name, (int) (System.currentTimeMillis() / 1000), msg_text, null);
+                    Comment comment = new Comment(0, author_id, author_name, (int)
+                            (System.currentTimeMillis() / 1000), msg_text, null);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/account_avatar/avatar_%s", getCacheDir(), author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/account_avatar/avatar_%s",
+                                    getCacheDir(), author_id), options);
                     comment.avatar = bitmap;
                     if (comments == null) {
                         comments = new ArrayList<Comment>();
@@ -309,7 +322,9 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                 if(((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount() > 4) {
                     ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setLines(4);
                 } else {
-                    ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setLines(((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).getLineCount());
+                    ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setLines(
+                            ((EmojiconEditText)
+                            commentPanel.findViewById(R.id.comment_edit)).getLineCount());
                 }
             }
         });
@@ -333,7 +348,9 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
 
     private void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
-            comments = wall.parseComments(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
+            comments = wall.parseComments(this, downloadManager,
+                    global_prefs.getString("photos_quality", ""),
+                    data.getString("response"));
             postViewLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_PHOTOS) {
             postViewLayout.loadPhotos();
@@ -347,7 +364,9 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
         intent.putExtra("where", "wall");
         try {
             if(getIntent().getExtras().getBoolean("contains_photo")) {
-                intent.putExtra("local_photo_addr", String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getCacheDir(),
+                intent.putExtra("local_photo_addr",
+                        String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                getCacheDir(),
                         owner_id, post_id));
                 intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
                 startActivity(intent);
@@ -376,7 +395,8 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                 for (int i = 0; i < post.repost.newsfeed_item.attachments.size(); i++) {
                     if (post.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
                         contains_poll = true;
-                        PollAttachment poll = ((PollAttachment) post.repost.newsfeed_item.attachments.get(i).getContent());
+                        PollAttachment poll = ((PollAttachment) post.repost.newsfeed_item.attachments.
+                                get(i).getContent());
                         intent.putExtra("poll_question", poll.question);
                         intent.putExtra("poll_anonymous", poll.anonymous);
                         //intent.putExtra("poll_answers", poll.answers);
@@ -384,7 +404,8 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
                         intent.putExtra("poll_user_votes", poll.user_votes);
                     } else if(post.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
                         contains_photo = true;
-                        PhotoAttachment photo = ((PhotoAttachment) post.repost.newsfeed_item.attachments.get(i).getContent());
+                        PhotoAttachment photo = ((PhotoAttachment) post.repost.newsfeed_item.attachments.
+                                get(i).getContent());
                         intent.putExtra("photo_id", photo.id);
                     }
                 }
@@ -423,7 +444,8 @@ public class WallPostActivity extends FragmentActivity implements EmojiconGridFr
 
     @Override
     public void onEmojiconClicked(Emojicon emojicon) {
-        EmojiconsFragment.input((EditText) findViewById(R.id.comment_panel).findViewById(R.id.comment_edit), emojicon);
+        EmojiconsFragment.input((EditText) findViewById(R.id.comment_panel).findViewById(R.id.
+                comment_edit), emojicon);
     }
 
     @Override

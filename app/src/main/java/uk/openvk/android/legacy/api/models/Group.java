@@ -150,25 +150,28 @@ public class Group implements Parcelable {
 
     public void downloadAvatar(DownloadManager downloadManager, String quality) {
         if(quality.equals("medium")) {
-            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%d", id), "group_avatars");
+            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
+                    "group_avatars");
         } else if(quality.equals("high")) {
             if(avatar_hsize_url.length() == 0) {
                 avatar_hsize_url = avatar_msize_url;
             }
-            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%d", id), "group_avatars");
+            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
+                    "group_avatars");
         } else if(quality.equals("original")) {
             if(avatar_osize_url.length() == 0) {
                 avatar_osize_url = avatar_msize_url;
             }
-            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%d", id), "group_avatars");
+            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
+                    "group_avatars");
         }
     }
 
     public void join(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Groups.join", String.format("group_id=%d", id));
+        ovk.sendAPIMethod("Groups.join", String.format("group_id=%s", id));
     }
 
     public void leave(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Groups.leave", String.format("group_id=%d", id));
+        ovk.sendAPIMethod("Groups.leave", String.format("group_id=%s", id));
     }
 }

@@ -100,7 +100,8 @@ public class QuickSearchActivity extends Activity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -142,7 +143,8 @@ public class QuickSearchActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 // TODO Auto-generated method stub
-                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                         && event.getAction() == KeyEvent.ACTION_DOWN)) {
                     String query = search_edit.getText().toString();
                     try {

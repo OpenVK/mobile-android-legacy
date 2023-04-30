@@ -112,30 +112,32 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             final Comment item = getItem(position);
             author_name.setText(item.author);
             Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
-            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " + new SimpleDateFormat("HH:mm").format(date));
+            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " +
+                    new SimpleDateFormat("HH:mm").format(date));
             reply_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                    if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
                         ((WallPostActivity) ctx).addAuthorMention(position);
                     }
                 }
             });
-            if(item.text.length() > 0) {
+            if (item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
+                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
                         .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
                 int regexp_results = 0;
-                while(regexp_search) {
-                    if(regexp_results == 0) {
+                while (regexp_search) {
+                    if (regexp_results == 0) {
                         text = text.replace("\n", "<br>");
                     }
                     String block = matcher.group();
-                    if(block.startsWith("[") && block.endsWith("]")) {
+                    if (block.startsWith("[") && block.endsWith("]")) {
                         OvkLink link = new OvkLink();
                         String[] markup = block.replace("[", "").replace("]", "").split("\\|");
                         link.screen_name = markup[0];
@@ -152,7 +154,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                                 text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
                             }
                         }
-                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
+                    } else if (block.startsWith("https://") || block.startsWith("http://")) {
                         text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
                     }
                     regexp_results = regexp_results + 1;
@@ -160,16 +162,16 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 }
 
                 String[] lines = text.split("\r\n|\r|\n");
-                if(lines.length > 8 && text.length() <= 500) {
+                if (lines.length > 8 && text.length() <= 500) {
                     String text_llines = "";
-                    for(int line_no = 0; line_no < 8; line_no++) {
-                        if(line_no == 7) {
+                    for (int line_no = 0; line_no < 8; line_no++) {
+                        if (line_no == 7) {
                             text_llines += String.format("%s...", lines[line_no]);
                         } else {
                             text_llines += String.format("%s\r\n", lines[line_no]);
                         }
                     }
-                    if(regexp_results > 0) {
+                    if (regexp_results > 0) {
                         comment_text.setText(Html.fromHtml(text_llines));
                         comment_text.setAutoLinkMask(0);
                     } else {
@@ -181,7 +183,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     expand_text_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(finalRegexp_results > 0) {
+                            if (finalRegexp_results > 0) {
                                 comment_text.setText(Html.fromHtml(finalText));
                                 comment_text.setAutoLinkMask(0);
                             } else {
@@ -190,8 +192,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                             expand_text_btn.setVisibility(View.GONE);
                         }
                     });
-                } else if(text.length() > 500) {
-                    if(regexp_results > 0) {
+                } else if (text.length() > 500) {
+                    if (regexp_results > 0) {
                         comment_text.setText(Html.fromHtml(String.format("%s...", text.substring(0, 500))));
                         comment_text.setAutoLinkMask(0);
                     } else {
@@ -203,7 +205,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     expand_text_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(finalRegexp_results > 0) {
+                            if (finalRegexp_results > 0) {
                                 comment_text.setText(Html.fromHtml(finalText));
                                 comment_text.setAutoLinkMask(0);
                             } else {
@@ -213,7 +215,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                         }
                     });
                 } else {
-                    if(regexp_results > 0) {
+                    if (regexp_results > 0) {
                         comment_text.setText(Html.fromHtml(text));
                         comment_text.setAutoLinkMask(0);
                     } else {
@@ -224,23 +226,24 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             } else {
                 comment_text.setText("");
             }
-            if(item.avatar != null) {
+            if (item.avatar != null) {
                 author_avatar.setImageBitmap(item.avatar);
             }
-            if(position == getItemCount() - 1) {
+            if (position == getItemCount() - 1) {
                 divider.setVisibility(View.GONE);
             } else {
                 divider.setVisibility(View.VISIBLE);
             }
-
-            for(int i = 0; i < item.attachments.size(); i++) {
-                if (item.attachments.get(i).type.equals("photo")) {
-                    if (item.attachments.get(i).getContent() != null) {
-                        comment_photo.setImageBitmap(((PhotoAttachment) item.attachments.get(i).getContent()).photo);
-                        comment_photo.setVisibility(View.VISIBLE);
-                        comment_photo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
+            comment_photo.setVisibility(View.GONE);
+            try {
+                for (int i = 0; i < item.attachments.size(); i++) {
+                    if (item.attachments.get(i).type.equals("photo") && item.attachments.get(i).status.equals("done")) {
+                        if (item.attachments.get(i).getContent() != null) {
+                            comment_photo.setImageBitmap(((PhotoAttachment) item.attachments.get(i).getContent()).photo);
+                            comment_photo.setVisibility(View.VISIBLE);
+                            comment_photo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
 //                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
 //                                    ((AppActivity) ctx).viewPhotoAttachment(position);
 //                                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
@@ -248,10 +251,12 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
 //                                } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
 //                                    ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
 //                                }
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
                 }
+            } catch (Exception ignored) {
             }
         }
     }

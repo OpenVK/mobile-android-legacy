@@ -113,33 +113,35 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final TextView repost_expand_text_btn;
         private final ImageView api_app_indicator;
         private final VideoAttachView post_video;
+        private final ImageView verified_icon;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
 
         public Holder(View view) {
             super(view);
             this.convertView = view;
-            this.poster_name = (TextView) view.findViewById(R.id.poster_name_view);
-            this.post_info = (TextView) view.findViewById(R.id.post_info_view);
-            this.post_text = (TextView) view.findViewById(R.id.post_view);
-            this.post_photo = (ImageView) view.findViewById(R.id.post_photo);
+            this.poster_name = view.findViewById(R.id.poster_name_view);
+            this.post_info = view.findViewById(R.id.post_info_view);
+            this.post_text = view.findViewById(R.id.post_view);
+            this.post_photo = view.findViewById(R.id.post_photo);
             this.post_video = view.findViewById(R.id.post_video);
-            this.likes_counter = (TextView) view.findViewById(R.id.post_likes);
-            this.reposts_counter = (TextView) view.findViewById(R.id.post_reposts);
-            this.comments_counter = (TextView) view.findViewById(R.id.post_comments);
-            this.avatar = (ImageView) view.findViewById(R.id.author_avatar);
-            this.photo_progress = ((ProgressBar) view.findViewById(R.id.photo_progress));
-            this.error_label = ((TextView) convertView.findViewById(R.id.error_label));
-            this.pollAttachView = ((PollAttachView) convertView.findViewById(R.id.poll_layout));
-            this.repost_info = ((LinearLayout) convertView.findViewById(R.id.post_attach_container));
-            this.original_poster_name = ((TextView) convertView.findViewById(R.id.post_retweet_name));
-            this.original_post_info = ((TextView) convertView.findViewById(R.id.post_retweet_time));
-            this.original_post_text = ((TextView) convertView.findViewById(R.id.post_retweet_text));
-            this.original_post_photo = (ImageView) view.findViewById(R.id.repost_photo);
-            this.original_post_poll = (PollAttachView) view.findViewById(R.id.repost_poll_layout);
-            this.expand_text_btn = (TextView) view.findViewById(R.id.expand_text_btn);
-            this.repost_expand_text_btn = (TextView) view.findViewById(R.id.repost_expand_text_btn);
-            this.api_app_indicator = (ImageView) view.findViewById(R.id.api_app_indicator);
+            this.likes_counter = view.findViewById(R.id.post_likes);
+            this.reposts_counter = view.findViewById(R.id.post_reposts);
+            this.comments_counter = view.findViewById(R.id.post_comments);
+            this.avatar = view.findViewById(R.id.author_avatar);
+            this.photo_progress = (view.findViewById(R.id.photo_progress));
+            this.error_label = (convertView.findViewById(R.id.error_label));
+            this.pollAttachView = (convertView.findViewById(R.id.poll_layout));
+            this.repost_info = (convertView.findViewById(R.id.post_attach_container));
+            this.original_poster_name = (convertView.findViewById(R.id.post_retweet_name));
+            this.original_post_info = (convertView.findViewById(R.id.post_retweet_time));
+            this.original_post_text = (convertView.findViewById(R.id.post_retweet_text));
+            this.original_post_photo = view.findViewById(R.id.repost_photo);
+            this.original_post_poll = view.findViewById(R.id.repost_poll_layout);
+            this.expand_text_btn = view.findViewById(R.id.expand_text_btn);
+            this.repost_expand_text_btn = view.findViewById(R.id.repost_expand_text_btn);
+            this.api_app_indicator = view.findViewById(R.id.api_app_indicator);
+            this.verified_icon = view.findViewById(R.id.verified_icon);
         }
 
         void bind(final int position) {
@@ -147,7 +149,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(item.post_source.type.equals("api")) {
                 api_app_indicator.setVisibility(View.VISIBLE);
                 if(item.post_source.platform.equals("android")) {
-                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
+                    api_app_indicator.setImageDrawable(ctx.getResources().
+                            getDrawable(R.drawable.ic_api_android_app_indicator));
                 } else if(item.post_source.platform.equals("iphone")) {
                     api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
                 } else if(item.post_source.platform.equals("mobile")) {
@@ -158,19 +161,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 api_app_indicator.setVisibility(View.GONE);
             }
+            poster_name.setText(item.name);
             if(item.verified_author) {
-                String name = item.name;
-                SpannableStringBuilder sb = new SpannableStringBuilder(name);
-                ImageSpan imageSpan;
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                    imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BOTTOM);
-                } else {
-                    imageSpan = new ImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black, DynamicDrawableSpan.ALIGN_BASELINE);
-                }
-                sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                poster_name.setText(item.name);
+                verified_icon.setVisibility(View.VISIBLE);
             } else {
-                poster_name.setText(item.name);
+                verified_icon.setVisibility(View.GONE);
             }
             post_info.setText(item.info);
             String[] lines = item.text.split("\r\n|\r|\n");
@@ -178,7 +173,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 String text_llines = "";
                 post_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
+                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -203,11 +199,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             }
                             link.name = markup[1];
                             if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                        link.url, link.name));
                             }
                         }
                     } else if(block.startsWith("https://") || block.startsWith("http://")) {
-                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                block, block));
                     }
                     regexp_results = regexp_results + 1;
                     regexp_search = matcher.find();
@@ -247,7 +245,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
+                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -272,7 +271,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             }
                             link.name = markup[1];
                             if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                        link.url, link.name));
                             }
                         }
                     } else if(block.startsWith("https://") || block.startsWith("http://")) {
@@ -305,7 +305,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
+                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
                 String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
@@ -330,11 +331,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             }
                             link.name = markup[1];
                             if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                        link.url, link.name));
                             }
                         }
                     } else if(block.startsWith("https://") || block.startsWith("http://")) {
-                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                block, block));
                     }
                     regexp_results = regexp_results + 1;
                     regexp_search = matcher.find();
@@ -355,7 +358,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 repost_info.setVisibility(View.VISIBLE);
                 original_poster_name.setText(item.repost.name);
                 original_post_info.setText(item.repost.time);
-                String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<")
+                        .replaceAll("&gt;", ">")
                         .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
                 String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
                 if(repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
@@ -386,16 +390,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("not_supported")) {
                         error_label.setText(ctx.getResources().getString(R.string.not_supported));
                         error_label.setVisibility(View.VISIBLE);
-                    } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("done") && item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
+                    } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("done")
+                            && item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
                         if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
                             original_post_photo.setImageBitmap(((PhotoAttachment) item.repost.newsfeed_item.attachments.get(i).getContent()).photo);
                             original_post_photo.setVisibility(View.VISIBLE);
                         }
                     } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
                         if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
-                            PollAttachment pollAttachment = ((PollAttachment) item.repost.newsfeed_item.attachments.get(i).getContent());
-                            original_post_poll.createAdapter(ctx, position, pollAttachment.answers, pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
-                            original_post_poll.setPollInfo(pollAttachment.question, pollAttachment.anonymous, pollAttachment.end_date);
+                            PollAttachment pollAttachment = ((PollAttachment) item.repost.
+                                    newsfeed_item.attachments.get(i).getContent());
+                            original_post_poll.createAdapter(ctx, position, pollAttachment.answers,
+                                    pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                            original_post_poll.setPollInfo(pollAttachment.question,
+                                    pollAttachment.anonymous, pollAttachment.end_date);
                             original_post_poll.setVisibility(View.VISIBLE);
                         }
                     }
@@ -432,9 +440,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 } else if (item.attachments.get(i).status.equals("error")) {
                     error_label.setText(ctx.getResources().getString(R.string.attachment_load_err));
                     error_label.setVisibility(View.VISIBLE);
-                } else if (item.attachments.get(i).status.equals("done") && item.attachments.get(i).type.equals("photo")) {
+                } else if (item.attachments.get(i).status.equals("done") &&
+                        item.attachments.get(i).type.equals("photo")) {
                     if (item.attachments.get(i).getContent() != null) {
-                        post_photo.setImageBitmap(((PhotoAttachment) item.attachments.get(0).getContent()).photo);
+                        post_photo.setImageBitmap(((PhotoAttachment)
+                                item.attachments.get(0).getContent()).photo);
                         post_photo.setVisibility(View.VISIBLE);
                         post_photo.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -449,9 +459,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             }
                         });
                     }
-                } else if (item.attachments.get(i).status.equals("done") && item.attachments.get(i).type.equals("video")) {
+                } else if (item.attachments.get(i).status.equals("done") &&
+                        item.attachments.get(i).type.equals("video")) {
                     if (item.attachments.get(i).getContent() != null) {
-                        final VideoAttachment videoAttachment = (VideoAttachment) item.attachments.get(i).getContent();
+                        final VideoAttachment videoAttachment = (VideoAttachment)
+                                item.attachments.get(i).getContent();
                         post_video.setAttachment(videoAttachment);
                         post_video.setVisibility(View.VISIBLE);
                         final int posFinal = i;
@@ -467,17 +479,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 } else if (item.attachments.get(i).type.equals("poll")) {
                     if (item.attachments.get(i).getContent() != null) {
-                        PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(i).getContent());
-                        pollAttachView.createAdapter(ctx, position, pollAttachment.answers, pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
-                        pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous, pollAttachment.end_date);
+                        PollAttachment pollAttachment = ((PollAttachment)
+                                item.attachments.get(i).getContent());
+                        pollAttachView.createAdapter(ctx, position, pollAttachment.answers,
+                                pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                        pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
+                                pollAttachment.end_date);
                         pollAttachView.setVisibility(View.VISIBLE);
                     }
                 }
             }
 
-            likes_counter.setText("" + item.counters.likes);
-            reposts_counter.setText("" + item.counters.reposts);
-            comments_counter.setText("" + item.counters.comments);
+            likes_counter.setText(String.format("%s", item.counters.likes));
+            reposts_counter.setText(String.format("%s", item.counters.reposts));
+            comments_counter.setText(String.format("%s", item.counters.comments));
 
             if(item.counters.isLiked) {
                 likes_counter.setSelected(true);
@@ -488,11 +503,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(item.counters.enabled) {
                 likes_counter.setEnabled(true);
                 if(item.counters.isLiked && likeAdded) {
-                    likes_counter.setText("" + (item.counters.likes + 1));
+                    likes_counter.setText(String.format("%s", item.counters.likes + 1));
                 } else if(!item.counters.isLiked && likeDeleted) {
-                    likes_counter.setText("" + (item.counters.likes - 1));
+                    likes_counter.setText(String.format("%s", item.counters.likes - 1));
                 } else {
-                    likes_counter.setText("" + (item.counters.likes));
+                    likes_counter.setText(String.format("%s", item.counters.likes));
                 }
             } else {
                 likes_counter.setEnabled(false);

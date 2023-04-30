@@ -80,7 +80,8 @@ public class ConversationsListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.conversation_title)).setText(item.title);
         String lastMsgTimestamp;
         if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 86400000) {
-            lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
+            lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(TimeUnit.SECONDS
+                    .toMillis(item.lastMsgTime));
         } else if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 31536000000L) {
             lastMsgTimestamp = new SimpleDateFormat(" dd MMM ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
         } else {
@@ -104,10 +105,12 @@ public class ConversationsListAdapter extends BaseAdapter {
         }
 
         if(item.lastMsgAuthorId == item.peer_id) {
-            ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setImageBitmap(account.user.avatar);
+            ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
+                    .setImageBitmap(account.user.avatar);
             ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setVisibility(View.GONE);
         } else if(item.lastMsgAuthorId == account.id) {
-            ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setImageBitmap(account.user.avatar);
+            ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
+                    .setImageBitmap(account.user.avatar);
             ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setVisibility(View.VISIBLE);
         }
 

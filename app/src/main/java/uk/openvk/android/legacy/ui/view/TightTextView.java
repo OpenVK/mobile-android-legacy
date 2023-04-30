@@ -42,7 +42,8 @@ public class TightTextView extends EmojiconTextView {
         if (specModeW != MeasureSpec.EXACTLY) {
             Layout layout = getLayout();
             if (layout != null) {
-                int w = (int) Math.ceil(getMaxLineWidth(layout)) + getCompoundPaddingLeft() + getCompoundPaddingRight();
+                int w = (int) Math.ceil(getMaxLineWidth(layout)) + getCompoundPaddingLeft() +
+                        getCompoundPaddingRight();
                 if (w < getMeasuredWidth()) {
                     super.onMeasure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.AT_MOST),
                             heightMeasureSpec);

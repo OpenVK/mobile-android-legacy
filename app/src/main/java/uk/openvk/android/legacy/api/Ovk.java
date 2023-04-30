@@ -93,18 +93,22 @@ public class Ovk implements Parcelable {
                 int groups_count = 0;
                 int wall_posts_count = 0;
                 if(statistics.has("users_count")) users_count = statistics.getInt("users_count");
-                if(statistics.has("online_users_count")) online_users_count = statistics.getInt("online_users_count");
-                if(statistics.has("active_users_count")) active_users_count = statistics.getInt("active_users_count");
+                if(statistics.has("online_users_count")) online_users_count =
+                        statistics.getInt("online_users_count");
+                if(statistics.has("active_users_count")) active_users_count =
+                        statistics.getInt("active_users_count");
                 if(statistics.has("groups_count")) groups_count = statistics.getInt("groups_count");
                 if(statistics.has("wall_posts_count")) wall_posts_count = statistics.getInt("wall_posts_count");
-                instance_stats = new InstanceStatistics(users_count, online_users_count, active_users_count, groups_count, wall_posts_count);
+                instance_stats = new InstanceStatistics(users_count, online_users_count, active_users_count,
+                        groups_count, wall_posts_count);
                 JSONObject admins = json.getJSONObject("response").getJSONObject("administrators");
                 JSONArray admin_items = json.getJSONObject("response").getJSONObject("administrators").getJSONArray("items");
                 JSONArray links_items = json.getJSONObject("response").getJSONObject("links").getJSONArray("items");
                 instance_admins = new ArrayList<InstanceAdmin>();
                 for(int i = 0; i < admin_items.length(); i++) {
                     JSONObject admin = admin_items.getJSONObject(i);
-                    instance_admins.add(new InstanceAdmin(admin.getString("first_name"), admin.getString("last_name"), admin.getInt("id")));
+                    instance_admins.add(new InstanceAdmin(admin.getString("first_name"), admin.getString("last_name"),
+                            admin.getInt("id")));
                 }
                 instance_links = new ArrayList<InstanceLink>();
                 for(int i = 0; i < links_items.length(); i++) {

@@ -176,19 +176,26 @@ public class DebugMenuActivity extends PreferenceActivity {
                         @Override
                         public void onClick(View view) {
                             try {
-                                if(instance_prefs.getString("account_password_hash", "").equals(Global.GetSHA256Hash(password_edit.getText().toString()))) {
+                                if(instance_prefs.getString("account_password_hash", "")
+                                        .equals(Global.GetSHA256Hash(password_edit.getText().toString()))) {
                                     if (target.equals("access_token")) {
                                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                            android.text.ClipboardManager clipboard =
+                                                    (android.text.ClipboardManager)
+                                                            getSystemService(Context.CLIPBOARD_SERVICE);
                                             clipboard.setText(instance_prefs.getString("access_token", ""));
                                         } else {
-                                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                            android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
+                                            android.content.ClipboardManager clipboard =
+                                                    (android.content.ClipboardManager)
+                                                    getSystemService(Context.CLIPBOARD_SERVICE);
+                                            android.content.ClipData clip = android.content.ClipData
+                                                    .newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
                                             clipboard.setPrimaryClip(clip);
                                         }
                                     }
                                     dialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), R.string.copy_token_toast, Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), R.string.copy_token_toast,
+                                            Toast.LENGTH_LONG).show();
                                 } else {
                                     password_edit.setError(getResources().getString(R.string.invalid_password));
                                     ok_btn.setEnabled(false);
@@ -242,19 +249,22 @@ public class DebugMenuActivity extends PreferenceActivity {
                 log.append(line + "\r\n");
             }
             try {
-                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "OpenVK");
+                File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
+                        "OpenVK");
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
 
-                directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/OpenVK", "App Logs");
+                directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
+                        "/OpenVK", "App Logs");
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
                 Date dt = new Date(System.currentTimeMillis());
                 File file = new File(directory, new SimpleDateFormat("yyyyMMdd_HHmmss").format(dt) + ".log");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if(getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    if(getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
                         if (!file.exists()) {
                             file.createNewFile();
                         }

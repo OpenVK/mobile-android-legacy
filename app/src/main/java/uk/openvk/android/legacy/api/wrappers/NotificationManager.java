@@ -70,7 +70,8 @@ public class NotificationManager {
         }
     }
 
-    public void buildDirectMsgNotification(Context ctx, ArrayList<Conversation> conversations, Bundle data, boolean notify, boolean is_repeat) {
+    public void buildDirectMsgNotification(Context ctx, ArrayList<Conversation> conversations,
+                                           Bundle data, boolean notify, boolean is_repeat) {
         int notification_id = 0;
         MessageEvent msg_event = new MessageEvent(data.getString("response"));
         if(msg_event.peer_id > 0 && notify) {
@@ -85,7 +86,8 @@ public class NotificationManager {
                 }
                 notification_id = notification_id + 1;
                 String last_longpoll_response = data.getString("response");
-                Notification notification = createNotification(notifMan, R.drawable.ic_stat_notify, msg_author, msg_event.msg_text);
+                Notification notification = createNotification(notifMan, R.drawable.ic_stat_notify,
+                        msg_author, msg_event.msg_text);
                 notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
                 notifMan.notify(notification_id, notification);
             }
@@ -104,7 +106,8 @@ public class NotificationManager {
         }
     }
 
-    public Notification createNotification(android.app.NotificationManager notifMan, int icon, String title, String description) {
+    public Notification createNotification(android.app.NotificationManager notifMan, int icon,
+                                           String title, String description) {
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =

@@ -109,7 +109,8 @@ public class MainSettingsActivity extends FragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };

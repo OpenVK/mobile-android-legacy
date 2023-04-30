@@ -266,7 +266,8 @@ public class ConversationActivity extends FragmentActivity implements
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
                 if(getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-                    final String msg_text = ((EditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString();
+                    final String msg_text = ((EditText) conversationPanel.findViewById(R.id.message_edit))
+                            .getText().toString();
                     if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
                         try {
@@ -284,7 +285,8 @@ public class ConversationActivity extends FragmentActivity implements
                         }
                         history.add(last_sended_message);
                         if (conversation_adapter == null) {
-                            conversation_adapter = new MessagesListAdapter(ConversationActivity.this, history, peer_id);
+                            conversation_adapter = new MessagesListAdapter(ConversationActivity.this,
+                                    history, peer_id);
                             messagesList.setAdapter(conversation_adapter);
                         } else {
                             conversation_adapter.notifyDataSetChanged();
@@ -339,7 +341,8 @@ public class ConversationActivity extends FragmentActivity implements
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getText().toString().length() > 0) {
+                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getText()
+                        .toString().length() > 0) {
                     send_btn.setEnabled(true);
                 } else {
                     send_btn.setEnabled(false);
@@ -417,7 +420,8 @@ public class ConversationActivity extends FragmentActivity implements
         if(!history.get(item_pos).isIncoming) {
             functions.add(getResources().getString(R.string.copy_text));
             functions.add(getResources().getString(R.string.delete));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                    functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -464,7 +468,8 @@ public class ConversationActivity extends FragmentActivity implements
                             clipboard.setText(history.get(item_pos).text);
                         } else {
                             android.content.ClipboardManager clipboard =
-                                    (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                    (android.content.ClipboardManager) getSystemService(
+                                            Context.CLIPBOARD_SERVICE);
                             android.content.ClipData clip = android.content.ClipData.
                                     newPlainText("Message text", history.get(item_pos).text);
                             clipboard.setPrimaryClip(clip);

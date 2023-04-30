@@ -83,21 +83,27 @@ public class GroupsListAdapter extends BaseAdapter {
             SpannableStringBuilder sb = new SpannableStringBuilder(name);
             ImageSpan imageSpan;
             imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
-            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
+            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
+                    ctx.getResources().getDisplayMetrics().density));
             sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             ((TextView) view.findViewById(R.id.group_list_item_text)).setText(sb);
         } else {
-            ((TextView) view.findViewById(R.id.group_list_item_text)).setText(String.format("%s", item.name));
+            ((TextView) view.findViewById(R.id.group_list_item_text)).setText(
+                    String.format("%s", item.name));
         }
 
         if(item.members_count > 0) {
-            ((TextView) view.findViewById(R.id.group_list_item_subtext)).setText(String.format("%s %s", item.members_count, ctx.getResources().getStringArray(R.array.profile_followers)[2]));
+            ((TextView) view.findViewById(R.id.group_list_item_subtext)).setText(
+                    String.format("%s %s", item.members_count, ctx.getResources().getStringArray(
+                            R.array.profile_followers)[2]));
         }
 
         if(item.avatar != null) {
-            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(item.avatar);
+            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(
+                    item.avatar);
         } else {
-            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(ctx.getResources().getDrawable(R.drawable.group_placeholder));
+            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(
+                    ctx.getResources().getDrawable(R.drawable.group_placeholder));
         }
 
         view.setOnClickListener(new View.OnClickListener() {

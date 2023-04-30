@@ -49,7 +49,8 @@ public class GroupsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_groups, container, false);
         groupsListView = view.findViewById(R.id.groups_listview);
         return view;
@@ -82,7 +83,9 @@ public class GroupsFragment extends Fragment {
                         Group item = groups.get(i);
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/group_avatars/avatar_%s", getContext().getCacheDir(), item.id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/photos_cache/group_avatars/avatar_%s",
+                                        getContext().getCacheDir(), item.id), options);
                         if (bitmap != null) {
                             item.avatar = bitmap;
                         }

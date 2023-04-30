@@ -73,7 +73,8 @@ public class NewsfeedFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
         adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
         return view;
@@ -133,7 +134,9 @@ public class NewsfeedFragment extends Fragment {
                     WallPost item = wallPosts.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_avatars/avatar_%s", getContext().getCacheDir(), item.author_id), options);
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                    getContext().getCacheDir(), item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -163,7 +166,8 @@ public class NewsfeedFragment extends Fragment {
                     if(item.repost != null) {
                         if (item.repost.newsfeed_item.attachments.size() > 0) {
                             if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(0).getContent());
+                                PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.
+                                        newsfeed_item.attachments.get(0).getContent());
                                 Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                 if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
                                     if(photoAttachment.photo != null) {
@@ -175,8 +179,12 @@ public class NewsfeedFragment extends Fragment {
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                     if (photoAttachment.url.length() > 0) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getContext().getCacheDir(),
-                                                item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
+                                        Bitmap bitmap = BitmapFactory.decodeFile(
+                                                String.format("%s/photos_cache/newsfeed_photo_attachments/" +
+                                                                "newsfeed_attachment_o%sp%s",
+                                                        getContext().getCacheDir(),
+                                                item.repost.newsfeed_item.owner_id,
+                                                        item.repost.newsfeed_item.post_id), options);
                                         if (bitmap != null) {
                                             photoAttachment.photo = bitmap;
                                             attachment.status = "done";
@@ -190,7 +198,8 @@ public class NewsfeedFragment extends Fragment {
                     }
                     if(item.attachments.size() > 0) {
                         if(item.attachments.get(0).type.equals("photo")) {
-                            PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
+                            PhotoAttachment photoAttachment = ((PhotoAttachment)
+                                    item.attachments.get(0).getContent());
                             Attachment attachment = item.attachments.get(0);
                             if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
                                 if(photoAttachment.photo != null) {
@@ -202,7 +211,10 @@ public class NewsfeedFragment extends Fragment {
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                 if (photoAttachment.url.length() > 0) {
-                                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s", getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                    Bitmap bitmap = BitmapFactory.decodeFile(
+                                            String.format("%s/photos_cache/newsfeed_photo_attachments/" +
+                                                    "newsfeed_attachment_o%sp%s", getContext().getCacheDir(),
+                                                    item.owner_id, item.post_id), options);
                                     if (bitmap != null) {
                                         photoAttachment.photo = bitmap;
                                         attachment.status = "done";
@@ -213,7 +225,8 @@ public class NewsfeedFragment extends Fragment {
                                 }
                             }
                             wallPosts.set(i, item);
-                        } else if(!item.attachments.get(0).type.equals("poll") && !item.attachments.get(0).type.equals("video")) {
+                        } else if(!item.attachments.get(0).type.equals("poll")
+                                && !item.attachments.get(0).type.equals("video")) {
                             item.attachments.get(0).status = "not_supported";
                         }
                     }
@@ -234,7 +247,8 @@ public class NewsfeedFragment extends Fragment {
         }
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean load_photos, final boolean infinity_scroll) {
+    public void setScrollingPositions(final Context ctx, final boolean load_photos,
+                                      final boolean infinity_scroll) {
         loading_more_posts = false;
         if(load_photos) {
             loadPhotos();
@@ -312,21 +326,29 @@ public class NewsfeedFragment extends Fragment {
             try {
                 if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                                LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)),
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
                         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                         newsfeedView.setLayoutParams(layoutParams);
                     } else {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                                LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
                         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                         newsfeedView.setLayoutParams(layoutParams);
                     }
                 } else {
                     if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                                LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)),
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
                         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                         newsfeedView.setLayoutParams(layoutParams);
                     } else {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                                LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
                         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                         newsfeedView.setLayoutParams(layoutParams);
                     }

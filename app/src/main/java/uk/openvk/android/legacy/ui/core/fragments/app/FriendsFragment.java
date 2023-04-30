@@ -193,7 +193,8 @@ public class FriendsFragment extends Fragment {
                             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
                                 loading_more_friends = true;
                                 ((AppActivity) ctx).loadMoreFriends();
-                            } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                            } else if(ctx.getClass().getSimpleName()
+                                    .equals("FriendsIntentActivity")) {
                                 loading_more_friends = true;
                                 ((FriendsIntentActivity) ctx).loadMoreFriends();
                             }
@@ -228,6 +229,7 @@ public class FriendsFragment extends Fragment {
     }
 
     public void hideSelectedItemBackground(int position) {
-        (view.findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
+        (view.findViewById(R.id.friends_listview)).setBackgroundColor(
+                getResources().getColor(R.color.transparent));
     }
 }

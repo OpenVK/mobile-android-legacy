@@ -42,7 +42,8 @@ public class ConversationsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.layout_conversations, container, false);
         convListView = view.findViewById(R.id.conversations_listview);
         return view;
@@ -66,7 +67,9 @@ public class ConversationsFragment extends Fragment {
                 if (conversation.avatar_url.length() > 0) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/conversations_avatars/avatar_%s", getContext().getCacheDir(),
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/photos_cache/conversations_avatars/avatar_%s",
+                                    getContext().getCacheDir(),
                             conversation.peer_id), options);
                     if (bitmap != null) {
                         conversation.avatar = bitmap;

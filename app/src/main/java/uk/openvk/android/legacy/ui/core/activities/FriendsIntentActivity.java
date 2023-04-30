@@ -98,7 +98,8 @@ public class FriendsIntentActivity extends FragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -205,7 +206,8 @@ public class FriendsIntentActivity extends FragmentActivity {
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 try {
-                    ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(0, String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
+                    ((TabSelector) friendsFragment.getView().findViewById(R.id.selector))
+                            .setTabTitle(0, String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
                 } catch (Exception ignored) {
 
                 }
@@ -222,7 +224,9 @@ public class FriendsIntentActivity extends FragmentActivity {
                 } else {
                     friendsFragment.setScrollingPositions(this, true);
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION || message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
+                    || message == HandlerMessages.INVALID_JSON_RESPONSE
+                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
                 errorLayout.setData(data);

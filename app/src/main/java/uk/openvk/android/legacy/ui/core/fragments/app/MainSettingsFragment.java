@@ -76,7 +76,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -97,7 +98,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
             language.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Toast.makeText(getContext(), getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),
+                            getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
                     return false;
                 }
             });
@@ -110,7 +112,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
             notif_ringtone.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Toast.makeText(getContext(), getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),
+                            getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
                     return false;
                 }
             });
@@ -213,7 +216,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                SharedPreferences.Editor editor = getContext().getApplicationContext().getSharedPreferences("instance", 0).edit();
+                SharedPreferences.Editor editor = getContext().getApplicationContext()
+                        .getSharedPreferences("instance", 0).edit();
                 editor.putString("access_token", "");
                 editor.putString("server", "");
                 editor.putString("account_password_hash", "");

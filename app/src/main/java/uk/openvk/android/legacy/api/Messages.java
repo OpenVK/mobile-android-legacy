@@ -63,7 +63,8 @@ public class Messages {
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
                                 if(peer_id == profile.getInt("id")) {
-                                    conversation.title = String.format("%s %s", profile.getString("first_name"), profile.getString("last_name"));
+                                    conversation.title = String.format("%s %s", profile.getString("first_name"),
+                                            profile.getString("last_name"));
                                     conversation.avatar_url = "";
                                     if(profile.has("photo_100")) {
                                         conversation.avatar_url = profile.getString("photo_100");
@@ -124,6 +125,6 @@ public class Messages {
     }
 
     public void delete(OvkAPIWrapper ovk, long id) {
-        ovk.sendAPIMethod("Messages.delete", String.format("message_ids=%d", id));
+        ovk.sendAPIMethod("Messages.delete", String.format("message_ids=%s", id));
     }
 }

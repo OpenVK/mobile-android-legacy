@@ -175,7 +175,8 @@ public class ProfileIntentActivity extends FragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(
+                getResources().getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
     }
 
@@ -234,7 +235,8 @@ public class ProfileIntentActivity extends FragmentActivity {
 
     private void createActionPopupMenu(final Menu menu) {
         final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
-        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
         popupMenu.setOutsideTouchable(true);
         popupMenu.setFocusable(true);
         final ActionBar actionBar = findViewById(R.id.actionbar);
@@ -265,15 +267,21 @@ public class ProfileIntentActivity extends FragmentActivity {
         }
         if(item.getItemId() == R.id.copy_link) {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                        getSystemService(Context.CLIPBOARD_SERVICE);
                 clipboard.setText(String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
             } else {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL", String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                        getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip =
+                        android.content.ClipData.newPlainText("OpenVK User URL",
+                                String.format("http://%s/id%s",
+                                        instance_prefs.getString("server", ""), user.id));
                 clipboard.setPrimaryClip(clip);
             }
         } else if(item.getItemId() == R.id.open_in_browser) {
-            String user_url = String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id);
+            String user_url = String.format("http://%s/id%s",
+                    instance_prefs.getString("server", ""), user.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(user_url));
             startActivity(i);
@@ -383,23 +391,28 @@ public class ProfileIntentActivity extends FragmentActivity {
                 users.getUser(ovk_api, users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
                 wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                        .createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).setScrollingPositions();
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                        .setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).loadAvatars();
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                        .loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 profileFragment.setCounter(user, "friends",  friends.count);
             } else if(message == HandlerMessages.LIKES_ADD) {
                 likes.parse(data.getString("response"));
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 1);
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                        .select(likes.position, "likes", 1);
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 likes.parse(data.getString("response"));
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).select(likes.position, "likes", 0);
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                        .select(likes.position, "likes", 0);
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 WallPost item = wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
@@ -428,15 +441,18 @@ public class ProfileIntentActivity extends FragmentActivity {
                         ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION  || message == HandlerMessages.INSTANCE_UNAVAILABLE ||
-                    message == HandlerMessages.INVALID_JSON_RESPONSE || message == HandlerMessages.CONNECTION_TIMEOUT ||
+            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
+                    || message == HandlerMessages.INSTANCE_UNAVAILABLE ||
+                    message == HandlerMessages.INVALID_JSON_RESPONSE
+                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
                 try {
                     if (data.containsKey("method")) {
                         if (data.getString("method").equals("Account.getProfileInfo") ||
                                 (data.getString("method").equals("Users.get") && user.id == 0) ||
                                 (data.getString("method").equals("Users.search") && user.id == 0) ||
-                                (data.getString("method").equals("Friends.get") && friends.getFriends().size() == 0)) {
+                                (data.getString("method").equals("Friends.get")
+                                        && friends.getFriends().size() == 0)) {
                             errorLayout.setReason(message);
                             errorLayout.setData(data);
                             errorLayout.setRetryAction(this);
@@ -609,9 +625,11 @@ public class ProfileIntentActivity extends FragmentActivity {
         this.item_pos = item_pos;
         this.poll_answer = answer;
         WallPost item = wall.getWallItems().get(item_pos);
-        for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+        for(int attachment_index = 0; attachment_index <
+                item.attachments.size(); attachment_index++) {
             if (item.attachments.get(attachment_index).type.equals("poll")) {
-                PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                PollAttachment pollAttachment = ((PollAttachment)
+                        item.attachments.get(attachment_index).getContent());
                 pollAttachment.user_votes = 1;
                 if (!pollAttachment.answers.get(answer).is_voted) {
                     pollAttachment.answers.get(answer).is_voted = true;
@@ -626,9 +644,11 @@ public class ProfileIntentActivity extends FragmentActivity {
     public void removeVoteInPoll(int item_pos) {
         this.item_pos = item_pos;
         WallPost item = wall.getWallItems().get(item_pos);
-        for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+        for(int attachment_index = 0; attachment_index <
+                item.attachments.size(); attachment_index++) {
             if(item.attachments.get(attachment_index).type.equals("poll")) {
-                PollAttachment pollAttachment = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                PollAttachment pollAttachment = ((PollAttachment)
+                        item.attachments.get(attachment_index).getContent());
                 for (int i = 0; i < pollAttachment.answers.size(); i++) {
                     if (pollAttachment.answers.get(i).is_voted) {
                         pollAttachment.answers.get(i).is_voted = false;
@@ -681,12 +701,14 @@ public class ProfileIntentActivity extends FragmentActivity {
         item = wall.getWallItems().get(position);
         intent.putExtra("where", "wall");
         try {
-            intent.putExtra("local_photo_addr", String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
+            intent.putExtra("local_photo_addr",
+                    String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
                     item.owner_id, item.post_id));
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {
                     if(item.attachments.get(i).type.equals("photo")) {
-                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
+                        PhotoAttachment photo = ((PhotoAttachment)
+                                item.attachments.get(i).getContent());
                         intent.putExtra("original_link", photo.original_url);
                         intent.putExtra("author_id", item.author_id);
                         intent.putExtra("photo_id", photo.id);
@@ -705,7 +727,8 @@ public class ProfileIntentActivity extends FragmentActivity {
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.repost_dlg_title);
         functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+        ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, functions);
         builder.setSingleChoiceItems(adapter, -1, null);
         final AlertDialog dialog = builder.create();
         dialog.show();
@@ -723,7 +746,8 @@ public class ProfileIntentActivity extends FragmentActivity {
     public void openRepostDialog(String where, final WallPost post) {
         if(where.equals("own_wall")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg, null, false);
+            final View repost_view = getLayoutInflater().inflate(
+                    R.layout.dialog_repost_msg, null, false);
             final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
             builder.setView(repost_view);
             builder.setPositiveButton(R.string.ok, null);
@@ -739,7 +763,8 @@ public class ProfileIntentActivity extends FragmentActivity {
                             @Override
                             public void onClick(View view) {
                                 try {
-                                    String msg_text = ((EditText)repost_view.findViewById(R.id.text_edit)).getText().toString();
+                                    String msg_text = ((EditText)repost_view.
+                                            findViewById(R.id.text_edit)).getText().toString();
                                     wall.repost(ovk_api, post.owner_id, post.post_id, msg_text);
                                     dialog.close();
                                 } catch (Exception ex) {

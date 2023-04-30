@@ -106,13 +106,16 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         });
         if(global_prefs.contains("proxy_address")) {
             if(global_prefs.getString("proxy_address", "").length() > 0) {
-                ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
+                ((Preference) findPreference("proxySettings"))
+                        .setSummary(global_prefs.getString("proxy_address", ""));
             }
         }
-        ((Preference) findPreference("useProxy")).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        ((Preference) findPreference("useProxy")).setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Toast.makeText(NetworkSettingsActivity.this, R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
+                Toast.makeText(NetworkSettingsActivity.this,
+                        R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
                 return true;
             }
         });
@@ -127,7 +130,8 @@ public class NetworkSettingsActivity extends PreferenceActivity {
         final EditText proxy_port = ((EditText) proxy_settings_view.findViewById(R.id.proxy_port));
         final Spinner proxy_type_spinner = proxy_settings_view.findViewById(R.id.proxy_type);
 
-        ArrayAdapter proxy_type_adapter = ArrayAdapter.createFromResource(this, R.array.proxy_type, android.R.layout.simple_spinner_item);
+        ArrayAdapter proxy_type_adapter = ArrayAdapter.createFromResource(this,
+                R.array.proxy_type, android.R.layout.simple_spinner_item);
         final String[] proxy_types = getResources().getStringArray(R.array.proxy_type);
         proxy_type_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         proxy_type_spinner.setAdapter(proxy_type_adapter);
@@ -140,9 +144,11 @@ public class NetworkSettingsActivity extends PreferenceActivity {
                     editor.putString("proxy_type", "http");
                 }
                 if(proxy_port.getText().length() > 0) {
-                    editor.putString("proxy_address", String.format("%s:%s", proxy_address.getText().toString(), proxy_port.getText().toString()));
+                    editor.putString("proxy_address", String.format("%s:%s",
+                            proxy_address.getText().toString(), proxy_port.getText().toString()));
                 } else {
-                    editor.putString("proxy_address", String.format("%s:8080", proxy_address.getText().toString()));
+                    editor.putString("proxy_address", String.format("%s:8080",
+                            proxy_address.getText().toString()));
                 }
                 editor.commit();
                 if(global_prefs.contains("proxy_address")) {
@@ -150,7 +156,8 @@ public class NetworkSettingsActivity extends PreferenceActivity {
                         ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
                     }
                 }
-                Toast.makeText(NetworkSettingsActivity.this, R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
+                Toast.makeText(NetworkSettingsActivity.this,
+                        R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
             }
         });
         builder.setNegativeButton(R.string.cancel, null);

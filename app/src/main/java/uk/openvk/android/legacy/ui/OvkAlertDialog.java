@@ -114,13 +114,16 @@ public class OvkAlertDialog extends AlertDialog {
         if(dialog != null) {
             dialog.show();
             super.dismiss();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO && Build.VERSION.SDK_INT <
+                    Build.VERSION_CODES.HONEYCOMB) {
                 // some style attributes (for example: buttons background, margins, size and etc) in res/values-v7/styles.xml won't changed
                 try {
                     dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setBackgroundResource(R.drawable.login_btn);
-                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                            .getLayoutParams()).height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
                     dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setBackgroundResource(R.drawable.login_btn);
-                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getLayoutParams()).setMargins(
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                            .getLayoutParams()).setMargins(
                             ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
                             0,
                             ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
@@ -130,16 +133,20 @@ public class OvkAlertDialog extends AlertDialog {
 
                 }
                 try {
-                    dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams()).setMargins(
+                    dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams().height =
+                            ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_NEUTRAL).
+                            getLayoutParams()).setMargins(
                             ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
                             0,
                             ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
                             0
                     );
                     dialog.getButton(DialogInterface.BUTTON_POSITIVE).setBackgroundResource(R.drawable.login_btn);
-                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams().height = ((int) (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams()).setMargins(
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).getLayoutParams().height = ((int)
+                            (32 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) dialog.getButton(DialogInterface.BUTTON_POSITIVE).
+                            getLayoutParams()).setMargins(
                             ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
                             0,
                             ((int) (3 * getContext().getResources().getDisplayMetrics().scaledDensity)),
@@ -149,8 +156,10 @@ public class OvkAlertDialog extends AlertDialog {
 
                 }
                 try {
-                    LinearLayout parent = (LinearLayout) dialog.getButton(DialogInterface.BUTTON_NEGATIVE).getParent();
-                    parent.getLayoutParams().height = ((int) (38 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    LinearLayout parent = (LinearLayout) dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                            .getParent();
+                    parent.getLayoutParams().height = ((int) (38 * getContext().getResources().
+                            getDisplayMetrics().scaledDensity));
                     int buttonBarId = getContext().getResources()
                             .getIdentifier("android:id/buttonPanel", null, null);
                     View buttonBar = dialog.findViewById(buttonBarId);
@@ -159,12 +168,14 @@ public class OvkAlertDialog extends AlertDialog {
                             (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
                             (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity),
                             (int) (6 * getContext().getResources().getDisplayMetrics().scaledDensity));
-                    ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (50 * getContext().getResources().getDisplayMetrics().scaledDensity));
+                    ((LinearLayout.LayoutParams) buttonBar.getLayoutParams()).height = ((int) (50 *
+                            getContext().getResources().getDisplayMetrics().scaledDensity));
                 } catch (Exception ignored) {
 
                 }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR &&
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 
                 try {
                     int divierId = getContext().getResources()

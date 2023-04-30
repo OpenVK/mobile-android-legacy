@@ -101,7 +101,8 @@ public class DownloadManager {
                 } else {
                     schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 }
-                httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams, schemeRegistry), basicHttpParams);
+                httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams,
+                        schemeRegistry), basicHttpParams);
                 legacy_mode = true;
             } else {
                 SSLContext sslContext = null;
@@ -111,12 +112,14 @@ public class DownloadManager {
                             new X509TrustManager() {
                                 @SuppressLint("TrustAllX509TrustManager")
                                 @Override
-                                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                                public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
+                                                               String authType) {
                                 }
 
                                 @SuppressLint("TrustAllX509TrustManager")
                                 @Override
-                                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                                public void checkServerTrusted(java.security.cert.X509Certificate[] chain,
+                                                               String authType) {
                                 }
 
                                 @Override
@@ -126,10 +129,14 @@ public class DownloadManager {
                             }
                     };
                     sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-                    javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory) sslContext.getSocketFactory();
-                    httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory()).connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory)
+                            sslContext.getSocketFactory();
+                    httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory())
+                            .connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
                 } catch (Exception e) {
-                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout
+                            (30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
                 }
                 legacy_mode = false;
             }
@@ -147,8 +154,10 @@ public class DownloadManager {
                         HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
                         httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(address_array[0],
+                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
+                                        new InetSocketAddress(address_array[0],
                                         Integer.valueOf(address_array[1])))).build();
                     }
                 }
@@ -169,7 +178,8 @@ public class DownloadManager {
             version_name = app.version;
         } finally {
             user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %s; %s; %s %s; %s)", version_name,
-                    Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language"));
+                    Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER,
+                    Build.MODEL, System.getProperty("user.language"));
         }
         return user_agent;
     }
@@ -195,7 +205,8 @@ public class DownloadManager {
             @Override
             public void run() {
                 try {
-                    File directory = new File(String.format("%s/photos_cache", ctx.getCacheDir().getAbsolutePath()), where);
+                    File directory = new File(String.format("%s/photos_cache",
+                            ctx.getCacheDir().getAbsolutePath()), where);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -214,7 +225,8 @@ public class DownloadManager {
                         filename = photoAttachment.filename;
                         //Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                         try {
-                            File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
+                            File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                    ctx.getCacheDir(), where), filename);
                             if(downloadedFile.exists()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 byte[] bytes = new byte[1];
@@ -250,7 +262,8 @@ public class DownloadManager {
                                 StatusLine statusLine = response.getStatusLine();
                                 response_in = response.getEntity().getContent();
                                 content_length = response.getEntity().getContentLength();
-                                File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
+                                File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                        ctx.getCacheDir(), where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -268,7 +281,8 @@ public class DownloadManager {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
                                 content_length = response.body().contentLength();
-                                File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
+                                File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                        ctx.getCacheDir(), where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -282,12 +296,19 @@ public class DownloadManager {
                                 }
                                 response.body().byteStream().close();
                             }
-                            if(logging_enabled) Log.d(OvkApplication.DL_TAG, String.format("Downloaded from %s (%s): %d kB (%d/%d)", short_address, response_code, (int) (filesize / 1024), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.d(OvkApplication.DL_TAG,
+                                    String.format("Downloaded from %s (%s): %d kB (%d/%d)",
+                                            short_address, response_code, (int) (filesize / 1024), i + 1,
+                                            photoAttachments.size()));
                         } catch (IOException e) {
-                            if(logging_enabled) Log.e(OvkApplication.DL_TAG, String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.e(OvkApplication.DL_TAG,
+                                    String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
+                                            photoAttachments.size()));
                         } catch (Exception e) {
                             photoAttachment.error = e.getClass().getSimpleName();
-                            if(logging_enabled) Log.e(OvkApplication.DL_TAG, String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1, photoAttachments.size()));
+                            if(logging_enabled) Log.e(OvkApplication.DL_TAG,
+                                    String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
+                                            photoAttachments.size()));
                         }
                     }
                 }
@@ -352,7 +373,8 @@ public class DownloadManager {
             public void run() {
                 Log.v("DownloadManager", String.format("Downloading %s...", url));
                 try {
-                    File directory = new File(String.format("%s/photos_cache", ctx.getCacheDir().getAbsolutePath()), where);
+                    File directory = new File(String.format("%s/photos_cache",
+                            ctx.getCacheDir().getAbsolutePath()), where);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -363,7 +385,8 @@ public class DownloadManager {
                 if (url.length() == 0) {
                     if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                     try {
-                        File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
+                        File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                ctx.getCacheDir(), where), filename);
                         if(downloadedFile.exists()) {
                             FileOutputStream fos = new FileOutputStream(downloadedFile);
                             byte[] bytes = new byte[1];
@@ -396,7 +419,8 @@ public class DownloadManager {
                             StatusLine statusLine = response.getStatusLine();
                             response_in = response.getEntity().getContent();
                             content_length = response.getEntity().getContentLength();
-                            File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
+                            File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                    ctx.getCacheDir(), where), filename);
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
@@ -413,7 +437,8 @@ public class DownloadManager {
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();
-                            File downloadedFile = new File(String.format("%s/photos_cache/%s", ctx.getCacheDir(), where), filename);
+                            File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                    ctx.getCacheDir(), where), filename);
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
@@ -430,9 +455,11 @@ public class DownloadManager {
                                 response.close();
                             }
                         }
-                        if(logging_enabled) Log.v("DownloadManager", String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
+                        if(logging_enabled) Log.v("DownloadManager",
+                                String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
                     } catch (Exception e) {
-                        if(logging_enabled) Log.e(OvkApplication.DL_TAG, String.format("Download error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e(OvkApplication.DL_TAG,
+                                String.format("Download error: %s", e.getMessage()));
                     }
                 }
                 Log.v("DownloadManager", String.format("Downloaded!"));

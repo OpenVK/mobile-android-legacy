@@ -94,7 +94,8 @@ public class NewPostActivity extends Activity {
                 global_prefs_editor = global_prefs.edit();
                 instance_prefs_editor = instance_prefs.edit();
                 inputStream_isClosed = false;
-                server = getApplicationContext().getSharedPreferences("instance", 0).getString("server", "");
+                server = getApplicationContext().getSharedPreferences("instance", 0)
+                        .getString("server", "");
                 auth_token = getApplicationContext().getSharedPreferences("instance", 0).getString("auth_token", "");
                 if (owner_id == 0) {
                     finish();
@@ -104,7 +105,8 @@ public class NewPostActivity extends Activity {
                     @Override
                     public void handleMessage(Message message) {
                         Bundle data = message.getData();
-                        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                        if(!BuildConfig.BUILD_TYPE.equals("release"))
+                            Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                         receiveState(message.what, data);
                     }
                 };
@@ -161,7 +163,8 @@ public class NewPostActivity extends Activity {
                 public void performAction(View view) {
                     EditText statusEditText = findViewById(R.id.status_text_edit);
                     if (statusEditText.getText().toString().length() == 0) {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),
+                                getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
                     } else {
                         try {
                             connectionDialog = new ProgressDialog(NewPostActivity.this);
@@ -187,10 +190,12 @@ public class NewPostActivity extends Activity {
                 connectionDialog.cancel();
                 finish();
             } else if(message == HandlerMessages.ACCESS_DENIED){
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_access_denied), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.posting_access_denied), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();
             } else {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();
             }
         } catch (Exception ex) {
@@ -213,8 +218,9 @@ public class NewPostActivity extends Activity {
         } else if(item.getItemId() == R.id.sendpost) {
             EditText statusEditText = findViewById(R.id.status_text_edit);
             if(statusEditText.getText().toString().length() == 0) {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
-            } else if(connection_status == false) {
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
+            } else if(!connection_status) {
                 try {
                     connectionDialog = new ProgressDialog(this);
                     connectionDialog.setMessage(getString(R.string.loading));

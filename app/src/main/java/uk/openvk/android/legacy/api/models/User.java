@@ -62,7 +62,8 @@ public class User implements Parcelable {
         parse(response, position);
     }
 
-    public User(String first_name, String last_name, int id, String status, String city, String screen_name, String avatar_msize_url, int friends_status, int ls_date, String birthdate,
+    public User(String first_name, String last_name, int id, String status, String city, String screen_name,
+                String avatar_msize_url, int friends_status, int ls_date, String birthdate,
                 String interests, String movies, String music, String tv, String books, boolean verified) {
         this.first_name = first_name;
         this.last_name = last_name;
@@ -301,17 +302,20 @@ public class User implements Parcelable {
 
     public void downloadAvatar(DownloadManager downloadManager, String quality) {
         if(quality.equals("medium")) {
-            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%d", id), "profile_avatars");
+            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
+                    "profile_avatars");
         } else if(quality.equals("high")) {
             if(avatar_hsize_url.length() == 0) {
                 avatar_hsize_url = avatar_msize_url;
             }
-            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%d", id), "profile_avatars");
+            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
+                    "profile_avatars");
         } else if(quality.equals("original")) {
             if(avatar_osize_url.length() == 0) {
                 avatar_osize_url = avatar_msize_url;
             }
-            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%d", id), "profile_avatars");
+            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
+                    "profile_avatars");
         }
     }
 
@@ -346,17 +350,17 @@ public class User implements Parcelable {
 
     public void downloadAvatar(DownloadManager downloadManager, String quality, String where) {
         if(quality.equals("medium")) {
-            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%d", id), where);
+            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id), where);
         } else if(quality.equals("high")) {
             if(avatar_hsize_url.length() == 0) {
                 avatar_hsize_url = avatar_msize_url;
             }
-            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%d", id), where);
+            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id), where);
         } else if(quality.equals("original")) {
             if(avatar_osize_url.length() == 0) {
                 avatar_osize_url = avatar_msize_url;
             }
-            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%d", id), where);
+            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id), where);
         }
     }
 }

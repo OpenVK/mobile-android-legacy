@@ -98,10 +98,13 @@ public class LongPollWrapper {
             } else {
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
             }
-            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager) new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager)
+                    new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry),
+                    (HttpParams) basicHttpParams);
             legacy_mode = true;
         } else {
-            httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
+            httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS).build();
             legacy_mode = false;
         }
     }
@@ -117,7 +120,8 @@ public class LongPollWrapper {
             version_name = app.version;
         } finally {
             user_agent = String.format("OpenVK Legacy/%s (Android %s; SDK %s; %s; %s %s; %s)", version_name,
-                    Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language"));
+                    Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.CPU_ABI, Build.MANUFACTURER,
+                    Build.MODEL, System.getProperty("user.language"));
         }
         return user_agent;
     }
@@ -175,10 +179,14 @@ public class LongPollWrapper {
                             response_code = response.code();
                         }
                         if (response_code == 200) {
-                            if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                            if(logging_enabled) Log.v(OvkApplication.LP_TAG,
+                                    String.format("Getting response from %s (%s): [%s]", server,
+                                            response_code, response_body));
                             sendLongPollMessageToActivity(response_body);
                         } else {
-                            if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Getting response from %s (%s)", server, response_code));
+                            if(logging_enabled) Log.v(OvkApplication.LP_TAG,
+                                    String.format("Getting response from %s (%s)", server,
+                                            response_code));
                         }
                         Thread.sleep(2000);
                     }
@@ -192,15 +200,18 @@ public class LongPollWrapper {
                         e.printStackTrace();
                     }
                 } catch(SSLProtocolException ex) {
-                    if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s",
+                            ex.getMessage()));
                     isActivated = false;
                     if(logging_enabled) Log.v(OvkApplication.LP_TAG, "LongPoll service stopped.");
                 } catch(SSLHandshakeException ex) {
-                    if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s",
+                            ex.getMessage()));
                     if(logging_enabled) Log.v(OvkApplication.LP_TAG, "LongPoll service stopped.");
                     isActivated = false;
                 } catch(SSLException ex) {
-                    if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s",
+                            ex.getMessage()));
                     Log.v(OvkApplication.LP_TAG, "LongPoll service stopped.");
                     isActivated = false;
                 } catch (Exception ex) {
@@ -222,8 +233,10 @@ public class LongPollWrapper {
                         HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
                         httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(address_array[0],
+                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).
+                                writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new
+                                        InetSocketAddress(address_array[0],
                                         Integer.valueOf(address_array[1])))).build();
                     }
                 }

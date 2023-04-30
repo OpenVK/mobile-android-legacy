@@ -48,7 +48,8 @@ public class Conversation {
 
     public void getHistory(OvkAPIWrapper ovk, long peer_id) {
         this.peer_id = peer_id;
-        ovk.sendAPIMethod("Messages.getHistory", String.format("peer_id=%d&count=150&rev=1", peer_id));
+        ovk.sendAPIMethod("Messages.getHistory",
+                String.format("peer_id=%s&count=150&rev=1", peer_id));
     }
 
     public ArrayList<Message> parseHistory(Context ctx, String response) {

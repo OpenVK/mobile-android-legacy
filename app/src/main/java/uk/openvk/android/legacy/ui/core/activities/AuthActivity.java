@@ -196,7 +196,8 @@ public class AuthActivity extends Activity {
                 warn_dialog.show();
                 ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(
                         Html.fromHtml(getResources().getString(R.string.ovk_warning)));
-                ((TextView) warn_view.findViewById(R.id.warn_message_text)).setMovementMethod(LinkMovementMethod.getInstance());
+                ((TextView) warn_view.findViewById(R.id.warn_message_text)).
+                        setMovementMethod(LinkMovementMethod.getInstance());
                 ((CheckBox) warn_view.findViewById(R.id.do_not_show_messages))
                         .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
