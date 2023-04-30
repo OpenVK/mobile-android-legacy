@@ -129,15 +129,18 @@ public class Wall implements Parcelable {
                     }
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
-                        WallPost repost_item = new WallPost(String.format("(Unknown author: %s)", repost.getInt("from_id")),
+                        WallPost repost_item = new WallPost(String.format("(Unknown author: %s)",
+                                repost.getInt("from_id")),
                                 repost.getInt("date"), null, repost.getString("text"), null, "",
                                 null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
-                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)", repost.getInt("from_id")),
+                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)",
+                                repost.getInt("from_id")),
                                 repost.getInt("date"), ctx);
                         repostInfo.newsfeed_item = repost_item;
                         item.repost = repostInfo;
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
-                        attachments_list = createAttachmentsList(owner_id, post_id, quality, repost_attachments, "wall_attachment");
+                        attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                                repost_attachments, "wall_attachment");
                         repost_item.attachments = attachments_list;
                     }
                     item.author_id = author_id;
@@ -256,7 +259,8 @@ public class Wall implements Parcelable {
         }
     }
 
-    public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality, String response) {
+    public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality,
+                                            String response) {
         comments = new ArrayList<Comment>();
         photos_msize = new ArrayList<PhotoAttachment>();
         photos_hsize = new ArrayList<PhotoAttachment>();
