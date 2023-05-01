@@ -41,7 +41,7 @@
                 <uk.openvk.android.legacy.ui.view.layouts.ProfileHeader
                     android:id="@+id/profile_header"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
                 <uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout
                     android:id="@+id/about_profile_layout"
@@ -53,11 +53,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginBottom="6dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
                     android:orientation="horizontal">
 
                     <Button
@@ -65,7 +65,6 @@
                         style="@style/BlueButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="4dp"
                         android:layout_weight="1"
                         android:text="@string/message"
                         android:textSize="20sp"
@@ -74,12 +73,12 @@
                     <ImageButton
                         android:id="@+id/add_to_friends"
                         android:layout_width="60dp"
-                        android:layout_marginRight="4dp"
                         android:layout_height="match_parent"
+                        android:layout_marginRight="4dp"
                         android:background="@drawable/btn_light_blue"
                         android:src="@drawable/ic_ab_add"
-                        tools:ignore="ContentDescription,RtlHardcoded"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription,RtlHardcoded" />
 
                 </LinearLayout>
 
@@ -102,12 +101,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp">
 
                     <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/photos_counter"
@@ -116,7 +115,7 @@
                         android:layout_marginRight="4dp"
                         android:layout_weight="1"
                         android:visibility="gone"
-                        tools:ignore="RtlHardcoded"/>
+                        tools:ignore="RtlHardcoded" />
 
                     <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/friends_counter"
@@ -125,16 +124,16 @@
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
                         android:layout_weight="1"
-                        tools:ignore="RtlHardcoded"/>
+                        tools:ignore="RtlHardcoded" />
 
                     <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
                         android:id="@+id/mutual_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="4dp"
                         android:layout_marginLeft="4dp"
+                        android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
                 </TableRow>
 
             </LinearLayout>
@@ -145,11 +144,11 @@
                 android:layout_height="wrap_content" />
 
             <uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout
+                android:id="@+id/wall_error_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#ffffff"
-                android:visibility="gone"
-                android:id="@+id/wall_error_layout" />
+                android:visibility="gone" />
 
             <uk.openvk.android.legacy.ui.view.layouts.WallLayout
                 android:id="@+id/wall_layout"

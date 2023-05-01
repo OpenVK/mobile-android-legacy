@@ -136,4 +136,7 @@ public class Global {
         }
     }
 
+    public static String formatLinksAsHtml(String subtitle) {
+        return subtitle;
+    }
 }

@@ -77,6 +77,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+@SuppressWarnings("ConstantConditions")
 public class ProfileIntentActivity extends FragmentActivity {
 
     private OvkAPIWrapper ovk_api;
@@ -168,7 +169,6 @@ public class ProfileIntentActivity extends FragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();
-                return;
             }
         }
     }

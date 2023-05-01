@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -167,6 +168,11 @@ public class ProfileFragment extends Fragment {
         ImageButton add_to_friends_btn = ((ImageButton) view.findViewById(R.id.add_to_friends));
         if(user.friends_status == 0) {
             friend_status.setVisibility(GONE);
+            LinearLayout.LayoutParams layoutParams =
+                    ((LinearLayout.LayoutParams) view.findViewById(R.id.send_direct_msg)
+                            .getLayoutParams());
+            layoutParams.rightMargin = 0;
+            view.findViewById(R.id.send_direct_msg).setLayoutParams(layoutParams);
             add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
         } else if(user.friends_status == 1) {
             friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));

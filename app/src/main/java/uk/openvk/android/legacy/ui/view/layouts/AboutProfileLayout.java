@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +13,12 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.ui.list.adapters.PublicPageAboutAdapter;
+import uk.openvk.android.legacy.ui.list.items.PublicPageAboutItem;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -65,18 +70,7 @@ public class AboutProfileLayout extends LinearLayout {
 
     @SuppressLint("SimpleDateFormat")
     public void setBirthdate(String bdate) {
-        if(bdate.length() > 0) {
-            SimpleDateFormat originalFormat = new SimpleDateFormat("d.m.yyyy");
-            try {
-                Date birthdate = originalFormat.parse(bdate);
-                ((TextView) findViewById(R.id.birthdate_label2)).setText(new SimpleDateFormat("dd MMMM yyyy").format(birthdate));
-                ((LinearLayout) findViewById(R.id.birthdate_ll)).setVisibility(VISIBLE);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else {
-            ((LinearLayout) findViewById(R.id.birthdate_ll)).setVisibility(GONE);
-        }
+
     }
 
     public void setInterests(String interests, String music, String movies, String tv, String books) {
@@ -85,87 +79,43 @@ public class AboutProfileLayout extends LinearLayout {
         this.movies = movies;
         this.tv = tv;
         this.books = books;
-        if(interests != null) {
-            if (interests.length() > 0) {
-                ((TextView) findViewById(R.id.interests_label2)).setText(interests);
-                ((LinearLayout) findViewById(R.id.interests_layout)).setVisibility(VISIBLE);
+        ArrayList<PublicPageAboutItem> items = new ArrayList<>();
+        if(this.interests != null && this.music != null && this.movies != null && this.tv != null
+                && this.books != null) {
+            if(this.interests.length() > 0) {
+                items.add(new PublicPageAboutItem(
+                        getResources().getString(R.string.profile_interests), interests));
+            }
+            if(this.music.length() > 0) {
+                items.add(new PublicPageAboutItem(
+                        getResources().getString(R.string.profile_music), music));
+            }
+            if(this.movies.length() > 0) {
+                items.add(new PublicPageAboutItem(
+                        getResources().getString(R.string.profile_movies), movies));
+            }
+            if(this.tv.length() > 0) {
+                items.add(new PublicPageAboutItem(
+                        getResources().getString(R.string.profile_tv), tv));
+            }
+            if(this.books.length() > 0) {
+                items.add(new PublicPageAboutItem(
+                        getResources().getString(R.string.profile_books), books));
+            }
+            RecyclerView about_rv = findViewById(R.id.about_rv);
+            PublicPageAboutAdapter aboutAdapter = new PublicPageAboutAdapter(getContext(), items);
+            about_rv.setLayoutManager(new LinearLayoutManager(getContext()));
+            about_rv.setAdapter(aboutAdapter);
+            if(aboutAdapter.getItemCount() > 0) {
+                findViewById(R.id.about_profile).setVisibility(VISIBLE);
             } else {
-                ((LinearLayout) findViewById(R.id.interests_layout)).setVisibility(GONE);
+                findViewById(R.id.about_profile).setVisibility(GONE);
             }
         } else {
-            ((LinearLayout) findViewById(R.id.interests_layout)).setVisibility(GONE);
-        }
-        if(music != null) {
-            if (music.length() > 0) {
-                ((TextView) findViewById(R.id.music_label2)).setText(music);
-                ((LinearLayout) findViewById(R.id.interests_layout2)).setVisibility(VISIBLE);
-            } else {
-                ((LinearLayout) findViewById(R.id.interests_layout2)).setVisibility(GONE);
-            }
-        } else {
-            ((LinearLayout) findViewById(R.id.interests_layout2)).setVisibility(GONE);
-        }
-        if(movies != null) {
-            if (movies.length() > 0) {
-                ((TextView) findViewById(R.id.movies_label2)).setText(movies);
-                ((LinearLayout) findViewById(R.id.interests_layout3)).setVisibility(VISIBLE);
-            } else {
-                ((LinearLayout) findViewById(R.id.interests_layout3)).setVisibility(GONE);
-            }
-        } else {
-            ((LinearLayout) findViewById(R.id.interests_layout3)).setVisibility(GONE);
-        }
-        if(tv != null) {
-            if (tv.length() > 0) {
-                ((TextView) findViewById(R.id.tvshows_label2)).setText(tv);
-                ((LinearLayout) findViewById(R.id.interests_layout4)).setVisibility(VISIBLE);
-            } else {
-                ((LinearLayout) findViewById(R.id.interests_layout4)).setVisibility(GONE);
-            }
-        } else {
-            ((LinearLayout) findViewById(R.id.interests_layout4)).setVisibility(GONE);
-        }
-        if(books != null) {
-            if (books.length() > 0) {
-                ((TextView) findViewById(R.id.books_label2)).setText(books);
-                ((LinearLayout) findViewById(R.id.interests_layout5)).setVisibility(VISIBLE);
-            } else {
-                ((LinearLayout) findViewById(R.id.interests_layout5)).setVisibility(GONE);
-            }
-        } else {
-            ((LinearLayout) findViewById(R.id.interests_layout5)).setVisibility(GONE);
-        }
-        if(interests != null && music != null && movies != null && tv != null && books != null) {
-            if (interests.length() == 0 && music.length() == 0 && movies.length() == 0 && tv.length() == 0 && books.length() == 0) {
-                ((LinearLayout) findViewById(R.id.interests_layout_all)).setVisibility(GONE);
-            }
-        } else {
-            ((LinearLayout) findViewById(R.id.interests_layout_all)).setVisibility(GONE);
+            findViewById(R.id.about_profile).setVisibility(GONE);
         }
     }
 
     public void setContacts(String city) {
-        if (city != null) {
-            if (city.length() > 0) {
-                ((TextView) findViewById(R.id.city_label2)).setText(city);
-                ((LinearLayout) findViewById(R.id.city_layout)).setVisibility(VISIBLE);
-                if(interests == null && music == null && movies == null && tv == null && books == null) {
-                    ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
-                } else if(interests.length() == 0 && music.length() == 0 && movies.length() == 0
-                        && tv.length() == 0 && books.length() == 0) {
-                    ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
-                }
-            } else {
-                ((LinearLayout) findViewById(R.id.city_layout)).setVisibility(GONE);
-                ((LinearLayout) findViewById(R.id.contacts_layout)).setVisibility(GONE);
-            }
-        } else {
-            if(interests == null && music == null && movies == null && tv == null && books == null) {
-                ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
-            } else if(interests.length() == 0 && music.length() == 0 && movies.length() == 0
-                    && tv.length() == 0 && books.length() == 0) {
-                ((LinearLayout) findViewById(R.id.about_profile)).setVisibility(GONE);
-            }
-        }
     }
 }
