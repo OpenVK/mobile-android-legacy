@@ -1355,14 +1355,7 @@ public class AppActivity extends FragmentActivity {
         String url = "openvk://group/" + "club" + groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
-        final PackageManager pm = getPackageManager();
-        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> activityList = pm.queryIntentActivities(i, 0);
-        for (int index = 0; index < activityList.size(); index++) {
-            ResolveInfo app = activityList.get(index);
-            if (app.activityInfo.name.contains("uk.openvk.android.legacy")) {
-                i.setClassName(app.activityInfo.packageName, app.activityInfo.name);
-            }
-        }
+        i.setPackage("uk.openvk.android.legacy");
         startActivity(i);
     }
 
@@ -1370,25 +1363,20 @@ public class AppActivity extends FragmentActivity {
         String url = "openvk://profile/" + "id" + user_id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
-        final PackageManager pm = getPackageManager();
-        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> activityList = pm.queryIntentActivities(i, 0);
-        for (int index = 0; index < activityList.size(); index++) {
-            ResolveInfo app = activityList.get(index);
-            if (app.activityInfo.name.contains("uk.openvk.android.legacy")) {
-                i.setClassName(app.activityInfo.packageName, app.activityInfo.name);
-            }
-        }
+        i.setPackage("uk.openvk.android.legacy");
         startActivity(i);
     }
 
     public void hideSelectedItemBackground(int position) {
-        ((ListView) friendsFragment.getView().findViewById(R.id.friends_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
+        ((ListView) friendsFragment.getView().findViewById(R.id.friends_listview))
+                .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void openIntentfromCounters(String action) {
         String url = action;
         if(action.length() > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(url));
             startActivity(i);
         }
@@ -1519,11 +1507,13 @@ public class AppActivity extends FragmentActivity {
         if(item.author_id < 0) {
             String url = "openvk://group/" + "club" + -item.author_id;
             Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(url));
             startActivity(i);
         } else {
             String url = "openvk://profile/" + "id" + item.author_id;
             Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(url));
             startActivity(i);
         }
