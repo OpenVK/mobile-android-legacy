@@ -18,27 +18,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:fitsSystemWindows="true">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
-        android:id="@+id/progress_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="fill"
-        android:fitsSystemWindows="true"
-        android:visibility="gone" />
+        <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+            android:id="@+id/progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="fill"
+            android:fitsSystemWindows="true"
+            android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
-        android:id="@+id/error_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:visibility="gone" />
+        <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+            android:id="@+id/error_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:visibility="gone" />
 
-    <FrameLayout
-        android:id="@+id/app_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <FrameLayout
+            android:id="@+id/app_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/actionbar_height"
+            android:layout_marginTop="2dp"/>
 
 
 

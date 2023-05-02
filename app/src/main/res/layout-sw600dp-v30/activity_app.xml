@@ -20,6 +20,14 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+    <uk.openvk.android.legacy.ui.view.layouts.SlidingMenuLayout
+        android:id="@+id/sliding_menu"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:background="#1B1D26"
+        android:fitsSystemWindows="true"
+        android:visibility="gone" />
+
     <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
@@ -39,7 +47,6 @@
         android:id="@+id/app_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 
 
 </LinearLayout>
