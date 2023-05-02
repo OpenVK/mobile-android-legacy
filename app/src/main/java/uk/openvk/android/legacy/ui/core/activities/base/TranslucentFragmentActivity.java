@@ -33,9 +33,12 @@ public class TranslucentFragmentActivity extends FragmentActivity {
     }
 
     private void setTranslucentStatusBar() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            tintManager.setStatusBarTintEnabled(true);
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tintManager.setTintDrawable(
+                    getResources().getDrawable(R.color.statusbar_color));
+        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             tintManager.setTintDrawable(
                     getResources().getDrawable(R.color.transparent_statusbar_color));
         }
