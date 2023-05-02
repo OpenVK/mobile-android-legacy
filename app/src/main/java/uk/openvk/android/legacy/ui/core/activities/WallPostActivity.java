@@ -47,6 +47,7 @@ import uk.openvk.android.legacy.api.models.Comment;
 import uk.openvk.android.legacy.api.models.RepostInfo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.view.layouts.CommentPanel;
 import uk.openvk.android.legacy.ui.view.layouts.PostViewLayout;
@@ -70,7 +71,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class WallPostActivity extends FragmentActivity
+public class WallPostActivity extends TranslucentFragmentActivity
         implements EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
     private OvkAPIWrapper ovk_api;

@@ -24,6 +24,7 @@ import uk.openvk.android.legacy.api.Ovk;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.MainSettingsFragment;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
@@ -42,7 +43,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class MainSettingsActivity extends FragmentActivity {
+public class MainSettingsActivity extends TranslucentFragmentActivity {
     private boolean isQuiting;
     private OvkApplication app;
     private Global global = new Global();

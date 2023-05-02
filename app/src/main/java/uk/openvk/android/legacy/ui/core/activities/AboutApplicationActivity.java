@@ -21,6 +21,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -38,7 +39,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class AboutApplicationActivity extends Activity {
+public class AboutApplicationActivity extends TranslucentActivity {
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private int logo_longclicks;

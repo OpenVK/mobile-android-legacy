@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import wseemann.media.FFmpegMediaPlayer;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 
@@ -45,7 +46,7 @@ import uk.openvk.android.legacy.api.attachments.VideoAttachment;
  **/
 
 @SuppressWarnings("deprecation")
-public class VideoPlayerActivity extends Activity {
+public class VideoPlayerActivity extends TranslucentActivity {
     private VideoAttachment video;
     private String url;
     private MediaController mediaCtrl;

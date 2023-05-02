@@ -76,6 +76,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.LongPollService;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
@@ -110,7 +111,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
-public class AppActivity extends FragmentActivity {
+public class AppActivity extends TranslucentFragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
     private LongPollService longPollService;

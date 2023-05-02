@@ -32,6 +32,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -49,7 +50,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class MainActivity extends Activity {
+public class MainActivity extends TranslucentActivity {
 
     private Global global = new Global();
     private SharedPreferences global_prefs;

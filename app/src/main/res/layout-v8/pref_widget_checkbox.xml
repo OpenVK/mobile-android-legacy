@@ -63,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="0dp"
-            android:layout_marginRight="6dp"
+            android:layout_marginRight="0dp"
             android:layout_marginTop="0dp"
             android:button="@drawable/checkbox"
             android:clickable="false"

@@ -19,14 +19,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
     <ScrollView
         android:id="@+id/newpost_scroll"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:fillViewport="true" >
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/newpost_scroll_content"

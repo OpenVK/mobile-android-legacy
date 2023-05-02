@@ -41,6 +41,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentPreferenceActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -58,7 +59,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class DebugMenuActivity extends PreferenceActivity {
+public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;

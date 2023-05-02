@@ -52,6 +52,7 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
@@ -78,7 +79,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 @SuppressWarnings("ConstantConditions")
-public class ProfileIntentActivity extends FragmentActivity {
+public class ProfileIntentActivity extends TranslucentFragmentActivity {
 
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;

@@ -28,6 +28,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -45,7 +46,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class NewPostActivity extends Activity {
+public class NewPostActivity extends TranslucentActivity {
     public String server;
     public String state;
     public String auth_token;

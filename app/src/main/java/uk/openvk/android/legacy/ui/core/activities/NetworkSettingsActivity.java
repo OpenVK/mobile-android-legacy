@@ -25,6 +25,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentPreferenceActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -42,7 +43,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class NetworkSettingsActivity extends PreferenceActivity {
+public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
     private boolean isQuiting;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;

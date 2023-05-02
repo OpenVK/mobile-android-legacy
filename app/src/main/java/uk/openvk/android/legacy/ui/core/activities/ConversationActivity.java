@@ -48,6 +48,7 @@ import uk.openvk.android.legacy.api.models.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.view.layouts.ConversationPanel;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesListAdapter;
@@ -69,7 +70,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ConversationActivity extends FragmentActivity implements
+public class ConversationActivity extends TranslucentFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 

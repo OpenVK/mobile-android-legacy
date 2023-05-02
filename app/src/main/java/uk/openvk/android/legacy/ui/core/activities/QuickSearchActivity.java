@@ -29,6 +29,7 @@ import uk.openvk.android.legacy.api.Groups;
 import uk.openvk.android.legacy.api.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.FullListView;
 import uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -48,7 +49,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class QuickSearchActivity extends Activity {
+public class QuickSearchActivity extends TranslucentActivity {
     private OvkAPIWrapper ovk_api;
     private Users users;
     private Groups groups;
@@ -61,7 +62,7 @@ public class QuickSearchActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_search);
+        setContentView(R.layout.activity_search);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();

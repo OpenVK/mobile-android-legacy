@@ -42,6 +42,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ZoomableImageView;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -61,7 +62,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PhotoViewerActivity extends Activity {
+public class PhotoViewerActivity extends TranslucentActivity {
     private String access_token;
     private SharedPreferences instance_prefs;
     private int owner_id;

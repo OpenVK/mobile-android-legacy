@@ -55,6 +55,7 @@ import uk.openvk.android.legacy.api.models.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.GroupHeader;
@@ -81,7 +82,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class GroupIntentActivity extends Activity {
+public class GroupIntentActivity extends TranslucentActivity {
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     public Handler handler;

@@ -29,4 +29,5 @@
     <color name="ovk_color">#3972a3</color>
     <color name="ovk_color_light">#a7d1ef</color>
     <color name="sublink_color">#8b8b8b</color>
+    <color name="transparent_statusbar_color">#3b597b</color>
 </resources>

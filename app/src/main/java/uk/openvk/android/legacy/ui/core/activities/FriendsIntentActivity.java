@@ -29,6 +29,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Friend;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
@@ -51,7 +52,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class FriendsIntentActivity extends FragmentActivity {
+public class FriendsIntentActivity extends TranslucentFragmentActivity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
