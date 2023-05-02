@@ -33,6 +33,7 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 7. [FFmpegMediaPlayer 1.0.4](https://github.com/wseemann/FFmpegMediaPlayer/tree/v1.0.4) (Apache License 2.0)
 8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
+10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
