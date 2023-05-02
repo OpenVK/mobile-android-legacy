@@ -44,7 +44,7 @@ public class ConversationsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.layout_conversations, container, false);
+        view = inflater.inflate(R.layout.fragment_conversations, container, false);
         convListView = view.findViewById(R.id.conversations_listview);
         return view;
     }
