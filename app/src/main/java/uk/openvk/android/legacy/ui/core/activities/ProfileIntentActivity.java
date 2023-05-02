@@ -110,7 +110,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
-        setContentView(R.layout.activity_app);
+        setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
         Bundle data = intent.getExtras();

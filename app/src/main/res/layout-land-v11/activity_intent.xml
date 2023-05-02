@@ -14,44 +14,32 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/comments_view">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:fitsSystemWindows="true">
-
-        <uk.openvk.android.legacy.ui.view.layouts.PostViewLayout
-            android:id="@+id/comments_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:ignore="InefficientWeight" />
-
-        <uk.openvk.android.legacy.ui.view.layouts.CommentPanel
-            android:id="@+id/comment_panel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/background_light" />
-    </LinearLayout>
+    android:orientation="horizontal">
 
     <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+        android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/progress_layout"
+        android:layout_gravity="fill"
+        android:fitsSystemWindows="true"
         android:visibility="gone" />
 
     <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+        android:id="@+id/error_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/error_layout"
+        android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-</uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>
+    <FrameLayout
+        android:id="@+id/app_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+
+</LinearLayout>

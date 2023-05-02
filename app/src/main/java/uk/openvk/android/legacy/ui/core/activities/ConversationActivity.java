@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -101,7 +100,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
-        setContentView(R.layout.layout_conversation_msgs);
+        setContentView(R.layout.activity_conversation_msgs);
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         conversation = new Conversation();
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
