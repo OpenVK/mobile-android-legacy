@@ -15,7 +15,7 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <uses-sdk tools:overrideLibrary="wseemann.media.ffmpegmediaplayer"/>
+    <uses-sdk tools:overrideLibrary="tv.danmaku.ijk.media.player,tv.danmaku.ijk.media.player_armv5,tv.danmaku.ijk.media.player_arm64,tv.danmaku.ijk.media.player_armv7a"/>
 
     <application
         android:name=".OvkApplication"

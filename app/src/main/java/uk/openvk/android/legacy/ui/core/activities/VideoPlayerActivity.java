@@ -24,10 +24,11 @@ import android.widget.VideoView;
 
 import java.io.IOException;
 
+import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
-import wseemann.media.FFmpegMediaPlayer;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -52,7 +53,7 @@ public class VideoPlayerActivity extends TranslucentActivity {
     private MediaController mediaCtrl;
     private VideoView video_view;
     private MediaPlayer mp;
-    private FFmpegMediaPlayer fmp;
+    private IMediaPlayer imp;
     private boolean ready;
 
     @Override
@@ -117,12 +118,11 @@ public class VideoPlayerActivity extends TranslucentActivity {
     }
 
     private void createMediaPlayer(Uri uri) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-            fmp = new FFmpegMediaPlayer();
-            fmp.setOnPreparedListener(new FFmpegMediaPlayer.OnPreparedListener() {
-
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            imp = new IjkMediaPlayer();
+            imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(FFmpegMediaPlayer mp) {
+                public void onPrepared(IMediaPlayer mp) {
                     ready = true;
                     findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
                     SurfaceView vsv = findViewById(R.id.video_surface_view);
@@ -140,11 +140,10 @@ public class VideoPlayerActivity extends TranslucentActivity {
                     });
                 }
             });
-            fmp.setOnErrorListener(new FFmpegMediaPlayer.OnErrorListener() {
-
+            imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
                 @Override
-                public boolean onError(FFmpegMediaPlayer mp, int what, int extra) {
-                    fmp.release();
+                public boolean onError(IMediaPlayer mp, int what, int extra) {
+                    mp.release();
                     OvkAlertDialog err_dlg;
                     err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
                     AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
@@ -172,8 +171,8 @@ public class VideoPlayerActivity extends TranslucentActivity {
             });
 
             try {
-                fmp.setDataSource(this, uri);
-                fmp.prepareAsync();
+                imp.setDataSource(this, uri);
+                imp.prepareAsync();
             } catch (IllegalArgumentException | IOException | IllegalStateException |
                     SecurityException e) {
                 e.printStackTrace();
@@ -240,11 +239,11 @@ public class VideoPlayerActivity extends TranslucentActivity {
     }
 
     private void rescaleVideo(SurfaceView vsv, SurfaceHolder vsh) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-            vsh.setFixedSize(fmp.getVideoWidth(), fmp.getVideoHeight());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            vsh.setFixedSize(imp.getVideoWidth(), imp.getVideoHeight());
             // Get the width of the frame
-            int videoWidth = fmp.getVideoWidth();
-            int videoHeight = fmp.getVideoHeight();
+            int videoWidth = imp.getVideoWidth();
+            int videoHeight = imp.getVideoHeight();
             float videoProportion = (float) videoWidth / (float) videoHeight;
 
             // Get the width of the screen
@@ -297,11 +296,11 @@ public class VideoPlayerActivity extends TranslucentActivity {
 
     private void playVideo() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
                 if (isPlaying()) {
-                    fmp.pause();
+                    imp.pause();
                 } else {
-                    fmp.start();
+                    imp.start();
                 }
             } else {
                 if (isPlaying()) {
@@ -317,8 +316,8 @@ public class VideoPlayerActivity extends TranslucentActivity {
 
     private boolean isPlaying() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                return fmp.isPlaying();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                return imp.isPlaying();
             } else {
                 return mp.isPlaying();
             }
@@ -333,9 +332,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
             int pos = 0;
             int duration = 0;
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                    pos = fmp.getCurrentPosition() / 1000;
-                    duration = fmp.getDuration() / 1000;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    pos = (int) (imp.getCurrentPosition() / 1000);
+                    duration = (int) (imp.getDuration() / 1000);
                 } else {
                     pos = mp.getCurrentPosition() / 1000;
                     duration = mp.getDuration() / 1000;
