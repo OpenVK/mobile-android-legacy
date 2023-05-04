@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -26,7 +27,9 @@ import java.io.IOException;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
@@ -59,6 +62,7 @@ public class VideoPlayerActivity extends TranslucentActivity {
     private Runnable hideCtrl;
     private int invalid_pos;
     private SurfaceView vsv;
+    private int duration;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -175,6 +179,16 @@ public class VideoPlayerActivity extends TranslucentActivity {
                         return false;
                     }
                 });
+                imp.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(IMediaPlayer iMediaPlayer) {
+                        if(imp.getDuration() > 0) {
+                            ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d",
+                                    duration / 60, duration % 60));
+                            ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
+                        }
+                    }
+                });
 
                 try {
                     imp.setDataSource(this, uri);
@@ -259,6 +273,16 @@ public class VideoPlayerActivity extends TranslucentActivity {
                     return false;
                 }
             });
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    if(mp.getDuration() > 0) {
+                        ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d",
+                                duration / 60, duration % 60));
+                        ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
+                    }
+                }
+            });
 
             try {
                 mp.setDataSource(this, uri);
@@ -266,6 +290,31 @@ public class VideoPlayerActivity extends TranslucentActivity {
             } catch (IllegalArgumentException | IOException | IllegalStateException | SecurityException e) {
                 e.printStackTrace();
             }
+        }
+        ((SeekBar) findViewById(R.id.video_seekbar)).setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                ((SeekBar) findViewById(R.id.video_seekbar)).requestFocus();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                seekProgress(seekBar.getProgress());
+            }
+        });
+    }
+
+    private void seekProgress(int progress) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            imp.seekTo(progress * 1000);
+        } else {
+            mp.seekTo(progress * 1000);
         }
     }
 
@@ -373,22 +422,29 @@ public class VideoPlayerActivity extends TranslucentActivity {
             try {
                 if(invalid_pos != 1) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-                        if (imp.getCurrentPosition() > 0 && imp.getDuration() > 0) {
-                            pos = (int) (imp.getCurrentPosition() / 1000);
-                            duration = (int) (imp.getDuration() / 1000);
-                        } else {
+                        pos = (int) (imp.getCurrentPosition() / 1000);
+                        // calculating video duration workaround
+                        if(this.duration == 0) {
+                            this.duration = (int) (imp.getDuration() / 1000);
+                        }
+                        if (pos < 0 && this.duration < 0) {
+                            pos = 0;
+                            this.duration = 0;
                             invalid_pos = 1;
-                            throw new Error("Incorrect information about the position and/or " +
-                                    "duration of the video");
+                            throw new Error(String.format("Incorrect information about the position and/or " +
+                                    "duration of the video\r\nPosition: %s < 0\r\nDuration: %s < 0",
+                                    imp.getCurrentPosition(), imp.getDuration()));
                         }
                     } else {
-                        if (mp.getCurrentPosition() > 0 && mp.getDuration() > 0) {
-                            pos = mp.getCurrentPosition() / 1000;
-                            duration = mp.getDuration() / 1000;
-                        } else {
+                        pos = mp.getCurrentPosition() / 1000;
+                        this.duration = mp.getDuration() / 1000;
+                        if (pos < 0 && this.duration < 0) {
+                            pos = 0;
+                            this.duration = 0;
                             invalid_pos = 1;
-                            throw new Error("Incorrect information about the position and/or " +
-                                    "duration of the video");
+                            throw new Error(String.format("Incorrect information about the position and/or " +
+                                            "duration of the video\r\nPosition: %s < 0\r\nDuration: %s < 0",
+                                    mp.getCurrentPosition(), mp.getDuration()));
                         }
                     }
                 }
@@ -399,10 +455,10 @@ public class VideoPlayerActivity extends TranslucentActivity {
                 ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d",
                         pos / 60, pos % 60));
                 ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d",
-                        duration / 60, duration % 60));
+                        this.duration / 60, this.duration % 60));
                 if(!((SeekBar) findViewById(R.id.video_seekbar)).isFocused()) {
                     ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(pos);
-                    ((SeekBar) findViewById(R.id.video_seekbar)).setMax(duration);
+                    ((SeekBar) findViewById(R.id.video_seekbar)).setMax(this.duration);
                 }
                 ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().
                         getDrawable(R.drawable.ic_video_pause));
