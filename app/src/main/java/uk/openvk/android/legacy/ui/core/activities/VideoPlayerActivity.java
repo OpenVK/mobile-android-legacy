@@ -17,11 +17,14 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.IOException;
 
@@ -50,7 +53,7 @@ import uk.openvk.android.legacy.api.attachments.VideoAttachment;
  **/
 
 @SuppressWarnings("deprecation")
-public class VideoPlayerActivity extends TranslucentActivity {
+public class VideoPlayerActivity extends Activity {
     private VideoAttachment video;
     private String url;
     private MediaController mediaCtrl;
@@ -63,6 +66,7 @@ public class VideoPlayerActivity extends TranslucentActivity {
     private int invalid_pos;
     private SurfaceView vsv;
     private int duration;
+    private boolean isErr;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +75,10 @@ public class VideoPlayerActivity extends TranslucentActivity {
         loadVideo();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -126,7 +134,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
     }
 
     private void createMediaPlayer(Uri uri) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                !Build.CPU_ABI.equals("x86")
+                && !Build.CPU_ABI.equals("x86_64")) {
             try {
                 imp = new IjkMediaPlayer();
                 imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
@@ -143,7 +153,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
                         new Handler(Looper.myLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                updateControlPanel();
+                                if(!isError()) {
+                                    updateControlPanel();
+                                }
                                 new Handler(Looper.myLooper()).postDelayed(this, 200);
                             }
                         });
@@ -152,6 +164,7 @@ public class VideoPlayerActivity extends TranslucentActivity {
                 imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
                     @Override
                     public boolean onError(IMediaPlayer mp, int what, int extra) {
+                        isErr = true;
                         mp.release();
                         OvkAlertDialog err_dlg;
                         err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
@@ -238,7 +251,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
                     new Handler(Looper.myLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            updateControlPanel();
+                            if(!isError()) {
+                                updateControlPanel();
+                            }
                             new Handler(Looper.myLooper()).postDelayed(this, 200);
                         }
                     });
@@ -248,6 +263,7 @@ public class VideoPlayerActivity extends TranslucentActivity {
 
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
+                    isErr = true;
                     mp.release();
                     OvkAlertDialog err_dlg;
                     err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
@@ -319,7 +335,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
     }
 
     private void rescaleVideo(SurfaceView vsv, SurfaceHolder vsh) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                !Build.CPU_ABI.equals("x86")
+                && !Build.CPU_ABI.equals("x86_64")) {
             vsh.setFixedSize(imp.getVideoWidth(), imp.getVideoHeight());
             // Get the width of the frame
             int videoWidth = imp.getVideoWidth();
@@ -384,7 +402,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
 
     private void playVideo() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                    !Build.CPU_ABI.equals("x86")
+                    && !Build.CPU_ABI.equals("x86_64")) {
                 if (isPlaying()) {
                     imp.pause();
                 } else {
@@ -404,7 +424,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
 
     private boolean isPlaying() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                    !Build.CPU_ABI.equals("x86")
+                    && !Build.CPU_ABI.equals("x86_64")) {
                 return imp.isPlaying();
             } else {
                 return mp.isPlaying();
@@ -421,7 +443,9 @@ public class VideoPlayerActivity extends TranslucentActivity {
             int duration = 0;
             try {
                 if(invalid_pos != 1) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                            !Build.CPU_ABI.equals("x86")
+                            && !Build.CPU_ABI.equals("x86_64")) {
                         pos = (int) (imp.getCurrentPosition() / 1000);
                         // calculating video duration workaround
                         if(this.duration == 0) {
@@ -480,14 +504,28 @@ public class VideoPlayerActivity extends TranslucentActivity {
     @Override
     protected void onDestroy() {
         ready = false;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            imp.stop();
-            imp.release();
-        } else {
-            mp.stop();
-            mp.release();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                    !Build.CPU_ABI.equals("x86")
+                    && !Build.CPU_ABI.equals("x86_64")) {
+                if (isPlaying()) {
+                    imp.stop();
+                }
+                imp.release();
+            } else {
+                if (isPlaying()) {
+                    mp.stop();
+                }
+                mp.release();
+            }
+        } catch (Exception ignored){
+
         }
         handler.removeCallbacks(hideCtrl);
         super.onDestroy();
+    }
+
+    public boolean isError() {
+        return isErr;
     }
 }

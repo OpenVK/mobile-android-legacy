@@ -9,10 +9,18 @@ android {
             storePassword 'GaF@421#'
         }
     }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a','arm64-v8a'
+            universalApk true
+        }
+    }
     lintOptions {
         checkReleaseBuilds false
     }
-    compileSdkVersion 27
+    compileSdkVersion 29
     //noinspection GradleDependency
     buildToolsVersion "29.0.0"
     defaultConfig {
@@ -23,9 +31,6 @@ android {
         targetSdkVersion 29
         versionCode 182
         versionName "1.1.182-stable"
-        ndk {
-            abiFilters "armeabi-v7a", "armeabi", "arm64-v8a", "x86"
-        }
     }
     buildTypes {
         release {
@@ -86,7 +91,6 @@ dependencies {
     compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
     compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
     compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
-    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile project(':actionbar')
     compile project(':popupmenu')

@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,13 +18,19 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v4.view.OnApplyWindowInsetsListener;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowCompat;
+import android.support.v4.view.WindowInsetsCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -62,7 +69,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PhotoViewerActivity extends TranslucentActivity {
+public class PhotoViewerActivity extends Activity {
     private String access_token;
     private SharedPreferences instance_prefs;
     private int owner_id;
@@ -80,8 +87,16 @@ public class PhotoViewerActivity extends TranslucentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance_prefs = getSharedPreferences("instance", 0);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+            }
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         setContentView(R.layout.activity_photo_viewer);
         handler = new Handler() {
@@ -152,6 +167,7 @@ public class PhotoViewerActivity extends TranslucentActivity {
             }
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
+            finish();
         }
     }
 

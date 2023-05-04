@@ -18,8 +18,7 @@
     <uses-sdk tools:overrideLibrary="tv.danmaku.ijk.media.player,
     tv.danmaku.ijk.media.player_armv5,
     tv.danmaku.ijk.media.player_arm64,
-    tv.danmaku.ijk.media.player_armv7a,
-    tv.danmaku.ijk.media.player_x86"/>
+    tv.danmaku.ijk.media.player_armv7a"/>
 
     <application
         android:name=".OvkApplication"

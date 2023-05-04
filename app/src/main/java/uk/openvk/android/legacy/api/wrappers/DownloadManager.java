@@ -356,8 +356,8 @@ public class DownloadManager {
     }
 
     public void downloadOnePhotoToCache(final String url, final String filename, final String where) {
-        if(photoAttachments == null) {
-            Log.e(OvkApplication.DL_TAG, "Attachments array is empty. Download canceled.");
+        if(url == null) {
+            Log.e(OvkApplication.DL_TAG, "URL is empty. Download canceled.");
             return;
         }
         Runnable httpRunnable = new Runnable() {
