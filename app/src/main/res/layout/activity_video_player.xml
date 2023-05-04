@@ -34,18 +34,17 @@
 
     <FrameLayout
         android:id="@+id/video_progress_wrap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center"
-        android:padding="10dip"
-        android:background="@drawable/video_btn_bg">
+        android:background="@drawable/video_btn_bg"
+        android:padding="10dip">
 
         <ProgressBar
             android:id="@+id/video_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminateDrawable="@drawable/progress_light">
-        </ProgressBar>
+            android:indeterminateDrawable="@drawable/progress_light"></ProgressBar>
     </FrameLayout>
 
     <LinearLayout

@@ -55,6 +55,10 @@ public class VideoPlayerActivity extends TranslucentActivity {
     private MediaPlayer mp;
     private IMediaPlayer imp;
     private boolean ready;
+    private Handler handler;
+    private Runnable hideCtrl;
+    private int invalid_pos;
+    private SurfaceView vsv;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +79,7 @@ public class VideoPlayerActivity extends TranslucentActivity {
                 showPlayControls();
             }
         });
+        findViewById(R.id.video_surface_view).setVisibility(View.GONE);
         if(data != null) {
             if(data.containsKey("attachment")) {
                 video = data.getParcelable("attachment");
@@ -119,63 +124,91 @@ public class VideoPlayerActivity extends TranslucentActivity {
 
     private void createMediaPlayer(Uri uri) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            imp = new IjkMediaPlayer();
-            imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(IMediaPlayer mp) {
-                    ready = true;
-                    findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
-                    SurfaceView vsv = findViewById(R.id.video_surface_view);
-                    SurfaceHolder vsh = vsv.getHolder();
-                    rescaleVideo(vsv, vsh);
-                    vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-                    mp.setDisplay(vsh);
-                    mp.start();
-                    new Handler(Looper.myLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateControlPanel();
-                            new Handler(Looper.myLooper()).postDelayed(this, 200);
-                        }
-                    });
-                }
-            });
-            imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(IMediaPlayer mp, int what, int extra) {
-                    mp.release();
-                    OvkAlertDialog err_dlg;
-                    err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
-                    builder.setMessage(R.string.error);
-                    builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
-                    });
-                    builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent tp_player = new Intent(Intent.ACTION_VIEW);
-                            tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
-                            startActivity(tp_player);
-                            finish();
-                        }
-                    });
-                    err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),
-                            null);
-                    err_dlg.show();
-                    return false;
-                }
-            });
-
             try {
-                imp.setDataSource(this, uri);
-                imp.prepareAsync();
-            } catch (IllegalArgumentException | IOException | IllegalStateException |
-                    SecurityException e) {
-                e.printStackTrace();
+                imp = new IjkMediaPlayer();
+                imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(IMediaPlayer mp) {
+                        ready = true;
+                        findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
+                        vsv = findViewById(R.id.video_surface_view);
+                        vsv.setVisibility(View.VISIBLE);
+                        SurfaceHolder vsh = vsv.getHolder();
+                        rescaleVideo(vsv, vsh);
+                        vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+                        mp.setDisplay(vsh);
+                        mp.start();
+                        new Handler(Looper.myLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateControlPanel();
+                                new Handler(Looper.myLooper()).postDelayed(this, 200);
+                            }
+                        });
+                    }
+                });
+                imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+                    @Override
+                    public boolean onError(IMediaPlayer mp, int what, int extra) {
+                        mp.release();
+                        OvkAlertDialog err_dlg;
+                        err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+                        builder.setCancelable(false);
+                        builder.setMessage(R.string.error);
+                        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                finish();
+                            }
+                        });
+                        builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent tp_player = new Intent(Intent.ACTION_VIEW);
+                                tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
+                                startActivity(tp_player);
+                                finish();
+                            }
+                        });
+                        err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),
+                                null);
+                        err_dlg.show();
+                        return false;
+                    }
+                });
+
+                try {
+                    imp.setDataSource(this, uri);
+                    imp.prepareAsync();
+                } catch (IllegalArgumentException | IOException | IllegalStateException |
+                        SecurityException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception ex) {
+                OvkAlertDialog err_dlg;
+                err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+                builder.setCancelable(false);
+                builder.setMessage(R.string.error);
+                builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent tp_player = new Intent(Intent.ACTION_VIEW);
+                        tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
+                        startActivity(tp_player);
+                        finish();
+                    }
+                });
+                err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),
+                        null);
+                err_dlg.show();
             }
         } else {
             mp = new MediaPlayer();
@@ -285,13 +318,21 @@ public class VideoPlayerActivity extends TranslucentActivity {
     }
 
     public void showPlayControls() {
+        if(handler == null) {
+            handler = new Handler(Looper.myLooper());
+        }
         findViewById(R.id.video_bottombar).setVisibility(View.VISIBLE);
-        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.video_bottombar).setVisibility(View.GONE);
-            }
-        }, 5000);
+        if(hideCtrl != null) {
+            handler.removeCallbacks(hideCtrl);
+        } else {
+            hideCtrl = new Runnable() {
+                @Override
+                public void run() {
+                    findViewById(R.id.video_bottombar).setVisibility(View.GONE);
+                }
+            };
+        }
+        handler.postDelayed(hideCtrl, 5000);
     }
 
     private void playVideo() {
@@ -332,14 +373,29 @@ public class VideoPlayerActivity extends TranslucentActivity {
             int pos = 0;
             int duration = 0;
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-                    pos = (int) (imp.getCurrentPosition() / 1000);
-                    duration = (int) (imp.getDuration() / 1000);
-                } else {
-                    pos = mp.getCurrentPosition() / 1000;
-                    duration = mp.getDuration() / 1000;
+                if(invalid_pos != 1) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                        if (imp.getCurrentPosition() > 0 && imp.getDuration() > 0) {
+                            pos = (int) (imp.getCurrentPosition() / 1000);
+                            duration = (int) (imp.getDuration() / 1000);
+                        } else {
+                            invalid_pos = 1;
+                            throw new Error("Incorrect information about the position and/or " +
+                                    "duration of the video");
+                        }
+                    } else {
+                        if (mp.getCurrentPosition() > 0 && mp.getDuration() > 0) {
+                            pos = mp.getCurrentPosition() / 1000;
+                            duration = mp.getDuration() / 1000;
+                        } else {
+                            invalid_pos = 1;
+                            throw new Error("Incorrect information about the position and/or " +
+                                    "duration of the video");
+                        }
+                    }
                 }
-            } catch (Exception ignored) {
+            } catch (Error | Exception err) {
+                err.printStackTrace();
             }
             if (isPlaying()) {
                 ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d",
@@ -365,5 +421,19 @@ public class VideoPlayerActivity extends TranslucentActivity {
         SurfaceView vsv = VideoPlayerActivity.this.findViewById(R.id.video_surface_view);
         SurfaceHolder vsh = vsv.getHolder();
         rescaleVideo(vsv, vsh);
+    }
+
+    @Override
+    protected void onDestroy() {
+        ready = false;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            imp.stop();
+            imp.release();
+        } else {
+            mp.stop();
+            mp.release();
+        }
+        handler.removeCallbacks(hideCtrl);
+        super.onDestroy();
     }
 }
