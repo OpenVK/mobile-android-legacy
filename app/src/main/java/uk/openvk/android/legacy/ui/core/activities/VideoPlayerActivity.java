@@ -79,7 +79,6 @@ public class VideoPlayerActivity extends TranslucentActivity {
                 showPlayControls();
             }
         });
-        findViewById(R.id.video_surface_view).setVisibility(View.GONE);
         if(data != null) {
             if(data.containsKey("attachment")) {
                 video = data.getParcelable("attachment");
@@ -132,7 +131,6 @@ public class VideoPlayerActivity extends TranslucentActivity {
                         ready = true;
                         findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
                         vsv = findViewById(R.id.video_surface_view);
-                        vsv.setVisibility(View.VISIBLE);
                         SurfaceHolder vsh = vsv.getHolder();
                         rescaleVideo(vsv, vsh);
                         vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
