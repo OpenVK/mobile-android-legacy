@@ -152,9 +152,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     api_app_indicator.setImageDrawable(ctx.getResources().
                             getDrawable(R.drawable.ic_api_android_app_indicator));
                 } else if(item.post_source.platform.equals("iphone")) {
-                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
+                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(
+                            R.drawable.ic_api_ios_app_indicator));
                 } else if(item.post_source.platform.equals("mobile")) {
-                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
+                    api_app_indicator.setImageDrawable(ctx.getResources().getDrawable(
+                            R.drawable.ic_api_mobile_indicator));
                 } else {
                     api_app_indicator.setVisibility(View.GONE);
                 }

@@ -113,11 +113,7 @@ public class Newsfeed implements Parcelable {
                     String content = post.getString("text");
                     boolean verified_author = false;
                     boolean isLiked = false;
-                    if(likes.getInt("user_likes") > 0) {
-                        isLiked = true;
-                    } else {
-                        isLiked = false;
-                    }
+                    isLiked = likes.getInt("user_likes") > 0;
                     PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"),
                             reposts.getInt("count"), isLiked, false);
 
@@ -190,17 +186,9 @@ public class Newsfeed implements Parcelable {
                                         avatar_url = group.getString("photo_100");
                                         if(group.has("verified")) {
                                             if(group.get("verified") instanceof Integer) {
-                                                if (group.getInt("verified") == 1) {
-                                                    verified_author = true;
-                                                } else {
-                                                    verified_author = false;
-                                                }
+                                                verified_author = group.getInt("verified") == 1;
                                             } else {
-                                                if (group.getBoolean("verified")) {
-                                                    verified_author = true;
-                                                } else {
-                                                    verified_author = false;
-                                                }
+                                                verified_author = group.getBoolean("verified");
                                             }
                                         }
                                     }
@@ -225,17 +213,9 @@ public class Newsfeed implements Parcelable {
                                     avatar_url = group.getString("photo_100");
                                     if(group.has("verified")) {
                                         if(group.get("verified") instanceof Integer) {
-                                            if (group.getInt("verified") == 1) {
-                                                verified_author = true;
-                                            } else {
-                                                verified_author = false;
-                                            }
+                                            verified_author = group.getInt("verified") == 1;
                                         } else {
-                                            if (group.getBoolean("verified")) {
-                                                verified_author = true;
-                                            } else {
-                                                verified_author = false;
-                                            }
+                                            verified_author = group.getBoolean("verified");
                                         }
                                     }
                                 }
@@ -300,12 +280,16 @@ public class Newsfeed implements Parcelable {
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                     photo_high_size = photo_sizes.getJSONObject(8).getString("url");
                     photo_original_size = photo_sizes.getJSONObject(10).getString("url");
-                    if(quality.equals("medium")) {
-                        photoAttachment.url = photo_medium_size;
-                    } else if(quality.equals("high")) {
-                        photoAttachment.url = photo_high_size;
-                    } else if(quality.equals("original")) {
-                        photoAttachment.url = photo_original_size;
+                    switch (quality) {
+                        case "medium":
+                            photoAttachment.url = photo_medium_size;
+                            break;
+                        case "high":
+                            photoAttachment.url = photo_high_size;
+                            break;
+                        case "original":
+                            photoAttachment.url = photo_original_size;
+                            break;
                     }
                     photoAttachment.original_url = photo_original_size;
                     photoAttachment.filename = String.format("newsfeed_attachment_o%sp%s", owner_id, post_id);

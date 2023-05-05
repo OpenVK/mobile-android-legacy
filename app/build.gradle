@@ -29,8 +29,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 182
-        versionName "1.1.182-stable"
+        versionCode 183
+        versionName "1.1.183-stable"
     }
     buildTypes {
         release {
@@ -44,8 +44,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 182
-            versionName "1.1.182-alpha.m2"
+            versionCode 183
+            versionName "1.1.183-alpha.m2"
         }
         betaConfig {
             applicationId "uk.openvk.android.legacy"
@@ -53,15 +53,15 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 182
-            versionName "1.1.182-beta"
+            versionCode 183
+            versionName "1.1.183-beta"
         }
         stableConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 182
-            versionName '1.1.182-stable'
+            versionCode 183
+            versionName '1.1.183-stable'
             proguardFile 'app/OpenVK KeyStore.jks'
             signingConfig signingConfigs.def_signing
         }

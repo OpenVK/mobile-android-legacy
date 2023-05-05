@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -67,7 +68,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-@SuppressWarnings({"ResultOfMethodCallIgnored", "StatementWithEmptyBody"})
+@SuppressWarnings({"ResultOfMethodCallIgnored", "StatementWithEmptyBody", "ConstantConditions"})
 public class DownloadManager {
 
     public String server;
@@ -215,18 +216,30 @@ public class DownloadManager {
                 }
                 for (int i = 0; i < photoAttachments.size(); i++) {
                     filesize = 0;
+                    File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                            ctx.getCacheDir(), where), filename);
                     PhotoAttachment photoAttachment = photoAttachments.get(i);
                     if(photoAttachment.url == null) {
                         photoAttachment.url = "";
                     }
-                    if(filename.equals(photoAttachment.filename)) {
-                        //Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping...");
+                    Date lastModDate;
+                    if(downloadedFile.exists()) {
+                        lastModDate = new Date(downloadedFile.lastModified());
+                    } else {
+                        lastModDate = new Date(0);
+                    }
+                    long time_diff = System.currentTimeMillis() - lastModDate.getTime();
+                    TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+                    if(downloadedFile.exists() && downloadedFile.length() >= 5120 &&
+                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 15000L &&
+                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 86400000L) {
+                        if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
+                                "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
+                                + " ms | Filesize: " + downloadedFile.length() + " bytes");
                     } else if (photoAttachment.url.length() == 0) {
                         filename = photoAttachment.filename;
-                        //Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
+                        if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                         try {
-                            File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                                    ctx.getCacheDir(), where), filename);
                             if(downloadedFile.exists()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 byte[] bytes = new byte[1];
@@ -262,8 +275,6 @@ public class DownloadManager {
                                 StatusLine statusLine = response.getStatusLine();
                                 response_in = response.getEntity().getContent();
                                 content_length = response.getEntity().getContentLength();
-                                File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                                        ctx.getCacheDir(), where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -273,7 +284,7 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response_in.close();
                                 response_code = statusLine.getStatusCode();
@@ -281,7 +292,7 @@ public class DownloadManager {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
                                 content_length = response.body().contentLength();
-                                File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                                downloadedFile = new File(String.format("%s/photos_cache/%s",
                                         ctx.getCacheDir(), where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
@@ -455,14 +466,19 @@ public class DownloadManager {
                                 response.close();
                             }
                         }
-                        if(logging_enabled) Log.v("DownloadManager",
-                                String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
+                        if(response_code == 200) {
+                            if (logging_enabled) Log.v("DownloadManager",
+                                    String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
+                        } else {
+                            if(logging_enabled) Log.e(OvkApplication.DL_TAG,
+                                    String.format("Download error: %s", response_code));
+                        }
                     } catch (Exception e) {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                 String.format("Download error: %s", e.getMessage()));
                     }
                 }
-                Log.v("DownloadManager", String.format("Downloaded!"));
+                Log.v("DownloadManager", "Downloaded!");
                 switch (where) {
                     case "account_avatar":
                         sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);

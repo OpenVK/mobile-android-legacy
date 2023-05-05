@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActiv
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
+import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
@@ -337,6 +339,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                         ex.printStackTrace();
                     }
                 } else {
+                    ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
                     if (user.friends_status == 0) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
@@ -363,8 +366,11 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     friends.get(ovk_api, user.id, 10, "profile_counter");
                 } else {
                     profileFragment.hideHeaderButtons(this, getWindowManager());
-                    activity_menu.removeItem(0);
+                    if(activity_menu != null) {
+                        activity_menu.getItem(0).setVisible(false);
+                    }
                     profileFragment.hideTabSelector();
+                    profileFragment.getHeader().hideExpandArrow();
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     createActionPopupMenu(activity_menu);
@@ -395,6 +401,12 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openNewPostActivity();
+                    }
+                });
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))

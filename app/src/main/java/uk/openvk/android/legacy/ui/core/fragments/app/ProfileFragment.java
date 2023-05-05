@@ -275,4 +275,8 @@ public class ProfileFragment extends Fragment {
     public void hideTabSelector() {
         ((ProfileWallSelector) view.findViewById(R.id.wall_selector)).setVisibility(GONE);
     }
+
+    public ProfileHeader getHeader() {
+        return view.findViewById(R.id.profile_header);
+    }
 }

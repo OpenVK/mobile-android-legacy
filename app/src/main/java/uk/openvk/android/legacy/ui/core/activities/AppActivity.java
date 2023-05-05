@@ -1279,11 +1279,6 @@ public class AppActivity extends TranslucentFragmentActivity {
             if(activity_menu != null) {
                 activity_menu.clear();
             }
-            try {
-                activity_menu.findItem(R.id.remove_friend).setVisible(false);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.profile));
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
