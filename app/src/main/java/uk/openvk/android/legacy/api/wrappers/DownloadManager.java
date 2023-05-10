@@ -231,8 +231,8 @@ public class DownloadManager {
                     long time_diff = System.currentTimeMillis() - lastModDate.getTime();
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
                     if(downloadedFile.exists() && downloadedFile.length() >= 5120 &&
-                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 15000L &&
-                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 86400000L) {
+                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 60000L &&
+                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
                                 "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
                                 + " ms | Filesize: " + downloadedFile.length() + " bytes");
