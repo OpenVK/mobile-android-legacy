@@ -2,6 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
+        // Shit, I don't know how else, if I reinstall the system
+        // almost every 4 months along with Android Studio :|
+        // https://github.com/openvk/mobile-android-legacy/issues/107
+        //
+        // Dmitry Tretyakov
         def_signing {
             storeFile file('OpenVK KeyStore.jks')
             keyAlias 'ovk_default_key'
