@@ -142,6 +142,7 @@ public class VideoPlayerActivity extends Activity {
                 imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(IMediaPlayer mp) {
+                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         ready = true;
                         findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
                         vsv = findViewById(R.id.video_surface_view);
@@ -164,6 +165,7 @@ public class VideoPlayerActivity extends Activity {
                 imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
                     @Override
                     public boolean onError(IMediaPlayer mp, int what, int extra) {
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         isErr = true;
                         mp.release();
                         OvkAlertDialog err_dlg;
@@ -195,6 +197,7 @@ public class VideoPlayerActivity extends Activity {
                 imp.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(IMediaPlayer iMediaPlayer) {
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         if(imp.getDuration() > 0) {
                             ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d",
                                     duration / 60, duration % 60));
@@ -240,6 +243,7 @@ public class VideoPlayerActivity extends Activity {
             mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     ready = true;
                     findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
                     SurfaceView vsv = VideoPlayerActivity.this.findViewById(R.id.video_surface_view);
@@ -263,6 +267,7 @@ public class VideoPlayerActivity extends Activity {
 
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     isErr = true;
                     mp.release();
                     OvkAlertDialog err_dlg;
@@ -292,6 +297,7 @@ public class VideoPlayerActivity extends Activity {
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     if(mp.getDuration() > 0) {
                         ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d",
                                 duration / 60, duration % 60));

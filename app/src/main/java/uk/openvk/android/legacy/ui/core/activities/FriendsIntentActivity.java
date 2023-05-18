@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -71,6 +72,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
     private int user_id = 0;
     private FragmentTransaction ft;
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +117,8 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                 if (path.startsWith("openvk://friends/")) {
                     String args = path.substring("openvk://friends/".length());
                     ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                    ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                            global_prefs.getString("proxy_address", ""));
                     ovk_api.setServer(instance_prefs.getString("server", ""));
                     ovk_api.setAccessToken(access_token);
                     users = new Users();
@@ -144,6 +148,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);

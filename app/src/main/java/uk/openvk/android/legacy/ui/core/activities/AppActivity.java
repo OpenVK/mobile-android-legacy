@@ -175,7 +175,8 @@ public class AppActivity extends TranslucentFragmentActivity {
         installFragments();
         Global global = new Global();
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
+        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
@@ -638,13 +639,11 @@ public class AppActivity extends TranslucentFragmentActivity {
     public void onSlidingMenuItemClicked(int position) {
         global_prefs_editor = global_prefs.edit();
         try {
-            if (position < 4) {
-                if (!((OvkApplication) getApplicationContext()).isTablet) {
-                    menu.toggle(true);
-                }
-                if (activity_menu != null) {
-                    activity_menu.clear();
-                }
+            if (!((OvkApplication) getApplicationContext()).isTablet) {
+                menu.toggle(true);
+            }
+            if (activity_menu != null) {
+                activity_menu.clear();
             }
         } catch (Exception ignored) {
 
@@ -784,7 +783,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.menu_settings));
             ft.hide(selectedFragment);
-            ft.show(getSupportFragmentManager().findFragmentByTag("settings"));
+            ft.show(mainSettingsFragment);
             errorLayout.setVisibility(View.GONE);
             progressLayout.setVisibility(View.GONE);
             findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);

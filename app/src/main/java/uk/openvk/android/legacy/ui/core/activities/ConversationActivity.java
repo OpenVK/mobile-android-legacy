@@ -102,6 +102,8 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_conversation_msgs);
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                global_prefs.getString("proxy_address", ""));
         conversation = new Conversation();
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
         installLayouts();

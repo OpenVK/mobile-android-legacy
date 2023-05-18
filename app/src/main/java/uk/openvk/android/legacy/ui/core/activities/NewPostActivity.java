@@ -97,7 +97,8 @@ public class NewPostActivity extends TranslucentActivity {
                 inputStream_isClosed = false;
                 server = getApplicationContext().getSharedPreferences("instance", 0)
                         .getString("server", "");
-                auth_token = getApplicationContext().getSharedPreferences("instance", 0).getString("auth_token", "");
+                auth_token = getApplicationContext().getSharedPreferences("instance", 0)
+                        .getString("auth_token", "");
                 if (owner_id == 0) {
                     finish();
                 }
@@ -107,11 +108,14 @@ public class NewPostActivity extends TranslucentActivity {
                     public void handleMessage(Message message) {
                         Bundle data = message.getData();
                         if(!BuildConfig.BUILD_TYPE.equals("release"))
-                            Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                            Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
+                                    message.what));
                         receiveState(message.what, data);
                     }
                 };
                 ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                        global_prefs.getString("proxy_address", ""));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 response_sb = new StringBuilder();

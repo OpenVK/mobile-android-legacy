@@ -138,7 +138,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }
         };
@@ -160,6 +161,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 account = new Account(this);
                 likes = new Likes();
                 ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                        global_prefs.getString("proxy_address", ""));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(access_token);
                 account.getProfileInfo(ovk_api);
@@ -272,7 +275,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
                         getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.setText(String.format("http://%s/id%s", instance_prefs.getString("server", ""), user.id));
+                clipboard.setText(String.format("http://%s/id%s",
+                        instance_prefs.getString("server", ""), user.id));
             } else {
                 android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
                         getSystemService(Context.CLIPBOARD_SERVICE);
@@ -397,7 +401,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 users.parseSearch(data.getString("response"));
                 users.getUser(ovk_api, users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""), data.getString("response"));
+                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""),
+                        data.getString("response"));
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
@@ -428,9 +433,11 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                         .select(likes.position, "likes", 0);
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 WallPost item = wall.getWallItems().get(item_pos);
-                for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                for(int attachment_index = 0; attachment_index < item.attachments.size();
+                    attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment poll = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                        PollAttachment poll = ((PollAttachment)
+                                item.attachments.get(attachment_index).getContent());
                         poll.user_votes = 0;
                         PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
@@ -442,16 +449,19 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 }
             } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
                 WallPost item = wall.getWallItems().get(item_pos);
-                for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                for(int attachment_index = 0; attachment_index < item.attachments.size();
+                    attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment poll = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                        PollAttachment poll = ((PollAttachment) item.attachments
+                                .get(attachment_index).getContent());
                         poll.user_votes = 0;
                         PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
                         item.attachments.get(attachment_index).setContent(poll);
                         wall.getWallItems().set(item_pos, item);
-                        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).updateItem(item, item_pos);
+                        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                                .updateItem(item, item_pos);
                     }
                 }
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
@@ -473,9 +483,11 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                             errorLayout.setVisibility(View.VISIBLE);
                         } else {
                             if (data.getString("method").equals("Wall.get")) {
-                                ((WallErrorLayout) profileFragment.getView().findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                                ((WallErrorLayout) profileFragment.getView()
+                                        .findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                             } else {
-                                Toast.makeText(this, getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                                Toast.makeText(this, getResources().getString(R.string.err_text),
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -541,7 +553,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
         try {
             intent.putExtra("peer_id", peer_id);
-            intent.putExtra("conv_title", String.format("%s %s", users.getList().get(0).first_name, users.getList().get(0).last_name));
+            intent.putExtra("conv_title", String.format("%s %s", users.getList().get(0).first_name,
+                    users.getList().get(0).last_name));
             if(users.getList().get(0).online) {
                 intent.putExtra("online", 1);
             } else {
@@ -574,7 +587,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             try {
                 intent.putExtra("post_id", item.post_id);
                 intent.putExtra("owner_id", item.owner_id);
-                intent.putExtra("author_name", String.format("%s %s", account.user.first_name, account.user.last_name));
+                intent.putExtra("author_name", String.format("%s %s", account.user.first_name,
+                        account.user.last_name));
                 intent.putExtra("author_id", account.id);
                 intent.putExtra("post_author_id", item.author_id);
                 intent.putExtra("post_author_name", item.name);
@@ -695,7 +709,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         try {
             intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
             intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
-            intent.putExtra("author_name", String.format("%s %s", account.first_name, account.last_name));
+            intent.putExtra("author_name", String.format("%s %s", account.first_name,
+                    account.last_name));
             intent.putExtra("author_id", account.id);
             intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
             intent.putExtra("post_author_name", item.repost.newsfeed_item.name);

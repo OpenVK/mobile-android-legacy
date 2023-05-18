@@ -78,6 +78,8 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
         }
         app = ((OvkApplication) getApplicationContext());
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk = new Ovk();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
