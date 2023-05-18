@@ -157,6 +157,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                 account = new Account(this);
                 likes = new Likes();
                 ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
+                        global_prefs.getString("proxy_address", ""));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(access_token);
                 account.getProfileInfo(ovk_api);
