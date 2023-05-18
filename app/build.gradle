@@ -95,6 +95,7 @@ dependencies {
     compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
     compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
     compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
+    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile project(':actionbar')
     compile project(':popupmenu')
