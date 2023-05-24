@@ -2,17 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        // Shit, I don't know how else, if I reinstall the system
-        // almost every 4 months along with Android Studio :|
-        // https://github.com/openvk/mobile-android-legacy/issues/107
-        //
-        // Dmitry Tretyakov
-        def_signing {
-            storeFile file('OpenVK KeyStore.jks')
-            keyAlias 'ovk_default_key'
-            keyPassword 'GaF@421#'
-            storePassword 'GaF@421#'
-        }
+        if (project.hasProperty('keystorePassword')) {
+			release {
+				storeFile file(property('keystoreFile'))
+				storePassword property('keystorePassword')
+				keyAlias property('keystoreAlias')
+				keyPassword property('keystorePassword')
+			}
+		}
     }
     splits {
         abi {
@@ -50,6 +47,10 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-alpha.m2"
+            if (project.hasProperty('keystorePassword')) {
+				//noinspection GroovyAssignabilityCheck
+				signingConfig signingConfigs.release
+			}
         }
         betaConfig {
             applicationId "uk.openvk.android.legacy"
@@ -59,6 +60,10 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-beta"
+            if (project.hasProperty('keystorePassword')) {
+				//noinspection GroovyAssignabilityCheck
+				signingConfig signingConfigs.release
+			}
         }
         stableConfig {
             minSdkVersion 7
@@ -68,6 +73,10 @@ android {
             versionName '1.1.185-stable'
             proguardFile 'app/OpenVK KeyStore.jks'
             signingConfig signingConfigs.def_signing
+            if (project.hasProperty('keystorePassword')) {
+				//noinspection GroovyAssignabilityCheck
+				signingConfig signingConfigs.release
+			}
         }
     }
     compileOptions {
