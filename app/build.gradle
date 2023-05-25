@@ -1,8 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        if (project.hasProperty('.signing/app')) {
+    if (new File('.signing/app.props').exists()) {
+        Properties props = new Properties();
+        props.load(new FileInputStream(".signing/app.props"))
+        signingConfigs {
 			release {
 				storeFile file(property('RELEASE_STORE_FILE'))
 				storePassword property('RELEASE_STORE_PASSWORD')
