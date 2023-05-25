@@ -1109,7 +1109,7 @@
 	<string name="newpost_export_tg">Экспорт в Telegram</string>
 	<string name="enter_topic_title">Введите название темы</string>
 	<string name="create_topic_explain">Для создания темы отправьте первое сообщение</string>
-	<string name="post_show_full">Показать полностью...</string>
+	<string name="post_show_full">Показать полностью…</string>
 	<string name="empty_list">Список пуст</string>
 	<string name="news_banlist_empty">Вы не скрыли ни одного источника из ленты новостей</string>
 	<string name="personal">Жизненная позиция</string>
