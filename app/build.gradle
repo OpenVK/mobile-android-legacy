@@ -40,30 +40,31 @@ android {
         }
     }
     productFlavors {
-        alphaConfig {
+        prereleaseConfig {
             applicationId "uk.openvk.android.legacy"
             //noinspection MinSdkTooLow
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 185
-            versionName "1.1.185-alpha.m2"
+            versionName "1.1.185-alpha.m2-d"
         }
-        betaConfig {
-            applicationId "uk.openvk.android.legacy"
-            //noinspection MinSdkTooLow
-            minSdkVersion 7
-            //noinspection OldTargetApi
-            targetSdkVersion 29
-            versionCode 185
-            versionName "1.1.185-beta"
-        }
-        stableConfig {
+        releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
             versionCode 185
-            versionName '1.1.185-stable'
+            versionName '1.1.185-stable-r'
+            signingConfig signingConfigs.release
+        }
+        fdroidConfig {
+            applicationId "uk.openvk.android.legacy"
+            //noinspection MinSdkTooLow
+            minSdkVersion 7
+            //noinspection OldTargetApi
+            targetSdkVersion 29
+            versionCode 185
+            versionName "1.1.185-alpha.m2-f"
             signingConfig signingConfigs.release
         }
     }
