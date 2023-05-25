@@ -2,8 +2,9 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        release {
-            if (file('.signing/app.prop').exists()) {
+
+        if (file('.signing/app.prop').exists()) {
+            release {
                 Properties props = new Properties();
                 props.load(new FileInputStream(file(".signing/app.prop")))
                 storeFile file(props['RELEASE_STORE_FILE'])
@@ -66,7 +67,9 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName '1.1.185-stable-r'
-            signingConfig signingConfigs.release
+            if (file('.signing/app.prop').exists()) {
+                signingConfig signingConfigs.release
+            }
         }
         fdroidConfig {
             applicationId "uk.openvk.android.legacy"
@@ -76,7 +79,9 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-alpha.m2-f"
-            signingConfig signingConfigs.release
+            if (file('.signing/app.prop').exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {
