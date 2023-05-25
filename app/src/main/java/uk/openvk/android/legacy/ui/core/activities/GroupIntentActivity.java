@@ -511,6 +511,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     public void showGroup(int position) {
         String url = "openvk://group/" + "id" + groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setPackage("uk.openvk.android.legacy");
         i.setData(Uri.parse(url));
         startActivity(i);
     }
@@ -601,11 +602,13 @@ public class GroupIntentActivity extends TranslucentActivity {
             if (item.author_id < 0) {
                 String url = "openvk://group/" + "id" + -item.author_id;
                 Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setPackage("uk.openvk.android.legacy");
                 i.setData(Uri.parse(url));
                 startActivity(i);
             } else {
                 String url = "openvk://profile/" + "id" + item.author_id;
                 Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setPackage("uk.openvk.android.legacy");
                 i.setData(Uri.parse(url));
                 startActivity(i);
             }

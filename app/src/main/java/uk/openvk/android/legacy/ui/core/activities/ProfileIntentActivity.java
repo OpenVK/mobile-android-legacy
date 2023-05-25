@@ -290,6 +290,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             String user_url = String.format("http://%s/id%s",
                     instance_prefs.getString("server", ""), user.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(user_url));
             startActivity(i);
         } else if(item.getItemId() == R.id.remove_friend) {
@@ -528,6 +529,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
         if(action.length() > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(url));
             startActivity(i);
         }
