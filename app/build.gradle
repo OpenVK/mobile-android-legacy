@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    if (new File('.signing/app.props').exists()) {
-        Properties props = new Properties();
-        props.load(new FileInputStream(".signing/app.props"))
-        signingConfigs {
-			release {
-				storeFile file(property('RELEASE_STORE_FILE'))
-				storePassword property('RELEASE_STORE_PASSWORD')
-				keyAlias property('RELEASE_KEY_ALIAS')
-				keyPassword property('RELEASE_KEY_PASSWORD')
-			}
-		}
+    signingConfigs {
+        release {
+            if (file('.signing/app.prop').exists()) {
+                Properties props = new Properties();
+                props.load(new FileInputStream(file(".signing/app.prop")))
+                storeFile file(props['RELEASE_STORE_FILE'])
+                storePassword props['RELEASE_STORE_PASSWORD']
+                keyAlias props['RELEASE_KEY_ALIAS']
+                keyPassword props['RELEASE_KEY_PASSWORD']
+            }
+        }
     }
     splits {
         abi {
@@ -48,10 +48,6 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-alpha.m2"
-            if (project.hasProperty('.signing/app')) {
-				//noinspection GroovyAssignabilityCheck
-				signingConfig signingConfigs.release
-			}
         }
         betaConfig {
             applicationId "uk.openvk.android.legacy"
@@ -61,10 +57,6 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-beta"
-            if (project.hasProperty('.signing/app')) {
-				//noinspection GroovyAssignabilityCheck
-				signingConfig signingConfigs.release
-			}
         }
         stableConfig {
             minSdkVersion 7
@@ -72,10 +64,7 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName '1.1.185-stable'
-            if (project.hasProperty('.signing/app')) {
-				//noinspection GroovyAssignabilityCheck
-				signingConfig signingConfigs.release
-			}
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
