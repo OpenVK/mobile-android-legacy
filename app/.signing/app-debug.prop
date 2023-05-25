@@ -1,0 +1,4 @@
+RELEASE_STORE_FILE=.signing/openvk-debug.jks
+RELEASE_STORE_PASSWORD=ovk_debug
+RELEASE_KEY_ALIAS=ovk_legacy
+RELEASE_KEY_PASSWORD=ovk_debug
