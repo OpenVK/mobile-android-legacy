@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        if (project.hasProperty('keystorePassword')) {
+        if (project.hasProperty('.signing/app')) {
 			release {
-				storeFile file(property('keystoreFile'))
-				storePassword property('keystorePassword')
-				keyAlias property('keystoreAlias')
-				keyPassword property('keystorePassword')
+				storeFile file(property('RELEASE_STORE_FILE'))
+				storePassword property('RELEASE_STORE_PASSWORD')
+				keyAlias property('RELEASE_KEY_ALIAS')
+				keyPassword property('RELEASE_KEY_PASSWORD')
 			}
 		}
     }
@@ -35,7 +35,6 @@ android {
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.def_signing
         }
     }
     productFlavors {
@@ -47,7 +46,7 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-alpha.m2"
-            if (project.hasProperty('keystorePassword')) {
+            if (project.hasProperty('.signing/app')) {
 				//noinspection GroovyAssignabilityCheck
 				signingConfig signingConfigs.release
 			}
@@ -60,7 +59,7 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName "1.1.185-beta"
-            if (project.hasProperty('keystorePassword')) {
+            if (project.hasProperty('.signing/app')) {
 				//noinspection GroovyAssignabilityCheck
 				signingConfig signingConfigs.release
 			}
@@ -71,9 +70,7 @@ android {
             targetSdkVersion 29
             versionCode 185
             versionName '1.1.185-stable'
-            proguardFile 'app/OpenVK KeyStore.jks'
-            signingConfig signingConfigs.def_signing
-            if (project.hasProperty('keystorePassword')) {
+            if (project.hasProperty('.signing/app')) {
 				//noinspection GroovyAssignabilityCheck
 				signingConfig signingConfigs.release
 			}
