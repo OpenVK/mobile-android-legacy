@@ -165,13 +165,15 @@ public class ProfileFragment extends Fragment {
 
     public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {
         TextView friend_status = ((TextView) view.findViewById(R.id.friend_status));
+        int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         ImageButton add_to_friends_btn = ((ImageButton) view.findViewById(R.id.add_to_friends));
+        ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).leftMargin = 8 * dp;
+        ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).rightMargin = 0;
         if(user.friends_status == 0) {
             friend_status.setVisibility(GONE);
             LinearLayout.LayoutParams layoutParams =
                     ((LinearLayout.LayoutParams) view.findViewById(R.id.send_direct_msg)
                             .getLayoutParams());
-            layoutParams.rightMargin = 0;
             view.findViewById(R.id.send_direct_msg).setLayoutParams(layoutParams);
             add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
         } else if(user.friends_status == 1) {

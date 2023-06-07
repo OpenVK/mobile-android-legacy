@@ -253,6 +253,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         String url = "openvk://profile/" + "id" + user_id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
+        i.setPackage(getPackageName());
         startActivity(i);
     }
 
