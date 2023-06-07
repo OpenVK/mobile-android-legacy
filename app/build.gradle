@@ -1,8 +1,34 @@
 apply plugin: 'com.android.application'
 
+def getGitHubCommit = {
+    try {
+        def hashOutput = new ByteArrayOutputStream()
+        def changeOutput = new ByteArrayOutputStream()
+        def gitVersionName
+        exec {
+            commandLine 'git', 'rev-list', '--max-count=1', 'HEAD'
+            standardOutput = hashOutput
+        }
+        exec {
+            commandLine 'git', 'diff-index', '--shortstat', 'HEAD'
+            standardOutput = changeOutput
+        }
+        gitVersionName = hashOutput.toString().trim().substring(0, 7);
+        if (!changeOutput.toString().trim().empty) {
+            def pattern = Pattern.compile("\\d+");
+            def matcher = pattern.matcher(changeOutput.toString().trim())
+            if (matcher.find()) {
+                gitVersionName += "-" + matcher.group()
+            }
+        }
+        return gitVersionName
+    } catch (ignored) {
+        return "UNKNOWN";
+    }
+}
+
 android {
     signingConfigs {
-
         if (file('.signing/app.prop').exists()) {
             release {
                 Properties props = new Properties();
@@ -48,6 +74,10 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
+        }
+        debug {
+            buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
         }
     }
     productFlavors {
@@ -58,7 +88,7 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 185
-            versionName "1.1.185-alpha.m2-d"
+            versionName "1.1.186-alpha.m2-d"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
@@ -66,7 +96,7 @@ android {
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
             versionCode 185
-            versionName '1.1.185-stable-r'
+            versionName '1.1.186-stable-r'
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -78,7 +108,7 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 185
-            versionName "1.1.185-alpha.m2-f"
+            versionName "1.1.186-alpha.m2-f"
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
             }

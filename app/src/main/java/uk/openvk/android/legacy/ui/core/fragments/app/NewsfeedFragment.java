@@ -322,40 +322,38 @@ public class NewsfeedFragment extends Fragment {
     }
 
     public void adjustLayoutSize(int orientation) {
-        if(newsfeed != null) {
-            try {
-                if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
-                                LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)),
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                        newsfeedView.setLayoutParams(layoutParams);
-                    } else {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
-                                LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                        newsfeedView.setLayoutParams(layoutParams);
-                    }
+        try {
+            if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                            LayoutParams((int) (600 * (getResources().getDisplayMetrics().density)),
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    newsfeedView.setLayoutParams(layoutParams);
                 } else {
-                    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
-                                LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)),
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                        newsfeedView.setLayoutParams(layoutParams);
-                    } else {
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.
-                                LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                        newsfeedView.setLayoutParams(layoutParams);
-                    }
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                            LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    newsfeedView.setLayoutParams(layoutParams);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } else {
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                            LayoutParams((int) (480 * (getResources().getDisplayMetrics().density)),
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    newsfeedView.setLayoutParams(layoutParams);
+                } else {
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.
+                            LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    newsfeedView.setLayoutParams(layoutParams);
+                }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

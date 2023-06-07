@@ -81,10 +81,13 @@ public class WallLayout extends LinearLayout {
                     @Override
                     public void run() {
                         requestLayout();
-                        if (getWidth() >= (int) (600 * getContext().getResources().getDisplayMetrics().density)) {
-                            adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+                        if (getWidth() >= (int)
+                                (600 * getContext().getResources().getDisplayMetrics().density)) {
+                            adjustLayoutSize(getContext().getResources().getConfiguration()
+                                    .orientation);
                         } else {
-                            LinearLayout.LayoutParams layoutParams = new LayoutParams(getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT);
+                            LinearLayout.LayoutParams layoutParams = new LayoutParams(getWidth(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
                             layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                             wallView.setLayoutParams(layoutParams);
                         }
@@ -136,7 +139,8 @@ public class WallLayout extends LinearLayout {
                         if(item.repost != null) {
                             if (item.repost.newsfeed_item.attachments.size() > 0) {
                                 if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                    PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.newsfeed_item.attachments.get(0).getContent());
+                                    PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost
+                                            .newsfeed_item.attachments.get(0).getContent());
                                     Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                     if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
                                         if(photoAttachment.photo != null) {
@@ -149,8 +153,12 @@ public class WallLayout extends LinearLayout {
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                         if (photoAttachment.url.length() > 0) {
                                             Bitmap bitmap = BitmapFactory.decodeFile(
-                                                    String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s", getContext().getCacheDir(),
-                                                    item.repost.newsfeed_item.owner_id, item.repost.newsfeed_item.post_id), options);
+                                                    String.format("%s/photos_cache" +
+                                                                    "/wall_photo_attachments/" +
+                                                                    "wall_attachment_o%sp%s",
+                                                            getContext().getCacheDir(),
+                                                    item.repost.newsfeed_item.owner_id,
+                                                            item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
                                                 photoAttachment.photo = bitmap;
                                                 attachment.status = "done";
@@ -171,19 +179,24 @@ public class WallLayout extends LinearLayout {
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             if(item.attachments.size() > 0) {
                                 if(item.attachments.get(0).type.equals("photo")) {
-                                    PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
+                                    PhotoAttachment photoAttachment = ((PhotoAttachment)
+                                            item.attachments.get(0).getContent());
                                     if (photoAttachment.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(
-                                                String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
-                                                        getContext().getCacheDir(), item.owner_id, item.post_id), options);
+                                                String.format("%s/photos_cache/wall_photo_attachments/" +
+                                                                "wall_attachment_o%sp%s",
+                                                        getContext().getCacheDir(),
+                                                        item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
-                                            ((PhotoAttachment) item.attachments.get(0).getContent()).photo = bitmap;
+                                            ((PhotoAttachment) item.attachments.get(0).getContent())
+                                                    .photo = bitmap;
                                             item.attachments.get(0).status = "done";
                                         } else if(photoAttachment.url.length() > 0) {
                                             item.attachments.get(0).status = "error";
                                         }
                                     }
-                                } else if(!item.attachments.get(0).type.equals("poll") && !item.attachments.get(0).type.equals("video")) {
+                                } else if(!item.attachments.get(0).type.equals("poll") &&
+                                        !item.attachments.get(0).type.equals("video")) {
                                     item.attachments.get(0).status = "not_supported";
                                 }
                             }
@@ -193,9 +206,11 @@ public class WallLayout extends LinearLayout {
                         Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
                     } catch (Exception ex) {
                         if(ex.getMessage() != null) {
-                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
+                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s",
+                                    ex.getMessage()));
                         } else {
-                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getClass().getSimpleName()));
+                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s",
+                                    ex.getClass().getSimpleName()));
                         }
                     }
                 }
@@ -249,7 +264,8 @@ public class WallLayout extends LinearLayout {
     public void limitWidth(final int width) {
         this.addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int leftWas, int topWas, int rightWas, int bottomWas )
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int leftWas, int topWas, int rightWas, int bottomWas )
             {
                 int widthWas = rightWas - leftWas;
                 if( v.getWidth() != widthWas ) {
@@ -297,13 +313,15 @@ public class WallLayout extends LinearLayout {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 wallView = (RecyclerView) findViewById(R.id.wall_listview);
                 LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
-                        (600 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                        (600 * (getResources().getDisplayMetrics().density)),
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             } else {
                 wallView = (RecyclerView) findViewById(R.id.wall_listview);
                 LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             }
@@ -311,7 +329,8 @@ public class WallLayout extends LinearLayout {
             wallView = (RecyclerView) findViewById(R.id.wall_listview);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
-                        (480 * (getResources().getDisplayMetrics().density)), ViewGroup.LayoutParams.WRAP_CONTENT);
+                        (480 * (getResources().getDisplayMetrics().density)),
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);
             } else {

@@ -41,8 +41,10 @@ public class SlidingMenuLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(getResources().getColor(R.color.transparent));
-        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(getResources().getColor(R.color.transparent));
+        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
+                getResources().getColor(R.color.transparent));
+        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
+                getResources().getColor(R.color.transparent));
         ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,7 +56,8 @@ public class SlidingMenuLayout extends LinearLayout {
         TextView profile_name = (TextView) findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
         TextView version_name = findViewById(R.id.version_label);
-        version_name.setText(getResources().getString(R.string.app_version_text, BuildConfig.VERSION_NAME));
+        version_name.setText(getResources().getString(R.string.app_version_s,
+                BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             version_name.setVisibility(GONE);
         }
@@ -65,8 +68,10 @@ public class SlidingMenuLayout extends LinearLayout {
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
-        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(getResources().getColor(R.color.transparent));
-        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(getResources().getColor(R.color.transparent));
+        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
+                getResources().getColor(R.color.transparent));
+        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
+                getResources().getColor(R.color.transparent));
         ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +83,8 @@ public class SlidingMenuLayout extends LinearLayout {
         TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
         TextView version_name = findViewById(R.id.version_label);
-        version_name.setText(getResources().getString(R.string.app_version_text, BuildConfig.VERSION_NAME));
+        version_name.setText(getResources().getString(R.string.app_version_s,
+                BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             version_name.setVisibility(GONE);
         }
@@ -137,7 +143,8 @@ public class SlidingMenuLayout extends LinearLayout {
                 account.user.avatar = null;
             }
         }
-        if(account.user.avatar != null) ((ImageView) findViewById(R.id.avatar)).setImageBitmap(account.user.avatar);
+        if(account.user.avatar != null) ((ImageView) findViewById(R.id.avatar))
+                .setImageBitmap(account.user.avatar);
 
     }
     

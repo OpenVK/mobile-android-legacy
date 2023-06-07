@@ -96,7 +96,8 @@
     <string name="cancel">Скасувати</string>
     <string name="ok">OK</string>
 
-    <string name="app_version_text">Версія %1$s</string>
+    <string name="app_version_text">Версія: %1$s\r\nКоммiт: %2$s</string>
+    <string name="app_version_s">Версія %1$s (%2$s)</string>
 
     <string-array name="like_menu">
 	    <item>Не подобається</item>

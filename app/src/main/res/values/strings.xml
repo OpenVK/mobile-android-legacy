@@ -99,7 +99,8 @@
 	<string name="cancel">Cancel</string>
 	<string name="ok">OK</string>
 
-	<string name="app_version_text">Version %1$s</string>
+	<string name="app_version_text">Version: %1$s\r\nCommit: %2$s</string>
+	<string name="app_version_s">Version %1$s (%2$s)</string>
 
 	<string-array name="like_menu">
 		<item>Unlike</item>
