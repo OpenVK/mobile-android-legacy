@@ -255,8 +255,11 @@ public class OvkAPIWrapper {
                             } else {
                                 sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                             }
+                        } else if (response_code == 301 && !use_https) {
+                            sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                        } else if (response_code == 302 && !use_https) {
+                            sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                         }
-                        ;
                     } catch (ProtocolException | UnknownHostException | ConnectException e) {
                         if (logging_enabled) {
                             if (e.getMessage() != null) {

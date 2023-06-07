@@ -79,7 +79,7 @@ public class OvkAlertDialog extends AlertDialog {
         if(title.length() > 0) {
             builder.setTitle(title);
         } else {
-            builder.setTitle("OpenVK");
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) builder.setTitle("OpenVK");
         }
         this.title = title;
         if(dlg_view == null) {
@@ -89,6 +89,7 @@ public class OvkAlertDialog extends AlertDialog {
                     TextView message_tv = dlg_view.findViewById(android.R.id.message);
                     message_tv.setText(message);
                     builder.setView(dlg_view);
+                    builder.setCancelable(false);
                 } else if(type.equals("listDlg")) {
                     builder.setView(null);
                 } else {
