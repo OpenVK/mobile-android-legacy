@@ -3,6 +3,8 @@ package uk.openvk.android.legacy;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
@@ -138,5 +140,16 @@ public class Global {
 
     public static String formatLinksAsHtml(String subtitle) {
         return subtitle;
+    }
+
+    public static void fixWindowPadding(View view, Resources.Theme theme) {
+        // Fixes cropped content in Android API 28 (9)+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            final TypedArray styledAttributes = theme.obtainStyledAttributes(
+                    new int[] { android.R.attr.actionBarSize });
+            int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin = mActionBarSize;
+        }
     }
 }

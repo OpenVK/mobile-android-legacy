@@ -1022,13 +1022,21 @@ public class SlidingMenu extends RelativeLayout {
                         setPadding(leftPadding, topPadding, rightPadding, navigation_height);
                         break;
                     case Surface.ROTATION_90:
-                        setPadding(leftPadding, topPadding, navigation_width, bottomPadding);
+                    	if(navigation_width > 60) {
+							setPadding(leftPadding, topPadding, navigation_width, bottomPadding);
+						} else {
+							setPadding(leftPadding, topPadding, rightPadding, navigation_width);
+						}
                         break;
                     case Surface.ROTATION_180:
                         setPadding(leftPadding, nav_height_id, rightPadding, bottomPadding);
                         break;
                     default:
-                        setPadding(navigation_width, topPadding, rightPadding, bottomPadding);
+                        if(navigation_width > 60) {
+                            setPadding(navigation_width, topPadding, rightPadding, bottomPadding);
+                        } else {
+                            setPadding(leftPadding, topPadding, rightPadding, navigation_width);
+                        }
                         break;
                 }
             }

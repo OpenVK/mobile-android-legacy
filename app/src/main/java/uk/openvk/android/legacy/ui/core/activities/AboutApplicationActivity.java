@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
@@ -16,9 +17,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.Locale;
-
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
@@ -165,5 +166,11 @@ public class AboutApplicationActivity extends TranslucentActivity {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Global.fixWindowPadding(findViewById(R.id.about_layout), getTheme());
     }
 }
