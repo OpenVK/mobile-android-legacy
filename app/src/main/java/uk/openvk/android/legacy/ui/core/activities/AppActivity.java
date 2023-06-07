@@ -44,6 +44,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import org.json.JSONObject;
 
@@ -891,8 +892,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     ex.printStackTrace();
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET) {
-                ((SwipeRefreshLayout) newsfeedFragment.getView().
-                        findViewById(R.id.refreshable_layout)).setRefreshing(false);
+                ((CustomSwipeRefreshLayout) newsfeedFragment.getView().
+                        findViewById(R.id.refreshable_layout)).refreshComplete();
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                             global_prefs.getString("proxy_address", ""));
@@ -919,8 +920,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                             .scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
-                ((SwipeRefreshLayout) newsfeedFragment.getView().findViewById(R.id.refreshable_layout))
-                        .setRefreshing(false);
+                ((CustomSwipeRefreshLayout) newsfeedFragment.getView().
+                        findViewById(R.id.refreshable_layout)).refreshComplete();
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                             global_prefs.getString("proxy_address", ""));

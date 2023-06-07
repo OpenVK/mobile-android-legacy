@@ -22,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -93,10 +95,8 @@ public class NewsfeedFragment extends Fragment {
             newsfeedAdapter.setArray(wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
         }
-        SwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setProgressBackgroundColorSchemeResource(R.color.ovk_color);
-        p2r_news_view.setColorSchemeResources(android.R.color.white);
-        p2r_news_view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 if(getActivity().getClass().getSimpleName().equals("AppActivity")) {
