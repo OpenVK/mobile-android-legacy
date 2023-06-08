@@ -107,8 +107,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 186
-            versionName "1.1.186-alpha.m2-f"
+            versionCode 187
+            versionName "1.1.187-alpha.m2-f"
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
             }
