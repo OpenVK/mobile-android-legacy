@@ -7,7 +7,7 @@ _[English](https://github.com/openvk/mobile-android-legacy/blob/master/README.md
 **OpenVK Legacy** - мобильный клиент для ретро-устройств, работающие на Android 2.1 Eclair и выше.\
 _Работает на OpenVK API._
 
-мы будем рады принять ваши сообщения об ошибках [в нашем баг-трекере](https://github.com/openvk/mobile-android-legacy/projects/1).
+Мы будем рады принять ваши сообщения об ошибках [в нашем баг-трекере](https://github.com/openvk/mobile-android-legacy/projects/1).
 
 ![featureGraphic](https://github.com/openvk/mobile-android-legacy/blob/main/fastlane/metadata/android/en-US/images/featureGraphic.png)
 
