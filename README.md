@@ -1,5 +1,8 @@
 # OpenVK Legacy for Android
-_Author: [Dmitry Tretyakov (Tinelix)](https://github.com/tretdm)_
+
+_[Русский](https://github.com/openvk/mobile-android-legacy/blob/master/README_RU.md)_
+
+Author: [Dmitry Tretyakov (Tinelix)](https://github.com/tretdm)
 
 **OpenVK Legacy** is mobile client for retro devices running Android 2.1 Eclair and higher.\
 _Powered by OpenVK API._
