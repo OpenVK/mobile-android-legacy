@@ -61,6 +61,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
         ViewGroup.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View header = inflater.inflate(R.layout.pull_to_refresh, null);
+        header.setBackgroundColor(Color.WHITE);
         p2r_tv = header.findViewById(R.id.p2r_text);
         p2r_arrow = header.findViewById(R.id.p2r_arrow);
         p2r_arrow.setImageDrawable(getResources().getDrawable(R.drawable.ic_pull_arrow));
@@ -73,6 +74,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
         if (DEBUG)
             Log.d("csrh", "onStateChange state = " + state + ", lastState = " + lastState);
         int stateCode = state.getRefreshState();
+        float percent = state.getPercent();
         int lastStateCode = lastState.getRefreshState();
         switch (stateCode) {
             case CustomSwipeRefreshLayout.State.STATE_NORMAL:
@@ -82,24 +84,24 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
                     p2r_tv.setText(R.string.pull_to_refresh);
                 }
             case CustomSwipeRefreshLayout.State.STATE_READY:
-                if (stateCode != lastStateCode) {
+                if(percent > 1.08) {
                     p2r_arrow.setVisibility(View.VISIBLE);
                     p2r_progress.setVisibility(View.GONE);
                     setImageRotation(180);
                     p2r_tv.setText(R.string.release_to_refresh);
+                } else {
+                    p2r_arrow.clearAnimation();
+                    setImageRotation(0);
+                    p2r_progress.setVisibility(View.GONE);
+                    p2r_tv.setText(R.string.pull_to_refresh);
                 }
                 break;
             case CustomSwipeRefreshLayout.State.STATE_REFRESHING:
                 if (stateCode != lastStateCode) {
-                    p2r_arrow.setVisibility(View.VISIBLE);
-                    p2r_progress.setVisibility(View.GONE);
-                    setImageRotation(180);
-                    p2r_tv.setText(R.string.release_to_refresh);
                     p2r_arrow.clearAnimation();
                     p2r_arrow.setVisibility(View.GONE);
                     p2r_progress.setVisibility(View.VISIBLE);
                     p2r_tv.setText(R.string.refreshing);
-
                 }
         }
     }

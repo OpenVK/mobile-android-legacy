@@ -98,7 +98,7 @@ public class NewsfeedFragment extends Fragment {
         }
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
         p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
-        p2r_news_view.setTriggerDistance(76);
+        p2r_news_view.setTriggerDistance(80);
         p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
