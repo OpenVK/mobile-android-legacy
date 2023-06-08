@@ -393,13 +393,13 @@ public class CustomSwipeRefreshLayout extends ViewGroup {
             ret = ViewCompat.canScrollHorizontally(view, direction);
         }
 
-        ret = ret || canChildrenScroolHorizontally(view, event, direction);
+        ret = ret || canChildrenScrollHorizontally(view, event, direction);
         if (DEBUG)
             Log.d(TAG, "canViewScrollHorizontally " + view.getClass().getName() + " " + ret);
         return ret;
     }
 
-    private boolean canChildrenScroolHorizontally(View view, MotionEvent event, int direction) {
+    private boolean canChildrenScrollHorizontally(View view, MotionEvent event, int direction) {
         if (view instanceof ViewGroup) {
             final ViewGroup viewgroup = (ViewGroup) view;
             int count = viewgroup.getChildCount();
@@ -1125,6 +1125,8 @@ public class CustomSwipeRefreshLayout extends ViewGroup {
             distance = 0;
         mTriggerDistance = distance;
     }
+
+
 
     /**
      * Classes that wish to be notified when the swipe gesture correctly

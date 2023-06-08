@@ -39,6 +39,7 @@ import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
+import uk.openvk.android.legacy.ui.view.layouts.OvkRefreshableHeaderLayout;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -96,6 +97,8 @@ public class NewsfeedFragment extends Fragment {
             newsfeedAdapter.notifyDataSetChanged();
         }
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
+        p2r_news_view.setTriggerDistance(76);
         p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

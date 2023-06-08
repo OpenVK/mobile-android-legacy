@@ -29,7 +29,11 @@ android {
     }
 }
 
+// Modified repo link
+def modSiteUrl = 'https://github.com/tinelix/SwipeRefreshLayout'
+def modGitUrl = 'https://github.com/tinelix/SwipeRefreshLayout.git'
 
+// Original repo link
 def siteUrl = 'https://github.com/xyxyLiu/SwipeRefreshLayout'
 def gitUrl = 'https://github.com/xyxyLiu/SwipeRefreshLayout.git'
 

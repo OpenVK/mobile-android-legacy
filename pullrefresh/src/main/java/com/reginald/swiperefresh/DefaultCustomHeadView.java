@@ -53,10 +53,10 @@ public class DefaultCustomHeadView extends LinearLayout implements CustomSwipeRe
         mContainer = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.default_swiperefresh_head_layout, null);
         addView(mContainer, lp);
         setGravity(Gravity.BOTTOM);
-        mImageView = (ImageView) findViewById(R.id.p2r_arrow);
-        mMainTextView = (TextView) findViewById(R.id.p2r_text);
-        //mSubTextView = (TextView) findViewById(R.id.default_header_time);
-        //mProgressBar = (ProgressBar) findViewById(R.id.default_header_progressbar);
+        mImageView = (ImageView) findViewById(R.id.default_header_arrow);
+        mMainTextView = (TextView) findViewById(R.id.default_header_textview);
+        mSubTextView = (TextView) findViewById(R.id.default_header_time);
+        mProgressBar = (ProgressBar) findViewById(R.id.default_header_progressbar);
 
         setupAnimation();
 
@@ -85,18 +85,15 @@ public class DefaultCustomHeadView extends LinearLayout implements CustomSwipeRe
         if (stateCode == CustomSwipeRefreshLayout.State.STATE_COMPLETE) {
             mImageView.clearAnimation();
             mImageView.setVisibility(View.INVISIBLE);
-            if(mProgressBar != null)
             mProgressBar.setVisibility(View.INVISIBLE);
         } else if (stateCode == CustomSwipeRefreshLayout.State.STATE_REFRESHING) {
             // show progress
             mImageView.clearAnimation();
             mImageView.setVisibility(View.INVISIBLE);
-            if(mProgressBar != null)
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
             // show arrow
             mImageView.setVisibility(View.VISIBLE);
-            if(mProgressBar != null)
             mProgressBar.setVisibility(View.INVISIBLE);
         }
 
@@ -133,13 +130,11 @@ public class DefaultCustomHeadView extends LinearLayout implements CustomSwipeRe
     public void updateData() {
 
         String time = fetchData();
-        if(mSubTextView != null) {
-            if (time != null) {
-                mSubTextView.setVisibility(VISIBLE);
-                mSubTextView.setText(time);
-            } else {
-                mSubTextView.setVisibility(GONE);
-            }
+        if (time != null) {
+            mSubTextView.setVisibility(VISIBLE);
+            mSubTextView.setText(time);
+        } else {
+            mSubTextView.setVisibility(GONE);
         }
 
     }

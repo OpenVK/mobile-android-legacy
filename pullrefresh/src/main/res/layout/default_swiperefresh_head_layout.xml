@@ -1,51 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    OPENVK LEGACY LICENSE NOTIFICATION
 
-    This program is free software: you can redistribute it and/or modify it under the terms of
-    the GNU Affero General Public License as published by the Free Software Foundation, either
-    version 3 of the License, or (at your option) any later version.
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License along with this
-    program. If not, see https://www.gnu.org/licenses/.
-
-    Source code: https://github.com/openvk/mobile-android-legacy
-!-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:gravity="bottom|clip_vertical"
-    android:orientation="vertical">
+    android:gravity="bottom">
 
-    <TextView
-        android:id="@+id/p2r_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="csr_text_state_normal" />
+    <RelativeLayout
+        android:id="@+id/default_header_content"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp">
 
-    <ImageView
-        android:id="@+id/p2r_arrow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:src="@drawable/ic_pull_arrow_white" />
+        <LinearLayout
+            android:id="@+id/default_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@+id/p2r_progressbar"
-        style="@android:style/Widget.ProgressBar.Inverse"
-        android:layout_width="38dip"
-        android:layout_height="38dip"
-        android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:indeterminateDrawable="@drawable/p2r_progress"
-        android:indeterminateDuration="700"
-        android:visibility="gone"></ProgressBar>
+            <!-- text -->
+
+            <TextView
+                android:id="@+id/default_header_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+            <!-- last update -->
+
+            <TextView
+                android:id="@+id/default_header_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="#999999"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/default_image_view">
+
+            <!-- arrow -->
+
+            <ImageView
+                android:id="@+id/default_header_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/pulltorefresh" />
+
+            <!-- progressbar -->
+
+            <ProgressBar
+                android:id="@+id/default_header_progressbar"
+                style="@android:style/Widget.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>

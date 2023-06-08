@@ -19,7 +19,8 @@
     tv.danmaku.ijk.media.player_armv5,
     tv.danmaku.ijk.media.player_arm64,
     tv.danmaku.ijk.media.player_armv7a,
-    tv.danmaku.ijk.media.player_x86"/>
+    tv.danmaku.ijk.media.player_x86,
+    com.reginald.swiperefresh"/>
 
     <application
         android:name=".OvkApplication"
