@@ -257,7 +257,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         ((TextView) about_instance_view.findViewById(R.id.rules_link)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openWebAddress(String.format("http://%s/about", instance_prefs.getString("server", "")));
+                openWebAddress(String.format("http://%s/terms", instance_prefs.getString("server", "")));
             }
         });
         ((TextView) about_instance_view.findViewById(R.id.privacy_link)).setOnClickListener(new View.OnClickListener() {

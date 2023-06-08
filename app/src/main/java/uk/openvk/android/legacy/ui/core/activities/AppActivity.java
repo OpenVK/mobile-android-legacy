@@ -667,6 +667,7 @@ public class AppActivity extends TranslucentFragmentActivity {
 
     @SuppressLint("CommitTransaction")
     public void onSlidingMenuItemClicked(int position) {
+        // sh*tcode probably
         global_prefs_editor = global_prefs.edit();
         try {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
@@ -795,6 +796,9 @@ public class AppActivity extends TranslucentFragmentActivity {
             newsfeed.get(ovk_api, newsfeed_count);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 actionBar = findViewById(R.id.actionbar);
+                if(actionBar.getActionCount() > 0) {
+                    actionBar.removeAllActions();
+                }
                 actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
                     @Override
                     public int getDrawable() {
@@ -821,6 +825,10 @@ public class AppActivity extends TranslucentFragmentActivity {
             selectedFragment = mainSettingsFragment;
             global_prefs_editor.putString("current_screen", "settings");
             global_prefs_editor.commit();
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                actionBar = findViewById(R.id.actionbar);
+                actionBar.removeAllActions();
+            }
         } else {
             Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
         }
