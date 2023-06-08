@@ -69,8 +69,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 185
-        versionName "1.1.185-stable"
+        versionCode 187
+        versionName "1.1.187-alpha-m2"
     }
     buildTypes {
         release {
@@ -87,16 +87,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 185
-            versionName "1.1.186-alpha.m2-d"
+            versionCode 187
+            versionName "1.1.187-alpha.m2-d"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 185
-            versionName '1.1.186-stable-r'
+            versionCode 187
+            versionName '1.1.187-stable-r'
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -107,7 +107,7 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 185
+            versionCode 186
             versionName "1.1.186-alpha.m2-f"
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
@@ -143,5 +143,5 @@ dependencies {
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile project(':actionbar')
     compile project(':popupmenu')
-    compile project(':pullrefresh')
+    compile 'com.reginald.swiperefresh:library:1.1.2'
 }
