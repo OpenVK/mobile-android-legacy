@@ -8,10 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,13 +16,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.OnApplyWindowInsetsListener;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.WindowInsetsCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -37,7 +29,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
@@ -50,12 +41,12 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.Account;
@@ -120,21 +111,20 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 public class AppActivity extends TranslucentFragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
-    private LongPollService longPollService;
     private DownloadManager downloadManager;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
+    public SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
     private SlidingMenu menu;
-    private ProgressLayout progressLayout;
-    private ErrorLayout errorLayout;
-    private NewsfeedFragment newsfeedFragment;
-    private ProfileFragment profileFragment;
-    private FriendsFragment friendsFragment;
-    private ConversationsFragment conversationsFragment;
-    private MainSettingsFragment mainSettingsFragment;
+    public ProgressLayout progressLayout;
+    public ErrorLayout errorLayout;
+    public NewsfeedFragment newsfeedFragment;
+    public ProfileFragment profileFragment;
+    public FriendsFragment friendsFragment;
+    public ConversationsFragment conversationsFragment;
+    public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
     private Account account;
     private Newsfeed newsfeed;
@@ -147,7 +137,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     private User user;
     private Likes likes;
     private Menu activity_menu;
-    private GroupsFragment groupsFragment;
+    public GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
     private String last_longpoll_response;
     private int item_pos;
@@ -159,8 +149,8 @@ public class AppActivity extends TranslucentFragmentActivity {
     private dev.tinelix.retro_ab.ActionBar actionBar;
     private LongPollReceiver lpReceiver;
     private FragmentTransaction ft;
-    private Fragment selectedFragment;
-    private static String TAG = "OpenVK";
+    public Fragment selectedFragment;
+    private FragmentNavigator fn;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -504,7 +494,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         groupsFragment = new GroupsFragment();
         mainSettingsFragment = new MainSettingsFragment();
         friendsFragment.setActivityContext(this);
-
+        fn = new FragmentNavigator(this);
         if(activity_menu == null) {
             android.support.v7.widget.PopupMenu p  = new android.support.v7.widget
                     .PopupMenu(this, null);
@@ -628,16 +618,15 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void refreshPage(String screen) {
+        errorLayout.setVisibility(View.GONE);
         if(screen.equals("subscriptions_newsfeed")) {
             menu_id = R.menu.newsfeed;
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if (newsfeedFragment.getCount() == 0) {
                 findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.GONE);
             }
             if (newsfeed == null) {
@@ -650,11 +639,9 @@ public class AppActivity extends TranslucentFragmentActivity {
             setActionBarTitle(getResources().getString(R.string.newsfeed));
             if (newsfeedFragment.getCount() == 0) {
                 findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
             } else {
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                errorLayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.GONE);
             }
             if (newsfeed == null) {
@@ -667,7 +654,11 @@ public class AppActivity extends TranslucentFragmentActivity {
 
     @SuppressLint("CommitTransaction")
     public void onSlidingMenuItemClicked(int position) {
-        // sh*tcode probably
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            actionBar = findViewById(R.id.actionbar);
+            actionBar.removeAllActions();
+            createActionPopupMenu(activity_menu, false);
+        }
         global_prefs_editor = global_prefs.edit();
         try {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
@@ -683,117 +674,38 @@ public class AppActivity extends TranslucentFragmentActivity {
         if(position == 0) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.friends));
-            if(friendsFragment.getCount() == 0) {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("friends"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-            } else {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("friends"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
-            }
-            ft.commit();
-            selectedFragment = friendsFragment;
-            global_prefs_editor.putString("current_screen", "friends");
-            global_prefs_editor.commit();
+            fn.navigateTo("friends", ft);
             if(friends == null) {
                 friends = new Friends();
             }
             friends.get(ovk_api, account.id, 25, "friends_list");
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBar = findViewById(R.id.actionbar);
-                actionBar.removeAllActions();
-                createActionPopupMenu(activity_menu, false);
-            }
         } else if(position == 1) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));
-            if(conversationsFragment.getCount() == 0) {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("messages"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-            } else {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("messages"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
-            }
-            ft.commit();
-            selectedFragment = conversationsFragment;
-            global_prefs_editor.putString("current_screen", "messages");
-            global_prefs_editor.commit();
+            fn.navigateTo("messages", ft);
             if(messages == null) {
                 messages = new Messages();
             }
             messages.getConversations(ovk_api);
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBar = findViewById(R.id.actionbar);
-                actionBar.removeAllActions();
-                createActionPopupMenu(activity_menu, false);
-            }
         } else if(position == 2) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.groups));
-            if(groupsFragment.getCount() == 0) {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("groups"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-            } else {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("groups"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
-            }
-            ft.commit();
-            selectedFragment = groupsFragment;
-            global_prefs_editor.putString("current_screen", "groups");
-            global_prefs_editor.commit();
+            fn.navigateTo("groups", ft);
             if(groups == null) {
                 groups = new Groups();
             }
             groups.getGroups(ovk_api, account.id, 25);
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBar = findViewById(R.id.actionbar);
-                actionBar.removeAllActions();
-                createActionPopupMenu(activity_menu, false);
-            }
         } else if(position == 3) {
             setActionBar("custom_newsfeed");
             menu_id = R.menu.newsfeed;
             onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
-            if(newsfeedFragment.getCount() == 0) {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("newsfeed"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-            } else {
-                ft.hide(selectedFragment);
-                ft.show(getSupportFragmentManager().findFragmentByTag("newsfeed"));
-                errorLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
-            }
-            ft.commit();
-            selectedFragment = newsfeedFragment;
-            global_prefs_editor.putString("current_screen", "newsfeed");
-            global_prefs_editor.commit();
+            fn.navigateTo("newsfeed", ft);
             if(newsfeed == null) {
                 newsfeed = new Newsfeed();
+                newsfeed_count = 25;
+                newsfeed.get(ovk_api, newsfeed_count);
             }
-            newsfeed_count = 25;
-            newsfeed.get(ovk_api, newsfeed_count);
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 actionBar = findViewById(R.id.actionbar);
                 if(actionBar.getActionCount() > 0) {
@@ -816,19 +728,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             Context context = getApplicationContext();
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.menu_settings));
-            ft.hide(selectedFragment);
-            ft.show(mainSettingsFragment);
-            errorLayout.setVisibility(View.GONE);
-            progressLayout.setVisibility(View.GONE);
-            findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-            ft.commit();
-            selectedFragment = mainSettingsFragment;
-            global_prefs_editor.putString("current_screen", "settings");
-            global_prefs_editor.commit();
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBar = findViewById(R.id.actionbar);
-                actionBar.removeAllActions();
-            }
+            fn.navigateTo("settings", ft);
         } else {
             Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
         }
@@ -1039,11 +939,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                 friends.parse(data.getString("response"), downloadManager, true, false);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 friendsFragment.createAdapter(this, friendsList, "friends");
-                if(old_friends_size == friends.getFriends().size()) {
-                    friendsFragment.setScrollingPositions(this, false);
-                } else {
-                    friendsFragment.setScrollingPositions(this, true);
-                }
+                friendsFragment.setScrollingPositions(this,
+                        old_friends_size != friends.getFriends().size());
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 if(global_prefs.getString("current_screen", "").equals("friends")) {
                     friends.requests.remove(friendsFragment.requests_cursor_index);
@@ -1094,11 +991,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
                 groupsFragment.createAdapter(this, groupsList);
-                if(old_friends_size == groups.getList().size()) {
-                    groupsFragment.setScrollingPositions(this, false);
-                } else {
-                    groupsFragment.setScrollingPositions(this, true);
-                }
+                groupsFragment.setScrollingPositions(this,
+                        old_friends_size != groups.getList().size());
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
@@ -1240,6 +1134,13 @@ public class AppActivity extends TranslucentFragmentActivity {
                     message == HandlerMessages.INSTANCE_UNAVAILABLE ||
                     message == HandlerMessages.BROKEN_SSL_CONNECTION ||
                     message == HandlerMessages.UNKNOWN_ERROR) {
+
+                errorLayout.setTitle(getResources().getString(R.string.err_text));
+                errorLayout.setIcon("error");
+                errorLayout.setReason(message);
+                errorLayout.setData(data);
+                errorLayout.setRetryAction(this);
+
                 if(data.containsKey("method")) {
                     try {
                         if (data.getString("method").equals("Account.getProfileInfo") ||
@@ -1279,11 +1180,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        errorLayout.setTitle(getResources().getString(R.string.err_text));
-                        errorLayout.setIcon("error");
-                        errorLayout.setReason(message);
-                        errorLayout.setData(data);
-                        errorLayout.setRetryAction(this);
                         progressLayout.setVisibility(View.GONE);
                         errorLayout.setVisibility(View.VISIBLE);
                     }
@@ -1291,10 +1187,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                     if(account.first_name == null && account.last_name == null) {
                         slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                     }
-                    errorLayout.setTitle(getResources().getString(R.string.err_text));
-                    errorLayout.setIcon("error");
-                    errorLayout.setReason(message);
-                    errorLayout.setData(data);
                     errorLayout.hideRetryButton();
                     progressLayout.setVisibility(View.GONE);
                     errorLayout.setVisibility(View.VISIBLE);
@@ -1576,19 +1468,16 @@ public class AppActivity extends TranslucentFragmentActivity {
         } else {
             item = newsfeed.getWallPosts().get(position);
         }
+        String url = "";
         if(item.author_id < 0) {
-            String url = "openvk://group/" + "club" + -item.author_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse(url));
-            startActivity(i);
+            url = "openvk://group/" + "club" + -item.author_id;
         } else {
-            String url = "openvk://profile/" + "id" + item.author_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse(url));
-            startActivity(i);
+            url = "openvk://profile/" + "id" + item.author_id;
         }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setPackage("uk.openvk.android.legacy");
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
     public void loadMoreNews() {
@@ -1814,17 +1703,18 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void repost(int position) {
+        final WallPost post = wall.getWallItems().get(position);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final ArrayList<String> functions = new ArrayList<>();
+        builder.setTitle(R.string.repost_dlg_title);
+        functions.add(getResources().getString(R.string.repost_own_wall));
+        ArrayAdapter adapter =
+                new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+        builder.setSingleChoiceItems(adapter, -1, null);
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
         if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
-            final WallPost post = newsfeed.getWallPosts().get(position);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final ArrayList<String> functions = new ArrayList<>();
-            builder.setTitle(R.string.repost_dlg_title);
-            functions.add(getResources().getString(R.string.repost_own_wall));
-            ArrayAdapter adapter =
-                    new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
-            builder.setSingleChoiceItems(adapter, -1, null);
-            final AlertDialog dialog = builder.create();
-            dialog.show();
             dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1834,16 +1724,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
             });
         } else if(global_prefs.getString("current_screen", "").equals("profile")) {
-            final WallPost post = wall.getWallItems().get(position);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final ArrayList<String> functions = new ArrayList<>();
-            builder.setTitle(R.string.repost_dlg_title);
-            functions.add(getResources().getString(R.string.repost_own_wall));
-            ArrayAdapter adapter =
-                    new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
-            builder.setSingleChoiceItems(adapter, -1, null);
-            final AlertDialog dialog = builder.create();
-            dialog.show();
             dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
