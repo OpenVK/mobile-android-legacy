@@ -98,6 +98,15 @@ public class PopupMenu {
         return item;
     }
 
+    public MenuItem add(int itemId, String title) {
+        MenuItem item = new MenuItem();
+        item.setItemId(itemId);
+        item.setTitle(title);
+        mItems.add(item);
+
+        return item;
+    }
+
     /**
      * Show popup menu.
      */
@@ -200,7 +209,11 @@ public class PopupMenu {
      */
     public void setHeaderTitle(CharSequence title) {
         mHeaderTitleView.setText(title);
-        mHeaderTitleView.setVisibility(View.VISIBLE);
+        if(title.length() > 0) {
+            mHeaderTitleView.setVisibility(View.VISIBLE);
+        } else {
+            mHeaderTitleView.setVisibility(View.GONE);
+        }
         mHeaderTitleView.requestFocus();
     }
 

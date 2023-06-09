@@ -34,6 +34,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AboutApplicationActivity;
 import uk.openvk.android.legacy.ui.core.activities.AdvancedSettingsActivity;
+import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.core.activities.NetworkSettingsActivity;
@@ -278,9 +279,9 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         about_instance_dlg = new OvkAlertDialog(getContext());
         about_instance_dlg.build(builder, getResources().getString(R.string.about_instance), "", about_instance_view);
         about_instance_dlg.show();
-        //ovk_api.checkHTTPS();
-        //ovk.getVersion(ovk_api);
-        //ovk.aboutInstance(ovk_api);
+        if(getActivity() instanceof AppActivity) {
+            ((AppActivity) getActivity()).ovk_api.checkHTTPS();
+        }
     }
 
     private void openWebAddress(String address) {

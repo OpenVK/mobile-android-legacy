@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,7 +29,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -40,6 +37,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -104,6 +102,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     private int poll_answer;
     private Menu activity_menu;
     private ActionBar actionBar;
+    private android.support.v7.widget.PopupMenu popup_menu;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -112,7 +111,7 @@ public class GroupIntentActivity extends TranslucentActivity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
-        setContentView(R.layout.group_page_layout);
+        setContentView(R.layout.layout_group_page);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -243,13 +242,29 @@ public class GroupIntentActivity extends TranslucentActivity {
         super.onConfigurationChanged(newConfig);
     }
 
-    private void createActionPopupMenu(final Menu menu) {
-        final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
-        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        popupMenu.setOutsideTouchable(true);
-        popupMenu.setFocusable(true);
-        final ActionBar actionBar = findViewById(R.id.actionbar);
+    private void createActionPopupMenu(final Menu menu, String where, boolean enable) {
+        if(popup_menu == null) {
+            popup_menu = new android.support.v7.widget.PopupMenu(this, null);
+        }
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            actionBar = findViewById(R.id.actionbar);
+            if(menu.size() == 0) {
+                if(where.equals("group")) {
+                    getMenuInflater().inflate(R.menu.group, menu);
+                }
+            }
+            if (enable) {
+                dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
+                        new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
+                                R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                                onMenuItemSelected(0, menu.getItem(item.getItemId()));
+                            }
+                        });
+                actionBar.addAction(action);
+            }
+        }
     }
 
     private void installLayouts() {
@@ -289,6 +304,10 @@ public class GroupIntentActivity extends TranslucentActivity {
                     onBackPressed();
                 }
             });
+            if(popup_menu == null) {
+                popup_menu = new android.support.v7.widget.PopupMenu(this, null);
+            }
+            createActionPopupMenu(popup_menu.getMenu(), "group", true);
             actionBar.setTitle(getResources().getString(R.string.group));
         }
     }
@@ -305,10 +324,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                     }
                 } else {
                     groups.search(ovk_api, args);
-                }
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    ActionBar actionBar = findViewById(R.id.actionbar);
-                    createActionPopupMenu(activity_menu);
                 }
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
@@ -338,8 +353,10 @@ public class GroupIntentActivity extends TranslucentActivity {
                         activity_menu.findItem(R.id.leave_group).setTitle(R.string.join_group);
                     }
                 }
-                for (int i = 0; i < activity_menu.size(); i++) {
-                    activity_menu.getItem(i).setVisible(true);
+                if(activity_menu != null) {
+                    for (int i = 0; i < activity_menu.size(); i++) {
+                        activity_menu.getItem(i).setVisible(true);
+                    }
                 }
             } else if (message == HandlerMessages.GROUPS_SEARCH) {
                 groups.parseSearch(data.getString("response"));
@@ -682,7 +699,7 @@ public class GroupIntentActivity extends TranslucentActivity {
         intent.putExtra("where", "wall");
         try {
             intent.putExtra("local_photo_addr",
-                    String.format("%s/wall_photo_attachments/wall_attachment_o%dp%d", getCacheDir(),
+                    String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
                     item.owner_id, item.post_id));
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {

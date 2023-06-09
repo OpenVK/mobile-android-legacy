@@ -22,5 +22,6 @@
         android:layout_marginRight="5dip"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
 </LinearLayout>

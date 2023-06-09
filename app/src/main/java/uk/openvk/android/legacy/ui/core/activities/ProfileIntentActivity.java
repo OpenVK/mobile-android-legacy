@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -105,6 +106,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
     private Menu activity_menu;
     private ActionBar actionBar;
     private FragmentTransaction ft;
+    private android.support.v7.widget.PopupMenu popup_menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,13 +145,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 receiveState(message.what, data);
             }
         };
-
-        if(activity_menu == null) {
-            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
-            activity_menu = p.getMenu();
-            getMenuInflater().inflate(R.menu.profile, activity_menu);
-            onCreateOptionsMenu(activity_menu);
-        }
 
         if (uri != null) {
             String path = uri.toString();
@@ -239,15 +234,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         }
     }
 
-    private void createActionPopupMenu(final Menu menu) {
-        final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
-        final PopupWindow popupMenu = new PopupWindow(menu_container, ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        popupMenu.setOutsideTouchable(true);
-        popupMenu.setFocusable(true);
-        final ActionBar actionBar = findViewById(R.id.actionbar);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -290,7 +276,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             String user_url = String.format("http://%s/id%s",
                     instance_prefs.getString("server", ""), user.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(user_url));
             startActivity(i);
         } else if(item.getItemId() == R.id.remove_friend) {
@@ -316,10 +301,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 } else {
                     users.search(ovk_api, args);
                 }
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    ActionBar actionBar = findViewById(R.id.actionbar);
-                    createActionPopupMenu(activity_menu);
-                }
             } else if (message == HandlerMessages.USERS_GET) {
                 users.parse(data.getString("response"));
                 user = users.getList().get(0);
@@ -338,31 +319,51 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                         }
                         activity_menu.removeItem(0);
                         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                            createActionPopupMenu(activity_menu);
+                            if(account.id == user.id) {
+                                createActionPopupMenu(popup_menu.getMenu(), "account", true);
+                            } else {
+                                createActionPopupMenu(popup_menu.getMenu(), "profile", true);
+                            }
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 } else {
                     ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
+                    popup_menu = new android.support.v7.widget.PopupMenu(this, null);
+                    getMenuInflater().inflate(R.menu.profile, popup_menu.getMenu());
                     if (user.friends_status == 0) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
                             activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_add_friend);
+                        }
+                        if(popup_menu.getMenu() != null) {
+                            popup_menu.getMenu().findItem(R.id.remove_friend)
+                                    .setTitle(R.string.profile_add_friend);
                         }
                     } else if (user.friends_status == 1) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
                             activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_friend_cancel);
                         }
+                        if(popup_menu.getMenu() != null) {
+                            popup_menu.getMenu().findItem(R.id.remove_friend)
+                                    .setTitle(R.string.profile_friend_cancel);
+                        }
                     } else if (user.friends_status == 2) {
                         findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
                         if(activity_menu != null) {
                             activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_friend_accept);
                         }
+                        if(popup_menu.getMenu() != null) {
+                            popup_menu.getMenu().findItem(R.id.remove_friend)
+                                    .setTitle(R.string.profile_friend_accept);
+                        }
                     }
-                    for (int i = 0; i < activity_menu.size(); i++) {
-                        activity_menu.getItem(i).setVisible(true);
+                    if(activity_menu != null) {
+                        for (int i = 0; i < activity_menu.size(); i++) {
+                            activity_menu.getItem(i).setVisible(true);
+                        }
                     }
                 }
                 if(user.deactivated == null) {
@@ -374,11 +375,14 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     if(activity_menu != null) {
                         activity_menu.getItem(0).setVisible(false);
                     }
+                    if(popup_menu != null) {
+                        popup_menu.getMenu().getItem(0).setVisible(false);
+                    }
                     profileFragment.hideTabSelector();
                     profileFragment.getHeader().hideExpandArrow();
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    createActionPopupMenu(activity_menu);
+                    createActionPopupMenu(popup_menu.getMenu(), "account", true);
                 }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
@@ -748,6 +752,36 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void createActionPopupMenu(final Menu menu, String where, boolean enable) {
+        if(popup_menu == null) {
+            popup_menu = new android.support.v7.widget.PopupMenu(this, null);
+        }
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            actionBar = findViewById(R.id.actionbar);
+            if(menu.size() == 0) {
+                if (where.equals("account")) {
+                    getMenuInflater().inflate(R.menu.profile, menu);
+                    menu.getItem(0).setVisible(false);
+                } else if (where.equals("profile")) {
+                    getMenuInflater().inflate(R.menu.profile, menu);
+                }
+            }
+            if (enable) {
+                dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
+                        new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
+                                R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                                onMenuItemSelected(0, menu.getItem(item.getItemId()));
+                            }
+                        });
+                actionBar.addAction(action);
+            } else {
+
+            }
         }
     }
 

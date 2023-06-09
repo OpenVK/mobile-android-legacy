@@ -88,6 +88,7 @@ public class ProfileFragment extends Fragment {
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0,
                 Arrays.asList(getResources().getStringArray(R.array.profile_mutual_friends)).get(2), "");
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
+        ((LinearLayout) view.findViewById(R.id.wall_error_layout)).setVisibility(GONE);
         if(user.deactivated == null) {
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setBirthdate("");
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setStatus(user.status);

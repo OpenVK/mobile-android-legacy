@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -68,7 +69,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         mTitleView = (TextView) mBarView.findViewById(R.id.actionbar_title);
         mSubtitleView = (TextView) mBarView.findViewById(R.id.actionbar_subtitle);
         mActionsView = (LinearLayout) mBarView.findViewById(R.id.actionbar_actions);
-        
+
         mProgress = (ProgressBar) mBarView.findViewById(R.id.actionbar_progress);
 
         TypedArray a = context.obtainStyledAttributes(attrs,
@@ -93,10 +94,10 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
     /**
      * Shows the provided logo to the left in the action bar.
-     * 
+     *
      * This is meant to be used instead of the setHomeAction and does not draw
      * a divider to the left of the provided logo.
-     * 
+     *
      * @param resId The drawable resource id
      */
     public void setHomeLogo(int resId) {
@@ -135,7 +136,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
     /**
      * Set the enabled state of the progress bar.
-     * 
+     *
      * @param One of {@link View#VISIBLE}, {@link View#INVISIBLE},
      *   or {@link View#GONE}.
      */
@@ -145,7 +146,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
     /**
      * Returns the visibility status for the progress bar.
-     * 
+     *
      * @param One of {@link View#VISIBLE}, {@link View#INVISIBLE},
      *   or {@link View#GONE}.
      */
@@ -155,7 +156,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
     /**
      * Function to set a click listener for Title TextView
-     * 
+     *
      * @param listener the onClickListener
      */
     public void setOnTitleClickListener(OnClickListener listener) {
@@ -249,7 +250,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         View view = mInflater.inflate(R.layout.actionbar_item, mActionsView, false);
 
         ImageButton labelView =
-            (ImageButton) view.findViewById(R.id.actionbar_item);
+                (ImageButton) view.findViewById(R.id.actionbar_item);
         labelView.setImageResource(action.getDrawable());
 
         view.setTag(action);
@@ -298,7 +299,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         @Override
         public void performAction(View view) {
             try {
-               mContext.startActivity(mIntent); 
+                mContext.startActivity(mIntent);
             } catch (ActivityNotFoundException e) {
                 Toast.makeText(mContext,
                         mContext.getText(R.string.actionbar_activity_not_found),
@@ -312,9 +313,12 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         private Context mContext;
         private Intent mIntent;
         private PopupMenu.OnItemSelectedListener mItemListener;
+        private PopupMenu p_menu;
+        private Menu menu;
 
-        public PopupMenuAction(Context context, CharSequence title, int drawable, PopupMenu.OnItemSelectedListener mItemListener) {
+        public PopupMenuAction(Context context, CharSequence title, Menu menu, int drawable, PopupMenu.OnItemSelectedListener mItemListener) {
             super(drawable);
+            this.menu = menu;
             mContext = context;
             mTitle = title;
             this.mItemListener = mItemListener;
@@ -322,21 +326,25 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
         @Override
         public void performAction(View view) {
-//            doesn't not work yet
-//
-//            try {
-//                if(mContext != null) {
-//                    PopupMenu menu = new PopupMenu(mContext);
-//                    menu.setHeaderTitle(mTitle);
-//                    menu.setOnItemSelectedListener(mItemListener);
-//                    menu.add(0, R.string.app_name);
-//                    menu.show(view);
-//                }
-//            } catch (Exception e) {
-//                Toast.makeText(mContext,
-//                        mContext.getText(R.string.actionbar_activity_not_found),
-//                        Toast.LENGTH_SHORT).show();
-//            }
+            try {
+                if(mContext != null) {
+                    // integration w/ custom popup menu
+                    p_menu = new PopupMenu(mContext);
+                    p_menu.setHeaderTitle(mTitle);
+                    p_menu.setOnItemSelectedListener(mItemListener);
+                    for(int i = 0; i < menu.size(); i++) {
+                        if(menu.getItem(i).isVisible() && menu.getItem(i).isEnabled()) {
+                            p_menu.add(i, (String) menu.getItem(i).getTitle());
+                        }
+                    }
+                    p_menu.show(view);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(mContext,
+                        mContext.getText(R.string.actionbar_activity_not_found),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

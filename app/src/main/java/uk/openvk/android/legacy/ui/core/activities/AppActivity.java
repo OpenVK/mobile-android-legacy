@@ -46,6 +46,7 @@ import java.util.Locale;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.api.Ovk;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -110,7 +111,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends TranslucentFragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
-    private OvkAPIWrapper ovk_api;
+    public OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     public Handler handler;
     private SharedPreferences global_prefs;
@@ -126,17 +127,17 @@ public class AppActivity extends TranslucentFragmentActivity {
     public ConversationsFragment conversationsFragment;
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
-    private Account account;
+    public Account account;
     private Newsfeed newsfeed;
     private Messages messages;
-    private Users users;
+    public Users users;
     private Groups groups;
     private Friends friends;
     private Wall wall;
     private ArrayList<Conversation> conversations;
-    private User user;
+    public User user;
     private Likes likes;
-    private Menu activity_menu;
+    public Menu activity_menu;
     public GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
     private String last_longpoll_response;
@@ -145,12 +146,14 @@ public class AppActivity extends TranslucentFragmentActivity {
     private uk.openvk.android.legacy.api.wrappers.NotificationManager notifMan;
     private boolean inBackground;
     public ActionBarLayout ab_layout;
-    private int menu_id;
-    private dev.tinelix.retro_ab.ActionBar actionBar;
+    public int menu_id;
+    public dev.tinelix.retro_ab.ActionBar actionBar;
     private LongPollReceiver lpReceiver;
     private FragmentTransaction ft;
     public Fragment selectedFragment;
     private FragmentNavigator fn;
+    public android.support.v7.widget.PopupMenu popup_menu;
+    private Ovk ovk;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -196,6 +199,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         friends = new Friends();
         groups = new Groups();
         wall = new Wall();
+        conversations = new ArrayList<>();
         registerBroadcastReceiver();
         if(((OvkApplication) getApplicationContext()).isTablet) {
             newsfeedFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
@@ -216,8 +220,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                 global_prefs.getString("notifyRingtone", ""));
         notifMan = ((OvkApplication) getApplicationContext()).notifMan;
         if(activity_menu == null) {
-            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
-            activity_menu = p.getMenu();
+            popup_menu  = new android.support.v7.widget.PopupMenu(this, null);
+            activity_menu = popup_menu.getMenu();
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
         }
@@ -496,9 +500,9 @@ public class AppActivity extends TranslucentFragmentActivity {
         friendsFragment.setActivityContext(this);
         fn = new FragmentNavigator(this);
         if(activity_menu == null) {
-            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget
+            popup_menu  = new android.support.v7.widget
                     .PopupMenu(this, null);
-            activity_menu = p.getMenu();
+            activity_menu = popup_menu.getMenu();
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
         }
@@ -559,35 +563,25 @@ public class AppActivity extends TranslucentFragmentActivity {
         //newpost.setVisible(false);
     }
 
-    private void createActionPopupMenu(final Menu menu, boolean enable) {
+    public void createActionPopupMenu(final Menu menu, String where, boolean enable) {
+        if(popup_menu == null) {
+            popup_menu = new android.support.v7.widget.PopupMenu(this, null);
+        }
+        menu.clear();
+        if(where.equals("account")) {
+            getMenuInflater().inflate(R.menu.profile, menu);
+            menu.getItem(0).setVisible(false);
+        }
         if(enable) {
-            final View menu_container = getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
-            final PopupWindow popupMenu = new PopupWindow(menu_container,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
-            popupMenu.setOutsideTouchable(true);
-            popupMenu.setFocusable(true);
-            final ListView menu_list = popupMenu.getContentView().findViewById(R.id.popup_menulist);
-            actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "",
-                    R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                    onMenuItemSelected(0, menu.getItem(item.getItemId()));
-                }
-            }));
-            menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    popupMenu.dismiss();
-                }
-            });
-            (popupMenu.getContentView().findViewById(R.id.overlay_layout))
-                    .setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popupMenu.dismiss();
-                }
-            });
+            dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
+                    new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
+                            R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                            onMenuItemSelected(0, menu.getItem(item.getItemId()));
+                        }
+                    });
+            actionBar.addAction(action);
         } else {
 
         }
@@ -657,7 +651,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             actionBar = findViewById(R.id.actionbar);
             actionBar.removeAllActions();
-            createActionPopupMenu(activity_menu, false);
+            //createActionPopupMenu(activity_menu, false);
         }
         global_prefs_editor = global_prefs.edit();
         try {
@@ -722,7 +716,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                         openNewPostActivity();
                     }
                 });
-                createActionPopupMenu(activity_menu, false);
+                //
             }
         } else if(position == 4) {
             Context context = getApplicationContext();
@@ -1127,6 +1121,22 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
             } else if(message == HandlerMessages.WALL_REPOST) {
                 Toast.makeText(this, getResources().getString(R.string.repost_ok_wall), Toast.LENGTH_LONG).show();
+            } else if(message == HandlerMessages.OVK_CHECK_HTTP) {
+                ovk = new Ovk();
+                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTP);
+                ovk.getVersion(ovk_api);
+                ovk.aboutInstance(ovk_api);
+            } else if(message == HandlerMessages.OVK_CHECK_HTTPS) {
+                ovk = new Ovk();
+                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTPS);
+                ovk.getVersion(ovk_api);
+                ovk.aboutInstance(ovk_api);
+            } else if(message == HandlerMessages.OVK_ABOUTINSTANCE) {
+                ovk.parseAboutInstance(data.getString("response"));
+                mainSettingsFragment.setAboutInstanceData(ovk);
+            } else if(message == HandlerMessages.OVK_VERSION) {
+                ovk.parseVersion(data.getString("response"));
+                mainSettingsFragment.setInstanceVersion(ovk);
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION ||
                     message == HandlerMessages.INVALID_JSON_RESPONSE ||
                     message == HandlerMessages.CONNECTION_TIMEOUT ||
@@ -1214,33 +1224,13 @@ public class AppActivity extends TranslucentFragmentActivity {
 
             findViewById(R.id.app_fragment).setVisibility(View.GONE);
             ft = getSupportFragmentManager().beginTransaction();
-            if(selectedFragment != null) {
-                ft.hide(selectedFragment);
-            } else {
-                ft.hide(newsfeedFragment);
-            }
-            ft.show(profileFragment);
-            ft.commit();
-            selectedFragment = profileFragment;
-            errorLayout.setVisibility(View.GONE);
-            progressLayout.setVisibility(View.VISIBLE);
-            global_prefs_editor.putString("current_screen", "profile");
-            global_prefs_editor.commit();
-
+            fn.navigateTo("profile", ft);
+            setActionBar("");
+            setActionBarTitle(getResources().getString(R.string.profile));
             if(users == null) {
                 users = new Users();
             }
             users.getUser(ovk_api, account.id);
-            menu_id = R.menu.profile;
-            if(activity_menu != null) {
-                activity_menu.clear();
-            }
-            setActionBar("");
-            setActionBarTitle(getResources().getString(R.string.profile));
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBar.removeAllActions();
-                createActionPopupMenu(activity_menu, true);
-            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

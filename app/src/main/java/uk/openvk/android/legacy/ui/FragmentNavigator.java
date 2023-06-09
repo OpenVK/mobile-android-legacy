@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
@@ -44,35 +45,90 @@ public class FragmentNavigator {
             appActivity.errorLayout.setVisibility(View.GONE);
             ft.hide(appActivity.selectedFragment);
             switch (where) {
+                case "profile":
+                    ft.show(appActivity.profileFragment);
+                    showFragment(activity, appActivity.user.first_name != null);
+                    appActivity.selectedFragment = appActivity.profileFragment;
+                    appActivity.global_prefs_editor.putString("current_screen", "profile");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                        appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(), "account", true);
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                            appActivity.menu_id = R.menu.profile;
+                            appActivity.onCreateOptionsMenu(appActivity.activity_menu);
+                            appActivity.activity_menu.getItem(0).setVisible(false);
+                        }
+                    }
+                    break;
                 case "friends":
                     ft.show(appActivity.friendsFragment);
                     showFragment(activity, appActivity.friendsFragment.getCount() != 0);
                     appActivity.selectedFragment = appActivity.friendsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "friends");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
                     break;
                 case "messages":
                     ft.show(appActivity.conversationsFragment);
                     showFragment(activity, appActivity.conversationsFragment.getCount() != 0);
                     appActivity.selectedFragment = appActivity.conversationsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "messages");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
                     break;
                 case "groups":
                     ft.show(appActivity.groupsFragment);
                     showFragment(activity, appActivity.groupsFragment.getCount() != 0);
-                    appActivity.selectedFragment = appActivity.conversationsFragment;
-                    appActivity.global_prefs_editor.putString("current_screen", "messages");
+                    appActivity.selectedFragment = appActivity.groupsFragment;
+                    appActivity.global_prefs_editor.putString("current_screen", "groups");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
                     break;
                 case "newsfeed":
                     ft.show(appActivity.newsfeedFragment);
                     showFragment(activity, appActivity.newsfeedFragment.getCount() != 0);
                     appActivity.selectedFragment = appActivity.newsfeedFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "newsfeed");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                        appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(), "newsfeed", true);
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                            appActivity.menu_id = R.menu.newsfeed;
+                            appActivity.onCreateOptionsMenu(appActivity.activity_menu);
+                        }
+                    }
                     break;
                 case "settings":
                     ft.show(appActivity.mainSettingsFragment);
                     showFragment(activity, true);
                     appActivity.selectedFragment = appActivity.mainSettingsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "settings");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
                     break;
             }
             ft.commit();
@@ -80,9 +136,9 @@ public class FragmentNavigator {
         }
     }
 
-    private void showFragment(Activity activity, boolean status) {
+    private void showFragment(Activity activity, final boolean status) {
         if(activity instanceof AppActivity) {
-            AppActivity appActivity = ((AppActivity) activity);
+            final AppActivity appActivity = ((AppActivity) activity);
             if(status) {
                 appActivity.findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 appActivity.progressLayout.setVisibility(View.GONE);
