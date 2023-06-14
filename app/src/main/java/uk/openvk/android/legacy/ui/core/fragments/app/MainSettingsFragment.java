@@ -86,6 +86,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setDividerPreferences(DIVIDER_PADDING_CHILD | DIVIDER_CATEGORY_AFTER_LAST | DIVIDER_CATEGORY_BETWEEN);
+        view.setBackgroundColor(getResources().getColor(R.color.white));
     }
 
     private void setListeners() {
