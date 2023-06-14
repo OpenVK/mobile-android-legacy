@@ -19,7 +19,7 @@
     <string-array name="official_instances_list" translable="false">
         <item>openvk.uk</item>
         <item>openvk.su</item>
-        <item>openvk.co</item>
+        <item>openvk.xyz</item>
     </string-array>
     <string-array name="instances_list" translable="false">
         <item>social.fetbuk.ru</item>
