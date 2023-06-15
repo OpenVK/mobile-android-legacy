@@ -198,7 +198,11 @@ public class Group implements Parcelable {
                     JSONObject user = members.getJSONObject(i);
                     member.first_name = user.getString("name").split(" ")[0];
                     if(user.getString("name").split(" ").length > 1) {
-                        member.last_name = user.getString("name").split(" ")[1];
+                        if(user.getString("name").split(" ")[1] != null) {
+                            member.last_name = user.getString("name").split(" ")[1];
+                        } else {
+                            member.last_name = "";
+                        }
                     }
                     member.id = user.getLong("id");
                     member.avatar_url = user.getString("photo_100");
