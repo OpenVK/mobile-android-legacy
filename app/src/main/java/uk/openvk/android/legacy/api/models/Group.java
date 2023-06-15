@@ -194,7 +194,7 @@ public class Group implements Parcelable {
                 ArrayList<PhotoAttachment> avatars;
                 avatars = new ArrayList<PhotoAttachment>();
                 for (int i = 0; i < members.length(); i++) {
-                    User member = new User(members.getJSONObject(i));
+                    User member = new User();
                     JSONObject user = members.getJSONObject(i);
                     member.first_name = user.getString("name").split(" ")[0];
                     if(user.getString("name").split(" ").length > 1) {
