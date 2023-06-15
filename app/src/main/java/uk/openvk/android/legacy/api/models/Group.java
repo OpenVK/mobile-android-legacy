@@ -5,10 +5,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -42,6 +45,7 @@ public class Group implements Parcelable {
     public int is_member;
     public String description;
     public String site;
+    public ArrayList<User> members;
 
     public Group() {
         jsonParser = new JSONParser();
@@ -173,5 +177,45 @@ public class Group implements Parcelable {
 
     public void leave(OvkAPIWrapper ovk) {
         ovk.sendAPIMethod("Groups.leave", String.format("group_id=%s", id));
+    }
+
+    public void getMembers(OvkAPIWrapper ovk, int count, String where) {
+        ovk.sendAPIMethod("Groups.getMembers", String.format("group_id=%s&fields=verified,online,photo_100," +
+                "photo_200_orig,photo_200,last_seen&count=%s", id, count), where);
+    }
+
+    public void parseMembers(String response, DownloadManager downloadManager, boolean downloadPhoto) {
+        try {
+            this.members.clear();
+            JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
+            if(json != null) {
+                members_count = json.getInt("count");
+                JSONArray members = json.getJSONArray("items");
+                ArrayList<PhotoAttachment> avatars;
+                avatars = new ArrayList<PhotoAttachment>();
+                for (int i = 0; i < members.length(); i++) {
+                    User member = new User(members.getJSONObject(i));
+                    JSONObject user = members.getJSONObject(i);
+                    member.first_name = user.getString("name").split(" ")[0];
+                    if(user.getString("name").split(" ").length > 1) {
+                        member.last_name = user.getString("name").split(" ")[1];
+                    }
+                    member.id = user.getLong("id");
+                    member.avatar_url = user.getString("photo_100");
+                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    if(member.avatar_url != null && member.avatar_url.length() > 0) {
+                        photoAttachment.url = member.avatar_url;
+                        photoAttachment.filename = String.format("avatar_%s", member.id);
+                        avatars.add(photoAttachment);
+                    }
+                    this.members.add(member);
+                }
+                if (downloadPhoto) {
+                    downloadManager.downloadPhotosToCache(avatars, "group_members_avatars");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

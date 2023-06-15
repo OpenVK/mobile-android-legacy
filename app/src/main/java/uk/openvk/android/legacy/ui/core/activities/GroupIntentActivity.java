@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -475,12 +476,21 @@ public class GroupIntentActivity extends TranslucentActivity {
     }
 
 
-    private void updateLayout(Group group) {
+    private void updateLayout(final Group group) {
         GroupHeader header = (GroupHeader) findViewById(R.id.group_header);
         header.setProfileName(String.format("%s  ", group.name));
         header.setVerified(group.verified, this);
         ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count,
                 Arrays.asList(getResources().getStringArray(R.array.profile_members)).get(2), "");
+        ((ProfileCounterLayout) findViewById(R.id.members_counter)).setOnCounterClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(GroupIntentActivity.this, GroupMembersActivity.class);
+                        i.putExtra("group_id", GroupIntentActivity.this.group.id);
+                        startActivity(i);
+                    }
+                });
         ((AboutGroupLayout) findViewById(R.id.about_group_layout)).setGroupInfo(group.description, group.site);
         header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -591,7 +601,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             intent.putExtra("account_id", account.id);
             intent.putExtra("account_first_name", group.name);
             startActivity(intent);
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }

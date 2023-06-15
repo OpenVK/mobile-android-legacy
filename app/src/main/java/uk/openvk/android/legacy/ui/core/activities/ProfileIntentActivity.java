@@ -312,12 +312,14 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 if(user.id == account.id) {
                     profileFragment.hideHeaderButtons(this, getWindowManager());
                     try {
-                        for (int i = 0; i < activity_menu.size(); i++) {
-                            if (i > 0) {
-                                activity_menu.getItem(i).setVisible(true);
+                        if(activity_menu != null) {
+                            for (int i = 0; i < activity_menu.size(); i++) {
+                                if (i > 0) {
+                                    activity_menu.getItem(i).setVisible(true);
+                                }
                             }
+                            activity_menu.removeItem(0);
                         }
-                        activity_menu.removeItem(0);
                         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                             if(account.id == user.id) {
                                 createActionPopupMenu(popup_menu.getMenu(), "account", true);
@@ -382,6 +384,9 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     profileFragment.getHeader().hideExpandArrow();
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    if(popup_menu == null) {
+                        popup_menu = new android.support.v7.widget.PopupMenu(this, null);
+                    }
                     createActionPopupMenu(popup_menu.getMenu(), "account", true);
                 }
             } else if(message == HandlerMessages.FRIENDS_ADD) {

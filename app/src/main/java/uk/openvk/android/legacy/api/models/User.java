@@ -53,6 +53,7 @@ public class User implements Parcelable {
     public String deactivated;
     private JSONParser jsonParser;
     public int sex;
+    public String avatar_url;
 
     public User(JSONObject user) {
         parse(user);

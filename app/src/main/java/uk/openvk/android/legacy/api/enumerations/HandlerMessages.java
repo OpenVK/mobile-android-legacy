@@ -45,6 +45,7 @@ public class HandlerMessages {
     public static int GROUPS_SEARCH                     = 304;
     public static int GROUPS_JOIN                       = 305;
     public static int GROUPS_LEAVE                      = 306;
+    public static int GROUP_MEMBERS                     = 307;
 
     // Likes
     public static int LIKES_ADD                         = 400;

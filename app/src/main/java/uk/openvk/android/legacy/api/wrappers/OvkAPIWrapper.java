@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
@@ -55,6 +56,7 @@ import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.Error;
+import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -108,7 +110,8 @@ public class OvkAPIWrapper {
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
                 httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager)
-                        new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry), (HttpParams) basicHttpParams);
+                        new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry),
+                        (HttpParams) basicHttpParams);
                 legacy_mode = true;
             } else {
                 if (use_https) {
@@ -296,10 +299,14 @@ public class OvkAPIWrapper {
         error.description = "";
         String url;
         if(use_https) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
+            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s" +
+                    "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
+                    URLEncoder.encode(password), code, client_name);
             if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)...", server));
         } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username), URLEncoder.encode(password), code, client_name);
+            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s" +
+                    "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
+                    URLEncoder.encode(password), code, client_name);
             if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s...", server));
         }
         final String fUrl = url;
@@ -491,6 +498,9 @@ public class OvkAPIWrapper {
                                         break;
                                     case "Groups.getById":
                                         sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
+                                        break;
+                                    case "Groups.getMembers":
+                                        sendMessage(HandlerMessages.GROUP_MEMBERS, method, response_body);
                                         break;
                                     case "Groups.search":
                                         sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
@@ -753,6 +763,9 @@ public class OvkAPIWrapper {
                                     case "Groups.get":
                                         sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
                                         break;
+                                    case "Groups.getMembers":
+                                        sendMessage(HandlerMessages.GROUP_MEMBERS, method, response_body);
+                                        break;
                                     case "Groups.getById":
                                         sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
                                         break;
@@ -1004,6 +1017,9 @@ public class OvkAPIWrapper {
                                     case "Groups.get":
                                         sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
                                         break;
+                                    case "Groups.getMembers":
+                                        sendMessage(HandlerMessages.GROUP_MEMBERS, method, response_body);
+                                        break;
                                     case "Groups.getById":
                                         sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
                                         break;
@@ -1209,6 +1225,8 @@ public class OvkAPIWrapper {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
             ((WallPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -1239,6 +1257,8 @@ public class OvkAPIWrapper {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
             ((WallPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
         }
     }
 
@@ -1270,6 +1290,8 @@ public class OvkAPIWrapper {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
             ((WallPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
         }
     }
 

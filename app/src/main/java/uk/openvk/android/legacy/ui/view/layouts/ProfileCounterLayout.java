@@ -59,4 +59,8 @@ public class ProfileCounterLayout extends LinearLayout {
             }
         });
     }
+
+    public void setOnCounterClickListener(OnClickListener onClickListener) {
+        ((LinearLayout) findViewById(R.id.counter)).setOnClickListener(onClickListener);
+    }
 }
