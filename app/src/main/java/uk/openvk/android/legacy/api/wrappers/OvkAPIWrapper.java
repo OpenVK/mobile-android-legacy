@@ -55,8 +55,7 @@ import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Error;
-import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
+import uk.openvk.android.legacy.api.entities.Error;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

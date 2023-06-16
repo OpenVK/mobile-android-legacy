@@ -30,11 +30,11 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.models.Comment;
-import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.api.entities.WallPost;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

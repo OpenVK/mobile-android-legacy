@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.entities;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -7,9 +7,9 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.counters.AccountCounters;
-import uk.openvk.android.legacy.api.models.User;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 

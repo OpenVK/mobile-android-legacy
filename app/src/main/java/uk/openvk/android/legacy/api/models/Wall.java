@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.models;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -16,16 +16,16 @@ import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
-import uk.openvk.android.legacy.api.models.Comment;
-import uk.openvk.android.legacy.api.models.PollAnswer;
-import uk.openvk.android.legacy.api.models.VideoFiles;
-import uk.openvk.android.legacy.api.models.WallPostSource;
+import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.legacy.api.entities.PollAnswer;
+import uk.openvk.android.legacy.api.entities.VideoFiles;
+import uk.openvk.android.legacy.api.entities.WallPostSource;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.counters.PostCounters;
-import uk.openvk.android.legacy.api.models.WallPost;
-import uk.openvk.android.legacy.api.models.RepostInfo;
+import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.api.entities.RepostInfo;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

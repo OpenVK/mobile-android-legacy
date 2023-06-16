@@ -1,8 +1,7 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 import android.graphics.Bitmap;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.attachments.Attachment;

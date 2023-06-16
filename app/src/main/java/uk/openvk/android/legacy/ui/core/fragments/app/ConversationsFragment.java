@@ -14,8 +14,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.Account;
-import uk.openvk.android.legacy.api.models.Conversation;
+import uk.openvk.android.legacy.api.entities.Account;
+import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

@@ -44,7 +44,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Message;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -68,7 +67,7 @@ public class LongPollWrapper {
     public boolean use_https;
     public boolean legacy_mode;
     private String status;
-    private uk.openvk.android.legacy.api.models.Error error;
+    private uk.openvk.android.legacy.api.entities.Error error;
     private Context ctx;
     private Handler handler;
     private String access_token;

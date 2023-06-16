@@ -18,7 +18,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.api.models.PollAnswer;
+import uk.openvk.android.legacy.api.entities.PollAnswer;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

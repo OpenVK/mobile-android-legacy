@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.models.Friend;
+import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;

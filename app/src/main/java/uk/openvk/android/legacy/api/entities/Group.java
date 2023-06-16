@@ -1,14 +1,12 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
@@ -196,10 +194,19 @@ public class Group implements Parcelable {
                 for (int i = 0; i < members.length(); i++) {
                     User member = new User();
                     JSONObject user = members.getJSONObject(i);
-                    member.first_name = user.getString("name").split(" ")[0];
-                    if(user.getString("name").split(" ").length > 1) {
-                        if(user.getString("name").split(" ")[1] != null) {
-                            member.last_name = user.getString("name").split(" ")[1];
+                    if(user.has("name")) {
+                        member.first_name = user.getString("name").split(" ")[0];
+                        if (user.getString("name").split(" ").length > 1) {
+                            if (user.getString("name").split(" ")[1] != null) {
+                                member.last_name = user.getString("name").split(" ")[1];
+                            } else {
+                                member.last_name = "";
+                            }
+                        }
+                    } else if(user.has("first_name") && user.has("last_name")) {
+                        member.first_name = user.getString("first_name");
+                        if (!user.isNull("last_name")) {
+                            member.last_name = user.getString("last_name");
                         } else {
                             member.last_name = "";
                         }

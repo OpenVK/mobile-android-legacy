@@ -10,8 +10,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.Group;
-import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.entities.Group;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsSearchResultAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.UsersSearchResultAdapter;
 

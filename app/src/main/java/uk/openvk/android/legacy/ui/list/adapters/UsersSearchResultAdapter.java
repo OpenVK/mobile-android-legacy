@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.entities.User;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

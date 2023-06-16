@@ -1,14 +1,13 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.models;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.models.Conversation;
-import uk.openvk.android.legacy.api.models.LongPollServer;
+import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.legacy.api.entities.LongPollServer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;

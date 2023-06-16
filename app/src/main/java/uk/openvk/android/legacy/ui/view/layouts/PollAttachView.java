@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.PollAnswer;
+import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.ui.list.adapters.PollAdapter;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

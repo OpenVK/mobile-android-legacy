@@ -1,9 +1,8 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,7 +10,6 @@ import org.json.JSONObject;
 
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.Friend;
+import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;

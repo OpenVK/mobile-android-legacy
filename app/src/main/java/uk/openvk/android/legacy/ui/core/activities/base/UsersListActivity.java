@@ -1,27 +1,19 @@
 package uk.openvk.android.legacy.ui.core.activities.base;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ScrollView;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.Users;
-import uk.openvk.android.legacy.api.models.User;
-import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.fragments.base.UsersFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;

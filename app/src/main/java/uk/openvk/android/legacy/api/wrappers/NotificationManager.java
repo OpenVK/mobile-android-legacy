@@ -16,7 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.Conversation;
+import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.longpoll_api.MessageEvent;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 

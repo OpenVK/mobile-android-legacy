@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -14,18 +14,17 @@ package uk.openvk.android.legacy.api.models;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
-public class LongPollServer {
-    public String address;
-    public String key;
-    public int ts;
 
-    public LongPollServer() {
-
-    }
-
-    public LongPollServer(String address, String key, int ts) {
-        this.address = address;
-        this.key = key;
-        this.ts = ts;
+public class PollAnswer {
+    public int id;
+    public int rate;
+    public int votes;
+    public String text;
+    public boolean is_voted;
+    public PollAnswer(int id, int rate, int votes, String text) {
+        this.id = id;
+        this.rate = rate;
+        this.votes = votes;
+        this.text = text;
     }
 }

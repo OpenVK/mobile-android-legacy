@@ -2,7 +2,7 @@ package uk.openvk.android.legacy.api.attachments;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.api.models.PollAnswer;
+import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

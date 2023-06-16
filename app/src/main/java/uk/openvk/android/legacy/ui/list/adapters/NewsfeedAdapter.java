@@ -3,15 +3,10 @@ package uk.openvk.android.legacy.ui.list.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.DynamicDrawableSpan;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +26,10 @@ import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
-import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

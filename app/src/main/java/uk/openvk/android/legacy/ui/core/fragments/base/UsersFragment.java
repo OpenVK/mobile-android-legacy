@@ -7,8 +7,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +20,11 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.Friend;
-import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.entities.Friend;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
-import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.UsersListAdapter;
-import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

@@ -19,9 +19,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.OvkLink;
+import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
-import uk.openvk.android.legacy.api.models.Message;
+import uk.openvk.android.legacy.api.entities.Message;
 import uk.openvk.android.legacy.ui.view.layouts.IncomingMessageLayout;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.Account;
+import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.api.models.Conversation;
+import uk.openvk.android.legacy.api.entities.Conversation;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

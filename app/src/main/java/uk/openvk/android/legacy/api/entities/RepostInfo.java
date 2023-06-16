@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

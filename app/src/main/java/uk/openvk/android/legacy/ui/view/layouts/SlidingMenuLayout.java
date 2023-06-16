@@ -14,7 +14,7 @@ import android.widget.TextView;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.api.Account;
+import uk.openvk.android.legacy.api.entities.Account;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

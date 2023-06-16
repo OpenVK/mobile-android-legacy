@@ -1,13 +1,9 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +13,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.models.Friend;
-import uk.openvk.android.legacy.api.models.User;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
 import uk.openvk.android.legacy.ui.core.fragments.base.UsersFragment;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;

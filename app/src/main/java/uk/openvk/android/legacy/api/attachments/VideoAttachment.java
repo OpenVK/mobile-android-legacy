@@ -3,7 +3,7 @@ package uk.openvk.android.legacy.api.attachments;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import uk.openvk.android.legacy.api.models.VideoFiles;
+import uk.openvk.android.legacy.api.entities.VideoFiles;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

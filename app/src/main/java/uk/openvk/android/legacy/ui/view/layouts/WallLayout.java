@@ -27,7 +27,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
-import uk.openvk.android.legacy.api.models.WallPost;
+import uk.openvk.android.legacy.api.entities.WallPost;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

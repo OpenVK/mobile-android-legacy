@@ -1,12 +1,10 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +18,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
-import uk.openvk.android.legacy.api.models.Comment;
-import uk.openvk.android.legacy.api.models.OvkLink;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

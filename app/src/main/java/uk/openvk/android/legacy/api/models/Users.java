@@ -1,6 +1,5 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.models;
 
-import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,8 +9,8 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.api.models.Conversation;
-import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 

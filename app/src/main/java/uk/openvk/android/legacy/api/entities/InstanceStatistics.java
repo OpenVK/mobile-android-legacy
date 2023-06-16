@@ -1,9 +1,4 @@
-package uk.openvk.android.legacy.api;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import uk.openvk.android.legacy.api.wrappers.JSONParser;
+package uk.openvk.android.legacy.api.entities;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -19,25 +14,19 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
-public class Authorization {
-    private String access_token;
-    private String response;
-    private JSONParser jsonParser;
 
-    public Authorization(String response) {
-        this.response = response;
-        jsonParser = new JSONParser();
-        JSONObject json = jsonParser.parseJSON(response);
-        if(json != null) {
-            try {
-                this.access_token = json.getString("access_token");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public String getAccessToken() {
-        return access_token;
+public class InstanceStatistics {
+    public int users_count;
+    public int online_users_count;
+    public int active_users_count;
+    public int groups_count;
+    public int wall_posts_count;
+    public InstanceStatistics(int users_count, int online_users_count, int active_users_count,
+                              int groups_count, int wall_posts_count) {
+        this.users_count = users_count;
+        this.online_users_count = online_users_count;
+        this.active_users_count = active_users_count;
+        this.groups_count = groups_count;
+        this.wall_posts_count = wall_posts_count;
     }
 }

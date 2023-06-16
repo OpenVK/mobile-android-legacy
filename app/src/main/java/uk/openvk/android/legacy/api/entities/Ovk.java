@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api;
+package uk.openvk.android.legacy.api.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,9 +8,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.api.models.InstanceAdmin;
-import uk.openvk.android.legacy.api.models.InstanceLink;
-import uk.openvk.android.legacy.api.models.InstanceStatistics;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 

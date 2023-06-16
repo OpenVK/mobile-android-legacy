@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -15,11 +15,18 @@ package uk.openvk.android.legacy.api.models;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class InstanceLink {
+public class OvkLink {
     public String name;
+    public String screen_name;
     public String url;
-    public InstanceLink(String name, String url) {
+    public OvkLink() {
+        this.name = "";
+        this.screen_name = "";
+        this.url = "";
+    }
+    public OvkLink(String name, String screen_name, String url) {
         this.name = name;
+        this.screen_name = screen_name;
         this.url = url;
     }
 }

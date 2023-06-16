@@ -41,9 +41,9 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.Messages;
+import uk.openvk.android.legacy.api.models.Messages;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Conversation;
+import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
@@ -88,9 +88,9 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     public long peer_id;
     private int cursor_id;
     public ActionBar actionBar;
-    private ArrayList<uk.openvk.android.legacy.api.models.Message> history;
+    private ArrayList<uk.openvk.android.legacy.api.entities.Message> history;
     private Messages messages;
-    private uk.openvk.android.legacy.api.models.Message last_sended_message;
+    private uk.openvk.android.legacy.api.entities.Message last_sended_message;
     private LongPollReceiver lpReceiver;
     private String last_lp_message;
 
@@ -277,13 +277,13 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                        last_sended_message = new uk.openvk.android.legacy.api.models.Message(0,
+                        last_sended_message = new uk.openvk.android.legacy.api.entities.Message(0,
                                 false, false, (int) (System.currentTimeMillis() / 1000), msg_text,
                                 ConversationActivity.this);
                         last_sended_message.sending = true;
                         last_sended_message.isError = false;
                         if (history == null) {
-                            history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
+                            history = new ArrayList<uk.openvk.android.legacy.api.entities.Message>();
                         }
                         history.add(last_sended_message);
                         if (conversation_adapter == null) {
@@ -316,12 +316,12 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                last_sended_message = new uk.openvk.android.legacy.api.models.Message(0, false,
+                last_sended_message = new uk.openvk.android.legacy.api.entities.Message(0, false,
                         false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
                 last_sended_message.sending = true;
                 last_sended_message.isError = false;
                 if(history == null) {
-                    history = new ArrayList<uk.openvk.android.legacy.api.models.Message>();
+                    history = new ArrayList<uk.openvk.android.legacy.api.entities.Message>();
                 }
                 history.add(last_sended_message);
                 if(conversation_adapter == null) {
@@ -485,7 +485,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
 
     private void showDeleteConfirmDialog(final int position) {
         cursor_id = position;
-        uk.openvk.android.legacy.api.models.Message msg = history.get(position);
+        uk.openvk.android.legacy.api.entities.Message msg = history.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String text;
         if(msg.text.length() <= 200) {

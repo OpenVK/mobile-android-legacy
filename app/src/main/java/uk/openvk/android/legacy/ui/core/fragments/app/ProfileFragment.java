@@ -25,7 +25,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.api.models.User;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;

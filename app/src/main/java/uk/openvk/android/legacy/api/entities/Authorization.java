@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api.models;
+package uk.openvk.android.legacy.api.entities;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,42 +19,25 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
-public class Error {
-    public String description;
-    public int code;
+public class Authorization {
+    private String access_token;
+    private String response;
     private JSONParser jsonParser;
 
-    public Error() {
-        jsonParser = new JSONParser();
-    }
-
-    public Error(String response) {
+    public Authorization(String response) {
+        this.response = response;
         jsonParser = new JSONParser();
         JSONObject json = jsonParser.parseJSON(response);
         if(json != null) {
             try {
-                description = json.getString("error_msg");
-                code = json.getInt("error_code");
+                this.access_token = json.getString("access_token");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void parse(String response) {
-        JSONObject json = jsonParser.parseJSON(response);
-        if(json != null) {
-            try {
-                description = json.getString("error_msg");
-                code = json.getInt("error_code");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public Error(String description, int code) {
-        this.description = description;
-        this.code = code;
+    public String getAccessToken() {
+        return access_token;
     }
 }
