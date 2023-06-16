@@ -34,8 +34,9 @@
 
     <EditText
         android:id="@+id/two_factor_code"
-        android:layout_width="match_parent"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="6dp"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
