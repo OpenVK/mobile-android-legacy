@@ -1172,7 +1172,7 @@
 	<string name="incompatible_openvk_api_title">Incompatible OpenVK API version</string>
 	<string name="incompatible_openvk_api">Most likely, this instance uses an incompatible version of the OpenVK API, in which the necessary functions are not implemented or deprecated. Contact your system administrator or application developer to resolve the issue.</string>
 	<string name="unable_to_parse_error">Unable to parse response from server</string>
-	<string name="twofactor_text">You have two-factor authentication enabled. To login, paste the code received in the application.</string>
+	<string name="twofactor_text">Enter the code provided by the code generating app.</string>
 	<string name="twofactor_hint">2FA code</string>
 	<string name="not_implemented">At the moment this feature is not implemented. Stay tuned.</string>
 	<string name="not_supported">At the moment this feature is not supported. Stay tuned.</string>

@@ -1215,7 +1215,7 @@
     <string name="incompatible_openvk_api_title">Несовместимая версия OpenVK API</string>
     <string name="incompatible_openvk_api">Скорее всего, в этой инстанции используется несовместимая версия OpenVK API, в котором не реализованы или устарели необходимые функции. Для решения проблемы обратитесь к системным администратором или разработчику приложения.</string>
     <string name="unable_to_parse_error">Невозможно обработать ответ от сервера</string>
-    <string name="twofactor_text">У вас включена двухфакторная аутентификация. Для входа вставьте код, полученный из специального приложения.</string>
+    <string name="twofactor_text">Введите код подтверждения из приложения-генератора кодов.</string>
     <string name="twofactor_hint">Код 2FA</string>
     <string name="not_implemented">На данный момент такая функция не реализована. Следите за обновлениями.</string>
     <string name="not_supported">На данный момент такая функция не поддерживается. Следите за обновлениями.</string>
