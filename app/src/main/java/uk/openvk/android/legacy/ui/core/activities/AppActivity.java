@@ -225,14 +225,19 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
+    @SuppressLint("CommitTransaction")
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if(lpReceiver != null) {
-            unregisterReceiver(lpReceiver);
+        if(selectedFragment instanceof NewsfeedFragment) {
+            super.onBackPressed();
+            if(lpReceiver != null) {
+                unregisterReceiver(lpReceiver);
+            }
+            finish();
+            System.exit(0);
+        } else {
+            fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
         }
-        finish();
-        System.exit(0);
     }
 
     @Override
@@ -255,7 +260,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
     }
 
-    private void setActionBar(String layout_name) {
+    public void setActionBar(String layout_name) {
         try {
             ab_layout.setOnHomeButtonClickListener(new View.OnClickListener() {
                 @Override
@@ -688,7 +693,6 @@ public class AppActivity extends TranslucentFragmentActivity {
             }
             groups.getGroups(ovk_api, account.id, 25);
         } else if(position == 3) {
-            setActionBar("custom_newsfeed");
             menu_id = R.menu.newsfeed;
             onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -698,24 +702,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 newsfeed_count = 25;
                 newsfeed.get(ovk_api, newsfeed_count);
             }
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                actionBar = findViewById(R.id.actionbar);
-                if(actionBar.getActionCount() > 0) {
-                    actionBar.removeAllActions();
-                }
-                actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
-                    @Override
-                    public int getDrawable() {
-                        return R.drawable.ic_ab_write;
-                    }
 
-                    @Override
-                    public void performAction(View view) {
-                        openNewPostActivity();
-                    }
-                });
-                //
-            }
         } else if(position == 4) {
             Context context = getApplicationContext();
             setActionBar("");

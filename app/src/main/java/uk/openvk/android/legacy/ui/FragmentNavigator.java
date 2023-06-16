@@ -41,7 +41,7 @@ public class FragmentNavigator {
     }
     public void navigateTo(String where, FragmentTransaction ft) {
         if(activity instanceof AppActivity) {
-            AppActivity appActivity = ((AppActivity) activity);
+            final AppActivity appActivity = ((AppActivity) activity);
             appActivity.errorLayout.setVisibility(View.GONE);
             ft.hide(appActivity.selectedFragment);
             switch (where) {
@@ -106,9 +106,25 @@ public class FragmentNavigator {
                     showFragment(activity, appActivity.newsfeedFragment.getCount() != 0);
                     appActivity.selectedFragment = appActivity.newsfeedFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "newsfeed");
+                    appActivity.setActionBar("custom_newsfeed");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
+                        appActivity.actionBar = appActivity.findViewById(R.id.actionbar);
+                        if(appActivity.actionBar.getActionCount() > 0) {
+                            appActivity.actionBar.removeAllActions();
+                        }
+                        appActivity.actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
+                            @Override
+                            public int getDrawable() {
+                                return R.drawable.ic_ab_write;
+                            }
+
+                            @Override
+                            public void performAction(View view) {
+                                appActivity.openNewPostActivity();
+                            }
+                        });
                         appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(), "newsfeed", true);
+                        //
                     } else {
                         if(appActivity.activity_menu != null) {
                             appActivity.activity_menu.clear();
