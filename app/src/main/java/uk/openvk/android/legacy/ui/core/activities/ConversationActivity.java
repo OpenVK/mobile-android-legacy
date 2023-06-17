@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -93,6 +95,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     private uk.openvk.android.legacy.api.entities.Message last_sended_message;
     private LongPollReceiver lpReceiver;
     private String last_lp_message;
+    private int keyboard_height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,8 +209,20 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
             ovk_api.setServer(instance_prefs.getString("server", ""));
             ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
             conversation.getHistory(ovk_api, peer_id);
-
         }
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        int height = getWindow().getDecorView().getHeight();
+                        Log.w("Foo", String.format("layout height: %d", height));
+                        Rect r = new Rect();
+                        getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                        int visible = r.bottom - r.top;
+                        keyboard_height = height - visible;
+                    }
+                }
+        );
     }
 
     private void registerBroadcastReceiver() {
@@ -248,6 +263,9 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
                     View view = ConversationActivity.this.getCurrentFocus();
                     if (view != null) {
+                        if(keyboard_height >= 80) {
+                            findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
+                        }
                         InputMethodManager imm =
                                 (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
