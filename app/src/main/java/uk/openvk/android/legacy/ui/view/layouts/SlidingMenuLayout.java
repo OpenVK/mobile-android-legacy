@@ -118,30 +118,34 @@ public class SlidingMenuLayout extends LinearLayout {
         Bitmap bitmap = BitmapFactory.decodeFile(
                 String.format("%s/photos_cache/account_avatar/avatar_%s",
                         getContext().getCacheDir(), account.user.id), options);
-        if(quality.equals("medium")) {
-            if (bitmap != null) {
-                account.user.avatar = bitmap;
-            } else if (account.user.avatar_msize_url.length() > 0) {
-                account.user.avatar = null;
-            } else {
-                account.user.avatar = null;
-            }
-        } else if(quality.equals("high")) {
-            if (bitmap != null) {
-                account.user.avatar = bitmap;
-            } else if (account.user.avatar_hsize_url.length() > 0) {
-                account.user.avatar = null;
-            } else {
-                account.user.avatar = null;
-            }
-        } else {
-            if (bitmap != null) {
-                account.user.avatar = bitmap;
-            } else if (account.user.avatar_osize_url.length() > 0) {
-                account.user.avatar = null;
-            } else {
-                account.user.avatar = null;
-            }
+        switch (quality) {
+            case "medium":
+                if (bitmap != null) {
+                    account.user.avatar = bitmap;
+                } else if (account.user.avatar_msize_url.length() > 0) {
+                    account.user.avatar = null;
+                } else {
+                    account.user.avatar = null;
+                }
+                break;
+            case "high":
+                if (bitmap != null) {
+                    account.user.avatar = bitmap;
+                } else if (account.user.avatar_hsize_url.length() > 0) {
+                    account.user.avatar = null;
+                } else {
+                    account.user.avatar = null;
+                }
+                break;
+            default:
+                if (bitmap != null) {
+                    account.user.avatar = bitmap;
+                } else if (account.user.avatar_osize_url.length() > 0) {
+                    account.user.avatar = null;
+                } else {
+                    account.user.avatar = null;
+                }
+                break;
         }
         if(account.user.avatar != null) ((ImageView) findViewById(R.id.avatar))
                 .setImageBitmap(account.user.avatar);

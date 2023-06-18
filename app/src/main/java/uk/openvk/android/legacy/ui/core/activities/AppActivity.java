@@ -1203,10 +1203,12 @@ public class AppActivity extends TranslucentFragmentActivity {
     public void openAccountProfile() {
         try {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
-                if(menu == null) {
+                if (menu == null) {
                     menu = new SlidingMenu(this);
                 }
-                menu.toggle(true);
+                if(menu.isMenuShowing()) {
+                    menu.toggle(true);
+                }
             }
 
             findViewById(R.id.app_fragment).setVisibility(View.GONE);
@@ -1296,14 +1298,14 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void showProfile(int user_id) {
-        if(selectedFragment instanceof NewsfeedFragment ||
-                (selectedFragment instanceof ProfileFragment && user_id != account.id)
-                ) {
+        if(user_id != account.id) {
             String url = "openvk://profile/" + "id" + user_id;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             i.setPackage("uk.openvk.android.legacy");
             startActivity(i);
+        } else {
+            openAccountProfile();
         }
     }
 
@@ -1314,11 +1316,10 @@ public class AppActivity extends TranslucentFragmentActivity {
 
     @SuppressLint("CommitTransaction")
     public void openIntentfromCounters(String action) {
-        String url = action;
-        if(action.length() > 0 && !url.startsWith("openvk://friends")) {
+        if(action.length() > 0 && !action.startsWith("openvk://friends")) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse(url));
+            i.setData(Uri.parse(action));
             startActivity(i);
         } else {
             onSlidingMenuItemClicked(0, false);
@@ -1452,16 +1453,20 @@ public class AppActivity extends TranslucentFragmentActivity {
         } else {
             item = newsfeed.getWallPosts().get(position);
         }
-        String url = "";
-        if(item.author_id < 0) {
-            url = "openvk://group/" + "club" + -item.author_id;
+        if(item.author_id != account.id) {
+            String url = "";
+            if (item.author_id < 0) {
+                url = "openvk://group/" + "club" + -item.author_id;
+            } else {
+                url = "openvk://profile/" + "id" + item.author_id;
+            }
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
+            i.setData(Uri.parse(url));
+            startActivity(i);
         } else {
-            url = "openvk://profile/" + "id" + item.author_id;
+            openAccountProfile();
         }
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setPackage("uk.openvk.android.legacy");
-        i.setData(Uri.parse(url));
-        startActivity(i);
     }
 
     public void loadMoreNews() {
