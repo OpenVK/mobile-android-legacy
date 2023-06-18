@@ -81,7 +81,7 @@ public class SlidingMenuAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((AppActivity) ctx).onSlidingMenuItemClicked(position);
+                ((AppActivity) ctx).onSlidingMenuItemClicked(position, true);
             }
         });
         return view;

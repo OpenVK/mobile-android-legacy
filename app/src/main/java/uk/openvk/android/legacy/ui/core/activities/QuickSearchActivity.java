@@ -171,6 +171,7 @@ public class QuickSearchActivity extends TranslucentActivity {
         String url = "openvk://profile/" + "id" + users.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
+        i.setPackage("uk.openvk.android.legacy");
         startActivity(i);
     }
 

@@ -536,13 +536,13 @@ public class AppActivity extends TranslucentFragmentActivity {
                 if (global_prefs.getString("current_screen", "newsfeed").equals("profile")) {
                     openAccountProfile();
                 } else if (global_prefs.getString("current_screen", "newsfeed").equals("friends")) {
-                    onSlidingMenuItemClicked(0);
+                    onSlidingMenuItemClicked(0, false);
                 }
                 if (global_prefs.getString("current_screen", "newsfeed").equals("messages")) {
-                    onSlidingMenuItemClicked(1);
+                    onSlidingMenuItemClicked(1, false);
                 }
                 if (global_prefs.getString("current_screen", "newsfeed").equals("groups")) {
-                    onSlidingMenuItemClicked(2);
+                    onSlidingMenuItemClicked(2, false);
                 }
             } catch (Exception ignored) {
 
@@ -650,22 +650,24 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     @SuppressLint("CommitTransaction")
-    public void onSlidingMenuItemClicked(int position) {
+    public void onSlidingMenuItemClicked(int position, boolean is_menu) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             actionBar = findViewById(R.id.actionbar);
             actionBar.removeAllActions();
             //createActionPopupMenu(activity_menu, false);
         }
         global_prefs_editor = global_prefs.edit();
-        try {
-            if (!((OvkApplication) getApplicationContext()).isTablet) {
-                menu.toggle(true);
-            }
-            if (activity_menu != null) {
-                activity_menu.clear();
-            }
-        } catch (Exception ignored) {
+        if(is_menu) {
+            try {
+                if (!((OvkApplication) getApplicationContext()).isTablet) {
+                    menu.toggle(true);
+                }
+                if (activity_menu != null) {
+                    activity_menu.clear();
+                }
+            } catch (Exception ignored) {
 
+            }
         }
         ft = getSupportFragmentManager().beginTransaction();
         if(position == 0) {
@@ -1294,11 +1296,15 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void showProfile(int user_id) {
-        String url = "openvk://profile/" + "id" + user_id;
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        i.setPackage("uk.openvk.android.legacy");
-        startActivity(i);
+        if(selectedFragment instanceof NewsfeedFragment ||
+                (selectedFragment instanceof ProfileFragment && user_id != account.id)
+                ) {
+            String url = "openvk://profile/" + "id" + user_id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            i.setPackage("uk.openvk.android.legacy");
+            startActivity(i);
+        }
     }
 
     public void hideSelectedItemBackground(int position) {
@@ -1306,13 +1312,16 @@ public class AppActivity extends TranslucentFragmentActivity {
                 .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
+    @SuppressLint("CommitTransaction")
     public void openIntentfromCounters(String action) {
         String url = action;
-        if(action.length() > 0) {
+        if(action.length() > 0 && !url.startsWith("openvk://friends")) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(url));
             startActivity(i);
+        } else {
+            onSlidingMenuItemClicked(0, false);
         }
     }
 
