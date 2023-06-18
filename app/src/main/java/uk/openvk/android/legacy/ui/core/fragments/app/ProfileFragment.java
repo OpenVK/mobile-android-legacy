@@ -1,8 +1,10 @@
 package uk.openvk.android.legacy.ui.core.fragments.app;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -51,6 +54,7 @@ import static android.view.View.GONE;
 
 public class ProfileFragment extends Fragment {
     private View view;
+    private boolean showExtended;
 
     @Nullable
     @Override
@@ -98,6 +102,7 @@ public class ProfileFragment extends Fragment {
             header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    toggleExtendedInfo();
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
@@ -123,6 +128,22 @@ public class ProfileFragment extends Fragment {
         } else {
             view.findViewById(R.id.profile_counters).setVisibility(GONE);
             (view.findViewById(R.id.deactivated_info)).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void toggleExtendedInfo() {
+        this.showExtended = !this.showExtended;
+        View arrow = getHeader().findViewById(R.id.profile_expand);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            float[] fArr = new float[2];
+            fArr[0] = this.showExtended ? 0 : -180;
+            fArr[1] = this.showExtended ? -180 : 0;
+            ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
+        } else {
+            RotateAnimation anim = new RotateAnimation(this.showExtended ? 0 : -180, this.showExtended ? -180 : 0, 1, 0.5f, 1, 0.5f);
+            anim.setFillAfter(true);
+            anim.setDuration(300L);
+            arrow.startAnimation(anim);
         }
     }
 
