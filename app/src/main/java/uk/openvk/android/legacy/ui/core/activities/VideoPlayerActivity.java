@@ -14,10 +14,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.SeekBar;
@@ -27,6 +29,7 @@ import android.widget.VideoView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -67,6 +70,7 @@ public class VideoPlayerActivity extends Activity {
     private SurfaceView vsv;
     private int duration;
     private boolean isErr;
+    private boolean fitVideo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,6 +129,12 @@ public class VideoPlayerActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         playVideo();
+                    }
+                });
+                ((ImageButton) findViewById(R.id.video_resize)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        resizeVideo();
                     }
                 });
             }
@@ -337,6 +347,46 @@ public class VideoPlayerActivity extends Activity {
             imp.seekTo(progress * 1000);
         } else {
             mp.seekTo(progress * 1000);
+        }
+    }
+
+    private void resizeVideo() {
+        SurfaceView mSurfaceView = findViewById(R.id.video_surface_view);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                !Build.CPU_ABI.equals("x86")
+                && !Build.CPU_ABI.equals("x86_64")) {
+            if(!fitVideo) {
+                int videoWidth = imp.getVideoWidth();
+                int videoHeight = imp.getVideoHeight();
+                int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+
+                android.view.ViewGroup.LayoutParams lp = mSurfaceView.getLayoutParams();
+
+                lp.width = screenWidth;
+
+                lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+                mSurfaceView.setLayoutParams(lp);
+                fitVideo = true;
+            } else {
+                fitVideo = false;
+                rescaleVideo(mSurfaceView, mSurfaceView.getHolder());
+            }
+        } else {
+            if(!fitVideo) {
+                int videoWidth = mp.getVideoWidth();
+                int videoHeight = mp.getVideoHeight();
+                int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+
+                android.view.ViewGroup.LayoutParams lp = mSurfaceView.getLayoutParams();
+
+                lp.width = screenWidth;
+
+                lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+                mSurfaceView.setLayoutParams(lp);
+                fitVideo = true;
+            } else {
+                fitVideo = false;
+            }
         }
     }
 
