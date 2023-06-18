@@ -268,10 +268,14 @@ public class AuthActivity extends Activity {
 
     public void clickInstancesItem(int position) {
         EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
+        String regexp = Pattern.quote("|");
+        String server;
         if(position >= getResources().getStringArray(R.array.official_instances_list).length) {
-            instance_edit.setText(getResources().getStringArray(R.array.instances_list)[position - 3]);
+            server = getResources().getStringArray(R.array.instances_list)[position - 3].split(regexp)[0];
+            instance_edit.setText(server);
         } else {
-            instance_edit.setText(getResources().getStringArray(R.array.official_instances_list)[position]);
+            server = getResources().getStringArray(R.array.official_instances_list)[position].split(regexp)[0];
+            instance_edit.setText(server);
         }
         if(alertDialog != null) {
             alertDialog.cancel();
