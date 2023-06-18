@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    OPENVK LEGACY LICENSE NOTIFICATION
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="friends_tab_all">
+        <item quantity="one">%d friend</item>
+        <item quantity="other">%d friends</item>
+    </plurals>
+
+    <plurals name="friends_tab_online">
+        <item quantity="other">%d online</item>
+    </plurals>
+
+    <plurals name="photos">
+        <item quantity="one">%d photo</item>
+        <item quantity="other">%d photos</item>
+    </plurals>
+
+    <plurals name="num_poll_votes">
+        <item quantity="one">%d vote</item>
+        <item quantity="other">%d votes</item>
+    </plurals>
+
+    <plurals name="profile_friends">
+        <item quantity="one">friend</item>
+        <item quantity="other">friends</item>
+    </plurals>
+
+    <plurals name="profile_mutual_friends">
+        <item quantity="other">mutual</item>
+    </plurals>
+
+    <plurals name="friends_mutual">
+        <item quantity="other">mutual</item>
+    </plurals>
+
+    <plurals name="profile_followers">
+        <item quantity="one">follower</item>
+        <item quantity="other">followers</item>
+    </plurals>
+
+    <plurals name="profile_photos">
+        <item quantity="one">photo</item>
+        <item quantity="other">photos</item>
+    </plurals>
+
+    <plurals name="profile_audios">
+        <item quantity="one">audio</item>
+        <item quantity="other">audios</item>
+    </plurals>
+
+    <plurals name="profile_videos">
+        <item quantity="one">video</item>
+        <item quantity="other">videos</item>
+    </plurals>
+
+    <plurals name="profile_groups">
+        <item quantity="one">group</item>
+        <item quantity="other">groups</item>
+    </plurals>
+
+    <plurals name="profile_docs">
+        <item quantity="one">document</item>
+        <item quantity="other">documents</item>
+    </plurals>
+
+    <plurals name="profile_members">
+        <item quantity="one">member</item>
+        <item quantity="other">members</item>
+    </plurals>
+
+    <plurals name="profile_topics">
+        <item quantity="one">topic</item>
+        <item quantity="other">topics</item>
+    </plurals>
+
+    <plurals name="profile_age_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+
+    <plurals name="messages">
+        <item quantity="one">message</item>
+        <item quantity="other">messages</item>
+    </plurals>
+
+    <plurals name="groups">
+        <item quantity="one">%d communitiy</item>
+        <item quantity="other">%d communities</item>
+    </plurals>
+
+    <plurals name="events">
+        <item quantity="one">%d event</item>
+        <item quantity="other">%d events</item>
+    </plurals>
+
+    <plurals name="chat_members">
+        <item quantity="one">%d participant</item>
+        <item quantity="other">%d participants</item>
+    </plurals>
+
+    <plurals name="group_members">
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
+
+    <plurals name="new_posts">
+        <item quantity="one">Show %d new post</item>
+        <item quantity="other">Show %d new posts</item>
+    </plurals>
+
+    <plurals name="wallview_likes">
+        <item quantity="one">One person likes this</item>
+        <item quantity="other">%d people like this</item>
+    </plurals>
+
+    <plurals name="wallview_likes_me">
+        <item quantity="one">You and one person like this</item>
+        <item quantity="other">You and %d people like this</item>
+    </plurals>
+
+    <plurals name="wallview_comments">
+        <item quantity="one">Show one more comment</item>
+        <item quantity="other">Show %d more comments</item>
+    </plurals>
+
+    <plurals name="qty_msgs">
+        <item quantity="one">this message</item>
+        <item quantity="other">%d messages</item>
+    </plurals>
+
+    <plurals name="num_attach_fwd_message">
+        <item quantity="one">Forwarded message</item>
+        <item quantity="other">%d forwarded messages</item>
+    </plurals>
+
+    <plurals name="num_attach_photo">
+        <item quantity="one">Photo</item>
+        <item quantity="other">%d photos</item>
+    </plurals>
+
+    <plurals name="num_attach_audio">
+        <item quantity="one">Audio file</item>
+        <item quantity="other">%d audio files</item>
+    </plurals>
+
+    <plurals name="num_attach_video">
+        <item quantity="one">Video</item>
+        <item quantity="other">%d videos</item>
+    </plurals>
+
+    <plurals name="num_attach_document">
+        <item quantity="one">Document</item>
+        <item quantity="other">%d documents</item>
+    </plurals>
+</resources>

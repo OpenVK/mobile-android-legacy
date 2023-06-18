@@ -206,7 +206,7 @@ public class MessagesListAdapter extends BaseAdapter {
                                 ctx.getCacheDir(), peer_id), options);
                         ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
                     }
-                } catch (OutOfMemoryError error) {
+                } catch (OutOfMemoryError ignored) {
 
                 }
             } else {
@@ -225,7 +225,7 @@ public class MessagesListAdapter extends BaseAdapter {
                                 String.format("%s/photos_cache/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
                         ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
                     }
-                } catch (OutOfMemoryError error) {
+                } catch (OutOfMemoryError ignored) {
 
                 }
                 ((view.findViewById(R.id.incoming_msg)).findViewById(R.id.msg_time_right)).setVisibility(View.VISIBLE);
@@ -245,7 +245,7 @@ public class MessagesListAdapter extends BaseAdapter {
                             String.format("%s/photos_cache/conversations_avatars/avatar_%s",
                                     ctx.getCacheDir(), peer_id), options);
                 }
-            } catch (OutOfMemoryError error) {
+            } catch (OutOfMemoryError ignored) {
 
             }
             if(regexp_results > 0) {

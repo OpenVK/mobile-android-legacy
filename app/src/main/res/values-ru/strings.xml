@@ -134,18 +134,6 @@
 	    <item>Не прикреплять</item>
     </string-array>
 
-    <string-array name="num_new_messages">
-        <item>%d новое сообщение.</item>
-        <item>%d новых сообщения.</item>
-        <item>%d новых сообщений.</item>
-    </string-array>
-
-    <string-array name="num_poll_votes">
-        <item>%d голос</item>
-        <item>%d голоса</item>
-        <item>%d голосов</item>
-    </string-array>
-
     <string name="instance">Инстанция</string>
     <string name="mail">Электронная почта</string>
     <string name="password">Пароль</string>
@@ -172,23 +160,9 @@
     <string name="updated">Обновлено</string>
     <string name="error">Ошибка</string>
     <string name="attach_note">Заметка</string>
-    <string-array name="wallview_likes">
-    	<item>Понравилось %d человеку</item>
-    	<item>Понравилось %d людям</item>
-    	<item>Понравилось %d людям</item>
-    </string-array>
-    <string-array name="wallview_likes_me">
-    	<item>Понравилось Вам и %d человеку</item>
-    	<item>Понравилось Вам и %d людям</item>
-    	<item>Понравилось Вам и %d людям</item>
-    </string-array>
+
     <string name="err_try_again">Повторить попытку</string>
     <string name="err_text">При загрузке данных произошла ошибка. Проверьте Ваше подключение к сети.</string>
-    <string-array name="wallview_comments">
-    	<item>Показать ещё %d комментарий</item>
-    	<item>Показать ещё %d комментария</item>
-    	<item>Показать ещё %d комментариев</item>
-    </string-array>
 
     <string name="sett_load_images">Загружать изображения</string>
     <string name="sett_load_images_summary">Отключение изображений значительно снизит количество передаваемых данных.</string>
@@ -217,21 +191,6 @@
     <string name="sett_proxy_address_alt">Адрес:</string>
     <string name="sett_proxy_type">Тип:</string>
 
-    <string-array name="date_ago_hrs">
-    	<item>час назад</item>
-    	<item>два часа назад</item>
-    	<item>три часа назад</item>
-    </string-array>
-    <string-array name="date_ago_mins">
-    	<item>%d минуту назад</item>
-    	<item>%d минуты назад</item>
-    	<item>%d минут назад</item>
-    </string-array>
-    <string-array name="date_ago_secs">
-    	<item>%d секунду назад</item>
-    	<item>%d секунды назад</item>
-    	<item>%d секунд назад</item>
-    </string-array>
     <string name="date_ago_now">только что</string>
     <string name="message">Сообщение</string>
     <string name="fsize_b">байт</string>
@@ -245,11 +204,6 @@
     <string name="msg_error">Ошибка при отправке сообщения</string>
     <string name="comments">Комментарии</string>
     <string name="no_comments">Нет комментариев, но вы можете отправить свой.</string>
-    <string-array name="ncomments_last">
-    	<item>Последний из %d комментария</item>
-    	<item>Последний из %d комментариев</item>
-    	<item>Последний из %d комментариев</item>
-    </string-array>
     <string name="no_news">Нет новостей</string>
     <string name="no_messages">Нет сообщений</string>
     <string name="no_friends">Список друзей пуст</string>
@@ -345,11 +299,6 @@
 
     <string name="widget_audio">Аудиозаписи</string>
 
-    <string-array name="album_numphotos">
-    	<item>%d фотография</item>
-    	<item>%d фотографии</item>
-    	<item>%d фотографий</item>
-    </string-array>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="user_photos_title">Фотографии с %s</string>
 
@@ -392,17 +341,6 @@
 
     <string name="welcome_next">Далее</string>
 
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <br/> -->
-
-
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-
     <string name="sync_all">Все друзья</string>
     <string name="sync_all_summary">Добавить в контакты данные всех Ваших друзей</string>
     <string name="sync_existing">Только контакты</string>
@@ -435,11 +373,6 @@
     <string name="friends_decline">Скрыть</string>
     <string name="sett_splash">Заставка при запуске</string>
     <string name="sett_ringtone">Сигнал уведомления</string>
-    <string-array name="num_mutual_friends_req">
-        <item>%d общий друг</item>
-        <item>%d общих друга</item>
-        <item>%d общих друзей</item>
-    </string-array>
     <string name="friend_req_accepted">Заявка принята</string>
     <string name="friend_req_declined">Заявка отклонена</string>
     <string name="friend_requests">Заявки</string>
@@ -461,31 +394,6 @@
     <string name="closed_event">Закрытая встреча</string>
     <string name="public_page">Публичная страница</string>
     <string name="post_from_group">От имени сообщества</string>
-    <string-array name="num_attach_photo">
-        <item>Фотография</item>
-        <item>%d фотографии</item>
-        <item>%d фотографий</item>
-    </string-array>
-    <string-array name="num_attach_audio">
-        <item>Аудиозапись</item>
-        <item>%d аудиозаписи</item>
-        <item>%d аудиозаписей</item>
-    </string-array>
-    <string-array name="num_attach_video">
-        <item>Видеозапись</item>
-        <item>%d видеозаписи</item>
-        <item>%d видеозаписей</item>
-    </string-array>
-    <string-array name="num_attach_document">
-        <item>Документ</item>
-        <item>%d документа</item>
-        <item>%d документов</item>
-    </string-array>
-    <string-array name="num_attach_fwd_message">
-        <item>%d пересланное сообщение</item>
-        <item>%d пересланных сообщения</item>
-        <item>%d пересланных сообщений</item>
-    </string-array>
 
     <string name="post_not_found">Запись не найдена</string>
     <string name="groups">Сообщества</string>
@@ -545,12 +453,6 @@
 	<string name="video_err_network">Произошла ошибка, связанная с подключением к серверу. Проверьте соединение и повотрите попытку.</string>
 	<string name="video_err_os">Для просмотра этой видеозаписи требуется Android 2.3 или выше.</string>
 	<string name="video_err_decode">Ваше устройство не может воспроизвести это видео. Попробуйте выбрать более низкое качество или воспроизвести видео в стороннем плеере.</string>
-
-	<string-array name="video_views">
-    	<item>%d просмотр</item>
-    	<item>%d просмотра</item>
-    	<item>%d просмотров</item>
-    </string-array>
 
 	<string name="page_deleted">Эта страница удалена или заморожена. Информация недоступна.</string>
 	<string name="page_blacklist">Нет доступа</string>
@@ -641,37 +543,13 @@
 		<item>приняли Вашу заявку в друзья</item>
 	</string-array>
 
-	<string-array name="ntf_x_more_users">
-    	<item>и ещё %d человек</item>
-    	<item>и ещё %d человека</item>
-    	<item>и ещё %d человек</item>
-    </string-array>
     <string name="ntf_two_users_c">и</string>
     <string name="replies">Ответы</string>
     <string-array name="replies_options">
     	<item>Мне нравится</item>
     	<item>Ответить</item>
     </string-array>
-    <string-array name="news_added_photo_m">
-    	<item>добавил %d фотографию</item>
-    	<item>добавил %d фотографии</item>
-    	<item>добавил %d фотографий</item>
-    </string-array>
-    <string-array name="news_added_photo_f">
-    	<item>добавила %d фотографию</item>
-    	<item>добавила %d фотографии</item>
-    	<item>добавила %d фотографий</item>
-    </string-array>
-    <string-array name="news_tagged_photo_m">
-    	<item>был отмечен на %d фотографии</item>
-    	<item>был отмечен на %d фотографиях</item>
-    	<item>был отмечен на %d фотографиях</item>
-    </string-array>
-    <string-array name="news_tagged_photo_f">
-    	<item>была отмечена на %d фотографии</item>
-    	<item>была отмечена на %d фотографиях</item>
-    	<item>была отмечена на %d фотографиях</item>
-    </string-array>
+
     <string name="all_videos">Все видеозаписи</string>
     <string name="like">Мне нравится</string>
     <string name="unlike">Мне не нравится</string>
@@ -707,11 +585,7 @@
 	<string name="wall_comment_repost"><font color="#aaaaaa">Комментарий к </font><a href="openvk://view/?http://openvk.uk/wall%1$d_%2$d">записи</a></string>
 	<string name="wall_post_reply">В ответ на запись</string>
 	<string name="topics">Обсуждения</string>
-	<string-array name="topic_posts">
-    	<item>%d сообщение</item>
-    	<item>%d сообщения</item>
-    	<item>%d сообщений</item>
-    </string-array>
+
     <string name="search_in_msgs1">Искать </string>
     <string name="search_in_msgs2"> в сообщениях</string>
 
@@ -776,12 +650,6 @@
 	<string name="birthday_tomorrow">Завтра день рождения %s.</string>
 	<string name="birthday_today_short">День рождения %s</string>
 	<string name="birthdays_title">Дни рождения</string>
-
-	<string-array name="birthday_age">
-    	<item>%d год</item>
-    	<item>%d года</item>
-    	<item>%d лет</item>
-    </string-array>
 	<string name="tomorrow">завтра</string>
 	<string name="sett_bdays">Напоминания о днях рожд.</string>
 	<string-array name="profile_relation_pm">
@@ -837,11 +705,6 @@
 	<string name="send_to_friend">Отправить другу</string>
 	<string name="delete_msgs_title">Удалить сообщения</string>
 	<string name="delete_msgs_confirm">Вы действительно хотите удалить %s?</string>
-	<string-array name="qty_msgs">
-    	<item>%d сообщение</item>
-    	<item>%d сообщения</item>
-    	<item>%d сообщений</item>
-	</string-array>
 	<string name="menu">Меню</string>
 	<string name="reminder">Напоминание</string>
 	<string name="bookmarks">Закладки</string>
@@ -929,89 +792,13 @@
 	<string name="profile_friend_cancel">Отменить заявку</string>
 	<string name="profile_add_post">Написать на стене</string>
 
-	<string-array name="friends_tab_all">
-    	<item>%d друг</item>
-    	<item>%d друга</item>
-    	<item>%d друзей</item>
-	</string-array>
-	<string-array name="friends_tab_online">
-    	<item>%d в сети</item>
-    	<item>%d в сети</item>
-    	<item>%d в сети</item>
-	</string-array>
-	<string-array name="photos">
-    	<item>%d фотография</item>
-    	<item>%d фотографии</item>
-    	<item>%d фотографий</item>
-	</string-array>
 
-	<string-array name="profile_friends">
-	    <item>друг</item>
-	    <item>друга</item>
-	    <item>друзей</item>
-	</string-array>
-	<string-array name="profile_mutual_friends">
-	    <item>общий</item>
-	    <item>общих</item>
-	    <item>общих</item>
-	</string-array>
-	<string-array name="profile_followers">
-	    <item>подписчик</item>
-	    <item>подписчика</item>
-	    <item>подписчиков</item>
-	</string-array>
-	<string-array name="profile_photos">
-	    <item>фото</item>
-	    <item>фото</item>
-	    <item>фото</item>
-	</string-array>
-	<string-array name="profile_audios">
-	    <item>аудио</item>
-	    <item>аудио</item>
-	    <item>аудио</item>
-	</string-array>
-	<string-array name="profile_videos">
-	    <item>видео</item>
-	    <item>видео</item>
-	    <item>видео</item>
-	</string-array>
-	<string-array name="profile_groups">
-	    <item>группа</item>
-	    <item>группы</item>
-	    <item>групп</item>
-	</string-array>
-	<string-array name="profile_docs">
-	    <item>документ</item>
-	    <item>документа</item>
-	    <item>документов</item>
-	</string-array>
-	<string-array name="profile_members">
-	    <item>участник</item>
-	    <item>участника</item>
-	    <item>участников</item>
-	</string-array>
-	<string-array name="profile_topics">
-	    <item>обсуждение</item>
-	    <item>обсуждения</item>
-	    <item>обсуждений</item>
-	</string-array>
-
-	<string-array name="profile_age_years">
-	    <item>%d год</item>
-	    <item>%d года</item>
-	    <item>%d лет</item>
-	</string-array>
 	<string name="group_event_join">Точно буду</string>
 	<string name="group_event_join_unsure">Возможно буду</string>
 	<string name="copy_link">Копировать ссылку</string>
 	<string name="open_in_browser">Открыть в браузере</string>
 	<string name="link_copied">Ссылка скопирована в буфер обмена</string>
 	<string name="friends_of_user">Друзья %s</string>
-	<string-array name="friends_mutual">
-	    <item>%d общий</item>
-	    <item>%d общих</item>
-	    <item>%d общих</item>
-	</string-array>
 	<string name="profile_inactive_banned">Страница была заблокирована по жалобам пользователей. Возможно, она была взломана.</string>
 	<string name="profile_inactive_deleted">Страница пользователя удалена. Информация недоступна.</string>
 	<string name="add_photo_gallery">Загрузить из галереи</string>
@@ -1020,11 +807,7 @@
 	<string name="notification_in_chat_summary">Беседа \"%s\"</string>
 	<string name="gift">Подарок</string>
 	<string name="selected_n">Выбрано: %d</string>
-	<string-array name="messages">
-		<item>сообщение</item>
-		<item>сообщения</item>
-		<item>сообщений</item>
-	</string-array>
+
 	<string name="retry">Повторить попытку</string>
 	<string name="delete_audio_confirm">Вы действительно хотите удалить эту аудиозапись со своей страницы?</string>
 	<string-array name="video_search_quality">
@@ -1035,16 +818,6 @@
 		<item>Любая длительность</item>
 		<item>Короткие</item>
 		<item>Длинные</item>
-	</string-array>
-	<string-array name="groups">
-	    <item>%d сообщество</item>
-	    <item>%d сообщества</item>
-	    <item>%d сообществ</item>
-	</string-array>
-	<string-array name="events">
-	    <item>%d встреча</item>
-	    <item>%d встречи</item>
-	    <item>%d встреч</item>
 	</string-array>
 	<string name="groups_past_events">Прошедшие встречи</string>
 	<string name="groups_of_user">Сообщества %s</string>
@@ -1071,16 +844,6 @@
     <string name="copy_token_toast">Токен доступа скопирован в буфер обмена. Для обеспечения безопасности не раскрывайте третьим лицам!</string>
 	<string name="poll_btn_vote">Голосовать</string>
 	<string name="offline">Не в сети</string>
-	<string-array name="chat_members">
-	    <item>%d участник</item>
-	    <item>%d участника</item>
-	    <item>%d участников</item>
-	</string-array>
-	<string-array name="group_members">
-	    <item>%d участник</item>
-	    <item>%d участника</item>
-	    <item>%d участников</item>
-	</string-array>
 	<string name="chat_title">Название беседы</string>
 	<string name="chat_members">Участники</string>
 	<string name="chat_add_member">Добавить участника</string>
@@ -1177,12 +940,6 @@
 	<string name="commented_post_s">(на стене)</string>
 	<string name="commented_photo_s">(к фото)</string>
 	<string name="commented_video_s">(к видео)</string>
-
-	<string-array name="new_posts">
-	    <item>Показать %d новую запись</item>
-	    <item>Показать %d новых записи</item>
-	    <item>Показать %d новых записей</item>
-	</string-array>
 
 	<string name="new_posts">Показать новые записи</string>
 	<string name="chat_photo_removed_m">%s удалил фотографию беседы</string>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    OPENVK LEGACY LICENSE NOTIFICATION
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="friends_tab_all">
+        <item quantity="other">%d друзів</item>
+        <item quantity="one">%d друг</item>
+        <item quantity="few">%d друга</item>
+        <item quantity="many">%d друзів</item>
+    </plurals>
+
+    <plurals name="friends_tab_online">
+        <item quantity="other">%d в мережі</item>
+        <item quantity="one">%d в мережі</item>
+        <item quantity="few">%d в мережі</item>
+        <item quantity="many">%d в мережі</item>
+    </plurals>
+
+    <plurals name="photos">
+        <item quantity="other">%d фотографія</item>
+        <item quantity="one">%d фотографія</item>
+        <item quantity="few">%d фотографії</item>
+        <item quantity="many">%d фотографій</item>
+    </plurals>
+
+    <plurals name="num_poll_votes">
+        <item quantity="other">%d голосів</item>
+        <item quantity="one">%d голос</item>
+        <item quantity="few">%d голоси</item>
+        <item quantity="many">%d голосів</item>
+    </plurals>
+
+    <plurals name="profile_friends">
+        <item quantity="other">друзів</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">друг</item>
+        <item quantity="few">друга</item>
+        <item quantity="many">друзів</item>
+    </plurals>
+
+    <plurals name="profile_mutual_friends">
+        <item quantity="other">спільних</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">спільний</item>
+        <item quantity="few">спільних</item>
+        <item quantity="many">спільних</item>
+    </plurals>
+
+    <plurals name="friends_mutual">
+        <item quantity="other">%d спільних</item>
+        <item quantity="one">%d спільний</item>
+        <item quantity="few">%d спільних</item>
+        <item quantity="many">%d спільних</item>
+    </plurals>
+
+    <plurals name="profile_followers">
+        <item quantity="other">підписників</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">підписник</item>
+        <item quantity="few">підписника</item>
+        <item quantity="many">підписників</item>
+    </plurals>
+
+    <plurals name="profile_photos">
+        <item quantity="other">фото</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">фото</item>
+        <item quantity="few">фото</item>
+        <item quantity="many">фото</item>
+    </plurals>
+
+    <plurals name="profile_audios">
+        <item quantity="other">аудіо</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">аудіо</item>
+        <item quantity="few">аудіо</item>
+        <item quantity="many">аудіо</item>
+    </plurals>
+
+    <plurals name="profile_videos">
+        <item quantity="other">відео</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">відео</item>
+        <item quantity="few">відео</item>
+        <item quantity="many">відео</item>
+    </plurals>
+
+    <plurals name="profile_groups">
+        <item quantity="other">груп</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">група</item>
+        <item quantity="few">групи</item>
+        <item quantity="many">груп</item>
+    </plurals>
+
+    <plurals name="profile_docs">
+        <item quantity="other">документів</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">документ</item>
+        <item quantity="few">документи</item>
+        <item quantity="many">документів</item>
+    </plurals>
+
+    <plurals name="profile_members">
+        <item quantity="other">учасників</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">учасник</item>
+        <item quantity="few">учасника</item>
+        <item quantity="many">учасників</item>
+    </plurals>
+
+    <plurals name="profile_topics">
+        <item quantity="other">обговорень</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">обговорення</item>
+        <item quantity="few">обговорення</item>
+        <item quantity="many">обговорень</item>
+    </plurals>
+
+    <plurals name="profile_age_years">
+        <item quantity="one">%d рік</item>
+        <item quantity="few">%d роки</item>
+        <item quantity="many">%d років</item>
+    </plurals>
+
+    <plurals name="messages">
+        <item quantity="other">повідомлень</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">повідомлення</item>
+        <item quantity="few">повідомлення</item>
+        <item quantity="many">повідомлень</item>
+    </plurals>
+
+    <plurals name="groups">
+        <item quantity="other">%d спільнот</item>
+        <item quantity="one">%d спільнота</item>
+        <item quantity="few">%d спільноти</item>
+        <item quantity="many">%d спільнот</item>
+    </plurals>
+
+    <plurals name="events">
+        <item quantity="other">%d зустрічей</item>
+        <item quantity="one">%d зустріч</item>
+        <item quantity="few">%d зустрічі</item>
+        <item quantity="many">%d зустрічей</item>
+    </plurals>
+
+    <plurals name="chat_members">
+        <item quantity="other">%d учасників</item>
+        <item quantity="one">%d учасник</item>
+        <item quantity="few">%d учасника</item>
+        <item quantity="many">%d учасників</item>
+    </plurals>
+
+    <plurals name="group_members">
+        <item quantity="other">%d учасників</item>
+        <item quantity="one">%d учасник</item>
+        <item quantity="few">%d учасника</item>
+        <item quantity="many">%d учасників</item>
+    </plurals>
+
+    <plurals name="new_posts">
+        <item quantity="one">Показати %d новий запис</item>
+        <item quantity="few">Показати %d нові записи</item>
+        <item quantity="many">Показати %d нових записів</item>
+    </plurals>
+
+    <plurals name="wallview_likes">
+        <item quantity="one">Сподобалось %d людині</item>
+        <item quantity="few">Сподобалось %d людям</item>
+        <item quantity="many">Сподобалось %d людям</item>
+    </plurals>
+
+    <plurals name="wallview_likes_me">
+        <item quantity="one">Сподобалось Вам та %d людині</item>
+        <item quantity="few">Сподобалось Вам та %d людям</item>
+        <item quantity="many">Сподобалось Вам та %d людям</item>
+    </plurals>
+
+    <plurals name="wallview_comments">
+        <item quantity="one">Показати ще %d коментар</item>
+        <item quantity="few">Показати ще %d коментарі</item>
+        <item quantity="many">Показати ще %d коментарів</item>
+    </plurals>
+
+    <plurals name="num_new_messages">
+        <item quantity="one">%d нове повідомлення.</item>
+        <item quantity="few">%d нові повідомлення.</item>
+        <item quantity="many">%d нових повідомлень.</item>
+    </plurals>
+
+    <plurals name="qty_msgs">
+        <item quantity="other">%d повідомлень</item>
+        <item quantity="one">%d повідомлення</item>
+        <item quantity="few">%d повідомлення</item>
+        <item quantity="many">%d повідомлень</item>
+    </plurals>
+
+    <plurals name="num_attach_photo">
+        <item quantity="one">Показати ще %d подія</item>
+        <item quantity="few">Показати ще %d події</item>
+        <item quantity="many">Показати ще %d подій</item>
+    </plurals>
+
+    <plurals name="num_attach_audio">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Аудіозапис</item>
+        <item quantity="few">%d аудіозаписи</item>
+        <item quantity="many">%d аудіозаписів</item>
+    </plurals>
+
+    <plurals name="num_attach_video">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Відеозапис</item>
+        <item quantity="few">%d відеозаписи</item>
+        <item quantity="many">%d відеозаписів</item>
+    </plurals>
+
+    <plurals name="num_attach_document">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Документ</item>
+        <item quantity="few">%d документи</item>
+        <item quantity="many">%d документів</item>
+    </plurals>
+</resources>

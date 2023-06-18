@@ -94,8 +94,8 @@ public class GroupsListAdapter extends BaseAdapter {
 
         if(item.members_count > 0) {
             ((TextView) view.findViewById(R.id.group_list_item_subtext)).setText(
-                    String.format("%s %s", item.members_count, ctx.getResources().getStringArray(
-                            R.array.profile_followers)[2]));
+                    String.format("%s %s", item.members_count,
+                            ctx.getResources().getQuantityString(R.plurals.profile_followers, 0, 0)));
         }
 
         if(item.avatar != null) {

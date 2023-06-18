@@ -132,14 +132,6 @@
 		<item>Select from gallery</item>
 		<item>Remove photo</item>
 	</string-array>
-	<string-array name="num_new_messages">
-		<item>You have a new message.</item>
-		<item>You have %d new messages.</item>
-	</string-array>
-	<string-array name="num_poll_votes">
-		<item>%d vote</item>
-		<item>%d votes</item>
-	</string-array>
 	<string-array name="place_titles">
 		<item>Home</item>
 		<item>Work</item>
@@ -192,20 +184,10 @@
 	<string name="updated">Updated</string>
 	<string name="error">Error</string>
 	<string name="attach_note">Note</string>
-	<string-array name="wallview_likes">
-		<item>One person likes this</item>
-		<item>%d people like this</item>
-	</string-array>
-	<string-array name="wallview_likes_me">
-		<item>You and one person like this</item>
-		<item>You and %d people like this</item>
-	</string-array>
+
 	<string name="err_try_again">Try again</string>
 	<string name="err_text">Cannot load data. Please check your network connection.</string>
-	<string-array name="wallview_comments">
-		<item>Show one more comment</item>
-		<item>Show %d more comments</item>
-	</string-array>
+
 	<string name="sett_load_images">Load images</string>
 	<string name="sett_load_images_summary">Disabling images significantly decreases amount of transferred data.</string>
 	<string name="sett_flist_sort">Friend list order</string>
@@ -447,26 +429,6 @@
     <string name="closed_event">Private event</string>
     <string name="public_page">Public page</string>
     <string name="post_from_group">On behalf of the group</string>
-    <string-array name="num_attach_photo">
-        <item>Photo</item>
-        <item>%d photos</item>
-    </string-array>
-    <string-array name="num_attach_audio">
-        <item>Audio file</item>
-        <item>%d audio files</item>
-    </string-array>
-    <string-array name="num_attach_video">
-        <item>Video</item>
-        <item>%d videos</item>
-    </string-array>
-    <string-array name="num_attach_document">
-        <item>Document</item>
-        <item>%d documents</item>
-    </string-array>
-    <string-array name="num_attach_fwd_message">
-        <item>Forwarded message</item>
-        <item>%d forwarded messages</item>
-    </string-array>
 
     <string name="post_not_found">Post not found</string>
     <string name="groups">Communities</string>
@@ -815,10 +777,6 @@
 	<string name="send_to_friend">Share with friend</string>
 	<string name="delete_msgs_title">Delete messages</string>
 	<string name="delete_msgs_confirm">Are you sure you want to delete %s?</string>
-	<string-array name="qty_msgs">
-    	<item>this message</item>
-    	<item>%d messages</item>
-	</string-array>
 	<string name="menu">Menu</string>
 	<string name="reminder">Reminder</string>
 	<string name="bookmarks">Bookmarks</string>
@@ -867,19 +825,6 @@
 	<string name="poll_anonym">Anonymous poll</string>
 	<string name="recommendations">Recommendations</string>
 
-	<string-array name="friends_tab_all">
-    	<item>%d friend</item>
-    	<item>%d friends</item>
-	</string-array>
-	<string-array name="friends_tab_online">
-    	<item>%d online</item>
-    	<item>%d online</item>
-	</string-array>
-	<string-array name="photos">
-    	<item>%d photo</item>
-    	<item>%d photos</item>
-	</string-array>
-
 	<string name="last_seen_profile_m">last seen %s</string>
 	<string name="last_seen_profile_f">last seen %s</string>
 
@@ -923,55 +868,6 @@
 	    <item>friends</item>
 		<item>friends</item>
 	</string-array>
-	<string-array name="profile_mutual_friends">
-	    <item>mutual</item>
-	    <item>mutual</item>
-		<item>mutual</item>
-	</string-array>
-	<string-array name="profile_followers">
-	    <item>follower</item>
-	    <item>followers</item>
-		<item>followers</item>
-	</string-array>
-	<string-array name="profile_photos">
-	    <item>photo</item>
-	    <item>photos</item>
-		<item>photos</item>
-	</string-array>
-	<string-array name="profile_audios">
-	    <item>audio</item>
-	    <item>audios</item>
-		<item>audios</item>
-	</string-array>
-	<string-array name="profile_videos">
-	    <item>video</item>
-	    <item>videos</item>
-		<item>videos</item>
-	</string-array>
-	<string-array name="profile_groups">
-	    <item>group</item>
-	    <item>groups</item>
-	</string-array>
-	<string-array name="profile_docs">
-	    <item>document</item>
-	    <item>documents</item>
-	</string-array>
-	<string-array name="profile_members">
-	    <item>member</item>
-		<item>members</item>
-	    <item>members</item>
-	</string-array>
-	<string-array name="profile_topics">
-	    <item>topic</item>
-		<item>topics</item>
-	    <item>topics</item>
-	</string-array>
-	<string-array name="profile_age_years">
-	    <item>%d year</item>
-		<item>%d years</item>
-		<item>%d years</item>
-	    <item>%d years</item>
-	</string-array>
 	<string name="group_event_join">I\'ll be there</string>
 	<string name="group_event_join_unsure">I may attend</string>
 	<string name="copy_link">Copy link</string>
@@ -992,10 +888,6 @@
 	<string name="notification_in_chat_summary">Group chat \"%s\"</string>
 	<string name="gift">Gift</string>
 	<string name="selected_n">%d selected</string>
-	<string-array name="messages">
-		<item>message</item>
-		<item>messages</item>
-	</string-array>
 	<string name="retry">Retry</string>
 	<string name="delete_audio_confirm">Are you sure you want to delete this audio file from your profile?</string>
 	<string-array name="video_search_quality">
@@ -1006,14 +898,6 @@
 		<item>Any length</item>
 		<item>Short</item>
 		<item>Long</item>
-	</string-array>
-	<string-array name="groups">
-	    <item>%d communitiy</item>
-	    <item>%d communities</item>
-	</string-array>
-	<string-array name="events">
-	    <item>%d event</item>
-	    <item>%d events</item>
 	</string-array>
 	<string name="groups_past_events">Past events</string>
 	<string name="groups_of_user">%s\'s communities</string>
@@ -1040,14 +924,6 @@
     <string name="copy_token_toast">Access token copied to clipboard. For security reasons do not show to third person!</string>
 	<string name="poll_btn_vote">Vote</string>
 	<string name="offline">Offline</string>
-	<string-array name="chat_members">
-	    <item>%d participant</item>
-	    <item>%d participants</item>
-	</string-array>
-	<string-array name="group_members">
-	    <item>%d member</item>
-	    <item>%d members</item>
-	</string-array>
 	<string name="chat_title">Chat title</string>
 	<string name="chat_add_member">Add a participant</string>
 	<string name="chat_leave">Leave this chat</string>
@@ -1143,10 +1019,6 @@
 	<string name="commented_post_s">(on wall)</string>
 	<string name="commented_photo_s">(on photo)</string>
 	<string name="commented_video_s">(on video)</string>
-	<string-array name="new_posts">
-	    <item>Show %d new post</item>
-	    <item>Show %d new posts</item>
-	</string-array>
 	<string name="new_posts">Show new posts</string>
 	<string name="chat_photo_removed_m">%s deleted chat photo</string>
 	<string name="chat_photo_removed_f">%s deleted chat photo</string>
