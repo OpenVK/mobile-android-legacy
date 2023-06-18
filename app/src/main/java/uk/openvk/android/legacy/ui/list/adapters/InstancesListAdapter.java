@@ -69,10 +69,16 @@ public class InstancesListAdapter extends BaseAdapter {
             TextView item_name = (TextView) view.findViewById(R.id.item_title);
             item_name.setText(item.server);
             ImageView item_official = (ImageView) view.findViewById(R.id.official_state);
+            TextView https_chip = (TextView) view.findViewById(R.id.https_chip);
             if(item.official) {
                 item_official.setVisibility(View.VISIBLE);
             } else {
                 item_official.setVisibility(View.GONE);
+            }
+            if(item.secured) {
+                https_chip.setVisibility(View.VISIBLE);
+            } else {
+                https_chip.setVisibility(View.GONE);
             }
         }
 

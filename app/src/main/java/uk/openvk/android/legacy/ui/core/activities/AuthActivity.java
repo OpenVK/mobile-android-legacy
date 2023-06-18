@@ -28,6 +28,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -243,13 +244,19 @@ public class AuthActivity extends Activity {
         ArrayList<InstancesListItem> instances_list = new ArrayList<>();
         for(int instances_index = 0; instances_index < getResources().getStringArray(
                 R.array.official_instances_list).length; instances_index++) {
-            instances_list.add(new InstancesListItem(getResources().getStringArray(
-                    R.array.official_instances_list)[instances_index], true, true));
+            String instance = getResources().getStringArray(R.array.official_instances_list)[instances_index];
+            boolean secured;
+            String regexp = Pattern.quote("|");
+            secured = instance.split(regexp)[1].equals("HTTPS");
+            instances_list.add(new InstancesListItem(instance.split(regexp)[0], true, secured));
         }
         for(int instances_index = 0; instances_index < getResources().getStringArray(
                 R.array.instances_list).length; instances_index++) {
-            instances_list.add(new InstancesListItem(getResources().getStringArray(
-                    R.array.instances_list)[instances_index], false, true));
+            String instance = getResources().getStringArray(R.array.instances_list)[instances_index];
+            boolean secured;
+            String regexp = Pattern.quote("|");
+            secured = instance.split(regexp)[1].equals("HTTPS");
+            instances_list.add(new InstancesListItem(instance.split(regexp)[0], false, secured));
         }
         InstancesListAdapter instancesAdapter = new InstancesListAdapter(
                 AuthActivity.this, instances_list);
