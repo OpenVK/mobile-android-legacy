@@ -140,7 +140,8 @@ public class ProfileFragment extends Fragment {
             fArr[1] = this.showExtended ? -180 : 0;
             ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
         } else {
-            RotateAnimation anim = new RotateAnimation(this.showExtended ? 0 : -180, this.showExtended ? -180 : 0, 1, 0.5f, 1, 0.5f);
+            RotateAnimation anim = new RotateAnimation(this.showExtended ? 0 : -180,
+                    this.showExtended ? -180 : 0, 1, 0.5f, 1, 0.5f);
             anim.setFillAfter(true);
             anim.setDuration(300L);
             arrow.startAnimation(anim);
