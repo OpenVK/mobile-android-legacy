@@ -83,14 +83,17 @@ public class ProfileFragment extends Fragment {
         header.setLastSeen(user.sex, user.ls_date, user.ls_platform);
         header.setVerified(user.verified, getContext());
         ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setCounter(0,
-                getResources().getQuantityString(R.plurals.profile_photos, 0, 0), "");
+                Global.getPluralQuantityString(getContext().getApplicationContext(),
+                        R.plurals.profile_photos, 0), "");
         ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setOnCounterClickListener();
         ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(0,
-                getResources().getQuantityString(R.plurals.profile_friends, 0, 0),
+                Global.getPluralQuantityString(getContext().getApplicationContext(),
+                        R.plurals.profile_friends, 0),
                 "openvk://friends/id" + user.id);
         ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setOnCounterClickListener();
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0,
-                getResources().getQuantityString(R.plurals.profile_mutual_friends, 0, 0), "");
+                Global.getPluralQuantityString(getContext().getApplicationContext(),
+                        R.plurals.profile_mutual_friends, 0), "");
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
         ((LinearLayout) view.findViewById(R.id.wall_error_layout)).setVisibility(GONE);
         if(user.deactivated == null) {
@@ -279,7 +282,8 @@ public class ProfileFragment extends Fragment {
     public void setCounter(User user, String where, int count) {
         if(where.equals("friends")) {
             ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(count,
-                    getResources().getQuantityString(R.plurals.profile_friends, count, count),
+                    Global.getPluralQuantityString(getContext().getApplicationContext(),
+                            R.plurals.profile_friends, count),
                     "openvk://friends/id" + user.id);
         }
     }

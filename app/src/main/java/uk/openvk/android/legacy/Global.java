@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.IdRes;
+import android.support.annotation.PluralsRes;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -151,5 +153,19 @@ public class Global {
             styledAttributes.recycle();
             ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin = mActionBarSize;
         }
+    }
+
+    public static String getPluralQuantityString(Context ctx, @PluralsRes int id, int value) {
+        String qStr = "";
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            qStr = ctx.getResources().getQuantityString(id, value, value);
+        } else {
+            // Using patched getQuantityString() method version for Android 2.x
+            if(ctx instanceof OvkApplication) {
+                OvkApplication app = ((OvkApplication) ctx);
+                qStr = app.pluralResources.getQuantityString(id, value, value);
+            }
+        }
+        return qStr;
     }
 }

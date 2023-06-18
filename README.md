@@ -38,6 +38,7 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
 11. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
+12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
 
 ## OpenVK Legacy License
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.

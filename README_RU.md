@@ -38,6 +38,7 @@ _Работает на OpenVK API._
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
 11. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
+12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
 
 ## Лицензия OpenVK Legacy
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) или более поздней версии.

@@ -480,7 +480,8 @@ public class GroupIntentActivity extends TranslucentActivity {
         header.setProfileName(String.format("%s  ", group.name));
         header.setVerified(group.verified, this);
         ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count,
-                getResources().getQuantityString(R.plurals.profile_members, (int) group.members_count), "");
+                Global.getPluralQuantityString(getApplicationContext(),
+                        R.plurals.profile_members, (int) group.members_count), "");
         ((ProfileCounterLayout) findViewById(R.id.members_counter)).setOnCounterClickListener(
                 new View.OnClickListener() {
                     @Override

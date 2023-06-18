@@ -7,6 +7,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.seppius.i18n.plurals.PluralResources;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
@@ -38,10 +40,18 @@ public class OvkApplication extends Application {
     public static String API_TAG = "OVK-API";
     public static String DL_TAG = "OVK-DLM";
     public static String LP_TAG = "OVK-LP";
+    public PluralResources pluralResources;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            try {
+                pluralResources = new PluralResources(getResources());
+            } catch (SecurityException | NoSuchMethodException e1) {
+                e1.printStackTrace();
+            }
+        }
         Global global = new Global(this);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
@@ -62,6 +72,8 @@ public class OvkApplication extends Application {
 
         if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                 String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
+
+        // Create preference parameters
 
         if(!global_prefs.contains("photos_quality")) {
             if(heap_size <= 67108864L) {
@@ -125,18 +137,23 @@ public class OvkApplication extends Application {
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String language = global_prefs.getString("interfaceLanguage", "System");
         String language_code = "en";
-        if(language.equals("English")) {
-            language_code = "en";
-        } else if(language.equals("Русский")) {
-            language_code = "ru";
-        } else if(language.equals("Украïнська")) {
-            language_code = "uk";
-        } else {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                language_code = ctx.getResources().getConfiguration().getLocales().get(0).getLanguage();
-            } else {
-                language_code = ctx.getResources().getConfiguration().locale.getLanguage();
-            }
+        switch (language) {
+            case "English":
+                language_code = "en";
+                break;
+            case "Русский":
+                language_code = "ru";
+                break;
+            case "Украïнська":
+                language_code = "uk";
+                break;
+            default:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    language_code = ctx.getResources().getConfiguration().getLocales().get(0).getLanguage();
+                } else {
+                    language_code = ctx.getResources().getConfiguration().locale.getLanguage();
+                }
+                break;
         }
 
 

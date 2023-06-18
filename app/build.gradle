@@ -144,4 +144,6 @@ dependencies {
     compile project(':actionbar')
     compile project(':popupmenu')
     compile 'com.reginald.swiperefresh:library:1.1.2'
+    // Android 2.x plurals patch
+    compile 'com.seppius.plurals:android-i18n-plurals:1.1'
 }
