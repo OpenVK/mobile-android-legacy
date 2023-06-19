@@ -2,10 +2,12 @@ package uk.openvk.android.legacy.api.wrappers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import org.apache.http.HttpHost;
@@ -37,6 +39,7 @@ import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -57,6 +60,7 @@ import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Error;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -130,6 +134,18 @@ public class OvkAPIWrapper {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Error getError() {
+        return error;
+    }
+
+    public void setAccessToken(String token) {
+        this.access_token = token;
     }
 
     public void setProxyConnection(boolean useProxy, String address) {
@@ -413,7 +429,7 @@ public class OvkAPIWrapper {
         String url;
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecti to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
         } else {
             url = String.format("http://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
             if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
@@ -450,12 +466,16 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if (response_code == 200) {
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s]",
+                                                server, method, response_code, response_body));
                                 sendMessage(HandlerMessages.PARSE_JSON, method, args, where, response_body);
                             } else if (response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
                                 if (error.code == 3) {
                                     sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
                                 } else if (error.code == 5) {
@@ -468,7 +488,8 @@ public class OvkAPIWrapper {
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
-                                if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Getting response from %s (%s)", server, response_code));
+                                if(logging_enabled) Log.e(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
                         }
@@ -566,12 +587,16 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s]",
+                                                server, method, response_code, response_body));
                                 sendMessage(HandlerMessages.PARSE_JSON, method, args, response_body);
                             } else if(response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
                                 if(error.code == 3) {
                                     sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
                                 } else if(error.code == 5) {
@@ -644,10 +669,12 @@ public class OvkAPIWrapper {
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?access_token=%s", server, method, access_token);
-            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecti to %s (Secured)...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                    String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
         } else {
             url = String.format("http://%s/method/%s?access_token=%s", server, method, access_token);
-            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                    String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
@@ -681,12 +708,14 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s]", server, method, response_code, response_body));
                                 sendMessage(HandlerMessages.PARSE_JSON, method, response_body);
                             } else if(response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]", server, method, response_code, error.description, error.code));
                                 if(error.code == 3) {
                                     sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                                 } else if(error.code == 5) {
@@ -964,41 +993,30 @@ public class OvkAPIWrapper {
         thread.start();
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public Error getError() {
-        return error;
-    }
-
-    public void setAccessToken(String token) {
-        this.access_token = token;
-    }
-
     public void parseJSONData(Bundle data, Activity activity) {
-        if(activity instanceof AppActivity) {
-            AppActivity app = (AppActivity)activity;
-            Message msg = new Message();
-            String method = data.getString("method");
-            String args = data.getString("args");
-            msg.setData(data);
-            DownloadManager downloadManager = new DownloadManager(activity,
-                    app.global_prefs.getBoolean("useHTTPS", false));
+        Message msg = new Message();
+        String method = data.getString("method");
+        String args = data.getString("args");
+        String where = data.getString("where");
+        msg.setData(data);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        DownloadManager downloadManager = new DownloadManager(activity,
+                global_prefs.getBoolean("useHTTPS", false));
+        if (activity instanceof AppActivity) {
+            AppActivity app_a = (AppActivity) activity;
             assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
-                    app.account.parse(data.getString("response"), this);
+                    app_a.account.parse(data.getString("response"), this);
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
                 case "Account.getCounters":
-                    app.account.parseCounters(data.getString("response"));
+                    app_a.account.parseCounters(data.getString("response"));
                     msg.what = HandlerMessages.ACCOUNT_COUNTERS;
                     break;
                 case "Newsfeed.get":
-                    app.newsfeed.parse(app, downloadManager, data.getString("response"),
-                            app.global_prefs.getString("photos_quality", ""), true);
-
+                    app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
+                            global_prefs.getString("photos_quality", ""), true);
                     if (args != null && args.contains("start_from")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE;
                     } else {
@@ -1006,8 +1024,8 @@ public class OvkAPIWrapper {
                     }
                     break;
                 case "Newsfeed.getGlobal":
-                    app.newsfeed.parse(activity, downloadManager, data.getString("response"),
-                            app.global_prefs.getString("photos_quality", ""), true);
+                    app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                            global_prefs.getString("photos_quality", ""), true);
                     if (args != null && args.contains("start_from")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
                     } else {
@@ -1015,26 +1033,232 @@ public class OvkAPIWrapper {
                     }
                     break;
                 case "Messages.getLongPollServer":
-                    app.longPollServer = app.messages
+                    app_a.longPollServer = app_a.messages
                             .parseLongPollServer(data.getString("response"));
                     msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
                     break;
+                case "Likes.add":
+                    app_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_ADD;
+                    break;
+                case "Likes.delete":
+                    app_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
                 case "Users.get":
-                    app.users.parse(data.getString("response"));
+                    app_a.users.parse(data.getString("response"));
                     msg.what = HandlerMessages.USERS_GET;
                     break;
                 case "Friends.get":
-                    app.friends.parse(data.getString("response"), downloadManager, true, true);
-                    msg.what = HandlerMessages.FRIENDS_GET;
+                    if (args != null && args.contains("offset")) {
+                        msg.what = HandlerMessages.FRIENDS_GET_MORE;
+                        app_a.friends.parse(data.getString("response"), downloadManager, true, false);
+                    } else {
+                        assert where != null;
+                        if(where.equals("profile_counter")) {
+                            msg.what = HandlerMessages.FRIENDS_GET_ALT;
+                            app_a.friends.parse(data.getString("response"), downloadManager, false, true);
+                        } else {
+                            msg.what = HandlerMessages.FRIENDS_GET;
+                            app_a.friends.parse(data.getString("response"), downloadManager, true, true);
+                        }
+                    }
+                    break;
+                case "Friends.getRequests":
+                    msg.what = HandlerMessages.FRIENDS_REQUESTS;
+                    app_a.friends.parseRequests(data.getString("response"), downloadManager, true);
                     break;
                 case "Wall.get":
-                    app.wall.parse(activity, downloadManager,
-                            app.global_prefs.getString("photos_quality", ""),
+                    app_a.wall.parse(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
                             data.getString("response"));
                     msg.what = HandlerMessages.WALL_GET;
                     break;
+                case "Messages.getConversations":
+                    app_a.conversations = app_a.messages.parseConversationsList(data.getString("response"),
+                            downloadManager);
+                    msg.what = HandlerMessages.MESSAGES_CONVERSATIONS;
+                    break;
+                case "Groups.get":
+                    if (args != null && args.contains("offset")) {
+                        msg.what = HandlerMessages.GROUPS_GET_MORE;
+                        app_a.old_friends_size = app_a.groups.getList().size();
+                        app_a.groups.parse(data.getString("response"), downloadManager,
+                                global_prefs.getString("photos_quality", ""), true, false);
+                    } else {
+                        msg.what = HandlerMessages.GROUPS_GET;
+                        app_a.groups.parse(data.getString("response"), downloadManager,
+                                global_prefs.getString("photos_quality", ""), true, true);
+                    }
+                    break;
+                case "Ovk.version":
+                    msg.what = HandlerMessages.OVK_VERSION;
+                    app_a.ovk.parseVersion(data.getString("response"));
+                    break;
+                case "Ovk.aboutInstance":
+                    msg.what = HandlerMessages.OVK_ABOUTINSTANCE;
+                    app_a.ovk.parseAboutInstance(data.getString("response"));
+                    break;
             }
-            app.handler.sendMessage(msg);
+            app_a.handler.sendMessage(msg);
+        } else if (activity instanceof ConversationActivity) {
+            ConversationActivity conv_a = ((ConversationActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Messages.getHistory":
+                    conv_a.history = conv_a.conversation.parseHistory(activity, data.getString("response"));
+                    msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
+                    break;
+                case "Messages.send":
+                    msg.what = HandlerMessages.MESSAGES_SEND;
+                    break;
+                case "Messages.delete":
+                    msg.what = HandlerMessages.MESSAGES_DELETE;
+                    break;
+            }
+            conv_a.handler.sendMessage(msg);
+        } else if (activity instanceof FriendsIntentActivity) {
+            FriendsIntentActivity friends_a = ((FriendsIntentActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    friends_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Friends.get":
+                    if (args != null && args.contains("offset")) {
+                        msg.what = HandlerMessages.FRIENDS_GET_MORE;
+                        friends_a.friends.parse(data.getString("response"), downloadManager, true, false);
+                    } else {
+                        msg.what = HandlerMessages.FRIENDS_GET;
+                        friends_a.friends.parse(data.getString("response"), downloadManager, true, true);
+                    }
+                    break;
+            }
+            friends_a.handler.sendMessage(msg);
+        } else if (activity instanceof ProfileIntentActivity) {
+            ProfileIntentActivity profile_a = ((ProfileIntentActivity) activity);
+            assert method != null;
+            switch (method) {
+                default:
+                    Log.e(OvkApplication.API_TAG, String.format("[%s] Method not found", method));
+                case "Account.getProfileInfo":
+                    profile_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Account.getCounters":
+                    profile_a.account.parseCounters(data.getString("response"));
+                    msg.what = HandlerMessages.ACCOUNT_COUNTERS;
+                    break;
+                case "Friends.get":
+                    if(where.equals("profile_counter")) {
+                        msg.what = HandlerMessages.FRIENDS_GET_ALT;
+                        profile_a.friends.parse(data.getString("response"), downloadManager, false, true);
+                    }
+                    break;
+                case "Users.get":
+                    profile_a.users.parse(data.getString("response"));
+                    profile_a.user = profile_a.users.getList().get(0);
+                    msg.what = HandlerMessages.USERS_GET;
+                    break;
+                case "Users.search":
+                    profile_a.users.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_SEARCH;
+                    break;
+                case "Wall.get":
+                    profile_a.wall.parse(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_GET;
+                    break;
+                case "Likes.add":
+                    profile_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_ADD;
+                    break;
+                case "Likes.delete":
+                    profile_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
+            }
+            profile_a.handler.sendMessage(msg);
+        } else if(activity instanceof GroupIntentActivity) {
+            GroupIntentActivity group_a = ((GroupIntentActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    group_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Groups.get":
+                    group_a.groups.parse(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_GET;
+                    break;
+                case "Groups.getById":
+                    group_a.groups.parse(data.getString("response"));
+                    msg.what = HandlerMessages.GROUPS_GET_BY_ID;
+                    break;
+                case "Groups.search":
+                    group_a.groups.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.GROUPS_SEARCH;
+                    break;
+                case "Wall.get":
+                    group_a.wall.parse(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_GET;
+                    break;
+                case "Likes.add":
+                    group_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_ADD;
+                    break;
+                case "Likes.delete":
+                    group_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
+            }
+            group_a.handler.sendMessage(msg);
+        } else if(activity instanceof NewPostActivity) {
+            NewPostActivity newpost_a = ((NewPostActivity) activity);
+            assert method != null;
+            msg.what = HandlerMessages.WALL_POST;
+            newpost_a.handler.sendMessage(msg);
+        } else if(activity instanceof QuickSearchActivity) {
+            QuickSearchActivity quick_search_a = ((QuickSearchActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Groups.search":
+                    quick_search_a.groups.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.GROUPS_SEARCH;
+                    break;
+                case "Users.search":
+                    quick_search_a.users.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_SEARCH;
+                    break;
+            }
+            quick_search_a.handler.sendMessage(msg);
+        } else if(activity instanceof GroupMembersActivity) {
+            GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Groups.getMembers":
+                    group_members_a.group.members = new ArrayList<>();
+                    group_members_a.group.parseMembers(data.getString("response"), downloadManager, true);
+                    msg.what = HandlerMessages.GROUPS_SEARCH;
+                    break;
+            }
+            group_members_a.handler.sendMessage(msg);
+        } else if(activity instanceof WallPostActivity) {
+            WallPostActivity wall_post_a = ((WallPostActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Wall.getComments":
+                    wall_post_a.comments = wall_post_a.wall.parseComments(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_ALL_COMMENTS;
+                    break;
+            }
+            wall_post_a.handler.sendMessage(msg);
         }
     }
 

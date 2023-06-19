@@ -91,15 +91,15 @@ public class GroupIntentActivity extends TranslucentActivity {
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
     private String access_token;
-    private Groups groups;
-    private Wall wall;
+    public Groups groups;
+    public Wall wall;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     private ScrollView groupScrollView;
     private Group group;
-    private Account account;
+    public Account account;
     private String args;
-    private Likes likes;
+    public Likes likes;
     private int item_pos;
     private int poll_answer;
     private Menu activity_menu;
@@ -135,10 +135,19 @@ public class GroupIntentActivity extends TranslucentActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, GroupIntentActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
 
@@ -318,7 +327,6 @@ public class GroupIntentActivity extends TranslucentActivity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                account.parse(data.getString("response"), ovk_api);
                 if (args.startsWith("club")) {
                     try {
                         groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(4)));
@@ -337,7 +345,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                 });
                 selector.setToGroup();
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
-                groups.parse(data.getString("response"));
                 group = groups.getList().get(0);
                 updateLayout(group);
                 progressLayout.setVisibility(View.GONE);
@@ -362,7 +369,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                     }
                 }
             } else if (message == HandlerMessages.GROUPS_SEARCH) {
-                groups.parseSearch(data.getString("response"));
                 groups.getGroupByID(ovk_api, groups.getList().get(0).id);
             } else if (message == HandlerMessages.GROUPS_JOIN) {
                 Button join_btn = findViewById(R.id.join_to_comm);
@@ -381,8 +387,6 @@ public class GroupIntentActivity extends TranslucentActivity {
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 loadAvatar();
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager,  global_prefs.getString("photos_quality", ""),
-                        data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();

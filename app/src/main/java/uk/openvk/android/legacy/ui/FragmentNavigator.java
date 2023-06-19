@@ -43,11 +43,20 @@ public class FragmentNavigator {
         if(activity instanceof AppActivity) {
             final AppActivity appActivity = ((AppActivity) activity);
             appActivity.errorLayout.setVisibility(View.GONE);
+            appActivity.progressLayout.setVisibility(View.VISIBLE);
             ft.hide(appActivity.selectedFragment);
             switch (where) {
                 case "profile":
                     ft.show(appActivity.profileFragment);
-                    showFragment(activity, appActivity.user.first_name != null);
+                    if(appActivity.user.first_name != null) {
+                        appActivity.handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                showFragment(activity, appActivity.user.first_name != null);
+                            }
+                        }, 600);
+                    }
+
                     appActivity.selectedFragment = appActivity.profileFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "profile");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {

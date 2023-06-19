@@ -56,7 +56,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private OvkAPIWrapper ovk_api;
-    private Account account;
+    public Account account;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -64,7 +64,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     private FriendsFragment friendsFragment;
-    private Friends friends;
+    public Friends friends;
     private Users users;
     private String access_token;
     private DownloadManager downloadManager;
@@ -99,10 +99,19 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, FriendsIntentActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
 
@@ -205,7 +214,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.FRIENDS_GET) {
-                friends.parse(data.getString("response"), downloadManager, true, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
