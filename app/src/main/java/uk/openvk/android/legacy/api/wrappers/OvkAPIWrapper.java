@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.wrappers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
@@ -973,6 +974,68 @@ public class OvkAPIWrapper {
 
     public void setAccessToken(String token) {
         this.access_token = token;
+    }
+
+    public void parseJSONData(Bundle data, Activity activity) {
+        if(activity instanceof AppActivity) {
+            AppActivity app = (AppActivity)activity;
+            Message msg = new Message();
+            String method = data.getString("method");
+            String args = data.getString("args");
+            msg.setData(data);
+            DownloadManager downloadManager = new DownloadManager(activity,
+                    app.global_prefs.getBoolean("useHTTPS", false));
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    app.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Account.getCounters":
+                    app.account.parseCounters(data.getString("response"));
+                    msg.what = HandlerMessages.ACCOUNT_COUNTERS;
+                    break;
+                case "Newsfeed.get":
+                    app.newsfeed.parse(app, downloadManager, data.getString("response"),
+                            app.global_prefs.getString("photos_quality", ""), true);
+
+                    if (args != null && args.contains("start_from")) {
+                        msg.what = HandlerMessages.NEWSFEED_GET_MORE;
+                    } else {
+                        msg.what = HandlerMessages.NEWSFEED_GET;
+                    }
+                    break;
+                case "Newsfeed.getGlobal":
+                    app.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                            app.global_prefs.getString("photos_quality", ""), true);
+                    if (args != null && args.contains("start_from")) {
+                        msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
+                    } else {
+                        msg.what = HandlerMessages.NEWSFEED_GET_GLOBAL;
+                    }
+                    break;
+                case "Messages.getLongPollServer":
+                    app.longPollServer = app.messages
+                            .parseLongPollServer(data.getString("response"));
+                    msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
+                    break;
+                case "Users.get":
+                    app.users.parse(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_GET;
+                    break;
+                case "Friends.get":
+                    app.friends.parse(data.getString("response"), downloadManager, true, true);
+                    msg.what = HandlerMessages.FRIENDS_GET;
+                    break;
+                case "Wall.get":
+                    app.wall.parse(activity, downloadManager,
+                            app.global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_GET;
+                    break;
+            }
+            app.handler.sendMessage(msg);
+        }
     }
 
 }

@@ -112,7 +112,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     public OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     public Handler handler;
-    private SharedPreferences global_prefs;
+    public SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     public SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
@@ -126,12 +126,12 @@ public class AppActivity extends TranslucentFragmentActivity {
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
     public Account account;
-    private Newsfeed newsfeed;
-    private Messages messages;
+    public Newsfeed newsfeed;
+    public Messages messages;
     public Users users;
     private Groups groups;
-    private Friends friends;
-    private Wall wall;
+    public Friends friends;
+    public Wall wall;
     private ArrayList<Conversation> conversations;
     public User user;
     private Likes likes;
@@ -152,7 +152,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     private FragmentNavigator fn;
     public android.support.v7.widget.PopupMenu popup_menu;
     private Ovk ovk;
-    private LongPollServer longPollServer;
+    public LongPollServer longPollServer;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -184,9 +184,10 @@ public class AppActivity extends TranslucentFragmentActivity {
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
+                        String.format("Handling API message: %s\r\nMethod: %s", message.what,
+                                data.getString("method")));
                 if(message.what == HandlerMessages.PARSE_JSON){
-                    parseJSONData(data);
+                    ovk_api.parseJSONData(data, AppActivity.this);
                 } else {
                     receiveState(message.what, data);
                 }
@@ -720,55 +721,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void parseJSONData(Bundle data) {
-        Message msg = new Message();
-        String method = data.getString("method");
-        String args = data.getString("args");
-        msg.setData(data);
-        switch (method) {
-            case "Account.getProfileInfo":
-                account.parse(data.getString("response"), ovk_api);
-                msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
-                break;
-            case "Account.getCounters":
-                account.parseCounters(data.getString("response"));
-                msg.what = HandlerMessages.ACCOUNT_COUNTERS;
-                break;
-            case "Newsfeed.get":
-                newsfeed.parse(this, downloadManager, data.getString("response"),
-                        global_prefs.getString("photos_quality", ""), true);
-
-                if(args != null && args.contains("start_from")) {
-                    msg.what = HandlerMessages.NEWSFEED_GET_MORE;
-                } else {
-                    msg.what = HandlerMessages.NEWSFEED_GET;
-                }
-                break;
-            case "Newsfeed.getGlobal":
-                newsfeed.parse(this, downloadManager, data.getString("response"),
-                        global_prefs.getString("photos_quality", ""), true);
-                if(args != null && args.contains("start_from")) {
-                    msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
-                } else {
-                    msg.what = HandlerMessages.NEWSFEED_GET_GLOBAL;
-                }
-                break;
-            case "Messages.getLongPollServer":
-                longPollServer = messages
-                        .parseLongPollServer(data.getString("response"));
-                msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
-            case "Users.get":
-                users.parse(data.getString("response"));
-                msg.what = HandlerMessages.USERS_GET;
-                break;
-            case "Friends.get":
-                friends.parse(data.getString("response"), downloadManager, true, true);
-                msg.what = HandlerMessages.FRIENDS_GET;
-                break;
-        }
-        handler.sendMessage(msg);
-    }
-
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
@@ -938,8 +890,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 account.user.downloadAvatar(downloadManager, global_prefs.
                         getString("photos_quality", ""), "account_avatar");
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""),
-                        data.getString("response"));
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).
                         createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
