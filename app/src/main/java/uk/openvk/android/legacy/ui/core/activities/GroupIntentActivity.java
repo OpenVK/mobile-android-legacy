@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -89,20 +91,21 @@ public class GroupIntentActivity extends TranslucentActivity {
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
     private String access_token;
-    private Groups groups;
-    private Wall wall;
+    public Groups groups;
+    public Wall wall;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     private ScrollView groupScrollView;
     private Group group;
-    private Account account;
+    public Account account;
     private String args;
-    private Likes likes;
+    public Likes likes;
     private int item_pos;
     private int poll_answer;
     private Menu activity_menu;
     private ActionBar actionBar;
     private android.support.v7.widget.PopupMenu popup_menu;
+    private boolean showExtended;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -132,10 +135,19 @@ public class GroupIntentActivity extends TranslucentActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, GroupIntentActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
 
@@ -315,7 +327,6 @@ public class GroupIntentActivity extends TranslucentActivity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                account.parse(data.getString("response"), ovk_api);
                 if (args.startsWith("club")) {
                     try {
                         groups.getGroupByID(ovk_api, Integer.parseInt(args.substring(4)));
@@ -334,7 +345,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                 });
                 selector.setToGroup();
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
-                groups.parse(data.getString("response"));
                 group = groups.getList().get(0);
                 updateLayout(group);
                 progressLayout.setVisibility(View.GONE);
@@ -359,7 +369,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                     }
                 }
             } else if (message == HandlerMessages.GROUPS_SEARCH) {
-                groups.parseSearch(data.getString("response"));
                 groups.getGroupByID(ovk_api, groups.getList().get(0).id);
             } else if (message == HandlerMessages.GROUPS_JOIN) {
                 Button join_btn = findViewById(R.id.join_to_comm);
@@ -378,8 +387,6 @@ public class GroupIntentActivity extends TranslucentActivity {
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 loadAvatar();
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager,  global_prefs.getString("photos_quality", ""),
-                        data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
@@ -474,6 +481,23 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
+    public void toggleExtendedInfo() {
+        this.showExtended = !this.showExtended;
+        View arrow = (findViewById(R.id.group_header)).findViewById(R.id.profile_expand);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            float[] fArr = new float[2];
+            fArr[0] = this.showExtended ? 0 : -180;
+            fArr[1] = this.showExtended ? -180 : 0;
+            ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
+        } else {
+            RotateAnimation anim = new RotateAnimation(this.showExtended ? 0 : -180,
+                    this.showExtended ? -180 : 0, 1, 0.5f, 1, 0.5f);
+            anim.setFillAfter(true);
+            anim.setDuration(300L);
+            arrow.startAnimation(anim);
+        }
+    }
+
 
     private void updateLayout(final Group group) {
         GroupHeader header = (GroupHeader) findViewById(R.id.group_header);
@@ -496,6 +520,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             @Override
             public void onClick(View view) {
                 float smallestWidth = Global.getSmalledWidth(getWindowManager());
+                toggleExtendedInfo();
                 if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
                     View aboutGroup = findViewById(R.id.about_group_ll);
                     if (aboutGroup.getVisibility() == View.GONE) {

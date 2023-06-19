@@ -89,13 +89,13 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     private ProfileFragment profileFragment;
-    private Users users;
-    private Friends friends;
-    private Account account;
-    private Wall wall;
-    private Likes likes;
+    public Users users;
+    public Friends friends;
+    public Account account;
+    public Wall wall;
+    public Likes likes;
     private String access_token;
-    private User user;
+    public User user;
     private String args;
     private int item_pos;
     private int poll_answer;
@@ -135,10 +135,19 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, ProfileIntentActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
 
@@ -288,7 +297,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         try {
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(args.startsWith("id")) {
-                    account.parse(data.getString("response"), ovk_api);
                     try {
                         users.getUser(ovk_api, Integer.parseInt(args.substring(2)));
                     } catch (Exception ex) {
@@ -298,8 +306,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     users.search(ovk_api, args);
                 }
             } else if (message == HandlerMessages.USERS_GET) {
-                users.parse(data.getString("response"));
-                user = users.getList().get(0);
                 profileFragment.updateLayout(user, getWindowManager());
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
@@ -404,11 +410,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
                 profileFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
-                users.parseSearch(data.getString("response"));
                 users.getUser(ovk_api, users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""),
-                        data.getString("response"));
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
@@ -426,7 +429,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                friends.parse(data.getString("response"), downloadManager, false, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 profileFragment.setCounter(user, "friends",  friends.count);
             } else if(message == HandlerMessages.LIKES_ADD) {
@@ -780,8 +782,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                             }
                         });
                 actionBar.addAction(action);
-            } else {
-
             }
         }
     }

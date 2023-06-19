@@ -80,7 +80,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
-    private Conversation conversation;
+    public Conversation conversation;
     private ListView messagesList;
     private MessagesListAdapter conversation_adapter;
     public String state;
@@ -90,7 +90,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     public long peer_id;
     private int cursor_id;
     public ActionBar actionBar;
-    private ArrayList<uk.openvk.android.legacy.api.entities.Message> history;
+    public ArrayList<uk.openvk.android.legacy.api.entities.Message> history;
     private Messages messages;
     private uk.openvk.android.legacy.api.entities.Message last_sended_message;
     private LongPollReceiver lpReceiver;
@@ -127,10 +127,19 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, ConversationActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
         if (savedInstanceState == null) {
@@ -398,7 +407,6 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
 
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
-            history = conversation.parseHistory(this, data.getString("response"));
             conversation_adapter = new MessagesListAdapter(this, history, peer_id);
             messagesList.setAdapter(conversation_adapter);
         } else if (message == HandlerMessages.CHAT_DISABLED) {

@@ -42,7 +42,7 @@ import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
 
 public class GroupMembersActivity extends UsersListActivity {
     private ArrayList<Users> users;
-    private Group group;
+    public Group group;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private DownloadManager dlm;
@@ -56,10 +56,19 @@ public class GroupMembersActivity extends UsersListActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, GroupMembersActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
         global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -135,8 +144,6 @@ public class GroupMembersActivity extends UsersListActivity {
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.GROUP_MEMBERS) {
             if(group != null) {
-                group.members = new ArrayList<>();
-                group.parseMembers(data.getString("response"), dlm, true);
                 createAdapter(group.members);
                 disableProgressBar();
             }

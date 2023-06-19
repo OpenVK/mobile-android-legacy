@@ -53,6 +53,7 @@ public class ProfileHeader extends RelativeLayout {
     public void setProfileName(String name) {
         this.name = name;
         ((TextView) findViewById(R.id.profile_name)).setText(name);
+        ((TextView) findViewById(R.id.profile_name)).setSelected(true);
     }
 
     public void setStatus(String status) {

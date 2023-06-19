@@ -112,7 +112,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     public OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
     public Handler handler;
-    private SharedPreferences global_prefs;
+    public SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     public SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
@@ -126,15 +126,15 @@ public class AppActivity extends TranslucentFragmentActivity {
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
     public Account account;
-    private Newsfeed newsfeed;
-    private Messages messages;
+    public Newsfeed newsfeed;
+    public Messages messages;
     public Users users;
-    private Groups groups;
-    private Friends friends;
-    private Wall wall;
-    private ArrayList<Conversation> conversations;
+    public Groups groups;
+    public Friends friends;
+    public Wall wall;
+    public ArrayList<Conversation> conversations;
     public User user;
-    private Likes likes;
+    public Likes likes;
     public Menu activity_menu;
     public GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
@@ -151,7 +151,9 @@ public class AppActivity extends TranslucentFragmentActivity {
     public Fragment selectedFragment;
     private FragmentNavigator fn;
     public android.support.v7.widget.PopupMenu popup_menu;
-    private Ovk ovk;
+    public Ovk ovk;
+    public LongPollServer longPollServer;
+    public int old_friends_size;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -181,10 +183,19 @@ public class AppActivity extends TranslucentFragmentActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, AppActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
         account = new Account(this);
@@ -718,7 +729,6 @@ public class AppActivity extends TranslucentFragmentActivity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                account.parse(data.getString("response"), ovk_api);
                 String profile_name = String.format("%s %s", account.first_name, account.last_name);
                 slidingmenuLayout.setProfileName(profile_name);
                 newsfeed.get(ovk_api, newsfeed_count);
@@ -755,8 +765,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     messages = new Messages();
                 }
                 messages.getConversations(ovk_api);
+                slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
-                account.parseCounters(data.getString("response"));
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = account.counters.friends_requests;
                 slidingMenuArray.set(0, friends_item);
@@ -786,8 +796,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                             global_prefs.getString("proxy_address", ""));
-                    newsfeed.parse(this, downloadManager, data.getString("response"),
-                            global_prefs.getString("photos_quality", ""), true);
                     newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         if(newsfeed.getWallPosts().size() > 0) {
@@ -814,8 +822,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 1) {
                     downloadManager.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                             global_prefs.getString("proxy_address", ""));
-                    newsfeed.parse(this, downloadManager, data.getString("response"),
-                            global_prefs.getString("photos_quality", ""), true);
                     newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         progressLayout.setVisibility(View.GONE);
@@ -827,8 +833,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                             .scrollToPosition(0);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
-                newsfeed.parse(this, downloadManager, data.getString("response"),
-                        global_prefs.getString("photos_quality", ""), false);
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -837,8 +841,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 newsfeedFragment.loading_more_posts = true;
                 newsfeedFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
-                newsfeed.parse(this, downloadManager, data.getString("response"),
-                        global_prefs.getString("photos_quality", ""), false);
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     progressLayout.setVisibility(View.GONE);
@@ -847,8 +849,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 newsfeedFragment.loading_more_posts = true;
                 newsfeedFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
-                LongPollServer longPollServer = messages
-                        .parseLongPollServer(data.getString("response"));
                 ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this,
                         instance_prefs.getString("access_token", ""),
                         global_prefs.getBoolean("use_https", true));
@@ -876,8 +876,8 @@ public class AppActivity extends TranslucentFragmentActivity {
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 groupsFragment.loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
-                users.parse(data.getString("response"));
                 user = users.getList().get(0);
+                account.user = user;
                 profileFragment.updateLayout(user, getWindowManager());
                 if (global_prefs.getString("current_screen", "").equals("profile")) {
                     progressLayout.setVisibility(View.GONE);
@@ -897,14 +897,11 @@ public class AppActivity extends TranslucentFragmentActivity {
                 account.user.downloadAvatar(downloadManager, global_prefs.
                         getString("photos_quality", ""), "account_avatar");
             } else if (message == HandlerMessages.WALL_GET) {
-                wall.parse(this, downloadManager, global_prefs.getString("photos_quality", ""),
-                        data.getString("response"));
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).
                         createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.FRIENDS_GET) {
-                friends.parse(data.getString("response"), downloadManager, true, true);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
                     progressLayout.setVisibility(View.GONE);
@@ -917,7 +914,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 int old_friends_size = friends.getFriends().size();
-                friends.parse(data.getString("response"), downloadManager, true, false);
                 ArrayList<Friend> friendsList = friends.getFriends();
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 friendsFragment.setScrollingPositions(this,
@@ -943,7 +939,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
                 profileFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if (message == HandlerMessages.FRIENDS_REQUESTS) {
-                friends.parseRequests(data.getString("response"), downloadManager, true);
                 ArrayList<Friend> requestsList = friends.requests;
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
                     progressLayout.setVisibility(View.GONE);
@@ -953,8 +948,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                         String.format("%s (%s)", getResources().getString(R.string.friend_requests), account.counters.friends_requests));
                 friendsFragment.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.GROUPS_GET) {
-                groups.parse(data.getString("response"), downloadManager,
-                        global_prefs.getString("photos_quality", ""), true, true);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
@@ -963,9 +956,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 groupsFragment.createAdapter(this, groupsList);
                 groupsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET_MORE) {
-                int old_friends_size = groups.getList().size();
-                groups.parse(data.getString("response"), downloadManager,
-                        global_prefs.getString("photos_quality", ""), true, false);
                 ArrayList<Group> groupsList = groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
                     progressLayout.setVisibility(View.GONE);
@@ -981,15 +971,12 @@ public class AppActivity extends TranslucentFragmentActivity {
                     profileFragment.setCounter(user, "friends",  friends.count);
                 }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
-                conversations = messages.parseConversationsList(data.getString("response"),
-                        downloadManager);
                 conversationsFragment.createAdapter(this, conversations, account);
                 if (global_prefs.getString("current_screen", "").equals("messages")) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
             } else if(message == HandlerMessages.LIKES_ADD) {
-                likes.parse(data.getString("response"));
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                     newsfeedFragment.select(likes.position, "likes", 1);
                 } else if (global_prefs.getString("current_screen", "").equals("profile")) {
@@ -1029,6 +1016,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                         profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                     }
                 }
+                slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
                 conversationsFragment.loadAvatars(conversations);
             } else if(message == HandlerMessages.LONGPOLL) {
@@ -1119,10 +1107,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                 ovk.getVersion(ovk_api);
                 ovk.aboutInstance(ovk_api);
             } else if(message == HandlerMessages.OVK_ABOUTINSTANCE) {
-                ovk.parseAboutInstance(data.getString("response"));
                 mainSettingsFragment.setAboutInstanceData(ovk);
             } else if(message == HandlerMessages.OVK_VERSION) {
-                ovk.parseVersion(data.getString("response"));
                 mainSettingsFragment.setInstanceVersion(ovk);
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION ||
                     message == HandlerMessages.INVALID_JSON_RESPONSE ||
