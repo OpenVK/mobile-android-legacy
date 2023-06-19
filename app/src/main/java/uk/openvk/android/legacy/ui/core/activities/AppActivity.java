@@ -765,7 +765,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                     messages = new Messages();
                 }
                 messages.getConversations(ovk_api);
-                slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = account.counters.friends_requests;
@@ -879,6 +878,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 user = users.getList().get(0);
                 account.user = user;
                 profileFragment.updateLayout(user, getWindowManager());
+                slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
                 if (global_prefs.getString("current_screen", "").equals("profile")) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);

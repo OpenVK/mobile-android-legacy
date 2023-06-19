@@ -117,7 +117,7 @@ public class SlidingMenuLayout extends LinearLayout {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(
                 String.format("%s/photos_cache/account_avatar/avatar_%s",
-                        getContext().getCacheDir(), account.user.id), options);
+                        getContext().getCacheDir(), account.id), options);
         try {
             switch (quality) {
                 case "medium":
@@ -151,8 +151,6 @@ public class SlidingMenuLayout extends LinearLayout {
             if (account.user.avatar != null) ((ImageView) findViewById(R.id.avatar))
                     .setImageBitmap(account.user.avatar);
         } catch (Exception ignored) {
-            if(bitmap != null)
-            ((ImageView) findViewById(R.id.avatar)).setImageBitmap(bitmap);
         }
 
     }
