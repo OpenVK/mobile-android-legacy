@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -103,6 +105,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     private Menu activity_menu;
     private ActionBar actionBar;
     private android.support.v7.widget.PopupMenu popup_menu;
+    private boolean showExtended;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -474,6 +477,23 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
+    public void toggleExtendedInfo() {
+        this.showExtended = !this.showExtended;
+        View arrow = (findViewById(R.id.group_header)).findViewById(R.id.profile_expand);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            float[] fArr = new float[2];
+            fArr[0] = this.showExtended ? 0 : -180;
+            fArr[1] = this.showExtended ? -180 : 0;
+            ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
+        } else {
+            RotateAnimation anim = new RotateAnimation(this.showExtended ? 0 : -180,
+                    this.showExtended ? -180 : 0, 1, 0.5f, 1, 0.5f);
+            anim.setFillAfter(true);
+            anim.setDuration(300L);
+            arrow.startAnimation(anim);
+        }
+    }
+
 
     private void updateLayout(final Group group) {
         GroupHeader header = (GroupHeader) findViewById(R.id.group_header);
@@ -496,6 +516,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             @Override
             public void onClick(View view) {
                 float smallestWidth = Global.getSmalledWidth(getWindowManager());
+                toggleExtendedInfo();
                 if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
                     View aboutGroup = findViewById(R.id.about_group_ll);
                     if (aboutGroup.getVisibility() == View.GONE) {

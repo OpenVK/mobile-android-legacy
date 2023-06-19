@@ -780,8 +780,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                             }
                         });
                 actionBar.addAction(action);
-            } else {
-
             }
         }
     }

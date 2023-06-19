@@ -115,6 +115,7 @@ public class HandlerMessages {
     public static int LONGPOLL                          = 1113;
     public static int ORIGINAL_PHOTO                    = 1114;
     public static int VIDEO_THUMBNAILS                  = 1115;
+    public static int PARSE_JSON                        = 1116;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =  -1;
