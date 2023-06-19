@@ -50,8 +50,8 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class QuickSearchActivity extends TranslucentActivity {
     private OvkAPIWrapper ovk_api;
-    private Users users;
-    private Groups groups;
+    public Users users;
+    public Groups groups;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -100,10 +100,19 @@ public class QuickSearchActivity extends TranslucentActivity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, QuickSearchActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
     }

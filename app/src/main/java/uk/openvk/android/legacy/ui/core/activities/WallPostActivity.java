@@ -77,7 +77,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
     private OvkAPIWrapper ovk_api;
     private DownloadManager downloadManager;
-    private Wall wall;
+    public Wall wall;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -85,7 +85,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
     private SharedPreferences.Editor instance_prefs_editor;
     private long owner_id;
     private long post_id;
-    private ArrayList<Comment> comments;
+    public ArrayList<Comment> comments;
     private PostViewLayout postViewLayout;
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
@@ -118,10 +118,19 @@ public class WallPostActivity extends TranslucentFragmentActivity
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
+                final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(
                         OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, WallPostActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data);
+                }
             }
         };
 
@@ -369,9 +378,6 @@ public class WallPostActivity extends TranslucentFragmentActivity
 
     private void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
-            comments = wall.parseComments(this, downloadManager,
-                    global_prefs.getString("photos_quality", ""),
-                    data.getString("response"));
             postViewLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_PHOTOS) {
             postViewLayout.loadPhotos();

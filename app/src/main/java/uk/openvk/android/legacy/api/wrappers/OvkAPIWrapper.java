@@ -1,10 +1,13 @@
 package uk.openvk.android.legacy.api.wrappers;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import org.apache.http.HttpHost;
@@ -36,6 +39,7 @@ import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -56,6 +60,7 @@ import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Error;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -129,6 +134,18 @@ public class OvkAPIWrapper {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Error getError() {
+        return error;
+    }
+
+    public void setAccessToken(String token) {
+        this.access_token = token;
     }
 
     public void setProxyConnection(boolean useProxy, String address) {
@@ -412,7 +429,7 @@ public class OvkAPIWrapper {
         String url;
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecti to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
         } else {
             url = String.format("http://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
             if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: %s\r\nWhere: %s", server, method, args, where));
@@ -449,180 +466,16 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if (response_code == 200) {
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                                switch (method) {
-                                    case "Account.getProfileInfo":
-                                        sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
-                                        break;
-                                    case "Account.setOnline":
-                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
-                                        break;
-                                    case "Account.setOffline":
-                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
-                                        break;
-                                    case "Account.getCounters":
-                                        sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
-                                        break;
-                                    case "Friends.get":
-                                        switch (where) {
-                                            case "friends_list":
-                                                sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                                break;
-                                            case "profile_counter":
-                                                sendMessage(HandlerMessages.FRIENDS_GET_ALT, method, args, response_body);
-                                                break;
-                                            case "more_friends":
-                                                sendMessage(HandlerMessages.FRIENDS_GET_MORE, method, args, response_body);
-                                                break;
-                                        }
-                                        break;
-                                    case "Friends.add":
-                                        sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
-                                        break;
-                                    case "Friends.delete":
-                                        sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
-                                        break;
-                                    case "Friends.areFriends":
-                                        sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
-                                        break;
-                                    case "Friends.getRequests":
-                                        sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
-                                        break;
-                                    case "Groups.get":
-                                        if (where.equals("more_groups")) {
-                                            sendMessage(HandlerMessages.GROUPS_GET_MORE, method, args, response_body);
-                                        } else {
-                                            sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
-                                        }
-                                        break;
-                                    case "Groups.getById":
-                                        sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Groups.getMembers":
-                                        sendMessage(HandlerMessages.GROUP_MEMBERS, method, response_body);
-                                        break;
-                                    case "Groups.search":
-                                        sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                                        break;
-                                    case "Groups.join":
-                                        sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                                        break;
-                                    case "Groups.leave":
-                                        sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                                        break;
-                                    case "Likes.add":
-                                        sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
-                                        break;
-                                    case "Likes.delete":
-                                        sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
-                                        break;
-                                    case "Likes.isLiked":
-                                        sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
-                                        break;
-                                    case "Messages.getById":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Messages.send":
-                                        sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
-                                        break;
-                                    case "Messages.delete":
-                                        sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
-                                        break;
-                                    case "Messages.restore":
-                                        sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
-                                        break;
-                                    case "Messages.getConverstaions":
-                                        sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
-                                        break;
-                                    case "Messages.getConverstaionsByID":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Messages.getHistory":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
-                                        break;
-                                    case "Messages.getLongPollHistory":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
-                                        break;
-                                    case "Messages.getLongPollServer":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
-                                        break;
-                                    case "Ovk.version":
-                                        sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
-                                        break;
-                                    case "Ovk.test":
-                                        sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
-                                        break;
-                                    case "Ovk.chickenWings":
-                                        sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
-                                        break;
-                                    case "Ovk.aboutInstance":
-                                        sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
-                                        break;
-                                    case "Users.getFollowers":
-                                        sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
-                                        break;
-                                    case "Users.search":
-                                        sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
-                                        break;
-                                    case "Users.get":
-                                        switch (where) {
-                                            case "profile":
-                                                sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                                                break;
-                                            case "account_user":
-                                                sendMessage(HandlerMessages.USERS_GET_ALT, method, args, response_body);
-                                                break;
-                                            case "peers":
-                                                sendMessage(HandlerMessages.USERS_GET_ALT2, method, args, response_body);
-                                                break;
-                                        }
-                                        break;
-                                    case "Wall.get":
-                                        sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
-                                        break;
-                                    case "Wall.getById":
-                                        sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Wall.post":
-                                        sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
-                                        break;
-                                    case "Wall.repost":
-                                        sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
-                                        break;
-                                    case "Wall.createComment":
-                                        sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
-                                        break;
-                                    case "Wall.getComment":
-                                        sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
-                                        break;
-                                    case "Wall.getComments":
-                                        sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
-                                        break;
-                                    case "Newsfeed.get":
-                                        if (where.equals("more_news")) {
-                                            sendMessage(HandlerMessages.NEWSFEED_GET_MORE, method, args, response_body);
-                                        } else {
-                                            sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
-                                        }
-                                        break;
-                                    case "Newsfeed.getGlobal":
-                                        if (where.equals("more_news")) {
-                                            sendMessage(HandlerMessages.NEWSFEED_GET_MORE_GLOBAL, method, args, response_body);
-                                        } else {
-                                            sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
-                                        }
-                                        break;
-                                    case "Polls.addVote":
-                                        sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
-                                        break;
-                                    case "Polls.deleteVote":
-                                        sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
-                                        break;
-                                }
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s]",
+                                                server, method, response_code, response_body));
+                                sendMessage(HandlerMessages.PARSE_JSON, method, args, where, response_body);
                             } else if (response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
                                 if (error.code == 3) {
                                     sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
                                 } else if (error.code == 5) {
@@ -635,7 +488,8 @@ public class OvkAPIWrapper {
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
-                                if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Getting response from %s (%s)", server, response_code));
+                                if(logging_enabled) Log.e(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
                         }
@@ -733,148 +587,16 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                                switch (method) {
-                                    case "Account.getProfileInfo":
-                                        sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, args, response_body);
-                                        break;
-                                    case "Account.setOnline":
-                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, args, response_body);
-                                        break;
-                                    case "Account.setOffline":
-                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, args, response_body);
-                                        break;
-                                    case "Account.getCounters":
-                                        sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, args, response_body);
-                                        break;
-                                    case "Friends.get":
-                                        sendMessage(HandlerMessages.FRIENDS_GET, method, args, response_body);
-                                        break;
-                                    case "Friends.add":
-                                        sendMessage(HandlerMessages.FRIENDS_ADD, method, args, response_body);
-                                        break;
-                                    case "Friends.delete":
-                                        sendMessage(HandlerMessages.FRIENDS_DELETE, method, args, response_body);
-                                        break;
-                                    case "Friends.areFriends":
-                                        sendMessage(HandlerMessages.FRIENDS_CHECK, method, args, response_body);
-                                        break;
-                                    case "Groups.get":
-                                        sendMessage(HandlerMessages.GROUPS_GET, method, args, response_body);
-                                        break;
-                                    case "Groups.getMembers":
-                                        sendMessage(HandlerMessages.GROUP_MEMBERS, method, response_body);
-                                        break;
-                                    case "Groups.getById":
-                                        sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Groups.search":
-                                        sendMessage(HandlerMessages.GROUPS_SEARCH, method, args, response_body);
-                                        break;
-                                    case "Groups.join":
-                                        sendMessage(HandlerMessages.GROUPS_JOIN, method, args, response_body);
-                                        break;
-                                    case "Groups.leave":
-                                        sendMessage(HandlerMessages.GROUPS_LEAVE, method, args, response_body);
-                                        break;
-                                    case "Friends.getRequests":
-                                        sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, args, response_body);
-                                        break;
-                                    case "Likes.add":
-                                        sendMessage(HandlerMessages.LIKES_ADD, method, args, response_body);
-                                        break;
-                                    case "Likes.delete":
-                                        sendMessage(HandlerMessages.LIKES_DELETE, method, args, response_body);
-                                        break;
-                                    case "Likes.isLiked":
-                                        sendMessage(HandlerMessages.LIKES_CHECK, method, args, response_body);
-                                        break;
-                                    case "Messages.getById":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Messages.send":
-                                        sendMessage(HandlerMessages.MESSAGES_SEND, method, args, response_body);
-                                        break;
-                                    case "Messages.delete":
-                                        sendMessage(HandlerMessages.MESSAGES_DELETE, method, args, response_body);
-                                        break;
-                                    case "Messages.restore":
-                                        sendMessage(HandlerMessages.MESSAGES_RESTORE, method, args, response_body);
-                                        break;
-                                    case "Messages.getConversations":
-                                        sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, args, response_body);
-                                        break;
-                                    case "Messages.getConverstaionsByID":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Messages.getHistory":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, args, response_body);
-                                        break;
-                                    case "Messages.getLongPollHistory":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, args, response_body);
-                                        break;
-                                    case "Messages.getLongPollServer":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, args, response_body);
-                                        break;
-                                    case "Ovk.version":
-                                        sendMessage(HandlerMessages.OVK_VERSION, method, args, response_body);
-                                        break;
-                                    case "Ovk.test":
-                                        sendMessage(HandlerMessages.OVK_TEST, method, args, response_body);
-                                        break;
-                                    case "Ovk.chickenWings":
-                                        sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, args, response_body);
-                                        break;
-                                    case "Ovk.aboutInstance":
-                                        sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, args, response_body);
-                                        break;
-                                    case "Users.getFollowers":
-                                        sendMessage(HandlerMessages.USERS_FOLLOWERS, method, args, response_body);
-                                        break;
-                                    case "Users.search":
-                                        sendMessage(HandlerMessages.USERS_SEARCH, method, args, response_body);
-                                        break;
-                                    case "Users.get":
-                                        sendMessage(HandlerMessages.USERS_GET, method, args, response_body);
-                                        break;
-                                    case "Wall.get":
-                                        sendMessage(HandlerMessages.WALL_GET, method, args, response_body);
-                                        break;
-                                    case "Wall.getById":
-                                        sendMessage(HandlerMessages.WALL_GET_BY_ID, method, args, response_body);
-                                        break;
-                                    case "Wall.post":
-                                        sendMessage(HandlerMessages.WALL_POST, method, args, response_body);
-                                        break;
-                                    case "Wall.repost":
-                                        sendMessage(HandlerMessages.WALL_REPOST, method, args, response_body);
-                                        break;
-                                    case "Wall.createComment":
-                                        sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, args, response_body);
-                                        break;
-                                    case "Wall.getComment":
-                                        sendMessage(HandlerMessages.WALL_COMMENT, method, args, response_body);
-                                        break;
-                                    case "Wall.getComments":
-                                        sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, args, response_body);
-                                        break;
-                                    case "Newsfeed.get":
-                                        sendMessage(HandlerMessages.NEWSFEED_GET, method, args, response_body);
-                                        break;
-                                    case "Newsfeed.getGlobal":
-                                        sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, args, response_body);
-                                        break;
-                                    case "Polls.addVote":
-                                        sendMessage(HandlerMessages.POLL_ADD_VOTE, method, args, response_body);
-                                        break;
-                                    case "Polls.deleteVote":
-                                        sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, args, response_body);
-                                        break;
-                                }
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s]",
+                                                server, method, response_code, response_body));
+                                sendMessage(HandlerMessages.PARSE_JSON, method, args, response_body);
                             } else if(response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
                                 if(error.code == 3) {
                                     sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
                                 } else if(error.code == 5) {
@@ -947,10 +669,12 @@ public class OvkAPIWrapper {
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?access_token=%s", server, method, access_token);
-            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecti to %s (Secured)...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                    String.format("Connecting to %s (Secured)...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
         } else {
             url = String.format("http://%s/method/%s?access_token=%s", server, method, access_token);
-            if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
+            if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                    String.format("Connecting to %s...\r\nMethod: %s\r\nArguments: [without arguments]", server, method));
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
@@ -984,148 +708,14 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s]", server, response_code, response_body));
-                                switch (method) {
-                                    case "Account.getProfileInfo":
-                                        sendMessage(HandlerMessages.ACCOUNT_PROFILE_INFO, method, response_body);
-                                        break;
-                                    case "Account.setOnline":
-                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_ONLINE, method, response_body);
-                                        break;
-                                    case "Account.setOffline":
-                                        sendMessage(HandlerMessages.ACCOUNT_SET_TO_OFFLINE, method, response_body);
-                                        break;
-                                    case "Account.getCounters":
-                                        sendMessage(HandlerMessages.ACCOUNT_COUNTERS, method, response_body);
-                                        break;
-                                    case "Friends.get":
-                                        sendMessage(HandlerMessages.FRIENDS_GET, method, response_body);
-                                        break;
-                                    case "Friends.add":
-                                        sendMessage(HandlerMessages.FRIENDS_ADD, method, response_body);
-                                        break;
-                                    case "Friends.delete":
-                                        sendMessage(HandlerMessages.FRIENDS_DELETE, method, response_body);
-                                        break;
-                                    case "Friends.areFriends":
-                                        sendMessage(HandlerMessages.FRIENDS_CHECK, method, response_body);
-                                        break;
-                                    case "Friends.getRequests":
-                                        sendMessage(HandlerMessages.FRIENDS_REQUESTS, method, response_body);
-                                        break;
-                                    case "Groups.get":
-                                        sendMessage(HandlerMessages.GROUPS_GET, method, response_body);
-                                        break;
-                                    case "Groups.getMembers":
-                                        sendMessage(HandlerMessages.GROUP_MEMBERS, method, response_body);
-                                        break;
-                                    case "Groups.getById":
-                                        sendMessage(HandlerMessages.GROUPS_GET_BY_ID, method, response_body);
-                                        break;
-                                    case "Groups.search":
-                                        sendMessage(HandlerMessages.GROUPS_SEARCH, method, response_body);
-                                        break;
-                                    case "Groups.join":
-                                        sendMessage(HandlerMessages.GROUPS_JOIN, method, response_body);
-                                        break;
-                                    case "Groups.leave":
-                                        sendMessage(HandlerMessages.GROUPS_LEAVE, method, response_body);
-                                        break;
-                                    case "Likes.add":
-                                        sendMessage(HandlerMessages.LIKES_ADD, method, response_body);
-                                        break;
-                                    case "Likes.delete":
-                                        sendMessage(HandlerMessages.LIKES_DELETE, method, response_body);
-                                        break;
-                                    case "Likes.isLiked":
-                                        sendMessage(HandlerMessages.LIKES_CHECK, method, response_body);
-                                        break;
-                                    case "Messages.getById":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_BY_ID, method, response_body);
-                                        break;
-                                    case "Messages.send":
-                                        sendMessage(HandlerMessages.MESSAGES_SEND, method, response_body);
-                                        break;
-                                    case "Messages.delete":
-                                        sendMessage(HandlerMessages.MESSAGES_DELETE, method, response_body);
-                                        break;
-                                    case "Messages.restore":
-                                        sendMessage(HandlerMessages.MESSAGES_RESTORE, method, response_body);
-                                        break;
-                                    case "Messages.getConverstaions":
-                                        sendMessage(HandlerMessages.MESSAGES_CONVERSATIONS, method, response_body);
-                                        break;
-                                    case "Messages.getConverstaionsByID":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID, method, response_body);
-                                        break;
-                                    case "Messages.getHistory":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_HISTORY, method, response_body);
-                                        break;
-                                    case "Messages.getLongPollHistory":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_HISTORY, method, response_body);
-                                        break;
-                                    case "Messages.getLongPollServer":
-                                        sendMessage(HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER, method, response_body);
-                                        break;
-                                    case "Ovk.version":
-                                        sendMessage(HandlerMessages.OVK_VERSION, method, response_body);
-                                        break;
-                                    case "Ovk.test":
-                                        sendMessage(HandlerMessages.OVK_TEST, method, response_body);
-                                        break;
-                                    case "Ovk.chickenWings":
-                                        sendMessage(HandlerMessages.OVK_CHICKEN_WINGS, method, response_body);
-                                        break;
-                                    case "Ovk.aboutInstance":
-                                        sendMessage(HandlerMessages.OVK_ABOUTINSTANCE, method, response_body);
-                                        break;
-                                    case "Users.getFollowers":
-                                        sendMessage(HandlerMessages.USERS_FOLLOWERS, method, response_body);
-                                        break;
-                                    case "Users.search":
-                                        sendMessage(HandlerMessages.USERS_SEARCH, method, response_body);
-                                        break;
-                                    case "Users.get":
-                                        sendMessage(HandlerMessages.USERS_GET, method, response_body);
-                                        break;
-                                    case "Wall.get":
-                                        sendMessage(HandlerMessages.WALL_GET, method, response_body);
-                                        break;
-                                    case "Wall.getById":
-                                        sendMessage(HandlerMessages.WALL_GET_BY_ID, method, response_body);
-                                        break;
-                                    case "Wall.post":
-                                        sendMessage(HandlerMessages.WALL_POST, method, response_body);
-                                        break;
-                                    case "Wall.repost":
-                                        sendMessage(HandlerMessages.WALL_REPOST, method, response_body);
-                                        break;
-                                    case "Wall.createComment":
-                                        sendMessage(HandlerMessages.WALL_DELETE_COMMENT, method, response_body);
-                                        break;
-                                    case "Wall.getComment":
-                                        sendMessage(HandlerMessages.WALL_COMMENT, method, response_body);
-                                        break;
-                                    case "Wall.getComments":
-                                        sendMessage(HandlerMessages.WALL_ALL_COMMENTS, method, response_body);
-                                        break;
-                                    case "Newsfeed.get":
-                                        sendMessage(HandlerMessages.NEWSFEED_GET, method, response_body);
-                                        break;
-                                    case "Newsfeed.getGlobal":
-                                        sendMessage(HandlerMessages.NEWSFEED_GET_GLOBAL, method, response_body);
-                                        break;
-                                    case "Polls.addVote":
-                                        sendMessage(HandlerMessages.POLL_ADD_VOTE, method, response_body);
-                                        break;
-                                    case "Polls.deleteVote":
-                                        sendMessage(HandlerMessages.POLL_DELETE_VOTE, method, response_body);
-                                        break;
-                                }
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s]", server, method, response_code, response_body));
+                                sendMessage(HandlerMessages.PARSE_JSON, method, response_body);
                             } else if(response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Getting response from %s (%s): [%s / Error code: %d]", server, response_code, error.description, error.code));
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]", server, method, response_code, error.description, error.code));
                                 if(error.code == 3) {
                                     sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
                                 } else if(error.code == 5) {
@@ -1294,6 +884,40 @@ public class OvkAPIWrapper {
         }
     }
 
+    private void sendMessage(int message, String method, String args, String where, String response) {
+        Message msg = new Message();
+        msg.what = message;
+        Bundle bundle = new Bundle();
+        bundle.putString("response", response);
+        bundle.putString("method", method);
+        bundle.putString("args", args);
+        bundle.putString("where", where);
+        msg.setData(bundle);
+        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
+            ((AuthActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+            ((AppActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            ((ConversationActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            ((NewPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            ((WallPostActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+        }
+    }
+
     public void checkHTTPS() {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             BasicHttpParams basicHttpParams = new BasicHttpParams();
@@ -1369,16 +993,273 @@ public class OvkAPIWrapper {
         thread.start();
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public Error getError() {
-        return error;
-    }
-
-    public void setAccessToken(String token) {
-        this.access_token = token;
+    public void parseJSONData(Bundle data, Activity activity) {
+        Message msg = new Message();
+        String method = data.getString("method");
+        String args = data.getString("args");
+        String where = data.getString("where");
+        msg.setData(data);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        DownloadManager downloadManager = new DownloadManager(activity,
+                global_prefs.getBoolean("useHTTPS", false));
+        if (activity instanceof AppActivity) {
+            AppActivity app_a = (AppActivity) activity;
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    app_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Account.getCounters":
+                    app_a.account.parseCounters(data.getString("response"));
+                    msg.what = HandlerMessages.ACCOUNT_COUNTERS;
+                    break;
+                case "Newsfeed.get":
+                    app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
+                            global_prefs.getString("photos_quality", ""), true);
+                    if (args != null && args.contains("start_from")) {
+                        msg.what = HandlerMessages.NEWSFEED_GET_MORE;
+                    } else {
+                        msg.what = HandlerMessages.NEWSFEED_GET;
+                    }
+                    break;
+                case "Newsfeed.getGlobal":
+                    app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                            global_prefs.getString("photos_quality", ""), true);
+                    if (args != null && args.contains("start_from")) {
+                        msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
+                    } else {
+                        msg.what = HandlerMessages.NEWSFEED_GET_GLOBAL;
+                    }
+                    break;
+                case "Messages.getLongPollServer":
+                    app_a.longPollServer = app_a.messages
+                            .parseLongPollServer(data.getString("response"));
+                    msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
+                    break;
+                case "Likes.add":
+                    app_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_ADD;
+                    break;
+                case "Likes.delete":
+                    app_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
+                case "Users.get":
+                    app_a.users.parse(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_GET;
+                    break;
+                case "Friends.get":
+                    if (args != null && args.contains("offset")) {
+                        msg.what = HandlerMessages.FRIENDS_GET_MORE;
+                        app_a.friends.parse(data.getString("response"), downloadManager, true, false);
+                    } else {
+                        assert where != null;
+                        if(where.equals("profile_counter")) {
+                            msg.what = HandlerMessages.FRIENDS_GET_ALT;
+                            app_a.friends.parse(data.getString("response"), downloadManager, false, true);
+                        } else {
+                            msg.what = HandlerMessages.FRIENDS_GET;
+                            app_a.friends.parse(data.getString("response"), downloadManager, true, true);
+                        }
+                    }
+                    break;
+                case "Friends.getRequests":
+                    msg.what = HandlerMessages.FRIENDS_REQUESTS;
+                    app_a.friends.parseRequests(data.getString("response"), downloadManager, true);
+                    break;
+                case "Wall.get":
+                    app_a.wall.parse(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_GET;
+                    break;
+                case "Messages.getConversations":
+                    app_a.conversations = app_a.messages.parseConversationsList(data.getString("response"),
+                            downloadManager);
+                    msg.what = HandlerMessages.MESSAGES_CONVERSATIONS;
+                    break;
+                case "Groups.get":
+                    if (args != null && args.contains("offset")) {
+                        msg.what = HandlerMessages.GROUPS_GET_MORE;
+                        app_a.old_friends_size = app_a.groups.getList().size();
+                        app_a.groups.parse(data.getString("response"), downloadManager,
+                                global_prefs.getString("photos_quality", ""), true, false);
+                    } else {
+                        msg.what = HandlerMessages.GROUPS_GET;
+                        app_a.groups.parse(data.getString("response"), downloadManager,
+                                global_prefs.getString("photos_quality", ""), true, true);
+                    }
+                    break;
+                case "Ovk.version":
+                    msg.what = HandlerMessages.OVK_VERSION;
+                    app_a.ovk.parseVersion(data.getString("response"));
+                    break;
+                case "Ovk.aboutInstance":
+                    msg.what = HandlerMessages.OVK_ABOUTINSTANCE;
+                    app_a.ovk.parseAboutInstance(data.getString("response"));
+                    break;
+            }
+            app_a.handler.sendMessage(msg);
+        } else if (activity instanceof ConversationActivity) {
+            ConversationActivity conv_a = ((ConversationActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Messages.getHistory":
+                    conv_a.history = conv_a.conversation.parseHistory(activity, data.getString("response"));
+                    msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
+                    break;
+                case "Messages.send":
+                    msg.what = HandlerMessages.MESSAGES_SEND;
+                    break;
+                case "Messages.delete":
+                    msg.what = HandlerMessages.MESSAGES_DELETE;
+                    break;
+            }
+            conv_a.handler.sendMessage(msg);
+        } else if (activity instanceof FriendsIntentActivity) {
+            FriendsIntentActivity friends_a = ((FriendsIntentActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    friends_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Friends.get":
+                    if (args != null && args.contains("offset")) {
+                        msg.what = HandlerMessages.FRIENDS_GET_MORE;
+                        friends_a.friends.parse(data.getString("response"), downloadManager, true, false);
+                    } else {
+                        msg.what = HandlerMessages.FRIENDS_GET;
+                        friends_a.friends.parse(data.getString("response"), downloadManager, true, true);
+                    }
+                    break;
+            }
+            friends_a.handler.sendMessage(msg);
+        } else if (activity instanceof ProfileIntentActivity) {
+            ProfileIntentActivity profile_a = ((ProfileIntentActivity) activity);
+            assert method != null;
+            switch (method) {
+                default:
+                    Log.e(OvkApplication.API_TAG, String.format("[%s] Method not found", method));
+                case "Account.getProfileInfo":
+                    profile_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Account.getCounters":
+                    profile_a.account.parseCounters(data.getString("response"));
+                    msg.what = HandlerMessages.ACCOUNT_COUNTERS;
+                    break;
+                case "Friends.get":
+                    if(where.equals("profile_counter")) {
+                        msg.what = HandlerMessages.FRIENDS_GET_ALT;
+                        profile_a.friends.parse(data.getString("response"), downloadManager, false, true);
+                    }
+                    break;
+                case "Users.get":
+                    profile_a.users.parse(data.getString("response"));
+                    profile_a.user = profile_a.users.getList().get(0);
+                    msg.what = HandlerMessages.USERS_GET;
+                    break;
+                case "Users.search":
+                    profile_a.users.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_SEARCH;
+                    break;
+                case "Wall.get":
+                    profile_a.wall.parse(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_GET;
+                    break;
+                case "Likes.add":
+                    profile_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_ADD;
+                    break;
+                case "Likes.delete":
+                    profile_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
+            }
+            profile_a.handler.sendMessage(msg);
+        } else if(activity instanceof GroupIntentActivity) {
+            GroupIntentActivity group_a = ((GroupIntentActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    group_a.account.parse(data.getString("response"), this);
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+                case "Groups.get":
+                    group_a.groups.parse(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_GET;
+                    break;
+                case "Groups.getById":
+                    group_a.groups.parse(data.getString("response"));
+                    msg.what = HandlerMessages.GROUPS_GET_BY_ID;
+                    break;
+                case "Groups.search":
+                    group_a.groups.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.GROUPS_SEARCH;
+                    break;
+                case "Wall.get":
+                    group_a.wall.parse(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_GET;
+                    break;
+                case "Likes.add":
+                    group_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_ADD;
+                    break;
+                case "Likes.delete":
+                    group_a.likes.parse(data.getString("response"));
+                    msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
+            }
+            group_a.handler.sendMessage(msg);
+        } else if(activity instanceof NewPostActivity) {
+            NewPostActivity newpost_a = ((NewPostActivity) activity);
+            assert method != null;
+            msg.what = HandlerMessages.WALL_POST;
+            newpost_a.handler.sendMessage(msg);
+        } else if(activity instanceof QuickSearchActivity) {
+            QuickSearchActivity quick_search_a = ((QuickSearchActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Groups.search":
+                    quick_search_a.groups.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.GROUPS_SEARCH;
+                    break;
+                case "Users.search":
+                    quick_search_a.users.parseSearch(data.getString("response"));
+                    msg.what = HandlerMessages.USERS_SEARCH;
+                    break;
+            }
+            quick_search_a.handler.sendMessage(msg);
+        } else if(activity instanceof GroupMembersActivity) {
+            GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Groups.getMembers":
+                    group_members_a.group.members = new ArrayList<>();
+                    group_members_a.group.parseMembers(data.getString("response"), downloadManager, true);
+                    msg.what = HandlerMessages.GROUPS_SEARCH;
+                    break;
+            }
+            group_members_a.handler.sendMessage(msg);
+        } else if(activity instanceof WallPostActivity) {
+            WallPostActivity wall_post_a = ((WallPostActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Wall.getComments":
+                    wall_post_a.comments = wall_post_a.wall.parseComments(activity, downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"));
+                    msg.what = HandlerMessages.WALL_ALL_COMMENTS;
+                    break;
+            }
+            wall_post_a.handler.sendMessage(msg);
+        }
     }
 
 }
