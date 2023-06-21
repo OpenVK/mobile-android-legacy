@@ -175,6 +175,10 @@ public class AppActivity extends TranslucentFragmentActivity {
         instance_prefs_editor = instance_prefs.edit();
         installFragments();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            Global.fixWindowPadding(getWindow(), getTheme());
+        }
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
@@ -394,6 +398,10 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
         ab_layout.adjustLayout();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            Global.fixWindowPadding(getWindow(), getTheme());
+        }
         super.onConfigurationChanged(newConfig);
     }
 
@@ -1160,7 +1168,7 @@ public class AppActivity extends TranslucentFragmentActivity {
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
         progressLayout.setVisibility(View.GONE);
-        findViewById(R.id.fragment).setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setIcon(icon);

@@ -39,8 +39,6 @@
         android:id="@+id/app_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/actionbar_height"/>
-
-
+        android:paddingTop="@dimen/landscape_actionbar_size" />
 
 </LinearLayout>

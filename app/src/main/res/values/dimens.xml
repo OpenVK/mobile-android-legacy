@@ -18,4 +18,6 @@
     <dimen name="list_side_padding">0dip</dimen>
     <dimen name="list_side_padding_neg">0dip</dimen>
     <dimen name="widget_padding">8dip</dimen>
+    <dimen name="actionbar_size">48dp</dimen>
+    <dimen name="landscape_actionbar_size">40dp</dimen>
 </resources>

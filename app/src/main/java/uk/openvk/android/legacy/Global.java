@@ -3,6 +3,7 @@ package uk.openvk.android.legacy;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -260,6 +262,31 @@ public class Global {
             int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
             styledAttributes.recycle();
             ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin = mActionBarSize;
+        }
+    }
+
+    public static void fixWindowPadding(Window window, Resources.Theme theme) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            View view = window.getDecorView();
+            int actionBarId = view.getContext().getResources().getIdentifier("action_bar", "id", "android");
+            ViewGroup actionBarView = (ViewGroup) view.findViewById(actionBarId);
+            Resources res = view.getContext().getResources();
+            try {
+                if(view.getContext().getApplicationContext() instanceof OvkApplication) {
+                    Field f = actionBarView.getClass().getSuperclass().getDeclaredField("mContentHeight");
+                    f.setAccessible(true);
+                    OvkApplication app = ((OvkApplication) view.getContext().getApplicationContext());
+                    if(!app.isTablet) {
+                        if (res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            f.set(actionBarView, (int)res.getDimension(R.dimen.actionbar_size));
+                        } else {
+                            f.set(actionBarView, (int)res.getDimension(R.dimen.landscape_actionbar_size));
+                        }
+                    }
+                }
+            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

@@ -134,6 +134,13 @@ public class VideoPlayerActivity extends Activity {
                 ((ImageButton) findViewById(R.id.video_resize)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(fitVideo) {
+                            ((ImageButton) v).setImageDrawable(
+                                    getResources().getDrawable(R.drawable.ic_video_expand));
+                        } else {
+                            ((ImageButton) v).setImageDrawable(
+                                    getResources().getDrawable(R.drawable.ic_video_shrink));
+                        }
                         resizeVideo();
                     }
                 });
@@ -205,6 +212,7 @@ public class VideoPlayerActivity extends Activity {
                     }
                 });
                 imp.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+                    @SuppressLint("DefaultLocale")
                     @Override
                     public void onCompletion(IMediaPlayer iMediaPlayer) {
                         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
