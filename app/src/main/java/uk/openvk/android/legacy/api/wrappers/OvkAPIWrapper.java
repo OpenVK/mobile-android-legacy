@@ -163,6 +163,7 @@ public class OvkAPIWrapper {
                                         new InetSocketAddress(address_array[0],
                                         Integer.valueOf(address_array[1])))).build();
                     }
+                    this.proxy_connection = true;
                 }
             }
         } catch (Exception ex) {

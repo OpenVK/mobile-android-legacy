@@ -30,6 +30,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.InstanceLink;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AboutApplicationActivity;
@@ -224,6 +225,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 editor.putString("server", "");
                 editor.putString("account_password_hash", "");
                 editor.commit();
+                DownloadManager dlm = new DownloadManager(getActivity(), false);
+                dlm.clearCache(getContext().getCacheDir());
                 Intent activity = new Intent(getContext().getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(activity);
@@ -353,13 +356,21 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         ((LinearLayout) about_instance_view.findViewById(R.id.instance_version_ll)).setVisibility(View.VISIBLE);
     }
 
-    public void setConnectionType(int message) {
+    public void setConnectionType(int message, boolean isProxy) {
         if(message == HandlerMessages.OVK_CHECK_HTTP) {
             TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
-            connection_type.setText(getResources().getString(R.string.default_connection));
+            if(isProxy) {
+                connection_type.setText(getResources().getString(R.string.proxy_connection));
+            } else {
+                connection_type.setText(getResources().getString(R.string.default_connection));
+            }
         } else if(message == HandlerMessages.OVK_CHECK_HTTPS){
             TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
-            connection_type.setText(getResources().getString(R.string.secured_connection));
+            if(isProxy) {
+                connection_type.setText(getResources().getString(R.string.proxy_connection));
+            } else {
+                connection_type.setText(getResources().getString(R.string.secured_connection));
+            }
         } else {
             TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
             connection_type.setText(getResources().getString(R.string.connection_error));

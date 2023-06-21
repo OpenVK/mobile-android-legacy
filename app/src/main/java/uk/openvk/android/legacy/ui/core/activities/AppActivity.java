@@ -1111,12 +1111,12 @@ public class AppActivity extends TranslucentFragmentActivity {
                 Toast.makeText(this, getResources().getString(R.string.repost_ok_wall), Toast.LENGTH_LONG).show();
             } else if(message == HandlerMessages.OVK_CHECK_HTTP) {
                 ovk = new Ovk();
-                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTP);
+                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTP, ovk_api.proxy_connection);
                 ovk.getVersion(ovk_api);
                 ovk.aboutInstance(ovk_api);
             } else if(message == HandlerMessages.OVK_CHECK_HTTPS) {
                 ovk = new Ovk();
-                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTPS);
+                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTPS, ovk_api.proxy_connection);
                 ovk.getVersion(ovk_api);
                 ovk.aboutInstance(ovk_api);
             } else if(message == HandlerMessages.OVK_ABOUTINSTANCE) {

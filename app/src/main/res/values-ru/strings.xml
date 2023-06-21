@@ -16,7 +16,10 @@
 !-->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="ovk_warning_title">Предупреждение</string>
-    <string name="ovk_warning"><![CDATA[Вы запустили свободный клиент OpenVK Legacy, работающий ТОЛЬКО с инстанциями <a href="https://github.com/openvk/openvk">OpenVK</a> - сети с открытым исходным кодом, несовместимая с ВКонтакте.<br><br>Пожалуйста, авторизуйтесь ТОЛЬКО в зарегистрированный аккаунт OpenVK в одной из существующих инстанций.]]></string>
+    <string name="ovk_warning"><![CDATA[Вы запустили свободный клиент OpenVK Legacy, работающий
+    ТОЛЬКО с инстанциями <a href="https://github.com/openvk/openvk">OpenVK</a> - сети с
+    открытым исходным кодом, несовместимая с ВКонтакте.<br><br>Пожалуйста, авторизуйтесь ТОЛЬКО
+    в зарегистрированный аккаунт OpenVK в одной из существующих инстанций.]]></string>
     <string name="dont_show_warn">Больше не показывать</string>
     <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
@@ -974,6 +977,7 @@
     <string name="unable_to_parse_error">Невозможно обработать ответ от сервера</string>
     <string name="twofactor_text">Введите код подтверждения из приложения-генератора кодов.</string>
     <string name="twofactor_hint">Код 2FA</string>
+    <string name="twofactor_invalid_code">Неверный код подтверждения. Повторите попытку.</string>
     <string name="not_implemented">На данный момент такая функция не реализована. Следите за обновлениями.</string>
     <string name="not_supported">На данный момент такая функция не поддерживается. Следите за обновлениями.</string>
     <string name="please_wait_network">Дождитесь окончания загрузки и повторите попытку.</string>
@@ -992,13 +996,14 @@
     <string name="allow_permisssion_in_storage">Для сохранения данных в память устройства приложению нужны специальные разрешения.\n\nОткрыть раздел системных настроек \"О приложении\"?</string>
     <string name="open_btn">Открыть</string>
     <string name="birthday">День рождения</string>
-    <string name="post_fail_empty">Извини, но мы не можем запостить пустое сообщение</string>
+    <string name="post_fail_empty">Прежде чем запостить, обязательно напишите что-нибудь и повторите еще раз.</string>
     <string name="on_wall">%1$s на стене %2$s</string>
     <string name="debug_incompatibillity_error">Требуется Android 4.1 или выше</string>
     <string name="about_instance">Об инстанции</string>
     <string name="server_address">Сервер:</string>
     <string name="connection_type">Тип соединения:</string>
-    <string name="secured_connection">"Защищённое (HTTPS) "</string>
+    <string name="proxy_connection">Прокси (HTTP)</string>
+    <string name="secured_connection">Защищённое (HTTPS)</string>
     <string name="default_connection">Обычное (HTTP)</string>
     <string name="instance_version">Версия инстанции:</string>
     <string name="instance_statistics">Статистика:</string>
@@ -1027,4 +1032,5 @@
     <string name="interface_language">Язык (Language)</string>
     <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина.\r\nВы можете узнать что-то новое в ленте всех новостей.</string>
     <string name="retry_short">Повторить</string>
+    <string name="vk_not_supported">Извините, но этот клиент несовместим с API ВКонтакте.</string>
 </resources>

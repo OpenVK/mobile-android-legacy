@@ -75,6 +75,7 @@ public class AuthActivity extends Activity {
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private JSONParser jsonParser = new JSONParser();
+    private int twofactor_fail = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -208,7 +209,7 @@ public class AuthActivity extends Activity {
                     }
                 });
             } else {
-                Toast.makeText(this, "А мы вас предупреждали, что сюда не следует тыкать в ваш ВК!",
+                Toast.makeText(this, getResources().getString(R.string.vk_not_supported),
                         Toast.LENGTH_LONG).show();
             }
 
@@ -302,6 +303,7 @@ public class AuthActivity extends Activity {
                         getResources().getString(R.string.auth_error), null);
                 if (!AuthActivity.this.isFinishing()) wrong_userdata_dlg.show();
             } else if (message == HandlerMessages.TWOFACTOR_CODE_REQUIRED) {
+                twofactor_fail++;
                 connectionDialog.close();
                 OvkAlertDialog twofactor_dlg;
                 twofactor_dlg = new OvkAlertDialog(this);
@@ -311,19 +313,23 @@ public class AuthActivity extends Activity {
                 builder.setTitle(R.string.auth);
                 builder.setView(twofactor_view);
                 final EditText two_factor_code = (EditText) twofactor_view.findViewById(R.id.two_factor_code);
-                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        twoFactorLogin(two_factor_code.getText().toString());
-                    }
-                });
-                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                twofactor_dlg.build(builder, "", getResources().getString(R.string.auth), twofactor_view);
+                twofactor_dlg.build(builder, getResources().getString(R.string.auth), "", twofactor_view);
+                twofactor_dlg.setButton(DialogInterface.BUTTON_POSITIVE,
+                        getResources().getString(android.R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                twoFactorLogin(two_factor_code.getText().toString());
+                            }
+                        });
+                twofactor_dlg.setButton(DialogInterface.BUTTON_NEGATIVE,
+                        getResources().getString(android.R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                twofactor_fail = -1;
+                            }
+                        });
                 two_factor_code.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -334,6 +340,11 @@ public class AuthActivity extends Activity {
                         return false;
                     }
                 });
+                if(twofactor_fail > 0) {
+                    twofactor_view.findViewById(R.id.twofactor_error).setVisibility(View.VISIBLE);
+                } else {
+                    twofactor_view.findViewById(R.id.twofactor_error).setVisibility(View.GONE);
+                }
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {

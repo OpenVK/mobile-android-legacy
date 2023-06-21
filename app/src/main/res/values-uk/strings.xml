@@ -16,7 +16,10 @@
 !-->
 <resources>
     <string name="ovk_warning_title">Попередження</string>
-    <string name="ovk_warning"><![CDATA[Ви запустили вільний клієнт OpenVK Legacy, який працює ТІЛЬКИ з інстанціями <a href="https://github.com/openvk/openvk">OpenVK</a> - мережі з відкритим вихідним кодом, несумісною з ВКонтакте.<br><br>Будь ласка, авторизуйтеся ТІЛЬКИ до зареєстрованого облікового запису OpenVK в одній з існуючих інстанцій.]]></string>
+    <string name="ovk_warning"><![CDATA[Ви запустили вільний клієнт OpenVK Legacy, який працює
+    ТІЛЬКИ з інстанціями <a href="https://github.com/openvk/openvk">OpenVK</a> - мережі з
+    відкритим вихідним кодом, несумісною з ВКонтакте.<br><br>Будь ласка, авторизуйтеся ТІЛЬКИ
+    до зареєстрованого облікового запису OpenVK в одній з існуючих інстанцій.]]></string>
     <string name="dont_show_warn">Більше не показувати</string>
     <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
@@ -113,7 +116,8 @@
     <string name="uploading_photo">Завантаження фотографії</string>
     <string name="uploading_photo_err">Помилка при завантаженні</string>
     <string name="uploading_photo_err_notify">Помилка при завантаженні фотографії.</string>
-    <string name="uploading_photo_alert">Сталася помилка при завантаженні фотографії на сервер. Повторити спробу?</string>
+    <string name="uploading_photo_alert">Сталася помилка при завантаженні фотографії на сервер.
+        Повторити спробу?</string>
 
     <string name="yes">Так</string>
     <string name="no">Ні</string>
@@ -392,17 +396,6 @@
 
     <string name="welcome_next">Далі</string>
 
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <br/> -->
-
-
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-
     <string name="sync_all">Всі друзі</string>
     <string name="sync_all_summary">Додати в контакти дані всіх Ваших друзів</string>
     <string name="sync_existing">Тільки контакти</string>
@@ -541,7 +534,8 @@
 	<string name="copy_text">Копіювати текст</string>
 	<string name="text_copied">Текст скопійований в буфер обміну</string>
 
-	<string name="video_err_network">Сталася помилка, пов\'язана з підключенням до сервера. Перевірте з\'єднання і повторіть спробу або відтворити відео у сторонньому плеєрі.</string>
+	<string name="video_err_network">Сталася помилка, пов\'язана з підключенням до сервера.
+        Перевірте з\'єднання і повторіть спробу або відтворити відео у сторонньому плеєрі.</string>
 	<string name="video_err_os">Для перегляду цього відеозапису потрібнен Android 2.3 або вище.</string>
 	<string name="video_err_decode">Ваш пристрій не може відтворити це відео. Спробуйте вибрати більш низьку якість.</string>
 
@@ -688,7 +682,8 @@
 	<string name="leave_group">Покинути спільноту</string>
 	<string name="join_group_closed">Подати заявку</string>
 	<string name="join_page">Підписатися</string>
-	<string name="leave_closed_group_confirm">Це закрита група. Якщо Ви з неї вийдете, потрапити назад, можливо, буде непросто. Вийти з групи?</string>
+	<string name="leave_closed_group_confirm">Це закрита група. Якщо Ви з неї вийдете,
+        потрапити назад, можливо, буде непросто. Вийти з групи?</string>
 
 	<string-array name="community_types">
     	<item>Зустрічі</item>
@@ -875,14 +870,17 @@
 	<string name="sett_news_banned">Фільтр новин</string>
 	<string name="sett_news_banned_summary">Змінити список прихованих користувачів і спільнот</string>
 	<string name="people">Люди</string>
-	<string name="news_banned_user">Новини від цього користувача тепер приховані з Вашої стрічки. Ви можете відновити їх у налаштуваннях додатку.</string>
-	<string name="news_banned_group">Новини від цієї спільноти тепер приховані з Вашої стрічки. Ви можете відновити їх у налаштуваннях додатку.</string>
+	<string name="news_banned_user">Новини від цього користувача тепер приховані з Вашої стрічки.
+        Ви можете відновити їх у налаштуваннях додатку.</string>
+	<string name="news_banned_group">Новини від цієї спільноти тепер приховані з Вашої стрічки.
+        Ви можете відновити їх у налаштуваннях додатку.</string>
 	<string name="news_unbanned_user">Новини від цього користувача будуть показуватися у Вашій стрічці.</string>
 	<string name="news_unbanned_group">Новини від цієї спільноти будуть показуватися у Вашій стрічці.</string>
 	<string name="chat_title_change_ok">Назва бесіди успішно змінено</string>
 	<string name="delete_chat_user_confirm">Ви дійсно хочете виключити цього користувача з бесіди?</string>
 	<string name="enter_chat_title">Введіть назву</string>
-	<string name="already_logged_in">На цьому пристрої вже є акаунт OpenVK. Для входу в інший аккаунт необхідно вийти з поточного.</string>
+	<string name="already_logged_in">На цьому пристрої вже є акаунт OpenVK.
+        Для входу в інший аккаунт необхідно вийти з поточного.</string>
 	<string name="post_edit_title">Запис</string>
 	<string name="attach_wiki">Сторінка</string>
 	<string name="post_edit_saved">Запис збережено</string>
@@ -1142,10 +1140,13 @@
     <string name="friend_deleted">%s видалено з ваших особливих друзей</string>
 
     <string name="incompatible_openvk_api_title">Версія OpenVK API застаріла</string>
-    <string name="incompatible_openvk_api">Швидше за все, в цій інстанції використовується несумісна версія OpenVK API, в якій не реалізовано або застаріло потрібні функції. Щоб вирішити цю проблему, зверніться до системного адміністратора або розробника програми.</string>
+    <string name="incompatible_openvk_api">Швидше за все, в цій інстанції використовується
+        несумісна версія OpenVK API, в якій не реалізовано або застаріло потрібні функції.
+        Щоб вирішити цю проблему, зверніться до системного адміністратора або розробника програми.</string>
     <string name="unable_to_parse_error">Неможливо обробити вiдповiдь вiд сервера</string>
     <string name="twofactor_text">Введіть код підтвердження з додатку-генератора кодів.</string>
     <string name="twofactor_hint">Код 2FA</string>
+    <string name="twofactor_invalid_code">Невірний код підтвердження. Повторіть спробу.</string>
     <string name="not_implemented">На даний момент така функція не реалізована. Стежте за оновленнями.</string>
     <string name="not_supported">На даний момент така функція не підтримується. Стежте за оновленнями.</string>
     <string name="please_wait_network">Дочекайтеся закiчення завантаження i повторiть спробу.</string>
@@ -1161,16 +1162,18 @@
     <string name="dnd_mode">Режим \"Не турбувати\"</string>
     <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s</string>
     <string name="allow_permisssion_in_storage_title">Потрібні дозволи</string>
-    <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про додаток\"?</string>
+    <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять
+        пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про додаток\"?</string>
     <string name="open_btn">Відкрити</string>
     <string name="birthday">День народження</string>
-    <string name="post_fail_empty">Вибач, але ми не можемо запостити порожнє повідомлення</string>
+    <string name="post_fail_empty">Перш ніж запостити, обов\'язково напишіть щось і повторіть ще раз.</string>
     <string name="on_wall">%1$s на стiнi %2$s</string>
     <string name="debug_incompatibillity_error">Потрібен Android 4.1 або вище</string>
     <string name="about_instance">Про iнстанцiю</string>
     <string name="server_address">Сервер:</string>
     <string name="connection_type">Тип з\'єднання:</string>
-    <string name="secured_connection">"Захищене (HTTPS) "</string>
+    <string name="proxy_connection">Проксi (HTTP)</string>
+    <string name="secured_connection">Захищене (HTTPS)</string>
     <string name="default_connection">Звичайне (HTTP)</string>
     <string name="instance_version">Версiя iнстанцiї:</string>
     <string name="instance_statistics">Статистика:</string>
@@ -1186,7 +1189,8 @@
         <item>Пiдписки</item>
         <item>Всi новини</item>
     </string-array>
-    <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень. Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
+    <string name="err_picture_not_enough_memory_text">Недостатньо пам\'яті для обробки зображень.
+        Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Офіційна інстанція OpenVK</string>
     <string name="wall_err_text">Хмммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
@@ -1200,4 +1204,5 @@
     <string name="interface_language">Мова (Language)</string>
     <string name="local_newsfeed_no_posts">У локальній стрічці поки що тиша.\r\nВи можете дізнатися щось нове у стрічці всіх новин.</string>
     <string name="retry_short">Повторити</string>
+    <string name="vk_not_supported">Вибачте, але цей клієнт несумісний з API ВКонтакте.</string>
 </resources>

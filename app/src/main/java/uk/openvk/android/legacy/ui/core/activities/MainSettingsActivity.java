@@ -138,10 +138,10 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
                 ovk.parseAboutInstance(data.getString("response"));
                 mainSettingsFragment.setAboutInstanceData(ovk);
             } else {
-                mainSettingsFragment.setConnectionType(message);
+                mainSettingsFragment.setConnectionType(message, false);
             }
         } catch (Exception ex) {
-            mainSettingsFragment.setConnectionType(message);
+            mainSettingsFragment.setConnectionType(message, false);
         }
     }
 

@@ -21,6 +21,18 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/twofactor_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginLeft="2dp"
+        android:text="@string/twofactor_invalid_code"
+        android:textColor="@color/holo_red_light"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/twofactor_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

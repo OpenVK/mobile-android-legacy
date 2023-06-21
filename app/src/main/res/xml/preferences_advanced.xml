@@ -22,6 +22,8 @@
 
 	<PreferenceCategory android:title="@string/sett_cache" android:layout="@layout/pref_category">
 		<Preference android:title="@string/sett_cache_quality" android:key="imageCacheQuality"
+			android:layout="@layout/pref_widget"/>
+		<Preference android:title="@string/sett_cache_quality" android:key="imageCacheQuality"
             android:layout="@layout/pref_widget"/>
 		<Preference android:title="@string/sett_clear_img_cache"
 			android:layout="@layout/pref_widget"
