@@ -351,7 +351,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                 groupScrollView.setVisibility(View.VISIBLE);
                 setJoinButtonListener(group.id);
                 group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
-                wall.get(ovk_api, -group.id, 50);
+                wall.get(ovk_api, -group.id, 25);
                 if(group.is_member > 0) {
                     findViewById(R.id.join_to_comm).setVisibility(View.GONE);
                     if(activity_menu != null) {
@@ -394,6 +394,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                 ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) findViewById(R.id.wall_layout)).loadAvatars();
+            } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
+                ((WallLayout) findViewById(R.id.wall_layout)).refreshAdapter();
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 WallPost item = wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {

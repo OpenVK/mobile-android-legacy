@@ -360,4 +360,10 @@ public class NewsfeedFragment extends Fragment {
             ex.printStackTrace();
         }
     }
+
+    public void refreshAdapter() {
+        if(newsfeedAdapter != null) {
+            newsfeedAdapter.notifyDataSetChanged();
+        }
+    }
 }

@@ -380,29 +380,31 @@ public class PostViewLayout extends LinearLayout {
                 try {
                     Comment item = comments.get(i);
                     if(item.attachments.size() > 0) {
-                        if(item.attachments.get(i).type.equals("photo")) {
-                            PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
-                            Attachment attachment = item.attachments.get(0);
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            if (photoAttachment.url.length() > 0) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(
-                                        String.format("%s/photos_cache/comment_photos/comment_photo_o%sp%s",
-                                                getContext().getCacheDir(), item.author_id, item.id), options);
-                                if (bitmap != null) {
-                                    photoAttachment.photo = bitmap;
-                                    attachment.status = "done";
-                                    item.attachments.set(i, attachment);
-                                } else if(photoAttachment.url.length() > 0) {
-                                    Log.e(OvkApplication.APP_TAG, "Loading photo error in comments");
-                                    attachment.status = "error";
+                        for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                            if (item.attachments.get(attachment_index).type.equals("photo")) {
+                                PhotoAttachment photoAttachment = ((PhotoAttachment) item.attachments.get(0).getContent());
+                                Attachment attachment = item.attachments.get(0);
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                if (photoAttachment.url.length() > 0) {
+                                    Bitmap bitmap = BitmapFactory.decodeFile(
+                                            String.format("%s/photos_cache/comment_photos/comment_photo_o%sp%s",
+                                                    getContext().getCacheDir(), item.author_id, item.id), options);
+                                    if (bitmap != null) {
+                                        photoAttachment.photo = bitmap;
+                                        attachment.status = "done";
+                                        item.attachments.set(i, attachment);
+                                    } else if (photoAttachment.url.length() > 0) {
+                                        Log.e(OvkApplication.APP_TAG, "Loading photo error in comments");
+                                        attachment.status = "error";
+                                    }
                                 }
                             }
-                            comments.set(i, item);
-                        } else {
-                            item.attachments.get(0).status = "not_supported";
                         }
+                    } else {
+                        item.attachments.get(0).status = "not_supported";
                     }
+                    comments.set(i, item);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

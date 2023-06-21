@@ -232,7 +232,7 @@ public class DownloadManager {
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
                     // photo autocaching
                     if(downloadedFile.exists() && downloadedFile.length() >= 5120 &&
-                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 120000L &&
+                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
                                 "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
@@ -511,6 +511,9 @@ public class DownloadManager {
                     case "comment_photos":
                         sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
                         break;
+                    case "video_thumbnails":
+                        sendMessage(HandlerMessages.VIDEO_THUMBNAILS, where);
+                        break;
                     case "original_photos":
                         sendMessage(HandlerMessages.ORIGINAL_PHOTO, where);
                         break;
@@ -572,33 +575,27 @@ public class DownloadManager {
             dir = ctx.getCacheDir();
             if (dir != null && dir.isDirectory()) {
                 String[] children = dir.list();
-                for (int i = 0; i < children.length; i++) {
-                    boolean success = clearCache(new File(dir, children[i]));
+                for (String aChildren : children) {
+                    boolean success = clearCache(new File(dir, aChildren));
                     if (!success) {
                         return false;
                     }
                 }
                 return dir.delete();
-            } else if (dir != null && dir.isFile()) {
-                return dir.delete();
-            } else {
-                return false;
-            }
+            } else
+                return dir != null && dir.isFile() && dir.delete();
         } else if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = clearCache(new File(dir, children[i]));
+            for (String aChildren : children) {
+                boolean success = clearCache(new File(dir, aChildren));
                 if (!success) {
                     return false;
                 }
             }
             return dir.delete();
-        } else if (dir != null && dir.isFile()) {
-            return dir.delete();
-        } else {
-            return false;
-        }
-    };
+        } else
+            return dir != null && dir.isFile() && dir.delete();
+    }
 
     public long getCacheSize() {
         final long[] size = {0};
@@ -607,14 +604,14 @@ public class DownloadManager {
             public void run() {
                 long foldersize = 0;
                 File[] filelist = new File(ctx.getCacheDir().getAbsolutePath()).listFiles();
-                for (int i = 0; i < filelist.length; i++) {
-                    if (filelist[i].isDirectory()) {
-                        File[] filelist2 = new File(filelist[i].getAbsolutePath()).listFiles();
-                        for(int file_index = 0; file_index < filelist2.length; file_index++) {
+                for (File aFilelist : filelist) {
+                    if (aFilelist.isDirectory()) {
+                        File[] filelist2 = new File(aFilelist.getAbsolutePath()).listFiles();
+                        for (File aFilelist2 : filelist2) {
                             foldersize += filelist2.length;
                         }
                     } else {
-                        foldersize += filelist[i].length();
+                        foldersize += aFilelist.length();
                     }
                 }
                 size[0] = foldersize;

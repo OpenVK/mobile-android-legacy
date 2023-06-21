@@ -121,11 +121,15 @@ public class Account implements Parcelable {
     public void parseCounters(String response) {
         try {
             JSONObject json = jsonParser.parseJSON(response);
-            JSONObject counters = json.getJSONObject("response");
-            int friends = counters.getInt("friends");
-            int messages = counters.getInt("messages");
-            int notifications = counters.getInt("notifications");
-            this.counters = new AccountCounters(friends, messages, notifications);
+            if(json == null || json.isNull("response")) {
+                this.counters = new AccountCounters(0, 0, 0);
+            } else {
+                JSONObject counters = json.getJSONObject("response");
+                int friends = counters.getInt("friends");
+                int messages = counters.getInt("messages");
+                int notifications = counters.getInt("notifications");
+                this.counters = new AccountCounters(friends, messages, notifications);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -308,4 +308,8 @@ public class ProfileFragment extends Fragment {
     public ProfileHeader getHeader() {
         return view.findViewById(R.id.profile_header);
     }
+
+    public void refreshWallAdapter() {
+        ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
+    }
 }

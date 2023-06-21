@@ -154,6 +154,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     public Ovk ovk;
     public LongPollServer longPollServer;
     public int old_friends_size;
+    public boolean profile_loaded = false;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -620,7 +621,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             intent.putExtra("account_id", account.id);
             intent.putExtra("account_first_name", account.user.first_name);
             startActivity(intent);
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }
@@ -660,7 +661,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    @SuppressLint("CommitTransaction")
+    @SuppressLint({"CommitTransaction", "CommitPrefEdits"})
     public void onSlidingMenuItemClicked(int position, boolean is_menu) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             actionBar = findViewById(R.id.actionbar);
@@ -798,22 +799,17 @@ public class AppActivity extends TranslucentFragmentActivity {
                     newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         if(newsfeed.getWallPosts().size() > 0) {
-                            progressLayout.setVisibility(View.GONE);
                             findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                         } else {
-                            progressLayout.setVisibility(View.GONE);
-                            errorLayout.setVisibility(View.VISIBLE);
-                            errorLayout.setTitle(
-                                    getResources().getString(R.string.local_newsfeed_no_posts));
-                            errorLayout.setIcon("ovk");
-                            errorLayout.setReason(0);
-                            errorLayout.hideRetryButton();
+                            setErrorPage(data, "ovk", message, false);
                         }
                     }
                     newsfeedFragment.loading_more_posts = true;
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
                 ((CustomSwipeRefreshLayout) newsfeedFragment.getView().
@@ -830,6 +826,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
@@ -867,6 +865,12 @@ public class AppActivity extends TranslucentFragmentActivity {
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .setScrollingPositions();
+            } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
+                if(selectedFragment != newsfeedFragment) {
+                    newsfeedFragment.refreshAdapter();
+                } else {
+                    profileFragment.refreshWallAdapter();
+                }
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .loadAvatars();
@@ -879,7 +883,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                 account.user = user;
                 profileFragment.updateLayout(user, getWindowManager());
                 slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
-                if (global_prefs.getString("current_screen", "").equals("profile")) {
+                if (selectedFragment instanceof ProfileFragment) {
+                    profile_loaded = true;
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     profileFragment.setDMButtonListener(this, user.id, getWindowManager());
@@ -888,7 +893,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                         profileFragment.hideHeaderButtons(this, getWindowManager());
                     }
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
-                    wall.get(ovk_api, user.id, 50);
+                    wall.get(ovk_api, user.id, 25);
                     friends.get(ovk_api, user.id, 25, "profile_counter");
                 }
             } else if (message == HandlerMessages.USERS_GET_ALT) {
@@ -1110,44 +1115,18 @@ public class AppActivity extends TranslucentFragmentActivity {
                 mainSettingsFragment.setAboutInstanceData(ovk);
             } else if(message == HandlerMessages.OVK_VERSION) {
                 mainSettingsFragment.setInstanceVersion(ovk);
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION ||
-                    message == HandlerMessages.INVALID_JSON_RESPONSE ||
-                    message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR ||
-                    message == HandlerMessages.INSTANCE_UNAVAILABLE ||
-                    message == HandlerMessages.BROKEN_SSL_CONNECTION ||
-                    message == HandlerMessages.UNKNOWN_ERROR) {
-
-                errorLayout.setTitle(getResources().getString(R.string.err_text));
-                errorLayout.setIcon("error");
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(this);
-
+            } else if (message < 0) {
+                setErrorPage(data, "error", message, true);
                 if(data.containsKey("method")) {
                     try {
-                        if (data.getString("method").equals("Account.getProfileInfo") ||
-                                ((data.getString("method").equals("Newsfeed.get") &&
-                                        newsfeed.getWallPosts() == null) ||
-                                        (data.getString("method").equals("Newsfeed.get") &&
-                                        newsfeed.getWallPosts().size() == 0)) ||
-                                (data.getString("method").equals("Messages.getConversations")
-                                        && conversations.size() == 0) ||
-                                (data.getString("method").equals("Friends.get") &&
-                                        friends.getFriends().size() == 0) ||
-                                (data.getString("method").equals("Users.get") &&
-                                        global_prefs.getString("current_screen", "")
-                                                .equals("profile")) ||
-                                (data.getString("method").equals("Groups.get") &&
-                                        (groups.getList() == null || groups.getList().size() == 0))) {
-                            slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                            errorLayout.setTitle(getResources().getString(R.string.err_text));
-                            errorLayout.setIcon("error");
-                            errorLayout.setReason(message);
-                            errorLayout.setData(data);
-                            errorLayout.setRetryAction(this);
-                            progressLayout.setVisibility(View.GONE);
-                            errorLayout.setVisibility(View.VISIBLE);
+                        String method = data.getString("method");
+                        if (((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
+                            && selectedFragment instanceof NewsfeedFragment)
+                            || (method.equals("Friends.get") && selectedFragment instanceof FriendsFragment)
+                            || (method.equals("Groups.get") && selectedFragment instanceof GroupsFragment)
+                            || (method.equals("Users.get") && selectedFragment instanceof ProfileFragment)) {
+                                slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                                setErrorPage(data, "error", message, true);
                         } else {
                             if(data.getString("method").equals("Wall.get") &&
                                     global_prefs.getString("current_screen", "").equals("profile")) {
@@ -1170,19 +1149,35 @@ public class AppActivity extends TranslucentFragmentActivity {
                     if(account.first_name == null && account.last_name == null) {
                         slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                     }
-                    errorLayout.hideRetryButton();
-                    progressLayout.setVisibility(View.GONE);
-                    errorLayout.setVisibility(View.VISIBLE);
+                    setErrorPage(data, "error", HandlerMessages.INVALID_JSON_RESPONSE, false);
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setData(data);
-            errorLayout.setRetryAction(this);
-            progressLayout.setVisibility(View.GONE);
-            errorLayout.setVisibility(View.VISIBLE);
+            setErrorPage(data, "error", HandlerMessages.INVALID_JSON_RESPONSE, false);
         }
+    }
+
+    private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
+        progressLayout.setVisibility(View.GONE);
+        findViewById(R.id.fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setIcon(icon);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(this);
+        errorLayout.setReason(reason);
+        if(icon.equals("ovk")) {
+            errorLayout.setTitle(
+                    getResources().getString(R.string.local_newsfeed_no_posts));
+        } else {
+            errorLayout.setTitle(getResources().getString(R.string.err_text));
+        }
+        if(!showRetry) {
+            errorLayout.hideRetryButton();
+        }
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     @SuppressLint("CommitTransaction")
@@ -1636,9 +1631,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                 e.printStackTrace();
             }
             if(position == 0) {
-                newsfeed.get(ovk_api, 50);
+                newsfeed.get(ovk_api, 25);
             } else {
-                newsfeed.getGlobal(ovk_api, 50);
+                newsfeed.getGlobal(ovk_api, 25);
             }
             findViewById(R.id.app_fragment).setVisibility(View.GONE);
             ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))

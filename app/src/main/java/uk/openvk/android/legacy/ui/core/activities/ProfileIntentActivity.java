@@ -260,7 +260,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
             }
-
         }
         if(item.getItemId() == R.id.copy_link) {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -372,7 +371,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 }
                 if(user.deactivated == null) {
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
-                    wall.get(ovk_api, user.id, 50);
+                    wall.get(ovk_api, user.id, 25);
                     friends.get(ovk_api, user.id, 10, "profile_counter");
                 } else {
                     profileFragment.hideHeaderButtons(this, getWindowManager());
@@ -428,6 +427,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .loadAvatars();
+            } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
+                profileFragment.refreshWallAdapter();
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 ArrayList<Friend> friendsList = friends.getFriends();
                 profileFragment.setCounter(user, "friends",  friends.count);
@@ -582,7 +583,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             intent.putExtra("account_id", account.id);
             intent.putExtra("account_first_name", user.first_name);
             startActivity(intent);
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }

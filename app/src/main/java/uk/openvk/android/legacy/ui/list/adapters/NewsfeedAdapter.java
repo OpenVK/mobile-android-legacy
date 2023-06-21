@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,10 +20,12 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
@@ -165,49 +168,26 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 verified_icon.setVisibility(View.GONE);
             }
             post_info.setText(item.info);
-            String[] lines = item.text.split("\r\n|\r|\n");
-            if(lines.length > 8 && item.text.length() <= 500) {
-                String text_llines = "";
-                post_text.setVisibility(View.VISIBLE);
-                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
-                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
-                Matcher matcher = pattern.matcher(item.text);
-                boolean regexp_search = matcher.find();
-                String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
-                int regexp_results = 0;
-                while(regexp_search) {
-                    if(regexp_results == 0) {
-                        text = text.replace("\n", "<br>");
+            expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).openWallComments(position, null);
+                    } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        ((ProfileIntentActivity) ctx).openWallComments(position, null);
+                    } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                        ((GroupIntentActivity) ctx).openWallComments(position, null);
                     }
-                    String block = matcher.group();
-                    if(block.startsWith("[") && block.endsWith("]")) {
-                        OvkLink link = new OvkLink();
-                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                        link.screen_name = markup[0];
-                        if (markup.length == 2) {
-                            if (markup[0].startsWith("id")) {
-                                link.url = String.format("openvk://profile/%s", markup[0]);
-                                link.name = markup[1];
-                            } else if (markup[0].startsWith("club")) {
-                                link.url = String.format("openvk://group/%s", markup[0]);
-                                link.name = markup[1];
-                            }
-                            link.name = markup[1];
-                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
-                                        link.url, link.name));
-                            }
-                        }
-                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
-                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
-                                block, block));
-                    }
-                    regexp_results = regexp_results + 1;
-                    regexp_search = matcher.find();
                 }
-                lines = text.split("\r\n|\r|\n");
+            });
+            if(item.text.length() > 0) {
+                post_text.setVisibility(View.VISIBLE);
+                String text = item.text.replaceAll("&lt;", "<")
+                        .replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&")
+                        .replaceAll("&quot;", "\"");
+                String[] lines = text.split("\r\n|\r|\n");
+                String text_llines = "";
                 if(lines.length > 8) {
                     for (int line_no = 0; line_no < 8; line_no++) {
                         if (line_no == 7) {
@@ -223,132 +203,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             text_llines += String.format("%s\r\n", lines[line_no]);
                         }
                     }
-                    post_text.setText(text_llines);
-                }
-                expand_text_btn.setVisibility(View.VISIBLE);
-                expand_text_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).openWallComments(position, null);
-                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).openWallComments(position, null);
-                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                            ((GroupIntentActivity) ctx).openWallComments(position, null);
-                        }
-                    }
-                });
-            } else if(item.text.length() > 500) {
-                expand_text_btn.setVisibility(View.GONE);
-                post_text.setVisibility(View.VISIBLE);
-                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
-                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
-                Matcher matcher = pattern.matcher(item.text);
-                boolean regexp_search = matcher.find();
-                String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
-                int regexp_results = 0;
-                while(regexp_search) {
-                    if(regexp_results == 0) {
-                        text = text.replace("\n", "<br>");
-                    }
-                    String block = matcher.group();
-                    if(block.startsWith("[") && block.endsWith("]")) {
-                        OvkLink link = new OvkLink();
-                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                        link.screen_name = markup[0];
-                        if (markup.length == 2) {
-                            if (markup[0].startsWith("id")) {
-                                link.url = String.format("openvk://profile/%s", markup[0]);
-                                link.name = markup[1];
-                            } else if (markup[0].startsWith("club")) {
-                                link.url = String.format("openvk://group/%s", markup[0]);
-                                link.name = markup[1];
-                            }
-                            link.name = markup[1];
-                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
-                                        link.url, link.name));
-                            }
-                        }
-                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
-                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
-                    }
-                    regexp_results = regexp_results + 1;
-                    regexp_search = matcher.find();
-                }
-                text = text.substring(0, 500) + "...";
-                if(regexp_results > 0) {
-                    post_text.setText(Html.fromHtml(text));
-                    post_text.setAutoLinkMask(0);
+                    post_text.setText(Global.formatLinksAsHtml(text_llines));
+                    expand_text_btn.setVisibility(View.VISIBLE);
                 } else {
-                    post_text.setText(text);
-                }
-                expand_text_btn.setVisibility(View.VISIBLE);
-                expand_text_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).openWallComments(position, null);
-                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).openWallComments(position, null);
-                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                            ((GroupIntentActivity) ctx).openWallComments(position, null);
-                        }
+                    OvkExpandableText expandableText = Global.formatLinksAsHtml(text, 500);
+                    post_text.setText(expandableText.sp_text);
+                    if (expandableText.expandable) {
+                        expand_text_btn.setVisibility(View.VISIBLE);
+                    } else {
+                        expand_text_btn.setVisibility(View.GONE);
                     }
-                });
-            } else if(item.text.length() > 0) {
-                expand_text_btn.setVisibility(View.GONE);
-                post_text.setVisibility(View.VISIBLE);
-                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}" +
-                        "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
-                Matcher matcher = pattern.matcher(item.text);
-                boolean regexp_search = matcher.find();
-                String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
-                int regexp_results = 0;
-                while(regexp_search) {
-                    if(regexp_results == 0) {
-                        text = text.replace("\n", "<br>");
-                    }
-                    String block = matcher.group();
-                    if(block.startsWith("[") && block.endsWith("]")) {
-                        OvkLink link = new OvkLink();
-                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                        link.screen_name = markup[0];
-                        if (markup.length == 2) {
-                            if (markup[0].startsWith("id")) {
-                                link.url = String.format("openvk://profile/%s", markup[0]);
-                                link.name = markup[1];
-                            } else if (markup[0].startsWith("club")) {
-                                link.url = String.format("openvk://group/%s", markup[0]);
-                                link.name = markup[1];
-                            }
-                            link.name = markup[1];
-                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
-                                        link.url, link.name));
-                            }
-                        }
-                    } else if(block.startsWith("https://") || block.startsWith("http://")) {
-                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
-                                block, block));
-                    }
-                    regexp_results = regexp_results + 1;
-                    regexp_search = matcher.find();
                 }
-                if(regexp_results > 0) {
-                    post_text.setText(Html.fromHtml(text));
-                    post_text.setAutoLinkMask(0);
-                } else {
-                    post_text.setText(text);
-                }
-                post_text.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
-                expand_text_btn.setVisibility(View.GONE);
                 post_text.setVisibility(View.GONE);
+                expand_text_btn.setVisibility(View.GONE);
             }
 
             if(item.repost != null) {
@@ -463,6 +331,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 item.attachments.get(i).getContent();
                         post_video.setAttachment(videoAttachment);
                         post_video.setVisibility(View.VISIBLE);
+                        post_video.setThumbnail();
+                        post_video.getViewTreeObserver().addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
+                                    float attachment_height = widescreen_aspect_ratio * 9;
+                                    post_video.getLayoutParams().height = (int) attachment_height;
+                                }
+                            });
                         final int posFinal = i;
                         post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
                             @Override

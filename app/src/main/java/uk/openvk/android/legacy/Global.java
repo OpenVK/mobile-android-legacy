@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.PluralsRes;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -25,6 +27,11 @@ import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import uk.openvk.android.legacy.api.entities.OvkExpandableText;
+import uk.openvk.android.legacy.api.entities.OvkLink;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -140,8 +147,109 @@ public class Global {
         }
     }
 
-    public static String formatLinksAsHtml(String subtitle) {
-        return subtitle;
+    @SuppressWarnings("deprecation")
+    public static Spanned formatLinksAsHtml(String original_text) {
+        String[] lines = original_text.split("\r\n|\r|\n");
+        StringBuilder text_llines = new StringBuilder();
+        Pattern pattern = Pattern.compile("\\[(.+?)\\]|((http|https)://)(www.)?[a-zA-Z0-9@:%._" +
+                "\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+        Matcher matcher = pattern.matcher(original_text);
+        boolean regexp_search = matcher.find();
+        String text = original_text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+        text = text.replace("\r\n", "<br>").replace("\n", "<br>");
+        int regexp_results = 0;
+        while(regexp_search) {
+            String block = matcher.group();
+            if(block.startsWith("[") && block.endsWith("]")) {
+                OvkLink link = new OvkLink();
+                String[] markup = block.replace("[", "").replace("]", "")
+                        .replace("<", "").replace("\"", "").replace(">", "")
+                        .split("\\|");
+                link.screen_name = markup[0];
+                if (markup.length == 2) {
+                    if (markup[0].startsWith("id")) {
+                        link.url = String.format("openvk://profile/%s", markup[0]);
+                        link.name = markup[1];
+                    } else if (markup[0].startsWith("club")) {
+                        link.url = String.format("openvk://group/%s", markup[0]);
+                        link.name = markup[1];
+                    }
+                    link.name = markup[1];
+                    if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                    }
+                }
+            } else if(block.startsWith("https://") || block.startsWith("http://")) {
+                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
+            }
+            regexp_results = regexp_results + 1;
+            regexp_search = matcher.find();
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
+        } else {
+            return Html.fromHtml(text);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static OvkExpandableText formatLinksAsHtml(String original_text, int end_number) {
+        String[] lines = original_text.split("\r\n|\r|\n");
+        StringBuilder text_llines = new StringBuilder();
+        Pattern pattern = Pattern.compile("\\[(.+?)\\]|((http|https)://)(www.)?[a-zA-Z0-9@:%._" +
+                "\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+        Matcher matcher = pattern.matcher(original_text);
+        boolean regexp_search = matcher.find();
+        String text = original_text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+        text = text.replace("\r\n", "<br>").replace("\n", "<br>");
+        int regexp_results = 0;
+        while(regexp_search) {
+            if(matcher.start() < end_number) {
+                String block = matcher.group();
+                if (block.startsWith("[") && block.endsWith("]")) {
+                    OvkLink link = new OvkLink();
+                    String[] markup = block.replace("[", "").replace("]", "")
+                            .replace("<", "").replace(">", "").replace("\"", "")
+                            .split("\\|");
+                    link.screen_name = markup[0];
+                    if (markup.length == 2) {
+                        if (markup[0].startsWith("id")) {
+                            link.url = String.format("openvk://profile/%s", markup[0]);
+                            link.name = markup[1];
+                        } else if (markup[0].startsWith("club")) {
+                            link.url = String.format("openvk://group/%s", markup[0]);
+                            link.name = markup[1];
+                        }
+                        link.name = markup[1];
+                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                        }
+                    }
+                } else if (block.startsWith("https://") || block.startsWith("http://")) {
+                    text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
+                }
+            }
+            regexp_results = regexp_results + 1;
+            regexp_search = matcher.find();
+        }
+
+        Spanned html;
+        if(text.length() >= end_number) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                html = Html.fromHtml(text.substring(0, end_number - 1) + "...", Html.FROM_HTML_MODE_COMPACT);
+            } else {
+                html = Html.fromHtml(text.substring(0, end_number - 1) + "...");
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                html = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
+            } else {
+                html = Html.fromHtml(text);
+            }
+        }
+        return new OvkExpandableText(html, text.length(), end_number);
     }
 
     public static void fixWindowPadding(View view, Resources.Theme theme) {

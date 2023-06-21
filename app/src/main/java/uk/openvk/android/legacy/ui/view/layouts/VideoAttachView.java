@@ -3,6 +3,8 @@ package uk.openvk.android.legacy.ui.view.layouts;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,10 +62,25 @@ public class VideoAttachView extends FrameLayout {
                 ((TextView) findViewById(R.id.attach_duration)).setText(
                         String.format("%d:%02d:%02d", attachment.duration / 3600,
                                 (attachment.duration % 3600) / 60, (attachment.duration % 60)));
-            } else {
+                ((TextView) findViewById(R.id.attach_duration)).setVisibility(VISIBLE);
+            } else if(attachment.duration > 0) {
                 ((TextView) findViewById(R.id.attach_duration)).setText(
                         String.format("%d:%02d", attachment.duration / 60, (attachment.duration % 60)));
+                ((TextView) findViewById(R.id.attach_duration)).setVisibility(VISIBLE);
+            } else {
+                ((TextView) findViewById(R.id.attach_duration)).setVisibility(GONE);
             }
         }
+    }
+
+    public void setThumbnail() {
+        ImageView preview = findViewById(R.id.video_preview);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        preview.setImageBitmap(
+                BitmapFactory.decodeFile(
+                        getContext().getCacheDir()
+                                + "/photos_cache/video_thumbnails/thumbnail_"
+                                + attachment.id, options));
     }
 }

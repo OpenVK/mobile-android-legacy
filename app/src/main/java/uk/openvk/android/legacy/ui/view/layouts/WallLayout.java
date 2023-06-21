@@ -341,4 +341,10 @@ public class WallLayout extends LinearLayout {
             }
         }
     }
+
+    public void refreshAdapter() {
+        if(wallAdapter != null) {
+            wallAdapter.notifyDataSetChanged();
+        }
+    }
 }
