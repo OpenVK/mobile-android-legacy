@@ -49,6 +49,7 @@ public class Wall implements Parcelable {
     private ArrayList<PhotoAttachment> photos_msize;
     private ArrayList<PhotoAttachment> photos_hsize;
     private ArrayList<PhotoAttachment> photos_osize;
+    private DownloadManager dlm;
 
     public Wall(String response, DownloadManager downloadManager, String quality, Context ctx) {
         jsonParser = new JSONParser();
@@ -76,6 +77,7 @@ public class Wall implements Parcelable {
     };
 
     public void parse(Context ctx, DownloadManager downloadManager, String quality, String response) {
+        this.dlm = downloadManager;
         items = new ArrayList<WallPost>();
         photos_msize = new ArrayList<PhotoAttachment>();
         photos_hsize = new ArrayList<PhotoAttachment>();
@@ -384,12 +386,16 @@ public class Wall implements Parcelable {
                     attachment_obj.status = attachment_status;
                     attachment_obj.setContent(photoAttachment);
                     attachments_list.add(attachment_obj);
-                    if(quality.equals("medium")) {
-                        photos_msize.add(photoAttachment);
-                    } else if(quality.equals("high")) {
-                        photos_hsize.add(photoAttachment);
-                    } else if(quality.equals("original")) {
-                        photos_osize.add(photoAttachment);
+                    switch (quality) {
+                        case "medium":
+                            photos_msize.add(photoAttachment);
+                            break;
+                        case "high":
+                            photos_hsize.add(photoAttachment);
+                            break;
+                        case "original":
+                            photos_osize.add(photoAttachment);
+                            break;
                     }
                 } else if (attachment.getString("type").equals("video")) {
                     JSONObject video = attachment.getJSONObject("video");
@@ -419,6 +425,8 @@ public class Wall implements Parcelable {
                     if(video.has("image")) {
                         JSONArray thumb_array = video.getJSONArray("image");
                         videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
+                        dlm.downloadOnePhotoToCache(videoAttachment.url_thumb, String.format("thumbnail_%so%s",
+                                video.getLong("id"), owner_id), "video_thumbnails");
                     }
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";
