@@ -31,7 +31,9 @@ import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
+import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
@@ -323,25 +325,48 @@ public class ProfileFragment extends Fragment {
         if(load_photos) {
             ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
         }
-        final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
-        scrollView.setOnScrollListener(new OnNestedScrollListener() {
-            @Override
-            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                if (!loading_more_posts) {
-                    if (diff == 0) {
-                        if (ctx instanceof AppActivity) {
-                            loading_more_posts = true;
-                            ((AppActivity) ctx).loadMoreWallPosts();
-                        } else if(ctx instanceof ProfileIntentActivity) {
-                            ((ProfileIntentActivity) ctx).loadMoreWallPosts();
-                        } else if(ctx instanceof GroupIntentActivity) {
-                            ((GroupIntentActivity) ctx).loadMoreWallPosts();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+            scrollView.setOnScrollListener(new OnNestedScrollListener() {
+                @Override
+                public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                    if (!loading_more_posts) {
+                        if (diff == 0) {
+                            if (ctx instanceof AppActivity) {
+                                loading_more_posts = true;
+                                ((AppActivity) ctx).loadMoreWallPosts();
+                            } else if (ctx instanceof ProfileIntentActivity) {
+                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
+                            } else if (ctx instanceof GroupIntentActivity) {
+                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
+            scrollView.setOnScrollListener(new OnScrollListener() {
+                @Override
+                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                    if (!loading_more_posts) {
+                        if (diff == 0) {
+                            if (ctx instanceof AppActivity) {
+                                loading_more_posts = true;
+                                ((AppActivity) ctx).loadMoreWallPosts();
+                            } else if(ctx instanceof ProfileIntentActivity) {
+                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
+                            } else if(ctx instanceof GroupIntentActivity) {
+                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }

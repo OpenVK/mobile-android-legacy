@@ -28,8 +28,7 @@
         android:theme="@style/NewsItemTransparentBackground"
         android:visibility="visible"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        android:nestedScrollingEnabled="false"
-        tools:targetApi="lollipop">
+        android:nestedScrollingEnabled="false">
 
     </android.support.v7.widget.RecyclerView>
 

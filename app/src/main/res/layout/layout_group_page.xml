@@ -38,7 +38,7 @@
         android:id="@+id/error_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.InfinityNestedScrollView
+    <uk.openvk.android.legacy.ui.view.InfinityScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6"
@@ -131,6 +131,6 @@
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-    </uk.openvk.android.legacy.ui.view.InfinityNestedScrollView>
+    </uk.openvk.android.legacy.ui.view.InfinityScrollView>
 
 </LinearLayout>
