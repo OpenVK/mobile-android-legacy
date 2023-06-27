@@ -75,6 +75,7 @@ public class VideoPlayerActivity extends Activity {
     private boolean isErr;
     private boolean fitVideo;
     private Bitmap thumbnail;
+    private long owner_id;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,6 +104,7 @@ public class VideoPlayerActivity extends Activity {
             if(data.containsKey("attachment")) {
                 video = data.getParcelable("attachment");
                 assert video != null;
+                owner_id = data.getLong("owner_id");
                 setThumbnail();
             } if(data.containsKey("files")) {
                 video.files = data.getParcelable("files");
@@ -160,7 +162,7 @@ public class VideoPlayerActivity extends Activity {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         thumbnail = BitmapFactory.decodeFile(
                 getCacheDir() + "/photos_cache/video_thumbnails/thumbnail_"
-                        + video.id, options);
+                        + video.id + "o" + owner_id, options);
         if(thumbnail != null)
         ((ImageView) findViewById(R.id.video_thumbnail)).setImageBitmap(thumbnail);
     }

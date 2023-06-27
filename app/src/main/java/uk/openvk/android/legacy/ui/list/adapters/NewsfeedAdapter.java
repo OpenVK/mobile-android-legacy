@@ -347,6 +347,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 Intent intent = new Intent(ctx, VideoPlayerActivity.class);
                                 intent.putExtra("attachment", videoAttachment);
                                 intent.putExtra("files", videoAttachment.files);
+                                intent.putExtra("owner_id", item.owner_id);
                                 ctx.startActivity(intent);
                             }
                         });
