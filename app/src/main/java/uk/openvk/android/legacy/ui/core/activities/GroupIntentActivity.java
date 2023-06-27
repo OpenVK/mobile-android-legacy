@@ -99,7 +99,8 @@ public class GroupIntentActivity extends TranslucentActivity {
     public Wall wall;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private InfinityNestedScrollView groupScrollView;
+    private InfinityNestedScrollView groupNestedScrollView;
+    private InfinityScrollView groupScrollView;
     private Group group;
     public Account account;
     private String args;
@@ -290,8 +291,13 @@ public class GroupIntentActivity extends TranslucentActivity {
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        groupScrollView = (InfinityNestedScrollView) findViewById(R.id.group_scrollview);
-        groupScrollView.setVisibility(View.GONE);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            groupNestedScrollView = (InfinityNestedScrollView) findViewById(R.id.group_scrollview);
+            groupNestedScrollView.setVisibility(View.GONE);
+        } else {
+            groupScrollView = (InfinityScrollView) findViewById(R.id.group_scrollview);
+            groupScrollView.setVisibility(View.GONE);
+        }
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
@@ -356,7 +362,11 @@ public class GroupIntentActivity extends TranslucentActivity {
                 group = groups.getList().get(0);
                 updateLayout(group);
                 progressLayout.setVisibility(View.GONE);
-                groupScrollView.setVisibility(View.VISIBLE);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    groupNestedScrollView.setVisibility(View.VISIBLE);
+                } else {
+                    groupScrollView.setVisibility(View.VISIBLE);
+                }
                 setJoinButtonListener(group.id);
                 group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 wall.get(ovk_api, -group.id, 25);
