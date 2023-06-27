@@ -63,7 +63,15 @@ public class OvkApplication extends Application {
         config = getResources().getConfiguration();
 
         createSettings(global_prefs, instance_prefs);
-        swdp = getResources().getConfiguration().smallestScreenWidthDp;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            swdp = getResources().getConfiguration().smallestScreenWidthDp;
+        } else {
+            if(isTablet) {
+                swdp = 600;
+            } else {
+                swdp = 420;
+            }
+        }
         isTablet = global.isTablet();
     }
 
