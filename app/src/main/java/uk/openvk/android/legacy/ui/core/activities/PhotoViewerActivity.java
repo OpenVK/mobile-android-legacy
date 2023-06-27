@@ -22,6 +22,7 @@ import android.support.v4.view.OnApplyWindowInsetsListener;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.WindowCompat;
 import android.support.v4.view.WindowInsetsCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -81,11 +82,13 @@ public class PhotoViewerActivity extends Activity {
     private DownloadManager downloadManager;
     private ActionBar actionBar;
     private PopupWindow popupMenu;
+    private SharedPreferences global_prefs;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         instance_prefs = getSharedPreferences("instance", 0);
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -155,6 +158,7 @@ public class PhotoViewerActivity extends Activity {
                 try {
                     if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
                         downloadManager = new DownloadManager(this, true);
+                        downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                         downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),
                                         extras.getLong("photo_id")), "original_photos");
@@ -184,10 +188,7 @@ public class PhotoViewerActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_MENU) {
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
+        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
     }
 
     private void receiveState(int message, Bundle data) {
@@ -305,12 +306,16 @@ public class PhotoViewerActivity extends Activity {
             FileChannel destChannel = null;
             if (mime.equals("image/jpeg") || mime.equals("image/png") || mime.equals("image/gif")) {
                 try {
-                    if(mime.equals("image/jpeg")) {
-                        dest = dest + ".jpg";
-                    } else if(mime.equals("image/png")) {
-                        dest = dest + ".png";
-                    } else if(mime.equals("image/gif")) {
-                        dest = dest + ".gif";
+                    switch (mime) {
+                        case "image/jpeg":
+                            dest = dest + ".jpg";
+                            break;
+                        case "image/png":
+                            dest = dest + ".png";
+                            break;
+                        case "image/gif":
+                            dest = dest + ".gif";
+                            break;
                     }
 
                     File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "OpenVK");

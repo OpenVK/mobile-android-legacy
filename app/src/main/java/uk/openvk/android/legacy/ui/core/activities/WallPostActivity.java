@@ -177,6 +177,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+                downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                 wall.getComments(ovk_api, owner_id, post.post_id);
             }
         } else {

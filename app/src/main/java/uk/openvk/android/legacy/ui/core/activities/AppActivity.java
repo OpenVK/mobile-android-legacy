@@ -185,6 +185,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+        downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -402,6 +403,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             Global.fixWindowPadding(getWindow(), getTheme());
         }
+        ((OvkApplication) getApplicationContext()).config = newConfig;
         super.onConfigurationChanged(newConfig);
     }
 
@@ -818,6 +820,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                             .scrollToPosition(0);
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    newsfeedFragment.adjustLayoutSize(
+                            ((OvkApplication) getApplicationContext()).config.orientation
+                    );
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_GLOBAL) {
                 ((CustomSwipeRefreshLayout) newsfeedFragment.getView().
@@ -836,6 +841,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                             .scrollToPosition(0);
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    newsfeedFragment.adjustLayoutSize(
+                            ((OvkApplication) getApplicationContext()).config.orientation
+                    );
                 }
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE) {
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
@@ -845,6 +853,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
                 newsfeedFragment.loading_more_posts = true;
                 newsfeedFragment.setScrollingPositions(this, false, true);
+                newsfeedFragment.adjustLayoutSize(
+                        ((OvkApplication) getApplicationContext()).config.orientation
+                );
             } else if (message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
                 newsfeedFragment.createAdapter(this, newsfeed.getWallPosts());
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
@@ -853,6 +864,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
                 newsfeedFragment.loading_more_posts = true;
                 newsfeedFragment.setScrollingPositions(this, false, true);
+                newsfeedFragment.adjustLayoutSize(
+                        ((OvkApplication) getApplicationContext()).config.orientation
+                );
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this,
                         instance_prefs.getString("access_token", ""),
@@ -1681,23 +1695,28 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void repost(int position) {
-        final WallPost post = wall.getWallItems().get(position);
+        WallPost post;
+        if(selectedFragment instanceof ProfileFragment) {
+            post = wall.getWallItems().get(position);
+        } else {
+            post = newsfeed.getWallPosts().get(position);
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.repost_dlg_title);
         functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter adapter =
-                new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
         builder.setSingleChoiceItems(adapter, -1, null);
         final AlertDialog dialog = builder.create();
         dialog.show();
-
+        final WallPost finalPost = post;
         if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
             dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                        openRepostDialog("own_wall", post);
+                        openRepostDialog("own_wall", finalPost);
                     }
                 }
             });
@@ -1706,7 +1725,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                        openRepostDialog("own_wall", post);
+                        openRepostDialog("own_wall", finalPost);
                         dialog.dismiss();
                     }
                 }

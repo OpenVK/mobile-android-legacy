@@ -118,10 +118,9 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(
+            conversation.avatar = BitmapFactory.decodeFile(
                     String.format("%s/conversations_avatars/avatar_%s", getCacheDir(), peer_id), options);
-            conversation.avatar = bitmap;
-        } catch (OutOfMemoryError error) {
+        } catch (OutOfMemoryError ignored) {
 
         }
         handler = new Handler() {

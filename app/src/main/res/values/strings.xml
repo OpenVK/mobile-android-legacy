@@ -49,7 +49,7 @@
         <item>Server sent an invalid response</item>
         <item>Response timed out</item>
 		<item>Secure connection failure</item>
-        <item>Instance failure</item>
+        <item>Instance/app failure</item>
         <item>Instance unavailable</item>
         <item>Unknown error</item>
     </string-array>
@@ -669,6 +669,7 @@
 	<string name="feed_comments_topic">Topic</string>
 	<string name="album_unnamed">Unnamed</string>
 	<string name="sett_cache">Image cache</string>
+	<string name="sett_forced_caching">Forced caching</string>
 	<string name="sett_cache_quality">Quality</string>
     <string-array name="sett_cache_quality_array">
         <item>Medium</item>

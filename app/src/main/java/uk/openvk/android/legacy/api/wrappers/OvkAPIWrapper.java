@@ -158,7 +158,7 @@ public class OvkAPIWrapper {
                         httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
                     } else {
                         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-                                .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
                                 .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
                                         new InetSocketAddress(address_array[0],
                                         Integer.valueOf(address_array[1])))).build();
@@ -380,6 +380,10 @@ public class OvkAPIWrapper {
                                     }
                                 }
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
+                            } else if (response_code == 301 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                            } else if (response_code == 302 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
                             } else {
@@ -502,6 +506,10 @@ public class OvkAPIWrapper {
                                 } else if (error.code == 100) {
                                     sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                                 }
+                            } else if (response_code == 301 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                            } else if (response_code == 302 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
@@ -628,9 +636,13 @@ public class OvkAPIWrapper {
                                 } else if(error.code == 945) {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, args, error.description);
                                 }
+                            } else if (response_code == 301 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                            } else if (response_code == 302 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
-                            }  else if (response_code >= 500 && response_code <= 526) {
+                            } else if (response_code >= 500 && response_code <= 526) {
                                 if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s)", server, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
@@ -762,9 +774,13 @@ public class OvkAPIWrapper {
                                 } else if(error.code == 945) {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
                                 }
+                            } else if (response_code == 301 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                            } else if (response_code == 302 && !use_https) {
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, response_body);
-                            }  else if (response_code >= 500 && response_code <= 526) {
+                            } else if (response_code >= 500 && response_code <= 526) {
                                 Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s)", server,
                                                 method, response_code));
@@ -1066,21 +1082,25 @@ public class OvkAPIWrapper {
                     msg.what = HandlerMessages.ACCOUNT_COUNTERS;
                     break;
                 case "Newsfeed.get":
-                    app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
-                            global_prefs.getString("photos_quality", ""), true);
-                    if (args != null && args.contains("start_from")) {
+                    if (where != null && where.equals("more_news")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE;
+                        app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
+                                global_prefs.getString("photos_quality", ""), false);
                     } else {
                         msg.what = HandlerMessages.NEWSFEED_GET;
+                        app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
+                                global_prefs.getString("photos_quality", ""), true);
                     }
                     break;
                 case "Newsfeed.getGlobal":
-                    app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
-                            global_prefs.getString("photos_quality", ""), true);
-                    if (args != null && args.contains("start_from")) {
+                    if (where != null && where.equals("more_news")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
+                        app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                                global_prefs.getString("photos_quality", ""), false);
                     } else {
                         msg.what = HandlerMessages.NEWSFEED_GET_GLOBAL;
+                        app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                                global_prefs.getString("photos_quality", ""), true);
                     }
                     break;
                 case "Messages.getLongPollServer":

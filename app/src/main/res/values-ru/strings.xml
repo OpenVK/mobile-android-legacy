@@ -48,7 +48,7 @@
         <item>Сервер отправил некорректный ответ</item>
         <item>Превышено время ожидания ответа</item>
         <item>Обрыв защищенного соединения</item>
-        <item>Сбой инстанции</item>
+        <item>Сбой инстанции или приложения</item>
         <item>Инстанция недоступна</item>
         <item>Неизвестная ошибка</item>
     </string-array>
@@ -611,6 +611,7 @@
 	<string name="album_unnamed">Без названия</string>
 	<string name="sett_cache">Кэш изображений</string>
     <string name="sett_cache_quality">Качество</string>
+    <string name="sett_forced_caching">Принудительное кэширование</string>
     <string-array name="sett_cache_quality_array">
         <item>Среднее</item>
         <item>Высокое</item>

@@ -37,6 +37,8 @@ import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 
 public class VideoAttachView extends FrameLayout {
     private VideoAttachment attachment;
+    private Bitmap thumbnail;
+
     public VideoAttachView(@NonNull Context context) {
         super(context);
         View view =  LayoutInflater.from(getContext()).inflate(
@@ -77,10 +79,14 @@ public class VideoAttachView extends FrameLayout {
         ImageView preview = findViewById(R.id.video_preview);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        preview.setImageBitmap(
-                BitmapFactory.decodeFile(
-                        getContext().getCacheDir()
-                                + "/photos_cache/video_thumbnails/thumbnail_"
-                                + attachment.id, options));
+        thumbnail = BitmapFactory.decodeFile(
+                getContext().getCacheDir()
+                        + "/photos_cache/video_thumbnails/thumbnail_"
+                        + attachment.id, options);
+        preview.setImageBitmap(thumbnail);
+    }
+
+    public Bitmap getThumbnail() {
+        return thumbnail;
     }
 }

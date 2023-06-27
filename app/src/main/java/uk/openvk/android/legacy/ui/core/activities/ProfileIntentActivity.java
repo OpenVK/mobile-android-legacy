@@ -169,6 +169,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 if (path.startsWith("openvk://profile/")) {
                     args = path.substring("openvk://profile/".length());
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+                    downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                     users = new Users();
                     wall = new Wall();
                 }
@@ -793,7 +794,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.repost_dlg_title);
         functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter adapter = new ArrayAdapter(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, functions);
         builder.setSingleChoiceItems(adapter, -1, null);
         final AlertDialog dialog = builder.create();

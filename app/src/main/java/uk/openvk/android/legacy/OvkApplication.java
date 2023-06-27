@@ -3,9 +3,9 @@ package uk.openvk.android.legacy;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.seppius.i18n.plurals.PluralResources;
 
@@ -41,6 +41,7 @@ public class OvkApplication extends Application {
     public static String DL_TAG = "OVK-DLM";
     public static String LP_TAG = "OVK-LP";
     public PluralResources pluralResources;
+    public Configuration config;
 
     @Override
     public void onCreate() {
@@ -69,9 +70,6 @@ public class OvkApplication extends Application {
             global_prefs_editor.putInt("owner_id", 0);
         }
         long heap_size = global.getHeapSize();
-
-        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                String.format("VM heap size: %s MB", (double) heap_size / (double) 1024 / (double) 1024));
 
         // Create preference parameters
 
@@ -116,6 +114,10 @@ public class OvkApplication extends Application {
             global_prefs_editor.putBoolean("startupSplash", true);
         }
 
+        if(!global_prefs.contains("forcedCaching")) {
+            global_prefs_editor.putBoolean("forcedCaching", true);
+        }
+
         if(global_prefs.contains("account_password") && global_prefs.getString("account_password", "").length() > 0) {
             try {
                 global_prefs_editor.putString("encrypted_account_password",
@@ -157,8 +159,7 @@ public class OvkApplication extends Application {
         }
 
 
-        Locale locale = new Locale(language_code);
-        return locale;
+        return new Locale(language_code);
     }
 
 }

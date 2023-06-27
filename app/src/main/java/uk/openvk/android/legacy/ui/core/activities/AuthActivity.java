@@ -364,32 +364,38 @@ public class AuthActivity extends Activity {
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error_network), null);
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error_network), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.INTERNAL_ERROR) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.INVALID_JSON_RESPONSE) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.CONNECTION_TIMEOUT) {
                 connectionDialog.cancel();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.BROKEN_SSL_CONNECTION) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error, getReason(message)), null);
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.NOT_OPENVK_INSTANCE) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                        getResources().getString(R.string.auth_error_title), getResources().getString(R.string.auth_error_not_openvk_instance), null);
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error_not_openvk_instance), null);
                 alertDialog.show();
             } else if (message == HandlerMessages.INSTANCE_UNAVAILABLE) {
                 connectionDialog.close();
@@ -425,13 +431,17 @@ public class AuthActivity extends Activity {
     public String getReason(int message) {
         String description = null;
         if(message == HandlerMessages.NO_INTERNET_CONNECTION) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(0));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(0));
         } else if(message == HandlerMessages.INVALID_JSON_RESPONSE) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(1));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(1));
         } else if(message == HandlerMessages.CONNECTION_TIMEOUT) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(2));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(2));
         } else if(message == HandlerMessages.INTERNAL_ERROR) {
-            description = getResources().getString(R.string.reason, Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
+            description = getResources().getString(R.string.reason,
+                    Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(3));
         } else {
             description = "No reason";
         }

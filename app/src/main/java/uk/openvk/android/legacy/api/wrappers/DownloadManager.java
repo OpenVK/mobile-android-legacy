@@ -80,6 +80,7 @@ public class DownloadManager {
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
+    private boolean forceCaching;
 
     public DownloadManager(Context ctx, boolean use_https) {
         this.ctx = ctx;
@@ -144,6 +145,10 @@ public class DownloadManager {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setForceCaching(boolean value) {
+        forceCaching = value;
     }
 
     public void setProxyConnection(boolean useProxy, String address) {
@@ -231,7 +236,7 @@ public class DownloadManager {
                     long time_diff = System.currentTimeMillis() - lastModDate.getTime();
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
                     // photo autocaching
-                    if(downloadedFile.exists() && downloadedFile.length() >= 5120 &&
+                    if(forceCaching && downloadedFile.exists() && downloadedFile.length() >= 5120 &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
@@ -260,7 +265,8 @@ public class DownloadManager {
                             } else {
                                 short_address = photoAttachments.get(i).url;
                             }
-                            //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...", short_address, i + 1, photoAttachments.size()));
+                            //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...",
+                            // short_address, i + 1, photoAttachments.size()));
                             url = photoAttachments.get(i).url;
                             if (legacy_mode) {
                                 request_legacy = new HttpGet(url);
@@ -394,11 +400,25 @@ public class DownloadManager {
                     ex.printStackTrace();
                 }
                 filesize = 0;
-                if (url.length() == 0) {
+                File downloadedFile = new File(String.format("%s/photos_cache/%s",
+                        ctx.getCacheDir(), where), filename);
+                Date lastModDate;
+                if(downloadedFile.exists()) {
+                    lastModDate = new Date(downloadedFile.lastModified());
+                } else {
+                    lastModDate = new Date(0);
+                }
+                long time_diff = System.currentTimeMillis() - lastModDate.getTime();
+                TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+                if(forceCaching && downloadedFile.exists() && downloadedFile.length() >= 5120 &&
+                        timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
+                        timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
+                    if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
+                            "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
+                            + " ms | Filesize: " + downloadedFile.length() + " bytes");
+                } else if (url.length() == 0) {
                     if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                     try {
-                        File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                                ctx.getCacheDir(), where), filename);
                         if(downloadedFile.exists()) {
                             FileOutputStream fos = new FileOutputStream(downloadedFile);
                             byte[] bytes = new byte[1];
@@ -431,8 +451,6 @@ public class DownloadManager {
                             StatusLine statusLine = response.getStatusLine();
                             response_in = response.getEntity().getContent();
                             content_length = response.getEntity().getContentLength();
-                            File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                                    ctx.getCacheDir(), where), filename);
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
@@ -449,8 +467,6 @@ public class DownloadManager {
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();
-                            File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                                    ctx.getCacheDir(), where), filename);
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;

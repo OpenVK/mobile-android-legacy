@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.attachments;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 

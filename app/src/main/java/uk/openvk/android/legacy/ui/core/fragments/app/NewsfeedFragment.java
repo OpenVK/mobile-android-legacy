@@ -303,22 +303,14 @@ public class NewsfeedFragment extends Fragment {
 
     public void select(int position, String item, int value) {
         if(item.equals("likes")) {
-            if(value == 1) {
-                wallPosts.get(position).counters.isLiked = true;
-            } else {
-                wallPosts.get(position).counters.isLiked = false;
-            }
+            wallPosts.get(position).counters.isLiked = value == 1;
             newsfeedAdapter.notifyDataSetChanged();
         }
     }
 
     public void select(int position, String item, String value) {
         if(item.equals("likes")) {
-            if(value.equals("add")) {
-                wallPosts.get(position).counters.isLiked = true;
-            } else {
-                wallPosts.get(position).counters.isLiked = false;
-            }
+            wallPosts.get(position).counters.isLiked = value.equals("add");
             newsfeedAdapter.notifyDataSetChanged();
         }
     }

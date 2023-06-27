@@ -47,7 +47,7 @@
         <item>Сервер надіслав некоректну відповідь</item>
         <item>Перевищено час очікування відповіді</item>
         <item>Обрив захищеного з\'єднання</item>
-        <item>Збій інстанції</item>
+        <item>Збій інстанції чи додатки</item>
         <item>Інстанція недоступна</item>
         <item>Невідома помилка</item>
     </string-array>
@@ -727,6 +727,7 @@
 	<string name="feed_comments_topic">Тема</string>
 	<string name="album_unnamed">Без назви</string>
 	<string name="sett_cache">Кеш зображень</string>
+    <string name="sett_forced_caching">Примусове кешування</string>
     <string name="sett_cache_quality">Якість</string>
     <string name="sett_cache_quality_alt">Якість зображень</string>
     <string-array name="sett_cache_quality_array">

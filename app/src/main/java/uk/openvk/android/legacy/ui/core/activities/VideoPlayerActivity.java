@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -71,6 +74,7 @@ public class VideoPlayerActivity extends Activity {
     private int duration;
     private boolean isErr;
     private boolean fitVideo;
+    private Bitmap thumbnail;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,6 +103,7 @@ public class VideoPlayerActivity extends Activity {
             if(data.containsKey("attachment")) {
                 video = data.getParcelable("attachment");
                 assert video != null;
+                setThumbnail();
             } if(data.containsKey("files")) {
                 video.files = data.getParcelable("files");
                 assert video.files != null;
@@ -150,6 +155,16 @@ public class VideoPlayerActivity extends Activity {
         }
     }
 
+    private void setThumbnail() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        thumbnail = BitmapFactory.decodeFile(
+                getCacheDir() + "/photos_cache/video_thumbnails/thumbnail_"
+                        + video.id, options);
+        if(thumbnail != null)
+        ((ImageView) findViewById(R.id.video_thumbnail)).setImageBitmap(thumbnail);
+    }
+
     private void createMediaPlayer(Uri uri) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
                 !Build.CPU_ABI.equals("x86")
@@ -162,6 +177,7 @@ public class VideoPlayerActivity extends Activity {
                         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         ready = true;
                         findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
+                        findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
                         vsv = findViewById(R.id.video_surface_view);
                         SurfaceHolder vsh = vsv.getHolder();
                         rescaleVideo(vsv, vsh);
@@ -187,6 +203,7 @@ public class VideoPlayerActivity extends Activity {
                         mp.release();
                         OvkAlertDialog err_dlg;
                         err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+                        findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
                         AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
                         builder.setCancelable(false);
                         builder.setMessage(R.string.error);
@@ -264,6 +281,7 @@ public class VideoPlayerActivity extends Activity {
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     ready = true;
                     findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
+                    findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
                     SurfaceView vsv = VideoPlayerActivity.this.findViewById(R.id.video_surface_view);
                     SurfaceHolder vsh = vsv.getHolder();
                     rescaleVideo(vsv, vsh);
@@ -290,6 +308,7 @@ public class VideoPlayerActivity extends Activity {
                     mp.release();
                     OvkAlertDialog err_dlg;
                     err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+                    findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
                     AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
                     builder.setMessage(R.string.error);
                     builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {

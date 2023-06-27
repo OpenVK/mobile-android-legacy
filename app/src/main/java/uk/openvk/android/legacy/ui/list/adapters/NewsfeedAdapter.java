@@ -249,7 +249,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     if (item.repost.newsfeed_item.attachments.get(i).status.equals("loading")) {
                         try {
                             photo_progress.setVisibility(View.VISIBLE);
-                        } catch (Exception ex) {
+                        } catch (Exception ignored) {
                         }
                         original_post_photo.setImageBitmap(null);
                     } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("not_supported")) {
@@ -341,7 +341,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                     post_video.getLayoutParams().height = (int) attachment_height;
                                 }
                             });
-                        final int posFinal = i;
                         post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

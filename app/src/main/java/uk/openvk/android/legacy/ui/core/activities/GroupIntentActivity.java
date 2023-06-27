@@ -176,6 +176,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                 if (path.startsWith("openvk://group/")) {
                     args = path.substring("openvk://group/".length());
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+                    downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                     groups = new Groups();
                     wall = new Wall();
                     installLayouts();
@@ -186,7 +187,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                 return;
             }
         }
-        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().
+                getConfiguration().orientation);
     }
 
     @Override
@@ -250,7 +252,8 @@ public class GroupIntentActivity extends TranslucentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().getConfiguration().orientation);
+        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().
+                getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
     }
 
