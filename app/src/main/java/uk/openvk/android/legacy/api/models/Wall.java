@@ -82,6 +82,7 @@ public class Wall implements Parcelable {
         if(items == null) {
             items = new ArrayList<>();
         } else {
+            next_from = items.size();
             if(clear) {
                 items.clear();
             }
@@ -98,7 +99,11 @@ public class Wall implements Parcelable {
                 if(newsfeed.has("next_from")) {
                     next_from = newsfeed.getLong("next_from");
                 } else {
-                    next_from = items.length();
+                    if(next_from > 0) {
+                        next_from += items.length() + 1;
+                    } else {
+                        next_from = items.length() + 1;
+                    }
                 }
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject post = items.getJSONObject(i);
