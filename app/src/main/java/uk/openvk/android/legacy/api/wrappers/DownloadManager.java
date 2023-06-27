@@ -268,6 +268,11 @@ public class DownloadManager {
                             //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...",
                             // short_address, i + 1, photoAttachments.size()));
                             url = photoAttachments.get(i).url;
+                            if(!url.startsWith("http://") || !url.startsWith("https://")) {
+                                Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
+                                return;
+                            }
+
                             if (legacy_mode) {
                                 request_legacy = new HttpGet(url);
                                 request_legacy.getParams().setParameter("timeout", 30000);
@@ -378,6 +383,10 @@ public class DownloadManager {
             Log.e(OvkApplication.DL_TAG, "URL is empty. Download canceled.");
             return;
         }
+        if(!url.startsWith("http://") || !url.startsWith("https://")) {
+            Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
+            return;
+        }
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
@@ -436,6 +445,12 @@ public class DownloadManager {
                     } else {
                         short_address = url;
                     }
+
+                    if(!url.startsWith("http://") || !url.startsWith("https://")) {
+                        Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
+                        return;
+                    }
+
                     if(logging_enabled) Log.v("DownloadManager", String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
                         request_legacy = new HttpGet(url);
@@ -485,7 +500,8 @@ public class DownloadManager {
                         }
                         if(response_code == 200) {
                             if (logging_enabled) Log.v("DownloadManager",
-                                    String.format("Downloaded from %s (%s): %d kB", short_address, response_code, (int) (filesize / 1024)));
+                                    String.format("Downloaded from %s (%s): %d kB", short_address,
+                                            response_code, (int) (filesize / 1024)));
                         } else {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s", response_code));
