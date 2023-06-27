@@ -27,8 +27,11 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
@@ -55,6 +58,7 @@ import static android.view.View.GONE;
 public class ProfileFragment extends Fragment {
     private View view;
     private boolean showExtended;
+    public boolean loading_more_posts;
 
     @Nullable
     @Override
@@ -311,5 +315,33 @@ public class ProfileFragment extends Fragment {
 
     public void refreshWallAdapter() {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
+    }
+
+    public void setScrollingPositions(final Context ctx, final boolean load_photos,
+                                      final boolean infinity_scroll) {
+        loading_more_posts = false;
+        if(load_photos) {
+            ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
+        }
+        final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+        scrollView.setOnScrollListener(new OnNestedScrollListener() {
+            @Override
+            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                if (!loading_more_posts) {
+                    if (diff == 0) {
+                        if (ctx instanceof AppActivity) {
+                            loading_more_posts = true;
+                            ((AppActivity) ctx).loadMoreWallPosts();
+                        } else if(ctx instanceof ProfileIntentActivity) {
+                            ((ProfileIntentActivity) ctx).loadMoreWallPosts();
+                        } else if(ctx instanceof GroupIntentActivity) {
+                            ((GroupIntentActivity) ctx).loadMoreWallPosts();
+                        }
+                    }
+                }
+            }
+        });
     }
 }

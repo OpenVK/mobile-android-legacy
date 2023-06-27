@@ -50,10 +50,11 @@ public class Wall implements Parcelable {
     private ArrayList<PhotoAttachment> photos_hsize;
     private ArrayList<PhotoAttachment> photos_osize;
     private DownloadManager dlm;
+    public long next_from;
 
     public Wall(String response, DownloadManager downloadManager, String quality, Context ctx) {
         jsonParser = new JSONParser();
-        parse(ctx, downloadManager, quality, response);
+        parse(ctx, downloadManager, quality, response, true);
     }
 
     public Wall() {
@@ -76,9 +77,15 @@ public class Wall implements Parcelable {
         }
     };
 
-    public void parse(Context ctx, DownloadManager downloadManager, String quality, String response) {
+    public void parse(Context ctx, DownloadManager downloadManager, String quality, String response, boolean clear) {
         this.dlm = downloadManager;
-        items = new ArrayList<WallPost>();
+        if(items == null) {
+            items = new ArrayList<>();
+        } else {
+            if(clear) {
+                items.clear();
+            }
+        }
         photos_msize = new ArrayList<PhotoAttachment>();
         photos_hsize = new ArrayList<PhotoAttachment>();
         photos_osize = new ArrayList<PhotoAttachment>();
@@ -88,6 +95,11 @@ public class Wall implements Parcelable {
             if(json != null) {
                 JSONObject newsfeed = json.getJSONObject("response");
                 JSONArray items = newsfeed.getJSONArray("items");
+                if(newsfeed.has("next_from")) {
+                    next_from = newsfeed.getLong("next_from");
+                } else {
+                    next_from = items.length();
+                }
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject post = items.getJSONObject(i);
                     JSONObject comments = post.getJSONObject("comments");
@@ -187,17 +199,9 @@ public class Wall implements Parcelable {
                                         owner_name = group.getString("name");
                                         avatar_url = group.getString("photo_50");
                                         if(group.get("verified") instanceof Integer) {
-                                            if (group.getInt("verified") == 1) {
-                                                verified_author = true;
-                                            } else {
-                                                verified_author = false;
-                                            }
+                                            verified_author = group.getInt("verified") == 1;
                                         } else {
-                                            if (group.getBoolean("verified")) {
-                                                verified_author = true;
-                                            } else {
-                                                verified_author = false;
-                                            }
+                                            verified_author = group.getBoolean("verified");
                                         }
                                     }
                                 }
@@ -219,17 +223,9 @@ public class Wall implements Parcelable {
                                     avatar_url = group.getString("photo_50");
                                     if(group.has("verified")) {
                                         if(group.get("verified") instanceof Integer) {
-                                            if (group.getInt("verified") == 1) {
-                                                verified_author = true;
-                                            } else {
-                                                verified_author = false;
-                                            }
+                                            verified_author = group.getInt("verified") == 1;
                                         } else {
-                                            if (group.getBoolean("verified")) {
-                                                verified_author = true;
-                                            } else {
-                                                verified_author = false;
-                                            }
+                                            verified_author = group.getBoolean("verified");
                                         }
                                     }
                                 }
@@ -513,5 +509,11 @@ public class Wall implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeTypedList(items);
+    }
+
+    public void get(OvkAPIWrapper ovk, long owner_id, int count, long offset) {
+        ovk.sendAPIMethod("Wall.get",
+                String.format("owner_id=%s&count=%s&extended=1&offset=%s",
+                        owner_id, count, offset), "more_wall_posts");
     }
 }

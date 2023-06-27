@@ -21,7 +21,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
+    <uk.openvk.android.legacy.ui.view.InfinityNestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6"
@@ -167,6 +168,6 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </uk.openvk.android.legacy.ui.view.InfinityNestedScrollView>
 
 </LinearLayout>

@@ -57,6 +57,8 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.GroupHeader;
@@ -95,7 +97,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     public Wall wall;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private ScrollView groupScrollView;
+    private InfinityNestedScrollView groupScrollView;
     private Group group;
     public Account account;
     private String args;
@@ -106,6 +108,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     private ActionBar actionBar;
     private android.support.v7.widget.PopupMenu popup_menu;
     private boolean showExtended;
+    private boolean loading_more_posts;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -285,7 +288,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        groupScrollView = (ScrollView) findViewById(R.id.group_scrollview);
+        groupScrollView = (InfinityNestedScrollView) findViewById(R.id.group_scrollview);
         groupScrollView.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -392,6 +395,25 @@ public class GroupIntentActivity extends TranslucentActivity {
             } else if (message == HandlerMessages.WALL_GET) {
                 ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openNewPostActivity();
+                    }
+                });
+                selector.showNewPostIcon();
+                loading_more_posts = true;
+                setScrollingPositions(this, false, true);
+            } else if (message == HandlerMessages.WALL_GET_MORE) {
+                ((WallLayout) findViewById(R.id.wall_layout))
+                        .createAdapter(this, wall.getWallItems());
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openNewPostActivity();
+                    }
+                });
                 selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
@@ -812,5 +834,40 @@ public class GroupIntentActivity extends TranslucentActivity {
             });
             dialog.show();
         }
+    }
+
+    public void loadMoreWallPosts() {
+        if(wall != null) {
+            wall.get(ovk_api, -group.id, 25, wall.next_from);
+        }
+    }
+
+
+    public void setScrollingPositions(final Context ctx, final boolean load_photos,
+                                      final boolean infinity_scroll) {
+        loading_more_posts = false;
+        if(load_photos) {
+            ((WallLayout) findViewById(R.id.wall_layout)).loadPhotos();
+        }
+        final InfinityNestedScrollView scrollView = findViewById(R.id.group_scrollview);
+        scrollView.setOnScrollListener(new OnNestedScrollListener() {
+            @Override
+            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                if (!loading_more_posts) {
+                    if (diff == 0) {
+                        if (ctx instanceof AppActivity) {
+                            loading_more_posts = true;
+                            ((AppActivity) ctx).loadMoreWallPosts();
+                        } else if(ctx instanceof ProfileIntentActivity) {
+                            ((ProfileIntentActivity) ctx).loadMoreWallPosts();
+                        } else if(ctx instanceof GroupIntentActivity) {
+                            ((GroupIntentActivity) ctx).loadMoreWallPosts();
+                        }
+                    }
+                }
+            }
+        });
     }
 }

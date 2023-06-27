@@ -422,6 +422,19 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     }
                 });
                 selector.showNewPostIcon();
+                profileFragment.loading_more_posts = true;
+                profileFragment.setScrollingPositions(this, false, true);
+            } else if (message == HandlerMessages.WALL_GET_MORE) {
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                        .createAdapter(this, wall.getWallItems());
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openNewPostActivity();
+                    }
+                });
+                selector.showNewPostIcon();
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .setScrollingPositions();
@@ -843,6 +856,12 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 }
             });
             dialog.show();
+        }
+    }
+
+    public void loadMoreWallPosts() {
+        if(wall != null) {
+            wall.get(ovk_api, user.id, 25, wall.next_from);
         }
     }
 }

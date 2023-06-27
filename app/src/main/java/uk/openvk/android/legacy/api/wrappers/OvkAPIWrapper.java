@@ -1140,10 +1140,17 @@ public class OvkAPIWrapper {
                     app_a.friends.parseRequests(data.getString("response"), downloadManager, true);
                     break;
                 case "Wall.get":
-                    app_a.wall.parse(activity, downloadManager,
-                            global_prefs.getString("photos_quality", ""),
-                            data.getString("response"));
-                    msg.what = HandlerMessages.WALL_GET;
+                    if(where != null && where.equals("more_wall_posts")) {
+                        app_a.wall.parse(activity, downloadManager,
+                                global_prefs.getString("photos_quality", ""),
+                                data.getString("response"), false);
+                        msg.what = HandlerMessages.WALL_GET_MORE;
+                    } else {
+                        app_a.wall.parse(activity, downloadManager,
+                                global_prefs.getString("photos_quality", ""),
+                                data.getString("response"), true);
+                        msg.what = HandlerMessages.WALL_GET;
+                    }
                     break;
                 case "Messages.getConversations":
                     app_a.conversations = app_a.messages.parseConversationsList(data.getString("response"),
@@ -1238,10 +1245,17 @@ public class OvkAPIWrapper {
                     msg.what = HandlerMessages.USERS_SEARCH;
                     break;
                 case "Wall.get":
-                    profile_a.wall.parse(activity, downloadManager,
-                            global_prefs.getString("photos_quality", ""),
-                            data.getString("response"));
-                    msg.what = HandlerMessages.WALL_GET;
+                    if(where != null && where.equals("more_wall_posts")) {
+                        profile_a.wall.parse(activity, downloadManager,
+                                global_prefs.getString("photos_quality", ""),
+                                data.getString("response"), false);
+                        msg.what = HandlerMessages.WALL_GET_MORE;
+                    } else {
+                        profile_a.wall.parse(activity, downloadManager,
+                                global_prefs.getString("photos_quality", ""),
+                                data.getString("response"), true);
+                        msg.what = HandlerMessages.WALL_GET;
+                    }
                     break;
                 case "Likes.add":
                     profile_a.likes.parse(data.getString("response"));
@@ -1274,10 +1288,17 @@ public class OvkAPIWrapper {
                     msg.what = HandlerMessages.GROUPS_SEARCH;
                     break;
                 case "Wall.get":
-                    group_a.wall.parse(activity, downloadManager,
-                            global_prefs.getString("photos_quality", ""),
-                            data.getString("response"));
-                    msg.what = HandlerMessages.WALL_GET;
+                    if(where != null && where.equals("more_wall_posts")) {
+                        group_a.wall.parse(activity, downloadManager,
+                                global_prefs.getString("photos_quality", ""),
+                                data.getString("response"), false);
+                        msg.what = HandlerMessages.WALL_GET_MORE;
+                    } else {
+                        group_a.wall.parse(activity, downloadManager,
+                                global_prefs.getString("photos_quality", ""),
+                                data.getString("response"), true);
+                        msg.what = HandlerMessages.WALL_GET;
+                    }
                     break;
                 case "Likes.add":
                     group_a.likes.parse(data.getString("response"));

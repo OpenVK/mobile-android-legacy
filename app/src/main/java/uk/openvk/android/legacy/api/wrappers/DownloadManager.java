@@ -268,7 +268,7 @@ public class DownloadManager {
                             //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...",
                             // short_address, i + 1, photoAttachments.size()));
                             url = photoAttachments.get(i).url;
-                            if(!url.startsWith("http://") || !url.startsWith("https://")) {
+                            if(!url.startsWith("http://") && !url.startsWith("https://")) {
                                 Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
                                 return;
                             }
@@ -383,7 +383,7 @@ public class DownloadManager {
             Log.e(OvkApplication.DL_TAG, "URL is empty. Download canceled.");
             return;
         }
-        if(!url.startsWith("http://") || !url.startsWith("https://")) {
+        if(!url.startsWith("http://") && !url.startsWith("https://")) {
             Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
             return;
         }

@@ -928,6 +928,13 @@ public class AppActivity extends TranslucentFragmentActivity {
                         createAdapter(this, wall.getWallItems());
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.showNewPostIcon();
+                profileFragment.loading_more_posts = true;
+                profileFragment.setScrollingPositions(this, false, true);
+            } else if (message == HandlerMessages.WALL_GET_MORE) {
+                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).
+                        createAdapter(this, wall.getWallItems());
+                ProfileWallSelector selector = findViewById(R.id.wall_selector);
+                selector.showNewPostIcon();
             } else if (message == HandlerMessages.FRIENDS_GET) {
                 ArrayList<Friend> friendsList = friends.getFriends();
                 if (global_prefs.getString("current_screen", "").equals("friends")) {
@@ -1478,6 +1485,24 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
+    public void loadMoreWallPosts() {
+        if(wall != null) {
+            wall.get(ovk_api, account.id, 25, wall.next_from);
+        }
+    }
+
+    public void loadMoreFriends() {
+        if(friends != null) {
+            friends.get(ovk_api, account.id, 25, friends.offset);
+        }
+    }
+
+    public void loadMoreGroups() {
+        if(groups != null) {
+            groups.getGroups(ovk_api, account.id, 25, groups.getList().size());
+        }
+    }
+
     public void voteInPoll(int item_pos, int answer) {
         this.item_pos = item_pos;
         this.poll_answer = answer;
@@ -1674,18 +1699,6 @@ public class AppActivity extends TranslucentFragmentActivity {
     protected void onResume() {
         inBackground = false;
         super.onResume();
-    }
-
-    public void loadMoreFriends() {
-        if(friends != null) {
-            friends.get(ovk_api, account.id, 25, friends.offset);
-        }
-    }
-
-    public void loadMoreGroups() {
-        if(groups != null) {
-            groups.getGroups(ovk_api, account.id, 25, groups.getList().size());
-        }
     }
 
     @Override

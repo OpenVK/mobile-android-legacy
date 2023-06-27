@@ -73,12 +73,13 @@ public class HandlerMessages {
     // Wall
     public static int WALL_GET                          = 700;
     public static int WALL_GET_BY_ID                    = 701;
-    public static int WALL_POST                         = 702;
-    public static int WALL_REPOST                       = 703;
-    public static int WALL_CREATE_COMMENT               = 704;
-    public static int WALL_DELETE_COMMENT               = 705;
-    public static int WALL_COMMENT                      = 706;
-    public static int WALL_ALL_COMMENTS                 = 707;
+    public static int WALL_GET_MORE                     = 702;
+    public static int WALL_POST                         = 703;
+    public static int WALL_REPOST                       = 704;
+    public static int WALL_CREATE_COMMENT               = 705;
+    public static int WALL_DELETE_COMMENT               = 706;
+    public static int WALL_COMMENT                      = 707;
+    public static int WALL_ALL_COMMENTS                 = 708;
 
     // Newsfeed
     public static int NEWSFEED_GET                      = 800;

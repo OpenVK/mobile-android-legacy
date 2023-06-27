@@ -125,7 +125,7 @@ public class WallLayout extends LinearLayout {
         }
     }
 
-    private void loadPhotos() {
+    public void loadPhotos() {
         wallView = (RecyclerView) findViewById(R.id.wall_listview);
         try {
             if(wallAdapter != null) {
