@@ -26,7 +26,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.reginald.swiperefresh.CustomSwipeRefreshLayout xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
+        <com.reginald.swiperefresh.CustomSwipeRefreshLayout
+            xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
             android:id="@+id/refreshable_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -255,41 +255,22 @@ public class NewsfeedFragment extends Fragment {
         if(load_photos) {
             loadPhotos();
         }
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
-            scrollView.setOnScrollListener(new OnScrollListener() {
-                @Override
-                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                    if (!loading_more_posts) {
-                        if (diff == 0) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreNews();
-                            }
+        final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+        scrollView.setOnScrollListener(new OnNestedScrollListener() {
+            @Override
+            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                if (!loading_more_posts) {
+                    if (diff == 0) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            loading_more_posts = true;
+                            ((AppActivity) ctx).loadMoreNews();
                         }
                     }
                 }
-            });
-        } else {
-            final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
-            scrollView.setOnScrollListener(new OnNestedScrollListener() {
-                @Override
-                public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                    if (!loading_more_posts) {
-                        if (diff == 0) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreNews();
-                            }
-                        }
-                    }
-                }
-            });
-        }
+            }
+        });
     }
 
 
