@@ -331,7 +331,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 item.attachments.get(i).getContent();
                         post_video.setAttachment(videoAttachment);
                         post_video.setVisibility(View.VISIBLE);
-                        post_video.setThumbnail();
+                        post_video.setThumbnail(item.owner_id);
                         post_video.getViewTreeObserver().addOnGlobalLayoutListener(
                             new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override

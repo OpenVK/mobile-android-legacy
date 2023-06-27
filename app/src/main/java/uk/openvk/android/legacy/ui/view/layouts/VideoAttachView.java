@@ -75,14 +75,14 @@ public class VideoAttachView extends FrameLayout {
         }
     }
 
-    public void setThumbnail() {
+    public void setThumbnail(long owner_id) {
         ImageView preview = findViewById(R.id.video_preview);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         thumbnail = BitmapFactory.decodeFile(
                 getContext().getCacheDir()
                         + "/photos_cache/video_thumbnails/thumbnail_"
-                        + attachment.id, options);
+                        + attachment.id + "o" + owner_id, options);
         preview.setImageBitmap(thumbnail);
     }
 
