@@ -42,6 +42,8 @@ public class OvkApplication extends Application {
     public static String LP_TAG = "OVK-LP";
     public PluralResources pluralResources;
     public Configuration config;
+    private Global global;
+    public int swdp;
 
     @Override
     public void onCreate() {
@@ -53,14 +55,21 @@ public class OvkApplication extends Application {
                 e1.printStackTrace();
             }
         }
-        Global global = new Global(this);
+        global = new Global(this);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
 
+        version = BuildConfig.VERSION_NAME;
+        config = getResources().getConfiguration();
+
+        createSettings(global_prefs, instance_prefs);
+        swdp = getResources().getConfiguration().smallestScreenWidthDp;
+        isTablet = global.isTablet();
+    }
+
+    private void createSettings(SharedPreferences global_prefs, SharedPreferences instance_prefs) {
         SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
         SharedPreferences.Editor instance_prefs_editor = instance_prefs.edit();
-
-        version = BuildConfig.VERSION_NAME;
 
         if(!instance_prefs.contains("server")) {
             instance_prefs_editor.putString("server", "");
@@ -130,15 +139,13 @@ public class OvkApplication extends Application {
 
         global_prefs_editor.commit();
         instance_prefs_editor.commit();
-
-        isTablet = global.isTablet();
     }
 
 
     public static Locale getLocale(Context ctx) {
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String language = global_prefs.getString("interfaceLanguage", "System");
-        String language_code = "en";
+        String language_code;
         switch (language) {
             case "English":
                 language_code = "en";

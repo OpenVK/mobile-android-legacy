@@ -19,12 +19,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#e3e4e6"
         android:descendantFocusability="blocksDescendants"
-        tools:ignore="UselessParent">
+        tools:ignore="UselessParent"
+        android:isScrollContainer="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -168,6 +169,6 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

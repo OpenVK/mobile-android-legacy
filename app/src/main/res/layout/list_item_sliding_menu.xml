@@ -18,8 +18,9 @@
     android:id="@+id/HLLinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="47dip"
+    android:background="@drawable/highlight"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/leftmenu_icon"

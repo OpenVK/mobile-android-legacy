@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -89,6 +90,7 @@ public class FriendsFragment extends Fragment {
     }
 
     public void createAdapter(Context ctx, ArrayList<Friend> friends, String where) {
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if(view != null) {
             if (where.equals("friends")) {
                 this.friends = friends;
@@ -105,9 +107,19 @@ public class FriendsFragment extends Fragment {
                 } else {
                     requestsAdapter.notifyDataSetChanged();
                 }
-                LinearLayoutManager llm = new LinearLayoutManager(ctx);
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
+                if(app.isTablet && app.swdp >= 760) {
+                    LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
+                    glm.setOrientation(LinearLayoutManager.VERTICAL);
+                    ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+                } else if(app.isTablet && app.swdp >= 600) {
+                    LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
+                    glm.setOrientation(LinearLayoutManager.VERTICAL);
+                    ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+                } else {
+                    LinearLayoutManager llm = new LinearLayoutManager(ctx);
+                    llm.setOrientation(LinearLayoutManager.VERTICAL);
+                    ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
+                }
                 ((RecyclerView) view.findViewById(R.id.requests_view)).setAdapter(requestsAdapter);
             }
         }

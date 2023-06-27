@@ -64,7 +64,7 @@ public class SlidingMenuAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = inflater.inflate(R.layout.menu_item_left, parent, false);
+            view = inflater.inflate(R.layout.list_item_sliding_menu, parent, false);
         }
 
         final int position = i;
