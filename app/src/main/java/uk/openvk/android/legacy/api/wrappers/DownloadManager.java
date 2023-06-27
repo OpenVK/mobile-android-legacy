@@ -446,11 +446,6 @@ public class DownloadManager {
                         short_address = url;
                     }
 
-                    if(!url.startsWith("http://") || !url.startsWith("https://")) {
-                        Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
-                        return;
-                    }
-
                     if(logging_enabled) Log.v("DownloadManager", String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
                         request_legacy = new HttpGet(url);
