@@ -340,8 +340,8 @@ public class Newsfeed implements Parcelable {
                     if(video.has("image")) {
                         JSONArray thumb_array = video.getJSONArray("image");
                         videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
-                        dlm.downloadOnePhotoToCache(videoAttachment.url_thumb, String.format("thumbnail_%s",
-                                video.getLong("id")), "video_thumbnails");
+                        dlm.downloadOnePhotoToCache(videoAttachment.url_thumb, String.format("thumbnail_%so%s",
+                                video.getLong("id"), owner_id), "video_thumbnails");
                     }
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";
