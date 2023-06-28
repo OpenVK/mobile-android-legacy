@@ -28,6 +28,7 @@ import java.lang.ref.WeakReference;
  * @author Hieu Rocker (rockerhieu@gmail.com)
  */
 class EmojiconSpan extends DynamicDrawableSpan {
+
     private final Context mContext;
 
     private final int mResourceId;
@@ -46,8 +47,8 @@ class EmojiconSpan extends DynamicDrawableSpan {
 
     private WeakReference<Drawable> mDrawableRef;
 
-    public EmojiconSpan(Context context, int resourceId, int size, int alignment, int textSize) {
-        super(alignment);
+    public EmojiconSpan(Context context, int resourceId, int size, int textSize) {
+        super(DynamicDrawableSpan.ALIGN_BASELINE);
         mContext = context;
         mResourceId = resourceId;
         mWidth = mHeight = mSize = size;
@@ -77,7 +78,7 @@ class EmojiconSpan extends DynamicDrawableSpan {
 
         int transY = bottom - b.getBounds().bottom;
         if (mVerticalAlignment == ALIGN_BASELINE) {
-            transY = top + ((bottom - top) / 2) - ((b.getBounds().bottom - b.getBounds().top) / 2) - mTop;
+          transY = top + ((bottom - top) / 2) - ((b.getBounds().bottom - b.getBounds().top) / 2) - mTop;
         }
 
         canvas.translate(x, transY);

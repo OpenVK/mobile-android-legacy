@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright 2014 Hieu Rocker
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +16,10 @@
   -->
 
 <resources>
-    <declare-styleable name="EmojiconStyle">
-        <attr name="emojiconGridViewStyle" format="reference"/>
-    </declare-styleable>
     <declare-styleable name="Emojicon">
-        <attr name="emojiconSize" format="dimension" />
-        <attr name="emojiconAlignment" format="enum">
-            <enum name="bottom" value="0" />
-            <enum name="baseline" value="1" />
-        </attr>
-        <attr name="emojiconTextStart" format="integer" />
-        <attr name="emojiconTextLength" format="integer" />
-        <attr name="emojiconUseSystemDefault" format="boolean" />
+        <attr name="emojiconSize" format="dimension"/>
+        <attr name="emojiconTextStart" format="integer"/>
+        <attr name="emojiconTextLength" format="integer"/>
+        <attr name="emojiconUseSystemDefault" format="boolean"/>
     </declare-styleable>
 </resources>

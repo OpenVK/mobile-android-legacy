@@ -16,13 +16,13 @@
 
 package dev.tinelix.twemojicon;
 
-import android.content.Context;
-
 import dev.tinelix.twemojicon.emoji.Emojicon;
 
+import android.content.Context;
+
 /**
- * @author Daniele Ricci
- */
+* @author Daniele Ricci
+*/
 public interface EmojiconRecents {
-    void addRecentEmoji(Context context, Emojicon emojicon);
+    public void addRecentEmoji(Context context, Emojicon emojicon);
 }

@@ -16,18 +16,18 @@
 
 package dev.tinelix.twemojicon;
 
+import dev.tinelix.twemojicon.emoji.Emojicon;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridView;
 
-import dev.tinelix.twemojicon.emoji.Emojicon;
-
 /**
  * @author Daniele Ricci
  */
 public class EmojiconRecentsGridFragment extends EmojiconGridFragment implements EmojiconRecents {
-    private EmojiconAdapter mAdapter;
+    private EmojiAdapter mAdapter;
     private boolean mUseSystemDefault = false;
 
     private static final String USE_SYSTEM_DEFAULT_KEY = "useSystemDefaults";
@@ -57,9 +57,9 @@ public class EmojiconRecentsGridFragment extends EmojiconGridFragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         EmojiconRecentsManager recents = EmojiconRecentsManager
-                .getInstance(view.getContext());
+            .getInstance(view.getContext());
 
-        mAdapter = new EmojiconAdapter(view.getContext(), recents, mUseSystemDefault);
+        mAdapter = new EmojiAdapter(view.getContext(), recents, mUseSystemDefault);
         GridView gridView = (GridView) view.findViewById(R.id.Emoji_GridView);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(this);
@@ -74,7 +74,7 @@ public class EmojiconRecentsGridFragment extends EmojiconGridFragment implements
     @Override
     public void addRecentEmoji(Context context, Emojicon emojicon) {
         EmojiconRecentsManager recents = EmojiconRecentsManager
-                .getInstance(context);
+            .getInstance(context);
         recents.push(emojicon);
 
         // notify dataset changed

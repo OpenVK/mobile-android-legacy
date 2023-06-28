@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package dev.tinelix.twemojicon;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v7.widget.AppCompatEditText;
-import android.text.style.DynamicDrawableSpan;
 import android.util.AttributeSet;
+import android.widget.EditText;
 
 /**
  * @author Hieu Rocker (rockerhieu@gmail.com).
  */
-public class EmojiconEditText extends AppCompatEditText {
+public class EmojiconEditText extends EditText {
     private int mEmojiconSize;
-    private int mEmojiconAlignment;
     private int mEmojiconTextSize;
     private boolean mUseSystemDefault = false;
 
@@ -49,7 +48,6 @@ public class EmojiconEditText extends AppCompatEditText {
     private void init(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.Emojicon);
         mEmojiconSize = (int) a.getDimension(R.styleable.Emojicon_emojiconSize, getTextSize());
-        mEmojiconAlignment = a.getInt(R.styleable.Emojicon_emojiconAlignment, DynamicDrawableSpan.ALIGN_BASELINE);
         mUseSystemDefault = a.getBoolean(R.styleable.Emojicon_emojiconUseSystemDefault, false);
         a.recycle();
         mEmojiconTextSize = (int) getTextSize();
@@ -71,7 +69,7 @@ public class EmojiconEditText extends AppCompatEditText {
     }
 
     private void updateText() {
-        EmojiconHandler.addEmojis(getContext(), getText(), mEmojiconSize, mEmojiconAlignment, mEmojiconTextSize, mUseSystemDefault);
+        EmojiconHandler.addEmojis(getContext(), getText(), mEmojiconSize, mEmojiconTextSize, mUseSystemDefault);
     }
 
     /**

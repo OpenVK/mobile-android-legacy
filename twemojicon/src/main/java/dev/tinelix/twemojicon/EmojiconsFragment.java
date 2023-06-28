@@ -16,6 +16,7 @@
 
 package dev.tinelix.twemojicon;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,17 +26,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.EditText;
+import dev.tinelix.twemojicon.emoji.*;
 
 import java.util.Arrays;
 import java.util.List;
-
-import dev.tinelix.twemojicon.emoji.Emojicon;
 
 /**
  * @author Hieu Rocker (rockerhieu@gmail.com).
@@ -44,7 +40,6 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
     private OnEmojiconBackspaceClickedListener mOnEmojiconBackspaceClickedListener;
     private int mEmojiTabLastSelectedIndex = -1;
     private View[] mEmojiTabs;
-    private ViewPager mViewPager;
     private PagerAdapter mEmojisAdapter;
     private EmojiconRecentsManager mRecentsManager;
     private boolean mUseSystemDefault = false;
@@ -62,19 +57,19 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.emojicons, container, false);
-        mViewPager = (ViewPager) view.findViewById(R.id.emojis_pager);
-        mViewPager.setOnPageChangeListener(this);
-
+        final ViewPager emojisPager = (ViewPager) view.findViewById(R.id.emojis_pager);
+        emojisPager.setOnPageChangeListener(this);
+        // we handle recents
         EmojiconRecents recents = this;
-        mEmojisAdapter = new EmojiconGridFragmentPagerAdapter(getFragmentManager(), Arrays.asList(
+        mEmojisAdapter = new EmojisPagerAdapter(getFragmentManager(), Arrays.asList(
                 EmojiconRecentsGridFragment.newInstance(mUseSystemDefault),
-                EmojiconGridFragment.newInstance(Emojicon.TYPE_PEOPLE, recents, mUseSystemDefault),
-                EmojiconGridFragment.newInstance(Emojicon.TYPE_NATURE, recents, mUseSystemDefault),
-                EmojiconGridFragment.newInstance(Emojicon.TYPE_OBJECTS, recents, mUseSystemDefault),
-                EmojiconGridFragment.newInstance(Emojicon.TYPE_PLACES, recents, mUseSystemDefault),
-                EmojiconGridFragment.newInstance(Emojicon.TYPE_SYMBOLS, recents, mUseSystemDefault)
+                EmojiconGridFragment.newInstance(People.DATA, recents, mUseSystemDefault),
+                EmojiconGridFragment.newInstance(Nature.DATA, recents, mUseSystemDefault),
+                EmojiconGridFragment.newInstance(Objects.DATA, recents, mUseSystemDefault),
+                EmojiconGridFragment.newInstance(Places.DATA, recents, mUseSystemDefault),
+                EmojiconGridFragment.newInstance(Symbols.DATA, recents, mUseSystemDefault)
         ));
-        mViewPager.setAdapter(mEmojisAdapter);
+        emojisPager.setAdapter(mEmojisAdapter);
 
         mEmojiTabs = new View[6];
         mEmojiTabs[0] = view.findViewById(R.id.emojis_tab_0_recents);
@@ -88,7 +83,7 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
             mEmojiTabs[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mViewPager.setCurrentItem(position);
+                    emojisPager.setCurrentItem(position);
                 }
             });
         }
@@ -112,21 +107,22 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
 
         if (page == 0) {
             onPageSelected(page);
-        } else {
-            mViewPager.setCurrentItem(page, false);
+        }
+        else {
+            emojisPager.setCurrentItem(page, false);
         }
         return view;
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
         if (getActivity() instanceof OnEmojiconBackspaceClickedListener) {
             mOnEmojiconBackspaceClickedListener = (OnEmojiconBackspaceClickedListener) getActivity();
-        } else if (getParentFragment() instanceof OnEmojiconBackspaceClickedListener) {
+        } else if(getParentFragment() instanceof  OnEmojiconBackspaceClickedListener) {
             mOnEmojiconBackspaceClickedListener = (OnEmojiconBackspaceClickedListener) getParentFragment();
         } else {
-            throw new IllegalArgumentException(context + " must implement interface " + OnEmojiconBackspaceClickedListener.class.getSimpleName());
+            throw new IllegalArgumentException(activity + " must implement interface " + OnEmojiconBackspaceClickedListener.class.getSimpleName());
         }
     }
 
@@ -152,7 +148,8 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
 
     @Override
     public void addRecentEmoji(Context context, Emojicon emojicon) {
-        EmojiconRecentsGridFragment fragment = (EmojiconRecentsGridFragment) mEmojisAdapter.instantiateItem(mViewPager, 0);
+        final ViewPager emojisPager = (ViewPager) getView().findViewById(R.id.emojis_pager);
+        EmojiconRecentsGridFragment fragment = (EmojiconRecentsGridFragment) mEmojisAdapter.instantiateItem(emojisPager, 0);
         fragment.addRecentEmoji(context, emojicon);
     }
 
@@ -191,10 +188,10 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
     public void onPageScrollStateChanged(int i) {
     }
 
-    private static class EmojiconGridFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    private static class EmojisPagerAdapter extends FragmentStatePagerAdapter {
         private List<EmojiconGridFragment> fragments;
 
-        public EmojiconGridFragmentPagerAdapter(FragmentManager fm, List<EmojiconGridFragment> fragments) {
+        public EmojisPagerAdapter(FragmentManager fm, List<EmojiconGridFragment> fragments) {
             super(fm);
             this.fragments = fragments;
         }
@@ -211,16 +208,13 @@ public class EmojiconsFragment extends Fragment implements ViewPager.OnPageChang
     }
 
     /**
-     * <p>
      * A class, that can be used as a TouchListener on any view (e.g. a Button).
      * It cyclically runs a clickListener, emulating keyboard-like behaviour. First
      * click is fired immediately, next before initialInterval, and subsequent before
      * normalInterval.
-     * </p>
-     * <p>
-     * Interval is scheduled before the onClick completes, so it has to run fast.
+     * <p/>
+     * <p>Interval is scheduled before the onClick completes, so it has to run fast.
      * If it runs slow, it does not generate skipped onClicks.
-     * </p>
      */
     public static class RepeatListener implements View.OnTouchListener {
 
