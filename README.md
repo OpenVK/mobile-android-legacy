@@ -1,6 +1,6 @@
 # OpenVK Legacy for Android
 
-_[Русский](https://github.com/openvk/mobile-android-legacy/blob/master/README_RU.md)_
+_[Русский](README_RU.md)_
 
 Author: [Dmitry Tretyakov (Tinelix)](https://github.com/tretdm)
 
@@ -9,7 +9,7 @@ _Powered by OpenVK API._
 
 We will be happy to accept your bugreports [in our bug-tracker](https://github.com/openvk/mobile-android-legacy/projects/1).
 
-![featureGraphic](https://github.com/openvk/mobile-android-legacy/blob/main/fastlane/metadata/android/en-US/images/featureGraphic.png)
+![featureGraphic](fastlane/metadata/android/en-US/images/featureGraphic.png)
 
 ## Download APK
 * **via F-Droid**
@@ -41,7 +41,7 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
 
 ## OpenVK Legacy License
-[GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) or later version.
+[GNU (Affero) GPL v3.0](COPYING) or later version.
 
 ## Links
 [OpenVK API docs](https://docs.openvk.su/openvk_engine/api/description/)\
