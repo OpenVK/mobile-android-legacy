@@ -27,7 +27,7 @@ public final class EmojiconHandler {
     }
 
     private static final SparseIntArray sEmojisMap = new SparseIntArray(846);
-    private static final SparseIntArray sSoftbanksMap = new SparseIntArray(471);
+    private static final SparseIntArray sSoftbanksMap = new SparseIntArray(476);
 
     static {
         // People
@@ -1314,49 +1314,54 @@ public final class EmojiconHandler {
         sSoftbanksMap.put(0xe509, R.drawable.emoji_1f5fc);
         sSoftbanksMap.put(0xe50b, R.drawable.emoji_1f1ef_1f1f5);
         sSoftbanksMap.put(0xe50c, R.drawable.emoji_1f1fa_1f1f8);
-        sSoftbanksMap.put(0xe50d, R.drawable.emoji_1f1eb_1f1f7);
-        sSoftbanksMap.put(0xe50e, R.drawable.emoji_1f1e9_1f1ea);
-        sSoftbanksMap.put(0xe50f, R.drawable.emoji_1f1ee_1f1f9);
-        sSoftbanksMap.put(0xe510, R.drawable.emoji_1f1ec_1f1e7);
-        sSoftbanksMap.put(0xe511, R.drawable.emoji_1f1ea_1f1f8);
-        sSoftbanksMap.put(0xe512, R.drawable.emoji_1f1f7_1f1fa);
-        sSoftbanksMap.put(0xe513, R.drawable.emoji_1f1e8_1f1f3);
-        sSoftbanksMap.put(0xe514, R.drawable.emoji_1f1f0_1f1f7);
-        sSoftbanksMap.put(0xe515, R.drawable.emoji_1f471);
-        sSoftbanksMap.put(0xe516, R.drawable.emoji_1f472);
-        sSoftbanksMap.put(0xe517, R.drawable.emoji_1f473);
-        sSoftbanksMap.put(0xe518, R.drawable.emoji_1f474);
-        sSoftbanksMap.put(0xe519, R.drawable.emoji_1f475);
-        sSoftbanksMap.put(0xe51a, R.drawable.emoji_1f476);
-        sSoftbanksMap.put(0xe51b, R.drawable.emoji_1f477);
-        sSoftbanksMap.put(0xe51c, R.drawable.emoji_1f478);
-        sSoftbanksMap.put(0xe51d, R.drawable.emoji_1f5fd);
-        sSoftbanksMap.put(0xe51e, R.drawable.emoji_1f482);
-        sSoftbanksMap.put(0xe51f, R.drawable.emoji_1f483);
-        sSoftbanksMap.put(0xe520, R.drawable.emoji_1f42c);
-        sSoftbanksMap.put(0xe521, R.drawable.emoji_1f426);
-        sSoftbanksMap.put(0xe522, R.drawable.emoji_1f420);
-        sSoftbanksMap.put(0xe523, R.drawable.emoji_1f423);
-        sSoftbanksMap.put(0xe524, R.drawable.emoji_1f439);
-        sSoftbanksMap.put(0xe525, R.drawable.emoji_1f41b);
-        sSoftbanksMap.put(0xe526, R.drawable.emoji_1f418);
-        sSoftbanksMap.put(0xe527, R.drawable.emoji_1f428);
-        sSoftbanksMap.put(0xe528, R.drawable.emoji_1f412);
-        sSoftbanksMap.put(0xe529, R.drawable.emoji_1f411);
-        sSoftbanksMap.put(0xe52a, R.drawable.emoji_1f43a);
-        sSoftbanksMap.put(0xe52b, R.drawable.emoji_1f42e);
-        sSoftbanksMap.put(0xe52c, R.drawable.emoji_1f430);
-        sSoftbanksMap.put(0xe52d, R.drawable.emoji_1f40d);
-        sSoftbanksMap.put(0xe52e, R.drawable.emoji_1f414);
-        sSoftbanksMap.put(0xe52f, R.drawable.emoji_1f417);
-        sSoftbanksMap.put(0xe530, R.drawable.emoji_1f42b);
-        sSoftbanksMap.put(0xe531, R.drawable.emoji_1f438);
-        sSoftbanksMap.put(0xe532, R.drawable.emoji_1f170);
-        sSoftbanksMap.put(0xe533, R.drawable.emoji_1f171);
-        sSoftbanksMap.put(0xe534, R.drawable.emoji_1f18e);
-        sSoftbanksMap.put(0xe535, R.drawable.emoji_1f17e);
-        sSoftbanksMap.put(0xe536, R.drawable.emoji_1f43e);
-        sSoftbanksMap.put(0xe537, R.drawable.emoji_2122);
+        sSoftbanksMap.put(0xe50d, R.drawable.emoji_1f1fa_1f1e6);
+        sSoftbanksMap.put(0xe50e, R.drawable.emoji_1f1eb_1f1f7);
+        sSoftbanksMap.put(0xe50f, R.drawable.emoji_1f1e6_1f1f2);
+        sSoftbanksMap.put(0xe510, R.drawable.emoji_1f1e7_1f1ec);
+        sSoftbanksMap.put(0xe511, R.drawable.emoji_1f1e7_1f1fe);
+        sSoftbanksMap.put(0xe512, R.drawable.emoji_1f1e9_1f1ea);
+        sSoftbanksMap.put(0xe513, R.drawable.emoji_1f1ee_1f1f9);
+        sSoftbanksMap.put(0xe514, R.drawable.emoji_1f1ec_1f1e7);
+        sSoftbanksMap.put(0xe515, R.drawable.emoji_1f1ea_1f1f8);
+        sSoftbanksMap.put(0xe516, R.drawable.emoji_1f1f7_1f1fa);
+        sSoftbanksMap.put(0xe517, R.drawable.emoji_1f1e8_1f1f3);
+        sSoftbanksMap.put(0xe518, R.drawable.emoji_1f1f0_1f1f7);
+        sSoftbanksMap.put(0xe519, R.drawable.emoji_1f1f0_1f1ff);
+        sSoftbanksMap.put(0xe51a, R.drawable.emoji_1f471);
+        sSoftbanksMap.put(0xe51b, R.drawable.emoji_1f472);
+        sSoftbanksMap.put(0xe51c, R.drawable.emoji_1f473);
+        sSoftbanksMap.put(0xe51d, R.drawable.emoji_1f474);
+        sSoftbanksMap.put(0xe51e, R.drawable.emoji_1f475);
+        sSoftbanksMap.put(0xe51f, R.drawable.emoji_1f476);
+        sSoftbanksMap.put(0xe520, R.drawable.emoji_1f477);
+        sSoftbanksMap.put(0xe521, R.drawable.emoji_1f478);
+        sSoftbanksMap.put(0xe522, R.drawable.emoji_1f5fd);
+        sSoftbanksMap.put(0xe523, R.drawable.emoji_1f482);
+        sSoftbanksMap.put(0xe524, R.drawable.emoji_1f483);
+        sSoftbanksMap.put(0xe525, R.drawable.emoji_1f42c);
+        sSoftbanksMap.put(0xe526, R.drawable.emoji_1f426);
+        sSoftbanksMap.put(0xe527, R.drawable.emoji_1f420);
+        sSoftbanksMap.put(0xe528, R.drawable.emoji_1f423);
+        sSoftbanksMap.put(0xe529, R.drawable.emoji_1f439);
+        sSoftbanksMap.put(0xe52a, R.drawable.emoji_1f41b);
+        sSoftbanksMap.put(0xe52b, R.drawable.emoji_1f418);
+        sSoftbanksMap.put(0xe52c, R.drawable.emoji_1f428);
+        sSoftbanksMap.put(0xe52d, R.drawable.emoji_1f412);
+        sSoftbanksMap.put(0xe52e, R.drawable.emoji_1f411);
+        sSoftbanksMap.put(0xe52f, R.drawable.emoji_1f43a);
+        sSoftbanksMap.put(0xe530, R.drawable.emoji_1f42e);
+        sSoftbanksMap.put(0xe531, R.drawable.emoji_1f430);
+        sSoftbanksMap.put(0xe532, R.drawable.emoji_1f40d);
+        sSoftbanksMap.put(0xe533, R.drawable.emoji_1f414);
+        sSoftbanksMap.put(0xe534, R.drawable.emoji_1f417);
+        sSoftbanksMap.put(0xe535, R.drawable.emoji_1f42b);
+        sSoftbanksMap.put(0xe536, R.drawable.emoji_1f438);
+        sSoftbanksMap.put(0xe537, R.drawable.emoji_1f170);
+        sSoftbanksMap.put(0xe538, R.drawable.emoji_1f171);
+        sSoftbanksMap.put(0xe539, R.drawable.emoji_1f18e);
+        sSoftbanksMap.put(0xe53a, R.drawable.emoji_1f17e);
+        sSoftbanksMap.put(0xe53b, R.drawable.emoji_1f43e);
+        sSoftbanksMap.put(0xe53c, R.drawable.emoji_2122);
     }
 
     private static boolean isSoftBankEmoji(char c) {
@@ -1500,10 +1505,28 @@ public final class EmojiconHandler {
                                 icon = (followUnicode == 0x1f1f5) ? R.drawable.emoji_1f1ef_1f1f5 : 0;
                                 break;
                             case 0x1f1fa:
-                                icon = (followUnicode == 0x1f1f8) ? R.drawable.emoji_1f1fa_1f1f8 : 0;
+                                if(followUnicode == 0x1f1f8) {
+                                    icon = R.drawable.emoji_1f1fa_1f1f8;
+                                } else if(followUnicode == 0x1f1e6) {
+                                    icon = R.drawable.emoji_1f1fa_1f1e6;
+                                } else {
+                                    icon = 0;
+                                }
                                 break;
                             case 0x1f1eb:
                                 icon = (followUnicode == 0x1f1f7) ? R.drawable.emoji_1f1eb_1f1f7 : 0;
+                                break;
+                            case 0x1f1e6:
+                                icon = (followUnicode == 0x1f1f2) ? R.drawable.emoji_1f1e6_1f1f2 : 0;
+                                break;
+                            case 0x1f1e7:
+                                if(followUnicode == 0x1f1ec) {
+                                    icon = R.drawable.emoji_1f1e7_1f1ec;
+                                } else if(followUnicode == 0x1f1fe) {
+                                    icon = R.drawable.emoji_1f1e7_1f1fe;
+                                } else {
+                                    icon = 0;
+                                }
                                 break;
                             case 0x1f1e9:
                                 icon = (followUnicode == 0x1f1ea) ? R.drawable.emoji_1f1e9_1f1ea : 0;
@@ -1524,7 +1547,13 @@ public final class EmojiconHandler {
                                 icon = (followUnicode == 0x1f1f3) ? R.drawable.emoji_1f1e8_1f1f3 : 0;
                                 break;
                             case 0x1f1f0:
-                                icon = (followUnicode == 0x1f1f7) ? R.drawable.emoji_1f1f0_1f1f7 : 0;
+                                if(followUnicode == 0x1f1f7) {
+                                    icon = R.drawable.emoji_1f1f0_1f1f7;
+                                } else if(followUnicode == 0x1f1ff) {
+                                    icon = R.drawable.emoji_1f1f0_1f1ff;
+                                } else {
+                                    icon = 0;
+                                }
                                 break;
                             default:
                                 followSkip = 0;

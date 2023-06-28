@@ -114,7 +114,11 @@ public class Places {
             Emojicon.fromCodePoint(0x1f6a9),
             Emojicon.fromChars("\ud83c\uddef\ud83c\uddf5"),
             Emojicon.fromChars("\ud83c\uddf0\ud83c\uddf7"),
+            Emojicon.fromChars("\ud83c\uddfa\ud83c\udde6"),
             Emojicon.fromChars("\ud83c\udde9\ud83c\uddea"),
+            Emojicon.fromChars("\ud83c\udde6\ud83C\uddf2"),
+            Emojicon.fromChars("\ud83c\udde7\ud83c\uddec"),
+            Emojicon.fromChars("\ud83c\udde7\ud83c\uddfe"),
             Emojicon.fromChars("\ud83c\udde8\ud83c\uddf3"),
             Emojicon.fromChars("\ud83c\uddfa\ud83c\uddf8"),
             Emojicon.fromChars("\ud83c\uddeb\ud83c\uddf7"),
@@ -122,5 +126,6 @@ public class Places {
             Emojicon.fromChars("\ud83c\uddee\ud83c\uddf9"),
             Emojicon.fromChars("\ud83c\uddf7\ud83c\uddfa"),
             Emojicon.fromChars("\ud83c\uddec\ud83c\udde7"),
+            Emojicon.fromChars("\ud83c\uddf0\ud83c\uddff"),
     };
 }
