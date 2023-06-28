@@ -23,7 +23,7 @@
             android:textAllCaps="true"
             android:textColor="#888888" />
 
-        <com.rockerhieu.emojicon.EmojiconTextView
+        <dev.tinelix.twemojicon.EmojiconTextView
             android:id="@+id/about_item_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

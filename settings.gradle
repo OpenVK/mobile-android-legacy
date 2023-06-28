@@ -1,1 +1,1 @@
-include ':app', ':slidingmenu', ':emoji-view', ':popupmenu', ':actionbar'
+include ':app', ':slidingmenu', ':popupmenu', ':actionbar', ':twemojicon'

@@ -27,7 +27,7 @@
         android:background="#313743"
         android:orientation="vertical">
 
-        <com.rockerhieu.emojicon.EmojiconEditText
+        <dev.tinelix.twemojicon.EmojiconEditText
             android:id="@+id/status_editor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

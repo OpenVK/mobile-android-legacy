@@ -55,7 +55,7 @@
                 android:gravity="start|center"
                 android:orientation="horizontal">
 
-                <com.rockerhieu.emojicon.EmojiconTextView
+                <dev.tinelix.twemojicon.EmojiconTextView
                     android:id="@+id/poster_name_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -134,7 +134,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.rockerhieu.emojicon.EmojiconTextView
+        <dev.tinelix.twemojicon.EmojiconTextView
             android:id="@+id/post_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.rockerhieu.emojicon.EmojiconTextView
+                <dev.tinelix.twemojicon.EmojiconTextView
                     android:id="@+id/post_retweet_name"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -249,7 +249,7 @@
                     android:textSize="14dip"
                     tools:ignore="HardcodedText,SpUsage" />
 
-                <com.rockerhieu.emojicon.EmojiconTextView
+                <dev.tinelix.twemojicon.EmojiconTextView
                     android:id="@+id/post_retweet_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

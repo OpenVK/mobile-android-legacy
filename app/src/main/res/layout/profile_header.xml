@@ -78,7 +78,7 @@
             app:srcCompat="@drawable/ic_api_android_app_indicator" />
     </LinearLayout>
 
-    <com.rockerhieu.emojicon.EmojiconTextView
+    <dev.tinelix.twemojicon.EmojiconTextView
         android:id="@+id/profile_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

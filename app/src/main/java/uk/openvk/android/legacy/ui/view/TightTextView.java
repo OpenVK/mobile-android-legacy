@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.Layout;
 import android.util.AttributeSet;
 
-import com.rockerhieu.emojicon.EmojiconTextView;
+import dev.tinelix.twemojicon.EmojiconTextView;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

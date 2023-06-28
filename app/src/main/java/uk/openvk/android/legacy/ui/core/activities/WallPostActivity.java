@@ -27,10 +27,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.rockerhieu.emojicon.EmojiconEditText;
-import com.rockerhieu.emojicon.EmojiconGridFragment;
-import com.rockerhieu.emojicon.EmojiconsFragment;
-import com.rockerhieu.emojicon.emoji.Emojicon;
+import dev.tinelix.twemojicon.EmojiconEditText;
+import dev.tinelix.twemojicon.EmojiconGridFragment;
+import dev.tinelix.twemojicon.EmojiconsFragment;
+import dev.tinelix.twemojicon.emoji.Emojicon;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -189,11 +189,12 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     @Override
                     public void onGlobalLayout() {
                         int height = getWindow().getDecorView().getHeight();
-                        Log.w("Foo", String.format("layout height: %d", height));
                         Rect r = new Rect();
                         getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                         int visible = r.bottom - r.top;
-                        keyboard_height = height - visible;
+                        if(height - visible >= 750) {
+                            keyboard_height = height - visible;
+                        }
                     }
                 }
         );
@@ -244,8 +245,10 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
                     View view = WallPostActivity.this.getCurrentFocus();
                     if (view != null) {
-                        if(keyboard_height >= 80) {
+                        if(keyboard_height >= 750) {
                             findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
+                        } else {
+                            findViewById(R.id.emojicons).getLayoutParams().height = 680;
                         }
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -255,6 +258,9 @@ public class WallPostActivity extends TranslucentFragmentActivity
                                 findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                             }
                         }, 200);
+                    } else {
+                        findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                        findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
                 } else {
                     findViewById(R.id.emojicons).setVisibility(View.GONE);
@@ -296,7 +302,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                             postViewLayout.requestFocus();
                         }
                     }
-                } catch (OutOfMemoryError error) {
+                } catch (OutOfMemoryError ignored) {
 
                 }
 
@@ -328,7 +334,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     comments.add(comment);
                     postViewLayout.createAdapter(WallPostActivity.this, comments);
                     ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
-                } catch (OutOfMemoryError error) {
+                } catch (OutOfMemoryError ignored) {
 
                 }
             }

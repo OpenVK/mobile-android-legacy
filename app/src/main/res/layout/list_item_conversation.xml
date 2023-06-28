@@ -117,7 +117,7 @@
         android:layout_toEndOf="@+id/conversation_avatar"
         android:layout_toRightOf="@+id/conversation_avatar">
 
-        <com.rockerhieu.emojicon.EmojiconTextView
+        <dev.tinelix.twemojicon.EmojiconTextView
             android:id="@+id/conversation_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -32,7 +32,7 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 3. [PhotoView 1.2.5](https://github.com/Baseflow/PhotoView/tree/v1.2.5) (Apache License 2.0)
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
-6. [Emojicon 1.2](https://github.com/rockerhieu/emojicon/tree/1.2) (Apache License 2.0)
+6. [Twemojicon (Emojicon with Twemoji pack)](https://github.com/tinelix/twemojicon) (Apache License 2.0)
 7. [ijkplayer 0.8.2](https://github.com/bilibili/ijkplayer/tree/k0.6.2) (LGPL 2.1+)
 8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)

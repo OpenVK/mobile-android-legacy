@@ -59,7 +59,7 @@
             android:visibility="visible"
             emojicon:ignore="ContentDescription" />
 
-        <com.rockerhieu.emojicon.EmojiconEditText
+        <dev.tinelix.twemojicon.EmojiconEditText
             android:id="@+id/comment_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -31,10 +31,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.rockerhieu.emojicon.EmojiconEditText;
-import com.rockerhieu.emojicon.EmojiconGridFragment;
-import com.rockerhieu.emojicon.EmojiconsFragment;
-import com.rockerhieu.emojicon.emoji.Emojicon;
+import dev.tinelix.twemojicon.EmojiconEditText;
+import dev.tinelix.twemojicon.EmojiconGridFragment;
+import dev.tinelix.twemojicon.EmojiconsFragment;
+import dev.tinelix.twemojicon.emoji.Emojicon;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -223,11 +223,12 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     @Override
                     public void onGlobalLayout() {
                         int height = getWindow().getDecorView().getHeight();
-                        Log.w("Foo", String.format("layout height: %d", height));
                         Rect r = new Rect();
                         getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                         int visible = r.bottom - r.top;
-                        keyboard_height = height - visible;
+                        if(height - visible >= 750) {
+                            keyboard_height = height - visible;
+                        }
                     }
                 }
         );
@@ -271,9 +272,12 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
                     View view = ConversationActivity.this.getCurrentFocus();
                     if (view != null) {
-                        if(keyboard_height >= 80) {
+                        if(keyboard_height >= 750) {
                             findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
+                        } else {
+                            findViewById(R.id.emojicons).getLayoutParams().height = 680;
                         }
+                        Log.d(OvkApplication.APP_TAG, String.format("KB height: %s", findViewById(R.id.emojicons).getLayoutParams().height));
                         InputMethodManager imm =
                                 (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -283,6 +287,9 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                                 findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                             }
                         }, 200);
+                    } else {
+                        findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                        findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
                 } else {
                     findViewById(R.id.emojicons).setVisibility(View.GONE);

@@ -57,7 +57,7 @@
             android:src="@drawable/ic_msg_panel_smiles_down"
             android:visibility="visible" />
 
-        <com.rockerhieu.emojicon.EmojiconEditText
+        <dev.tinelix.twemojicon.EmojiconEditText
             android:id="@+id/message_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

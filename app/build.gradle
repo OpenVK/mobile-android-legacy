@@ -134,7 +134,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
     //noinspection GradleDependency
     compile 'com.takisoft.fix:preference-v7:24.0.0.1'
-    compile project(':emoji-view')
     compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
     compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
     compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
@@ -146,4 +145,5 @@ dependencies {
     compile 'com.reginald.swiperefresh:library:1.1.2'
     // Android 2.x plurals patch
     compile 'com.seppius.plurals:android-i18n-plurals:1.1'
+    compile project(':twemojicon')
 }
