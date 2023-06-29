@@ -96,9 +96,16 @@ public class WallPost implements Parcelable {
         try {
             JSONParser jsonParser = new JSONParser();
             JSONObject post = jsonParser.parseJSON(json_str);
-            JSONObject comments = post.getJSONObject("comments");
-            JSONObject likes = post.getJSONObject("likes");
-            JSONObject reposts = post.getJSONObject("reposts");
+            JSONObject comments = null;
+            JSONObject likes = null;
+            JSONObject reposts = null;
+            try {
+                comments = post.getJSONObject("comments");
+                likes = post.getJSONObject("likes");
+                reposts = post.getJSONObject("reposts");
+            } catch (Exception ignore) {
+
+            }
             JSONArray attachments = post.getJSONArray("attachments");
             owner_id = post.getLong("owner_id");
             post_id = post.getLong("id");
@@ -132,9 +139,13 @@ public class WallPost implements Parcelable {
             text = post.getString("text");
             boolean isLiked = false;
             boolean verified_author = false;
-            isLiked = likes.getInt("user_likes") > 0;
-            counters = new PostCounters(likes.getInt("count"), comments.getInt("count"),
-                    reposts.getInt("count"), isLiked, false);
+            if(likes != null && reposts != null && comments != null) {
+                isLiked = likes.getInt("user_likes") > 0;
+                counters = new PostCounters(likes.getInt("count"), comments.getInt("count"),
+                        reposts.getInt("count"), isLiked, false);
+            } else {
+                counters = new PostCounters(0, 0, 0, false, false);
+            }
             if(post.has("post_source") && !post.isNull("post_source")) {
                 if(post.getJSONObject("post_source").getString("type").equals("api")) {
                     post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"),

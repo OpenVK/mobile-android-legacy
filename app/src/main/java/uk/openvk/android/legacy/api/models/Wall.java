@@ -149,6 +149,7 @@ public class Wall implements Parcelable {
                                 repost.getInt("from_id")),
                                 repost.getInt("date"), null, repost.getString("text"), null, "",
                                 null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
+                        repost_item.setJSONString(repost.toString());
                         RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)",
                                 repost.getInt("from_id")),
                                 repost.getInt("date"), ctx);

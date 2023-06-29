@@ -135,6 +135,7 @@ public class Newsfeed implements Parcelable {
                         WallPost repost_item = new WallPost(String.format("(Unknown author: %s)",
                                 repost.getLong("from_id")), repost.getLong("date"), null, repost.getString("text"), null, "",
                                 null, repost.getLong("owner_id"), repost.getLong("id"), ctx);
+                        repost_item.setJSONString(repost.toString());
                         RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)",
                                 repost.getLong("from_id")), repost.getLong("date"), ctx);
                         repostInfo.newsfeed_item = repost_item;

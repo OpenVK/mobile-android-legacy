@@ -1542,43 +1542,17 @@ public class AppActivity extends TranslucentFragmentActivity {
             item = newsfeed.getWallPosts().get(position);
             intent.putExtra("where", "newsfeed");
         }
+        item = wall.getWallItems().get(position);
+        intent.putExtra("where", "wall");
         try {
             intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
             intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
-            intent.putExtra("author_name", String.format("%s %s", account.first_name,
+            intent.putExtra("account_name", String.format("%s %s", account.first_name,
                     account.last_name));
-            intent.putExtra("author_id", account.id);
+            intent.putExtra("account_id", account.id);
             intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
             intent.putExtra("post_author_name", item.repost.newsfeed_item.name);
-            intent.putExtra("post_info", item.repost.newsfeed_item.info);
-            intent.putExtra("post_text", item.repost.newsfeed_item.text);
-            intent.putExtra("post_likes", 0);
-            boolean contains_poll = false;
-            boolean contains_photo = false;
-            boolean is_repost = false;
-            if (item.repost.newsfeed_item.attachments.size() > 0) {
-                for (int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
-                    if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
-                        contains_poll = true;
-                        PollAttachment poll =
-                                ((PollAttachment) item.repost.newsfeed_item.attachments
-                                        .get(i).getContent());
-                        intent.putExtra("poll_question", poll.question);
-                        intent.putExtra("poll_anonymous", poll.anonymous);
-                        //intent.putExtra("poll_answers", poll.answers);
-                        intent.putExtra("poll_total_votes", poll.votes);
-                        intent.putExtra("poll_user_votes", poll.user_votes);
-                    } else if(item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
-                        contains_photo = true;
-                        PhotoAttachment photo =
-                                ((PhotoAttachment) item.repost.newsfeed_item.attachments
-                                        .get(i).getContent());
-                        intent.putExtra("photo_id", photo.id);
-                    }
-                }
-            }
-            intent.putExtra("contains_poll", contains_poll);
-            intent.putExtra("contains_photo", contains_photo);
+            intent.putExtra("post_json", item.repost.newsfeed_item.getJSONString());
             startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
