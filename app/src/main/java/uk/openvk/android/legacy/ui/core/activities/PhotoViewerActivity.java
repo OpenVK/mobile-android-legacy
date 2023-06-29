@@ -152,6 +152,7 @@ public class PhotoViewerActivity extends Activity {
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
+                Log.e(OvkApplication.APP_TAG, "PhotoViewerActivity: Bundle is empty!");
                 finish();
             } else {
                 access_token = instance_prefs.getString("access_token", "");
@@ -163,6 +164,7 @@ public class PhotoViewerActivity extends Activity {
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),
                                         extras.getLong("photo_id")), "original_photos");
                     } else {
+                        Log.e(OvkApplication.APP_TAG, "PhotoViewerActivity: Empty original link");
                         finish();
                     }
                 } catch (Exception ex) {

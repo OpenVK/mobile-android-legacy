@@ -576,7 +576,7 @@ public class OvkAPIWrapper {
         String url = "";
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            Log.d(OvkApplication.API_TAG, String.format("Connecti to %s (Secured)..." +
+            Log.d(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)..." +
                     "\r\nMethod: %s\r\nArguments: %s", server, method, args));
         } else {
             url = String.format("http://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
@@ -637,15 +637,15 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, args, error.description);
                                 }
                             } else if (response_code == 301 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, response_body);
                             } else if (response_code == 302 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
                                 if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s)", server, response_code));
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, "");
                             }
                         };
                     } catch (ConnectException | ProtocolException | UnknownHostException e) {
@@ -775,9 +775,9 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
                                 }
                             } else if (response_code == 301 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
                             } else if (response_code == 302 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
                             } else if (response_code == 503) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
@@ -800,7 +800,7 @@ public class OvkAPIWrapper {
                             }
                         }
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
                     } catch (SocketException e) {
                         if(e.getMessage().contains("ETIMEDOUT")) {
                             if(logging_enabled) Log.e(OvkApplication.API_TAG,
@@ -834,12 +834,12 @@ public class OvkAPIWrapper {
                     } catch (IOException ignored) {
 
                     } catch (Exception e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
+                        sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
                         e.printStackTrace();
                         error.description = e.getMessage();
                     }
                 } catch (Exception ex) {
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
                     ex.printStackTrace();
                 }
             }

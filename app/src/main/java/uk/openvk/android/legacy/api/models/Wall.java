@@ -125,11 +125,7 @@ public class Wall implements Parcelable {
                     String content = post.getString("text");
                     boolean isLiked = false;
                     boolean verified_author = false;
-                    if(likes.getInt("user_likes") > 0) {
-                        isLiked = true;
-                    } else {
-                        isLiked = false;
-                    }
+                    isLiked = likes.getInt("user_likes") > 0;
                     PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"),
                             reposts.getInt("count"), isLiked, false);
 
@@ -138,6 +134,7 @@ public class Wall implements Parcelable {
 
                     WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec, null,
                             content, counters, "", attachments_list, owner_id, post_id, ctx);
+                    item.setJSONString(post.toString());
                     if(post.has("post_source") && !post.isNull("post_source")) {
                         if(post.getJSONObject("post_source").getString("type").equals("api")) {
                             item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"),

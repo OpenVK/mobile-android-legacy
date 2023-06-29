@@ -39,6 +39,9 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
@@ -83,18 +86,18 @@ public class WallPostActivity extends TranslucentFragmentActivity
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
-    private long owner_id;
-    private long post_id;
     public ArrayList<Comment> comments;
     private PostViewLayout postViewLayout;
     private CommentPanel commentPanel;
     private CommentsListAdapter commentsAdapter;
-    private String author_name;
-    private long author_id;
+    private String account_name;
+    private long account_id;
     private long post_author_id;
     private WallPost post;
     private String author_mention = "";
     private int keyboard_height;
+    private String where;
+    private ArrayList<Attachment> attachments;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -142,8 +145,8 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 finish();
                 return;
             } else {
-                author_name = extras.getString("author_name");
-                author_id = extras.getLong("author_id");
+                account_name = extras.getString("account_name");
+                account_id = extras.getLong("account_id");
                 post = new WallPost();
                 getPost(post, extras);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -151,7 +154,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                         getActionBar().setHomeButtonEnabled(true);
                     }
                     getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.comments));
+                    getActionBar().setTitle(getResources().getString(R.string.wall_view));
                 } else {
                     final ActionBar actionBar = findViewById(R.id.actionbar);
                     actionBar.setHomeLogo(R.drawable.ic_ab_app);
@@ -168,7 +171,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                             onBackPressed();
                         }
                     });
-                    actionBar.setTitle(getResources().getString(R.string.comments));
+                    actionBar.setTitle(getResources().getString(R.string.wall_view));
                 }
                 wall = new Wall();
                 ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
@@ -178,7 +181,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
                 downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
-                wall.getComments(ovk_api, owner_id, post.post_id);
+                wall.getComments(ovk_api, post.owner_id, post.post_id);
             }
         } else {
             finish();
@@ -207,33 +210,24 @@ public class WallPostActivity extends TranslucentFragmentActivity
     }
 
     private void getPost(WallPost post, Bundle extras) {
+        post = new WallPost(extras.getString("post_json"), this);
         post.owner_id = extras.getLong("owner_id");
         post.post_id = extras.getLong("post_id");
         post.name = extras.getString("post_author_name");
-        post.info = extras.getString("post_info");
-        post.text = extras.getString("post_text");
-        post.counters = new PostCounters();
-        post.counters.likes = extras.getInt("post_likes");
-        owner_id = extras.getLong("owner_id");
-        post_id = extras.getLong("post_id");
-        String where = extras.getString("where");
-        post_author_id = extras.getLong("post_author_id");
-        post.attachments = new ArrayList<>();
-        if(extras.getBoolean("is_repost")) {
-            post.repost = new RepostInfo(extras.getString("repost_author_name"), 0, this);
-            post.repost.newsfeed_item = new WallPost();
-            post.repost.newsfeed_item.attachments = new ArrayList<>();
-            post.repost.newsfeed_item.name = extras.getString("repost_author_name");
-            post.repost.newsfeed_item.info = extras.getString("repost_info");
-            post.repost.newsfeed_item.owner_id = extras.getInt("repost_owner_id");
-            post.repost.newsfeed_item.post_id = extras.getInt("repost_id");
-            post.repost.newsfeed_item.text = extras.getString("repost_text");
+        where = extras.getString("where");
+        attachments = post.attachments;
+        if(post.attachments == null) {
+            Log.e(OvkApplication.APP_TAG, "Oops!");
         }
-
         postViewLayout.setPost(post, this);
         postViewLayout.setPhotoListener(this);
-        postViewLayout.loadWallAvatar(post_author_id, where);
+        postViewLayout.loadWallAvatar(post.author_id, where);
         postViewLayout.loadWallPhoto(post, where);
+        if(post.attachments.get(0).type.equals("video")) {
+            VideoAttachment video = (VideoAttachment) post.attachments.get(0).getContent();
+            postViewLayout.loadVideoAttachment(this, video, post.owner_id);
+        }
+        this.post = post;
     }
 
     private void setCommentsView() {
@@ -278,17 +272,17 @@ public class WallPostActivity extends TranslucentFragmentActivity
                             final String msg_text = ((EmojiconEditText) commentPanel
                                     .findViewById(R.id.comment_edit)).getText().toString();
                             try {
-                                wall.createComment(ovk_api, owner_id, post_id, msg_text);
+                                wall.createComment(ovk_api, post.owner_id, post.post_id, msg_text);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-                            Comment comment = new Comment(0, author_id, author_name,
+                            Comment comment = new Comment(0, account_id, account_name,
                                     (int) (System.currentTimeMillis() / 1000), msg_text, null);
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             Bitmap bitmap = BitmapFactory.decodeFile(
                                     String.format("%s/photos_cache/account_avatar/avatar_%s",
-                                            getCacheDir(), author_id), options);
+                                            getCacheDir(), account_id), options);
                             comment.avatar = bitmap;
                             if (comments == null) {
                                 comments = new ArrayList<Comment>();
@@ -316,17 +310,17 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     final String msg_text = ((EmojiconEditText) commentPanel.
                             findViewById(R.id.comment_edit)).getText().toString();
                     try {
-                        wall.createComment(ovk_api, owner_id, post_id, msg_text);
+                        wall.createComment(ovk_api, post.owner_id, post.post_id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    Comment comment = new Comment(0, author_id, author_name, (int)
+                    Comment comment = new Comment(0, account_id, account_name, (int)
                             (System.currentTimeMillis() / 1000), msg_text, null);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
                             String.format("%s/photos_cache/account_avatar/avatar_%s",
-                                    getCacheDir(), author_id), options);
+                                    getCacheDir(), account_id), options);
                     comment.avatar = bitmap;
                     if (comments == null) {
                         comments = new ArrayList<Comment>();
@@ -397,12 +391,23 @@ public class WallPostActivity extends TranslucentFragmentActivity
         Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
         intent.putExtra("where", "wall");
         try {
-            if(getIntent().getExtras().getBoolean("contains_photo")) {
-                intent.putExtra("local_photo_addr",
-                        String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                getCacheDir(),
-                        owner_id, post_id));
-                intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
+            if(attachments.get(0).type.equals("photo")) {
+                PhotoAttachment photo = (PhotoAttachment) attachments.get(0).getContent();
+                intent.putExtra("original_link", photo.original_url);
+                intent.putExtra("author_id", post.author_id);
+                intent.putExtra("photo_id", photo.id);
+                if(where.equals("newsfeed")) {
+                    intent.putExtra("local_photo_addr",
+                            String.format("%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                    getCacheDir(),
+                                    post.owner_id, post.post_id));
+                } else {
+                    intent.putExtra("local_photo_addr",
+                            String.format("%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                    getCacheDir(),
+                                    post.owner_id, post.post_id));
+                    intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
+                }
                 startActivity(intent);
             }
         } catch (Exception ex) {
@@ -415,8 +420,8 @@ public class WallPostActivity extends TranslucentFragmentActivity
         try {
             intent.putExtra("post_id", post.repost.newsfeed_item.post_id);
             intent.putExtra("owner_id", post.repost.newsfeed_item.owner_id);
-            intent.putExtra("author_name", author_name);
-            intent.putExtra("author_id", author_id);
+            intent.putExtra("account_name", account_name);
+            intent.putExtra("account_id", account_id);
             intent.putExtra("post_author_id", post.repost.newsfeed_item.author_id);
             intent.putExtra("post_author_name", post.repost.newsfeed_item.name);
             intent.putExtra("post_info", post.repost.newsfeed_item.info);

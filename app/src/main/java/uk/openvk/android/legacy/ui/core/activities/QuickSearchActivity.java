@@ -187,6 +187,7 @@ public class QuickSearchActivity extends TranslucentActivity {
     public void showGroup(int position) {
         String url = "openvk://group/" + "club" + groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setPackage("uk.openvk.android.legacy");
         i.setData(Uri.parse(url));
         startActivity(i);
     }

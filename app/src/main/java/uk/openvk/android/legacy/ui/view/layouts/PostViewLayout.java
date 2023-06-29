@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,8 +32,10 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
@@ -150,7 +154,8 @@ public class PostViewLayout extends LinearLayout {
         if(item.text.length() > 0) {
             String text = item.text;
             Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                    "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+                    "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]" +
+                    "{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
             Matcher matcher = pattern.matcher(text);
             boolean regexp_search = matcher.find();
             int regexp_results = 0;
@@ -324,6 +329,32 @@ public class PostViewLayout extends LinearLayout {
         } catch (Exception ex) {
             Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
         }
+    }
+
+    public void loadVideoAttachment(final Context ctx, final VideoAttachment video, final long owner_id) {
+        final VideoAttachView post_video = findViewById(R.id.post_video);
+        post_video.setAttachment(video);
+        post_video.setVisibility(View.VISIBLE);
+        post_video.setThumbnail(owner_id);
+        post_video.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
+                        float attachment_height = widescreen_aspect_ratio * 9;
+                        post_video.getLayoutParams().height = (int) attachment_height;
+                    }
+                });
+        post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ctx, VideoPlayerActivity.class);
+                intent.putExtra("attachment", video);
+                intent.putExtra("files", video.files);
+                intent.putExtra("owner_id", owner_id);
+                ctx.startActivity(intent);
+            }
+        });
     }
 
     public void adjustLayoutSize(int orientation) {

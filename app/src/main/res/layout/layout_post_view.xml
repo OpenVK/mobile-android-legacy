@@ -270,6 +270,15 @@
                         android:visibility="gone"
                         tools:ignore="ContentDescription" />
 
+                    <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
+                        android:id="@+id/post_video"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginBottom="10dip"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginRight="10dip"
+                        android:visibility="gone" />
+
                     <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
                         android:id="@+id/poll_layout"
                         android:layout_width="match_parent"
@@ -277,7 +286,9 @@
                         android:layout_marginBottom="10dip"
                         android:layout_marginLeft="10dip"
                         android:layout_marginRight="10dip"
-                        android:visibility="gone" />
+                        android:visibility="gone" >
+
+                    </uk.openvk.android.legacy.ui.view.layouts.PollAttachView>
 
                     <LinearLayout
                         android:id="@+id/wall_view_nlikesw"

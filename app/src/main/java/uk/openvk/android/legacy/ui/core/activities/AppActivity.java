@@ -1145,17 +1145,19 @@ public class AppActivity extends TranslucentFragmentActivity {
             } else if(message == HandlerMessages.OVK_VERSION) {
                 mainSettingsFragment.setInstanceVersion(ovk);
             } else if (message < 0) {
-                setErrorPage(data, "error", message, true);
                 if(data.containsKey("method")) {
                     try {
                         String method = data.getString("method");
-                        if (((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
-                            && selectedFragment instanceof NewsfeedFragment)
-                            || (method.equals("Friends.get") && selectedFragment instanceof FriendsFragment)
-                            || (method.equals("Groups.get") && selectedFragment instanceof GroupsFragment)
-                            || (method.equals("Users.get") && selectedFragment instanceof ProfileFragment)) {
-                                slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                                setErrorPage(data, "error", message, true);
+                        if (method.equals("Account.getProfileInfo")
+                                || ((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
+                                && selectedFragment instanceof NewsfeedFragment)
+                                || (method.equals("Friends.get") && selectedFragment instanceof FriendsFragment)
+                                || (method.equals("Groups.get") && selectedFragment instanceof GroupsFragment)
+                                || (method.equals("Users.get") && selectedFragment instanceof ProfileFragment)
+                                || (method.equals("Messages.getConversations")
+                                && selectedFragment instanceof ConversationsFragment)) {
+                                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                                    setErrorPage(data, "error", message, true);
                         } else {
                             if(data.getString("method").equals("Wall.get") &&
                                     global_prefs.getString("current_screen", "").equals("profile")) {
@@ -1178,7 +1180,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                     if(account.first_name == null && account.last_name == null) {
                         slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                     }
-                    setErrorPage(data, "error", HandlerMessages.INVALID_JSON_RESPONSE, false);
+                    setErrorPage(data, "error", message, false);
                 }
             }
         } catch (Exception ex) {
@@ -1404,57 +1406,18 @@ public class AppActivity extends TranslucentFragmentActivity {
             try {
                 intent.putExtra("post_id", item.post_id);
                 intent.putExtra("owner_id", item.owner_id);
-                intent.putExtra("author_name", String.format("%s %s", account.first_name,
+                intent.putExtra("account_name", String.format("%s %s", account.first_name,
                         account.last_name));
-                intent.putExtra("author_id", account.id);
+                intent.putExtra("account_id", account.id);
                 intent.putExtra("post_author_id", item.author_id);
                 intent.putExtra("post_author_name", item.name);
-                intent.putExtra("post_info", item.info);
-                intent.putExtra("post_text", item.text);
-                intent.putExtra("post_likes", item.counters.likes);
-                boolean contains_poll = false;
-                boolean contains_photo = false;
-                boolean is_repost = false;
-                if (item.attachments.size() > 0) {
-                    for (int i = 0; i < item.attachments.size(); i++) {
-                        if (item.attachments.get(i).type.equals("poll")) {
-                            contains_poll = true;
-                            PollAttachment poll = ((PollAttachment) item.attachments.get(i)
-                                    .getContent());
-                            intent.putExtra("poll_question", poll.question);
-                            intent.putExtra("poll_anonymous", poll.anonymous);
-                            //intent.putExtra("poll_answers", poll.answers);
-                            intent.putExtra("poll_total_votes", poll.votes);
-                            intent.putExtra("poll_user_votes", poll.user_votes);
-                        } else if(item.attachments.get(i).type.equals("photo")) {
-                            contains_photo = true;
-                            PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i)
-                                    .getContent());
-                            intent.putExtra("photo_id", photo.id);
-                        }
-                    }
-                }
-                intent.putExtra("contains_poll", contains_poll);
-                intent.putExtra("contains_photo", contains_photo);
-                if (item.repost != null) {
-                    intent.putExtra("is_repost", true);
-                    intent.putExtra("repost_id", item.repost.newsfeed_item.post_id);
-                    intent.putExtra("repost_owner_id", item.repost.newsfeed_item.owner_id);
-                    intent.putExtra("repost_author_id", item.repost.newsfeed_item.author_id);
-                    intent.putExtra("repost_author_name", item.repost.newsfeed_item.name);
-                    intent.putExtra("repost_info", item.repost.newsfeed_item.info);
-                    intent.putExtra("repost_text", item.repost.newsfeed_item.text);
-                } else {
-                    intent.putExtra("is_repost", false);
-                }
+                intent.putExtra("post_json", item.getJSONString());
                 startActivity(intent);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
-
-
 
     public void showAuthorPage(int position) {
         WallPost item;

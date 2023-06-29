@@ -121,6 +121,7 @@ public class Newsfeed implements Parcelable {
 
                     WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec,
                             null, content, counters, "", attachments_list, owner_id, post_id, ctx);
+                    item.setJSONString(post.toString());
                     if(post.has("post_source") && !post.isNull("post_source")) {
                         if(post.getJSONObject("post_source").getString("type").equals("api")) {
                             item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"),
