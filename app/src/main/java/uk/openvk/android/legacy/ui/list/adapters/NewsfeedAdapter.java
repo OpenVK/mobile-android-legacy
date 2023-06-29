@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.ui.list.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -392,7 +393,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(author_avatar != null) {
                 avatar.setImageBitmap(author_avatar);
             } else {
-                avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                ctx.getCacheDir(), item.author_id), options);
+                if(bitmap != null) {
+                    avatar.setImageBitmap(bitmap);
+                } else {
+                    avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+                }
             }
 
             ((LinearLayout) convertView.findViewById(R.id.poster_ll)).setOnClickListener(new View.OnClickListener() {

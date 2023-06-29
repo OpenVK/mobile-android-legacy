@@ -27,6 +27,7 @@ import java.util.Timer;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.InstanceLink;
@@ -116,7 +117,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     Toast.makeText(getContext(),
-                            getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
+                            getResources().getString(R.string.not_implemented),
+                            Toast.LENGTH_LONG).show();
                     return false;
                 }
             });
@@ -132,7 +134,14 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         });
         Preference logout_preference = findPreference("logOut");
         if (logout_preference != null) {
-            //logout_preference.setSummary(account_name);
+            if(getActivity() instanceof AppActivity) {
+                AppActivity appActivity = ((AppActivity) getActivity());
+                if(appActivity.account.first_name != null && appActivity.account.last_name != null) {
+                    logout_preference.setSummary(
+                            String.format("%s %s", appActivity.account.first_name,
+                                    appActivity.account.last_name));
+                }
+            }
             logout_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -374,6 +383,14 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         } else {
             TextView connection_type = (TextView) about_instance_view.findViewById(R.id.connection_type_label2);
             connection_type.setText(getResources().getString(R.string.connection_error));
+        }
+    }
+
+    public void setAccount(Account account) {
+        if(account.first_name != null && account.last_name != null) {
+            Preference logout_preference = findPreference("logOut");
+            logout_preference.setSummary(
+                    String.format("%s %s", account.first_name, account.last_name));
         }
     }
 }

@@ -741,6 +741,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String profile_name = String.format("%s %s", account.first_name, account.last_name);
+                mainSettingsFragment.setAccount(account);
                 slidingmenuLayout.setProfileName(profile_name);
                 newsfeed.get(ovk_api, newsfeed_count);
                 messages.getLongPollServer(ovk_api);
