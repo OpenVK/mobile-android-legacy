@@ -301,7 +301,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                     usingHTTPS = "No";
                 }
                 writer.append(String.format(
-                        "OpenVK Legacy %s\r\n" +
+                        "OpenVK Legacy %s (%s)\r\n" +
                                 "==============================================" +
                                 "\r\nDEVICE" +
                                 "\r\nDevice: %s %s (codename: %s)" +
@@ -312,8 +312,11 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                                 "\r\nHTTPS: %s" +
                                 "\r\nTablet UI?: %s\r\n" +
                                 "==============================================\r\n",
-                        ovk.version, Build.BRAND, Build.MODEL, Build.DEVICE,
+                        ovk.version, BuildConfig.GITHUB_COMMIT, Build.BRAND, Build.MODEL, Build.DEVICE,
                         Build.VERSION.RELEASE, Build.VERSION.SDK_INT, server, usingHTTPS, isTablet));
+                if(log.length() == 0) {
+                    log.append("ERROR: Logcat not supported or not allowed. Please enable USB debugging.");
+                }
                 writer.append(log);
                 writer.flush();
                 writer.close();

@@ -5,15 +5,22 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
 import com.seppius.i18n.plurals.PluralResources;
+
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import uk.openvk.android.legacy.api.wrappers.NotificationManager;
 import uk.openvk.android.legacy.longpoll_api.LongPollService;
+import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -30,6 +37,13 @@ import uk.openvk.android.legacy.longpoll_api.LongPollService;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+@ReportsCrashes(
+        customReportContent = {ReportField.DEVICE_ID, ReportField.USER_CRASH_DATE, 
+                ReportField.USER_APP_START_DATE, ReportField.STACK_TRACE, ReportField.LOGCAT},
+        mode = ReportingInteractionMode.DIALOG,
+        resDialogText = R.string.crash_description,
+        resDialogTitle = R.string.crash_title, buildConfigClass = BuildConfig.class,
+        reportDialogClass = CrashReporterActivity.class)
 public class OvkApplication extends Application {
 
     public String version;
@@ -62,6 +76,8 @@ public class OvkApplication extends Application {
         version = BuildConfig.VERSION_NAME;
         config = getResources().getConfiguration();
 
+        initializeACRA();
+
         createSettings(global_prefs, instance_prefs);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             swdp = getResources().getConfiguration().smallestScreenWidthDp;
@@ -73,6 +89,17 @@ public class OvkApplication extends Application {
             }
         }
         isTablet = global.isTablet();
+    }
+
+    private void initializeACRA() {
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        ACRA.init(this);
+        ACRACustomSender customSender = new ACRACustomSender();
+        ACRA.getErrorReporter().setReportSender(customSender);
     }
 
     private void createSettings(SharedPreferences global_prefs, SharedPreferences instance_prefs) {

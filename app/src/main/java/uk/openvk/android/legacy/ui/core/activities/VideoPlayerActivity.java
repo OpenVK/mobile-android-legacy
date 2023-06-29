@@ -168,9 +168,7 @@ public class VideoPlayerActivity extends Activity {
     }
 
     private void createMediaPlayer(Uri uri) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                !Build.CPU_ABI.equals("x86")
-                && !Build.CPU_ABI.equals("x86_64")) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
             try {
                 imp = new IjkMediaPlayer();
                 imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
@@ -381,8 +379,7 @@ public class VideoPlayerActivity extends Activity {
 
     private void resizeVideo() {
         SurfaceView mSurfaceView = findViewById(R.id.video_surface_view);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                !Build.CPU_ABI.equals("x86")
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                 && !Build.CPU_ABI.equals("x86_64")) {
             if(!fitVideo) {
                 int videoWidth = imp.getVideoWidth();
@@ -420,8 +417,7 @@ public class VideoPlayerActivity extends Activity {
     }
 
     private void rescaleVideo(SurfaceView vsv, SurfaceHolder vsh) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                !Build.CPU_ABI.equals("x86")
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                 && !Build.CPU_ABI.equals("x86_64")) {
             vsh.setFixedSize(imp.getVideoWidth(), imp.getVideoHeight());
             // Get the width of the frame
@@ -487,8 +483,7 @@ public class VideoPlayerActivity extends Activity {
 
     private void playVideo() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                    !Build.CPU_ABI.equals("x86")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                     && !Build.CPU_ABI.equals("x86_64")) {
                 if (isPlaying()) {
                     imp.pause();
@@ -509,8 +504,7 @@ public class VideoPlayerActivity extends Activity {
 
     private boolean isPlaying() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                    !Build.CPU_ABI.equals("x86")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                     && !Build.CPU_ABI.equals("x86_64")) {
                 return imp.isPlaying();
             } else {
@@ -528,8 +522,7 @@ public class VideoPlayerActivity extends Activity {
             int duration = 0;
             try {
                 if(invalid_pos != 1) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                            !Build.CPU_ABI.equals("x86")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                             && !Build.CPU_ABI.equals("x86_64")) {
                         pos = (int) (imp.getCurrentPosition() / 1000);
                         // calculating video duration workaround
@@ -590,8 +583,7 @@ public class VideoPlayerActivity extends Activity {
     protected void onDestroy() {
         ready = false;
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                    !Build.CPU_ABI.equals("x86")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                     && !Build.CPU_ABI.equals("x86_64")) {
                 if (isPlaying()) {
                     imp.stop();

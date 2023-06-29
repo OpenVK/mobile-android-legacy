@@ -145,5 +145,6 @@ dependencies {
     compile 'com.reginald.swiperefresh:library:1.1.2'
     // Android 2.x plurals patch
     compile 'com.seppius.plurals:android-i18n-plurals:1.1'
+    compile 'ch.acra:acra:4.6.0'
     compile project(':twemojicon')
 }

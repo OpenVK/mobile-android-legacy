@@ -39,6 +39,7 @@ _Работает на OpenVK API._
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
 11. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
 12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
+13. [Application Crash Reports for Android](https://github.com/ACRA/acra) (Apache License 2.0)
 
 ## Лицензия OpenVK Legacy
 [GNU (Affero) GPL v3.0](https://github.com/openvk/mobile-android-legacy/blob/main/COPYING) или более поздней версии.

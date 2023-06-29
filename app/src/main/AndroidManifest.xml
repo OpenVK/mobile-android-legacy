@@ -224,6 +224,11 @@
 
         <!--suppress AndroidDomInspection -->
         <service android:name=".longpoll_api.LongPollService" android:enabled="true" android:exported="true"/>
+
+        <activity android:name=".ui.core.activities.CrashReporterActivity"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
     </application>
 
 </manifest>

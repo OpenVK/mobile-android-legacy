@@ -98,6 +98,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
     private int keyboard_height;
     private String where;
     private ArrayList<Attachment> attachments;
+    private int minKbHeight = 450;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -136,6 +137,12 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 }
             }
         };
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+        }
 
         setCommentsView();
 
@@ -195,7 +202,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                         Rect r = new Rect();
                         getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                         int visible = r.bottom - r.top;
-                        if(height - visible >= 750) {
+                        if(height - visible >= minKbHeight) {
                             keyboard_height = height - visible;
                         }
                     }
@@ -244,10 +251,10 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
                     View view = WallPostActivity.this.getCurrentFocus();
                     if (view != null) {
-                        if(keyboard_height >= 750) {
+                        if(keyboard_height >= minKbHeight) {
                             findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
                         } else {
-                            findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                            findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight - 75;
                         }
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -258,7 +265,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                             }
                         }, 200);
                     } else {
-                        findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                        findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight - 75;
                         findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -379,6 +386,11 @@ public class WallPostActivity extends TranslucentFragmentActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         postViewLayout.adjustLayoutSize(newConfig.orientation);
+        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);;
+        } else {
+            minKbHeight = (int) (180 * getResources().getDisplayMetrics().scaledDensity);;
+        }
         super.onConfigurationChanged(newConfig);
     }
 

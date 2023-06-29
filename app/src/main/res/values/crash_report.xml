@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="crash_title">Critical Application Crash</string>
+    <string name="crash_description"><![CDATA[
+        <b>Alas, the OpenVK Legacy app crashed due to an unexpected error.</b>
+        <br>
+        <br>To fix <a href="https://github.com/openvk/mobile-android-legacy/issues">submit a сrash report to the developers</a>.
+    ]]></string>
+    <string name="show_crash_report">Show report</string>
+    <string name="hide_crash_report">Hide report</string>
+    <string name="restart_app">Restart</string>
+</resources>

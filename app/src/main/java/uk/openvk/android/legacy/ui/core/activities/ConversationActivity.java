@@ -96,6 +96,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     private LongPollReceiver lpReceiver;
     private String last_lp_message;
     private int keyboard_height;
+    private int minKbHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +115,11 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         messages = new Messages();
         registerBroadcastReceiver();
         setEmojiconFragment(false);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+        }
         ((XLinearLayout) findViewById(R.id.conversation_view)).setOnKeyboardStateListener(this);
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -537,6 +543,16 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 getResources().getString(R.string.delete_msgs_confirm,
                         String.format("\"%s\"", text)), null);
         dialog.show();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+        }
     }
 
     private void setEmojiconFragment(boolean useSystemDefault) {
