@@ -223,9 +223,14 @@ public class WallPostActivity extends TranslucentFragmentActivity
         postViewLayout.setPhotoListener(this);
         postViewLayout.loadWallAvatar(post.author_id, where);
         postViewLayout.loadWallPhoto(post, where);
-        if(post.attachments.get(0).type.equals("video")) {
-            VideoAttachment video = (VideoAttachment) post.attachments.get(0).getContent();
-            postViewLayout.loadVideoAttachment(this, video, post.owner_id);
+        for(int i = 0; i < post.attachments.size(); i++) {
+            if (post.attachments.get(i).type.equals("video")) {
+                VideoAttachment video = (VideoAttachment) post.attachments.get(i).getContent();
+                postViewLayout.loadVideoAttachment(this, video, post.owner_id);
+            } else if(post.attachments.get(i).type.equals("poll")) {
+                PollAttachment poll = (PollAttachment) post.attachments.get(i).getContent();
+                postViewLayout.loadPollAttachment(this, poll);
+            }
         }
         this.post = post;
     }
