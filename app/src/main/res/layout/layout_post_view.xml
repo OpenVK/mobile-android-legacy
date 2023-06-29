@@ -177,7 +177,7 @@
                                 android:textColor="@color/main_text"
                                 android:textSize="16dip"
                                 android:visibility="visible"
-                                tools:ignore="Deprecated,HardcodedText,RtlHardcoded,SpUsage"/>
+                                tools:ignore="Deprecated,HardcodedText,RtlHardcoded,SpUsage" />
 
                             <TextView
                                 android:id="@+id/post_retweet_time"
@@ -201,9 +201,8 @@
                                 android:layout_marginBottom="8dip"
                                 android:layout_marginLeft="10dip"
                                 android:layout_marginRight="10dip"
-                                android:layout_marginTop="-2dip"
+                                android:layout_marginTop="8dip"
                                 android:linksClickable="false"
-                                android:minLines="8"
                                 android:text="repost text"
                                 android:textColor="@color/main_text"
                                 android:textSize="14dip"
