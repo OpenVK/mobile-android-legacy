@@ -32,6 +32,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
@@ -442,5 +443,12 @@ public class PostViewLayout extends LinearLayout {
             }
             commentsAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void loadPollAttachment(Context ctx, PollAttachment poll) {
+        PollAttachView pollAttachView = findViewById(R.id.poll_layout);
+        pollAttachView.createAdapter(ctx, 0, poll.answers, poll.multiple, poll.user_votes, poll.votes);
+        pollAttachView.setPollInfo(poll.question, poll.anonymous, poll.end_date);
+        pollAttachView.setVisibility(View.VISIBLE);
     }
 }
