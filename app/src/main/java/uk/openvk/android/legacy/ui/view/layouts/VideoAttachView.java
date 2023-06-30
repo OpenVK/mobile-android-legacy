@@ -79,11 +79,15 @@ public class VideoAttachView extends FrameLayout {
         ImageView preview = findViewById(R.id.video_preview);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        thumbnail = BitmapFactory.decodeFile(
-                getContext().getCacheDir()
-                        + "/photos_cache/video_thumbnails/thumbnail_"
-                        + attachment.id + "o" + owner_id, options);
-        preview.setImageBitmap(thumbnail);
+        try {
+            thumbnail = BitmapFactory.decodeFile(
+                    getContext().getCacheDir()
+                            + "/photos_cache/video_thumbnails/thumbnail_"
+                            + attachment.id + "o" + owner_id, options);
+            preview.setImageBitmap(thumbnail);
+        } catch (OutOfMemoryError oom) {
+            oom.printStackTrace();
+        }
     }
 
     public Bitmap getThumbnail() {

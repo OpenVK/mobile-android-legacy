@@ -96,11 +96,7 @@ public class NotificationManager {
 
     public boolean isRepeat(String last_longpoll_response, String response) {
         try {
-            if (last_longpoll_response.equals(response)) {
-                return true;
-            } else {
-                return false;
-            }
+            return last_longpoll_response.equals(response);
         } catch (Exception ex) {
             return false;
         }

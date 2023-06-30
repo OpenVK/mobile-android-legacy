@@ -84,23 +84,27 @@ public class OvkAlertDialog extends AlertDialog {
         this.title = title;
         if(dlg_view == null) {
             try {
-                if(type.equals("progressDlg")) {
-                    dlg_view = getLayoutInflater().inflate(R.layout.dialog_styled_progress, null, false);
-                    TextView message_tv = dlg_view.findViewById(android.R.id.message);
-                    message_tv.setText(message);
-                    builder.setView(dlg_view);
-                    builder.setCancelable(false);
-                } else if(type.equals("listDlg")) {
-                    builder.setView(null);
-                } else {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        dlg_view = getLayoutInflater().inflate(R.layout.layout_styled_dialog, null, false);
+                switch (type) {
+                    case "progressDlg":
+                        dlg_view = getLayoutInflater().inflate(R.layout.dialog_styled_progress, null, false);
                         TextView message_tv = dlg_view.findViewById(android.R.id.message);
                         message_tv.setText(message);
                         builder.setView(dlg_view);
-                    } else {
-                        builder.setMessage(message);
-                    }
+                        builder.setCancelable(false);
+                        break;
+                    case "listDlg":
+                        builder.setView(null);
+                        break;
+                    default:
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                            dlg_view = getLayoutInflater().inflate(R.layout.layout_styled_dialog, null, false);
+                            message_tv = dlg_view.findViewById(android.R.id.message);
+                            message_tv.setText(message);
+                            builder.setView(dlg_view);
+                        } else {
+                            builder.setMessage(message);
+                        }
+                        break;
                 }
             } catch (Exception ignored) {
 

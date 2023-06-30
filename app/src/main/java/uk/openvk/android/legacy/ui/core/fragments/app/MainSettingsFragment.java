@@ -4,8 +4,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
@@ -65,6 +68,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     private int danger_zone_multiple_tap;
     private View about_instance_view;
     private OvkAlertDialog about_instance_dlg;
+    public  int selectedPosition;
 
     @Override
     public void onCreatePreferencesFix(Bundle bundle, String s) {
@@ -96,29 +100,32 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         PreferenceGroup others = (PreferenceGroup) findPreference("cat_others");
 
         Preference language = findPreference("interfaceLanguage");
-        if (language != null) {
-            // Not implemented yet
-            language.setEnabled(false);
-            language.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Toast.makeText(getContext(),
-                            getResources().getString(R.string.not_implemented), Toast.LENGTH_LONG).show();
-                    return false;
-                }
-            });
-        }
+        String[] langauge_array = getResources().getStringArray(R.array.interface_languages);
+        language.setSummary(global_prefs.getString("interfaceLanguage", ""));
+        language.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showUiLanguageSelectionDialog();
+                return false;
+            }
+        });
 
         Preference notif_ringtone = findPreference("notifyRingtone");
         if (notif_ringtone != null) {
-            // Not implemented yet
-            notif_ringtone.setEnabled(false);
             notif_ringtone.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Toast.makeText(getContext(),
-                            getResources().getString(R.string.not_implemented),
-                            Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE,
+                            getResources().getString(R.string.sett_notifications));
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                            Uri.parse(global_prefs.getString("notifyRingtone", "content://settings/system/ringtone")));
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
+                            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                    getActivity().startActivityForResult(intent, 5);
                     return false;
                 }
             });
@@ -220,6 +227,55 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 }
             });
         }
+    }
+
+    private void showUiLanguageSelectionDialog() {
+        int valuePos = 0;
+        String value = global_prefs.getString("ui_language", "blue");
+        String[] array = getResources().getStringArray(R.array.interface_languages);
+        selectedPosition = 0;
+        switch (value) {
+            default:
+                break;
+            case "English":
+                valuePos = 1;
+                break;
+            case "Русский":
+                valuePos = 2;
+                break;
+            case "Украïнська":
+                valuePos = 3;
+                break;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setSingleChoiceItems(R.array.interface_languages, valuePos, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectedPosition = which;
+            }
+        });
+        OvkAlertDialog dialog = new OvkAlertDialog(getContext());
+        dialog.build(builder, getResources().getString(R.string.interface_language), "", null, "listDlg");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = global_prefs.edit();
+                        editor.putString("interfaceLanguage",
+                                getResources().getStringArray(R.array.interface_languages)[selectedPosition]);
+                        editor.commit();
+                        Toast.makeText(getContext(), R.string.sett_app_restart_required,
+                                Toast.LENGTH_LONG).show();
+                    }
+        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+        });
+        dialog.show();
     }
 
     private void openLogoutConfirmationDialog() {
@@ -392,5 +448,11 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
             logout_preference.setSummary(
                     String.format("%s %s", account.first_name, account.last_name));
         }
+    }
+
+    public void setNotificationSound(String uri) {
+        SharedPreferences.Editor editor = global_prefs.edit();
+        editor.putString("notifyRingtone", uri);
+        editor.commit();
     }
 }
