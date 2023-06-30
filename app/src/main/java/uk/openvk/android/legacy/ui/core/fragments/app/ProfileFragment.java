@@ -300,7 +300,7 @@ public class ProfileFragment extends Fragment {
             ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else if(((OvkApplication)getContext().getApplicationContext()).isTablet &&
                 smallestWidth < 800) {
-            ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else {
             ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         }
