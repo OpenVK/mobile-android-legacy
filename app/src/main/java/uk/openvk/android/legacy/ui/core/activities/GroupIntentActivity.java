@@ -499,6 +499,25 @@ public class GroupIntentActivity extends TranslucentActivity {
                 join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
             }
             join_btn.setVisibility(View.VISIBLE);
+        } else if(((OvkApplication)getApplicationContext()).isTablet &&
+                smallestWidth < 800) {
+            final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
+            join_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(group.is_member > 0) {
+                        group.leave(ovk_api);
+                    } else {
+                        group.join(ovk_api);
+                    }
+                }
+            });
+            if(group.is_member > 0) {
+                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+            } else {
+                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+            }
+            join_btn.setVisibility(View.VISIBLE);
         } else {
             final Button join_btn = ((Button) findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {
