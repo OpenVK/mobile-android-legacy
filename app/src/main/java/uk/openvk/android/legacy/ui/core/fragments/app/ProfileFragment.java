@@ -171,7 +171,7 @@ public class ProfileFragment extends Fragment {
                 }
             });
         } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
-            ((Button) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
+            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (ctx.getClass().getSimpleName().equals("AppActivity")) {
