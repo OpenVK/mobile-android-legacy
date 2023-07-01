@@ -1,11 +1,13 @@
 package uk.openvk.android.legacy.ui.core.activities.base;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.support.v7.preference.PreferenceManager;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -38,14 +40,21 @@ public class TranslucentActivity extends Activity {
     private void setTranslucentStatusBar() {
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int statusbar_color = R.color.transparent_statusbar_color;
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            statusbar_color = R.color.transparent_statusbar_color_gray;
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            statusbar_color = R.color.transparent_statusbar_color_black;
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.transparent_statusbar_color));
+            window.setStatusBarColor(getResources().getColor(statusbar_color));
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             tintManager.setTintDrawable(
-                    getResources().getDrawable(R.color.transparent_statusbar_color));
+                    getResources().getDrawable(statusbar_color));
         }
     }
 

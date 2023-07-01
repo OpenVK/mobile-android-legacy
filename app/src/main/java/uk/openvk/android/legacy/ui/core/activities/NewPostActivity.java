@@ -150,6 +150,7 @@ public class NewPostActivity extends TranslucentActivity {
     private void installLayouts() {
         TextView where = findViewById(R.id.newpost_location_address);
         where.setText(String.format("%s %s", getResources().getString(R.string.wall), account_first_name));
+        global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);

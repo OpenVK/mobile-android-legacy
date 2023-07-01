@@ -261,7 +261,7 @@ public class Global {
                     new int[] { android.R.attr.actionBarSize });
             int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
             styledAttributes.recycle();
-            ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin = mActionBarSize;
+            ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin = 0;
         }
     }
 
