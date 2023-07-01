@@ -81,7 +81,7 @@ public class MainActivity extends TranslucentActivity {
                     findViewById(R.id.auth)
                             .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_black));
                     ((ImageView) findViewById(R.id.auth_logo))
-                            .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
+                            .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_black));
                 }
             }
             handler = new Handler(Looper.myLooper()) {

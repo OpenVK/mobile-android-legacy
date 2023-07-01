@@ -66,9 +66,9 @@ public class SlidingMenuLayout extends LinearLayout {
 
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-            view.setBackgroundColor(getResources().getColor(R.color.transparent_statusbar_color_gray));
+            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-            view.setBackgroundColor(getResources().getColor(R.color.transparent_statusbar_color_black));
+            view.setBackgroundColor(getResources().getColor(R.color.color_black_v2));
         }
     }
 

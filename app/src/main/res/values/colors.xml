@@ -32,8 +32,8 @@
     <color name="sublink_color">#8b8b8b</color>
     <color name="transparent_statusbar_color">#3b597b</color>
     <color name="transparent_statusbar_color_gray">#3e3e3e</color>
-    <color name="transparent_statusbar_color_black">#121212</color>
-    <color name="color_gray_v2">#222222</color>
+    <color name="transparent_statusbar_color_black">#151515</color>
+    <color name="color_gray_v2">#252525</color>
     <color name="color_gray_v3">#2f2f2f</color>
     <color name="color_black_v2">#1a1a1a</color>
     <color name="warningColor">#8ffbe684</color>

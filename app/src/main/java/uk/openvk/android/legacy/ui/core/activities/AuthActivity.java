@@ -117,7 +117,7 @@ public class AuthActivity extends Activity {
             findViewById(R.id.auth_layout)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_black));
             ((ImageView) findViewById(R.id.auth_logo))
-                    .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
+                    .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_black));
             findViewById(R.id.reg_btn)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
         }
