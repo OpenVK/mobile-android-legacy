@@ -86,11 +86,19 @@ public class ProfileFragment extends Fragment {
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
             view.findViewById(R.id.about_profile_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            view.findViewById(R.id.send_direct_msg)
+                    .setBackground(getResources().getDrawable(R.drawable.btn_light_gray));
+            view.findViewById(R.id.add_to_friends)
+                    .setBackground(getResources().getDrawable(R.drawable.btn_light_gray));
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
             view.findViewById(R.id.profile_ext_header)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
             view.findViewById(R.id.about_profile_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            view.findViewById(R.id.send_direct_msg)
+                    .setBackground(getResources().getDrawable(R.drawable.btn_light_black));
+            view.findViewById(R.id.add_to_friends)
+                    .setBackground(getResources().getDrawable(R.drawable.btn_light_black));
         }
         return view;
     }

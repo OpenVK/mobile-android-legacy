@@ -305,11 +305,15 @@ public class GroupIntentActivity extends TranslucentActivity {
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
             findViewById(R.id.about_group_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            findViewById(R.id.join_to_comm)
+                    .setBackground(getResources().getDrawable(R.drawable.btn_light_gray));
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
             findViewById(R.id.profile_ext_header)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
             findViewById(R.id.about_group_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            findViewById(R.id.join_to_comm)
+                    .setBackground(getResources().getDrawable(R.drawable.btn_light_black));
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
