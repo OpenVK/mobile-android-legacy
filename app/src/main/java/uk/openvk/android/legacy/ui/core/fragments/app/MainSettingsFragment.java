@@ -324,7 +324,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
             }
         });
         OvkAlertDialog dialog = new OvkAlertDialog(getContext());
-        dialog.build(builder, getResources().getString(R.string.interface_language), "", null, "listDlg");
+        dialog.build(builder, getResources().getString(R.string.interface_theme), "", null, "listDlg");
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                     @Override
