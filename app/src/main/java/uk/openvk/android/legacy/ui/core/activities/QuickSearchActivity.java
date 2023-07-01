@@ -30,9 +30,11 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.models.Groups;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.FullListView;
+import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
@@ -60,6 +62,7 @@ public class QuickSearchActivity extends TranslucentActivity {
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
+    public DownloadManager dlm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class QuickSearchActivity extends TranslucentActivity {
         setContentView(R.layout.activity_search);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false));
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setTextEditListener();
@@ -130,15 +134,21 @@ public class QuickSearchActivity extends TranslucentActivity {
 
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.USERS_SEARCH) {
-            users.parseSearch(data.getString("response"));
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
             searchResultsLayout.createUsersAdapter(this, users.getList());
             ((LinearLayout) searchResultsLayout.findViewById(R.id.people_ll)).setVisibility(View.VISIBLE);
         } else if(message == HandlerMessages.GROUPS_SEARCH) {
-            groups.parseSearch(data.getString("response"));
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
             searchResultsLayout.createGroupsAdapter(this, groups.getList());
             ((LinearLayout) searchResultsLayout.findViewById(R.id.community_ll)).setVisibility(View.VISIBLE);
+        } else if(message == HandlerMessages.GROUP_AVATARS) {
+            final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
+            searchResultsLayout.groupsSearchResultAdapter.loadAvatars = true;
+            searchResultsLayout.refreshGroupsAdapter();
+        } else if(message == HandlerMessages.PROFILE_AVATARS) {
+            final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
+            searchResultsLayout.usersSearchResultAdapter.loadAvatars = true;
+            searchResultsLayout.refreshUsersAdapter();
         }
     }
 

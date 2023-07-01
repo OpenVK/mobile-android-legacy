@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ public class GroupsSearchResultAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Group> objects;
+    public boolean loadAvatars;
 
     public GroupsSearchResultAdapter(Context context, ArrayList<Group> items) {
         ctx = context;
@@ -81,8 +84,29 @@ public class GroupsSearchResultAdapter extends BaseAdapter {
                 }
             }
         });
+        if(loadAvatars) {
+            loadAvatar(view, item.id);
+        }
 
         return view;
+    }
+
+    private void loadAvatar(View view, long id) {
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap avatar = BitmapFactory.decodeFile(
+                    ctx.getCacheDir() + "/photos_cache/group_avatars/avatar_"
+                            + id, options);
+            if(avatar != null) {
+                ((ImageView) view.findViewById(R.id.sr_list_item_photo)).setImageBitmap(avatar);
+            } else {
+                ((ImageView) view.findViewById(R.id.sr_list_item_photo))
+                        .setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+            }
+        } catch (OutOfMemoryError oom) {
+            oom.printStackTrace();
+        }
     }
 
     public class ViewHolder {

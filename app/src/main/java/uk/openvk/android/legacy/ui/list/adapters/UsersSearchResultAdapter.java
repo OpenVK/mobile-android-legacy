@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ public class UsersSearchResultAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<User> objects;
+    public boolean loadAvatars;
 
     public UsersSearchResultAdapter(Context context, ArrayList<User> items) {
         ctx = context;
@@ -94,6 +97,10 @@ public class UsersSearchResultAdapter extends BaseAdapter {
             }
         });
 
+        if(loadAvatars) {
+            loadAvatars(view, item.id);
+        }
+
         return view;
     }
 
@@ -102,6 +109,23 @@ public class UsersSearchResultAdapter extends BaseAdapter {
         public TextView item_name;
         public TextView item_avatar;
         public TextView item_online;
+    }
+
+    private void loadAvatars(View view, long id) {
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap avatar = BitmapFactory.decodeFile(
+                    ctx.getCacheDir() + "/photos_cache/profile_avatars/avatar_" + id, options);
+            if(avatar != null) {
+                ((ImageView) view.findViewById(R.id.sr_list_item_photo)).setImageBitmap(avatar);
+            } else {
+                ((ImageView) view.findViewById(R.id.sr_list_item_photo))
+                        .setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+            }
+        } catch (OutOfMemoryError oom) {
+            oom.printStackTrace();
+        }
     }
 
 }

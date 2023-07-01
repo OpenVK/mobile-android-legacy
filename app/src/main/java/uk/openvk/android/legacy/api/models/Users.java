@@ -9,8 +9,10 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -78,16 +80,25 @@ public class Users implements Parcelable {
         }
     }
 
-    public void parseSearch(String response) {
+    public void parseSearch(String response, DownloadManager downloadManager) {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONObject("response").getJSONArray("items");
+            ArrayList<PhotoAttachment> avatars;
+            avatars = new ArrayList<PhotoAttachment>();
             if(this.users.size() > 0) {
                 this.users.clear();
             }
             for (int i = 0; i < users.length(); i++) {
                 User user = new User(users.getJSONObject(i));
+                PhotoAttachment photoAttachment = new PhotoAttachment();
+                photoAttachment.url = user.avatar_msize_url;
+                photoAttachment.filename = String.format("avatar_%s", user.id);
+                avatars.add(photoAttachment);
                 this.users.add(user);
+            }
+            if(downloadManager != null) {
+                downloadManager.downloadPhotosToCache(avatars, "profile_avatars");
             }
         } catch (Exception e) {
             e.printStackTrace();

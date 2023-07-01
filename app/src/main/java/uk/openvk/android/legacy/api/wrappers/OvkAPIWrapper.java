@@ -1241,7 +1241,7 @@ public class OvkAPIWrapper {
                     msg.what = HandlerMessages.USERS_GET;
                     break;
                 case "Users.search":
-                    profile_a.users.parseSearch(data.getString("response"));
+                    profile_a.users.parseSearch(data.getString("response"), null);
                     msg.what = HandlerMessages.USERS_SEARCH;
                     break;
                 case "Wall.get":
@@ -1284,7 +1284,7 @@ public class OvkAPIWrapper {
                     msg.what = HandlerMessages.GROUPS_GET_BY_ID;
                     break;
                 case "Groups.search":
-                    group_a.groups.parseSearch(data.getString("response"));
+                    group_a.groups.parseSearch(data.getString("response"), null);
                     msg.what = HandlerMessages.GROUPS_SEARCH;
                     break;
                 case "Wall.get":
@@ -1320,11 +1320,11 @@ public class OvkAPIWrapper {
             assert method != null;
             switch (method) {
                 case "Groups.search":
-                    quick_search_a.groups.parseSearch(data.getString("response"));
+                    quick_search_a.groups.parseSearch(data.getString("response"), quick_search_a.dlm);
                     msg.what = HandlerMessages.GROUPS_SEARCH;
                     break;
                 case "Users.search":
-                    quick_search_a.users.parseSearch(data.getString("response"));
+                    quick_search_a.users.parseSearch(data.getString("response"), quick_search_a.dlm);
                     msg.what = HandlerMessages.USERS_SEARCH;
                     break;
             }

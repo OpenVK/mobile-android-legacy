@@ -34,8 +34,8 @@ public class SearchResultsLayout extends LinearLayout {
     private ListView people_listview;
     private ListView groups_listview;
     private ArrayList<User> users;
-    private UsersSearchResultAdapter usersSearchResultAdapter;
-    private GroupsSearchResultAdapter groupsSearchResultAdapter;
+    public UsersSearchResultAdapter usersSearchResultAdapter;
+    public GroupsSearchResultAdapter groupsSearchResultAdapter;
     private ArrayList<Group> groups;
 
     public SearchResultsLayout(Context context, AttributeSet attrs) {
@@ -58,5 +58,13 @@ public class SearchResultsLayout extends LinearLayout {
         usersSearchResultAdapter = new UsersSearchResultAdapter(ctx, users);
         people_listview = (ListView) findViewById(R.id.people_listview);
         people_listview.setAdapter(usersSearchResultAdapter);
+    }
+
+    public void refreshGroupsAdapter() {
+        groupsSearchResultAdapter.notifyDataSetChanged();
+    }
+
+    public void refreshUsersAdapter() {
+        usersSearchResultAdapter.notifyDataSetChanged();
     }
 }

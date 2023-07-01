@@ -48,6 +48,7 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
@@ -221,6 +222,7 @@ public class DownloadManager {
                 }
                 for (int i = 0; i < photoAttachments.size(); i++) {
                     filesize = 0;
+                    filename = photoAttachments.get(i).filename;
                     File downloadedFile = new File(String.format("%s/photos_cache/%s",
                             ctx.getCacheDir(), where), filename);
                     PhotoAttachment photoAttachment = photoAttachments.get(i);
@@ -562,6 +564,8 @@ public class DownloadManager {
             ((AuthActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
             ((AppActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
             ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {

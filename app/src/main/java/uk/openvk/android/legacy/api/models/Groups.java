@@ -79,17 +79,26 @@ public class Groups implements Parcelable {
         }
     }
 
-    public void parseSearch(String response) {
+    public void parseSearch(String response, DownloadManager downloadManager) {
         try {
             groups = new ArrayList<Group>();
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray groups = json.getJSONObject("response").getJSONArray("items");
+            ArrayList<PhotoAttachment> avatars;
+            avatars = new ArrayList<PhotoAttachment>();
             if(this.groups.size() > 0) {
                 this.groups.clear();
             }
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
+                PhotoAttachment photoAttachment = new PhotoAttachment();
+                photoAttachment.url = group.avatar_msize_url;
+                photoAttachment.filename = String.format("avatar_%s", group.id);
+                avatars.add(photoAttachment);
                 this.groups.add(group);
+            }
+            if(downloadManager != null) {
+                downloadManager.downloadPhotosToCache(avatars, "group_avatars");
             }
         } catch (Exception e) {
             e.printStackTrace();
