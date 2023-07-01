@@ -108,6 +108,10 @@
             android:defaultValue="System"
             android:layout="@layout/pref_list"/>
 
+        <Preference android:title="@string/interface_theme"
+            android:key="uiTheme"
+            android:layout="@layout/pref_widget"/>
+
         <CheckBoxPreference android:title="@string/sett_splash"
             android:key="startupSplash"
             android:layout="@layout/pref_widget_checkbox"

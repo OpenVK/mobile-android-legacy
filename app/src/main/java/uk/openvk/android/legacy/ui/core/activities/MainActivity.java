@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -71,6 +72,17 @@ public class MainActivity extends TranslucentActivity {
                 setContentView(R.layout.activity_splash_xmas);
             } else {
                 setContentView(R.layout.activity_splash);
+                if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                    findViewById(R.id.auth)
+                            .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_gray));
+                    ((ImageView) findViewById(R.id.auth_logo))
+                            .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
+                } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                    findViewById(R.id.auth)
+                            .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_black));
+                    ((ImageView) findViewById(R.id.auth_logo))
+                            .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
+                }
             }
             handler = new Handler(Looper.myLooper()) {
                 @Override

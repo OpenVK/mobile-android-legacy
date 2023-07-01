@@ -589,11 +589,24 @@ public class AppActivity extends TranslucentFragmentActivity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
         } else {
             actionBar = findViewById(R.id.actionbar);
             actionBar.setCustomView(ab_layout);
             ab_layout.createSpinnerAdapter(this);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
         }
         setActionBar("custom_newsfeed");
         setActionBarTitle(getResources().getString(R.string.newsfeed));

@@ -105,6 +105,22 @@ public class AuthActivity extends Activity {
         } else {
             instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
         }
+
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            findViewById(R.id.auth_layout)
+                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_gray));
+            ((ImageView) findViewById(R.id.auth_logo))
+                    .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
+            findViewById(R.id.reg_btn)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            findViewById(R.id.auth_layout)
+                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_black));
+            ((ImageView) findViewById(R.id.auth_logo))
+                    .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
+            findViewById(R.id.reg_btn)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
         instance_edit.setActionClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

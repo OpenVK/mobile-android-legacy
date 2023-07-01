@@ -1,8 +1,10 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +63,13 @@ public class SlidingMenuLayout extends LinearLayout {
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             version_name.setVisibility(GONE);
         }
+
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.setBackgroundColor(getResources().getColor(R.color.transparent_statusbar_color_gray));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.setBackgroundColor(getResources().getColor(R.color.transparent_statusbar_color_black));
+        }
     }
 
     public SlidingMenuLayout(final Context context, AttributeSet attrs) {
@@ -87,6 +96,13 @@ public class SlidingMenuLayout extends LinearLayout {
                 BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             version_name.setVisibility(GONE);
+        }
+
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.setBackgroundColor(getResources().getColor(R.color.color_black_v2));
         }
     }
 

@@ -2,12 +2,14 @@ package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -78,6 +80,18 @@ public class ProfileFragment extends Fragment {
         });
         ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources()
                 .getConfiguration().orientation);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            view.findViewById(R.id.about_profile_layout)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            view.findViewById(R.id.about_profile_layout)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
         return view;
     }
 

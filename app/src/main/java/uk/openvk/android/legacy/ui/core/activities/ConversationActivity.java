@@ -166,6 +166,13 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayUseLogoEnabled(false);
+                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                        getActionBar().setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.bg_actionbar_gray));
+                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                        getActionBar().setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    }
                 } else {
                     ActionBar actionBar = findViewById(R.id.actionbar);
                     actionBar.setTitle(conv_title);
@@ -183,6 +190,13 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                             onBackPressed();
                         }
                     });
+                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    } else {
+                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    }
                 }
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
@@ -202,6 +216,13 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 getActionBar().setDisplayHomeAsUpEnabled(true);
                 getActionBar().setDisplayShowHomeEnabled(true);
                 getActionBar().setDisplayUseLogoEnabled(false);
+                if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                    getActionBar().setBackgroundDrawable(
+                            getResources().getDrawable(R.drawable.bg_actionbar_gray));
+                } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                    getActionBar().setBackgroundDrawable(
+                            getResources().getDrawable(R.drawable.bg_actionbar_black));
+                }
             } else {
                 ActionBar actionBar = findViewById(R.id.actionbar);
                 actionBar.setTitle(conv_title);
@@ -219,6 +240,13 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                         onBackPressed();
                     }
                 });
+                if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                } else {
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                }
             }
             ovk_api.setServer(instance_prefs.getString("server", ""));
             ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));

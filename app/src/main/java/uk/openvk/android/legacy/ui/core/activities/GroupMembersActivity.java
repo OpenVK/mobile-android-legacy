@@ -110,6 +110,13 @@ public class GroupMembersActivity extends UsersListActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
         } else {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
@@ -127,6 +134,13 @@ public class GroupMembersActivity extends UsersListActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.group_members));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
         }
     }
 

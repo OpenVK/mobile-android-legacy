@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +33,18 @@ public class ProfileCounterLayout extends LinearLayout {
 
     public ProfileCounterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.profile_counter, null);
+        View view = null;
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view =  LayoutInflater.from(getContext()).inflate(
+                    R.layout.profile_counter_gray, null);
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view =  LayoutInflater.from(getContext()).inflate(
+                    R.layout.profile_counter_black, null);
+        } else {
+            view =  LayoutInflater.from(getContext()).inflate(
+                    R.layout.profile_counter, null);
+        }
 
         this.addView(view);
 

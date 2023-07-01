@@ -75,6 +75,13 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
             } catch (Exception ex) {
                 Log.e(OvkApplication.APP_TAG, "Cannot display home button.");
             }
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
         } else {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setTitle(R.string.sett_network);

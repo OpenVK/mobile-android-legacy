@@ -220,11 +220,17 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
         } else {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
                 public int getDrawable() {
@@ -237,6 +243,13 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.profile));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
         }
     }
 

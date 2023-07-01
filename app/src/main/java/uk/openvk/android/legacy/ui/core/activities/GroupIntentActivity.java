@@ -299,12 +299,31 @@ public class GroupIntentActivity extends TranslucentActivity {
             groupScrollView.setVisibility(View.GONE);
         }
         progressLayout.setVisibility(View.VISIBLE);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            findViewById(R.id.about_group_layout)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            findViewById(R.id.about_group_layout)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.group));
+                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                        getActionBar().setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.bg_actionbar_gray));
+                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                        getActionBar().setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -318,7 +337,13 @@ public class GroupIntentActivity extends TranslucentActivity {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
             actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
                 public int getDrawable() {

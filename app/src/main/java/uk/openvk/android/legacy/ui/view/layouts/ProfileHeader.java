@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
@@ -48,6 +50,12 @@ public class ProfileHeader extends RelativeLayout {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
     }
 
     public void setProfileName(String name) {

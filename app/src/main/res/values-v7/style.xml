@@ -147,6 +147,17 @@
         <item name="android:listViewStyle">@style/BaseStyle.DialogStyle.List</item>
     </style>
 
+    <style name="BaseStyle.Gray" parent="android:style/Theme">
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
+        <item name="android:alertDialogTheme">@style/BaseStyle.DialogTheme</item>
+        <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:listViewStyle">@style/BaseStyle.DialogStyle.List</item>
+    </style>
+
     <style name="SlidingMenu" parent="android:style/Widget.ListView">
         <item name="android:textColor">#FFFFFFFF</item>
     </style>

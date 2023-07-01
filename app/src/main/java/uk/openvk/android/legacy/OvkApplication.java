@@ -117,6 +117,10 @@ public class OvkApplication extends Application {
 
         // Create preference parameters
 
+        if(!global_prefs.contains("uiTheme")) {
+            global_prefs_editor.putString("uiTheme", "default");
+        }
+
         if(!global_prefs.contains("photos_quality")) {
             if(heap_size <= 100663296L) {
                 global_prefs_editor.putString("photos_quality", "medium");

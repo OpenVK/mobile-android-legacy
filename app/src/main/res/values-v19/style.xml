@@ -26,6 +26,26 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <style name="BaseStyle.Dark" parent="android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarStyle.Dark</item>
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
+        <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="BaseStyle.Gray" parent="android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBarStyle.Gray</item>
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
+        <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
 
     <style name="BaseStyle.NoActionBar" parent="android:style/Theme.Holo.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>

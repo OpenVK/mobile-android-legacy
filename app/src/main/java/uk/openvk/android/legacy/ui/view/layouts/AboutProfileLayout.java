@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -53,6 +55,14 @@ public class AboutProfileLayout extends LinearLayout {
         layoutParams.width = LayoutParams.MATCH_PARENT;
         layoutParams.height = LayoutParams.WRAP_CONTENT;
         view.setLayoutParams(layoutParams);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
     }
 
     public void setStatus(String status) {

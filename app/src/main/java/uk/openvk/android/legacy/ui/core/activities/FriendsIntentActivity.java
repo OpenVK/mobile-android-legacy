@@ -175,6 +175,13 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.friends));
+                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                        getActionBar().setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.bg_actionbar_gray));
+                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                        getActionBar().setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -201,6 +208,13 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.friends));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
         }
     }
 

@@ -110,6 +110,29 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
             }
         });
 
+        Preference ui_theme = findPreference("uiTheme");
+        String[] theme_array = getResources().getStringArray(R.array.ui_themes);
+        String value = global_prefs.getString("uiTheme", "Blue");
+        int valuePos = 0;
+        switch (value) {
+            default:
+                break;
+            case "Gray":
+                valuePos = 1;
+                break;
+            case "Black":
+                valuePos = 2;
+                break;
+        }
+        ui_theme.setSummary(theme_array[valuePos]);
+        ui_theme.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showUiThemeSelectionDialog();
+                return false;
+            }
+        });
+
         Preference notif_ringtone = findPreference("notifyRingtone");
         if (notif_ringtone != null) {
             notif_ringtone.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -275,6 +298,57 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                         dialog.dismiss();
                     }
         });
+        dialog.show();
+    }
+
+    private void showUiThemeSelectionDialog() {
+        int valuePos = 0;
+        String value = global_prefs.getString("uiTheme", "Blue");
+        String[] array = getResources().getStringArray(R.array.ui_themes);
+        selectedPosition = 0;
+        switch (value) {
+            default:
+                break;
+            case "Gray":
+                valuePos = 1;
+                break;
+            case "Black":
+                valuePos = 2;
+                break;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setSingleChoiceItems(R.array.ui_themes, valuePos, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectedPosition = which;
+            }
+        });
+        OvkAlertDialog dialog = new OvkAlertDialog(getContext());
+        dialog.build(builder, getResources().getString(R.string.interface_language), "", null, "listDlg");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = global_prefs.edit();
+                        if(selectedPosition == 0) {
+                            editor.putString("uiTheme", "Blue");
+                        } else if(selectedPosition == 1) {
+                            editor.putString("uiTheme", "Gray");
+                        } else {
+                            editor.putString("uiTheme", "Black");
+                        }
+                        editor.commit();
+                        Toast.makeText(getContext(), R.string.sett_app_restart_required,
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
         dialog.show();
     }
 

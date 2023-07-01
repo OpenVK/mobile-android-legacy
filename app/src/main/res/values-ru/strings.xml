@@ -1032,6 +1032,7 @@
     <string name="authdata_required">Пожалуйста, введите все необходимые данные для авторизации и повторите попытку.</string>
     <string name="interface_category">Интерфейс</string>
     <string name="interface_language">Язык (Language)</string>
+    <string name="interface_theme">Тема оформления</string>
     <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина.\r\nВы можете узнать что-то новое в ленте всех новостей.</string>
     <string name="retry_short">Повторить</string>
     <string name="vk_not_supported">Извините, но этот клиент несовместим с API ВКонтакте.</string>

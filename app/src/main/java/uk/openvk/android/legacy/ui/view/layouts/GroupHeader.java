@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
@@ -44,6 +46,12 @@ public class GroupHeader extends RelativeLayout {
         view.setLayoutParams(layoutParams);
         ((TextView) view.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.open_group));
         ((TextView) view.findViewById(R.id.profile_activity)).setText("");
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
     }
 
     public void setProfileName(String name) {

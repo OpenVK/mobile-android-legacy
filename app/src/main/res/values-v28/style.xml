@@ -34,6 +34,15 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
+    <style name="ActionBarStyle.Gray" parent="android:style/Widget.Holo.ActionBar.Solid">
+        <item name="android:background">@drawable/bg_actionbar_gray</item>
+        <item name="android:icon">@drawable/ic_ab_app</item>
+        <item name="android:progressBarStyle">@style/ActionBarProgress</item>
+        <!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
+        <item name="backgroundStacked">@drawable/action_bar_tabs_bg</item-->
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
     <style name="BaseStyle.Dark.Transparent" parent="android:style/Theme.Holo">
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:actionBarStyle">@style/ActionBarStyle.Dark.Transparent</item>
