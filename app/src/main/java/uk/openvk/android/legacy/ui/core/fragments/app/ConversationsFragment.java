@@ -6,6 +6,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +16,12 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
+import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -36,7 +41,7 @@ import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
 public class ConversationsFragment extends Fragment {
     private ArrayList<Conversation> conversations;
     private ConversationsListAdapter conversationsAdapter;
-    private ListView convListView;
+    private RecyclerView convListView;
     private Account account;
     private View view;
 
@@ -53,11 +58,29 @@ public class ConversationsFragment extends Fragment {
         this.conversations = conversations;
         this.account = account;
         conversationsAdapter = new ConversationsListAdapter(ctx, this.conversations, account);
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        if(app.isTablet && app.swdp >= 760) {
+            LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
+        } else if(app.isTablet && app.swdp >= 600) {
+            LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
+        } else {
+            LinearLayoutManager llm = new LinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(llm);
+        }
         convListView.setAdapter(conversationsAdapter);
     }
 
     public int getCount() {
-        return convListView.getCount();
+        if(convListView.getAdapter() != null) {
+            return convListView.getAdapter().getItemCount();
+        } else {
+            return 0;
+        }
     }
 
     public void loadAvatars(ArrayList<Conversation> conversations_list) {

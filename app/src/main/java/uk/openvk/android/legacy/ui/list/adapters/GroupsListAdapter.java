@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
@@ -20,6 +21,8 @@ import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
+import static uk.openvk.android.legacy.R.string.view;
+
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
@@ -35,7 +38,7 @@ import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class GroupsListAdapter extends BaseAdapter {
+public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Holder> {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Group> objects;
@@ -48,18 +51,18 @@ public class GroupsListAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    @Override
-    public int getCount() {
-        if(objects != null) {
-            return objects.size();
-        } else {
-            return 0;
-        }
+    public Group getItem(int position) {
+        return objects.get(position);
     }
 
     @Override
-    public Group getItem(int position) {
-        return objects.get(position);
+    public GroupsListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new GroupsListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_group, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(Holder holder, int position) {
+        holder.bind(position);
     }
 
     @Override
@@ -67,59 +70,76 @@ public class GroupsListAdapter extends BaseAdapter {
         return position;
     }
 
+    @Override
+    public int getItemCount() {
+        if(objects != null) {
+            return objects.size();
+        } else {
+            return 0;
+        }
+    }
+
     Group getGroup(int position) {
         return (getItem(position));
     }
 
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.list_item_group, parent, false);
+    public class Holder extends RecyclerView.ViewHolder {
+        public TextView item_id;
+        public TextView item_name;
+        public TextView item_subtext;
+        public ImageView item_avatar;
+        public View view;
+        public Holder(View convertView) {
+            super(convertView);
+            view = convertView;
+            item_name = (view.findViewById(R.id.group_list_item_text));
+            item_subtext = (view.findViewById(R.id.group_list_item_subtext));
+            item_avatar = (view.findViewById(R.id.group_list_item_photo));
         }
 
-        Group item = getItem(position);
-        if(item.verified) {
-            String name = String.format("%s  ", item.name);
-            SpannableStringBuilder sb = new SpannableStringBuilder(name);
-            ImageSpan imageSpan;
-            imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
-            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
-                    ctx.getResources().getDisplayMetrics().density));
-            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ((TextView) view.findViewById(R.id.group_list_item_text)).setText(sb);
-        } else {
-            ((TextView) view.findViewById(R.id.group_list_item_text)).setText(
-                    String.format("%s", item.name));
-        }
-
-        if(item.members_count > 0) {
-            ((TextView) view.findViewById(R.id.group_list_item_subtext)).setText(
-                    String.format("%s %s", item.members_count,
-                            Global.getPluralQuantityString(ctx.getApplicationContext(),
-                                    R.plurals.profile_followers, 0)));
-        }
-
-        if(item.avatar != null) {
-            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(
-                    item.avatar);
-        } else {
-            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(
-                    ctx.getResources().getDrawable(R.drawable.group_placeholder));
-        }
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).hideSelectedItemBackground(position);
-                    ((AppActivity) ctx).showGroup(position);
-                } else if(ctx.getClass().getSimpleName().equals("GroupsIntentActivity")) {
-                    ((GroupIntentActivity) ctx).hideSelectedItemBackground(position);
-                    ((GroupIntentActivity) ctx).showGroup(position);
-                }
+        void bind(final int position) {
+            Group item = getItem(position);
+            if(item.verified) {
+                String name = String.format("%s  ", item.name);
+                SpannableStringBuilder sb = new SpannableStringBuilder(name);
+                ImageSpan imageSpan;
+                imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
+                ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
+                        ctx.getResources().getDisplayMetrics().density));
+                sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ((TextView) view.findViewById(R.id.group_list_item_text)).setText(sb);
+            } else {
+                ((TextView) view.findViewById(R.id.group_list_item_text)).setText(
+                        String.format("%s", item.name));
             }
-        });
+
+            if(item.members_count > 0) {
+                ((TextView) view.findViewById(R.id.group_list_item_subtext)).setText(
+                        String.format("%s %s", item.members_count,
+                                Global.getPluralQuantityString(ctx.getApplicationContext(),
+                                        R.plurals.profile_followers, 0)));
+            }
+
+            if(item.avatar != null) {
+                ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(
+                        item.avatar);
+            } else {
+                ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.group_placeholder));
+            }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        ((AppActivity) ctx).hideSelectedItemBackground(position);
+                        ((AppActivity) ctx).showGroup(position);
+                    } else if(ctx.getClass().getSimpleName().equals("GroupsIntentActivity")) {
+                        ((GroupIntentActivity) ctx).hideSelectedItemBackground(position);
+                        ((GroupIntentActivity) ctx).showGroup(position);
+                    }
+                }
+            });
 
         /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
             @Override
@@ -128,15 +148,7 @@ public class GroupsListAdapter extends BaseAdapter {
                 return super.onTouch(v, event);
             }
         }); */
-
-        return view;
-    }
-
-    public class ViewHolder {
-        public TextView item_id;
-        public TextView item_name;
-        public TextView item_avatar;
-        public TextView item_online;
+        }
     }
 
 }

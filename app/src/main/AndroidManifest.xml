@@ -170,7 +170,7 @@
 
         <activity android:name=".ui.core.activities.QuickSearchActivity"
             android:label="@string/search_global"
-            android:theme="@style/BaseStyle"
+            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
             android:resizeableActivity="false"

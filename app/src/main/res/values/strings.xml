@@ -803,6 +803,7 @@
 	<string name="contact_message_subtitle">Send a message</string>
 	<string name="sett_force_tablet_ui">Tablet UI</string>
 	<string name="sett_app_restart_required">Application restart is required for this setting to take effect</string>
+	<string name="sett_app_restart_required_many">These settings will take effect after restarting the application</string>
 	<string name="followers_of">%s\'s followers</string>
 	<string name="hide_from_newsfeed">Don\'t show these news</string>
 	<string name="sett_news_banned">News filter</string>

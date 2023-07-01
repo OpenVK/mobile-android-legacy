@@ -25,19 +25,19 @@
         android:id="@+id/search_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginBottom="4dp"
-        android:background="@android:drawable/editbox_background"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/textfield_left_search"
         android:ems="10"
         android:hint="@string/search"
         android:imeOptions="actionSearch"
         android:inputType="textPersonName"
+        android:paddingBottom="8dp"
         android:paddingLeft="12dp"
-        android:paddingTop="8dp"
         android:paddingRight="12dp"
-        android:paddingBottom="8dp" />
+        android:paddingTop="8dp" />
 
     <uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout
         android:id="@+id/sr_ll"

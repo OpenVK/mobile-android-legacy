@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -12,7 +14,7 @@ import uk.openvk.android.legacy.R;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
- * <p>
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or (at your option) any later version.
@@ -25,6 +27,7 @@ import uk.openvk.android.legacy.R;
  *
  * Source code: https://github.com/openvk/mobile-android-legacy
  **/
+@SuppressWarnings("deprecation")
 public class TranslucentPreferenceActivity extends PreferenceActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,11 +39,24 @@ public class TranslucentPreferenceActivity extends PreferenceActivity {
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            tintManager.setTintDrawable(
-                    getResources().getDrawable(R.color.statusbar_color));
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.transparent_statusbar_color));
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             tintManager.setTintDrawable(
                     getResources().getDrawable(R.color.transparent_statusbar_color));
+        }
+    }
+
+    public void setTranslucentStatusBar(int type, int res) {
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        if(type == 0) { // Drawable (or color resource ID)
+            tintManager.setTintDrawable(
+                    getResources().getDrawable(res));
+        } else {       // Color
+            tintManager.setTintColor(res);
         }
     }
 }

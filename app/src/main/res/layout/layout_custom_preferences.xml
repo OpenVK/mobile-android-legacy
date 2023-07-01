@@ -16,20 +16,20 @@
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <dev.tinelix.retro_ab.ActionBar
         android:id="@+id/actionbar"
-        app:title="@string/app_name"
         style="@style/ActionBar"
-        />
+        app:title="@string/app_name" />
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:divider="@null"/>
+        android:divider="@null" />
 </LinearLayout>

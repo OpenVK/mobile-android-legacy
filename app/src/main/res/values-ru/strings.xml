@@ -735,6 +735,7 @@
 	<string name="contact_message_subtitle">Отправить сообщение</string>
 	<string name="sett_force_tablet_ui">Интерфейс для планшетов</string>
 	<string name="sett_app_restart_required">Эта настройка вступит в силу после перезапуска приложения</string>
+    <string name="sett_app_restart_required_many">Эти настройки вступят в силу после перезапуска приложения</string>
 	<string name="followers_of">Подписчики %s</string>
 	<string name="hide_from_newsfeed">Не показывать эти новости</string>
 	<string name="sett_news_banned">Фильтр новостей</string>

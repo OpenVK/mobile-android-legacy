@@ -56,6 +56,18 @@
         <item name="android:listDivider">@android:color/transparent</item>
     </style>
 
+    <style name="BaseStyle.NoActionBar.NoShadow" parent="android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:fadingEdgeLength">0dip</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:alertDialogTheme">@style/BaseStyle.DialogTheme</item>
+        <item name="android:alertDialogStyle">@style/BaseStyle.DialogStyle</item>
+        <item name="android:dialogTheme">@style/BaseStyle.DialogTheme</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:listDivider">@android:color/transparent</item>
+    </style>
+
     <style name="BaseStyle.DialogStyle" parent="@android:style/Theme.Dialog">
         <item name="android:padding">20px</item>
         <item name="android:bottomBright">@android:color/white</item>

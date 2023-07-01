@@ -231,7 +231,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
     private void showUiLanguageSelectionDialog() {
         int valuePos = 0;
-        String value = global_prefs.getString("ui_language", "blue");
+        String value = global_prefs.getString("interfaceLanguage", "System");
         String[] array = getResources().getStringArray(R.array.interface_languages);
         selectedPosition = 0;
         switch (value) {

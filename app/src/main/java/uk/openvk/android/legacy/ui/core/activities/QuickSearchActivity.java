@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.ui.core.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -66,30 +69,6 @@ public class QuickSearchActivity extends TranslucentActivity {
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getActionBar().setHomeButtonEnabled(true);
-            }
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setTitle(getResources().getString(R.string.search_global));
-        } else {
-            final ActionBar actionBar = findViewById(R.id.actionbar);
-            actionBar.setHomeLogo(R.drawable.ic_ab_app);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            actionBar.setTitle(getResources().getString(R.string.search_global));
-            actionBar.setHomeAction(new ActionBar.Action() {
-                @Override
-                public int getDrawable() {
-                    return R.drawable.ic_ab_app;
-                }
-
-                @Override
-                public void performAction(View view) {
-                    onBackPressed();
-                }
-            });
-        }
         setTextEditListener();
         users = new Users();
         groups = new Groups();
@@ -115,6 +94,22 @@ public class QuickSearchActivity extends TranslucentActivity {
                 }
             }
         };
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            setTranslucentStatusBar(1, Color.parseColor("#8f8f8f"));
+        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor( Color.parseColor("#8f8f8f"));
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            int flags = window.getDecorView().getSystemUiVisibility();
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            window.getDecorView().setSystemUiVisibility(flags);
+            window.setStatusBarColor(Color.parseColor("#ffffff"));
+        }
     }
 
     @Override

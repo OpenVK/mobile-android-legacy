@@ -15,15 +15,17 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@null"
         android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:divider="@null"/>
+        android:paddingRight="12dp" />
 </LinearLayout>

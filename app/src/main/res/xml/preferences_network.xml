@@ -15,6 +15,10 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<Preference
+		android:key="restart_required"
+		android:layout="@layout/pref_notification" />
     
 	<PreferenceCategory
 		android:title="@string/sett_general"

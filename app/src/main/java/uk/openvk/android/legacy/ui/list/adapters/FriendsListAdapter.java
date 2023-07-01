@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
@@ -35,7 +36,7 @@ import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class FriendsListAdapter extends BaseAdapter {
+public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.Holder> {
     private final FriendsFragment friendsFragment;
     Context ctx;
     LayoutInflater inflater;
@@ -50,18 +51,18 @@ public class FriendsListAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    @Override
-    public int getCount() {
-        if(objects != null) {
-            return objects.size();
-        } else {
-            return 0;
-        }
+    public Friend getItem(int position) {
+        return objects.get(position);
     }
 
     @Override
-    public Object getItem(int position) {
-        return objects.get(position);
+    public FriendsListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new FriendsListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_friend, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(Holder holder, int position) {
+        holder.bind(position);
     }
 
     @Override
@@ -69,63 +70,80 @@ public class FriendsListAdapter extends BaseAdapter {
         return position;
     }
 
+    @Override
+    public int getItemCount() {
+        if(objects != null) {
+            return objects.size();
+        } else {
+            return 0;
+        }
+    }
+
     Friend getFriend(int position) {
         return ((Friend) getItem(position));
     }
 
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.list_item_friend, parent, false);
+    public class Holder extends RecyclerView.ViewHolder {
+        private final View view;
+        public TextView item_id;
+        public TextView item_name;
+        public ImageView item_avatar;
+        public ImageView item_online;
+        public Holder(View convertView) {
+            super(convertView);
+            view = convertView;
+            item_name = (view.findViewById(R.id.flist_item_text));
+            item_avatar = (view.findViewById(R.id.flist_item_photo));
+            item_online = (view.findViewById(R.id.flist_item_online));
         }
 
-        final Friend item = getFriend(position);
-        if(item.verified) {
-            String name = String.format("%s %s  ", item.first_name, item.last_name);
-            SpannableStringBuilder sb = new SpannableStringBuilder(name);
-            ImageSpan imageSpan;
-            imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
-            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
-                    ctx.getResources().getDisplayMetrics().density));
-            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            ((TextView) view.findViewById(R.id.flist_item_text)).setText(sb);
-        } else {
-            ((TextView) view.findViewById(R.id.flist_item_text)).setText(
-                    String.format("%s %s", item.first_name, item.last_name));
-        }
-        if(item.online) {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.VISIBLE);
-        } else {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
-        }
-        if(item.avatar != null) {
-            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageBitmap(item.avatar);
-        } else {
-            ((ImageView) view.findViewById(R.id.flist_item_photo)).setImageDrawable(
-                    ctx.getResources().getDrawable(R.drawable.photo_loading));
-        }
-
-        if(item.from_mobile) {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(
-                    ctx.getResources().getDrawable(R.drawable.ic_online_mobile));
-        } else {
-            ((ImageView) view.findViewById(R.id.flist_item_online)).setImageDrawable(
-                    ctx.getResources().getDrawable(R.drawable.ic_online));
-        }
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    friendsFragment.hideSelectedItemBackground(position);
-                    ((AppActivity) ctx).showProfile(item.id);
-                } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-                    friendsFragment.hideSelectedItemBackground(position);
-                    ((FriendsIntentActivity) ctx).showProfile(item.id);
-                }
+        void bind(final int position) {
+            final Friend item = getFriend(position);
+            if(item.verified) {
+                String name = String.format("%s %s  ", item.first_name, item.last_name);
+                SpannableStringBuilder sb = new SpannableStringBuilder(name);
+                ImageSpan imageSpan;
+                imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
+                ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
+                        ctx.getResources().getDisplayMetrics().density));
+                sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                item_name.setText(sb);
+            } else {
+                item_name.setText(
+                        String.format("%s %s", item.first_name, item.last_name));
             }
-        });
+            if(item.online) {
+                ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.VISIBLE);
+            } else {
+                ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
+            }
+            if(item.avatar != null) {
+                item_avatar.setImageBitmap(item.avatar);
+            } else {
+                item_avatar.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.photo_loading));
+            }
+
+            if(item.from_mobile) {
+                item_online.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.ic_online_mobile));
+            } else {
+                item_online.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.ic_online));
+            }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        friendsFragment.hideSelectedItemBackground(position);
+                        ((AppActivity) ctx).showProfile(item.id);
+                    } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                        friendsFragment.hideSelectedItemBackground(position);
+                        ((FriendsIntentActivity) ctx).showProfile(item.id);
+                    }
+                }
+            });
 
         /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
             @Override
@@ -134,15 +152,7 @@ public class FriendsListAdapter extends BaseAdapter {
                 return super.onTouch(v, event);
             }
         }); */
-
-        return view;
-    }
-
-    public class ViewHolder {
-        public TextView item_id;
-        public TextView item_name;
-        public TextView item_avatar;
-        public TextView item_online;
+        }
     }
 
 }

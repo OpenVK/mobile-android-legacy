@@ -50,7 +50,7 @@ public class FriendsFragment extends Fragment {
     public String state;
     public String send_request;
     public SharedPreferences global_sharedPreferences;
-    private ListView friendsListView;
+    private RecyclerView friendsListView;
     private ArrayList<Friend> friends;
     private ArrayList<Friend> requests;
     private FriendsListAdapter friendsAdapter;
@@ -96,6 +96,19 @@ public class FriendsFragment extends Fragment {
                 this.friends = friends;
                 if (friendsAdapter == null) {
                     friendsAdapter = new FriendsListAdapter(ctx, this, friends);
+                    if(app.isTablet && app.swdp >= 760) {
+                        LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
+                        glm.setOrientation(LinearLayoutManager.VERTICAL);
+                        ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+                    } else if(app.isTablet && app.swdp >= 600) {
+                        LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
+                        glm.setOrientation(LinearLayoutManager.VERTICAL);
+                        ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+                    } else {
+                        LinearLayoutManager llm = new LinearLayoutManager(ctx);
+                        llm.setOrientation(LinearLayoutManager.VERTICAL);
+                        ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(llm);
+                    }
                     friendsListView.setAdapter(friendsAdapter);
                 } else {
                     friendsAdapter.notifyDataSetChanged();
@@ -127,7 +140,7 @@ public class FriendsFragment extends Fragment {
 
     public int getCount() {
         try {
-            return friendsAdapter.getCount();
+            return friendsAdapter.getItemCount();
         } catch(Exception ex) {
             return 0;
         }
@@ -190,31 +203,18 @@ public class FriendsFragment extends Fragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         loading_more_friends = false;
-        friendsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                 int totalItemCount) {
-                if(infinity_scroll) {
+        // TODO: Add infinity scroll for RecyclerView (must be inside InfinityNestedScrollView / InfinityScrollView)
+        /* if(infinity_scroll) {
                     if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                        if(!loading_more_friends) {
+                        if(!loading_more_groups) {
                             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_friends = true;
-                                ((AppActivity) ctx).loadMoreFriends();
-                            } else if(ctx.getClass().getSimpleName()
-                                    .equals("FriendsIntentActivity")) {
-                                loading_more_friends = true;
-                                ((FriendsIntentActivity) ctx).loadMoreFriends();
+                                loading_more_groups = true;
+                                ((AppActivity) ctx).loadMoreGroups();
                             }
                         }
                     }
                 }
-            }
-        });
+        */
     }
 
     private void setupTabHost(TabHost tabhost, String where) {

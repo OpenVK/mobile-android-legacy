@@ -1336,7 +1336,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void hideSelectedItemBackground(int position) {
-        ((ListView) friendsFragment.getView().findViewById(R.id.friends_listview))
+        (friendsFragment.getView().findViewById(R.id.friends_listview))
                 .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 

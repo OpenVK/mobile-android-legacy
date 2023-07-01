@@ -7,6 +7,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
@@ -41,7 +45,7 @@ public class GroupsFragment extends Fragment {
     public String state;
     public String send_request;
     public SharedPreferences global_sharedPreferences;
-    private ListView groupsListView;
+    private RecyclerView groupsListView;
     private ArrayList<Group> groups;
     private GroupsListAdapter groupsAdapter;
     private boolean loading_more_groups = false;
@@ -58,8 +62,22 @@ public class GroupsFragment extends Fragment {
 
     public void createAdapter(Context ctx, ArrayList<Group> groups) {
         this.groups = groups;
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if (groupsAdapter == null) {
             groupsAdapter = new GroupsListAdapter(ctx, groups);
+            if(app.isTablet && app.swdp >= 760) {
+                LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
+                glm.setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+            } else if(app.isTablet && app.swdp >= 600) {
+                LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
+                glm.setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+            } else {
+                LinearLayoutManager llm = new LinearLayoutManager(ctx);
+                llm.setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(llm);
+            }
             groupsListView.setAdapter(groupsAdapter);
         } else {
             groupsAdapter.notifyDataSetChanged();
@@ -68,7 +86,7 @@ public class GroupsFragment extends Fragment {
 
     public int getCount() {
         try {
-            return groupsAdapter.getCount();
+            return groupsAdapter.getItemCount();
         } catch(Exception ex) {
             return 0;
         }
@@ -77,7 +95,7 @@ public class GroupsFragment extends Fragment {
     public void loadAvatars() {
         try {
             if(groupsAdapter != null) {
-                groupsListView = (ListView) view.findViewById(R.id.groups_listview);
+                groupsListView = view.findViewById(R.id.groups_listview);
                 for (int i = 0; i < getCount(); i++) {
                     try {
                         Group item = groups.get(i);
@@ -108,25 +126,17 @@ public class GroupsFragment extends Fragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         loading_more_groups = false;
-        groupsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(infinity_scroll) {
+        // TODO: Add infinity scroll for RecyclerView (must be inside InfinityNestedScrollView / InfinityScrollView)
+        /* if(infinity_scroll) {
                     if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                        if(!loading_more_groups) {
+                        if(!loading_more_friends) {
                             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_groups = true;
-                                ((AppActivity) ctx).loadMoreGroups();
+                                loading_more_friends = true;
+                                ((AppActivity) ctx).loadMoreFriends();
                             }
                         }
                     }
                 }
-            }
-        });
+        */
     }
 }

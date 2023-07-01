@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,8 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -43,6 +42,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+@SuppressWarnings("ConstantConditions")
 public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
     private boolean isQuiting;
     private SharedPreferences global_prefs;
@@ -58,6 +58,13 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         addPreferencesFromResource(R.xml.preferences_network);
         setContentView(R.layout.layout_custom_preferences);
+
+        // for warning label
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ((LinearLayout.LayoutParams) findViewById(android.R.id.list).getLayoutParams()).topMargin =
+                    (int) (8 * getResources().getDisplayMetrics().scaledDensity);
+        }
+
         app = ((OvkApplication) getApplicationContext());
         setListeners();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -115,8 +122,6 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
                 new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Toast.makeText(NetworkSettingsActivity.this,
-                        R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
                 return true;
             }
         });
@@ -157,8 +162,6 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
                         ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
                     }
                 }
-                Toast.makeText(NetworkSettingsActivity.this,
-                        R.string.sett_app_restart_required, Toast.LENGTH_LONG).show();
             }
         });
         builder.setNegativeButton(R.string.cancel, null);
@@ -200,21 +203,6 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
         } else {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-        }
-
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            setDialogStyle(proxy_settings_view, "proxy_settings");
-        }
-    }
-
-    private void setDialogStyle(View view, String dialog_name) {
-        try {
-            if (dialog_name.equals("proxy_settings")) {
-                //((TextView) view.findViewById(R.id.proxy_address_label)).setTextColor(Color.WHITE);
-                //((TextView) view.findViewById(R.id.proxy_type_label)).setTextColor(Color.WHITE);
-            }
-        } catch (Exception ex) {
-
         }
     }
 }
