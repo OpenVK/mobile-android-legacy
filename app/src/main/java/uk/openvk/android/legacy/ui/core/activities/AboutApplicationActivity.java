@@ -217,9 +217,7 @@ public class AboutApplicationActivity extends TranslucentActivity {
         boolean network_avaliable = (
                 connectivityManager.getNetworkInfo(mobile).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(wifi).getState() == NetworkInfo.State.CONNECTED);
-        if(link.startsWith("GNU")) {
-            page.loadUrl("file:///android_res/raw/agpl_3.html");
-        }
+        page.loadUrl("file:///android_res/raw/agpl_3.html");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(webviewLayout);
         OvkAlertDialog dialog = new OvkAlertDialog(this);
