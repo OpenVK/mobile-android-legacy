@@ -205,7 +205,7 @@ public class AboutApplicationActivity extends TranslucentActivity {
         app_disclaimer_label.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void openWebViewDialog(String url) {
+    private void openWebViewDialog(String link) {
         View webviewLayout = getLayoutInflater().inflate(R.layout.layout_web, null, false);
         WebView page = webviewLayout.findViewById(R.id.webview);
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -216,7 +216,9 @@ public class AboutApplicationActivity extends TranslucentActivity {
         boolean network_avaliable = (
                 connectivityManager.getNetworkInfo(mobile).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(wifi).getState() == NetworkInfo.State.CONNECTED);
-        page.loadUrl(url);
+        if(link.startsWith("GNU")) {
+            page.loadUrl("file:///android_res/raw/agpl_3.html");
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(webviewLayout);
         OvkAlertDialog dialog = new OvkAlertDialog(this);
