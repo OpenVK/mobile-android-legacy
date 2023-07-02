@@ -173,7 +173,8 @@ public class GroupIntentActivity extends TranslucentActivity {
             try {
                 account = new Account(this);
                 likes = new Likes();
-                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                        global_prefs.getBoolean("legacyHttpClient", false));
                 ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                         global_prefs.getString("proxy_address", ""));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
@@ -181,7 +182,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                 account.getProfileInfo(ovk_api);
                 if (path.startsWith("openvk://group/")) {
                     args = path.substring("openvk://group/".length());
-                    downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+                    downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
+                            global_prefs.getBoolean("legacyHttpClient", false));
                     downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                     groups = new Groups();
                     wall = new Wall();

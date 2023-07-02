@@ -1061,6 +1061,10 @@
     <string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>
     <string name="send_bug_report">Send bug report</string>
     <string name="debug_on_pre_jellybean">To send the log, enable USB debugging.</string>
+	<string name="use_legacy_http_client">Use legacy HTTP(S) client</string>
+	<string name="use_legacy_http_client_description">Use Apache wrapped HTTP(S) client designed for legacy versions of Android</string>
+    <string name="use_legacy_http_client_okhttp_err">Unable to turn off due to an unsupported Android version</string>
+    <string name="use_legacy_http_client_apachew_err">Unable to turn on due to an unsupported Android version</string>
 	<string name="terminate">Terminate process</string>
 	<string name="dnd_mode">DND mode</string>
 	<string name="saved_logs_successfully">Log saved to Device Memory/%1$s</string>

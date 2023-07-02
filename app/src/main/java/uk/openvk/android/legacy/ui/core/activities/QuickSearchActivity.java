@@ -70,13 +70,15 @@ public class QuickSearchActivity extends TranslucentActivity {
         setContentView(R.layout.activity_search);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
-        dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false));
+        dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
+                global_prefs.getBoolean("legacyHttpClient", false));
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setTextEditListener();
         users = new Users();
         groups = new Groups();
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                global_prefs.getBoolean("legacyHttpClient", false));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));

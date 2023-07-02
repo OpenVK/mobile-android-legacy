@@ -46,6 +46,7 @@ import java.util.Locale;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.api.counters.AccountCounters;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.OvkApplication;
@@ -181,12 +182,14 @@ public class AppActivity extends TranslucentFragmentActivity {
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             Global.fixWindowPadding(getWindow(), getTheme());
         }
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                global_prefs.getBoolean("legacyHttpClient", false));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
-        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
+                global_prefs.getBoolean("legacyHttpClient", false));
         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         handler = new Handler() {
             @Override
@@ -897,13 +900,15 @@ public class AppActivity extends TranslucentFragmentActivity {
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this,
                         instance_prefs.getString("access_token", ""),
-                        global_prefs.getBoolean("use_https", true));
+                        global_prefs.getBoolean("use_https", true),
+                        global_prefs.getBoolean("debugUseLegacyHttpClient", false));
                 ((OvkApplication) getApplicationContext()).longPollService.setProxyConnection(
                         global_prefs.getBoolean("useProxy", false),
                         global_prefs.getString("proxy_address", ""));
                 ((OvkApplication) getApplicationContext()).longPollService.run(instance_prefs.
                         getString("server", ""), longPollServer.address, longPollServer.key,
-                        longPollServer.ts, global_prefs.getBoolean("useHTTPS", true));
+                        longPollServer.ts, global_prefs.getBoolean("useHTTPS", true),
+                        global_prefs.getBoolean("legacyHttpClient", false));
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
                 slidingmenuLayout.loadAccountAvatar(account,
                         global_prefs.getString("photos_quality", ""));
@@ -1185,6 +1190,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                                 && selectedFragment instanceof ConversationsFragment)) {
                                     slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                                     setErrorPage(data, "error", message, true);
+                        } else if(method.equals("Account.getCounters")) {
+                            ab_layout.setNotificationCount(new AccountCounters(0, 0, 0));
                         } else {
                             if(data.getString("method").equals("Wall.get") &&
                                     global_prefs.getString("current_screen", "").equals("profile")) {
@@ -1217,25 +1224,27 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
-        progressLayout.setVisibility(View.GONE);
-        findViewById(R.id.app_fragment).setVisibility(View.GONE);
-        errorLayout.setVisibility(View.VISIBLE);
-        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-        errorLayout.setIcon(icon);
-        errorLayout.setData(data);
-        errorLayout.setRetryAction(this);
-        errorLayout.setReason(reason);
-        if(icon.equals("ovk")) {
-            errorLayout.setTitle(
-                    getResources().getString(R.string.local_newsfeed_no_posts));
-        } else {
-            errorLayout.setTitle(getResources().getString(R.string.err_text));
+        if(selectedFragment != mainSettingsFragment) {
+            progressLayout.setVisibility(View.GONE);
+            findViewById(R.id.app_fragment).setVisibility(View.GONE);
+            errorLayout.setVisibility(View.VISIBLE);
+            errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+            errorLayout.setIcon(icon);
+            errorLayout.setData(data);
+            errorLayout.setRetryAction(this);
+            errorLayout.setReason(reason);
+            if (icon.equals("ovk")) {
+                errorLayout.setTitle(
+                        getResources().getString(R.string.local_newsfeed_no_posts));
+            } else {
+                errorLayout.setTitle(getResources().getString(R.string.err_text));
+            }
+            if (!showRetry) {
+                errorLayout.hideRetryButton();
+            }
+            progressLayout.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.VISIBLE);
         }
-        if(!showRetry) {
-            errorLayout.hideRetryButton();
-        }
-        progressLayout.setVisibility(View.GONE);
-        errorLayout.setVisibility(View.VISIBLE);
     }
 
     @SuppressLint("CommitTransaction")

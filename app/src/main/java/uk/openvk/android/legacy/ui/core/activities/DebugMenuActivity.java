@@ -157,6 +157,17 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
             }
         });
 
+        Preference legacy_http_client = findPreference("legacyHttpClient");
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+            legacy_http_client.setEnabled(false);
+            legacy_http_client.setSummary(
+                    getResources().getString(R.string.use_legacy_http_client_okhttp_err));
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            legacy_http_client.setEnabled(false);
+            legacy_http_client.setSummary(
+                    getResources().getString(R.string.use_legacy_http_client_apachew_err));
+        }
+
         PreferenceCategory dangerZoneCategory = (PreferenceCategory) findPreference("danger_zone");
         Preference showAccessToken = findPreference("copyAccessToken");
         if(global_prefs.getBoolean("debugDangerZone", false)) {

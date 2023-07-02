@@ -83,14 +83,16 @@ public class DownloadManager {
     private HttpClient httpClientLegacy = null;
     private boolean forceCaching;
 
-    public DownloadManager(Context ctx, boolean use_https) {
+    public DownloadManager(Context ctx, boolean use_https, boolean legacy_mode) {
         this.ctx = ctx;
         this.use_https = use_https;
+        this.legacy_mode = legacy_mode;
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             logging_enabled = false;
         }
         try {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+            if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+                Log.v(OvkApplication.DL_TAG, "Starting DownloadManager in Legacy Mode...");
                 BasicHttpParams basicHttpParams = new BasicHttpParams();
                 HttpProtocolParams.setUseExpectContinue(basicHttpParams, false);
                 HttpProtocolParams.setUserAgent(basicHttpParams, generateUserAgent(ctx));
@@ -98,16 +100,15 @@ public class DownloadManager {
                 HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);
                 HttpConnectionParams.setSoTimeout(basicHttpParams, 30000);
                 SchemeRegistry schemeRegistry = new SchemeRegistry();
+                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 if (use_https) {
                     schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-                    schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-                } else {
-                    schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 }
                 httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams,
                         schemeRegistry), basicHttpParams);
-                legacy_mode = true;
+                this.legacy_mode = true;
             } else {
+                Log.v(OvkApplication.DL_TAG, "Starting DownloadManager...");
                 SSLContext sslContext = null;
                 try {
                     sslContext = SSLContext.getInstance("SSL");

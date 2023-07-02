@@ -105,7 +105,8 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_conversation_msgs);
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                global_prefs.getBoolean("legacyHttpClient", false));
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
         conversation = new Conversation();
@@ -260,7 +261,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                         Rect r = new Rect();
                         getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                         int visible = r.bottom - r.top;
-                        if(height - visible >= 750) {
+                        if(height - visible >= minKbHeight) {
                             keyboard_height = height - visible;
                         }
                     }

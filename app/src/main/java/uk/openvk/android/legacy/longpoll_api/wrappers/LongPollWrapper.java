@@ -79,11 +79,10 @@ public class LongPollWrapper {
     private boolean looper_prepared;
 
 
-    public LongPollWrapper(Context ctx, boolean use_https) {
+    public LongPollWrapper(Context ctx, boolean use_https, boolean legacy_mode) {
         this.ctx = ctx;
-
         this.use_https = use_https;
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+        if(legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             BasicHttpParams basicHttpParams = new BasicHttpParams();
             HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
             HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
@@ -100,11 +99,11 @@ public class LongPollWrapper {
             httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager)
                     new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry),
                     (HttpParams) basicHttpParams);
-            legacy_mode = true;
+            this.legacy_mode = true;
         } else {
             httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS).build();
-            legacy_mode = false;
+            this.legacy_mode = false;
         }
     }
 

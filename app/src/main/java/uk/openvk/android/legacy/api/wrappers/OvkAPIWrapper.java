@@ -95,15 +95,17 @@ public class OvkAPIWrapper {
     private boolean logging_enabled = true; // default for beta releases
     private String client_name = "openvk_legacy_android";
 
-    public OvkAPIWrapper(Context ctx, boolean use_https) {
+    public OvkAPIWrapper(Context ctx, boolean use_https, boolean legacy_mode) {
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             logging_enabled = false;
         }
         this.ctx = ctx;
         this.use_https = use_https;
+        this.legacy_mode = legacy_mode;
         error = new Error();
         try {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+            if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+                Log.v(OvkApplication.API_TAG, "Starting OvkAPIWrapper in Legacy mode...");
                 BasicHttpParams basicHttpParams = new BasicHttpParams();
                 HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
                 HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
@@ -112,12 +114,15 @@ public class OvkAPIWrapper {
                 HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
                 SchemeRegistry schemeRegistry = new SchemeRegistry();
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-                schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                if (use_https) {
+                    schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                }
                 httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager)
                         new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry),
                         (HttpParams) basicHttpParams);
-                legacy_mode = true;
+                this.legacy_mode = true;
             } else {
+                Log.v(OvkApplication.API_TAG, "Starting OvkAPIWrapper...");
                 if (use_https) {
                     httpClient = new OkHttpClient.Builder()
                             .connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS)
@@ -129,7 +134,6 @@ public class OvkAPIWrapper {
                             .readTimeout(30, TimeUnit.SECONDS)
                             .retryOnConnectionFailure(false).followSslRedirects(false).build();
                 }
-                legacy_mode = false;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -830,7 +834,7 @@ public class OvkAPIWrapper {
                         if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
+                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, error.description);
                     } catch (IOException ignored) {
 
                     } catch (Exception e) {
@@ -1068,7 +1072,8 @@ public class OvkAPIWrapper {
         msg.setData(data);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         DownloadManager downloadManager = new DownloadManager(activity,
-                global_prefs.getBoolean("useHTTPS", false));
+                global_prefs.getBoolean("useHTTPS", false),
+                global_prefs.getBoolean("legacyHttpClient", false));
         if (activity instanceof AppActivity) {
             AppActivity app_a = (AppActivity) activity;
             assert method != null;

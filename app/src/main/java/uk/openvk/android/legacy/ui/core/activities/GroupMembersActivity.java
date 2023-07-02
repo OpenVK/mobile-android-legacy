@@ -146,12 +146,14 @@ public class GroupMembersActivity extends UsersListActivity {
 
     private void setOvkAPIWrapper() {
         users = new ArrayList<Users>();
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", false));
+        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", false),
+                global_prefs.getBoolean("legacyHttpClient", false));
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk_api.setAccessToken(access_token);
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
-        dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false));
+        dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
+                global_prefs.getBoolean("legacyHttpClient", false));
         group.getMembers(ovk_api, 25, "");
     }
 

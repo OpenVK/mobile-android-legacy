@@ -364,7 +364,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 editor.putString("server", "");
                 editor.putString("account_password_hash", "");
                 editor.commit();
-                DownloadManager dlm = new DownloadManager(getActivity(), false);
+                DownloadManager dlm = new DownloadManager(getActivity(), false,
+                        global_prefs.getBoolean("legacyHttpClient", false));
                 dlm.clearCache(getContext().getCacheDir());
                 Intent activity = new Intent(getContext().getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

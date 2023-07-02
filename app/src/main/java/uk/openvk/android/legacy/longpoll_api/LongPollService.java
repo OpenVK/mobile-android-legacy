@@ -38,10 +38,10 @@ public class LongPollService extends Service {
     public LongPollService() {
     }
 
-    public LongPollService(Context ctx, String access_token, boolean use_https) {
+    public LongPollService(Context ctx, String access_token, boolean use_https, boolean legacy_client) {
         this.ctx = ctx;
         this.access_token = access_token;
-        lpW = new LongPollWrapper(ctx, use_https);
+        lpW = new LongPollWrapper(ctx, use_https, legacy_client);
     }
 
     @Override
@@ -56,12 +56,13 @@ public class LongPollService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void run(String instance, String lp_server, String key, int ts, boolean use_https) {
+    public void run(String instance, String lp_server, String key, int ts, boolean use_https,
+                    boolean legacy_client) {
         this.use_https = use_https;
         if(lpW == null) {
-            lpW = new LongPollWrapper(ctx, use_https);
+            lpW = new LongPollWrapper(ctx, use_https, use_https);
         }
-        ovk_api = new OvkAPIWrapper(ctx, use_https);
+        ovk_api = new OvkAPIWrapper(ctx, use_https, legacy_client);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);
         if(BuildConfig.BUILD_TYPE.equals("release")) ovk_api.log(false);
@@ -91,7 +92,7 @@ public class LongPollService extends Service {
 
     public void setProxyConnection(boolean useProxy, String proxy_address) {
         if(lpW == null) {
-            lpW = new LongPollWrapper(ctx, use_https);
+            lpW = new LongPollWrapper(ctx, use_https, use_https);
         }
         lpW.setProxyConnection(useProxy, proxy_address);
     }

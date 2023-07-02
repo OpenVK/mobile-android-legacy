@@ -153,6 +153,10 @@ public class OvkApplication extends Application {
         if(!global_prefs.contains("debugDangerZone")) {
             global_prefs_editor.putBoolean("debugDangerZone", false);
         }
+        if (!global_prefs.contains("legacyHttpClient")) {
+            global_prefs_editor.putBoolean("legacyHttpClient",
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD);
+        }
 
         if(!global_prefs.contains("hideOvkWarnForBeginners")) {
             global_prefs_editor.putBoolean("hideOvkWarnForBeginners", false);
@@ -166,7 +170,8 @@ public class OvkApplication extends Application {
             global_prefs_editor.putBoolean("forcedCaching", true);
         }
 
-        if(global_prefs.contains("account_password") && global_prefs.getString("account_password", "").length() > 0) {
+        if(global_prefs.contains("account_password") &&
+                global_prefs.getString("account_password", "").length() > 0) {
             try {
                 global_prefs_editor.putString("encrypted_account_password",
                         Global.GetSHA256Hash(global_prefs.getString("account_password", "")));

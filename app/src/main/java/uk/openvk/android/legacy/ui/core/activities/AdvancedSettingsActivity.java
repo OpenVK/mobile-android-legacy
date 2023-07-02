@@ -91,7 +91,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                 actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             }
         }
-        dlManager = new DownloadManager(this, false);
+        dlManager = new DownloadManager(this, false, global_prefs.getBoolean("legacyHttpClient", false));
         setListeners();
     }
 

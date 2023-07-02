@@ -82,7 +82,8 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         installLayouts();
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
+                global_prefs.getBoolean("legacyHttpClient", false));
         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -125,7 +126,8 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
             try {
                 if (path.startsWith("openvk://friends/")) {
                     String args = path.substring("openvk://friends/".length());
-                    ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                    ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                            global_prefs.getBoolean("legacyHttpClient", false));
                     ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                             global_prefs.getString("proxy_address", ""));
                     ovk_api.setServer(instance_prefs.getString("server", ""));

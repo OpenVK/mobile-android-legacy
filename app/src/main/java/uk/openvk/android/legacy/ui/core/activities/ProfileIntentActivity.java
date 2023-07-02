@@ -160,7 +160,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             try {
                 account = new Account(this);
                 likes = new Likes();
-                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                        global_prefs.getBoolean("legacyHttpClient", false));
                 ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                         global_prefs.getString("proxy_address", ""));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
@@ -168,7 +169,8 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 account.getProfileInfo(ovk_api);
                 if (path.startsWith("openvk://profile/")) {
                     args = path.substring("openvk://profile/".length());
-                    downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+                    downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
+                            global_prefs.getBoolean("legacyHttpClient", false));
                     downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                     users = new Users();
                     wall = new Wall();

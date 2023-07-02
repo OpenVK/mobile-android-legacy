@@ -195,12 +195,14 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     }
                 }
                 wall = new Wall();
-                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true));
+                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
+                        global_prefs.getBoolean("legacyHttpClient", false));
                 ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                         global_prefs.getString("proxy_address", ""));
                 ovk_api.setServer(instance_prefs.getString("server", ""));
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
-                downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true));
+                downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
+                        global_prefs.getBoolean("legacyHttpClient", false));
                 downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                 wall.getComments(ovk_api, post.owner_id, post.post_id);
             }

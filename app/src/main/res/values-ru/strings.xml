@@ -991,6 +991,10 @@
     <string name="write_logs_to_file">Запись журнала в файл</string>
     <string name="send_bug_report">Отправить баг-репорт</string>
     <string name="debug_on_pre_jellybean">Для отправки журнала включите отладку по USB.</string>
+    <string name="use_legacy_http_client">Использовать устаревший HTTP(S)-клиент</string>
+    <string name="use_legacy_http_client_description">Использовать обернутый HTTP(S)-клиент Apache, предназначенный для устаревших версий Android</string>
+    <string name="use_legacy_http_client_okhttp_err">Отключение невозможно из-за неподдерживаемой версии Android</string>
+    <string name="use_legacy_http_client_apachew_err">Включение невозможно из-за неподдерживаемой версии Android</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>
     <string name="saved_logs_successfully">Журнал сохранен в Память устройства/%1$s</string>
