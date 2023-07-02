@@ -158,6 +158,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
         });
 
         Preference legacy_http_client = findPreference("legacyHttpClient");
+
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             legacy_http_client.setEnabled(false);
             legacy_http_client.setSummary(

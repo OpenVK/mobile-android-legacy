@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -206,11 +208,20 @@ public class AboutApplicationActivity extends TranslucentActivity {
     private void openWebViewDialog(String url) {
         View webviewLayout = getLayoutInflater().inflate(R.layout.layout_web, null, false);
         WebView page = webviewLayout.findViewById(R.id.webview);
-        if(url.equals("https://www.gnu.org/licenses/agpl.txt")
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        int mobile = ConnectivityManager.TYPE_MOBILE;
+        int wifi = ConnectivityManager.TYPE_WIFI;
+
+        boolean network_avaliable = (
+                connectivityManager.getNetworkInfo(mobile).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(wifi).getState() == NetworkInfo.State.CONNECTED);
+        if(network_avaliable && url.equals("https://www.gnu.org/licenses/agpl.txt")
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             page.loadUrl(url);
         } else {
             /* if an HTTPS connection cannot be established on legacy Android devices
+               or no Internet connection
                file:///android_res/raw/agpl_3.html => R.raw.agpl_3.html
             */
             page.loadUrl("file:///android_res/raw/agpl_3.html");
