@@ -17,5 +17,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
 	android:shape="rectangle">
 	<gradient android:type="radial"
-		android:endColor="#717171" android:startColor="#6f6f6f" android:gradientRadius="1000" android:centerX="0.5" android:centerY="0.1" />
+		android:endColor="#656565" android:startColor="#5a5a5a" android:gradientRadius="1000" android:centerX="0.5" android:centerY="0.1" />
 </shape>
