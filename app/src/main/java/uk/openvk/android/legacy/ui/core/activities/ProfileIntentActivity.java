@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -399,6 +400,20 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     }
                     profileFragment.hideTabSelector();
                     profileFragment.getHeader().hideExpandArrow();
+                    if(user.deactivated.equals("banned")) {
+                        if(user.ban_reason.length() > 0) {
+                            ((TextView) findViewById(R.id.deactivated_info)).setText(
+                                    String.format("%s\r\n%s: %s",
+                                            getResources().getString(R.string.profile_inactive_banned),
+                                            getResources().getString(R.string.reason), user.ban_reason
+                                    )
+                            );
+                        } else {
+                            ((TextView) findViewById(R.id.deactivated_info)).setText(
+                                    getResources().getString(R.string.profile_inactive_banned)
+                            );
+                        }
+                    }
                 }
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                     if(popup_menu == null) {

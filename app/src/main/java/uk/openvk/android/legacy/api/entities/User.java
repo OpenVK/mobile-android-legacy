@@ -52,6 +52,7 @@ public class User implements Parcelable {
     private JSONParser jsonParser;
     public int sex;
     public String avatar_url;
+    public String ban_reason;
 
     public User(JSONObject user) {
         parse(user);
@@ -160,6 +161,11 @@ public class User implements Parcelable {
                 }
                 if(user.has("deactivated")) {
                     deactivated = user.getString("deactivated");
+                    if(deactivated.equals("banned") && user.isNull("ban_reason")) {
+                        ban_reason = user.getString("ban_reason");
+                    } else {
+                        ban_reason = "";
+                    }
                 } else {
                     friends_status = user.getInt("friend_status");
                     if (!user.isNull("interests")) {
@@ -197,16 +203,8 @@ public class User implements Parcelable {
                     if (!user.isNull("city")) {
                         city = user.getString("city");
                     }
-                    if (user.getInt("verified") == 1) {
-                        verified = true;
-                    } else {
-                        verified = false;
-                    }
-                    if (user.getInt("online") == 1) {
-                        online = true;
-                    } else {
-                        online = false;
-                    }
+                    verified = user.getInt("verified") == 1;
+                    online = user.getInt("online") == 1;
                     if(user.has("sex")) {
                         sex = user.getInt("sex");
                     }
