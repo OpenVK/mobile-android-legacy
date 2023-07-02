@@ -1,7 +1,9 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -13,6 +15,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -23,7 +26,9 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.ui.core.methods.CustomLinkMovementMethod;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -181,8 +186,48 @@ public class AboutApplicationActivity extends TranslucentActivity {
         app_author_label.setMovementMethod(LinkMovementMethod.getInstance());
         app_design_label.setMovementMethod(LinkMovementMethod.getInstance());
         app_devteam_label.setMovementMethod(LinkMovementMethod.getInstance());
-        app_license_label.setMovementMethod(LinkMovementMethod.getInstance());
+        CustomLinkMovementMethod linkMovementMethod = new CustomLinkMovementMethod(this);
+        linkMovementMethod.setOnLinkClickListener(
+                new CustomLinkMovementMethod.OnTextViewClickMovementListener() {
+                    @Override
+                    public void onLinkClicked(String linkText, CustomLinkMovementMethod.LinkType linkType) {
+                        openWebViewDialog(linkText);
+                    }
+
+                    @Override
+                    public void onLongClick(String text) {
+
+                    }
+        });
+        app_license_label.setMovementMethod(linkMovementMethod);
         app_disclaimer_label.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void openWebViewDialog(String url) {
+        View webviewLayout = getLayoutInflater().inflate(R.layout.layout_web, null, false);
+        WebView page = webviewLayout.findViewById(R.id.webview);
+        if(url.equals("https://www.gnu.org/licenses/agpl.txt")
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            page.loadUrl(url);
+        } else {
+            /* if an HTTPS connection cannot be established on legacy Android devices
+               file:///android_res/raw/agpl_3.html => R.raw.agpl_3.html
+            */
+            page.loadUrl("file:///android_res/raw/agpl_3.html");
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(webviewLayout);
+        OvkAlertDialog dialog = new OvkAlertDialog(this);
+        dialog.build(builder, getResources().getString(R.string.app_license_title), "", page);
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
     }
 
     @Override
