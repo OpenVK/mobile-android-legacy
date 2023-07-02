@@ -216,16 +216,7 @@ public class AboutApplicationActivity extends TranslucentActivity {
         boolean network_avaliable = (
                 connectivityManager.getNetworkInfo(mobile).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(wifi).getState() == NetworkInfo.State.CONNECTED);
-        if(network_avaliable && url.equals("https://www.gnu.org/licenses/agpl.txt")
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            page.loadUrl(url);
-        } else {
-            /* if an HTTPS connection cannot be established on legacy Android devices
-               or no Internet connection
-               file:///android_res/raw/agpl_3.html => R.raw.agpl_3.html
-            */
-            page.loadUrl("file:///android_res/raw/agpl_3.html");
-        }
+        page.loadUrl(url);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(webviewLayout);
         OvkAlertDialog dialog = new OvkAlertDialog(this);

@@ -42,7 +42,7 @@
     <string name="app_license_text"><![CDATA[
         Эта программа является свободным программным обеспечением: вы можете распространять и/или
         изменять его в соответствии с условиями лицензии
-        <a href="https://www.gnu.org/licenses/agpl.txt">GNU Affero General Public License версии 3.0</a>
+        <a href="file:///android_res/raw/agpl_3.html">GNU Affero General Public License версии 3.0</a>
         или поздней версии, опубликованной Фондом свободного программного обеспечения.
         <br><br>БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ ИЛИ ПРИГОДНОСТЬ ДЛЯ КОНКРЕТНЫХ ЦЕЛЕЙ.
     ]]></string>
