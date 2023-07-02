@@ -7,6 +7,6 @@
 
     <WebView
         android:id="@+id/webview"
-        android:layout_width="300dp"
+        android:layout_width="500dp"
         android:layout_height="300dp" />
 </LinearLayout>
