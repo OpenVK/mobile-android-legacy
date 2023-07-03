@@ -58,6 +58,7 @@ public class OvkApplication extends Application {
     public Configuration config;
     private Global global;
     public int swdp;
+    public String instance;
 
     @Override
     public void onCreate() {
@@ -181,6 +182,14 @@ public class OvkApplication extends Application {
             global_prefs_editor.putString("account_password", "");
         }
 
+        if(!global_prefs.contains("current_instance")) {
+            global_prefs_editor.putString("current_instance", "");
+        }
+
+        if(!global_prefs.contains("current_uid")) {
+            global_prefs_editor.putLong("current_uid", 0);
+        }
+
         global_prefs_editor.commit();
         instance_prefs_editor.commit();
     }
@@ -211,6 +220,27 @@ public class OvkApplication extends Application {
 
 
         return new Locale(language_code);
+    }
+
+    public String getCurrentInstance() {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", "");
+    }
+
+    public long getCurrentUserId() {
+        return PreferenceManager.getDefaultSharedPreferences(this).getLong("current_uid", 0);
+    }
+
+    public String getPhotoCacheDir() {
+        SharedPreferences prefs = getSharedPreferences(
+                String.format("instance_a%s_%s", getCurrentUserId(), getCurrentInstance()), 0);
+        if(prefs != null && prefs.contains("server") &&
+                prefs.getString("server", "").endsWith(
+                        String.format("a%s_%s", getCurrentUserId(), getCurrentInstance()))) {
+            return String.format("%s/%s/photos_cache", getCacheDir(), prefs.getString("server", ""));
+        } else {
+            prefs = getSharedPreferences("instance", 0);
+            return String.format("%s/%s/photos_cache", getCacheDir(), prefs.getString("server", ""));
+        }
     }
 
 }

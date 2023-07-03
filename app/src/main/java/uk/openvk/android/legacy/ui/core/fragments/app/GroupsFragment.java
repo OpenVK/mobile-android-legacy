@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,6 +51,7 @@ public class GroupsFragment extends Fragment {
     private GroupsListAdapter groupsAdapter;
     private boolean loading_more_groups = false;
     private View view;
+    private String instance;
 
     @Nullable
     @Override
@@ -57,6 +59,7 @@ public class GroupsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_groups, container, false);
         groupsListView = view.findViewById(R.id.groups_listview);
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         return view;
     }
 
@@ -102,8 +105,8 @@ public class GroupsFragment extends Fragment {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                         Bitmap bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/photos_cache/group_avatars/avatar_%s",
-                                        getContext().getCacheDir(), item.id), options);
+                                String.format("%s/%s/photos_cache/group_avatars/avatar_%s",
+                                        getContext().getCacheDir(), instance, item.id), options);
                         if (bitmap != null) {
                             item.avatar = bitmap;
                         }

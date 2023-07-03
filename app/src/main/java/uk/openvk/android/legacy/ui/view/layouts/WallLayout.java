@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -45,6 +46,7 @@ import uk.openvk.android.legacy.api.entities.WallPost;
  **/
 
 public class WallLayout extends LinearLayout {
+    private final String instance;
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -69,6 +71,7 @@ public class WallLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
     }
 
     @Override
@@ -157,10 +160,10 @@ public class WallLayout extends LinearLayout {
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                         if (photoAttachment.url.length() > 0) {
                                             Bitmap bitmap = BitmapFactory.decodeFile(
-                                                    String.format("%s/photos_cache" +
+                                                    String.format("%s/%s/photos_cache" +
                                                                     "/wall_photo_attachments/" +
                                                                     "wall_attachment_o%sp%s",
-                                                            getContext().getCacheDir(),
+                                                            getContext().getCacheDir(), instance,
                                                     item.repost.newsfeed_item.owner_id,
                                                             item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
@@ -187,9 +190,9 @@ public class WallLayout extends LinearLayout {
                                             item.attachments.get(0).getContent());
                                     if (photoAttachment.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(
-                                                String.format("%s/photos_cache/wall_photo_attachments/" +
+                                                String.format("%s/%s/photos_cache/wall_photo_attachments/" +
                                                                 "wall_attachment_o%sp%s",
-                                                        getContext().getCacheDir(),
+                                                        getContext().getCacheDir(), instance,
                                                         item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
                                             ((PhotoAttachment) item.attachments.get(0).getContent())
@@ -290,8 +293,8 @@ public class WallLayout extends LinearLayout {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/photos_cache/wall_avatars/avatar_%s",
-                                    getContext().getCacheDir(), item.author_id), options);
+                            String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                                    getContext().getCacheDir(), instance, item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }

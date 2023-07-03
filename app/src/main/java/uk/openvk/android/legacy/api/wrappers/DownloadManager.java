@@ -82,6 +82,7 @@ public class DownloadManager {
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
     private boolean forceCaching;
+    private String instance;
 
     public DownloadManager(Context ctx, boolean use_https, boolean legacy_mode) {
         this.ctx = ctx;
@@ -148,6 +149,10 @@ public class DownloadManager {
             ex.printStackTrace();
         }
     }
+    
+    public void setInstance(String instance) {
+        this.instance = instance;
+    }
 
     public void setForceCaching(boolean value) {
         forceCaching = value;
@@ -213,8 +218,8 @@ public class DownloadManager {
             @Override
             public void run() {
                 try {
-                    File directory = new File(String.format("%s/photos_cache",
-                            ctx.getCacheDir().getAbsolutePath()), where);
+                    File directory = new File(String.format("%s/%s/photos_cache",
+                            ctx.getCacheDir().getAbsolutePath(), instance), where);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -224,8 +229,8 @@ public class DownloadManager {
                 for (int i = 0; i < photoAttachments.size(); i++) {
                     filesize = 0;
                     filename = photoAttachments.get(i).filename;
-                    File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                            ctx.getCacheDir(), where), filename);
+                    File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
+                            ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
                     PhotoAttachment photoAttachment = photoAttachments.get(i);
                     if(photoAttachment.url == null) {
                         photoAttachment.url = "";
@@ -307,8 +312,8 @@ public class DownloadManager {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
                                 content_length = response.body().contentLength();
-                                downloadedFile = new File(String.format("%s/photos_cache/%s",
-                                        ctx.getCacheDir(), where), filename);
+                                downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
+                                        ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -403,8 +408,8 @@ public class DownloadManager {
             public void run() {
                 Log.v("DownloadManager", String.format("Downloading %s...", url));
                 try {
-                    File directory = new File(String.format("%s/photos_cache",
-                            ctx.getCacheDir().getAbsolutePath()), where);
+                    File directory = new File(String.format("%s/%s/photos_cache",
+                            ctx.getCacheDir().getAbsolutePath(), instance), where);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -412,8 +417,8 @@ public class DownloadManager {
                     ex.printStackTrace();
                 }
                 filesize = 0;
-                File downloadedFile = new File(String.format("%s/photos_cache/%s",
-                        ctx.getCacheDir(), where), filename);
+                File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
+                        ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
                 Date lastModDate;
                 if(downloadedFile.exists()) {
                     lastModDate = new Date(downloadedFile.lastModified());

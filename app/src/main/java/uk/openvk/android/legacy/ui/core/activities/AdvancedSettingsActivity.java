@@ -92,6 +92,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
             }
         }
         dlManager = new DownloadManager(this, false, global_prefs.getBoolean("legacyHttpClient", false));
+        dlManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
         setListeners();
     }
 

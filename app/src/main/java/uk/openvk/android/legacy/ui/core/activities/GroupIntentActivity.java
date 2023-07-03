@@ -112,6 +112,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     private android.support.v7.widget.PopupMenu popup_menu;
     private boolean showExtended;
     private boolean loading_more_posts;
+    private String instance;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -131,6 +132,8 @@ public class GroupIntentActivity extends TranslucentActivity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
+
+        instance = PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", "");
 
         DisplayMetrics metrics = new DisplayMetrics();
         Display display = getWindowManager().getDefaultDisplay();
@@ -184,6 +187,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     args = path.substring("openvk://group/".length());
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                             global_prefs.getBoolean("legacyHttpClient", false));
+                    downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
                     downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                     groups = new Groups();
                     wall = new Wall();
@@ -632,8 +636,9 @@ public class GroupIntentActivity extends TranslucentActivity {
     public void loadAvatar() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/group_avatars/avatar_%s",
-                getCacheDir(), group.id), options);
+        Bitmap bitmap = BitmapFactory.decodeFile(
+                String.format("%s/%s/photos_cache/group_avatars/avatar_%s",
+                getCacheDir(), instance, group.id), options);
         if (bitmap != null) {
             group.avatar = bitmap;
         } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0
@@ -793,8 +798,7 @@ public class GroupIntentActivity extends TranslucentActivity {
         intent.putExtra("where", "wall");
         try {
             intent.putExtra("local_photo_addr",
-                    String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
-                    item.owner_id, item.post_id));
+                    String.format("%s/%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(), instance, item.owner_id, item.post_id));
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {
                     if(item.attachments.get(i).type.equals("photo")) {

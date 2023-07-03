@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ import uk.openvk.android.legacy.ui.view.layouts.IncomingMessageLayout;
  **/
 
 public class MessagesListAdapter extends BaseAdapter {
+    private final String instance;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Message> objects;
@@ -52,6 +54,7 @@ public class MessagesListAdapter extends BaseAdapter {
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.peer_id = peer_id;
+        this.instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
     }
 
     @Override
@@ -202,8 +205,9 @@ public class MessagesListAdapter extends BaseAdapter {
                     if (peer_id == item.author_id) {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(String.format("%s/photos_cache/conversations_avatars/avatar_%s",
-                                ctx.getCacheDir(), peer_id), options);
+                        Bitmap bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                ctx.getCacheDir(), instance, peer_id), options);
                         ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
                     }
                 } catch (OutOfMemoryError ignored) {
@@ -222,7 +226,8 @@ public class MessagesListAdapter extends BaseAdapter {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                         Bitmap bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/photos_cache/conversations_avatars/avatar_%s", ctx.getCacheDir(), peer_id), options);
+                                String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                        ctx.getCacheDir(), instance, peer_id), options);
                         ((IncomingMessageLayout) view.findViewById(R.id.incoming_msg)).setAvatar(bitmap);
                     }
                 } catch (OutOfMemoryError ignored) {
@@ -242,8 +247,8 @@ public class MessagesListAdapter extends BaseAdapter {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/photos_cache/conversations_avatars/avatar_%s",
-                                    ctx.getCacheDir(), peer_id), options);
+                            String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                    ctx.getCacheDir(), instance, peer_id), options);
                 }
             } catch (OutOfMemoryError ignored) {
 

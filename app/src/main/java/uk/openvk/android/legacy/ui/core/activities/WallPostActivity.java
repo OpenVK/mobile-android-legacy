@@ -99,6 +99,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
     private String where;
     private ArrayList<Attachment> attachments;
     private int minKbHeight = 450;
+    private String instance;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -109,6 +110,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
+        instance = instance_prefs.getString("server", "");
         ((XLinearLayout) findViewById(R.id.comments_view)).setOnKeyboardStateListener(this);
         setEmojiconFragment(false);
         postViewLayout = findViewById(R.id.comments_layout);
@@ -203,6 +205,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                         global_prefs.getBoolean("legacyHttpClient", false));
+                downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
                 downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                 wall.getComments(ovk_api, post.owner_id, post.post_id);
             }
@@ -309,8 +312,8 @@ public class WallPostActivity extends TranslucentFragmentActivity
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             Bitmap bitmap = BitmapFactory.decodeFile(
-                                    String.format("%s/photos_cache/account_avatar/avatar_%s",
-                                            getCacheDir(), account_id), options);
+                                    String.format("%s/%s/photos_cache/account_avatar/avatar_%s",
+                                            getCacheDir(), instance, account_id), options);
                             comment.avatar = bitmap;
                             if (comments == null) {
                                 comments = new ArrayList<Comment>();
@@ -347,8 +350,8 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/photos_cache/account_avatar/avatar_%s",
-                                    getCacheDir(), account_id), options);
+                            String.format("%s/%s/photos_cache/account_avatar/avatar_%s",
+                                    getCacheDir(), instance, account_id), options);
                     comment.avatar = bitmap;
                     if (comments == null) {
                         comments = new ArrayList<Comment>();

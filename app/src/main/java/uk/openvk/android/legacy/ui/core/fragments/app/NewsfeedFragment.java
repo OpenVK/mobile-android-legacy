@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -72,6 +73,7 @@ public class NewsfeedFragment extends Fragment {
     private int pastComplVisiblesItems;
     private Parcelable recyclerViewState;
     private View view;
+    private String instance;
 
     @Nullable
     @Override
@@ -79,6 +81,7 @@ public class NewsfeedFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
         adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         return view;
     }
 
@@ -137,8 +140,8 @@ public class NewsfeedFragment extends Fragment {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                    getContext().getCacheDir(), item.author_id), options);
+                            String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                    getContext().getCacheDir(), instance, item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -182,9 +185,9 @@ public class NewsfeedFragment extends Fragment {
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                     if (photoAttachment.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(
-                                                String.format("%s/photos_cache/newsfeed_photo_attachments/" +
+                                                String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
                                                                 "newsfeed_attachment_o%sp%s",
-                                                        getContext().getCacheDir(),
+                                                        getContext().getCacheDir(), instance,
                                                 item.repost.newsfeed_item.owner_id,
                                                         item.repost.newsfeed_item.post_id), options);
                                         if (bitmap != null) {
@@ -214,8 +217,9 @@ public class NewsfeedFragment extends Fragment {
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                                 if (photoAttachment.url.length() > 0) {
                                     Bitmap bitmap = BitmapFactory.decodeFile(
-                                            String.format("%s/photos_cache/newsfeed_photo_attachments/" +
+                                            String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
                                                     "newsfeed_attachment_o%sp%s", getContext().getCacheDir(),
+                                                    instance,
                                                     item.owner_id, item.post_id), options);
                                     if (bitmap != null) {
                                         photoAttachment.photo = bitmap;

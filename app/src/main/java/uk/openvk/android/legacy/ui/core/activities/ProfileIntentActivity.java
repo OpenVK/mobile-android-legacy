@@ -172,6 +172,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     args = path.substring("openvk://profile/".length());
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                             global_prefs.getBoolean("legacyHttpClient", false));
+                    downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
                     downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                     users = new Users();
                     wall = new Wall();

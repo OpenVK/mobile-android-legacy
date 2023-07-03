@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -53,6 +54,7 @@ public class UsersFragment extends Fragment {
     public boolean loading_more_friends;
     private View view;
     private Context activity_ctx;
+    private String instance;
 
     @Nullable
     @Override
@@ -83,6 +85,7 @@ public class UsersFragment extends Fragment {
                 }
         });
 */
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         return view;
     }
 
@@ -115,8 +118,8 @@ public class UsersFragment extends Fragment {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/photos_cache/users_avatars/avatar_%s",
-                                    getContext().getCacheDir(), item.id), options);
+                            String.format("%s/%s/photos_cache/users_avatars/avatar_%s",
+                                    getContext().getCacheDir(), instance, item.id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     }
@@ -134,14 +137,14 @@ public class UsersFragment extends Fragment {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile
-                            (String.format("%s/photos_cache/users_avatars/avatar_%s",
-                                    getContext().getCacheDir(), item.id), options);
+                            (String.format("%s/%s/photos_cache/users_avatars/avatar_%s",
+                                    getContext().getCacheDir(), instance, item.id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     } else {
                         Log.e(OvkApplication.APP_TAG,
-                                String.format("%s/photos_cache/users_avatars/avatar_%d",
-                                        getContext().getCacheDir(), item.id));
+                                String.format("%s/%s/photos_cache/users_avatars/avatar_%d",
+                                        getContext().getCacheDir(), instance, item.id));
                     }
                     requests.set(i, item);
                 } catch (OutOfMemoryError | Exception ex) {

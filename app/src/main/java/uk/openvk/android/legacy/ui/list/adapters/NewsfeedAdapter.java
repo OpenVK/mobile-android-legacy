@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -53,6 +54,7 @@ import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
+    private final String instance;
     private ArrayList<WallPost> items = new ArrayList<>();
     private Context ctx;
     public LruCache memCache;
@@ -60,6 +62,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     public NewsfeedAdapter(Context context, ArrayList<WallPost> posts) {
         ctx = context;
         items = posts;
+        instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
     }
 
     @Override
@@ -396,8 +399,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                ctx.getCacheDir(), item.author_id), options);
+                        String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                ctx.getCacheDir(), instance, item.author_id), options);
                 if(bitmap != null) {
                     avatar.setImageBitmap(bitmap);
                 } else {

@@ -160,6 +160,7 @@ public class PhotoViewerActivity extends Activity {
                     if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
                         downloadManager = new DownloadManager(this, true,
                                 global_prefs.getBoolean("legacyHttpClient", false));
+                        downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
                         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                         downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),

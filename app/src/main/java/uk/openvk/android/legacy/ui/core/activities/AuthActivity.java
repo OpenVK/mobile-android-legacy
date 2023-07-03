@@ -394,6 +394,10 @@ public class AuthActivity extends TranslucentAuthActivity {
                     instance_prefs = getSharedPreferences(
                             String.format("instance_a%s_%s", account.id, server), 0);
                 }
+                SharedPreferences.Editor global_editor = global_prefs.edit();
+                global_editor.putString("current_instance", server);
+                global_editor.putLong("current_uid", account.id);
+                global_editor.commit();
                 SharedPreferences.Editor instance_editor = instance_prefs.edit();
                 instance_editor.putString("email", username);
                 instance_editor.putString("access_token", auth.getAccessToken());

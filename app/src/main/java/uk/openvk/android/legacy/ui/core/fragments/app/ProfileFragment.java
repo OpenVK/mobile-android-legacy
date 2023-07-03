@@ -63,6 +63,7 @@ public class ProfileFragment extends Fragment {
     private View view;
     private boolean showExtended;
     public boolean loading_more_posts;
+    private String instance;
 
     @Nullable
     @Override
@@ -100,6 +101,7 @@ public class ProfileFragment extends Fragment {
             view.findViewById(R.id.add_to_friends)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
         }
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         return view;
     }
 
@@ -269,8 +271,8 @@ public class ProfileFragment extends Fragment {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = BitmapFactory.decodeFile(
-                    String.format("%s/photos_cache/profile_avatars/avatar_%s",
-                            getContext().getCacheDir(), user.id), options);
+                    String.format("%s/%s/photos_cache/profile_avatars/avatar_%s",
+                            getContext().getCacheDir(), instance, user.id), options);
             switch (quality) {
                 case "medium":
                     if (bitmap != null) {

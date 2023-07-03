@@ -154,6 +154,7 @@ public class GroupMembersActivity extends UsersListActivity {
                 global_prefs.getString("proxy_address", ""));
         dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
                 global_prefs.getBoolean("legacyHttpClient", false));
+        dlm.setInstance(instance_prefs.getString("instance", ""));
         group.getMembers(ovk_api, 25, "");
     }
 

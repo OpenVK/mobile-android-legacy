@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -44,6 +45,7 @@ public class ConversationsFragment extends Fragment {
     private RecyclerView convListView;
     private Account account;
     private View view;
+    private String instance;
 
     @Nullable
     @Override
@@ -51,6 +53,7 @@ public class ConversationsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_conversations, container, false);
         convListView = view.findViewById(R.id.conversations_listview);
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         return view;
     }
 
@@ -91,9 +94,9 @@ public class ConversationsFragment extends Fragment {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/photos_cache/conversations_avatars/avatar_%s",
+                            String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
                                     getContext().getCacheDir(),
-                            conversation.peer_id), options);
+                                    instance, conversation.peer_id), options);
                     if (bitmap != null) {
                         conversation.avatar = bitmap;
                         conversations_list.set(i, conversation);

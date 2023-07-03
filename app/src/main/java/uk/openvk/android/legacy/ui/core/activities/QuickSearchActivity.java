@@ -72,6 +72,7 @@ public class QuickSearchActivity extends TranslucentActivity {
         instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
         dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
                 global_prefs.getBoolean("legacyHttpClient", false));
+        dlm.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setTextEditListener();

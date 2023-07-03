@@ -192,6 +192,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false));
+        downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         handler = new Handler() {
             @Override
