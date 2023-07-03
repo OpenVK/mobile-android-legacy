@@ -234,8 +234,7 @@ public class OvkApplication extends Application {
         SharedPreferences prefs = getSharedPreferences(
                 String.format("instance_a%s_%s", getCurrentUserId(), getCurrentInstance()), 0);
         if(prefs != null && prefs.contains("server") &&
-                prefs.getString("server", "").endsWith(
-                        String.format("a%s_%s", getCurrentUserId(), getCurrentInstance()))) {
+                prefs.getString("server", "").equals(getCurrentInstance())) {
             return String.format("%s/%s/photos_cache", getCacheDir(), prefs.getString("server", ""));
         } else {
             prefs = getSharedPreferences("instance", 0);
@@ -247,8 +246,7 @@ public class OvkApplication extends Application {
         SharedPreferences prefs = getSharedPreferences(
                 String.format("instance_a%s_%s", getCurrentUserId(), getCurrentInstance()), 0);
         if(prefs != null && prefs.contains("server") &&
-                prefs.getString("server", "").endsWith(
-                        String.format("a%s_%s", getCurrentUserId(), getCurrentInstance()))) {
+                prefs.getString("server", "").equals(getCurrentInstance())) {
             return prefs;
         } else {
             return getSharedPreferences("instance", 0);

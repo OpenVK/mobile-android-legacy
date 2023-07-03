@@ -566,6 +566,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         String file_extension;
         String account_names[] = new String[0];
         Context app_ctx = getContext().getApplicationContext();
+        accountArray.clear();
         try {
             for (File prefs_file : prefs_files) {
                 String filename = prefs_file.getName();
@@ -577,8 +578,10 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                     String name = prefs.getString("account_name", "[Unknown account]");
                     long uid = prefs.getLong("uid", 0);
                     String server = prefs.getString("server", "");
-                    InstanceAccount account = new InstanceAccount(name, uid, server);
-                    accountArray.add(account);
+                    if(server.length() > 0 && uid > 0 && name.length() > 0) {
+                        InstanceAccount account = new InstanceAccount(name, uid, server);
+                        accountArray.add(account);
+                    }
                 }
             }
             account_names = new String[accountArray.size()];
