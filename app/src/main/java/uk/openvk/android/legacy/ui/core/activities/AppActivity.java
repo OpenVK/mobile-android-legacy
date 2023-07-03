@@ -169,7 +169,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         inBackground = true;
         menu_id = R.menu.newsfeed;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         if(instance_prefs.getString("access_token", "").length() == 0 ||
                 instance_prefs.getString("server", "").length() == 0) {
             finish();

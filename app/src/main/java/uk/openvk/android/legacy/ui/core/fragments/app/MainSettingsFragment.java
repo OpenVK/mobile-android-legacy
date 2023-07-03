@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.core.fragments.app;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +18,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,9 @@ import android.widget.Toast;
 
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Timer;
 
 import uk.openvk.android.legacy.BuildConfig;
@@ -43,6 +49,7 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.core.activities.NetworkSettingsActivity;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -69,6 +76,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     private View about_instance_view;
     private OvkAlertDialog about_instance_dlg;
     public  int selectedPosition;
+    private ArrayList<InstanceAccount> accountArray;
 
     @Override
     public void onCreatePreferencesFix(Bundle bundle, String s) {
@@ -80,6 +88,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
             addPreferencesFromResource(R.xml.preferences_2);
         }
         setListeners();
+        accountArray = new ArrayList<>();
     }
 
     @Override
@@ -162,6 +171,18 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 return false;
             }
         });
+
+        Preference change_account = findPreference("changeAccount");
+        if(change_account != null) {
+            change_account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    openChangeAccountDialog();
+                    return false;
+                }
+            });
+        }
+
         Preference logout_preference = findPreference("logOut");
         if (logout_preference != null) {
             if(getActivity() instanceof AppActivity) {
@@ -529,5 +550,78 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         SharedPreferences.Editor editor = global_prefs.edit();
         editor.putString("notifyRingtone", uri);
         editor.commit();
+    }
+
+    public void openChangeAccountDialog() {
+        int valuePos = 0;
+        selectedPosition = 0;
+        long current_uid = global_prefs.getLong("current_uid", 0);
+        String current_instance = global_prefs.getString("current_instance", "");
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        String package_name = getContext().getApplicationContext().getPackageName();
+        @SuppressLint("SdCardPath") String profile_path =
+                String.format("/data/data/%s/shared_prefs", package_name);
+        File prefs_directory = new File(profile_path);
+        File[] prefs_files = prefs_directory.listFiles();
+        String file_extension;
+        String account_names[] = new String[0];
+        Context app_ctx = getContext().getApplicationContext();
+        try {
+            for (File prefs_file : prefs_files) {
+                String filename = prefs_file.getName();
+                if (prefs_file.getName().startsWith("instance")
+                        && prefs_file.getName().endsWith(".xml")) {
+                    SharedPreferences prefs =
+                            getContext().getSharedPreferences(
+                                    filename.substring(0, filename.length() - 4), 0);
+                    String name = prefs.getString("account_name", "[Unknown account]");
+                    long uid = prefs.getLong("uid", 0);
+                    String server = prefs.getString("server", "");
+                    InstanceAccount account = new InstanceAccount(name, uid, server);
+                    accountArray.add(account);
+                }
+            }
+            account_names = new String[accountArray.size()];
+            for(int i = 0; i < accountArray.size(); i++) {
+                account_names[i] = accountArray.get(i).name;
+                if (accountArray.get(i).instance.equals(current_instance)) {
+                    valuePos = i;
+                }
+            }
+            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        builder.setSingleChoiceItems(account_names, valuePos,
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    selectedPosition = which;
+                }
+            }
+        );
+        OvkAlertDialog dialog = new OvkAlertDialog(getContext());
+        dialog.build(builder, getResources().getString(R.string.sett_account), "", null, "listDlg");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = global_prefs.edit();
+                        editor.putString("current_instance", accountArray.get(selectedPosition).instance);
+                        editor.putLong("current_uid", accountArray.get(selectedPosition).id);
+                        editor.commit();
+                        Toast.makeText(getContext(), R.string.sett_app_restart_required,
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
     }
 }

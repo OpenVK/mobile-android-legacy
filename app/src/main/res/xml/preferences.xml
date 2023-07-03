@@ -93,6 +93,12 @@
         !-->
 
 		<Preference
+			android:key="changeAccount"
+			android:layout="@layout/pref_widget"
+			android:summary=""
+			android:title="@string/change_account" />
+
+		<Preference
 			android:key="logOut"
 			android:layout="@layout/pref_widget"
 			android:summary=""

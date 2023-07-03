@@ -90,7 +90,7 @@ public class NewPostActivity extends TranslucentActivity {
                 installLayouts();
                 wall = new Wall();
                 global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+                instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
                 global_prefs_editor = global_prefs.edit();
                 instance_prefs_editor = instance_prefs.edit();
                 inputStream_isClosed = false;

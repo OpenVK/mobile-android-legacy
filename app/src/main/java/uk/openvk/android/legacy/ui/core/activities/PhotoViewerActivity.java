@@ -89,7 +89,7 @@ public class PhotoViewerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        instance_prefs = getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);

@@ -69,7 +69,7 @@ public class QuickSearchActivity extends TranslucentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
                 global_prefs.getBoolean("legacyHttpClient", false));
         dlm.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));

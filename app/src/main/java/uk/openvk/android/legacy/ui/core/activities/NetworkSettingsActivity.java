@@ -55,7 +55,7 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
         super.onCreate(savedInstanceState);
         isQuiting = false;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         addPreferencesFromResource(R.xml.preferences_network);
         setContentView(R.layout.layout_custom_preferences);
 

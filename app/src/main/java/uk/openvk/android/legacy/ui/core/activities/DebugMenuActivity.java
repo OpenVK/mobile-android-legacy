@@ -70,7 +70,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
         setContentView(R.layout.layout_custom_preferences);
         addPreferencesFromResource(R.xml.preferences_debug);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);

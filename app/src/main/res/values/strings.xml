@@ -297,6 +297,7 @@
 	<string name="save">Save</string>
 	<string name="sett_account">Your account</string>
 	<string name="log_out">Log out</string>
+    <string name="change_account">Change account</string>
 	<string name="menu_exit">Quit</string>
 	<string name="post_options">Post settings</string>
 	<string-array name="post_options">

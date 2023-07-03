@@ -63,7 +63,7 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
         super.onCreate(savedInstanceState);
         isQuiting = false;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         setContentView(R.layout.activity_intent);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();

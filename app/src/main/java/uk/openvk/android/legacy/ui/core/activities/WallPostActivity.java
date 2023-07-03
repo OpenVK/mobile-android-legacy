@@ -107,7 +107,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wall_post);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         instance = instance_prefs.getString("server", "");

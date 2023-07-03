@@ -262,6 +262,7 @@
     <string name="save">Сохранить</string>
 
     <string name="sett_account">Учётная запись</string>
+    <string name="change_account">Сменить аккаунт</string>
     <string name="log_out">Выйти</string>
     <string name="menu_exit">Закрыть</string>
 

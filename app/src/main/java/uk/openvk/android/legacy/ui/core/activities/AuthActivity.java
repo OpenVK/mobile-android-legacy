@@ -87,7 +87,7 @@ public class AuthActivity extends TranslucentAuthActivity {
         app = ((OvkApplication) getApplicationContext());
         XLinearLayout auth_layout = ((XLinearLayout) findViewById(R.id.auth_layout));
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         if(!app.isTablet) {
             auth_layout.setOnKeyboardStateListener(new OnKeyboardStateListener() {
                 @Override
@@ -399,6 +399,9 @@ public class AuthActivity extends TranslucentAuthActivity {
                 global_editor.putLong("current_uid", account.id);
                 global_editor.commit();
                 SharedPreferences.Editor instance_editor = instance_prefs.edit();
+                instance_editor.putLong("uid", account.id);
+                instance_editor.putString("account_name",
+                        String.format("%s %s (%s)", account.first_name, account.last_name, server));
                 instance_editor.putString("email", username);
                 instance_editor.putString("access_token", auth.getAccessToken());
                 instance_editor.putString("server", server);
