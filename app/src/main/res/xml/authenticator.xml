@@ -15,7 +15,7 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="com.vkontakte.account"
+    android:accountType="uk.openvk.android.legacy.account"
     android:icon="@drawable/icon"
     android:smallIcon="@drawable/icon"
     android:label="@string/app_name"

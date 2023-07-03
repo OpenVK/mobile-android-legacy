@@ -21,6 +21,7 @@
 	<string name="app_name">OpenVK</string>
 	<string name="full_app_name">OpenVK Legacy for Android</string>
 	<string name="loading">Loading…</string>
+	<string name="creating_account">Creating account…</string>
 	<string name="add_comment_hint">Your comment</string>
 	<string name="send">Send</string>
 	<string name="captcha_hint">Please enter the code from the image</string>

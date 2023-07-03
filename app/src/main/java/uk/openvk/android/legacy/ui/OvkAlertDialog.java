@@ -42,6 +42,7 @@ public class OvkAlertDialog extends AlertDialog {
     private AlertDialog.Builder builder;
     private View dlg_view;
     private String title;
+    private String type;
 
     public OvkAlertDialog(Context context) {
         super(context);
@@ -82,6 +83,7 @@ public class OvkAlertDialog extends AlertDialog {
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) builder.setTitle("OpenVK");
         }
         this.title = title;
+        this.type = type;
         if(dlg_view == null) {
             try {
                 switch (type) {
@@ -307,5 +309,11 @@ public class OvkAlertDialog extends AlertDialog {
     @Override
     public void setOnShowListener(@Nullable OnShowListener listener) {
         dialog.setOnShowListener(listener);
+    }
+
+    public void setProgressText(String message) {
+        if(type.equals("progressDlg")) {
+            ((TextView) dlg_view.findViewById(android.R.id.message)).setText(message);
+        }
     }
 }

@@ -1,9 +1,8 @@
-package uk.openvk.android.legacy.longpoll_api.receivers;
+package uk.openvk.android.legacy.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 
 public class LongPollReceiver extends BroadcastReceiver {

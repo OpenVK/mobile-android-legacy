@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.longpoll_api;
+package uk.openvk.android.legacy.services;
 
 import android.app.Service;
 import android.content.Context;

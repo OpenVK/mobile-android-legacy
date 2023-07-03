@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -47,6 +48,7 @@ import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.api.counters.AccountCounters;
+import uk.openvk.android.legacy.api.entities.Authorization;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.OvkApplication;
@@ -72,8 +74,8 @@ import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.longpoll_api.LongPollService;
-import uk.openvk.android.legacy.longpoll_api.receivers.LongPollReceiver;
+import uk.openvk.android.legacy.services.LongPollService;
+import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
@@ -770,6 +772,8 @@ public class AppActivity extends TranslucentFragmentActivity {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String profile_name = String.format("%s %s", account.first_name, account.last_name);
+                instance_prefs_editor.putString("profile_name", profile_name);
+                instance_prefs_editor.commit();
                 mainSettingsFragment.setAccount(account);
                 slidingmenuLayout.setProfileName(profile_name);
                 newsfeed.get(ovk_api, newsfeed_count);

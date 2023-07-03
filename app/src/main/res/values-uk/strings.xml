@@ -23,6 +23,7 @@
     <string name="dont_show_warn">Більше не показувати</string>
     <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
+    <string name="creating_account">Створення облікового запису…</string>
     <string name="loading">Завантаження…</string>
     <string name="add_comment_hint">Ваш коментар</string>
     <string name="send">Надіслати</string>

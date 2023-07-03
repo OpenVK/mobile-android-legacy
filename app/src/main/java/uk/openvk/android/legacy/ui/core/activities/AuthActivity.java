@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,6 +40,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentAuthActivity;
 import uk.openvk.android.legacy.ui.view.layouts.EditTextAction;
 import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
 import uk.openvk.android.legacy.ui.list.adapters.InstancesListAdapter;
@@ -62,7 +64,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 @SuppressWarnings("ALL")
-public class AuthActivity extends Activity {
+public class AuthActivity extends TranslucentAuthActivity {
 
     private OvkApplication app;
     private Global global = new Global();
@@ -76,6 +78,7 @@ public class AuthActivity extends Activity {
     private SharedPreferences instance_prefs;
     private JSONParser jsonParser = new JSONParser();
     private int twofactor_fail = -1;
+    private Authorization auth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -160,8 +163,17 @@ public class AuthActivity extends Activity {
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                Bundle data = message.getData();
-                receiveState(message.what, data.getString("response"));
+                final Bundle data = message.getData();
+                if(message.what == HandlerMessages.PARSE_JSON){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ovk_api.parseJSONData(data, AuthActivity.this);
+                        }
+                    }).start();
+                } else {
+                    receiveState(message.what, data.getString("response"));
+                }
             }
         };
         (findViewById(R.id.reg_btn)).setOnClickListener(new View.OnClickListener() {
@@ -365,14 +377,33 @@ public class AuthActivity extends Activity {
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {
-                connectionDialog.close();
+                auth = new Authorization(response);
+                if(connectionDialog.isShowing()) {
+                    connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
+                }
+                account = new Account(this);
+                ovk_api.setAccessToken(auth.getAccessToken());
+                account.getProfileInfo(ovk_api);
+            } else if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+                String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
+                account = new Account(response, this, ovk_api);
+                if(instance_prefs != null && instance_prefs.contains("access_token") &&
+                        instance_prefs.getString("access_token", "").length() > 0) {
+                    instance_prefs = getSharedPreferences(
+                            String.format("instance_a%s_%s", account.id, server), 0);
+                }
                 SharedPreferences.Editor instance_editor = instance_prefs.edit();
-                Authorization auth = new Authorization(response);
+                instance_editor.putString("email", username);
                 instance_editor.putString("access_token", auth.getAccessToken());
-                instance_editor.putString("server", ((EditTextAction) findViewById(R.id.instance_name)).getText());
+                instance_editor.putString("server", server);
                 instance_editor.putString("account_password_hash", Global.GetSHA256Hash(password));
                 instance_editor.commit();
+                createAndroidAccount(
+                        String.format("%s %s", account.first_name, account.last_name), server, auth);
+                connectionDialog.close();
+                auth = new Authorization(response);
                 if (connectionDialog != null) connectionDialog.cancel();
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, AppActivity.class);
@@ -435,6 +466,24 @@ public class AuthActivity extends Activity {
             alertDialog.show();
             e.printStackTrace();
         }
+    }
+
+    private void createAndroidAccount(String username, String server, Authorization auth) {
+        // Add OpenVK account to operating system
+        android.accounts.Account account = new android.accounts.Account(
+                String.format("%s (%s)", username, server),
+                Authorization.ACCOUNT_TYPE);
+        AccountManager accountManager = AccountManager.get(getApplicationContext());
+        accountManager.addAccountExplicitly(account, auth.getAccessToken(), null);
+        if(getIntent().hasExtra("accountAuthenticatorResponse")) {
+            getIntent().getParcelableExtra("accountAuthenticatorResponse");
+            Bundle res = new Bundle();
+            res.putString("authAccount", String.format("%s (%s)", username, server));
+            res.putString("accountType", Authorization.ACCOUNT_TYPE);
+            setAccountAuthenticatorResult(res);
+        }
+        boolean success = accountManager.addAccountExplicitly(account,
+                auth.getAccessToken(), null);
     }
 
     private void twoFactorLogin(String two_factor_code) {

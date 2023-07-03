@@ -19,10 +19,12 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
+
 public class Authorization {
     private String access_token;
     private String response;
     private JSONParser jsonParser;
+    public static String ACCOUNT_TYPE = "uk.openvk.android.legacy.account";
 
     public Authorization(String response) {
         this.response = response;

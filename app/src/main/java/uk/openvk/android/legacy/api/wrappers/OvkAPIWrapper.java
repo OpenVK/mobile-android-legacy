@@ -1074,7 +1074,16 @@ public class OvkAPIWrapper {
         DownloadManager downloadManager = new DownloadManager(activity,
                 global_prefs.getBoolean("useHTTPS", false),
                 global_prefs.getBoolean("legacyHttpClient", false));
-        if (activity instanceof AppActivity) {
+        if (activity instanceof AuthActivity) {
+            AuthActivity auth_a = (AuthActivity) activity;
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+            }
+            auth_a.handler.sendMessage(msg);
+        } else if (activity instanceof AppActivity) {
             AppActivity app_a = (AppActivity) activity;
             assert method != null;
             switch (method) {

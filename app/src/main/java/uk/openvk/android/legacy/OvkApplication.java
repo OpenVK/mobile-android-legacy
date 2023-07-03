@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import uk.openvk.android.legacy.api.wrappers.NotificationManager;
-import uk.openvk.android.legacy.longpoll_api.LongPollService;
+import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
