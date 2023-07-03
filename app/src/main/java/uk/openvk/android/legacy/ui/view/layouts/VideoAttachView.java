@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -36,6 +37,7 @@ import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
  **/
 
 public class VideoAttachView extends FrameLayout {
+    private final String instance;
     private VideoAttachment attachment;
     private Bitmap thumbnail;
 
@@ -43,7 +45,7 @@ public class VideoAttachView extends FrameLayout {
         super(context);
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.attach_video, null);
-
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         this.addView(view);
     }
 
@@ -51,7 +53,7 @@ public class VideoAttachView extends FrameLayout {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.attach_video, null);
-
+        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         this.addView(view);
     }
 
@@ -82,7 +84,7 @@ public class VideoAttachView extends FrameLayout {
         try {
             thumbnail = BitmapFactory.decodeFile(
                     getContext().getCacheDir()
-                            + "/photos_cache/video_thumbnails/thumbnail_"
+                            + "/" + instance + "/photos_cache/video_thumbnails/thumbnail_"
                             + attachment.id + "o" + owner_id, options);
             preview.setImageBitmap(thumbnail);
         } catch (OutOfMemoryError oom) {
