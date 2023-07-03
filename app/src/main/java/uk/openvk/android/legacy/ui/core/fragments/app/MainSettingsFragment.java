@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.fragments.app;
 
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -81,7 +82,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     @Override
     public void onCreatePreferencesFix(Bundle bundle, String s) {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        instance_prefs = getContext().getSharedPreferences("instance", 0);
+        instance_prefs = ((OvkApplication) getContext().getApplicationContext()).getAccountPreferences();
         if(instance_prefs.getString("account_password_hash", "").length() > 0) {
             addPreferencesFromResource(R.xml.preferences);
         } else {
@@ -322,6 +323,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         dialog.show();
     }
 
+
+
     private void showUiThemeSelectionDialog() {
         int valuePos = 0;
         String value = global_prefs.getString("uiTheme", "Blue");
@@ -379,12 +382,19 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                SharedPreferences.Editor editor = getContext().getApplicationContext()
-                        .getSharedPreferences("instance", 0).edit();
+                SharedPreferences.Editor editor =
+                        ((OvkApplication) getContext().getApplicationContext())
+                                .getAccountPreferences().edit();
                 editor.putString("access_token", "");
                 editor.putString("server", "");
+                editor.putString("account_name", "");
+                editor.putLong("uid", 0);
                 editor.putString("account_password_hash", "");
                 editor.commit();
+                if(getActivity() instanceof AppActivity) {
+                    AccountManager am = AccountManager.get(getContext());
+                    am.removeAccount(((AppActivity) getActivity()).androidAccount, null, null);
+                }
                 DownloadManager dlm = new DownloadManager(getActivity(), false,
                         global_prefs.getBoolean("legacyHttpClient", false));
                 dlm.clearCache(getContext().getCacheDir());

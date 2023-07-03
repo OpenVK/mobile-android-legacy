@@ -40,6 +40,7 @@ import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -85,6 +86,7 @@ import uk.openvk.android.legacy.ui.core.fragments.app.MainSettingsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.view.layouts.ActionBarLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
@@ -160,6 +162,8 @@ public class AppActivity extends TranslucentFragmentActivity {
     public LongPollServer longPollServer;
     public int old_friends_size;
     public boolean profile_loaded = false;
+    private ArrayList<InstanceAccount> accountArray;
+    public android.accounts.Account androidAccount;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -170,6 +174,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         menu_id = R.menu.newsfeed;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+        getAndroidAccounts();
         if(instance_prefs.getString("access_token", "").length() == 0 ||
                 instance_prefs.getString("server", "").length() == 0) {
             finish();
@@ -192,7 +197,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false));
-        downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
+        downloadManager.setInstance(instance_prefs.getString("server", ""));
         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         handler = new Handler() {
             @Override
@@ -247,6 +252,66 @@ public class AppActivity extends TranslucentFragmentActivity {
             activity_menu = popup_menu.getMenu();
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
+        }
+    }
+
+    private void getAndroidAccounts() {
+        accountArray = new ArrayList<>();
+        AccountManager accountManager = AccountManager.get(this);
+        android.accounts.Account[] accounts = accountManager.getAccounts();
+        long current_uid = global_prefs.getLong("current_uid", 0);
+        String current_instance = global_prefs.getString("current_instance", "");
+        String package_name = getApplicationContext().getPackageName();
+        @SuppressLint("SdCardPath") String profile_path =
+                String.format("/data/data/%s/shared_prefs", package_name);
+        File prefs_directory = new File(profile_path);
+        File[] prefs_files = prefs_directory.listFiles();
+        String file_extension;
+        String account_names[] = new String[0];
+        Context app_ctx = getApplicationContext();
+        accountArray.clear();
+        try {
+            for (File prefs_file : prefs_files) {
+                String filename = prefs_file.getName();
+                if (prefs_file.getName().startsWith("instance")
+                        && prefs_file.getName().endsWith(".xml")) {
+                    SharedPreferences prefs =
+                            getSharedPreferences(
+                                    filename.substring(0, filename.length() - 4), 0);
+                    String name = prefs.getString("account_name", "");
+                    long uid = prefs.getLong("uid", 0);
+                    String server = prefs.getString("server", "");
+                    if(server.length() > 0 && uid > 0 && name.length() > 0) {
+                        InstanceAccount account = new InstanceAccount(name, uid, server);
+                        accountArray.add(account);
+                    }
+                }
+            }
+            account_names = new String[accountArray.size()];
+            for(int i = 0; i < accountArray.size(); i++) {
+                account_names[i] = accountArray.get(i).name;
+                if(account_names[i].equals(instance_prefs.getString("account_name", ""))) {
+                    androidAccount = accounts[i];
+                }
+            }
+            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        if(androidAccount == null) {
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+            instance_prefs_editor = instance_prefs.edit();
+            instance_prefs_editor.putString("access_token", "");
+            instance_prefs_editor.putString("server", "");
+            instance_prefs_editor.putLong("uin", 0);
+            instance_prefs_editor.putString("account_name", "");
+            instance_prefs_editor.commit();
+            Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+            activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(activity);
+            finish();
         }
     }
 
@@ -1065,11 +1130,16 @@ public class AppActivity extends TranslucentFragmentActivity {
             } else if(message == HandlerMessages.INVALID_TOKEN) {
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+                AccountManager am = AccountManager.get(this);
+                am.removeAccount(androidAccount, null, null);
                 instance_prefs_editor.putString("access_token", "");
                 instance_prefs_editor.putString("server", "");
+                instance_prefs_editor.putLong("uin", 0);
+                instance_prefs_editor.putString("account_name", "");
                 instance_prefs_editor.commit();
-                Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
-                startActivity(intent);
+                Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(activity);
                 finish();
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 if(global_prefs.getString("photos_quality", "").equals("medium")) {

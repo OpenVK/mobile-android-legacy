@@ -133,7 +133,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
 
-        instance = PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", "");
+        instance = instance_prefs.getString("server", "");
 
         DisplayMetrics metrics = new DisplayMetrics();
         Display display = getWindowManager().getDefaultDisplay();

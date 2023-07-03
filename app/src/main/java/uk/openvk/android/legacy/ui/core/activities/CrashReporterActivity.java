@@ -131,7 +131,7 @@ public class CrashReporterActivity extends BaseCrashReportDialog implements Dial
         final StringBuilder log = new StringBuilder();
         String line = "";
         OvkApplication ovk = ((OvkApplication) getApplicationContext());
-        SharedPreferences instance_prefs = getSharedPreferences("instance_prefs", 0);
+        SharedPreferences instance_prefs = getSharedPreferences("instance", 0);
         SharedPreferences global_prefs =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String server;

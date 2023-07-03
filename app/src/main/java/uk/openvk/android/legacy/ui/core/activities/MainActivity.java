@@ -1,5 +1,7 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,6 +17,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +27,8 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
@@ -34,6 +39,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -59,6 +65,7 @@ public class MainActivity extends TranslucentActivity {
     private View warn_view;
     private Handler handler;
     private OvkAlertDialog warn_dialog;
+    private ArrayList<InstanceAccount> accountArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +74,7 @@ public class MainActivity extends TranslucentActivity {
         int day = new Date().getDate();
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+        getAndroidAccounts();
         if(global_prefs.getBoolean("startupSplash", true)) {
             if ((month == 11 && day >= 1) || (month == 0 && day <= 15)) {
                 setContentView(R.layout.activity_splash_xmas);
@@ -117,9 +125,7 @@ public class MainActivity extends TranslucentActivity {
                     getApplicationContext());
             SharedPreferences instance_prefs = getApplicationContext().
                     getSharedPreferences("instance", 0);
-            if ((instance_prefs.getString("server", "").length() == 0 ||
-                    instance_prefs.getString("access_token", "").length() == 0 ||
-                    instance_prefs.getString("account_password_hash", "").length() == 0) &&
+            if ((accountArray.size() == 0) &&
                     !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 Message msg = new Message();
                 msg.what = 0;
@@ -170,9 +176,7 @@ public class MainActivity extends TranslucentActivity {
     }
 
     private void closeSplashScreen() {
-        if (instance_prefs.getString("server", "").length() == 0 ||
-                instance_prefs.getString("access_token", "").length() == 0 ||
-                instance_prefs.getString("account_password_hash", "").length() == 0) {
+        if ((accountArray.size() == 0)) {
             Context context = getApplicationContext();
             Intent intent = new Intent(context, AuthActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -183,6 +187,44 @@ public class MainActivity extends TranslucentActivity {
             Intent intent = new Intent(context, AppActivity.class);
             startActivity(intent);
             finish();
+        }
+    }
+
+    private void getAndroidAccounts() {
+        accountArray = new ArrayList<>();
+        AccountManager accountManager = AccountManager.get(this);
+        android.accounts.Account[] accounts = accountManager.getAccounts();
+        long current_uid = global_prefs.getLong("current_uid", 0);
+        String current_instance = global_prefs.getString("current_instance", "");
+        String package_name = getApplicationContext().getPackageName();
+        @SuppressLint("SdCardPath") String profile_path =
+                String.format("/data/data/%s/shared_prefs", package_name);
+        File prefs_directory = new File(profile_path);
+        File[] prefs_files = prefs_directory.listFiles();
+        String file_extension;
+        String account_names[] = new String[0];
+        Context app_ctx = getApplicationContext();
+        accountArray.clear();
+        try {
+            for (File prefs_file : prefs_files) {
+                String filename = prefs_file.getName();
+                if (prefs_file.getName().startsWith("instance")
+                        && prefs_file.getName().endsWith(".xml")) {
+                    SharedPreferences prefs =
+                            getSharedPreferences(
+                                    filename.substring(0, filename.length() - 4), 0);
+                    String name = prefs.getString("account_name", "[Unknown account]");
+                    long uid = prefs.getLong("uid", 0);
+                    String server = prefs.getString("server", "");
+                    if(server.length() > 0 && uid > 0 && name.length() > 0) {
+                        InstanceAccount account = new InstanceAccount(name, uid, server);
+                        accountArray.add(account);
+                    }
+                }
+            }
+            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

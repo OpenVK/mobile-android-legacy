@@ -101,7 +101,7 @@ public class ProfileFragment extends Fragment {
             view.findViewById(R.id.add_to_friends)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
         }
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 

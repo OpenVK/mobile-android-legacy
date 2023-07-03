@@ -53,7 +53,7 @@ public class ConversationsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_conversations, container, false);
         convListView = view.findViewById(R.id.conversations_listview);
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 

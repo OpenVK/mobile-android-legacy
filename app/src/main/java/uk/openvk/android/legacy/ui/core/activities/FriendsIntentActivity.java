@@ -84,7 +84,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         Bundle data = intent.getExtras();
         downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false));
-        downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
+        downloadManager.setInstance(instance_prefs.getString("server", ""));
         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();

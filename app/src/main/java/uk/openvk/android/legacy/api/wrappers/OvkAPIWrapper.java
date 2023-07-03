@@ -1074,7 +1074,7 @@ public class OvkAPIWrapper {
         DownloadManager downloadManager = new DownloadManager(activity,
                 global_prefs.getBoolean("useHTTPS", false),
                 global_prefs.getBoolean("legacyHttpClient", false));
-        downloadManager.setInstance(ctx.getSharedPreferences("instance", 0).getString("server", ""));
+        downloadManager.setInstance(((OvkApplication) ctx.getApplicationContext()).getCurrentInstance());
         if (activity instanceof AuthActivity) {
             AuthActivity auth_a = (AuthActivity) activity;
             assert method != null;

@@ -81,7 +81,7 @@ public class NewsfeedFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
         adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 

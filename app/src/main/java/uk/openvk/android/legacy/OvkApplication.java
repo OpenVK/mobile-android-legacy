@@ -72,7 +72,7 @@ public class OvkApplication extends Application {
         }
         global = new Global(this);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences instance_prefs = getApplicationContext().getSharedPreferences("instance", 0);
+        SharedPreferences instance_prefs = getAccountPreferences();
 
         version = BuildConfig.VERSION_NAME;
         config = getResources().getConfiguration();

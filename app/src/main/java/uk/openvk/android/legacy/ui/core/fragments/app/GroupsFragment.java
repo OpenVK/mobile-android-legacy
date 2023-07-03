@@ -59,7 +59,7 @@ public class GroupsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_groups, container, false);
         groupsListView = view.findViewById(R.id.groups_listview);
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 

@@ -16,6 +16,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -41,6 +43,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentAuthActivity;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.view.layouts.EditTextAction;
 import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
 import uk.openvk.android.legacy.ui.list.adapters.InstancesListAdapter;
@@ -392,7 +395,8 @@ public class AuthActivity extends TranslucentAuthActivity {
                 if(instance_prefs != null && instance_prefs.contains("access_token") &&
                         instance_prefs.getString("access_token", "").length() > 0) {
                     instance_prefs = getSharedPreferences(
-                            String.format("instance_a%s_%s", account.id, server), 0);
+                            String.format("instance_a%s_%s", account.id, server),
+                            0);
                 }
                 SharedPreferences.Editor global_editor = global_prefs.edit();
                 global_editor.putString("current_instance", server);
@@ -401,20 +405,25 @@ public class AuthActivity extends TranslucentAuthActivity {
                 SharedPreferences.Editor instance_editor = instance_prefs.edit();
                 instance_editor.putLong("uid", account.id);
                 instance_editor.putString("account_name",
-                        String.format("%s %s (%s)", account.first_name, account.last_name, server));
+                        String.format("id%s, %s", account.id, server)
+                );
                 instance_editor.putString("email", username);
                 instance_editor.putString("access_token", auth.getAccessToken());
                 instance_editor.putString("server", server);
                 instance_editor.putString("account_password_hash", Global.GetSHA256Hash(password));
                 instance_editor.commit();
                 createAndroidAccount(
-                        String.format("%s %s", account.first_name, account.last_name), server, auth);
+                        String.format("%s %s", account.first_name, account.last_name),
+                        account.id, server, auth
+                );
                 connectionDialog.close();
                 auth = new Authorization(response);
                 if (connectionDialog != null) connectionDialog.cancel();
-                Context context = getApplicationContext();
-                Intent intent = new Intent(context, AppActivity.class);
-                startActivity(intent);
+                if(!getIntent().hasExtra("accountAuthenticatorResponse")) {
+                    Context context = getApplicationContext();
+                    Intent intent = new Intent(context, AppActivity.class);
+                    startActivity(intent);
+                }
                 finish();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION) {
                 connectionDialog.close();
@@ -475,17 +484,17 @@ public class AuthActivity extends TranslucentAuthActivity {
         }
     }
 
-    private void createAndroidAccount(String username, String server, Authorization auth) {
+    private void createAndroidAccount(String username, long id, String server, Authorization auth) {
         // Add OpenVK account to operating system
         android.accounts.Account account = new android.accounts.Account(
-                String.format("%s (%s)", username, server),
+                String.format("id%s, %s", id, server),
                 Authorization.ACCOUNT_TYPE);
         AccountManager accountManager = AccountManager.get(getApplicationContext());
         accountManager.addAccountExplicitly(account, auth.getAccessToken(), null);
         if(getIntent().hasExtra("accountAuthenticatorResponse")) {
             getIntent().getParcelableExtra("accountAuthenticatorResponse");
             Bundle res = new Bundle();
-            res.putString("authAccount", String.format("%s (%s)", username, server));
+            res.putString("authAccount", String.format("id%s, %s", id, server));
             res.putString("accountType", Authorization.ACCOUNT_TYPE);
             setAccountAuthenticatorResult(res);
         }
@@ -531,7 +540,6 @@ public class AuthActivity extends TranslucentAuthActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-        System.exit(0);
     }
 
     @Override

@@ -88,7 +88,7 @@ public class FriendsFragment extends Fragment {
 
             }
         });
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 
