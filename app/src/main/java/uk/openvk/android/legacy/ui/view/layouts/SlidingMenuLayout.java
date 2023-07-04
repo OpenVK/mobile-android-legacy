@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.entities.Account;
@@ -35,11 +36,14 @@ import uk.openvk.android.legacy.api.entities.Account;
 
 public class SlidingMenuLayout extends LinearLayout {
 
+    private String instance;
+
     public SlidingMenuLayout(final Context context) {
         super(context);
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
@@ -77,6 +81,7 @@ public class SlidingMenuLayout extends LinearLayout {
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
+        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
@@ -129,46 +134,16 @@ public class SlidingMenuLayout extends LinearLayout {
 
     public void loadAccountAvatar(Account account, String quality) {
         ImageView avatar = (ImageView) findViewById(R.id.avatar);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(
-                String.format("%s/photos_cache/account_avatar/avatar_%s",
-                        getContext().getCacheDir(), account.id), options);
         try {
-            switch (quality) {
-                case "medium":
-                    if (bitmap != null) {
-                        account.user.avatar = bitmap;
-                    } else if (account.user.avatar_msize_url.length() > 0) {
-                        account.user.avatar = null;
-                    } else {
-                        account.user.avatar = null;
-                    }
-                    break;
-                case "high":
-                    if (bitmap != null) {
-                        account.user.avatar = bitmap;
-                    } else if (account.user.avatar_hsize_url.length() > 0) {
-                        account.user.avatar = null;
-                    } else {
-                        account.user.avatar = null;
-                    }
-                    break;
-                default:
-                    if (bitmap != null) {
-                        account.user.avatar = bitmap;
-                    } else if (account.user.avatar_osize_url.length() > 0) {
-                        account.user.avatar = null;
-                    } else {
-                        account.user.avatar = null;
-                    }
-                    break;
-            }
-            if (account.user.avatar != null) ((ImageView) findViewById(R.id.avatar))
-                    .setImageBitmap(account.user.avatar);
-        } catch (Exception ignored) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(
+                    String.format("%s/%s/photos_cache/profile_avatars/avatar_%s",
+                            getContext().getCacheDir(), instance, account.user.id), options);
+            if (bitmap != null) avatar.setImageBitmap(bitmap);
+        } catch (OutOfMemoryError oom) {
+            oom.printStackTrace();
         }
-
     }
     
 }

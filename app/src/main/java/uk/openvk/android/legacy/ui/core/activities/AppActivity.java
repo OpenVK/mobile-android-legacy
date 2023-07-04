@@ -1006,7 +1006,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 user = users.getList().get(0);
                 account.user = user;
                 profileFragment.updateLayout(user, getWindowManager());
-                slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
                 if (selectedFragment instanceof ProfileFragment) {
                     profile_loaded = true;
                     progressLayout.setVisibility(View.GONE);
@@ -1019,6 +1018,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 25);
                     friends.get(ovk_api, user.id, 25, "profile_counter");
+
                 }
             } else if (message == HandlerMessages.USERS_GET_ALT) {
                 users.parse(data.getString("response"));
@@ -1142,21 +1142,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 startActivity(activity);
                 finish();
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                if(global_prefs.getString("photos_quality", "").equals("medium")) {
-                    if (user.avatar_msize_url.length() > 0) {
-                        profileFragment.loadAvatar(user, global_prefs
-                                .getString("photos_quality", ""));
-                    }
-                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
-                    if (user.avatar_hsize_url.length() > 0) {
-                        profileFragment.loadAvatar(user, global_prefs
-                                .getString("photos_quality", ""));
-                    }
-                } else {
-                    if (user.avatar_osize_url.length() > 0) {
-                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
-                    }
-                }
+                profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
                 slidingmenuLayout.loadAccountAvatar(account, global_prefs.getString("photos_quality", ""));
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
                 conversationsFragment.loadAvatars(conversations);
