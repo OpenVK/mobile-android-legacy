@@ -872,6 +872,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
                 account.getCounters(ovk_api);
                 users.getAccountUser(ovk_api, account.id);
+                slidingmenuLayout.loadAccountAvatar(account,
+                        global_prefs.getString("photos_quality", ""));
                 if(messages == null) {
                     messages = new Messages();
                 }
@@ -1018,10 +1020,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                     wall.get(ovk_api, user.id, 25);
                     friends.get(ovk_api, user.id, 25, "profile_counter");
-
                 }
             } else if (message == HandlerMessages.USERS_GET_ALT) {
-                users.parse(data.getString("response"));
                 account.user = users.getList().get(0);
                 account.user.downloadAvatar(downloadManager, global_prefs.
                         getString("photos_quality", ""), "account_avatar");
