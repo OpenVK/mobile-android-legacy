@@ -112,6 +112,7 @@ public class OvkAPIWrapper {
                 HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
                 HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
                 HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
+                basicHttpParams.setParameter("http.protocol.handle-redirects",false);
                 SchemeRegistry schemeRegistry = new SchemeRegistry();
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 if (use_https) {
@@ -838,6 +839,9 @@ public class OvkAPIWrapper {
                     } catch (IOException ignored) {
 
                     } catch (Exception e) {
+                        if(e.getMessage().equals("Scheme 'https' not registered.")) {
+                            Log.e(OvkApplication.API_TAG, String.format("WTF? %s", fUrl));
+                        }
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
                         e.printStackTrace();
                         error.description = e.getMessage();
