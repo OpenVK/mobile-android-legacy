@@ -570,6 +570,7 @@ public class VideoPlayerActivity extends Activity {
                     mp.start();
                 }
             }
+            handler.postDelayed(hideCtrl, 5000);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
