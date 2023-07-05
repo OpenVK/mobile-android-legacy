@@ -53,7 +53,7 @@ public class ProfileWallSelector extends LinearLayout {
     public void setUserName(String username) {
         ((TextView) findViewById(R.id.profile_wall_owner_posts)).setText(getResources().getString(R.string.wall_owners_posts, username));
         // not implemented yet!
-        ((TextView) findViewById(R.id.profile_wall_owner_posts)).setVisibility(GONE);
+        (findViewById(R.id.profile_wall_owner_posts_tab)).setVisibility(GONE);
     }
 
     public void setToGroup() {
