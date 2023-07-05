@@ -273,7 +273,7 @@ public class Global {
     }
 
     public static void fixWindowPadding(Window window, Resources.Theme theme) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             View view = window.getDecorView();
             int actionBarId = view.getContext().getResources().getIdentifier("action_bar", "id", "android");
             ViewGroup actionBarView = (ViewGroup) view.findViewById(actionBarId);

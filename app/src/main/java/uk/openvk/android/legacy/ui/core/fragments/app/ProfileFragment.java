@@ -139,7 +139,8 @@ public class ProfileFragment extends Fragment {
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
-                    if(((OvkApplication)getContext().getApplicationContext()).isTablet &&
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
+                            ((OvkApplication)getContext().getApplicationContext()).isTablet &&
                             getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
                         View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_ll);
                         if (aboutProfile.getVisibility() == GONE) {
@@ -195,16 +196,29 @@ public class ProfileFragment extends Fragment {
                 }
             });
         } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
-            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).getConversationById(peer_id);
-                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                        ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            ((AppActivity) ctx).getConversationById(peer_id);
+                        } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                            ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                ((Button) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            ((AppActivity) ctx).getConversationById(peer_id);
+                        } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                            ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+                        }
+                    }
+                });
+            }
         } else {
             ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -324,7 +338,11 @@ public class ProfileFragment extends Fragment {
             ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         } else if(((OvkApplication)getContext().getApplicationContext()).isTablet &&
                 smallestWidth < 800) {
-            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            } else {
+                ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+            }
         } else {
             ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
         }

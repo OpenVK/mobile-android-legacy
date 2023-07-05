@@ -73,6 +73,7 @@ public class VideoPlayerActivity extends Activity {
     private Bitmap thumbnail;
     private long owner_id;
     private SystemBarTintManager tintManager;
+    private boolean overduration;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -612,6 +613,14 @@ public class VideoPlayerActivity extends Activity {
                             throw new Error(String.format("Incorrect information about the position and/or " +
                                     "duration of the video\r\nPosition: %s < 0\r\nDuration: %s < 0",
                                     imp.getCurrentPosition(), imp.getDuration()));
+                        } else if (pos > this.duration) {
+                            this.duration = 0;
+                            if(!overduration) {
+                                this.overduration = true;
+                                throw new Error(String.format("Incorrect information about the " +
+                                                "duration of the video\r\nPosition != Duration: %s > %s",
+                                        imp.getCurrentPosition(), imp.getDuration()));
+                            }
                         }
                     } else {
                         pos = mp.getCurrentPosition() / 1000;
@@ -623,6 +632,11 @@ public class VideoPlayerActivity extends Activity {
                             throw new Error(String.format("Incorrect information about the position and/or " +
                                             "duration of the video\r\nPosition: %s < 0\r\nDuration: %s < 0",
                                     mp.getCurrentPosition(), mp.getDuration()));
+                        } else if (pos > this.duration) {
+                            this.duration = 0;
+                            throw new Error(String.format("Incorrect information about the " +
+                                            "duration of the video\r\nPosition != Duration: %s > %s",
+                                    imp.getCurrentPosition(), imp.getDuration()));
                         }
                     }
                 }
