@@ -556,6 +556,9 @@ public class VideoPlayerActivity extends Activity {
 
     private void playVideo() {
         try {
+            if(!isPlaying()) {
+                handler.postDelayed(hideCtrl, 5000);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                     && !Build.CPU_ABI.equals("x86_64")) {
                 if (isPlaying()) {
@@ -570,7 +573,6 @@ public class VideoPlayerActivity extends Activity {
                     mp.start();
                 }
             }
-            handler.postDelayed(hideCtrl, 5000);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
