@@ -139,11 +139,14 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 }
             }
         };
-
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            minKbHeight = (int) (400 * getResources().getDisplayMetrics().scaledDensity);
         } else {
-            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
+            } else {
+                minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+            }
         }
 
         setCommentsView();
@@ -270,21 +273,30 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
                     View view = WallPostActivity.this.getCurrentFocus();
                     if (view != null) {
-                        if(keyboard_height >= minKbHeight) {
-                            findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
-                        } else {
-                            findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight - 75;
-                        }
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        view.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                        if(!((OvkApplication) getApplicationContext()).isTablet) {
+                            if (keyboard_height >= 750) {
+                                findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
+                            } else {
+                                findViewById(R.id.emojicons).getLayoutParams().height = 680;
                             }
-                        }, 200);
+                            Log.d(OvkApplication.APP_TAG, String.format("KB height: %s",
+                                    findViewById(R.id.emojicons).getLayoutParams().height));
+                            InputMethodManager imm =
+                                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            view.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                                }
+                            }, 200);
+                        } else {
+                            findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                        }
                     } else {
-                        findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight - 75;
+                        if(!((OvkApplication) getApplicationContext()).isTablet) {
+                            findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                        }
                         findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
                 } else {

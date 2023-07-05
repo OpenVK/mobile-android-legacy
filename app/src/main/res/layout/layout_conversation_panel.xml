@@ -85,10 +85,4 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/emojicons"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:visibility="gone" />
-
 </LinearLayout>

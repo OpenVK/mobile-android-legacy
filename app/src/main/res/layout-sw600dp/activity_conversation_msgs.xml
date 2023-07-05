@@ -15,50 +15,53 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:id="@+id/conversation_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/conversation_view">
+    android:orientation="horizontal">
 
-    <dev.tinelix.retro_ab.ActionBar
-        android:id="@+id/actionbar"
-        app:title="@string/app_name"
-        style="@style/ActionBar" />
-
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/msgs_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:fitsSystemWindows="false">
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/conversation_msgs_listview"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:divider="@null"
-            android:stackFromBottom="true">
+            android:layout_weight="1">
 
-        </ListView>
+            <ListView
+                android:id="@+id/conversation_msgs_listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:divider="@null"
+                android:stackFromBottom="true">
 
-        <View
-            android:id="@+id/divider"
+            </ListView>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/bottom_shadow" />
+
+        </RelativeLayout>
+
+        <uk.openvk.android.legacy.ui.view.layouts.ConversationPanel
+            android:id="@+id/conversation_panel"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/bottom_shadow" />
+            android:layout_height="wrap_content" />
 
-    </RelativeLayout>
-
-    <uk.openvk.android.legacy.ui.view.layouts.ConversationPanel
-        android:id="@+id/conversation_panel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/emojicons"
-        android:layout_width="match_parent"
+        android:layout_width="600dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:visibility="gone" />

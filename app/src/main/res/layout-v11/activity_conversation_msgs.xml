@@ -56,6 +56,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <FrameLayout
+            android:id="@+id/emojicons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>

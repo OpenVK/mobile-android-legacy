@@ -39,14 +39,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:ignore="InefficientWeight" />
+            tools:ignore="InefficientWeight">
+
+        </uk.openvk.android.legacy.ui.view.layouts.PostViewLayout>
 
         <uk.openvk.android.legacy.ui.view.layouts.CommentPanel
             android:id="@+id/comment_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/background_light" />
+            android:background="@android:color/background_light">
+
+        </uk.openvk.android.legacy.ui.view.layouts.CommentPanel>
+
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/emojicons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="gone" />
 
     <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
         android:layout_width="match_parent"
