@@ -204,6 +204,7 @@ public class VideoPlayerActivity extends Activity {
                                 new Handler(Looper.myLooper()).postDelayed(this, 200);
                             }
                         });
+                        handler.postDelayed(hideCtrl, 5000);
                     }
                 });
                 imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
@@ -256,6 +257,7 @@ public class VideoPlayerActivity extends Activity {
                                     duration / 60, duration % 60));
                             ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
                         }
+                        showPlayControls();
                     }
                 });
 
@@ -306,6 +308,7 @@ public class VideoPlayerActivity extends Activity {
                     vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
                     mp.setDisplay(vsh);
                     mp.start();
+                    handler.postDelayed(hideCtrl, 5000);
                     new Handler(Looper.myLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -366,6 +369,7 @@ public class VideoPlayerActivity extends Activity {
                                 String.format("%d:%02d", duration / 60, duration % 60));
                         ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
                     }
+                    showPlayControls();
                 }
             });
 
@@ -513,7 +517,9 @@ public class VideoPlayerActivity extends Activity {
                 }
             };
         }
-        handler.postDelayed(hideCtrl, 5000);
+        if(isPlaying()) {
+            handler.postDelayed(hideCtrl, 5000);
+        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE;
             getWindow().getDecorView().setSystemUiVisibility(uiOptions);
