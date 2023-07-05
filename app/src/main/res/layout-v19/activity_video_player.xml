@@ -39,6 +39,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- скостылил, кек !-->
+    <View
+        android:id="@+id/statusbartint_view"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/transparent_statusbar_color_black" />
+
     <FrameLayout
         android:id="@+id/video_progress_wrap"
         android:layout_width="60dp"

@@ -1,8 +1,11 @@
 package uk.openvk.android.legacy;
 
+import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -10,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.PluralsRes;
+import android.support.v7.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Base64;
@@ -23,6 +27,7 @@ import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -34,6 +39,8 @@ import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -303,4 +310,55 @@ public class Global {
         }
         return qStr;
     }
+
+    public static void loadAccounts(Context ctx, ArrayList<InstanceAccount> accountArray,
+                     SharedPreferences instance_prefs) {
+        AccountManager accountManager = AccountManager.get(ctx);
+        android.accounts.Account[] accounts = accountManager.getAccounts();
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        long current_uid = global_prefs.getLong("current_uid", 0);
+        String current_instance = global_prefs.getString("current_instance", "");
+        String package_name = ctx.getApplicationContext().getPackageName();
+        @SuppressLint("SdCardPath") String profile_path =
+                String.format("/data/data/%s/shared_prefs", package_name);
+        File prefs_directory = new File(profile_path);
+        File[] prefs_files = prefs_directory.listFiles();
+        String file_extension;
+        String account_names[] = new String[0];
+        Context app_ctx = ctx.getApplicationContext();
+        accountArray.clear();
+        try {
+            for (File prefs_file : prefs_files) {
+                String filename = prefs_file.getName();
+                if (prefs_file.getName().startsWith("instance")
+                        && prefs_file.getName().endsWith(".xml")) {
+                    SharedPreferences prefs =
+                            ctx.getSharedPreferences(
+                                    filename.substring(0, filename.length() - 4), 0);
+                    String name = prefs.getString("account_name", "");
+                    long uid = prefs.getLong("uid", 0);
+                    String server = prefs.getString("server", "");
+                    if (server.length() > 0 && uid > 0 && name.length() > 0) {
+                        InstanceAccount account = new InstanceAccount(name, uid, server);
+                        accountArray.add(account);
+                    }
+                }
+            }
+            account_names = new String[accountArray.size()];
+            for (int i = 0; i < accountArray.size(); i++) {
+                account_names[i] = accountArray.get(i).name;
+                if (account_names[i].equals(instance_prefs.getString("account_name", ""))) {
+                    if (ctx instanceof AppActivity) {
+                        AppActivity app_a = ((AppActivity) ctx);
+                        app_a.androidAccount = accounts[i];
+                    }
+                }
+            }
+            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
 }

@@ -16,12 +16,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.Display;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -32,16 +31,13 @@ import android.widget.VideoView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -76,19 +72,34 @@ public class VideoPlayerActivity extends Activity {
     private boolean fitVideo;
     private Bitmap thumbnail;
     private long owner_id;
+    private SystemBarTintManager tintManager;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
-        loadVideo();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().hide();
+            getActionBar().setDisplayShowHomeEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(getResources().getString(R.string.video));
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        } else {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
+        loadVideo();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadVideo() {
@@ -201,6 +212,8 @@ public class VideoPlayerActivity extends Activity {
                         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         isErr = true;
                         mp.release();
+                        handler.removeCallbacks(hideCtrl);
+                        Log.e(OvkApplication.APP_TAG, String.format("Cannot load video. Code: %s", what));
                         OvkAlertDialog err_dlg;
                         err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
                         findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
@@ -222,8 +235,13 @@ public class VideoPlayerActivity extends Activity {
                                 finish();
                             }
                         });
-                        err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),
-                                null);
+                        int error_reason_id = R.string.video_err_decode;
+                        if(extra == IMediaPlayer.MEDIA_ERROR_TIMED_OUT
+                                || what == IMediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+                            error_reason_id = R.string.video_err_network;
+                        }
+                        err_dlg.build(builder, getResources().getString(R.string.error),
+                                getResources().getString(error_reason_id), null);
                         err_dlg.show();
                         return false;
                     }
@@ -300,12 +318,13 @@ public class VideoPlayerActivity extends Activity {
                 }
             });
             mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     isErr = true;
                     mp.release();
+                    handler.removeCallbacks(hideCtrl);
+                    Log.e(OvkApplication.APP_TAG, String.format("Cannot load video. Code: %s", what));
                     OvkAlertDialog err_dlg;
                     err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
                     findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
@@ -326,18 +345,25 @@ public class VideoPlayerActivity extends Activity {
                             finish();
                         }
                     });
-                    err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode), null);
+                    int error_reason_id = R.string.video_err_decode;
+                    if(extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT
+                            || what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+                        error_reason_id = R.string.video_err_network;
+                    }
+                    err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(error_reason_id), null);
                     err_dlg.show();
+
                     return false;
                 }
             });
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @SuppressLint("DefaultLocale")
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     if(mp.getDuration() > 0) {
-                        ((TextView) findViewById(R.id.video_time2)).setText(String.format("%d:%02d",
-                                duration / 60, duration % 60));
+                        ((TextView) findViewById(R.id.video_time2)).setText(
+                                String.format("%d:%02d", duration / 60, duration % 60));
                         ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
                     }
                 }
@@ -463,6 +489,15 @@ public class VideoPlayerActivity extends Activity {
         }
     }
 
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
     public void showPlayControls() {
         if(handler == null) {
             handler = new Handler(Looper.myLooper());
@@ -474,11 +509,43 @@ public class VideoPlayerActivity extends Activity {
             hideCtrl = new Runnable() {
                 @Override
                 public void run() {
-                    findViewById(R.id.video_bottombar).setVisibility(View.GONE);
+                    hidePlayControls();
                 }
             };
         }
         handler.postDelayed(hideCtrl, 5000);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE;
+            getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+            findViewById(R.id.statusbartint_view).getLayoutParams().height = getStatusBarHeight();
+            findViewById(R.id.statusbartint_view).setVisibility(View.VISIBLE);
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().show();
+        }
+    }
+
+    public void hidePlayControls() {
+        findViewById(R.id.video_bottombar).setVisibility(View.GONE);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+                }
+            }
+        }, 50);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                findViewById(R.id.statusbartint_view).setVisibility(View.GONE);
+            }
+        }, 300);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().hide();
+        }
     }
 
     private void playVideo() {

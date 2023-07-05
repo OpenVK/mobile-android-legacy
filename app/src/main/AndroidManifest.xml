@@ -208,6 +208,7 @@
             android:theme="@style/BaseStyle.Dark.Transparent"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:windowTranslucentStatus="true"
             />
 
         <activity android:name=".ui.core.activities.GroupMembersActivity"
