@@ -50,11 +50,10 @@
         <View
             android:id="@+id/tab_checked"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="2dp"
             android:layout_alignParentBottom="true"
-            android:layout_weight="1"
             android:background="@color/tab_indicator"
-            android:elevation="1dp" />
+            android:elevation="0dp" />
 
     </LinearLayout>
 
@@ -85,18 +84,17 @@
         <View
             android:id="@+id/tab_checked2"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="2dp"
             android:layout_alignParentBottom="true"
-            android:layout_weight="1"
             android:background="@color/tab_indicator"
-            android:elevation="1dp"
+            android:elevation="0dp"
             android:visibility="invisible" />
     </LinearLayout>
 
     <View
-        android:layout_width="14dip"
+        android:layout_width="10dip"
         android:layout_height="5dip"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <FrameLayout
         android:layout_width="wrap_content"
