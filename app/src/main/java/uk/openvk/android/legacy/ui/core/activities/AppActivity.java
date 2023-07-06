@@ -1600,7 +1600,6 @@ public class AppActivity extends TranslucentFragmentActivity {
             item = newsfeed.getWallPosts().get(position);
             intent.putExtra("where", "newsfeed");
         }
-        item = wall.getWallItems().get(position);
         intent.putExtra("where", "wall");
         try {
             intent.putExtra("post_id", item.repost.newsfeed_item.post_id);

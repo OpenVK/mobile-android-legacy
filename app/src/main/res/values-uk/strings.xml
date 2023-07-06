@@ -1139,6 +1139,7 @@
     <string name="profile_telegram">Telegram</string>
     <string name="telegram_not_installed">Встановiть програму Telegram</string>
     <string name="newpost_export_tg">Експорт до Telegram</string>
+    <string name="set_default_account">Використовувати як основний</string>
     <string name="welcome_title3">Синхронiзацiя контактiв</string>
     <string name="widget_news">OpenVK - новини</string>
     <string name="friend_deleted">%s видалено з ваших особливих друзей</string>

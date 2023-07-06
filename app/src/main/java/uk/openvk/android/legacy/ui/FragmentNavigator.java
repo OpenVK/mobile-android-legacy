@@ -126,8 +126,6 @@ public class FragmentNavigator {
                                 appActivity.openNewPostActivity();
                             }
                         });
-                        appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(), "newsfeed", true);
-                        //
                     } else {
                         if(appActivity.activity_menu != null) {
                             appActivity.activity_menu.clear();
