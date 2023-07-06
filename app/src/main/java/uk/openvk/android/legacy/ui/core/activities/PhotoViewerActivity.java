@@ -83,6 +83,7 @@ public class PhotoViewerActivity extends Activity {
     private ActionBar actionBar;
     private PopupWindow popupMenu;
     private SharedPreferences global_prefs;
+    private String instance;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -90,6 +91,7 @@ public class PhotoViewerActivity extends Activity {
         super.onCreate(savedInstanceState);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+        instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
@@ -160,7 +162,8 @@ public class PhotoViewerActivity extends Activity {
                     if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
                         downloadManager = new DownloadManager(this, true,
                                 global_prefs.getBoolean("legacyHttpClient", false));
-                        downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
+                        downloadManager.setInstance(
+                                PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
                         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                         downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),
@@ -204,8 +207,8 @@ public class PhotoViewerActivity extends Activity {
             try {
                 Bundle extras = getIntent().getExtras();
                 bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/photos_cache/original_photos/original_photo_a%s_%s",
-                        getCacheDir().getAbsolutePath(), extras.getLong("author_id"),
+                        String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
+                        getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
                         extras.getLong("photo_id")), bfOptions);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
@@ -297,8 +300,8 @@ public class PhotoViewerActivity extends Activity {
     private void savePhoto() {
         Global global = new Global();
         final Bundle data = getIntent().getExtras();
-        String cache_path = String.format("%s/photos_cache/original_photos/original_photo_a%s_%s",
-                getCacheDir().getAbsolutePath(), getIntent().getExtras().getLong("author_id"),
+        String cache_path = String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
+                getCacheDir().getAbsolutePath(), instance, getIntent().getExtras().getLong("author_id"),
                 getIntent().getExtras().getLong("photo_id"));
         File file = new File(cache_path);
         String[] path_array = cache_path.split("/");
