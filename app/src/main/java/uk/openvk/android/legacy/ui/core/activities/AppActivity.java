@@ -504,22 +504,26 @@ public class AppActivity extends TranslucentFragmentActivity {
                 } else if (slider_menu_item_index == 5) {
                     slidingMenuArray.add(new SlidingMenuItem(
                             getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_news)));
+                            0, getResources().getDrawable(R.drawable.ic_left_notes)));
                 } else if (slider_menu_item_index == 6) {
+                    slidingMenuArray.add(new SlidingMenuItem(
+                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                            0, getResources().getDrawable(R.drawable.ic_left_news)));
+                } else if (slider_menu_item_index == 7) {
                     /* Not implemented!
                     /
                     /  slidingMenuArray.add(new SlidingMenuItem(
                     /  getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                     /  0, getResources().getDrawable(R.drawable.ic_left_feedback)));
                     */
-                } else if (slider_menu_item_index == 7) {
+                } else if (slider_menu_item_index == 8) {
                     /* Not implemented!
                     /
                     /  slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
                     /  R.array.leftmenu)[slider_menu_item_index],
                     /  0, getResources().getDrawable(R.drawable.ic_left_fave)));
                     */
-                } else if (slider_menu_item_index == 8) {
+                } else if (slider_menu_item_index == 9) {
                     slidingMenuArray.add(new SlidingMenuItem(
                             getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                             0, getResources().getDrawable(R.drawable.ic_left_settings)));

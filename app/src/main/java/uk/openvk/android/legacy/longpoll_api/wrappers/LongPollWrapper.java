@@ -177,16 +177,27 @@ public class LongPollWrapper {
                             response_code = response.code();
                         }
                         if (response_code == 200) {
-                            if(logging_enabled) Log.v(OvkApplication.LP_TAG,
-                                    String.format("Getting response from %s (%s): [%s]", server,
-                                            response_code, response_body));
-                            sendLongPollMessageToActivity(response_body);
+                            if(logging_enabled &&
+                                    ((response_body.startsWith("[") && response_body.endsWith("]"))
+                                    || (response_body.startsWith("{") && response_body.endsWith("}")))) {
+                                Log.v(OvkApplication.LP_TAG,
+                                        String.format("Getting response from %s (%s): [%s]", server,
+                                                response_code, response_body));
+                                sendLongPollMessageToActivity(response_body);
+                                Thread.sleep(2000);
+                            } else {
+                                Log.v(OvkApplication.LP_TAG,
+                                        String.format("Getting response from %s (%s): Invalid JSON data", server,
+                                                response_code));
+                                sendLongPollMessageToActivity(response_body);
+                                Thread.sleep(60000);
+                            }
                         } else {
                             if(logging_enabled) Log.v(OvkApplication.LP_TAG,
                                     String.format("Getting response from %s (%s)", server,
                                             response_code));
                         }
-                        Thread.sleep(2000);
+
                     }
                 } catch(ConnectException | SocketTimeoutException | UnknownHostException ex) {
                     if(logging_enabled) Log.v(OvkApplication.LP_TAG, String.format("Connection error: %s", ex.getMessage()));

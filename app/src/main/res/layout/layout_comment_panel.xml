@@ -84,8 +84,8 @@
             android:layout_alignParentBottom="false"
             android:background="@drawable/highlight"
             android:padding="8dp"
-            android:src="@drawable/ic_ab_add_inverse"
-            android:visibility="gone"
+            android:src="@drawable/ic_msg_attach_down"
+            android:visibility="visible"
             emojicon:ignore="ContentDescription" />
     </RelativeLayout>
 
