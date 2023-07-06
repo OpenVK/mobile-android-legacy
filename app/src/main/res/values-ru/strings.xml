@@ -144,6 +144,10 @@
     <string name="log_in">Войти</string>
     <string name="auth_error_title">Ошибка авторизации</string>
     <string name="auth_error">При входе произошла ошибка. Проверьте введенные данные и попробуйте еще раз.</string>
+    <string name="auth_error_banned">Вы не можете войти в аккаунт, поскольку Ваша страница заблокирована.
+        Если Вы считаете, что произошла ошибка, свяжитесь со службой поддержки.</string>
+    <string name="auth_error_deleted">Вы не можете войти в аккаунт, поскольку Ваша страница удалена.
+        Если Вы считаете, что произошла ошибка, восстановите её или свяжитесь со службой поддержки.</string>
     <string name="wall">Стена</string>
     <string name="friends">Друзья</string>
     <string name="post_to_wall">Написать на стене</string>
@@ -160,7 +164,7 @@
     <string name="pull_to_refresh">Потяните, чтобы обновить</string>
     <string name="pull_to_refresh_bottom">Потяните, чтобы обновить</string>
     <string name="release_to_refresh">Отпустите, чтобы обновить</string>
-    <string name="refreshing">Обновление..</string>
+    <string name="refreshing">Обновление…</string>
     <string name="updated">Обновлено</string>
     <string name="error">Ошибка</string>
     <string name="attach_note">Заметка</string>

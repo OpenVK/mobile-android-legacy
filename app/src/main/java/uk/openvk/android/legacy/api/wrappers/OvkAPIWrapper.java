@@ -774,6 +774,8 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
                                 } else if (error.code == 15) {
                                     sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
+                                } else if (error.code == 18) {
+                                    sendMessage(HandlerMessages.BANNED_ACCOUNT, method, error.description);
                                 } else if(error.code == 100) {
                                     sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                                 } else if(error.code == 945) {

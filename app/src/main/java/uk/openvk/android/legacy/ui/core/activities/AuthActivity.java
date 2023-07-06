@@ -455,6 +455,12 @@ public class AuthActivity extends TranslucentAuthActivity {
                         getResources().getString(R.string.auth_error_title),
                         getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
+            } else if (message == HandlerMessages.BANNED_ACCOUNT) {
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error_banned, getReason(message)), null);
+                alertDialog.show();
             } else if (message == HandlerMessages.NOT_OPENVK_INSTANCE) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
