@@ -31,8 +31,9 @@ public class Attachment {
             case "poll":
                 content = new PollAttachment();
                 break;
-            default:
+            case "note":
                 content = new CommonAttachment();
+            default:
                 break;
         }
     }
