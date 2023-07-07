@@ -1,8 +1,11 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -29,18 +32,35 @@ import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 
 public class NoteActivity extends TranslucentActivity {
     private WebView webView;
+    private SharedPreferences global_prefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.attach_note));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
         }
         webView = findViewById(R.id.webview);
         loadNote();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadNote() {

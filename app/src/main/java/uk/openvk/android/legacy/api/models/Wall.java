@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
@@ -461,6 +462,13 @@ public class Wall implements Parcelable {
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
                     attachment_obj.status = attachment_status;
                     attachment_obj.setContent(pollAttachment);
+                    attachments_list.add(attachment_obj);
+                } else if (attachment.getString("type").equals("note")) {
+                    CommonAttachment commonAttachment = new CommonAttachment(
+                            attachment.getString("title"), attachment.getString("text"));
+                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                    attachment_obj.status = "done";
+                    attachment_obj.setContent(commonAttachment);
                     attachments_list.add(attachment_obj);
                 } else {
                     attachment_status = "not_supported";

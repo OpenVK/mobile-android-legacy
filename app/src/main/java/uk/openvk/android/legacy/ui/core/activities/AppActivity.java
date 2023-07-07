@@ -778,7 +778,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 groups = new Groups();
             }
             groups.getGroups(ovk_api, account.id, 25);
-        } else if(position == 3) {
+        } else if(position == 4) {
             menu_id = R.menu.newsfeed;
             onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -789,7 +789,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 newsfeed.get(ovk_api, newsfeed_count);
             }
 
-        } else if(position == 4) {
+        } else if(position == 5) {
             Context context = getApplicationContext();
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.menu_settings));
