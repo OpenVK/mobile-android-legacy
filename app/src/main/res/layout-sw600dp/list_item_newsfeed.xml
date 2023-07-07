@@ -369,6 +369,15 @@
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
 
+            <uk.openvk.android.legacy.ui.view.layouts.CommonAttachView
+                android:id="@+id/post_attahcment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dip"
+                android:layout_marginLeft="6dip"
+                android:layout_marginRight="6dip"
+                android:visibility="gone" />
+
             <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
                 android:id="@+id/post_video"
                 android:layout_width="match_parent"

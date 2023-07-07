@@ -332,6 +332,15 @@
         android:visibility="gone"
         tools:ignore="ContentDescription" />
 
+    <uk.openvk.android.legacy.ui.view.layouts.CommonAttachView
+        android:id="@+id/post_attahcment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="6dip"
+        android:layout_marginRight="6dip"
+        android:visibility="gone" />
+
     <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
         android:id="@+id/poll_layout"
         android:layout_width="match_parent"

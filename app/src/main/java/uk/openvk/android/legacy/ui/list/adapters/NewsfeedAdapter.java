@@ -24,15 +24,18 @@ import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.ui.view.layouts.CommonAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
@@ -116,6 +119,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final ImageView api_app_indicator;
         private final VideoAttachView post_video;
         private final ImageView verified_icon;
+        private final CommonAttachView attachment_view;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
 
@@ -134,6 +138,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.photo_progress = (view.findViewById(R.id.photo_progress));
             this.error_label = (convertView.findViewById(R.id.error_label));
             this.pollAttachView = (convertView.findViewById(R.id.poll_layout));
+            this.attachment_view = (convertView.findViewById(R.id.post_attahcment));
             this.repost_info = (convertView.findViewById(R.id.post_attach_container));
             this.original_poster_name = (convertView.findViewById(R.id.post_retweet_name));
             this.original_post_info = (convertView.findViewById(R.id.post_retweet_time));
@@ -365,6 +370,18 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
                                 pollAttachment.end_date);
                         pollAttachView.setVisibility(View.VISIBLE);
+                    }
+                } else if (item.attachments.get(i).type.equals("note")) {
+                    if (item.attachments.get(i).getContent() != null) {
+                        CommonAttachment commonAttachment = ((CommonAttachment)
+                                item.attachments.get(i).getContent());
+                        attachment_view.setAttachment(item.attachments.get(i));
+                        Intent intent = new Intent(ctx, NoteActivity.class);
+                        intent.putExtra("title", commonAttachment.title);
+                        intent.putExtra("content", commonAttachment.text);
+                        intent.putExtra("author", item.name);
+                        attachment_view.setIntent(intent);
+                        attachment_view.setVisibility(View.VISIBLE);
                     }
                 }
             }

@@ -15,33 +15,15 @@ package uk.openvk.android.legacy.api.attachments;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Attachment {
-    public String type;
-    public String status;
-    private Object content;
-    public Attachment(String type) {
-        this.type = type;
-        switch (type) {
-            case "photo":
-                content = new PhotoAttachment();
-                break;
-            case "video":
-                content = new VideoAttachment();
-                break;
-            case "poll":
-                content = new PollAttachment();
-                break;
-            default:
-                content = new CommonAttachment();
-                break;
-        }
+public class CommonAttachment {
+    public String title;
+    public String text;
+    public CommonAttachment(String title, String text) {
+        this.title = title;
+        this.text = text;
     }
 
-    public Object getContent() {
-        return content;
-    }
+    public CommonAttachment() {
 
-    public void setContent(Object content) {
-        this.content = content;
     }
 }

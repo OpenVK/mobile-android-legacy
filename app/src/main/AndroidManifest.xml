@@ -211,6 +211,14 @@
             android:windowTranslucentStatus="true"
             />
 
+        <activity
+            android:name=".ui.core.activities.NoteActivity"
+            android:label="@string/photo"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            />
+
         <activity android:name=".ui.core.activities.GroupMembersActivity"
             android:label="@string/friends"
             android:icon="@drawable/ic_ab_app"
