@@ -26,6 +26,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
+import android.widget.ListView;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -40,7 +43,9 @@ import java.util.regex.Pattern;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -361,4 +366,69 @@ public class Global {
     }
 
 
+    public static void setSlidingMenu(Context ctx, View menuLayout, SlidingMenu menu) {
+        menu.setMode(SlidingMenu.LEFT);
+        menu.setBehindWidth((int) (ctx.getResources().getDisplayMetrics().density * 260));
+        menu.setMenu(menuLayout);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setFadeDegree(0.8f);
+        menu.attachToActivity(((Activity) ctx), SlidingMenu.SLIDING_WINDOW);
+        menu.setSlidingEnabled(true);
+    }
+
+    public static ArrayList<SlidingMenuItem> createSlidingMenuItems(Context ctx) {
+        ArrayList<SlidingMenuItem> slidingMenuArray = new ArrayList<SlidingMenuItem>();
+        for (int slider_menu_item_index = 0;
+             slider_menu_item_index < ctx.getResources().getStringArray(R.array.leftmenu).length;
+             slider_menu_item_index++) {
+            if (slider_menu_item_index == 0) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_friends)));
+            } else if (slider_menu_item_index == 1) {
+                //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
+                // R.array.leftmenu)[slider_menu_item_index], 0,
+                // getResources().getDrawable(R.drawable.ic_left_photos)));
+            } else if (slider_menu_item_index == 2) {
+                //slidingMenuArray.add(new SlidingMenuItem(
+                // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                // 0, getResources().getDrawable(R.drawable.ic_left_video)));
+            } else if (slider_menu_item_index == 3) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_messages)));
+            } else if (slider_menu_item_index == 4) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_groups)));
+            } else if (slider_menu_item_index == 5) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_notes)));
+            } else if (slider_menu_item_index == 6) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_news)));
+            } else if (slider_menu_item_index == 7) {
+                    /* Not implemented!
+                    /
+                    /  slidingMenuArray.add(new SlidingMenuItem(
+                    /  getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                    /  0, getResources().getDrawable(R.drawable.ic_left_feedback)));
+                    */
+            } else if (slider_menu_item_index == 8) {
+                    /* Not implemented!
+                    /
+                    /  slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
+                    /  R.array.leftmenu)[slider_menu_item_index],
+                    /  0, getResources().getDrawable(R.drawable.ic_left_fave)));
+                    */
+            } else if (slider_menu_item_index == 9) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_settings)));
+            }
+        }
+        return slidingMenuArray;
+    }
 }

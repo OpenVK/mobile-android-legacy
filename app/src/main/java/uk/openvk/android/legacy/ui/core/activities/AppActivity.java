@@ -53,7 +53,6 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.counters.AccountCounters;
-import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.Group;
@@ -415,13 +414,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 slidingmenuLayout = new SlidingMenuLayout(this);
             }
             menu = new SlidingMenu(this);
-            menu.setMode(SlidingMenu.LEFT);
-            menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
-            menu.setMenu(slidingmenuLayout);
-            menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-            menu.setFadeDegree(0.8f);
-            menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
-            menu.setSlidingEnabled(true);
+            Global.setSlidingMenu(this, slidingmenuLayout, menu);
         } else {
             try {
                 slidingmenuLayout = findViewById(R.id.sliding_menu);
@@ -433,78 +426,11 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
                 ((OvkApplication) getApplicationContext()).isTablet = false;
                 menu = new SlidingMenu(this);
-                menu.setMode(SlidingMenu.LEFT);
-                menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
-                menu.setMenu(slidingmenuLayout);
-                menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-                menu.setFadeDegree(0.8f);
-                menu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
-                menu.setSlidingEnabled(true);
+                Global.setSlidingMenu(this, slidingmenuLayout, menu);
             }
         }
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
-        slidingMenuArray = new ArrayList<SlidingMenuItem>();
-        if (slidingMenuArray != null) {
-            for (int slider_menu_item_index = 0;
-                 slider_menu_item_index < getResources().getStringArray(R.array.leftmenu).length;
-                 slider_menu_item_index++) {
-                if (slider_menu_item_index == 0) {
-                    slidingMenuArray.add(new SlidingMenuItem(
-                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_friends)));
-                } else if (slider_menu_item_index == 1) {
-                    //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
-                    // R.array.leftmenu)[slider_menu_item_index], 0,
-                    // getResources().getDrawable(R.drawable.ic_left_photos)));
-                } else if (slider_menu_item_index == 2) {
-                    //slidingMenuArray.add(new SlidingMenuItem(
-                    // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                    // 0, getResources().getDrawable(R.drawable.ic_left_video)));
-                } else if (slider_menu_item_index == 3) {
-                    slidingMenuArray.add(new SlidingMenuItem(
-                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_messages)));
-                } else if (slider_menu_item_index == 4) {
-                    slidingMenuArray.add(new SlidingMenuItem(
-                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_groups)));
-                } else if (slider_menu_item_index == 5) {
-                    slidingMenuArray.add(new SlidingMenuItem(
-                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_notes)));
-                } else if (slider_menu_item_index == 6) {
-                    slidingMenuArray.add(new SlidingMenuItem(
-                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_news)));
-                } else if (slider_menu_item_index == 7) {
-                    /* Not implemented!
-                    /
-                    /  slidingMenuArray.add(new SlidingMenuItem(
-                    /  getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                    /  0, getResources().getDrawable(R.drawable.ic_left_feedback)));
-                    */
-                } else if (slider_menu_item_index == 8) {
-                    /* Not implemented!
-                    /
-                    /  slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
-                    /  R.array.leftmenu)[slider_menu_item_index],
-                    /  0, getResources().getDrawable(R.drawable.ic_left_fave)));
-                    */
-                } else if (slider_menu_item_index == 9) {
-                    slidingMenuArray.add(new SlidingMenuItem(
-                            getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                            0, getResources().getDrawable(R.drawable.ic_left_settings)));
-                }
-            }
-            SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
-            if(!((OvkApplication) getApplicationContext()).isTablet) {
-                ((ListView) menu.getMenu().findViewById(R.id.menu_view))
-                        .setAdapter(slidingMenuAdapter);
-            } else {
-                ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
-                        .setAdapter(slidingMenuAdapter);
-            }
-        }
+        slidingMenuArray = Global.createSlidingMenuItems(this);
         slidingmenuLayout.setSearchListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
