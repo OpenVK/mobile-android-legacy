@@ -50,46 +50,21 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.counters.AccountCounters;
-import uk.openvk.android.legacy.api.entities.Conversation;
-import uk.openvk.android.legacy.api.entities.Friend;
-import uk.openvk.android.legacy.api.entities.Group;
-import uk.openvk.android.legacy.api.entities.LongPollServer;
-import uk.openvk.android.legacy.api.entities.Ovk;
-import uk.openvk.android.legacy.api.entities.PollAnswer;
-import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Friends;
-import uk.openvk.android.legacy.api.models.Groups;
-import uk.openvk.android.legacy.api.models.Messages;
-import uk.openvk.android.legacy.api.models.Newsfeed;
-import uk.openvk.android.legacy.api.models.Users;
-import uk.openvk.android.legacy.api.wrappers.JSONParser;
+import uk.openvk.android.legacy.api.counters.*;
+import uk.openvk.android.legacy.api.attachments.*;
+import uk.openvk.android.legacy.api.entities.*;
+import uk.openvk.android.legacy.api.models.*;
+import uk.openvk.android.legacy.api.wrappers.*;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
-import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.MainSettingsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.NotesFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.*;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
-import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
-import uk.openvk.android.legacy.ui.view.layouts.ActionBarLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
-import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
-import uk.openvk.android.legacy.ui.view.layouts.SlidingMenuLayout;
-import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
-import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
+import uk.openvk.android.legacy.ui.list.items.*;
+import uk.openvk.android.legacy.ui.view.layouts.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -145,7 +120,6 @@ public class AppActivity extends TranslucentFragmentActivity {
     public LongPollServer longPollServer;
     public int old_friends_size;
     public boolean profile_loaded = false;
-    private ArrayList<InstanceAccount> accountArray;
     public android.accounts.Account androidAccount;
     public OpenVKAPI ovk_api;
 
@@ -222,7 +196,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     private void getAndroidAccounts() {
-        accountArray = new ArrayList<>();
+        ArrayList<InstanceAccount> accountArray = new ArrayList<>();
         long current_uid = global_prefs.getLong("current_uid", 0);
         String current_instance = global_prefs.getString("current_instance", "");
         Global.loadAccounts(this, accountArray, instance_prefs);
@@ -1681,5 +1655,4 @@ public class AppActivity extends TranslucentFragmentActivity {
             dialog.show();
         }
     }
-
 }
