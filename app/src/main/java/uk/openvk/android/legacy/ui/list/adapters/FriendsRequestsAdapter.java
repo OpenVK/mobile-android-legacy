@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -103,7 +105,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
                 @Override
                 public void onClick(View v) {
                     if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).showProfile(item.id);
+                        showProfile(item.id);
                     }
                 }
             });
@@ -118,6 +120,27 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
                 }
             });
 
+        }
+
+        private void showProfile(int user_id) {
+            if(ctx instanceof AppActivity) {
+                AppActivity app_a = ((AppActivity) ctx);
+                if (user_id != app_a.ovk_api.account.id) {
+                    String url = "openvk://profile/" + "id" + user_id;
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    i.setPackage("uk.openvk.android.legacy");
+                    ctx.startActivity(i);
+                } else {
+                    app_a.openAccountProfile();
+                }
+            } else {
+                String url = "openvk://profile/" + "id" + user_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                i.setPackage("uk.openvk.android.legacy");
+                ctx.startActivity(i);
+            }
         }
     }
 
