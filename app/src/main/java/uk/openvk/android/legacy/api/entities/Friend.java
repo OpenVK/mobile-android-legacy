@@ -83,26 +83,14 @@ public class Friend implements Parcelable {
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
                 avatar_url = "";
-                if(user.has("verified")) {
-                    if (user.getInt("verified") == 1) {
-                        verified = true;
-                    } else {
-                        verified = false;
-                    }
+                if (user.has("verified")) {
+                    verified = user.getInt("verified") == 1;
                 } else {
                     verified = false;
                 }
-                if(user.has("online")) {
-                    if (user.getInt("online") == 1) {
-                        online = true;
-                    } else {
-                        online = false;
-                    }
-                } else {
-                    online = false;
-                }
+                online = user.has("online") && user.getInt("online") == 1;
                 if (user.has("last_seen") && !user.isNull("last_seen")) {
-                    if(user.getJSONObject("last_seen").getInt("platform") != 7) {
+                    if (user.getJSONObject("last_seen").getInt("platform") != 7) {
                         from_mobile = true;
                     }
                 }
@@ -141,16 +129,8 @@ public class Friend implements Parcelable {
                         first_name = user.getString("first_name");
                         last_name = user.getString("last_name");
                         id = user.getInt("id");
-                        if(user.getInt("verified") == 1) {
-                            verified = true;
-                        } else {
-                            verified = false;
-                        }
-                        if(user.getInt("online") == 1) {
-                            online = true;
-                        } else {
-                            online = false;
-                        }
+                        verified = user.getInt("verified") == 1;
+                        online = user.getInt("online") == 1;
                         if (user.has("photo_50")) {
                             avatar_url = user.getString("photo_50");
                         } else if (user.has("photo_100")) {

@@ -69,15 +69,15 @@ public class NotesFragment extends Fragment {
             if(app.isTablet && app.swdp >= 760) {
                 LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+                ((RecyclerView) view.findViewById(R.id.notes_listview)).setLayoutManager(glm);
             } else if(app.isTablet && app.swdp >= 600) {
                 LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+                ((RecyclerView) view.findViewById(R.id.notes_listview)).setLayoutManager(glm);
             } else {
                 LinearLayoutManager llm = new LinearLayoutManager(ctx);
                 llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(llm);
+                ((RecyclerView) view.findViewById(R.id.notes_listview)).setLayoutManager(llm);
             }
             notesListView.setAdapter(notesAdapter);
         } else {

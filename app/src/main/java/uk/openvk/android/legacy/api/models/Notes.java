@@ -1,5 +1,12 @@
 package uk.openvk.android.legacy.api.models;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import uk.openvk.android.legacy.api.entities.Note;
+import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /**
@@ -19,13 +26,33 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
  */
 
 public class Notes {
+    private JSONParser jsonParser;
+    public ArrayList<Note> list;
     public Notes() {
-
+        list = new ArrayList<>();
+        jsonParser = new JSONParser();
     }
 
     public void get(OvkAPIWrapper ovk, long user_id, int count, int sort) {
         ovk.sendAPIMethod("Notes.get",
                 String.format("user_id=%s&count=%s&sort=%s", user_id, count, sort)
         );
+    }
+
+    public void parse(String response) {
+        try {
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONArray notes = json.getJSONObject("response").getJSONArray("notes");
+            for(int i = 0; i < notes.length(); i++) {
+                JSONObject item = notes.getJSONObject(i);
+                Note note = new Note();
+                note.title = item.getString("title");
+                note.content = item.getString("text");
+                note.date = item.getLong("date");
+                list.add(note);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

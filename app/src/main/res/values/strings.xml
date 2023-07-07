@@ -1116,4 +1116,5 @@
     <string name="local_newsfeed_no_posts">Silence in the local feed so far.\r\nYou can learn something new in the all news feed.</string>
 	<string name="retry_short">Retry</string>
 	<string name="vk_not_supported">Sorry, but this client is incompatible with the VK API.</string>
+	<string name="notes">Notes</string>
 </resources>

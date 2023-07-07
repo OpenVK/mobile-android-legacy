@@ -32,9 +32,7 @@
             android:dividerHeight="1dp"
             android:footerDividersEnabled="false"
             android:headerDividersEnabled="false"
-            android:visibility="visible">
-
-        </android.support.v7.widget.RecyclerView>
+            android:visibility="visible" />
 
     </LinearLayout>
 </LinearLayout>

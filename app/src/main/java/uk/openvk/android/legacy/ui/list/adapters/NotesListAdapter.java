@@ -1,7 +1,10 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
@@ -19,6 +22,7 @@ import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -100,13 +104,15 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Hold
             Note item = getItem(position);
             ((TextView) view.findViewById(R.id.nlist_item_text)).setText(
                     item.title);
+            ((TextView) view.findViewById(R.id.nlist_item_subtext)).setText(
+                    Html.fromHtml(item.content).toString());
 
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).showNote(position);
+                        showNote(position);
                     }
                 }
             });
@@ -118,6 +124,21 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Hold
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        private void showNote(int position) {
+            Intent intent = new Intent(ctx, NoteActivity.class);
+            intent.putExtra("title", getItem(position).title);
+            intent.putExtra("content", getItem(position).content)
+            if(ctx instanceof AppActivity) {
+                String author_name = String.format("%s %s",
+                        ((AppActivity) ctx).ovk_api.account.first_name,
+                        ((AppActivity) ctx).ovk_api.account.last_name);
+                intent.putExtra("author", author_name);
+            } else {
+                intent.putExtra("author", "Unknown author");
+            }
+            ctx.startActivity(intent);
         }
     }
 

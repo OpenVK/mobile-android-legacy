@@ -1216,4 +1216,5 @@
     <string name="local_newsfeed_no_posts">У локальній стрічці поки що тиша.\r\nВи можете дізнатися щось нове у стрічці всіх новин.</string>
     <string name="retry_short">Повторити</string>
     <string name="vk_not_supported">Вибачте, але цей клієнт несумісний з API ВКонтакте.</string>
+    <string name="notes">Нонатки</string>
 </resources>

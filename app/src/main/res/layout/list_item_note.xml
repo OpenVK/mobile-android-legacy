@@ -34,28 +34,32 @@
         android:src="@drawable/ic_attach_note"
         android:visibility="visible"></ImageView>
 
-    <ImageView
-        android:id="@+id/nlist_item_online"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="10dip"
-        android:src="@drawable/ic_online"></ImageView>
-
-    <TextView
-        android:id="@+id/nlist_item_text"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dip"
-        android:layout_toLeftOf="@+id/nlist_item_online"
         android:layout_toRightOf="@+id/nlist_item_photo"
-        android:duplicateParentState="false"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="TextView"
-        android:textColor="@color/main_text"
-        android:textSize="17dip" />
+        android:duplicateParentState="false">
+
+        <TextView
+            android:id="@+id/nlist_item_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="Note name"
+            android:textColor="@color/main_text"
+            android:textSize="17dip" />
+
+        <TextView
+            android:id="@+id/nlist_item_subtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Note subtitle"
+            android:textColor="@color/hint" />
+    </LinearLayout>
 
 </RelativeLayout>

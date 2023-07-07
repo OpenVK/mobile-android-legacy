@@ -104,6 +104,19 @@ public class FragmentNavigator {
                         }
                     }
                     break;
+                case "notes":
+                    ft.show(appActivity.notesFragment);
+                    showFragment(activity, appActivity.notesFragment.getCount() != 0);
+                    appActivity.selectedFragment = appActivity.notesFragment;
+                    appActivity.global_prefs_editor.putString("current_screen", "notes");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
+                    break;
                 case "newsfeed":
                     ft.show(appActivity.newsfeedFragment);
                     showFragment(activity, appActivity.newsfeedFragment.getCount() != 0);

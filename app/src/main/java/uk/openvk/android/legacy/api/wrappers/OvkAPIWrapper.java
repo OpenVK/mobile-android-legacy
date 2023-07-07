@@ -1198,6 +1198,10 @@ public class OvkAPIWrapper {
                     msg.what = HandlerMessages.OVK_ABOUTINSTANCE;
                     app_a.ovk_api.ovk.parseAboutInstance(data.getString("response"));
                     break;
+                case "Notes.get":
+                    msg.what = HandlerMessages.NOTES_GET;
+                    app_a.ovk_api.notes.parse(data.getString("response"));
+                    break;
             }
             app_a.handler.sendMessage(msg);
         } else if (activity instanceof ConversationActivity) {
