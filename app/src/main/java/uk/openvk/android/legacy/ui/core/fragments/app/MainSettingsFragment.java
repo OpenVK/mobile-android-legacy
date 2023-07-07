@@ -188,10 +188,11 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         if (logout_preference != null) {
             if(getActivity() instanceof AppActivity) {
                 AppActivity appActivity = ((AppActivity) getActivity());
-                if(appActivity.account.first_name != null && appActivity.account.last_name != null) {
+                if(appActivity.ovk_api.account.first_name != null &&
+                        appActivity.ovk_api.account.last_name != null) {
                     logout_preference.setSummary(
-                            String.format("%s %s", appActivity.account.first_name,
-                                    appActivity.account.last_name));
+                            String.format("%s %s", appActivity.ovk_api.account.first_name,
+                                    appActivity.ovk_api.account.last_name));
                 }
             }
             logout_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -455,7 +456,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         about_instance_dlg.build(builder, getResources().getString(R.string.about_instance), "", about_instance_view);
         about_instance_dlg.show();
         if(getActivity() instanceof AppActivity) {
-            ((AppActivity) getActivity()).ovk_api.checkHTTPS();
+            ((AppActivity) getActivity()).ovk_api.wrapper.checkHTTPS();
         }
     }
 

@@ -76,16 +76,15 @@ public class NoteActivity extends TranslucentActivity {
                         "charset=UTF-8\" charset=\"UTF-8\">" +
                         "   </head>" +
                         "   <body bgcolor=\"#d5e8fe\" style=\"margin: 0\">" +
-                                "<div>" +
+                        "       <div>" +
                         data.getString("content") +
-                                "</div>" +
+                        "       </div>" +
                         "   </body>" +
                         "</html>";
                 WebSettings settings = webView.getSettings();
                 settings.setPluginState(WebSettings.PluginState.ON);
                 settings.setSupportZoom(true);
-                webView.loadData(page
-                        , "text/html; charset=UTF-8", "UTF-8");
+                webView.loadData(page, "text/html; charset=UTF-8", "UTF-8");
             }
             if(data.containsKey("title")) {
                 ((TextView) findViewById(R.id.note_title)).setText(data.getString("title"));

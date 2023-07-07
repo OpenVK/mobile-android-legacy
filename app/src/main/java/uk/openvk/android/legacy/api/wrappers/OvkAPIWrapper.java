@@ -1095,108 +1095,108 @@ public class OvkAPIWrapper {
             assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
-                    app_a.account.parse(data.getString("response"), this);
+                    app_a.ovk_api.account.parse(data.getString("response"), this);
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
                 case "Account.getCounters":
-                    app_a.account.parseCounters(data.getString("response"));
+                    app_a.ovk_api.account.parseCounters(data.getString("response"));
                     msg.what = HandlerMessages.ACCOUNT_COUNTERS;
                     break;
                 case "Newsfeed.get":
                     if (where != null && where.equals("more_news")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE;
-                        app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
+                        app_a.ovk_api.newsfeed.parse(app_a, downloadManager, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), false);
                     } else {
                         msg.what = HandlerMessages.NEWSFEED_GET;
-                        app_a.newsfeed.parse(app_a, downloadManager, data.getString("response"),
+                        app_a.ovk_api.newsfeed.parse(app_a, downloadManager, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), true);
                     }
                     break;
                 case "Newsfeed.getGlobal":
                     if (where != null && where.equals("more_news")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
-                        app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                        app_a.ovk_api.newsfeed.parse(activity, downloadManager, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), false);
                     } else {
                         msg.what = HandlerMessages.NEWSFEED_GET_GLOBAL;
-                        app_a.newsfeed.parse(activity, downloadManager, data.getString("response"),
+                        app_a.ovk_api.newsfeed.parse(activity, downloadManager, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), true);
                     }
                     break;
                 case "Messages.getLongPollServer":
-                    app_a.longPollServer = app_a.messages
+                    app_a.longPollServer = app_a.ovk_api.messages
                             .parseLongPollServer(data.getString("response"));
                     msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
                     break;
                 case "Likes.add":
-                    app_a.likes.parse(data.getString("response"));
+                    app_a.ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_ADD;
                     break;
                 case "Likes.delete":
-                    app_a.likes.parse(data.getString("response"));
+                    app_a.ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_DELETE;
                     break;
                 case "Users.get":
-                    app_a.users.parse(data.getString("response"));
+                    app_a.ovk_api.users.parse(data.getString("response"));
                     msg.what = HandlerMessages.USERS_GET;
                     break;
                 case "Friends.get":
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.FRIENDS_GET_MORE;
-                        app_a.friends.parse(data.getString("response"), downloadManager, true, false);
+                        app_a.ovk_api.friends.parse(data.getString("response"), downloadManager, true, false);
                     } else {
                         assert where != null;
                         if(where.equals("profile_counter")) {
                             msg.what = HandlerMessages.FRIENDS_GET_ALT;
-                            app_a.friends.parse(data.getString("response"), downloadManager, false, true);
+                            app_a.ovk_api.friends.parse(data.getString("response"), downloadManager, false, true);
                         } else {
                             msg.what = HandlerMessages.FRIENDS_GET;
-                            app_a.friends.parse(data.getString("response"), downloadManager, true, true);
+                            app_a.ovk_api.friends.parse(data.getString("response"), downloadManager, true, true);
                         }
                     }
                     break;
                 case "Friends.getRequests":
                     msg.what = HandlerMessages.FRIENDS_REQUESTS;
-                    app_a.friends.parseRequests(data.getString("response"), downloadManager, true);
+                    app_a.ovk_api.friends.parseRequests(data.getString("response"), downloadManager, true);
                     break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {
-                        app_a.wall.parse(activity, downloadManager,
+                        app_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), false);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
-                        app_a.wall.parse(activity, downloadManager,
+                        app_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;
                 case "Messages.getConversations":
-                    app_a.conversations = app_a.messages.parseConversationsList(data.getString("response"),
+                    app_a.conversations = app_a.ovk_api.messages.parseConversationsList(data.getString("response"),
                             downloadManager);
                     msg.what = HandlerMessages.MESSAGES_CONVERSATIONS;
                     break;
                 case "Groups.get":
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.GROUPS_GET_MORE;
-                        app_a.old_friends_size = app_a.groups.getList().size();
-                        app_a.groups.parse(data.getString("response"), downloadManager,
+                        app_a.old_friends_size = app_a.ovk_api.groups.getList().size();
+                        app_a.ovk_api.groups.parse(data.getString("response"), downloadManager,
                                 global_prefs.getString("photos_quality", ""), true, false);
                     } else {
                         msg.what = HandlerMessages.GROUPS_GET;
-                        app_a.groups.parse(data.getString("response"), downloadManager,
+                        app_a.ovk_api.groups.parse(data.getString("response"), downloadManager,
                                 global_prefs.getString("photos_quality", ""), true, true);
                     }
                     break;
                 case "Ovk.version":
                     msg.what = HandlerMessages.OVK_VERSION;
-                    app_a.ovk.parseVersion(data.getString("response"));
+                    app_a.ovk_api.ovk.parseVersion(data.getString("response"));
                     break;
                 case "Ovk.aboutInstance":
                     msg.what = HandlerMessages.OVK_ABOUTINSTANCE;
-                    app_a.ovk.parseAboutInstance(data.getString("response"));
+                    app_a.ovk_api.ovk.parseAboutInstance(data.getString("response"));
                     break;
             }
             app_a.handler.sendMessage(msg);

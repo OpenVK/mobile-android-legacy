@@ -50,7 +50,7 @@ public class FragmentNavigator {
                     ft.show(appActivity.profileFragment);
                     appActivity.selectedFragment = appActivity.profileFragment;
                     if(appActivity.profile_loaded) {
-                        showFragment(activity, appActivity.user.first_name != null);
+                        showFragment(activity, appActivity.ovk_api.user.first_name != null);
                     }
                     appActivity.global_prefs_editor.putString("current_screen", "profile");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
