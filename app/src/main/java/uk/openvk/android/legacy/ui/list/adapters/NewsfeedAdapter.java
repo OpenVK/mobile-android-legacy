@@ -1,7 +1,9 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
@@ -13,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -58,6 +62,7 @@ import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
     private final String instance;
+    private String where;
     private ArrayList<WallPost> items = new ArrayList<>();
     private Context ctx;
     public LruCache memCache;
@@ -471,13 +476,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             reposts_counter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                        ((ProfileIntentActivity) ctx).repost(position);
-                    } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                        ((GroupIntentActivity) ctx).repost(position);
-                    } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).repost(position);
-                    }
+                    repost(position);
                 }
             });
 
@@ -490,6 +489,37 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         ((ProfileIntentActivity) ctx).openWallComments(position, view);
                     } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
                         ((GroupIntentActivity) ctx).openWallComments(position, view);
+                    }
+                }
+            });
+        }
+
+        public void repost(int position) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            final ArrayList<String> functions = new ArrayList<>();
+            builder.setTitle(R.string.repost_dlg_title);
+            functions.add(ctx.getResources().getString(R.string.repost_own_wall));
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<>(ctx, android.R.layout.simple_list_item_1, functions);
+            builder.setSingleChoiceItems(adapter, -1, null);
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            final WallPost finalPost = getItem(position);
+            SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+            String current_screen = global_prefs.getString("current_screen", "");
+            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if(functions.get(position)
+                            .equals(ctx.getResources().getString(R.string.repost_own_wall))) {
+                        if(ctx instanceof AppActivity) {
+                            ((AppActivity) ctx).openRepostDialog("own_wall", finalPost);
+                        } else if(ctx instanceof ProfileIntentActivity) {
+                            ((ProfileIntentActivity) ctx).openRepostDialog("own_wall", finalPost);
+                        } else if(ctx instanceof GroupIntentActivity) {
+                            ((GroupIntentActivity) ctx).openRepostDialog("own_wall", finalPost);
+                        }
+                        dialog.dismiss();
                     }
                 }
             });

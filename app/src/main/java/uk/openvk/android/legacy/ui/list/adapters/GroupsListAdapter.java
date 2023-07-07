@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -133,7 +135,7 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
                 public void onClick(View view) {
                     if(ctx.getClass().getSimpleName().equals("AppActivity")) {
                         ((AppActivity) ctx).hideSelectedItemBackground(position);
-                        ((AppActivity) ctx).showGroup(position);
+                        showGroup(position);
                     } else if(ctx.getClass().getSimpleName().equals("GroupsIntentActivity")) {
                         ((GroupIntentActivity) ctx).hideSelectedItemBackground(position);
                         ((GroupIntentActivity) ctx).showGroup(position);
@@ -148,6 +150,14 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        public void showGroup(int position) {
+            String url = "openvk://group/" + "club" + getItem(position).id;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            i.setPackage("uk.openvk.android.legacy");
+            ctx.startActivity(i);
         }
     }
 

@@ -1131,8 +1131,13 @@ public class AppActivity extends TranslucentFragmentActivity {
             errorLayout.setRetryAction(this);
             errorLayout.setReason(reason);
             if (icon.equals("ovk")) {
-                errorLayout.setTitle(
-                        getResources().getString(R.string.local_newsfeed_no_posts));
+                if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
+                    errorLayout.setTitle(
+                            getResources().getString(R.string.local_newsfeed_no_posts));
+                } else {
+                    errorLayout.setTitle(
+                            getResources().getString(R.string.no_news));
+                }
             } else {
                 errorLayout.setTitle(getResources().getString(R.string.err_text));
             }
@@ -1231,26 +1236,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                         break;
                 }
             }
-        }
-    }
-
-    public void showGroup(int position) {
-        String url = "openvk://group/" + "club" + ovk_api.groups.getList().get(position).id;
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        i.setPackage("uk.openvk.android.legacy");
-        startActivity(i);
-    }
-
-    public void showProfile(int user_id) {
-        if(user_id != ovk_api.account.id) {
-            String url = "openvk://profile/" + "id" + user_id;
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            i.setPackage("uk.openvk.android.legacy");
-            startActivity(i);
-        } else {
-            openAccountProfile();
         }
     }
 
@@ -1578,45 +1563,6 @@ public class AppActivity extends TranslucentFragmentActivity {
     protected void onDestroy() {
         unregisterReceiver(lpReceiver);
         super.onDestroy();
-    }
-
-    public void repost(int position) {
-        WallPost post;
-        if(selectedFragment instanceof ProfileFragment) {
-            post = ovk_api.wall.getWallItems().get(position);
-        } else {
-            post = ovk_api.newsfeed.getWallPosts().get(position);
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final ArrayList<String> functions = new ArrayList<>();
-        builder.setTitle(R.string.repost_dlg_title);
-        functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
-        builder.setSingleChoiceItems(adapter, -1, null);
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-        final WallPost finalPost = post;
-        if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
-            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                        openRepostDialog("own_wall", finalPost);
-                    }
-                }
-            });
-        } else if(global_prefs.getString("current_screen", "").equals("profile")) {
-            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                        openRepostDialog("own_wall", finalPost);
-                        dialog.dismiss();
-                    }
-                }
-            });
-        }
     }
 
     public void openRepostDialog(String where, final WallPost post) {

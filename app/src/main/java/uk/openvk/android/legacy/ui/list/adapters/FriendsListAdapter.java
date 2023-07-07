@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -137,10 +139,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                 public void onClick(View view) {
                     if(ctx.getClass().getSimpleName().equals("AppActivity")) {
                         friendsFragment.hideSelectedItemBackground(position);
-                        ((AppActivity) ctx).showProfile(item.id);
+                        showProfile(item.id);
                     } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
                         friendsFragment.hideSelectedItemBackground(position);
-                        ((FriendsIntentActivity) ctx).showProfile(item.id);
+                        showProfile(item.id);
                     }
                 }
             });
@@ -152,6 +154,27 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        private void showProfile(int user_id) {
+            if(ctx instanceof AppActivity) {
+                AppActivity app_a = ((AppActivity) ctx);
+                if (user_id != app_a.ovk_api.account.id) {
+                    String url = "openvk://profile/" + "id" + user_id;
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    i.setPackage("uk.openvk.android.legacy");
+                    ctx.startActivity(i);
+                } else {
+                    app_a.openAccountProfile();
+                }
+            } else {
+                String url = "openvk://profile/" + "id" + user_id;
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                i.setPackage("uk.openvk.android.legacy");
+                ctx.startActivity(i);
+            }
         }
     }
 

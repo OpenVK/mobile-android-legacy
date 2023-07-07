@@ -878,7 +878,6 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
-
     public void setScrollingPositions(final Context ctx, final boolean load_photos,
                                       final boolean infinity_scroll) {
         loading_more_posts = false;

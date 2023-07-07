@@ -274,14 +274,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void showProfile(int user_id) {
-        String url = "openvk://profile/" + "id" + user_id;
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        i.setPackage(getPackageName());
-        startActivity(i);
-    }
-
     public void loadMoreFriends() {
         if(friends != null) {
             friends.get(ovk_api, user_id, 25, friends.offset);
