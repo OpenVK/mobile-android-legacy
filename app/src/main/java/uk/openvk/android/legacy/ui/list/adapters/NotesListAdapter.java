@@ -129,7 +129,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Hold
         private void showNote(int position) {
             Intent intent = new Intent(ctx, NoteActivity.class);
             intent.putExtra("title", getItem(position).title);
-            intent.putExtra("content", getItem(position).content)
+            intent.putExtra("content", getItem(position).content);
             if(ctx instanceof AppActivity) {
                 String author_name = String.format("%s %s",
                         ((AppActivity) ctx).ovk_api.account.first_name,
