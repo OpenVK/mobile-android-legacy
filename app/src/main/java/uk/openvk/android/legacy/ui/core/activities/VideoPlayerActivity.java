@@ -31,6 +31,17 @@ import android.widget.VideoView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -103,6 +114,7 @@ public class VideoPlayerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadVideo() {
         Bundle data = getIntent().getExtras();
         showPlayControls();
@@ -141,16 +153,27 @@ public class VideoPlayerActivity extends Activity {
                     url = "";
                 }
 
+                /* Because ijkplayer does not support TLS connection.
+                /
+                /  W/IJKMEDIA: https protocol not found, recompile FFmpeg with openssl,
+                /  gnutls or securetransport enabled.
+                /  E/IJKMEDIA: https://[CDN address]: Protocol not found
+                */
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
+                        !Build.CPU_ABI.equals("x86_64")) {
+                    url.replace("https", "http");
+                }
+
                 Uri uri = Uri.parse(url);
 
                 createMediaPlayer(uri);
-                ((ImageButton) findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
+                (findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         playVideo();
                     }
                 });
-                ((ImageButton) findViewById(R.id.video_resize)).setOnClickListener(new View.OnClickListener() {
+                (findViewById(R.id.video_resize)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(fitVideo) {

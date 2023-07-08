@@ -720,7 +720,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 if(ovk_api.messages == null) {
                     ovk_api.messages = new Messages();
                 }
-                ovk_api.messages.getConversations(ovk_api.wrapper);
             } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = ovk_api.account.counters.friends_requests;
@@ -813,6 +812,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                         ((OvkApplication) getApplicationContext()).config.orientation
                 );
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
+                ovk_api.messages.getConversations(ovk_api.wrapper);
                 ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this,
                         instance_prefs.getString("access_token", ""),
                         global_prefs.getBoolean("use_https", true),
