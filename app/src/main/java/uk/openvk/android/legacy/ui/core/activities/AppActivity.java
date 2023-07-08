@@ -414,6 +414,14 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
             }
         });
+        SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
+        if(!((OvkApplication) getApplicationContext()).isTablet) {
+            ((ListView) menu.getMenu().findViewById(R.id.menu_view))
+                    .setAdapter(slidingMenuAdapter);
+        } else {
+            ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
+                    .setAdapter(slidingMenuAdapter);
+        }
     }
 
     @Override
