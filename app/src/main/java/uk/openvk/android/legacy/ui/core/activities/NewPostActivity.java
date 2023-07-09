@@ -347,12 +347,12 @@ public class NewPostActivity extends TranslucentActivity {
     {
         if (requestCode == 4) {
             if (data == null) {
-                //Display an error
+                Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
                 return;
             }
             Uri uri = data.getData();
             File file = new File(uriToFilename(uri));
-            if(file.exists()) {
+            if(file.exists() && ovk_api.photos.wallUploadServer != null) {
                 findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
                 UploadableFile upload_file = new UploadableFile(uriToFilename(uri), file);
                 upload_file.length = file.length();
@@ -360,6 +360,8 @@ public class NewPostActivity extends TranslucentActivity {
                 files.add(upload_file);
                 filesAdapter.notifyDataSetChanged();
                 ovk_api.ulman.uploadFile(ovk_api.photos.wallUploadServer, file, "");
+            } else {
+                Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
             }
         }
     }
