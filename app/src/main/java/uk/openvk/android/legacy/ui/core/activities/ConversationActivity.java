@@ -118,7 +118,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         setEmojiconFragment(false);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            minKbHeight = (int) (500 * getResources().getDisplayMetrics().scaledDensity);
+            minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
             minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
         }
