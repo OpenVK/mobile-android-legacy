@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -148,15 +149,25 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
         Preference notif_ringtone = findPreference("notifyRingtone");
         if (notif_ringtone != null) {
+            Uri notif_uri = Uri.parse("content://settings/system/notification_sound");
+            if(global_prefs.getString("notifyRingtone", "content://settings/system/notification_sound")
+                    .equals("content://settings/system/notification_sound")) {
+                notif_ringtone.setSummary("OpenVK");
+            } else {
+                notif_uri = Uri.parse(global_prefs.getString("notifyRingtone",
+                        "content://settings/system/notification_sound"));
+                Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), notif_uri);
+                notif_ringtone.setSummary(ringtone.getTitle(getContext()));
+            }
+            final Uri notif_uri_f = notif_uri;
             notif_ringtone.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE,
-                            getResources().getString(R.string.sett_notifications));
-                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
-                            Uri.parse(global_prefs.getString("notifyRingtone", "content://settings/system/ringtone")));
+                            getResources().getString(R.string.sett_ringtone));
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, notif_uri_f);
                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
                             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
@@ -169,7 +180,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
         Preference about_preference = findPreference("about");
         about_preference.setSummary(
-                String.format("%s (%s)", BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT)
+                String.format("OpenVK Legacy %s (%s)", BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT)
         );
         about_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
