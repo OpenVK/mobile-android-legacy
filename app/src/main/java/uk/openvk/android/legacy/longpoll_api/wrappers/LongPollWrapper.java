@@ -184,7 +184,7 @@ public class LongPollWrapper {
                                         String.format("Getting response from %s (%s): [%s]", server,
                                                 response_code, response_body));
                                 sendLongPollMessageToActivity(response_body);
-                                Thread.sleep(2000);
+                                Thread.sleep(5000);
                             } else {
                                 Log.v(OvkApplication.LP_TAG,
                                         String.format("Getting response from %s (%s): Invalid JSON data", server,
@@ -192,10 +192,17 @@ public class LongPollWrapper {
                                 sendLongPollMessageToActivity(response_body);
                                 Thread.sleep(60000);
                             }
-                        } else {
-                            if(logging_enabled) Log.v(OvkApplication.LP_TAG,
+                        } else if(response_code >= 400 && response_code <= 528) {
+                            if(logging_enabled) Log.e(OvkApplication.LP_TAG,
                                     String.format("Getting response from %s (%s)", server,
                                             response_code));
+                            if(logging_enabled) Log.v(OvkApplication.LP_TAG, "Retrying in 60 seconds...");
+                            Thread.sleep(60000);
+                        } else {
+                            if(logging_enabled) Log.e(OvkApplication.LP_TAG,
+                                    String.format("Getting response from %s (%s)", server,
+                                            response_code));
+                            Thread.sleep(5000);
                         }
 
                     }
@@ -264,7 +271,6 @@ public class LongPollWrapper {
                 public void handleMessage(android.os.Message msg) {
                     super.handleMessage(msg);
                     if(msg.what == HandlerMessages.LONGPOLL) {
-                        Log.d("OK", "OK! LongPolling 2...");
                         Intent intent = new Intent();
                         intent.setAction("uk.openvk.android.legacy.LONGPOLL_RECEIVE");
                         intent.putExtra("response", response);
