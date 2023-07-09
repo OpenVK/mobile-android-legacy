@@ -59,8 +59,8 @@
                 android:id="@+id/newpost_attachments"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:visibility="gone" />
 
         </LinearLayout>
