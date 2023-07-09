@@ -139,12 +139,10 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 }
             }
         };
-        if(!((OvkApplication) getApplicationContext()).isTablet) {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                minKbHeight = (int) (400 * getResources().getDisplayMetrics().scaledDensity);
-            } else {
-                minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
-            }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (500 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
         }
 
         setCommentsView();
@@ -272,10 +270,10 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     View view = WallPostActivity.this.getCurrentFocus();
                     if (view != null) {
                         if(!((OvkApplication) getApplicationContext()).isTablet) {
-                            if (keyboard_height >= 750) {
-                                findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height - 75;
+                            if (keyboard_height >= minKbHeight) {
+                                findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height;
                             } else {
-                                findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                                findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
                             }
                             Log.d(OvkApplication.APP_TAG, String.format("KB height: %s",
                                     findViewById(R.id.emojicons).getLayoutParams().height));
@@ -293,7 +291,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                         }
                     } else {
                         if(!((OvkApplication) getApplicationContext()).isTablet) {
-                            findViewById(R.id.emojicons).getLayoutParams().height = 680;
+                            findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
                         }
                         findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
