@@ -356,6 +356,7 @@ public class NewPostActivity extends TranslucentActivity {
                 findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
                 UploadableFile upload_file = new UploadableFile(uriToFilename(uri), file);
                 upload_file.length = file.length();
+                Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
                 files.add(upload_file);
                 filesAdapter.notifyDataSetChanged();
                 ovk_api.ulman.uploadFile(ovk_api.photos.wallUploadServer, file, "");

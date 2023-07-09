@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
@@ -107,13 +109,14 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             UploadableFile file = getItem(position);
             if(file.mime.startsWith("image")) {
                 loadBitmap(file);
+                setUploadProgress(file);
                 if(file.progress < file.length) {
                     progress_layout.setVisibility(View.VISIBLE);
-                    setUploadProgress(file);
                 } else {
                     progress_layout.setVisibility(View.GONE);
                 }
             }
+            Log.d(OvkApplication.APP_TAG, "Filesize: " + file.length + " bytes");
         }
 
         private void loadBitmap(UploadableFile file) {
@@ -124,21 +127,26 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
         }
 
         private void setUploadProgress(UploadableFile file) {
+            String b = ctx.getResources().getString(R.string.fsize_b);
             String kb = ctx.getResources().getString(R.string.fsize_kb);
             String mb = ctx.getResources().getString(R.string.fsize_mb);
             String gb = ctx.getResources().getString(R.string.fsize_gb);
-            if(file.progress >= 1073741824L) {
+            if(file.length >= 1073741824L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress, file.length, gb));
-            } else if(file.progress >= 1048576L) {
+                                file.progress / 1024 / 1024 / 1024, file.length / 1024 / 1024 / 1024, gb));
+            } else if(file.length >= 1048576L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress, file.length, mb));
-            } else if(file.progress >= 1024L) {
+                                file.progress / 1024 / 1024, file.length / 1024, mb));
+            } else if(file.length >= 1024L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress, file.length, kb));
+                                file.progress / 1024, file.length / 1024, kb));
+            } else {
+                progress_status.setText(
+                        String.format("%s / %s %s",
+                                file.progress, file.length, b));
             }
         }
     }
