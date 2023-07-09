@@ -85,7 +85,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance_prefs = ((OvkApplication) getContext().getApplicationContext()).getAccountPreferences();
         Bundle data = getActivity().getIntent().getExtras();
-        if(data.containsKey("start_from") && data.getString("start_from").equals("AuthActivity")) {
+        if(data != null && data.containsKey("start_from")
+                && data.getString("start_from").equals("AuthActivity")) {
             addPreferencesFromResource(R.xml.preferences);
         } else {
             addPreferencesFromResource(R.xml.preferences_2);
