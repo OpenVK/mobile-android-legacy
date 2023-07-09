@@ -138,7 +138,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             } else if(file.length >= 1048576L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress / 1024 / 1024, file.length / 1024, mb));
+                                file.progress / 1024 / 1024, file.length / 1024 / 1024, mb));
             } else if(file.length >= 1024L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
