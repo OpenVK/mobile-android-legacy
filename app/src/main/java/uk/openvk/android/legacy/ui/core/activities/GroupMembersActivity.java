@@ -17,6 +17,8 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Group;
@@ -41,12 +43,11 @@ import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
  */
 
 public class GroupMembersActivity extends UsersListActivity {
-    private ArrayList<Users> users;
+    private ArrayList<User> users;
     public Group group;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
-    private DownloadManager dlm;
-    private OvkAPIWrapper ovk_api;
+    private OpenVKAPI ovk_api;
     private String access_token;
     private PopupMenu popup_menu;
 
@@ -63,7 +64,7 @@ public class GroupMembersActivity extends UsersListActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.parseJSONData(data, GroupMembersActivity.this);
+                            ovk_api.wrapper.parseJSONData(data, GroupMembersActivity.this);
                         }
                     }).start();
                 } else {
@@ -145,17 +146,8 @@ public class GroupMembersActivity extends UsersListActivity {
     }
 
     private void setOvkAPIWrapper() {
-        users = new ArrayList<Users>();
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", false),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        ovk_api.setServer(instance_prefs.getString("server", ""));
-        ovk_api.setAccessToken(access_token);
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
-        dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        dlm.setInstance(instance_prefs.getString("instance", ""));
-        group.getMembers(ovk_api, 25, "");
+        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+        group.getMembers(ovk_api.wrapper, 25, "");
     }
 
     private void receiveState(int message, Bundle data) {

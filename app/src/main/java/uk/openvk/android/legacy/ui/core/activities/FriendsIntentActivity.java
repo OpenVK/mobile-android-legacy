@@ -22,6 +22,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Users;
@@ -55,8 +56,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 public class FriendsIntentActivity extends TranslucentFragmentActivity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
-    private OvkAPIWrapper ovk_api;
-    public Account account;
+    public OpenVKAPI ovk_api;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -64,10 +64,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     private FriendsFragment friendsFragment;
-    public Friends friends;
-    private Users users;
     private String access_token;
-    private DownloadManager downloadManager;
     private int user_id = 0;
     private FragmentTransaction ft;
 
@@ -82,10 +79,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         installLayouts();
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        downloadManager.setInstance(instance_prefs.getString("server", ""));
-        downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -109,7 +102,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.parseJSONData(data, FriendsIntentActivity.this);
+                            ovk_api.wrapper.parseJSONData(data, FriendsIntentActivity.this);
                         }
                     }).start();
                 } else {
@@ -127,23 +120,19 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
             try {
                 if (path.startsWith("openvk://friends/")) {
                     String args = path.substring("openvk://friends/".length());
-                    ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                            global_prefs.getBoolean("legacyHttpClient", false));
-                    ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                            global_prefs.getString("proxy_address", ""));
-                    ovk_api.setServer(instance_prefs.getString("server", ""));
-                    ovk_api.setAccessToken(access_token);
-                    users = new Users();
-                    friends = new Friends();
+                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+                    ovk_api.users = new Users();
+                    ovk_api.friends = new Friends();
                     if(args.startsWith("id")) {
                         try {
                             user_id = Integer.parseInt(args.substring(2));
-                            friends.get(ovk_api, Integer.parseInt(args.substring(2)), 25, "friends_list");
+                            ovk_api.friends.get(ovk_api.wrapper,
+                                    Integer.parseInt(args.substring(2)), 25, "friends_list");
                         } catch (Exception ex) {
-                            users.search(ovk_api, args);
+                            ovk_api.users.search(ovk_api.wrapper, args);
                         }
                     } else {
-                        users.search(ovk_api, args);
+                        ovk_api.users.search(ovk_api.wrapper, args);
                     }
                 }
             } catch (Exception ex) {
@@ -232,13 +221,14 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
     private void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.FRIENDS_GET) {
-                ArrayList<Friend> friendsList = friends.getFriends();
+                ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 try {
                     ((TabSelector) friendsFragment.getView().findViewById(R.id.selector))
-                            .setTabTitle(0, String.format("%s (%s)", getResources().getString(R.string.friends), friends.count));
+                            .setTabTitle(0, String.format("%s (%s)",
+                                    getResources().getString(R.string.friends), ovk_api.friends.count));
                 } catch (Exception ignored) {
 
                 }
@@ -246,11 +236,11 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsFragment.loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                int old_friends_size = friends.getFriends().size();
-                friends.parse(data.getString("response"), downloadManager, true, false);
-                ArrayList<Friend> friendsList = friends.getFriends();
+                int old_friends_size = ovk_api.friends.getFriends().size();
+                ovk_api.friends.parse(data.getString("response"), ovk_api.dlman, true, false);
+                ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 friendsFragment.createAdapter(this, friendsList, "friends");
-                if(old_friends_size == friends.getFriends().size()) {
+                if(old_friends_size == ovk_api.friends.getFriends().size()) {
                     friendsFragment.setScrollingPositions(this, false);
                 } else {
                     friendsFragment.setScrollingPositions(this, true);
@@ -275,8 +265,8 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
     }
 
     public void loadMoreFriends() {
-        if(friends != null) {
-            friends.get(ovk_api, user_id, 25, friends.offset);
+        if(ovk_api.friends != null) {
+            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, ovk_api.friends.offset);
         }
     }
 }

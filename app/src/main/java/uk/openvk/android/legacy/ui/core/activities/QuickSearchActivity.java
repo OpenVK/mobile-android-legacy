@@ -27,6 +27,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.models.Groups;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -54,9 +55,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 public class QuickSearchActivity extends TranslucentActivity {
-    private OvkAPIWrapper ovk_api;
-    public Users users;
-    public Groups groups;
+    public OpenVKAPI ovk_api;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -76,13 +75,7 @@ public class QuickSearchActivity extends TranslucentActivity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         setTextEditListener();
-        users = new Users();
-        groups = new Groups();
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false), global_prefs.getString("proxy_address", ""));
-        ovk_api.setServer(instance_prefs.getString("server", ""));
-        ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
+        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
         handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -93,7 +86,7 @@ public class QuickSearchActivity extends TranslucentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.parseJSONData(data, QuickSearchActivity.this);
+                            ovk_api.wrapper.parseJSONData(data, QuickSearchActivity.this);
                         }
                     }).start();
                 } else {
@@ -138,11 +131,11 @@ public class QuickSearchActivity extends TranslucentActivity {
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.USERS_SEARCH) {
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
-            searchResultsLayout.createUsersAdapter(this, users.getList());
+            searchResultsLayout.createUsersAdapter(this, ovk_api.users.getList());
             ((LinearLayout) searchResultsLayout.findViewById(R.id.people_ll)).setVisibility(View.VISIBLE);
         } else if(message == HandlerMessages.GROUPS_SEARCH) {
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
-            searchResultsLayout.createGroupsAdapter(this, groups.getList());
+            searchResultsLayout.createGroupsAdapter(this, ovk_api.groups.getList());
             ((LinearLayout) searchResultsLayout.findViewById(R.id.community_ll)).setVisibility(View.VISIBLE);
         } else if(message == HandlerMessages.GROUP_AVATARS) {
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
@@ -166,8 +159,8 @@ public class QuickSearchActivity extends TranslucentActivity {
                         && event.getAction() == KeyEvent.ACTION_DOWN)) {
                     String query = search_edit.getText().toString();
                     try {
-                        groups.search(ovk_api, query);
-                        users.search(ovk_api, query);
+                        ovk_api.groups.search(ovk_api.wrapper, query);
+                        ovk_api.users.search(ovk_api.wrapper, query);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -185,7 +178,7 @@ public class QuickSearchActivity extends TranslucentActivity {
     }
 
     public void showProfile(int position) {
-        String url = "openvk://profile/" + "id" + users.getList().get(position).id;
+        String url = "openvk://profile/" + "id" + ovk_api.users.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         i.setPackage("uk.openvk.android.legacy");
@@ -193,7 +186,7 @@ public class QuickSearchActivity extends TranslucentActivity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://group/" + "club" + groups.getList().get(position).id;
+        String url = "openvk://group/" + "club" + ovk_api.groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setPackage("uk.openvk.android.legacy");
         i.setData(Uri.parse(url));

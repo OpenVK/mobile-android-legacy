@@ -39,6 +39,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Ovk;
@@ -78,8 +79,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 public class WallPostActivity extends TranslucentFragmentActivity
         implements EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
-    private OvkAPIWrapper ovk_api;
-    private DownloadManager downloadManager;
+    private OpenVKAPI ovk_api;
     public Wall wall;
     public Handler handler;
     private SharedPreferences global_prefs;
@@ -131,7 +131,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.parseJSONData(data, WallPostActivity.this);
+                            ovk_api.wrapper.parseJSONData(data, WallPostActivity.this);
                         }
                     }).start();
                 } else {
@@ -196,17 +196,8 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     }
                 }
                 wall = new Wall();
-                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                        global_prefs.getBoolean("legacyHttpClient", false));
-                ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                        global_prefs.getString("proxy_address", ""));
-                ovk_api.setServer(instance_prefs.getString("server", ""));
-                ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
-                downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
-                        global_prefs.getBoolean("legacyHttpClient", false));
-                downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
-                downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
-                wall.getComments(ovk_api, post.owner_id, post.post_id);
+                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+                ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
             }
         } else {
             finish();
@@ -311,7 +302,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                             final String msg_text = ((EmojiconEditText) commentPanel
                                     .findViewById(R.id.comment_edit)).getText().toString();
                             try {
-                                wall.createComment(ovk_api, post.owner_id, post.post_id, msg_text);
+                                ovk_api.wall.createComment(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -349,7 +340,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     final String msg_text = ((EmojiconEditText) commentPanel.
                             findViewById(R.id.comment_edit)).getText().toString();
                     try {
-                        wall.createComment(ovk_api, post.owner_id, post.post_id, msg_text);
+                        ovk_api.wall.createComment(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }

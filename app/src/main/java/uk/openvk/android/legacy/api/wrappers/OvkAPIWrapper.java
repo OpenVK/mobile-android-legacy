@@ -1226,16 +1226,16 @@ public class OvkAPIWrapper {
             assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
-                    friends_a.account.parse(data.getString("response"), this);
+                    friends_a.ovk_api.account.parse(data.getString("response"), this);
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
                 case "Friends.get":
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.FRIENDS_GET_MORE;
-                        friends_a.friends.parse(data.getString("response"), downloadManager, true, false);
+                        friends_a.ovk_api.friends.parse(data.getString("response"), downloadManager, true, false);
                     } else {
                         msg.what = HandlerMessages.FRIENDS_GET;
-                        friends_a.friends.parse(data.getString("response"), downloadManager, true, true);
+                        friends_a.ovk_api.friends.parse(data.getString("response"), downloadManager, true, true);
                     }
                     break;
             }
@@ -1247,48 +1247,48 @@ public class OvkAPIWrapper {
                 default:
                     Log.e(OvkApplication.API_TAG, String.format("[%s] Method not found", method));
                 case "Account.getProfileInfo":
-                    profile_a.account.parse(data.getString("response"), this);
+                    profile_a.ovk_api.account.parse(data.getString("response"), this);
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
                 case "Account.getCounters":
-                    profile_a.account.parseCounters(data.getString("response"));
+                    profile_a.ovk_api.account.parseCounters(data.getString("response"));
                     msg.what = HandlerMessages.ACCOUNT_COUNTERS;
                     break;
                 case "Friends.get":
                     assert where != null;
                     if(where.equals("profile_counter")) {
                         msg.what = HandlerMessages.FRIENDS_GET_ALT;
-                        profile_a.friends.parse(data.getString("response"), downloadManager, false, true);
+                        profile_a.ovk_api.friends.parse(data.getString("response"), downloadManager, false, true);
                     }
                     break;
                 case "Users.get":
-                    profile_a.users.parse(data.getString("response"));
-                    profile_a.user = profile_a.users.getList().get(0);
+                    profile_a.ovk_api.users.parse(data.getString("response"));
+                    profile_a.user = profile_a.ovk_api.users.getList().get(0);
                     msg.what = HandlerMessages.USERS_GET;
                     break;
                 case "Users.search":
-                    profile_a.users.parseSearch(data.getString("response"), null);
+                    profile_a.ovk_api.users.parseSearch(data.getString("response"), null);
                     msg.what = HandlerMessages.USERS_SEARCH;
                     break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {
-                        profile_a.wall.parse(activity, downloadManager,
+                        profile_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), false);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
-                        profile_a.wall.parse(activity, downloadManager,
+                        profile_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;
                 case "Likes.add":
-                    profile_a.likes.parse(data.getString("response"));
+                    profile_a.ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_ADD;
                     break;
                 case "Likes.delete":
-                    profile_a.likes.parse(data.getString("response"));
+                    profile_a.ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_DELETE;
                     break;
             }
@@ -1298,40 +1298,40 @@ public class OvkAPIWrapper {
             assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
-                    group_a.account.parse(data.getString("response"), this);
+                    group_a.ovk_api.account.parse(data.getString("response"), this);
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
                 case "Groups.get":
-                    group_a.groups.parse(data.getString("response"));
+                    group_a.ovk_api.groups.parse(data.getString("response"));
                     msg.what = HandlerMessages.USERS_GET;
                     break;
                 case "Groups.getById":
-                    group_a.groups.parse(data.getString("response"));
+                    group_a.ovk_api.groups.parse(data.getString("response"));
                     msg.what = HandlerMessages.GROUPS_GET_BY_ID;
                     break;
                 case "Groups.search":
-                    group_a.groups.parseSearch(data.getString("response"), null);
+                    group_a.ovk_api.groups.parseSearch(data.getString("response"), null);
                     msg.what = HandlerMessages.GROUPS_SEARCH;
                     break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {
-                        group_a.wall.parse(activity, downloadManager,
+                        group_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), false);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
-                        group_a.wall.parse(activity, downloadManager,
+                        group_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;
                 case "Likes.add":
-                    group_a.likes.parse(data.getString("response"));
+                    group_a.ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_ADD;
                     break;
                 case "Likes.delete":
-                    group_a.likes.parse(data.getString("response"));
+                    group_a.ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_DELETE;
                     break;
             }
@@ -1354,11 +1354,11 @@ public class OvkAPIWrapper {
             assert method != null;
             switch (method) {
                 case "Groups.search":
-                    quick_search_a.groups.parseSearch(data.getString("response"), quick_search_a.dlm);
+                    quick_search_a.ovk_api.groups.parseSearch(data.getString("response"), quick_search_a.dlm);
                     msg.what = HandlerMessages.GROUPS_SEARCH;
                     break;
                 case "Users.search":
-                    quick_search_a.users.parseSearch(data.getString("response"), quick_search_a.dlm);
+                    quick_search_a.ovk_api.users.parseSearch(data.getString("response"), quick_search_a.dlm);
                     msg.what = HandlerMessages.USERS_SEARCH;
                     break;
             }

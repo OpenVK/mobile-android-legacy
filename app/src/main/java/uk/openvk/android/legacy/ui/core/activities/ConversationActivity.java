@@ -43,6 +43,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.models.Messages;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Conversation;
@@ -75,7 +76,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 
-    private OvkAPIWrapper ovk_api;
+    private OpenVKAPI ovk_api;
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -91,7 +92,6 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     private int cursor_id;
     public ActionBar actionBar;
     public ArrayList<uk.openvk.android.legacy.api.entities.Message> history;
-    private Messages messages;
     private uk.openvk.android.legacy.api.entities.Message last_sended_message;
     private LongPollReceiver lpReceiver;
     private String last_lp_message;
@@ -105,15 +105,11 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_conversation_msgs);
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
+        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
         conversation = new Conversation();
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
         installLayouts();
         setConversationView();
-        messages = new Messages();
         registerBroadcastReceiver();
         setEmojiconFragment(false);
 
@@ -142,7 +138,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.parseJSONData(data, ConversationActivity.this);
+                            ovk_api.wrapper.parseJSONData(data, ConversationActivity.this);
                         }
                     }).start();
                 } else {
@@ -201,9 +197,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                         actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     }
                 }
-                ovk_api.setServer(instance_prefs.getString("server", ""));
-                ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
-                conversation.getHistory(ovk_api, peer_id);
+                conversation.getHistory(ovk_api.wrapper, peer_id);
             }
         } else {
             peer_id = savedInstanceState.getInt("peer_id");
@@ -251,9 +245,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                 }
             }
-            ovk_api.setServer(instance_prefs.getString("server", ""));
-            ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
-            conversation.getHistory(ovk_api, peer_id);
+            conversation.getHistory(ovk_api.wrapper, peer_id);
         }
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -350,7 +342,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
                         try {
-                            conversation.sendMessage(ovk_api, msg_text);
+                            conversation.sendMessage(ovk_api.wrapper, msg_text);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -389,7 +381,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 final String msg_text = ((EmojiconEditText) conversationPanel
                         .findViewById(R.id.message_edit)).getText().toString();
                 try {
-                    conversation.sendMessage(ovk_api, msg_text);
+                    conversation.sendMessage(ovk_api.wrapper, msg_text);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -475,7 +467,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         } else if(message == HandlerMessages.LONGPOLL) {
             if(!((OvkApplication) getApplicationContext()).notifMan.isRepeat(last_lp_message,
                     data.getString("response"))) {
-                conversation.getHistory(ovk_api, peer_id);
+                conversation.getHistory(ovk_api.wrapper, peer_id);
             }
             last_lp_message = data.getString("response");
         }
@@ -572,7 +564,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                messages.delete(ovk_api, history.get(position).id);
+                ovk_api.messages.delete(ovk_api.wrapper, history.get(position).id);
             }
         });
         builder.setNegativeButton(R.string.cancel, null);
