@@ -369,7 +369,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     }
                 }
                 if(user.deactivated == null) {
-                    user.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
+                    user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
                     ovk_api.wall.get(ovk_api.wrapper, user.id, 25);
                     ovk_api.friends.get(ovk_api.wrapper, user.id, 10, "profile_counter");
                 } else {
