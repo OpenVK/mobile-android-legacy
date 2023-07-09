@@ -112,11 +112,13 @@ public class OvkAPIWrapper {
                 HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
                 HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
                 HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
-                basicHttpParams.setParameter("http.protocol.handle-redirects",false);
+
                 SchemeRegistry schemeRegistry = new SchemeRegistry();
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 if (use_https) {
                     schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                } else {
+                    basicHttpParams.setParameter("http.protocol.handle-redirects",false);
                 }
                 httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager)
                         new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry),

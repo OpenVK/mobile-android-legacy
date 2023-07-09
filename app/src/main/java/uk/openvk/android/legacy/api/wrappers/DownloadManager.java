@@ -100,11 +100,12 @@ public class DownloadManager {
                 HttpConnectionParams.setSocketBufferSize(basicHttpParams, 8192);
                 HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);
                 HttpConnectionParams.setSoTimeout(basicHttpParams, 30000);
-                basicHttpParams.setParameter("http.protocol.handle-redirects",false);
                 SchemeRegistry schemeRegistry = new SchemeRegistry();
                 schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
                 if (use_https) {
                     schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                } else {
+                    basicHttpParams.setParameter("http.protocol.handle-redirects",false);
                 }
                 httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams,
                         schemeRegistry), basicHttpParams);
