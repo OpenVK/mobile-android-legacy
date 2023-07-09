@@ -87,9 +87,9 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         Bundle data = getActivity().getIntent().getExtras();
         if(data != null && data.containsKey("start_from")
                 && data.getString("start_from").equals("AuthActivity")) {
-            addPreferencesFromResource(R.xml.preferences);
-        } else {
             addPreferencesFromResource(R.xml.preferences_2);
+        } else {
+            addPreferencesFromResource(R.xml.preferences);
         }
         setListeners();
         accountArray = new ArrayList<>();
