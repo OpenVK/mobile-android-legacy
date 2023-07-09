@@ -142,7 +142,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
-            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+            minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
 
         setCommentsView();
@@ -413,10 +413,10 @@ public class WallPostActivity extends TranslucentFragmentActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         postViewLayout.adjustLayoutSize(newConfig.orientation);
-        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
-            minKbHeight = (int) (180 * getResources().getDisplayMetrics().scaledDensity);;
+            minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
         super.onConfigurationChanged(newConfig);
     }

@@ -120,7 +120,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
-            minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
+            minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
 
         ((XLinearLayout) findViewById(R.id.conversation_view)).setOnKeyboardStateListener(this);
@@ -586,12 +586,10 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(!((OvkApplication) getApplicationContext()).isTablet) {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
-            } else {
-                minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
-            }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
     }
 
