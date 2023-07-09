@@ -168,6 +168,9 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         }
 
         Preference about_preference = findPreference("about");
+        about_preference.setSummary(
+                String.format("%s (%s)", BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT)
+        );
         about_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -233,6 +236,9 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
         final Preference about_instance = findPreference("about_instance");
         if(about_instance != null) {
+            about_instance.setSummary(
+                    ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance()
+            );
             about_instance.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
