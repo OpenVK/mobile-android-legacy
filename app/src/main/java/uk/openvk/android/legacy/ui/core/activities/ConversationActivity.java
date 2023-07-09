@@ -116,15 +116,15 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         messages = new Messages();
         registerBroadcastReceiver();
         setEmojiconFragment(false);
-        if(((OvkApplication) getApplicationContext()).isTablet) {
-            minKbHeight = (int) (400 * getResources().getDisplayMetrics().scaledDensity);
-        } else {
+
+        if(!((OvkApplication) getApplicationContext()).isTablet) {
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                minKbHeight = (int) (300 * getResources().getDisplayMetrics().scaledDensity);
+                minKbHeight = (int) (400 * getResources().getDisplayMetrics().scaledDensity);
             } else {
                 minKbHeight = (int) (240 * getResources().getDisplayMetrics().scaledDensity);
             }
         }
+
         ((XLinearLayout) findViewById(R.id.conversation_view)).setOnKeyboardStateListener(this);
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
