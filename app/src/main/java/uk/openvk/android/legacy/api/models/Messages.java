@@ -36,8 +36,8 @@ public class Messages {
         jsonParser = new JSONParser();
     }
 
-    public void getConversations(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Messages.getConversations", "count=30&extended=1&fields=photo_100");
+    public void getConversations(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Messages.getConversations", "count=30&extended=1&fields=photo_100");
     }
 
     public ArrayList<Conversation> parseConversationsList(String response, DownloadManager downloadManager) {
@@ -103,8 +103,8 @@ public class Messages {
         return conversations;
     }
 
-    public void getLongPollServer(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Messages.getLongPollServer");
+    public void getLongPollServer(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Messages.getLongPollServer");
     }
 
     public LongPollServer parseLongPollServer(String response) {
@@ -123,7 +123,7 @@ public class Messages {
         return longPollServer;
     }
 
-    public void delete(OvkAPIWrapper ovk, long id) {
-        ovk.sendAPIMethod("Messages.delete", String.format("message_ids=%s", id));
+    public void delete(OvkAPIWrapper wrapper, long id) {
+        wrapper.sendAPIMethod("Messages.delete", String.format("message_ids=%s", id));
     }
 }

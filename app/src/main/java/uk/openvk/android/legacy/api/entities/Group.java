@@ -169,16 +169,16 @@ public class Group implements Parcelable {
         }
     }
 
-    public void join(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Groups.join", String.format("group_id=%s", id));
+    public void join(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Groups.join", String.format("group_id=%s", id));
     }
 
-    public void leave(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Groups.leave", String.format("group_id=%s", id));
+    public void leave(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Groups.leave", String.format("group_id=%s", id));
     }
 
-    public void getMembers(OvkAPIWrapper ovk, int count, String where) {
-        ovk.sendAPIMethod("Groups.getMembers", String.format("group_id=%s&fields=verified,online,photo_100," +
+    public void getMembers(OvkAPIWrapper wrapper, int count, String where) {
+        wrapper.sendAPIMethod("Groups.getMembers", String.format("group_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s", id, count), where);
     }
 

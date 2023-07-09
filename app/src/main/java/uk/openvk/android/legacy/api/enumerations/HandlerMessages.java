@@ -91,17 +91,22 @@ public class HandlerMessages {
     public static int NOTES_GET                         =  900;
     public static int NOTES_GET_BY_ID                   =  901;
 
+    // Photos (/method/Photos)
+    public static int PHOTOS_GET                        = 1000;
+    public static int PHOTOS_UPLOAD_SERVER              = 1001;
+    public static int PHOTOS_SAVE                       = 1002;
+
     // OpenVK specific (/method/Ovk)
-    public static int OVK_VERSION                       = 1000;
-    public static int OVK_TEST                          = 1001;
-    public static int OVK_CHICKEN_WINGS                 = 1002;
-    public static int OVK_ABOUTINSTANCE                 = 1003;
-    public static int OVK_CHECK_HTTP                    = 1004;
-    public static int OVK_CHECK_HTTPS                   = 1005;
+    public static int OVK_VERSION                       = 1100;
+    public static int OVK_TEST                          = 1101;
+    public static int OVK_CHICKEN_WINGS                 = 1102;
+    public static int OVK_ABOUTINSTANCE                 = 1103;
+    public static int OVK_CHECK_HTTP                    = 1104;
+    public static int OVK_CHECK_HTTPS                   = 1105;
 
     // Poll (/method/Poll)
-    public static int POLL_ADD_VOTE                     = 1100;
-    public static int POLL_DELETE_VOTE                  = 1101;
+    public static int POLL_ADD_VOTE                     = 1200;
+    public static int POLL_DELETE_VOTE                  = 1201;
 
     // Misc (LongPoll API, avatars, attachments and etc.)
     public static int ACCOUNT_AVATAR                    = 2000;
@@ -121,6 +126,8 @@ public class HandlerMessages {
     public static int ORIGINAL_PHOTO                    = 2014;
     public static int VIDEO_THUMBNAILS                  = 2015;
     public static int PARSE_JSON                        = 2016;
+    public static int UPLOAD_PROGRESS                   = 2017;
+    public static int UPLOADED_SUCCESSFULLY             = 2018;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =   -1;
@@ -138,4 +145,5 @@ public class HandlerMessages {
     public static int INSTANCE_UNAVAILABLE              =   -13;
     public static int NOT_OPENVK_INSTANCE               =   -14;
     public static int UNKNOWN_ERROR                     =   -15;
+    public static int UPLOAD_ERROR                      =   -16;
 }

@@ -33,8 +33,8 @@ public class Notes {
         jsonParser = new JSONParser();
     }
 
-    public void get(OvkAPIWrapper ovk, long user_id, int count, int sort) {
-        ovk.sendAPIMethod("Notes.get",
+    public void get(OvkAPIWrapper wrapper, long user_id, int count, int sort) {
+        wrapper.sendAPIMethod("Notes.get",
                 String.format("user_id=%s&count=%s&sort=%s", user_id, count, sort)
         );
     }

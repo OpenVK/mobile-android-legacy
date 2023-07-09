@@ -46,9 +46,9 @@ public class Conversation {
         history = new ArrayList<Message>();
     }
 
-    public void getHistory(OvkAPIWrapper ovk, long peer_id) {
+    public void getHistory(OvkAPIWrapper wrapper, long peer_id) {
         this.peer_id = peer_id;
-        ovk.sendAPIMethod("Messages.getHistory",
+        wrapper.sendAPIMethod("Messages.getHistory",
                 String.format("peer_id=%s&count=150&rev=1", peer_id));
     }
 
@@ -77,7 +77,7 @@ public class Conversation {
         return history;
     }
 
-    public void sendMessage(OvkAPIWrapper ovk, String text) {
-        ovk.sendAPIMethod("Messages.send", String.format("peer_id=%s&message=%s", peer_id, URLEncoder.encode(text)));
+    public void sendMessage(OvkAPIWrapper wrapper, String text) {
+        wrapper.sendAPIMethod("Messages.send", String.format("peer_id=%s&message=%s", peer_id, URLEncoder.encode(text)));
     }
 }

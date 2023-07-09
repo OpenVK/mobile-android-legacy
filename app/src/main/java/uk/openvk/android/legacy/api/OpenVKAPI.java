@@ -12,10 +12,12 @@ import uk.openvk.android.legacy.api.models.Likes;
 import uk.openvk.android.legacy.api.models.Messages;
 import uk.openvk.android.legacy.api.models.Newsfeed;
 import uk.openvk.android.legacy.api.models.Notes;
+import uk.openvk.android.legacy.api.models.Photos;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.api.wrappers.UploadManager;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -44,9 +46,11 @@ public class OpenVKAPI {
     public User user;
     public Likes likes;
     public Notes notes;
+    public Photos photos;
     public Ovk ovk;
     public OvkAPIWrapper wrapper;
     public DownloadManager dlman;
+    public UploadManager ulman;
     public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs) {
         wrapper = new OvkAPIWrapper(ctx, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false));
@@ -58,6 +62,10 @@ public class OpenVKAPI {
                 global_prefs.getBoolean("legacyHttpClient", false));
         dlman.setInstance(instance_prefs.getString("server", ""));
         dlman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
+        ulman = new UploadManager(ctx, global_prefs.getBoolean("useHTTPS", true),
+                global_prefs.getBoolean("legacyHttpClient", false));
+        ulman.setInstance(instance_prefs.getString("server", ""));
+        ulman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         account = new Account(ctx);
         account.getProfileInfo(wrapper);
         newsfeed = new Newsfeed();
@@ -69,5 +77,6 @@ public class OpenVKAPI {
         groups = new Groups();
         wall = new Wall();
         notes = new Notes();
+        photos = new Photos();
     }
 }

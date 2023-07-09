@@ -109,8 +109,8 @@ public class Groups implements Parcelable {
         return groups;
     }
 
-    public void search(OvkAPIWrapper ovk, String query) {
-        ovk.sendAPIMethod("Groups.search", String.format("q=%s&count=50", URLEncoder.encode(query)));
+    public void search(OvkAPIWrapper wrapper, String query) {
+        wrapper.sendAPIMethod("Groups.search", String.format("q=%s&count=50", URLEncoder.encode(query)));
     }
 
     @Override
@@ -123,18 +123,18 @@ public class Groups implements Parcelable {
         parcel.writeTypedList(groups);
     }
 
-    public void getGroupByID(OvkAPIWrapper ovk, long id) {
-        ovk.sendAPIMethod("Groups.getById", String.format("group_id=%s&fields=verified,photo_200," +
+    public void getGroupByID(OvkAPIWrapper wrapper, long id) {
+        wrapper.sendAPIMethod("Groups.getById", String.format("group_id=%s&fields=verified,photo_200," +
                 "photo_400,photo_max_orig,is_member,members_count,site,description,contacts", id));
     }
 
-    public void getGroups(OvkAPIWrapper ovk, long user_id, long count) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+    public void getGroups(OvkAPIWrapper wrapper, long user_id, long count) {
+        wrapper.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
                 "photo_400,photo_max_orig,is_member,members_count,site,description,contacts&extended=1", user_id, count));
     }
 
-    public void getGroups(OvkAPIWrapper ovk, long user_id, int count, int offset) {
-        ovk.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+    public void getGroups(OvkAPIWrapper wrapper, long user_id, int count, int offset) {
+        wrapper.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
                 "photo_400,photo_max_orig,is_member,members_count,site,description,contacts&offset=%s" +
                 "&extended=1", user_id, count, offset), "more_groups");
     }

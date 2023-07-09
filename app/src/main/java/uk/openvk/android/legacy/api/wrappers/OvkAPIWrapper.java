@@ -649,7 +649,8 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
                                 if(logging_enabled) Log.e(OvkApplication.API_TAG,
-                                        String.format("Getting response from %s (%s)", server, response_code));
+                                        String.format("Getting response from %s (%s, %s)",
+                                                server, method, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, "");
                             }
                         };
@@ -1338,7 +1339,15 @@ public class OvkAPIWrapper {
         } else if(activity instanceof NewPostActivity) {
             NewPostActivity newpost_a = ((NewPostActivity) activity);
             assert method != null;
-            msg.what = HandlerMessages.WALL_POST;
+            if(method.equals("Wall.post")) {
+                msg.what = HandlerMessages.WALL_POST;
+            } else if(method.startsWith("Photos.get") && method.endsWith("Server")) {
+                msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
+                newpost_a.ovk_api.photos.parseUploadServer(data.getString("response"), method);
+            } else if(method.startsWith("Photos.save")) {
+                msg.what = HandlerMessages.PHOTOS_SAVE;
+                newpost_a.ovk_api.photos.parse(data.getString("response"));
+            }
             newpost_a.handler.sendMessage(msg);
         } else if(activity instanceof QuickSearchActivity) {
             QuickSearchActivity quick_search_a = ((QuickSearchActivity) activity);

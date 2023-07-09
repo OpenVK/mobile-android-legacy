@@ -121,14 +121,14 @@ public class Friends implements Parcelable {
         }
     }
 
-    public void get(OvkAPIWrapper ovk, long user_id, int count, String where) {
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
+    public void get(OvkAPIWrapper wrapper, long user_id, int count, String where) {
+        wrapper.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s", user_id, count), where);
     }
 
-    public void get(OvkAPIWrapper ovk, long user_id, int count, int offset) {
+    public void get(OvkAPIWrapper wrapper, long user_id, int count, int offset) {
         this.offset++;
-        ovk.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
+        wrapper.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset),
                 "more_friends");
     }
@@ -146,15 +146,15 @@ public class Friends implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
     }
 
-    public void add(OvkAPIWrapper ovk, long user_id) {
-        ovk.sendAPIMethod("Friends.add", String.format("user_id=%s", user_id));
+    public void add(OvkAPIWrapper wrapper, long user_id) {
+        wrapper.sendAPIMethod("Friends.add", String.format("user_id=%s", user_id));
     }
 
-    public void delete(OvkAPIWrapper ovk, long user_id) {
-        ovk.sendAPIMethod("Friends.delete", String.format("user_id=%s", user_id));
+    public void delete(OvkAPIWrapper wrapper, long user_id) {
+        wrapper.sendAPIMethod("Friends.delete", String.format("user_id=%s", user_id));
     }
 
-    public void getRequests(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Friends.getRequests", String.format("fields=verified,online,photo_100,photo_200_orig,photo_200"));
+    public void getRequests(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Friends.getRequests", String.format("fields=verified,online,photo_100,photo_200_orig,photo_200"));
     }
 }

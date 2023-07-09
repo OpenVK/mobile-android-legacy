@@ -1,11 +1,4 @@
-package uk.openvk.android.legacy.services;
-
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-
-import uk.openvk.android.legacy.utils.AccountAuthentificator;
+package uk.openvk.android.legacy.api.entities;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -23,11 +16,12 @@ import uk.openvk.android.legacy.utils.AccountAuthentificator;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class AuthenticatorService extends Service {
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        AccountAuthentificator authenticator = new AccountAuthentificator(this);
-        return authenticator.getIBinder();
+public class Photo {
+    public long id;
+    public long album_id;
+    public long owner_id;
+    public String url;
+    public Photo() {
+
     }
 }

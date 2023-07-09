@@ -2,7 +2,9 @@ package uk.openvk.android.legacy.ui.core.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,17 +20,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.api.models.PhotoUploadParams;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.ui.list.adapters.UploadableFilesAdapter;
+import uk.openvk.android.legacy.ui.list.items.UploadableFile;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
+import uk.openvk.android.legacy.utils.RealPathUtil;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -61,11 +72,14 @@ public class NewPostActivity extends TranslucentActivity {
     private SharedPreferences.Editor global_prefs_editor;
     private SharedPreferences.Editor instance_prefs_editor;
     public long owner_id;
-    public OvkAPIWrapper ovk_api;
+    public OpenVKAPI ovk_api;
     private Wall wall;
     public Handler handler;
     private long account_id;
     private String account_first_name;
+    private ArrayList<UploadableFile> files;
+    private UploadableFilesAdapter filesAdapter;
+    private UploadableFile file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,15 +96,14 @@ public class NewPostActivity extends TranslucentActivity {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
                 finish();
-                return;
             } else {
                 owner_id = extras.getLong("owner_id");
                 account_id = extras.getLong("account_id");
                 account_first_name = extras.getString("account_first_name");
                 installLayouts();
-                wall = new Wall();
                 global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                 global_prefs_editor = global_prefs.edit();
                 instance_prefs_editor = instance_prefs.edit();
                 inputStream_isClosed = false;
@@ -113,7 +126,7 @@ public class NewPostActivity extends TranslucentActivity {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ovk_api.parseJSONData(data, NewPostActivity.this);
+                                    ovk_api.wrapper.parseJSONData(data, NewPostActivity.this);
                                 }
                             }).start();
                         } else {
@@ -121,15 +134,30 @@ public class NewPostActivity extends TranslucentActivity {
                         }
                     }
                 };
-                ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                        global_prefs.getBoolean("legacyHttpClient", false));
-                ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                        global_prefs.getString("proxy_address", ""));
-                ovk_api.setServer(instance_prefs.getString("server", ""));
-                ovk_api.setAccessToken(instance_prefs.getString("access_token", ""));
                 response_sb = new StringBuilder();
+                ovk_api.photos.getOwnerUploadServer(ovk_api.wrapper, owner_id);
             }
         }
+        createAttachmentsAdapter();
+        setUiListeners();
+    }
+
+    private void createAttachmentsAdapter() {
+        files = new ArrayList<>();
+        filesAdapter = new UploadableFilesAdapter(this, files);
+    }
+
+    private void setUiListeners() {
+        findViewById(R.id.newpost_btn_photo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent,
+                        getResources().getString(R.string.add_photo_gallery)), 4);
+            }
+        });
     }
 
     @Override
@@ -186,7 +214,12 @@ public class NewPostActivity extends TranslucentActivity {
                             connectionDialog.setMessage(getString(R.string.loading));
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
-                            wall.post(ovk_api, owner_id, statusEditText.getText().toString());
+                            if(files.size() > 0) {
+                                ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(),
+                                        createAttachmentsList());
+                            } else {
+                                ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString());
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -213,20 +246,58 @@ public class NewPostActivity extends TranslucentActivity {
 
     }
 
+    private String createAttachmentsList() {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < files.size(); i++) {
+            UploadableFile file = files.get(i);
+            if(file.mime.startsWith("image")) {
+                Photo photo = file.getPhoto();
+                sb.append(String.format("photo%s_%s", photo.owner_id, photo.id));
+                if(i < files.size() - 1) {
+                    sb.append(",");
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private void receiveState(int message, Bundle data) {
         try {
             if(message == HandlerMessages.WALL_POST) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();
                 finish();
+            } else if(message == HandlerMessages.UPLOAD_PROGRESS) {
+                String filename = data.getString("filename");
+                int pos = filesAdapter.searchByFileName(filename);
+                UploadableFile file = files.get(pos);
+                file.progress = data.getLong("position");
+                files.set(pos, file);
+                filesAdapter.notifyDataSetChanged();
+            } else if(message == HandlerMessages.UPLOADED_SUCCESSFULLY) {
+                String filename = data.getString("filename");
+                int pos = filesAdapter.searchByFileName(filename);
+                file = files.get(pos);
+                file.progress = data.getLong("position");
+                files.set(pos, file);
+                filesAdapter.notifyDataSetChanged();
+                PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
+                ovk_api.photos.saveWallPhoto(ovk_api.wrapper, params.photo, params.hash);
+            } else if(message == HandlerMessages.PHOTOS_SAVE) {
+                int pos = filesAdapter.searchByFileName(file.filename);
+                files.get(pos).setPhoto(ovk_api.photos.list.get(0));
             } else if(message == HandlerMessages.ACCESS_DENIED){
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.posting_access_denied), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
-                connectionDialog.cancel();
+            } else if(message < 0){
+                if(data.containsKey("method") && data.getString("method").equals("Wall.post")) {
+                    Toast.makeText(getApplicationContext(),
+                            getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
+                    if (connectionDialog != null)
+                        connectionDialog.cancel();
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -256,13 +327,36 @@ public class NewPostActivity extends TranslucentActivity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    wall.post(ovk_api, owner_id, statusEditText.getText().toString());
+                    ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == 4) {
+            if (data == null) {
+                //Display an error
+                return;
+            }
+            Uri uri = data.getData();
+            File file = new File(uriToFilename(uri));
+            if(file.exists()) {
+                findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
+                files.add(new UploadableFile(uriToFilename(uri), file));
+                filesAdapter.notifyDataSetChanged();
+                ovk_api.ulman.uploadFile(ovk_api.photos.wallUploadServer, file, "");
+            }
+        }
+    }
+
+    private String uriToFilename(Uri uri) {
+        return RealPathUtil.getRealPathFromURI(this, uri);
     }
 
 }

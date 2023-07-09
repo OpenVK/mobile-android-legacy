@@ -62,12 +62,12 @@ public class Ovk implements Parcelable {
         }
     };
 
-    public void getVersion(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Ovk.version");
+    public void getVersion(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Ovk.version");
     }
 
-    public void aboutInstance(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Ovk.aboutInstance", "fields=statistics,links,administrators");
+    public void aboutInstance(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Ovk.aboutInstance", "fields=statistics,links,administrators");
     }
 
     public void parseVersion(String response) {

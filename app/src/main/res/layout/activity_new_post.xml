@@ -55,7 +55,7 @@
                 android:singleLine="false"
                 tools:ignore="Deprecated"></EditText>
 
-            <View
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/newpost_attachments"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
@@ -121,7 +121,7 @@
         android:gravity="center"
         android:paddingLeft="12dip"
         android:paddingRight="12dip"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/newpost_btn_location"
@@ -130,6 +130,7 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_location"
+            android:visibility="gone"
             tools:ignore="ContentDescription" />
 
         <ImageView
@@ -139,6 +140,7 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_mention"
+            android:visibility="gone"
             tools:ignore="ContentDescription" />
 
         <ImageView
@@ -157,6 +159,7 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_attach"
+            android:visibility="gone"
             tools:ignore="ContentDescription" />
 
         <ImageView
@@ -166,6 +169,7 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_settings"
+            android:visibility="gone"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>

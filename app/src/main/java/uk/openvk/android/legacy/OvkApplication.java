@@ -21,6 +21,7 @@ import java.util.Locale;
 import uk.openvk.android.legacy.api.wrappers.NotificationManager;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
+import uk.openvk.android.legacy.utils.ACRACustomSender;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -45,7 +46,6 @@ import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
         resDialogTitle = R.string.crash_title, buildConfigClass = BuildConfig.class,
         reportDialogClass = CrashReporterActivity.class)
 public class OvkApplication extends Application {
-
     public String version;
     public boolean isTablet;
     public LongPollService longPollService;
@@ -53,6 +53,7 @@ public class OvkApplication extends Application {
     public static String APP_TAG = "OpenVK";
     public static String API_TAG = "OVK-API";
     public static String DL_TAG = "OVK-DLM";
+    public static String UL_TAG = "OVK-ULM";
     public static String LP_TAG = "OVK-LP";
     public PluralResources pluralResources;
     public Configuration config;

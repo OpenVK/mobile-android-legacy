@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy;
+package uk.openvk.android.legacy.utils;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;

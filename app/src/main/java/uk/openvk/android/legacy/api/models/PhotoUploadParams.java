@@ -1,11 +1,9 @@
-package uk.openvk.android.legacy.services;
+package uk.openvk.android.legacy.api.models;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import uk.openvk.android.legacy.utils.AccountAuthentificator;
+import uk.openvk.android.legacy.api.wrappers.JSONParser;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -23,11 +21,21 @@ import uk.openvk.android.legacy.utils.AccountAuthentificator;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class AuthenticatorService extends Service {
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        AccountAuthentificator authenticator = new AccountAuthentificator(this);
-        return authenticator.getIBinder();
+public class PhotoUploadParams {
+    private JSONParser jsonParser;
+    public long server;
+    public String photo;
+    public String hash;
+
+    public PhotoUploadParams(String response) {
+        try {
+            jsonParser = new JSONParser();
+            JSONObject json = jsonParser.parseJSON(response);
+            server = json.getLong("server");
+            photo = json.getString("photo");
+            hash = json.getString("hash");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

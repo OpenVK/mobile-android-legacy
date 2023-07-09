@@ -195,8 +195,6 @@ public class AppActivity extends TranslucentFragmentActivity {
 
     private void getAndroidAccounts() {
         ArrayList<InstanceAccount> accountArray = new ArrayList<>();
-        long current_uid = global_prefs.getLong("current_uid", 0);
-        String current_instance = global_prefs.getString("current_instance", "");
         Global.loadAccounts(this, accountArray, instance_prefs);
         if(androidAccount == null) {
             Toast.makeText(getApplicationContext(),

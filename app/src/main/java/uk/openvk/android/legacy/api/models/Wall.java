@@ -27,6 +27,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.entities.RepostInfo;
+import uk.openvk.android.legacy.ui.list.items.UploadableFile;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -483,8 +484,8 @@ public class Wall implements Parcelable {
         return attachments_list;
     }
 
-    public void get(OvkAPIWrapper ovk, long owner_id, int count) {
-        ovk.sendAPIMethod("Wall.get", String.format("owner_id=%s&count=%s&extended=1",
+    public void get(OvkAPIWrapper wrapper, long owner_id, int count) {
+        wrapper.sendAPIMethod("Wall.get", String.format("owner_id=%s&count=%s&extended=1",
                 owner_id, count));
     }
 
@@ -492,23 +493,28 @@ public class Wall implements Parcelable {
         return items;
     }
 
-    public void post(OvkAPIWrapper ovk, long owner_id, String post) {
-        ovk.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s",
+    public void post(OvkAPIWrapper wrapper, long owner_id, String post) {
+        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s",
                 owner_id, URLEncoder.encode(post)));
     }
 
-    public void getComments(OvkAPIWrapper ovk, long owner_id, long post_id) {
-        ovk.sendAPIMethod("Wall.getComments", String.format("owner_id=%s&post_id=%s&extended=1&count=50",
+    public void post(OvkAPIWrapper wrapper, long owner_id, String post, String attachments) {
+        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s&attachments=",
+                owner_id, URLEncoder.encode(post)), attachments);
+    }
+
+    public void getComments(OvkAPIWrapper wrapper, long owner_id, long post_id) {
+        wrapper.sendAPIMethod("Wall.getComments", String.format("owner_id=%s&post_id=%s&extended=1&count=50",
                 owner_id, post_id));
     }
 
-    public void createComment(OvkAPIWrapper ovk, long owner_id, long post_id, String text) {
-        ovk.sendAPIMethod("Wall.createComment", String.format("owner_id=%s&post_id=%s&message=%s", owner_id,
+    public void createComment(OvkAPIWrapper wrapper, long owner_id, long post_id, String text) {
+        wrapper.sendAPIMethod("Wall.createComment", String.format("owner_id=%s&post_id=%s&message=%s", owner_id,
                 post_id, URLEncoder.encode(text)));
     }
 
-    public void repost(OvkAPIWrapper ovk, long owner_id, long post_id, String text) {
-        ovk.sendAPIMethod("Wall.repost", String.format("object=wall%s_%s&message=%s", owner_id,
+    public void repost(OvkAPIWrapper wrapper, long owner_id, long post_id, String text) {
+        wrapper.sendAPIMethod("Wall.repost", String.format("object=wall%s_%s&message=%s", owner_id,
                 post_id, URLEncoder.encode(text)));
     }
 
@@ -522,8 +528,8 @@ public class Wall implements Parcelable {
         parcel.writeTypedList(items);
     }
 
-    public void get(OvkAPIWrapper ovk, long owner_id, int count, long offset) {
-        ovk.sendAPIMethod("Wall.get",
+    public void get(OvkAPIWrapper wrapper, long owner_id, int count, long offset) {
+        wrapper.sendAPIMethod("Wall.get",
                 String.format("owner_id=%s&count=%s&extended=1&offset=%s",
                         owner_id, count, offset), "more_wall_posts");
     }

@@ -79,11 +79,13 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     public  int selectedPosition;
     private ArrayList<InstanceAccount> accountArray;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onCreatePreferencesFix(Bundle bundle, String s) {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance_prefs = ((OvkApplication) getContext().getApplicationContext()).getAccountPreferences();
-        if(instance_prefs.getString("account_password_hash", "").length() > 0) {
+        Bundle data = getActivity().getIntent().getExtras();
+        if(data.containsKey("start_from") && data.getString("start_from").equals("AuthActivity")) {
             addPreferencesFromResource(R.xml.preferences);
         } else {
             addPreferencesFromResource(R.xml.preferences_2);
@@ -552,8 +554,11 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     public void setAccount(Account account) {
         if(account.first_name != null && account.last_name != null) {
             Preference logout_preference = findPreference("logOut");
-            logout_preference.setSummary(
-                    String.format("%s %s", account.first_name, account.last_name));
+            try {
+                logout_preference.setSummary(
+                        String.format("%s %s", account.first_name, account.last_name));
+            } catch (Exception ignore) {
+            }
         }
     }
 

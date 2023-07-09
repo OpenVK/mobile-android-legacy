@@ -282,13 +282,13 @@ public class LongPollWrapper {
         handler.sendMessage(msg);
     }
 
-    public void updateCounters(final OvkAPIWrapper ovk) {
+    public void updateCounters(final OvkAPIWrapper wrapper) {
         Thread thread = null;
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                ovk.sendAPIMethod("Account.getCounters");
+                wrapper.sendAPIMethod("Account.getCounters");
                 try {
                     if(error != null && error.description.length() > 0) {
                         handler.postDelayed(this, 5000);
@@ -303,12 +303,12 @@ public class LongPollWrapper {
         handler.postDelayed(runnable, 5000);
     }
 
-    public void keepUptime(final OvkAPIWrapper ovk) {
+    public void keepUptime(final OvkAPIWrapper wrapper) {
         handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                ovk.sendAPIMethod("Account.setOnline");
+                wrapper.sendAPIMethod("Account.setOnline");
                 try {
                     if(error != null && error.description.length() > 0) {
                         handler.postDelayed(this, 60000);

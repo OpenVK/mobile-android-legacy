@@ -54,19 +54,19 @@ public class Likes implements Parcelable {
         }
     };
 
-    public void add(OvkAPIWrapper ovk, long owner_id, long post_id, int position) {
+    public void add(OvkAPIWrapper wrapper, long owner_id, long post_id, int position) {
         this.owner_id = owner_id;
         this.item_id = post_id;
         this.position = position;
-        ovk.sendAPIMethod("Likes.add", String.format("type=post&owner_id=%s&item_id=%s",
+        wrapper.sendAPIMethod("Likes.add", String.format("type=post&owner_id=%s&item_id=%s",
                 owner_id, post_id));
     }
 
-    public void delete(OvkAPIWrapper ovk, long owner_id, long post_id, int position) {
+    public void delete(OvkAPIWrapper wrapper, long owner_id, long post_id, int position) {
         this.owner_id = owner_id;
         this.item_id = post_id;
         this.position = position;
-        ovk.sendAPIMethod("Likes.delete", String.format("type=post&owner_id=%s&item_id=%s",
+        wrapper.sendAPIMethod("Likes.delete", String.format("type=post&owner_id=%s&item_id=%s",
                 owner_id, post_id));
     }
 

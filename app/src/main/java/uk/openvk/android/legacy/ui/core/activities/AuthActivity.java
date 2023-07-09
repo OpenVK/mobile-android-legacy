@@ -149,6 +149,7 @@ public class AuthActivity extends TranslucentAuthActivity {
             public void onClick(View view) {
                 Context context = getApplicationContext();
                 Intent intent = new Intent(context, MainSettingsActivity.class);
+                intent.putExtra("start_from", "AuthActivity");
                 startActivity(intent);
             }
         });

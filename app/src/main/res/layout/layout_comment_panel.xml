@@ -85,7 +85,7 @@
             android:background="@drawable/highlight"
             android:padding="8dp"
             android:src="@drawable/ic_msg_attach_down"
-            android:visibility="visible"
+            android:visibility="gone"
             emojicon:ignore="ContentDescription" />
     </RelativeLayout>
 

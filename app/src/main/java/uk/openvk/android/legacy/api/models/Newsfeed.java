@@ -249,20 +249,20 @@ public class Newsfeed implements Parcelable {
         }
     }
 
-    public void get(OvkAPIWrapper ovk, int count) {
-        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%s&extended=1", count));
+    public void get(OvkAPIWrapper wrapper, int count) {
+        wrapper.sendAPIMethod("Newsfeed.get", String.format("count=%s&extended=1", count));
     }
 
-    public void get(OvkAPIWrapper ovk, int count, long start_from) {
-        ovk.sendAPIMethod("Newsfeed.get", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
+    public void get(OvkAPIWrapper wrapper, int count, long start_from) {
+        wrapper.sendAPIMethod("Newsfeed.get", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
     }
 
-    public void getGlobal(OvkAPIWrapper ovk, int count) {
-        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&extended=1", count));
+    public void getGlobal(OvkAPIWrapper wrapper, int count) {
+        wrapper.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&extended=1", count));
     }
 
-    public void getGlobal(OvkAPIWrapper ovk, int count, long start_from) {
-        ovk.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
+    public void getGlobal(OvkAPIWrapper wrapper, int count, long start_from) {
+        wrapper.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
     }
 
     public ArrayList<Attachment> createAttachmentsList(long owner_id, long post_id, String quality, JSONArray attachments) {

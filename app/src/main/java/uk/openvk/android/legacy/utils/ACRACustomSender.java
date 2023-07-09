@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy;
+package uk.openvk.android.legacy.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +25,7 @@ import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-class ACRACustomSender implements ReportSender {
+public class ACRACustomSender implements ReportSender {
     @Override
     public void send(Context context, CrashReportData errorContent) throws ReportSenderException {
         Intent intent = new Intent(context.getApplicationContext(), CrashReporterActivity.class);

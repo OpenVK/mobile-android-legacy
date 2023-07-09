@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities.base;
 
 import android.accounts.AccountAuthenticatorActivity;
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.view.WindowManager;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import uk.openvk.android.legacy.AccountAuthentificator;
 import uk.openvk.android.legacy.R;
 
 /**

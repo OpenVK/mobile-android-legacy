@@ -44,11 +44,11 @@ public class PollAttachment {
 
     }
 
-    public void vote(OvkAPIWrapper ovk, int answer_id) {
-        ovk.sendAPIMethod("Polls.addVote", String.format("poll_id=%s&answers_ids=%s", id, answer_id));
+    public void vote(OvkAPIWrapper wrapper, int answer_id) {
+        wrapper.sendAPIMethod("Polls.addVote", String.format("poll_id=%s&answers_ids=%s", id, answer_id));
     }
 
-    public void unvote(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Polls.deleteVote", String.format("poll_id=%s", id));
+    public void unvote(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Polls.deleteVote", String.format("poll_id=%s", id));
     }
 }

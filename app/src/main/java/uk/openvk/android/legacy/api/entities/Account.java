@@ -51,13 +51,13 @@ public class Account implements Parcelable {
         this.ctx = ctx;
     }
 
-    public Account(String response, Context ctx, OvkAPIWrapper ovk) {
+    public Account(String response, Context ctx, OvkAPIWrapper wrapper) {
         retryConnection = false;
         jsonParser = new JSONParser();
         this.user = new User();
         this.users = new Users();
         this.ctx = ctx;
-        parse(response, ovk);
+        parse(response, wrapper);
     }
 
     public Account(String first_name, String last_name, long id, String status, String birthdate) {
@@ -92,7 +92,7 @@ public class Account implements Parcelable {
         }
     };
 
-    public void parse(String response, OvkAPIWrapper ovk) {
+    public void parse(String response, OvkAPIWrapper wrapper) {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
@@ -135,12 +135,12 @@ public class Account implements Parcelable {
         }
     }
 
-    public void getProfileInfo(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Account.getProfileInfo");
+    public void getProfileInfo(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Account.getProfileInfo");
     }
 
-    public void getCounters(OvkAPIWrapper ovk) {
-        ovk.sendAPIMethod("Account.getCounters");
+    public void getCounters(OvkAPIWrapper wrapper) {
+        wrapper.sendAPIMethod("Account.getCounters");
     }
 
     @Override
