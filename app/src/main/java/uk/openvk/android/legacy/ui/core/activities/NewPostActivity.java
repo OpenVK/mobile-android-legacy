@@ -10,12 +10,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
@@ -143,8 +146,11 @@ public class NewPostActivity extends TranslucentActivity {
     }
 
     private void createAttachmentsAdapter() {
+        RecyclerView attachments_view = findViewById(R.id.newpost_attachments);
         files = new ArrayList<>();
         filesAdapter = new UploadableFilesAdapter(this, files);
+        attachments_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        attachments_view.setAdapter(filesAdapter);
     }
 
     private void setUiListeners() {

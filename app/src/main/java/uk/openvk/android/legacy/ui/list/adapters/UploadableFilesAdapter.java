@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
         public ImageView photo_view;
         public TextView item_title;
         public TextView item_subtitle;
-        public TextView progress_layout;
+        public LinearLayout progress_layout;
         public TextView progress_status;
 
         public Holder(View convertView) {
