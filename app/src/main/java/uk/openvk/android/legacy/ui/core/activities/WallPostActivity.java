@@ -413,7 +413,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         postViewLayout.adjustLayoutSize(newConfig.orientation);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
             minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
