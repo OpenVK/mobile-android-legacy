@@ -107,7 +107,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             UploadableFile file = getItem(position);
             if(file.mime.startsWith("image")) {
                 loadBitmap(file);
-                if(file.progress < file.length) {
+                if(file.progress < file.file.length()) {
                     progress_layout.setVisibility(View.VISIBLE);
                     setUploadProgress(file);
                 } else {
@@ -130,15 +130,15 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             if(file.progress >= 1073741824L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress, file.length, gb));
+                                file.progress, file.file.length(), gb));
             } else if(file.progress >= 1048576L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress, file.length, mb));
+                                file.progress, file.file.length(), mb));
             } else if(file.progress >= 1024L) {
                 progress_status.setText(
                         String.format("%s / %s %s",
-                                file.progress, file.length, kb));
+                                file.progress, file.file.length(), kb));
             }
         }
     }

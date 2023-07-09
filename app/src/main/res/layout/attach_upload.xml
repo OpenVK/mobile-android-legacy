@@ -10,6 +10,7 @@
         android:id="@+id/attach_photo_view"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/photo_loading" />
 
     <LinearLayout
