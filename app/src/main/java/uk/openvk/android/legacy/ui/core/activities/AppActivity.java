@@ -61,7 +61,6 @@ import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.*;
-import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
 import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
@@ -86,7 +85,6 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends TranslucentFragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
-    private ArrayList<SlidingMenuItem> accountSlidingMenuArray;
     public Handler handler;
     public SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -414,7 +412,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
         slidingMenuArray = Global.createSlidingMenuItems(this);
-        accountSlidingMenuArray = Global.createAccountSlidingMenuItems(this);
         slidingmenuLayout.setSearchListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -426,31 +423,13 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
             }
         });
-        SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
-        AccountSlidingMenuAdapter accountMenuAdapter = new AccountSlidingMenuAdapter(this,
-                accountSlidingMenuArray);
+        SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
-            LinearLayoutManager llm = new LinearLayoutManager(this);
-            ((RecyclerView) menu.getMenu().findViewById(R.id.account_menu_view))
-                    .setLayoutManager(llm);
-            ((RecyclerView) menu.getMenu().findViewById(R.id.account_menu_view))
-                    .setAdapter(accountMenuAdapter);
-            llm = new LinearLayoutManager(this);
-            ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
-                    .setLayoutManager(llm);
-            ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
-                    .setAdapter(menuAdapter);
+            ((ListView) menu.getMenu().findViewById(R.id.menu_view))
+                    .setAdapter(slidingMenuAdapter);
         } else {
-            LinearLayoutManager llm = new LinearLayoutManager(this);
-            ((RecyclerView) slidingmenuLayout.findViewById(R.id.account_menu_view))
-                    .setLayoutManager(llm);
-            ((RecyclerView) slidingmenuLayout.findViewById(R.id.account_menu_view))
-                    .setAdapter(accountMenuAdapter);
-            llm = new LinearLayoutManager(this);
-            ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
-                    .setLayoutManager(llm);
-            ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
-                    .setAdapter(menuAdapter);
+            ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
+                    .setAdapter(slidingMenuAdapter);
         }
     }
 
@@ -636,16 +615,6 @@ public class AppActivity extends TranslucentFragmentActivity {
             }
             newsfeed_count = 25;
             ovk_api.newsfeed.getGlobal(ovk_api.wrapper, newsfeed_count);
-        }
-    }
-
-    public void onAccountSlidingMenuItemClicked(int position, boolean b) {
-        if(position == 0) {
-            mainSettingsFragment.openChangeAccountDialog();
-        } else if(position == 1) {
-            Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
-        } else {
-            mainSettingsFragment.openLogoutConfirmationDialog();
         }
     }
 

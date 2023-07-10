@@ -59,35 +59,28 @@
             tools:ignore="HardcodedText,InefficientWeight,RtlHardcoded" />
 
         <ImageButton
-            android:id="@+id/arrow"
-            android:layout_width="42dp"
+            android:id="@+id/imageButton2"
+            android:layout_width="54dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:src="@drawable/ic_profile_expand"
+            android:src="@drawable/ic_left_post_photo"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/account_menu_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#8f000000"
-        android:visibility="gone" />
-
-    <android.support.v7.widget.RecyclerView
+    <ListView
         android:id="@+id/menu_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         android:layout_weight="1"
-        android:divider="@drawable/left_item_up"
+        android:divider="@android:drawable/divider_horizontal_textfield"
         android:entries="@array/leftmenu"
         android:fitsSystemWindows="true"
         android:theme="@style/SlidingMenu">
 
-    </android.support.v7.widget.RecyclerView>
+    </ListView>
 
     <TextView
         android:id="@+id/version_label"

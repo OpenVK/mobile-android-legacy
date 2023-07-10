@@ -397,7 +397,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         dialog.show();
     }
 
-    public void openLogoutConfirmationDialog() {
+    private void openLogoutConfirmationDialog() {
         OvkAlertDialog logout_dlg;
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {

@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class AccountSlidingMenuAdapter extends RecyclerView.Adapter<AccountSlidingMenuAdapter.Holder> {
+public class AccountSlidingMenuAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<SlidingMenuItem> objects;
@@ -43,13 +42,13 @@ public class AccountSlidingMenuAdapter extends RecyclerView.Adapter<AccountSlidi
     }
 
     @Override
-    public AccountSlidingMenuAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(inflater.inflate(R.layout.list_item_sliding_menu_3, parent, false));
+    public int getCount() {
+        return objects.size();
     }
 
     @Override
-    public void onBindViewHolder(AccountSlidingMenuAdapter.Holder holder, int position) {
-        holder.bind(position);
+    public Object getItem(int position) {
+        return objects.get(position);
     }
 
     @Override
@@ -57,37 +56,27 @@ public class AccountSlidingMenuAdapter extends RecyclerView.Adapter<AccountSlidi
         return position;
     }
 
-    @Override
-    public int getItemCount() {
-        return objects.size();
-    }
-
     SlidingMenuItem getSlidingMenuItem(int position) {
-        return objects.get(position);
+        return ((SlidingMenuItem) getItem(position));
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
-
-        private View view;
-
-        public Holder(View convertView) {
-            super(convertView);
-            this.view = convertView;
+    @Override
+    public View getView(int i, View convertView, ViewGroup parent) {
+        View view = convertView;
+        if (view == null) {
+            view = inflater.inflate(R.layout.list_item_sliding_menu_3, parent, false);
         }
 
-        void bind(final int position) {
-            view.setTag("account_menu_list" + position);
+        final int position = i;
 
-            String tag = (String) view.getTag();
-
-            SlidingMenuItem item = getSlidingMenuItem(position);
-            ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ((AppActivity) ctx).onAccountSlidingMenuItemClicked(position, true);
-                }
-            });
-        }
+        SlidingMenuItem item = getSlidingMenuItem(i);
+        ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((AppActivity) ctx).onAccountSlidingMenuItemClicked(position, true);
+            }
+        });
+        return view;
     }
 }

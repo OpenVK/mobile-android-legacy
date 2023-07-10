@@ -1,17 +1,14 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -41,7 +38,6 @@ import uk.openvk.android.legacy.api.entities.Account;
 public class SlidingMenuLayout extends LinearLayout {
 
     private String instance;
-    private boolean showAccountMenu;
 
     public SlidingMenuLayout(final Context context) {
         super(context);
@@ -52,7 +48,7 @@ public class SlidingMenuLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        (findViewById(R.id.menu_view)).setBackgroundColor(
+        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
@@ -60,6 +56,8 @@ public class SlidingMenuLayout extends LinearLayout {
                 toogleAccountMenu();
             }
         });
+        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
+                getResources().getColor(R.color.transparent));
         ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,20 +89,17 @@ public class SlidingMenuLayout extends LinearLayout {
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        (findViewById(R.id.menu_view)).setBackgroundColor(
+        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         (findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
+        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
+                getResources().getColor(R.color.transparent));
+        ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(context.getClass().getSimpleName().equals("AppActivity")) {
                     ((AppActivity) context).openAccountProfile();
                 }
-            }
-        });
-        (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toogleAccountMenu();
             }
         });
         TextView profile_name = findViewById(R.id.profile_name);
