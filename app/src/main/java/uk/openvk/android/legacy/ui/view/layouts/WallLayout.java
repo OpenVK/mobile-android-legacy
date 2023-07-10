@@ -311,7 +311,11 @@ public class WallLayout extends LinearLayout {
                     err.printStackTrace();
                 }
             }
-            wallAdapter.notifyDataSetChanged();
+            try {
+                wallAdapter.notifyDataSetChanged();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
