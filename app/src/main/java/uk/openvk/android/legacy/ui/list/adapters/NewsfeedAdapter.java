@@ -127,6 +127,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final CommonAttachView attachment_view;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
+        private LinearLayout photo_progress_layout;
 
         public Holder(View view) {
             super(view);
@@ -154,6 +155,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.repost_expand_text_btn = view.findViewById(R.id.repost_expand_text_btn);
             this.api_app_indicator = view.findViewById(R.id.api_app_indicator);
             this.verified_icon = view.findViewById(R.id.verified_icon);
+            this.photo_progress_layout = view.findViewById(R.id.photo_progress_layout);
         }
 
         void bind(final int position) {
@@ -304,14 +306,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
 
             error_label.setVisibility(View.GONE);
-            photo_progress.setVisibility(View.GONE);
+            photo_progress_layout.setVisibility(View.GONE);
             post_photo.setVisibility(View.GONE);
             post_video.setVisibility(View.GONE);
             pollAttachView.setVisibility(View.GONE);
 
             for(int i = 0; i < item.attachments.size(); i++) {
                 if (item.attachments.get(i).status.equals("loading")) {
-                    photo_progress.setVisibility(View.VISIBLE);
+                    photo_progress_layout.setVisibility(View.VISIBLE);
                     post_photo.setImageBitmap(null);
                 } else if (item.attachments.get(i).status.equals("not_supported") &&
                         !item.attachments.get(i).type.equals("note")) {
@@ -322,7 +324,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     error_label.setVisibility(View.VISIBLE);
                 } else if (item.attachments.get(i).status.equals("done") &&
                         item.attachments.get(i).type.equals("photo")) {
-                    photo_progress.setVisibility(View.GONE);
+                    photo_progress_layout.setVisibility(View.GONE);
                     if (item.attachments.get(i).getContent() != null) {
                         post_photo.setImageBitmap(((PhotoAttachment)
                                 item.attachments.get(0).getContent()).photo);
