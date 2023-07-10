@@ -21,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -64,7 +63,6 @@ import uk.openvk.android.legacy.ui.core.fragments.app.*;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
-import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.view.layouts.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
@@ -135,6 +133,10 @@ public class AppActivity extends TranslucentFragmentActivity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         getAndroidAccounts();
+        if(instance_prefs.getString("access_token", "").length() == 0 ||
+                instance_prefs.getString("server", "").length() == 0) {
+            finish();
+        }
         ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
 
         last_longpoll_response = "";
@@ -181,9 +183,9 @@ public class AppActivity extends TranslucentFragmentActivity {
         // Creating notification manager
         ((OvkApplication) getApplicationContext()).notifMan =
                 new uk.openvk.android.legacy.api.wrappers.NotificationManager(AppActivity.this,
-                global_prefs.getBoolean("notifyLED", true), global_prefs
+                        global_prefs.getBoolean("notifyLED", true), global_prefs
                         .getBoolean("notifyVibrate", true), global_prefs.getBoolean("notifySound", true),
-                global_prefs.getString("notifyRingtone", ""));
+                        global_prefs.getString("notifyRingtone", ""));
         notifMan = ((OvkApplication) getApplicationContext()).notifMan;
         if(activity_menu == null) {
             popup_menu  = new android.support.v7.widget.PopupMenu(this, null);
@@ -197,31 +199,18 @@ public class AppActivity extends TranslucentFragmentActivity {
         ArrayList<InstanceAccount> accountArray = new ArrayList<>();
         Global.loadAccounts(this, accountArray, instance_prefs);
         if(androidAccount == null) {
-            if(accountArray.size() == 1) {
-                Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
-                instance_prefs_editor = instance_prefs.edit();
-                instance_prefs_editor.putString("access_token", "");
-                instance_prefs_editor.putString("server", "");
-                instance_prefs_editor.putLong("uin", 0);
-                instance_prefs_editor.putString("account_name", "");
-                instance_prefs_editor.commit();
-                Intent activity = new Intent(getApplicationContext(), MainActivity.class);
-                activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(activity);
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
-                instance_prefs_editor = instance_prefs.edit();
-                instance_prefs_editor.putString("access_token", "");
-                instance_prefs_editor.putString("server", "");
-                instance_prefs_editor.putLong("uin", 0);
-                instance_prefs_editor.putString("account_name", "");
-                instance_prefs_editor.commit();
-                Global global = new Global();
-                global.openChangeAccountDialog(this, global_prefs);
-            }
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+            instance_prefs_editor = instance_prefs.edit();
+            instance_prefs_editor.putString("access_token", "");
+            instance_prefs_editor.putString("server", "");
+            instance_prefs_editor.putLong("uin", 0);
+            instance_prefs_editor.putString("account_name", "");
+            instance_prefs_editor.commit();
+            Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+            activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(activity);
+            finish();
         }
     }
 
@@ -342,8 +331,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                         getSystemService(Context.CLIPBOARD_SERVICE);
                 android.content.ClipData clip =
                         android.content.ClipData.newPlainText("OpenVK User URL",
-                        String.format("http://%s/id%s", instance_prefs.getString("server", ""),
-                                ovk_api.user.id));
+                                String.format("http://%s/id%s", instance_prefs.getString("server", ""),
+                                        ovk_api.user.id));
                 clipboard.setPrimaryClip(clip);
             }
         } else if(item.getItemId() == R.id.open_in_browser) {
@@ -627,6 +616,16 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
+    public void onAccountSlidingMenuItemClicked(int position, boolean b) {
+        if(position == 0) {
+            mainSettingsFragment.openChangeAccountDialog();
+        } else if(position == 1) {
+            Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
+        } else {
+            mainSettingsFragment.openLogoutConfirmationDialog();
+        }
+    }
+
     @SuppressLint({"CommitTransaction", "CommitPrefEdits"})
     public void onSlidingMenuItemClicked(int position, boolean is_menu) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -717,16 +716,16 @@ public class AppActivity extends TranslucentFragmentActivity {
                     dev.tinelix.retro_ab.ActionBar actionBar = findViewById(R.id.actionbar);
                     dev.tinelix.retro_ab.ActionBar.Action newpost =
                             new dev.tinelix.retro_ab.ActionBar.Action() {
-                        @Override
-                        public int getDrawable() {
-                            return R.drawable.ic_ab_write;
-                        }
+                                @Override
+                                public int getDrawable() {
+                                    return R.drawable.ic_ab_write;
+                                }
 
-                        @Override
-                        public void performAction(View view) {
-                            openNewPostActivity();
-                        }
-                    };
+                                @Override
+                                public void performAction(View view) {
+                                    openNewPostActivity();
+                                }
+                            };
                     actionBar.addAction(newpost);
                 } else {
                     if(activity_menu == null) {
@@ -758,16 +757,11 @@ public class AppActivity extends TranslucentFragmentActivity {
                 //slidingMenuArray.set(6, notifications_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
                         slidingMenuArray);
-                LinearLayoutManager llm = new LinearLayoutManager(this);
                 if(!((OvkApplication) getApplicationContext()).isTablet) {
-                    ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
-                            .setLayoutManager(llm);
-                    ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
+                    ((ListView) menu.getMenu().findViewById(R.id.menu_view))
                             .setAdapter(slidingMenuAdapter);
                 } else {
-                    ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
-                            .setLayoutManager(llm);
-                    ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
+                    ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
                             .setAdapter(slidingMenuAdapter);
                 }
                 try {
@@ -792,8 +786,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                         }
                     }
                     newsfeedFragment.loading_more_posts = true;
-                    ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
-                            .setLoading(false);
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
@@ -814,8 +806,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     }
                     newsfeedFragment.loading_more_posts = true;
-                    ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
-                            .setLoading(false);
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
@@ -832,8 +822,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
                 newsfeedFragment.loading_more_posts = true;
-                ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
-                        .setLoading(false);
                 newsfeedFragment.setScrollingPositions(this, false, true);
                 newsfeedFragment.adjustLayoutSize(
                         ((OvkApplication) getApplicationContext()).config.orientation
@@ -845,8 +833,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
                 newsfeedFragment.loading_more_posts = true;
-                ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
-                        .setLoading(false);
                 newsfeedFragment.setScrollingPositions(this, false, true);
                 newsfeedFragment.adjustLayoutSize(
                         ((OvkApplication) getApplicationContext()).config.orientation
@@ -861,7 +847,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                         global_prefs.getBoolean("useProxy", false),
                         global_prefs.getString("proxy_address", ""));
                 ((OvkApplication) getApplicationContext()).longPollService.run(instance_prefs.
-                        getString("server", ""), longPollServer.address, longPollServer.key,
+                                getString("server", ""), longPollServer.address, longPollServer.key,
                         longPollServer.ts, global_prefs.getBoolean("useHTTPS", true),
                         global_prefs.getBoolean("legacyHttpClient", false));
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
@@ -1140,8 +1126,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                                 || (method.equals("Users.get") && selectedFragment instanceof ProfileFragment)
                                 || (method.equals("Messages.getConversations")
                                 && selectedFragment instanceof ConversationsFragment)) {
-                                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                                    setErrorPage(data, "error", message, true);
+                            slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                            setErrorPage(data, "error", message, true);
                         } else if(method.equals("Account.getCounters")) {
                             ab_layout.setNotificationCount(new AccountCounters(0, 0, 0));
                         } else {
@@ -1546,12 +1532,12 @@ public class AppActivity extends TranslucentFragmentActivity {
                 intent.putExtra("local_photo_addr",
                         String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
                                 getCacheDir(),
-                        item.owner_id, item.post_id));
+                                item.owner_id, item.post_id));
             } else {
                 intent.putExtra("local_photo_addr",
                         String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
                                 getCacheDir(),
-                        item.owner_id, item.post_id));
+                                item.owner_id, item.post_id));
             }
             if(item.attachments != null) {
                 for(int i = 0; i < item.attachments.size(); i++) {

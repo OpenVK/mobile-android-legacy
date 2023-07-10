@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +29,11 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.Holder> {
+public class SlidingMenuAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<SlidingMenuItem> objects;
     public boolean opened_sliding_menu;
-
     public SlidingMenuAdapter(Context context, ArrayList<SlidingMenuItem> items) {
         ctx = context;
         objects = items;
@@ -44,13 +42,13 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
     }
 
     @Override
-    public SlidingMenuAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(inflater.inflate(R.layout.list_item_sliding_menu, parent, false));
+    public int getCount() {
+        return objects.size();
     }
 
     @Override
-    public void onBindViewHolder(SlidingMenuAdapter.Holder holder, int position) {
-        holder.bind(position);
+    public Object getItem(int position) {
+        return objects.get(position);
     }
 
     @Override
@@ -58,44 +56,34 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
         return position;
     }
 
-    @Override
-    public int getItemCount() {
-        return objects.size();
-    }
-
     SlidingMenuItem getSlidingMenuItem(int position) {
-        return objects.get(position);
+        return ((SlidingMenuItem) getItem(position));
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
-
-        private View view;
-
-        public Holder(View convertView) {
-            super(convertView);
-            this.view = convertView;
+    @Override
+    public View getView(int i, View convertView, ViewGroup parent) {
+        View view = convertView;
+        if (view == null) {
+            view = inflater.inflate(R.layout.list_item_sliding_menu, parent, false);
         }
 
-        void bind(final int position) {
-            view.setTag("account_menu_list" + position);
+        final int position = i;
 
-            String tag = (String) view.getTag();
-
-            SlidingMenuItem item = getSlidingMenuItem(position);
-            ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
-            if (item.counter == 0) {
-                ((TextView) view.findViewById(R.id.leftmenu_counter)).setVisibility(View.GONE);
-            } else {
-                ((TextView) view.findViewById(R.id.leftmenu_counter)).setVisibility(View.VISIBLE);
-                ((TextView) view.findViewById(R.id.leftmenu_counter)).setText("" + item.counter);
+        SlidingMenuItem item = getSlidingMenuItem(i);
+        ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
+        if(item.counter == 0) {
+            ((TextView) view.findViewById(R.id.leftmenu_counter)).setVisibility(View.GONE);
+        } else {
+            ((TextView) view.findViewById(R.id.leftmenu_counter)).setVisibility(View.VISIBLE);
+            ((TextView) view.findViewById(R.id.leftmenu_counter)).setText("" + item.counter);
+        }
+        ((ImageView) view.findViewById(R.id.leftmenu_icon)).setImageDrawable(item.icon);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((AppActivity) ctx).onSlidingMenuItemClicked(position, true);
             }
-            ((ImageView) view.findViewById(R.id.leftmenu_icon)).setImageDrawable(item.icon);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ((AppActivity) ctx).onSlidingMenuItemClicked(position, true);
-                }
-            });
-        }
+        });
+        return view;
     }
 }
