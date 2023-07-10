@@ -46,6 +46,8 @@ import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 
+import static java.security.AccessController.getContext;
+
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
@@ -321,62 +323,52 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             pollAttachView.setVisibility(View.GONE);
 
             for(int i = 0; i < item.attachments.size(); i++) {
-                if (item.attachments.get(i).status.equals("loading")) {
-                    photo_progress_layout.setVisibility(View.VISIBLE);
-                    post_photo.setImageBitmap(null);
-                    if(item.attachments.get(i).type.equals("photo")) {
-                        final PhotoAttachment photoAttachment =
-                                ((PhotoAttachment) item.attachments.get(i).getContent());
-                        if(photoAttachment.size[0] > 0 && photoAttachment.size[1] > 0) {
-                            photo_progress_layout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    float aspect_ratio = (float)
-                                            ((double) photoAttachment.size[0] / (double) photoAttachment.size[1]);
-                                    float width = photo_progress_layout.getMeasuredWidth();
-                                    float attachment_height = (float) ((double) width / (double) aspect_ratio);
-                                    Log.d(OvkApplication.APP_TAG,
-                                            String.format("W: %s H: %s A: %s", width, attachment_height, aspect_ratio));
-                                    LinearLayout.LayoutParams lp =
-                                            (LinearLayout.LayoutParams) photo_progress_layout.getLayoutParams();
-                                    lp.height = (int) attachment_height;
-                                    photo_progress_layout.setLayoutParams(lp);
-                                }
-                            });
-                        }
-                    }
-                } else if (item.attachments.get(i).status.equals("not_supported") &&
-                       !item.attachments.get(i).type.equals("note")) {
-                    error_label.setText(ctx.getResources().getString(R.string.not_supported));
-                    error_label.setVisibility(View.VISIBLE);
-                } else if (item.attachments.get(i).status.equals("error")) {
-                    error_label.setText(ctx.getResources().getString(R.string.attachment_load_err));
-                    error_label.setVisibility(View.VISIBLE);
-                } else if (item.attachments.get(i).status.equals("done") &&
-                        item.attachments.get(i).type.equals("photo")) {
+                if(item.attachments.get(i).type.equals("photo")) {
                     LinearLayout.LayoutParams lp =
                             (LinearLayout.LayoutParams) photo_progress_layout.getLayoutParams();
                     lp.height = (int) (80 * (ctx.getResources().getDisplayMetrics().scaledDensity));
                     photo_progress_layout.setLayoutParams(lp);
                     if (item.attachments.get(i).getContent() != null) {
-                        post_photo.setImageBitmap(((PhotoAttachment)
-                                item.attachments.get(0).getContent()).photo);
-                        post_photo.setVisibility(View.VISIBLE);
-                        post_photo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                    ((AppActivity) ctx).viewPhotoAttachment(position);
-                                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                                    ((ProfileIntentActivity) ctx).viewPhotoAttachment(position);
-                                } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                                    ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
+                        Bitmap bitmap = loadPostPhoto(position);
+                        if(bitmap != null) {
+                            post_photo.setImageBitmap(bitmap);
+                            post_photo.setVisibility(View.VISIBLE);
+                            post_photo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                                        ((AppActivity) ctx).viewPhotoAttachment(position);
+                                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                                        ((ProfileIntentActivity) ctx).viewPhotoAttachment(position);
+                                    } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                                        ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
+                                    }
                                 }
+                            });
+                        } else {
+                            photo_progress_layout.setVisibility(View.VISIBLE);
+                            final PhotoAttachment photoAttachment =
+                                    ((PhotoAttachment) item.attachments.get(i).getContent());
+                            if(photoAttachment.size[0] > 0 && photoAttachment.size[1] > 0) {
+                                photo_progress_layout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        float aspect_ratio = (float)
+                                                ((double) photoAttachment.size[0] / (double) photoAttachment.size[1]);
+                                        float width = photo_progress_layout.getMeasuredWidth();
+                                        float attachment_height = (float) ((double) width / (double) aspect_ratio);
+                                        Log.d(OvkApplication.APP_TAG,
+                                                String.format("W: %s H: %s A: %s", width, attachment_height, aspect_ratio));
+                                        LinearLayout.LayoutParams lp =
+                                                (LinearLayout.LayoutParams) photo_progress_layout.getLayoutParams();
+                                        lp.height = (int) attachment_height;
+                                        photo_progress_layout.setLayoutParams(lp);
+                                    }
+                                });
                             }
-                        });
+                        }
                     }
-                } else if (item.attachments.get(i).status.equals("done") &&
-                        item.attachments.get(i).type.equals("video")) {
+                } else if (item.attachments.get(i).type.equals("video")) {
                     if (item.attachments.get(i).getContent() != null) {
                         final VideoAttachment videoAttachment = (VideoAttachment)
                                 item.attachments.get(i).getContent();
@@ -437,6 +429,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         attachment_view.setIntent(intent);
                         attachment_view.setVisibility(View.VISIBLE);
                     }
+                } else {
+                    error_label.setText(ctx.getResources().getString(R.string.not_supported));
+                    error_label.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -540,6 +535,21 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             });
+        }
+
+        private Bitmap loadPostPhoto(int position) {
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                return BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
+                                        "newsfeed_attachment_o%sp%s",
+                                ctx.getCacheDir(), instance,
+                                items.get(position).owner_id,
+                                items.get(position).post_id), options);
+            } catch (OutOfMemoryError oom) {
+                return null;
+            }
         }
 
         public void repost(int position) {
