@@ -117,11 +117,19 @@ public class WallLayout extends LinearLayout {
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
-        wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
-        wallView = (RecyclerView) findViewById(R.id.wall_listview);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        wallView.setLayoutManager(llm);
-        wallView.setAdapter(wallAdapter);
+        if(wallAdapter == null) {
+            wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
+            wallView = (RecyclerView) findViewById(R.id.wall_listview);
+            try {
+                llm.setOrientation(LinearLayoutManager.VERTICAL);
+                wallView.setLayoutManager(llm);
+                wallView.setAdapter(wallAdapter);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            wallAdapter.notifyDataSetChanged();
+        }
     }
 
     public void updateItem(WallPost item, int position) {
