@@ -27,4 +27,8 @@ public class SlidingMenuItem {
         counter = _counter;
         icon = _icon;
     }
+
+    public SlidingMenuItem(String _describe) {
+        name = _describe;
+    }
 }

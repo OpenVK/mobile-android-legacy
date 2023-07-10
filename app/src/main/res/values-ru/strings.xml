@@ -712,6 +712,12 @@
     	<item>Настройки</item>
 	</string-array>
 
+    <string-array name="leftmenu_account">
+        <item>Сменить аккаунт</item>
+        <item>Сменить фотографию</item>
+        <item>Выйти</item>
+    </string-array>
+
 	<string name="link_not_supported">Открытие этой ссылки не поддерживается в приложении</string>
 	<string name="send_to_friend">Отправить другу</string>
 	<string name="delete_msgs_title">Удалить сообщения</string>

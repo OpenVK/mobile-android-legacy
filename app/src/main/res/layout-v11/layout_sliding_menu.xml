@@ -18,6 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:background="#1B1D26">
 
@@ -57,14 +58,21 @@
             android:textColor="#FFFFFF"/>
 
         <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="54dp"
+            android:id="@+id/arrow"
+            android:layout_width="42dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:src="@drawable/ic_left_post_photo"
-        />
+            android:src="@drawable/ic_profile_expand"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/account_menu_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#8f000000"
+        android:visibility="gone" />
 
     <ListView
         android:id="@+id/menu_view"

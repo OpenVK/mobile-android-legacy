@@ -1,13 +1,16 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,6 +40,7 @@ import uk.openvk.android.legacy.api.entities.Account;
 public class SlidingMenuLayout extends LinearLayout {
 
     private String instance;
+    private boolean showAccountMenu;
 
     public SlidingMenuLayout(final Context context) {
         super(context);
@@ -47,10 +51,16 @@ public class SlidingMenuLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
+        (findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
                 getResources().getColor(R.color.transparent));
+        (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toogleAccountMenu();
+            }
+        });
         ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,16 +92,22 @@ public class SlidingMenuLayout extends LinearLayout {
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
+        (findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
                 getResources().getColor(R.color.transparent));
-        ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
+        (findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(context.getClass().getSimpleName().equals("AppActivity")) {
                     ((AppActivity) context).openAccountProfile();
                 }
+            }
+        });
+        (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toogleAccountMenu();
             }
         });
         TextView profile_name = findViewById(R.id.profile_name);
@@ -143,6 +159,29 @@ public class SlidingMenuLayout extends LinearLayout {
             if (bitmap != null) avatar.setImageBitmap(bitmap);
         } catch (OutOfMemoryError oom) {
             oom.printStackTrace();
+        }
+    }
+
+    private void toogleAccountMenu() {
+        final ListView account_menu_view = findViewById(R.id.account_menu_view);
+        this.showAccountMenu = !this.showAccountMenu;
+        View arrow = findViewById(R.id.arrow);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            float[] fArr = new float[2];
+            fArr[0] = this.showAccountMenu ? 0 : -180;
+            fArr[1] = this.showAccountMenu ? -180 : 0;
+            ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
+        } else {
+            RotateAnimation anim = new RotateAnimation(this.showAccountMenu ? 0 : -180,
+                    this.showAccountMenu ? -180 : 0, 1, 0.5f, 1, 0.5f);
+            anim.setFillAfter(true);
+            anim.setDuration(300L);
+            arrow.startAnimation(anim);
+        }
+        if(account_menu_view.getVisibility() == VISIBLE) {
+            account_menu_view.setVisibility(GONE);
+        } else {
+            account_menu_view.setVisibility(VISIBLE);
         }
     }
     

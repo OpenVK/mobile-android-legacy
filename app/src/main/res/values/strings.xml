@@ -780,6 +780,12 @@
     	<item>Settings</item>
 	</string-array>
 
+	<string-array name="leftmenu_account">
+		<item>Change account</item>
+		<item>Change profile photo</item>
+		<item>Log out</item>
+	</string-array>
+
 	<string name="link_not_supported">This link is not supported in the app</string>
 	<string name="send_to_friend">Share with friend</string>
 	<string name="delete_msgs_title">Delete messages</string>

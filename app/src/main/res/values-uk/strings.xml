@@ -834,6 +834,12 @@
     	<item>Налаштування</item>
 	</string-array>
 
+    <string-array name="leftmenu_account">
+        <item>Змінити обліковий запис</item>
+        <item>Змінити фотографію</item>
+        <item>Вийти</item>
+    </string-array>
+
 	<string name="link_not_supported">Відкриття цього посилання не підтримується в додатку</string>
 	<string name="send_to_friend">Надіслати другу</string>
 	<string name="delete_msgs_title">Видалити повідомлення</string>

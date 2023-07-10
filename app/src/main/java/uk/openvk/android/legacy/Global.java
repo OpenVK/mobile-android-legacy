@@ -431,4 +431,15 @@ public class Global {
         }
         return slidingMenuArray;
     }
+
+    public static ArrayList<SlidingMenuItem> createAccountSlidingMenuItems(Context ctx) {
+        ArrayList<SlidingMenuItem> slidingMenuArray = new ArrayList<SlidingMenuItem>();
+        for (int slider_menu_item_index = 0;
+             slider_menu_item_index < ctx.getResources().getStringArray(R.array.leftmenu_account).length;
+             slider_menu_item_index++) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                    ctx.getResources().getStringArray(R.array.leftmenu_account)[slider_menu_item_index]));
+        }
+        return slidingMenuArray;
+    }
 }
