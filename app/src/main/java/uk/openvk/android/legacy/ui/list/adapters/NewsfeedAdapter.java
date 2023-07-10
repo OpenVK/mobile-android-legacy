@@ -322,6 +322,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     error_label.setVisibility(View.VISIBLE);
                 } else if (item.attachments.get(i).status.equals("done") &&
                         item.attachments.get(i).type.equals("photo")) {
+                    photo_progress.setVisibility(View.GONE);
                     if (item.attachments.get(i).getContent() != null) {
                         post_photo.setImageBitmap(((PhotoAttachment)
                                 item.attachments.get(0).getContent()).photo);
