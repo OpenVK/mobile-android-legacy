@@ -285,13 +285,8 @@ public class GroupIntentActivity extends TranslucentActivity {
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            groupNestedScrollView = (InfinityNestedScrollView) findViewById(R.id.group_scrollview);
-            groupNestedScrollView.setVisibility(View.GONE);
-        } else {
-            groupScrollView = (InfinityScrollView) findViewById(R.id.group_scrollview);
-            groupScrollView.setVisibility(View.GONE);
-        }
+        groupScrollView = (InfinityScrollView) findViewById(R.id.group_scrollview);
+        groupScrollView.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
@@ -873,10 +868,10 @@ public class GroupIntentActivity extends TranslucentActivity {
             ((WallLayout) findViewById(R.id.wall_layout)).loadPhotos();
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final InfinityNestedScrollView scrollView = findViewById(R.id.group_scrollview);
-            scrollView.setOnScrollListener(new OnNestedScrollListener() {
+            final InfinityScrollView scrollView = findViewById(R.id.group_scrollview);
+            scrollView.setOnScrollListener(new OnScrollListener() {
                 @Override
-                public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
                     View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {

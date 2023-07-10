@@ -42,6 +42,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 
 public class WallPost implements Parcelable {
 
+    private int type;
     private String avatar_url;
     public Bitmap avatar;
     public String name;
@@ -89,6 +90,10 @@ public class WallPost implements Parcelable {
 
     public WallPost() {
 
+    }
+
+    public WallPost(int type) {
+        this.type = type;
     }
 
     @SuppressLint("SimpleDateFormat")
