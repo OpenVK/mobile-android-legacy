@@ -45,7 +45,7 @@
         <TextView
             android:id="@+id/comment_label"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="90dp"
             android:layout_marginTop="16dp"
             android:text="Comment text"
             android:textColor="@color/holo_red_light"
