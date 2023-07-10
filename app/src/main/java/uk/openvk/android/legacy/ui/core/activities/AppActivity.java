@@ -61,6 +61,7 @@ import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.*;
+import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
 import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
@@ -85,6 +86,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends TranslucentFragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
+    private ArrayList<SlidingMenuItem> accountSlidingMenuArray;
     public Handler handler;
     public SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -412,6 +414,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
         slidingMenuArray = Global.createSlidingMenuItems(this);
+        accountSlidingMenuArray = Global.createAccountSlidingMenuItems(this);
         slidingmenuLayout.setSearchListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -423,13 +426,19 @@ public class AppActivity extends TranslucentFragmentActivity {
                 }
             }
         });
-        SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
+        SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
+        AccountSlidingMenuAdapter accountMenuAdapter = new AccountSlidingMenuAdapter(this,
+                accountSlidingMenuArray);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
+            ((ListView) menu.getMenu().findViewById(R.id.account_menu_view))
+                    .setAdapter(accountMenuAdapter);
             ((ListView) menu.getMenu().findViewById(R.id.menu_view))
-                    .setAdapter(slidingMenuAdapter);
+                    .setAdapter(menuAdapter);
         } else {
+            ((ListView) slidingmenuLayout.findViewById(R.id.account_menu_view))
+                    .setAdapter(accountMenuAdapter);
             ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
-                    .setAdapter(slidingMenuAdapter);
+                    .setAdapter(menuAdapter);
         }
     }
 
