@@ -625,8 +625,8 @@
         <item>Исходное</item>
     </string-array>
     <string name="sett_cache_quality_alt">Качество изображений</string>
-    <string name="sett_cache_quality_lowres">Предназначено для максимально возможной экономии трафика и ресурсов устройства.
-        Максимально жертвуя качеством, приложение может работать как можно быстрее.</string>
+    <string name="sett_cache_quality_lowres">Максимально жертвуя качеством, данные могут загружаться
+        как можно быстрее в условиях низкой скорости интернета.</string>
     <string name="sett_cache_quality_medres">Выбрано оптимальное качество для работы приложения.</string>
     <string name="sett_cache_quality_highres">Позволяет видеть четче, но не экономит трафик и не оптимизирует работу приложения.</string>
     <string name="sett_cache_quality_highestres">Позволяет видеть еще четче, но не экономит трафик и не оптимизирует работу приложения.</string>

@@ -683,8 +683,8 @@
         <item>Original</item>
     </string-array>
     <string name="sett_cache_quality_alt">Image Quality</string>
-    <string name="sett_cache_quality_lowres">It is intended for the maximum possible saving of traffic and device resources.
-          By sacrificing quality as much as possible, the application can run as quickly as possible.</string>
+    <string name="sett_cache_quality_lowres">Sacrificing quality as much as possible, data can be downloaded
+         as soon as possible in conditions of low Internet speed.</string>
     <string name="sett_cache_quality_medres">The optimal quality has been selected for app working.</string>
     <string name="sett_cache_quality_highres">Allows you to see clearer, but does not save traffic
         and does not optimize the application.</string>

@@ -738,8 +738,8 @@
         <item>Висока</item>
         <item>Вихiдна</item>
     </string-array>
-    <string name="sett_cache_quality_lowres">Предназначено для максимально можливої економії трафіку та ресурсів пристрою.
-         Максимально постраждала якість, додаток може працювати як можна швидше.</string>
+    <string name="sett_cache_quality_lowres">Максимально жертвуючи якістю, дані можуть завантажуватись
+         якнайшвидше в умовах низької швидкості інтернету.</string>
     <string name="sett_cache_quality_medres">Вибрано оптимальну якість для роботи додатка.</string>
     <string name="sett_cache_quality_highres">Дозволяє бачити чіткіше, але не заощаджує трафік і не оптимізує роботу додатка.</string>
     <string name="sett_cache_quality_highestres">Дозволяє бачити ще чіткіше, але не заощаджує трафік і не оптимізує роботу додатка.</string>
