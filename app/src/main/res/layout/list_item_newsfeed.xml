@@ -227,12 +227,12 @@
                     android:drawablePadding="3dip"
                     android:duplicateParentState="true"
                     android:ellipsize="marquee"
+                    android:gravity="start|center"
                     android:singleLine="true"
                     android:text="Orig Poster Name"
                     android:textColor="@color/main_text"
                     android:textSize="16dip"
                     android:visibility="visible"
-                    android:gravity="start|center"
                     tools:ignore="Deprecated,HardcodedText,SpUsage" />
 
                 <TextView
@@ -276,12 +276,12 @@
                     android:layout_marginBottom="8dip"
                     android:layout_marginEnd="10dip"
                     android:layout_marginLeft="10dip"
+                    android:layout_marginRight="10dip"
                     android:text="@string/post_show_full"
                     android:textColor="@color/ovk_color"
                     android:textStyle="bold"
                     android:visibility="gone"
-                    tools:ignore="RtlHardcoded"
-                    android:layout_marginRight="10dip" />
+                    tools:ignore="RtlHardcoded" />
 
                 <ImageView
                     android:id="@+id/repost_photo"
@@ -308,16 +308,31 @@
             </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/photo_progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="12dp"
-        android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/photo_progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#10000000"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/photo_progress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:indeterminateDrawable="@drawable/progress_dark"
+                android:padding="12dp"
+                android:visibility="visible" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/post_photo"

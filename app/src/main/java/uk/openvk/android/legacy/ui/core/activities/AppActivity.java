@@ -759,8 +759,10 @@ public class AppActivity extends TranslucentFragmentActivity {
                     newsfeedFragment.createAdapter(this, ovk_api.newsfeed.getWallPosts());
                     if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
                         if(ovk_api.newsfeed.getWallPosts().size() > 0) {
+                            progressLayout.setVisibility(View.GONE);
                             findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                         } else {
+                            progressLayout.setVisibility(View.GONE);
                             setErrorPage(data, "ovk", message, false);
                         }
                     }
@@ -768,7 +770,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
-                    progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     newsfeedFragment.adjustLayoutSize(
                             ((OvkApplication) getApplicationContext()).config.orientation

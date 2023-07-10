@@ -24,6 +24,7 @@ public class PhotoAttachment implements Parcelable {
     public String url;
     public String original_url;
     public String filename;
+    public int[] size;
     public Bitmap photo;
     public String error;
 

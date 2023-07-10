@@ -365,15 +365,46 @@ public class Wall implements Parcelable {
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                     photo_high_size = photo_sizes.getJSONObject(8).getString("url");
                     photo_original_size = photo_sizes.getJSONObject(10).getString("url");
+                    photoAttachment.size = new int[2];
                     switch (quality) {
                         case "medium":
                             photoAttachment.url = photo_medium_size;
+                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
+                                photoAttachment.size[0] = photo_sizes.getJSONObject(5).getInt("width");
+                            } else {
+                                photoAttachment.size[0] = 480;
+                            }
+                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
+                                photoAttachment.size[1] = photo_sizes.getJSONObject(5).getInt("height");
+                            } else {
+                                photoAttachment.size[1] = 360;
+                            }
                             break;
                         case "high":
                             photoAttachment.url = photo_high_size;
+                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
+                                photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
+                            } else {
+                                photoAttachment.size[0] = 1024;
+                            }
+                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
+                                photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
+                            } else {
+                                photoAttachment.size[1] = 768;
+                            }
                             break;
                         case "original":
                             photoAttachment.url = photo_original_size;
+                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
+                                photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
+                            } else {
+                                photoAttachment.size[0] = 2560;
+                            }
+                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
+                                photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
+                            } else {
+                                photoAttachment.size[1] = 1920;
+                            }
                             break;
                     }
                     photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
