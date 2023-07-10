@@ -35,9 +35,11 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
+import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.OvkRefreshableHeaderLayout;
 
@@ -259,20 +261,11 @@ public class NewsfeedFragment extends Fragment {
         if(load_photos) {
             loadPhotos();
         }
-        final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
-        scrollView.setOnScrollListener(new OnNestedScrollListener() {
+        final InfinityRecyclerView news_listview = view.findViewById(R.id.news_listview);
+        news_listview.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
             @Override
-            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                if (!loading_more_posts) {
-                    if (diff == 0) {
-                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            loading_more_posts = true;
-                            ((AppActivity) ctx).loadMoreNews();
-                        }
-                    }
-                }
+            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
+                ((AppActivity) ctx).loadMoreNews();
             }
         });
     }

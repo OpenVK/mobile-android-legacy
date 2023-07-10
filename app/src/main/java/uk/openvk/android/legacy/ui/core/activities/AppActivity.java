@@ -64,6 +64,7 @@ import uk.openvk.android.legacy.ui.core.fragments.app.*;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
+import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.view.layouts.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
@@ -813,6 +814,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                         }
                     }
                     newsfeedFragment.loading_more_posts = true;
+                    ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
+                            .setLoading(false);
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
@@ -833,6 +836,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     }
                     newsfeedFragment.loading_more_posts = true;
+                    ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
+                            .setLoading(false);
                     newsfeedFragment.setScrollingPositions(this, false, true);
                     ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
                             .scrollToPosition(0);
@@ -849,6 +854,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
                 newsfeedFragment.loading_more_posts = true;
+                ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
+                        .setLoading(false);
                 newsfeedFragment.setScrollingPositions(this, false, true);
                 newsfeedFragment.adjustLayoutSize(
                         ((OvkApplication) getApplicationContext()).config.orientation
@@ -860,6 +867,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
                 newsfeedFragment.loading_more_posts = true;
+                ((InfinityRecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
+                        .setLoading(false);
                 newsfeedFragment.setScrollingPositions(this, false, true);
                 newsfeedFragment.adjustLayoutSize(
                         ((OvkApplication) getApplicationContext()).config.orientation
