@@ -35,11 +35,9 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
-import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
-import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.OvkRefreshableHeaderLayout;
 
@@ -91,7 +89,7 @@ public class NewsfeedFragment extends Fragment {
         this.wallPosts = wallPosts;
         newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
         if(newsfeedAdapter == null) {
-            newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts, false);
+            newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts);
             llm = new LinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             newsfeedView.setLayoutManager(llm);
@@ -157,8 +155,98 @@ public class NewsfeedFragment extends Fragment {
     }
 
     private void loadPhotos() {
-        newsfeedView = (InfinityRecyclerView) view.findViewById(R.id.news_listview);
+        newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
         try {
+            if(llm == null) {
+                llm = new LinearLayoutManager(getContext());
+                llm.setOrientation(LinearLayoutManager.VERTICAL);
+            }
+            int visibleItemCount = llm.getChildCount();
+            int totalItemCount = llm.getItemCount();
+            int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
+            int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
+            for (int i = 0; i < totalItemCount; i++) {
+                WallPost item = wallPosts.get(i);
+                try {
+                    if(item.repost != null) {
+                        if (item.repost.newsfeed_item.attachments.size() > 0) {
+                            if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
+                                PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.
+                                        newsfeed_item.attachments.get(0).getContent());
+                                Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
+                                if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                                    if(photoAttachment.photo != null) {
+                                        photoAttachment.photo.recycle();
+                                        photoAttachment.photo = null;
+                                        System.gc();
+                                    }
+                                } else {
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                    if (photoAttachment.url.length() > 0) {
+                                        Bitmap bitmap = BitmapFactory.decodeFile(
+                                                String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
+                                                                "newsfeed_attachment_o%sp%s",
+                                                        getContext().getCacheDir(), instance,
+                                                        item.repost.newsfeed_item.owner_id,
+                                                        item.repost.newsfeed_item.post_id), options);
+                                        if (bitmap != null) {
+                                            photoAttachment.photo = bitmap;
+                                            attachment.status = "done";
+                                            item.repost.newsfeed_item.attachments.set(0, attachment);
+                                        }
+                                    }
+                                }
+                                wallPosts.set(i, item);
+                            }
+                        }
+                    }
+                    if(item.attachments.size() > 0) {
+                        if(item.attachments.get(0).type.equals("photo")) {
+                            PhotoAttachment photoAttachment = ((PhotoAttachment)
+                                    item.attachments.get(0).getContent());
+                            Attachment attachment = item.attachments.get(0);
+                            if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
+                                if(photoAttachment.photo != null) {
+                                    photoAttachment.photo.recycle();
+                                    photoAttachment.photo = null;
+                                    System.gc();
+                                }
+                            } else {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                if (photoAttachment.url.length() > 0) {
+                                    Bitmap bitmap = BitmapFactory.decodeFile(
+                                            String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
+                                                            "newsfeed_attachment_o%sp%s", getContext().getCacheDir(),
+                                                    instance,
+                                                    item.owner_id, item.post_id), options);
+                                    if (bitmap != null) {
+                                        photoAttachment.photo = bitmap;
+                                        attachment.status = "done";
+                                        item.attachments.set(0, attachment);
+                                    } else if(photoAttachment.url.length() > 0) {
+                                        attachment.status = "error";
+                                    }
+                                }
+                            }
+                            wallPosts.set(i, item);
+                        } else if(!item.attachments.get(0).type.equals("poll")
+                                && !item.attachments.get(0).type.equals("video")) {
+                            item.attachments.get(0).status = "not_supported";
+                        }
+                    }
+                } catch (OutOfMemoryError error) {
+                    Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
+                } catch (Exception ex) {
+                    if(ex.getMessage() != null) {
+                        Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
+                    } else {
+                        Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getClass().getSimpleName()));
+                    }
+                    ex.printStackTrace();
+                }
+            }
             newsfeedAdapter.notifyDataSetChanged();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -171,11 +259,20 @@ public class NewsfeedFragment extends Fragment {
         if(load_photos) {
             loadPhotos();
         }
-        final InfinityRecyclerView news_listview = view.findViewById(R.id.news_listview);
-        news_listview.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
+        final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+        scrollView.setOnScrollListener(new OnNestedScrollListener() {
             @Override
-            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                ((AppActivity) ctx).loadMoreNews();
+            public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                if (!loading_more_posts) {
+                    if (diff == 0) {
+                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            loading_more_posts = true;
+                            ((AppActivity) ctx).loadMoreNews();
+                        }
+                    }
+                }
             }
         });
     }

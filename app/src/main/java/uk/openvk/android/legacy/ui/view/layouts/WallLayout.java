@@ -117,44 +117,18 @@ public class WallLayout extends LinearLayout {
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
-        try {
-            if(wallAdapter == null) {
-                wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
-                wallView = (RecyclerView) findViewById(R.id.wall_listview);
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                wallView.setLayoutManager(llm);
-                wallView.setAdapter(wallAdapter);
-            } else {
-                wallView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            wallAdapter.notifyDataSetChanged();
-                        } catch (Exception ignore) {
-
-                        }
-                    }
-                });
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        wallAdapter = new NewsfeedAdapter(ctx, wallItems);
+        wallView = (RecyclerView) findViewById(R.id.wall_listview);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        wallView.setLayoutManager(llm);
+        wallView.setAdapter(wallAdapter);
     }
 
     public void updateItem(WallPost item, int position) {
         if(wallAdapter != null) {
             wallView = (RecyclerView) findViewById(R.id.news_listview);
             wallItems.set(position, item);
-            wallView.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        wallAdapter.notifyDataSetChanged();
-                    } catch (Exception ignore) {
-
-                    }
-                }
-            });
+            wallAdapter.notifyItemChanged(position);
         }
     }
 
@@ -190,7 +164,7 @@ public class WallLayout extends LinearLayout {
                                                                     "/wall_photo_attachments/" +
                                                                     "wall_attachment_o%sp%s",
                                                             getContext().getCacheDir(), instance,
-                                                    item.repost.newsfeed_item.owner_id,
+                                                            item.repost.newsfeed_item.owner_id,
                                                             item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
                                                 photoAttachment.photo = bitmap;
@@ -247,16 +221,7 @@ public class WallLayout extends LinearLayout {
                         }
                     }
                 }
-                wallView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            wallAdapter.notifyDataSetChanged();
-                        } catch (Exception ignore) {
-
-                        }
-                    }
-                });
+                wallAdapter.notifyDataSetChanged();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -338,20 +303,7 @@ public class WallLayout extends LinearLayout {
                     err.printStackTrace();
                 }
             }
-            try {
-                wallView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            wallAdapter.notifyDataSetChanged();
-                        } catch (Exception ignore) {
-
-                        }
-                    }
-                });
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            wallAdapter.notifyDataSetChanged();
         }
     }
 
@@ -399,15 +351,7 @@ public class WallLayout extends LinearLayout {
 
     public void refreshAdapter() {
         if(wallAdapter != null) {
-            wallView.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        wallAdapter.notifyDataSetChanged();
-                    } catch (Exception ignored) {
-                    }
-                }
-            });
+            wallAdapter.notifyDataSetChanged();
         }
     }
 }
