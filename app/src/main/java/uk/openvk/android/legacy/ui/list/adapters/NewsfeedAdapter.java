@@ -66,12 +66,14 @@ import static java.security.AccessController.getContext;
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
     private final String instance;
+    private final boolean isWall;
     private String where;
     private ArrayList<WallPost> items = new ArrayList<>();
     private Context ctx;
     public LruCache memCache;
 
-    public NewsfeedAdapter(Context context, ArrayList<WallPost> posts) {
+    public NewsfeedAdapter(Context context, ArrayList<WallPost> posts, boolean isWall) {
+        this.isWall = isWall;
         ctx = context;
         items = posts;
         instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
@@ -541,12 +543,21 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                return BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
-                                        "newsfeed_attachment_o%sp%s",
-                                ctx.getCacheDir(), instance,
-                                items.get(position).owner_id,
-                                items.get(position).post_id), options);
+                if(isWall) {
+                    return BitmapFactory.decodeFile(
+                            String.format("%s/%s/photos_cache/wall_photo_attachments/" +
+                                            "wall_attachment_o%sp%s",
+                                    ctx.getCacheDir(), instance,
+                                    items.get(position).owner_id,
+                                    items.get(position).post_id), options);
+                } else {
+                    return BitmapFactory.decodeFile(
+                            String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
+                                            "newsfeed_attachment_o%sp%s",
+                                    ctx.getCacheDir(), instance,
+                                    items.get(position).owner_id,
+                                    items.get(position).post_id), options);
+                }
             } catch (OutOfMemoryError oom) {
                 return null;
             }

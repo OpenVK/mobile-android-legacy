@@ -91,7 +91,7 @@ public class NewsfeedFragment extends Fragment {
         this.wallPosts = wallPosts;
         newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
         if(newsfeedAdapter == null) {
-            newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts);
+            newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts, false);
             llm = new LinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             newsfeedView.setLayoutManager(llm);
