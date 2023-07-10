@@ -91,7 +91,6 @@ public class SlidingMenuLayout extends LinearLayout {
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
-        (findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
                 getResources().getColor(R.color.transparent));
         ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
