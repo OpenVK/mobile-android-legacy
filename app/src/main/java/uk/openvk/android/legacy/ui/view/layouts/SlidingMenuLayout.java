@@ -1,14 +1,17 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,6 +41,7 @@ import uk.openvk.android.legacy.api.entities.Account;
 public class SlidingMenuLayout extends LinearLayout {
 
     private String instance;
+    private boolean showAccountMenu;
 
     public SlidingMenuLayout(final Context context) {
         super(context);
