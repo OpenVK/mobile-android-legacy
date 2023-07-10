@@ -158,7 +158,7 @@ public class SlidingMenuLayout extends LinearLayout {
     }
 
     private void toogleAccountMenu() {
-        final RecyclerView account_menu_view = findViewById(R.id.account_menu_view);
+        final ListView account_menu_view = findViewById(R.id.account_menu_view);
         this.showAccountMenu = !this.showAccountMenu;
         View arrow = findViewById(R.id.arrow);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
