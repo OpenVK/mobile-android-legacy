@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -133,10 +134,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         getAndroidAccounts();
-        if(instance_prefs.getString("access_token", "").length() == 0 ||
-                instance_prefs.getString("server", "").length() == 0) {
-            finish();
-        }
         ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
 
         last_longpoll_response = "";
@@ -199,18 +196,31 @@ public class AppActivity extends TranslucentFragmentActivity {
         ArrayList<InstanceAccount> accountArray = new ArrayList<>();
         Global.loadAccounts(this, accountArray, instance_prefs);
         if(androidAccount == null) {
-            Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
-            instance_prefs_editor = instance_prefs.edit();
-            instance_prefs_editor.putString("access_token", "");
-            instance_prefs_editor.putString("server", "");
-            instance_prefs_editor.putLong("uin", 0);
-            instance_prefs_editor.putString("account_name", "");
-            instance_prefs_editor.commit();
-            Intent activity = new Intent(getApplicationContext(), MainActivity.class);
-            activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(activity);
-            finish();
+            if(accountArray.size() == 1) {
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+                instance_prefs_editor = instance_prefs.edit();
+                instance_prefs_editor.putString("access_token", "");
+                instance_prefs_editor.putString("server", "");
+                instance_prefs_editor.putLong("uin", 0);
+                instance_prefs_editor.putString("account_name", "");
+                instance_prefs_editor.commit();
+                Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(activity);
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+                instance_prefs_editor = instance_prefs.edit();
+                instance_prefs_editor.putString("access_token", "");
+                instance_prefs_editor.putString("server", "");
+                instance_prefs_editor.putLong("uin", 0);
+                instance_prefs_editor.putString("account_name", "");
+                instance_prefs_editor.commit();
+                Global global = new Global();
+                global.openChangeAccountDialog(this, global_prefs);
+            }
         }
     }
 
@@ -419,14 +429,26 @@ public class AppActivity extends TranslucentFragmentActivity {
         AccountSlidingMenuAdapter accountMenuAdapter = new AccountSlidingMenuAdapter(this,
                 accountSlidingMenuArray);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
-            ((ListView) menu.getMenu().findViewById(R.id.account_menu_view))
+            LinearLayoutManager llm = new LinearLayoutManager(this);
+            ((RecyclerView) menu.getMenu().findViewById(R.id.account_menu_view))
+                    .setLayoutManager(llm);
+            ((RecyclerView) menu.getMenu().findViewById(R.id.account_menu_view))
                     .setAdapter(accountMenuAdapter);
-            ((ListView) menu.getMenu().findViewById(R.id.menu_view))
+            llm = new LinearLayoutManager(this);
+            ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
+                    .setLayoutManager(llm);
+            ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
                     .setAdapter(menuAdapter);
         } else {
-            ((ListView) slidingmenuLayout.findViewById(R.id.account_menu_view))
+            LinearLayoutManager llm = new LinearLayoutManager(this);
+            ((RecyclerView) slidingmenuLayout.findViewById(R.id.account_menu_view))
+                    .setLayoutManager(llm);
+            ((RecyclerView) slidingmenuLayout.findViewById(R.id.account_menu_view))
                     .setAdapter(accountMenuAdapter);
-            ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
+            llm = new LinearLayoutManager(this);
+            ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
+                    .setLayoutManager(llm);
+            ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
                     .setAdapter(menuAdapter);
         }
     }
@@ -757,11 +779,16 @@ public class AppActivity extends TranslucentFragmentActivity {
                 //slidingMenuArray.set(6, notifications_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
                         slidingMenuArray);
+                LinearLayoutManager llm = new LinearLayoutManager(this);
                 if(!((OvkApplication) getApplicationContext()).isTablet) {
-                    ((ListView) menu.getMenu().findViewById(R.id.menu_view))
+                    ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
+                            .setLayoutManager(llm);
+                    ((RecyclerView) menu.getMenu().findViewById(R.id.menu_view))
                             .setAdapter(slidingMenuAdapter);
                 } else {
-                    ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
+                    ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
+                            .setLayoutManager(llm);
+                    ((RecyclerView) slidingmenuLayout.findViewById(R.id.menu_view))
                             .setAdapter(slidingMenuAdapter);
                 }
                 try {

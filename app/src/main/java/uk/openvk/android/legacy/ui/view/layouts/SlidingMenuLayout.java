@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,8 +54,6 @@ public class SlidingMenuLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
         (findViewById(R.id.menu_view)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
-        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
-                getResources().getColor(R.color.transparent));
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,8 +92,6 @@ public class SlidingMenuLayout extends LinearLayout {
         this.addView(view);
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         (findViewById(R.id.menu_view)).setBackgroundColor(
-                getResources().getColor(R.color.transparent));
-        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
                 getResources().getColor(R.color.transparent));
         (findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
             @Override
@@ -163,7 +160,7 @@ public class SlidingMenuLayout extends LinearLayout {
     }
 
     private void toogleAccountMenu() {
-        final ListView account_menu_view = findViewById(R.id.account_menu_view);
+        final RecyclerView account_menu_view = findViewById(R.id.account_menu_view);
         this.showAccountMenu = !this.showAccountMenu;
         View arrow = findViewById(R.id.arrow);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

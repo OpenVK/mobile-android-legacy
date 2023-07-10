@@ -589,6 +589,9 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     public void openChangeAccountDialog() {
         int valuePos = 0;
         selectedPosition = 0;
+        if(global_prefs == null) {
+            global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
         long current_uid = global_prefs.getLong("current_uid", 0);
         String current_instance = global_prefs.getString("current_instance", "");
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

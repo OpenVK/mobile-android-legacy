@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class AccountSlidingMenuAdapter extends BaseAdapter {
+public class AccountSlidingMenuAdapter extends RecyclerView.Adapter<AccountSlidingMenuAdapter.Holder> {
     Context ctx;
     LayoutInflater inflater;
     ArrayList<SlidingMenuItem> objects;
@@ -42,13 +43,13 @@ public class AccountSlidingMenuAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return objects.size();
+    public AccountSlidingMenuAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new Holder(inflater.inflate(R.layout.list_item_sliding_menu_3, parent, false));
     }
 
     @Override
-    public Object getItem(int position) {
-        return objects.get(position);
+    public void onBindViewHolder(AccountSlidingMenuAdapter.Holder holder, int position) {
+        holder.bind(position);
     }
 
     @Override
@@ -56,31 +57,37 @@ public class AccountSlidingMenuAdapter extends BaseAdapter {
         return position;
     }
 
-    SlidingMenuItem getSlidingMenuItem(int position) {
-        return ((SlidingMenuItem) getItem(position));
+    @Override
+    public int getItemCount() {
+        return objects.size();
     }
 
-    @Override
-    public View getView(int i, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.list_item_sliding_menu_3, parent, false);
-            // Fixes SlidingMenu lag: https://github.com/jfeinstein10/SlidingMenu/issues/262#issuecomment-73592083
-            view.setTag("account_menu_list" + i);
+    SlidingMenuItem getSlidingMenuItem(int position) {
+        return objects.get(position);
+    }
+
+    public class Holder extends RecyclerView.ViewHolder {
+
+        private View view;
+
+        public Holder(View convertView) {
+            super(convertView);
+            this.view = convertView;
         }
 
-        String tag = (String) view.getTag();
+        void bind(final int position) {
+            view.setTag("account_menu_list" + position);
 
-        final int position = i;
+            String tag = (String) view.getTag();
 
-        SlidingMenuItem item = getSlidingMenuItem(i);
-        ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((AppActivity) ctx).onAccountSlidingMenuItemClicked(position, true);
-            }
-        });
-        return view;
+            SlidingMenuItem item = getSlidingMenuItem(position);
+            ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((AppActivity) ctx).onAccountSlidingMenuItemClicked(position, true);
+                }
+            });
+        }
     }
 }

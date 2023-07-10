@@ -446,6 +446,10 @@ public class OvkAPIWrapper {
     public void sendAPIMethod(final String method, final String args, final String where) {
         error.description = "";
         String url;
+        if(server.length() == 0) {
+            sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
+            return;
+        }
         if(use_https) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
             if(logging_enabled) Log.d(OvkApplication.API_TAG, String.format("Connecting to %s (Secured)..." +
@@ -579,6 +583,10 @@ public class OvkAPIWrapper {
     }
 
     public void sendAPIMethod(final String method, final String args) {
+        if(server.length() == 0) {
+            sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
+            return;
+        }
         error.description = "";
         String url = "";
         if(use_https) {
@@ -712,6 +720,10 @@ public class OvkAPIWrapper {
     }
 
     public void sendAPIMethod(final String method) {
+        if(server.length() == 0) {
+            sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
+            return;
+        }
         error.description = "";
         String url = "";
         if(use_https) {
@@ -867,127 +879,143 @@ public class OvkAPIWrapper {
         Bundle bundle = new Bundle();
         bundle.putString("response", response);
         msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
-            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
-            ((ConversationActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
-            ((NewPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
-            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+        try {
+            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                ((AuthActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                ((AppActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                ((GroupIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                ((MainSettingsActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                ((ConversationActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+                ((NewPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+                ((QuickSearchActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                ((WallPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+                ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     private void sendMessage(int message, String method, String response) {
-        Message msg = new Message();
-        msg.what = message;
-        Bundle bundle = new Bundle();
-        bundle.putString("response", response);
-        bundle.putString("method", method);
-        msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
-            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
-            ((ConversationActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
-            ((NewPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
-            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+        try {
+            Message msg = new Message();
+            msg.what = message;
+            Bundle bundle = new Bundle();
+            bundle.putString("response", response);
+            bundle.putString("method", method);
+            msg.setData(bundle);
+            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                ((AuthActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                ((AppActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                ((GroupIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                ((MainSettingsActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                ((ConversationActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+                ((NewPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+                ((QuickSearchActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                ((WallPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+                ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     private void sendMessage(int message, String method, String args, String response) {
-        Message msg = new Message();
-        msg.what = message;
-        Bundle bundle = new Bundle();
-        bundle.putString("response", response);
-        bundle.putString("method", method);
-        bundle.putString("args", args);
-        msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
-            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
-            ((ConversationActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
-            ((NewPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
-            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+        try {
+            Message msg = new Message();
+            msg.what = message;
+            Bundle bundle = new Bundle();
+            bundle.putString("response", response);
+            bundle.putString("method", method);
+            bundle.putString("args", args);
+            msg.setData(bundle);
+            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                ((AuthActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                ((AppActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                ((GroupIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                ((MainSettingsActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                ((ConversationActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+                ((NewPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+                ((QuickSearchActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                ((WallPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+                ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     private void sendMessage(int message, String method, String args, String where, String response) {
-        Message msg = new Message();
-        msg.what = message;
-        Bundle bundle = new Bundle();
-        bundle.putString("response", response);
-        bundle.putString("method", method);
-        bundle.putString("args", args);
-        bundle.putString("where", where);
-        msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
-            ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
-            ((ConversationActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
-            ((NewPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
-            ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+        try {
+            Message msg = new Message();
+            msg.what = message;
+            Bundle bundle = new Bundle();
+            bundle.putString("response", response);
+            bundle.putString("method", method);
+            bundle.putString("args", args);
+            bundle.putString("where", where);
+            msg.setData(bundle);
+            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                ((AuthActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                ((AppActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                ((GroupIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+                ((MainSettingsActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                ((ConversationActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+                ((NewPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+                ((QuickSearchActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                ((WallPostActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+                ((GroupMembersActivity) ctx).handler.sendMessage(msg);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -1249,8 +1277,12 @@ public class OvkAPIWrapper {
                 default:
                     Log.e(OvkApplication.API_TAG, String.format("[%s] Method not found", method));
                 case "Account.getProfileInfo":
-                    profile_a.ovk_api.account.parse(data.getString("response"), this);
-                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    try {
+                        profile_a.ovk_api.account.parse(data.getString("response"), this);
+                        msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    } catch (Exception ex) {
+                        msg.what = HandlerMessages.INTERNAL_ERROR;
+                    }
                     break;
                 case "Account.getCounters":
                     profile_a.ovk_api.account.parseCounters(data.getString("response"));

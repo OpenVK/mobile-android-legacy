@@ -68,14 +68,14 @@
 
     </LinearLayout>
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/account_menu_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#8f000000"
         android:visibility="gone" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/menu_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -87,7 +87,7 @@
         android:fitsSystemWindows="true"
         android:theme="@style/SlidingMenu">
 
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
     <TextView
         android:id="@+id/version_label"
