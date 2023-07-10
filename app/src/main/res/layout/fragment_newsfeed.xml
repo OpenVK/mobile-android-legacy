@@ -60,6 +60,7 @@
                     android:background="@color/window_bg_transparent"
                     android:nestedScrollingEnabled="false"
                     android:persistentDrawingCache="all"
+                    android:tag="newsfeed"
                     android:theme="@style/NewsItemTransparentBackground"
                     android:visibility="visible" />
 

@@ -48,6 +48,7 @@ public class Wall implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<WallPost> items;
     private ArrayList<Comment> comments;
+    private ArrayList<PhotoAttachment> photos_lsize;
     private ArrayList<PhotoAttachment> photos_msize;
     private ArrayList<PhotoAttachment> photos_hsize;
     private ArrayList<PhotoAttachment> photos_osize;
@@ -89,6 +90,7 @@ public class Wall implements Parcelable {
                 items.clear();
             }
         }
+        photos_lsize = new ArrayList<PhotoAttachment>();
         photos_msize = new ArrayList<PhotoAttachment>();
         photos_hsize = new ArrayList<PhotoAttachment>();
         photos_osize = new ArrayList<PhotoAttachment>();
@@ -245,6 +247,9 @@ public class Wall implements Parcelable {
                     this.items.add(item);
                 }
                 switch (quality) {
+                    case "low":
+                        downloadManager.downloadPhotosToCache(photos_lsize, "wall_photo_attachments");
+                        break;
                     case "medium":
                         downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
                         break;
@@ -265,6 +270,7 @@ public class Wall implements Parcelable {
     public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality,
                                             String response) {
         comments = new ArrayList<Comment>();
+        photos_lsize = new ArrayList<>();
         photos_msize = new ArrayList<PhotoAttachment>();
         photos_hsize = new ArrayList<PhotoAttachment>();
         photos_osize = new ArrayList<PhotoAttachment>();
@@ -329,6 +335,9 @@ public class Wall implements Parcelable {
                     this.comments.add(comment);
                 }
                 switch (quality) {
+                    case "low":
+                        downloadManager.downloadPhotosToCache(photos_lsize, "comment_photos");
+                        break;
                     case "medium":
                         downloadManager.downloadPhotosToCache(photos_msize, "comment_photos");
                         break;
@@ -352,6 +361,7 @@ public class Wall implements Parcelable {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
+                String photo_low_size;
                 String photo_medium_size;
                 String photo_high_size;
                 String photo_original_size;
@@ -362,11 +372,25 @@ public class Wall implements Parcelable {
                     PhotoAttachment photoAttachment = new PhotoAttachment();
                     photoAttachment.id = photo.getLong("id");
                     JSONArray photo_sizes = photo.getJSONArray("sizes");
+                    photo_low_size = photo_sizes.getJSONObject(2).getString("url");
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                     photo_high_size = photo_sizes.getJSONObject(8).getString("url");
                     photo_original_size = photo_sizes.getJSONObject(10).getString("url");
                     photoAttachment.size = new int[2];
                     switch (quality) {
+                        case "low":
+                            photoAttachment.url = photo_low_size;
+                            if(!photo_sizes.getJSONObject(2).isNull("width")) {
+                                photoAttachment.size[0] = photo_sizes.getJSONObject(2).getInt("width");
+                            } else {
+                                photoAttachment.size[0] = 384;
+                            }
+                            if(!photo_sizes.getJSONObject(2).isNull("height")) {
+                                photoAttachment.size[1] = photo_sizes.getJSONObject(2).getInt("height");
+                            } else {
+                                photoAttachment.size[1] = 288;
+                            }
+                            break;
                         case "medium":
                             photoAttachment.url = photo_medium_size;
                             if(!photo_sizes.getJSONObject(5).isNull("width")) {
@@ -419,6 +443,9 @@ public class Wall implements Parcelable {
                     attachment_obj.setContent(photoAttachment);
                     attachments_list.add(attachment_obj);
                     switch (quality) {
+                        case "low":
+                            photos_lsize.add(photoAttachment);
+                            break;
                         case "medium":
                             photos_msize.add(photoAttachment);
                             break;

@@ -733,13 +733,16 @@
     <string name="sett_cache_quality">Якість</string>
     <string name="sett_cache_quality_alt">Якість зображень</string>
     <string-array name="sett_cache_quality_array">
+        <item>Низьке</item>
         <item>Середня</item>
         <item>Висока</item>
         <item>Вихiдна</item>
     </string-array>
-    <string name="sett_cache_quality_lowres">Для економії трафіку та ресурсів пристрою.</string>
-    <string name="sett_cache_quality_highres">Дозволяє бачити чіткіше, але не економить трафік.</string>
-    <string name="sett_cache_quality_highestres">Дозволяє бачити ще чіткіше, але не економить трафік.</string>
+    <string name="sett_cache_quality_lowres">Предназначено для максимально можливої економії трафіку та ресурсів пристрою.
+         Максимально постраждала якість, додаток може працювати як можна швидше.</string>
+    <string name="sett_cache_quality_medres">Вибрано оптимальну якість для роботи додатка.</string>
+    <string name="sett_cache_quality_highres">Дозволяє бачити чіткіше, але не заощаджує трафік і не оптимізує роботу додатка.</string>
+    <string name="sett_cache_quality_highestres">Дозволяє бачити ще чіткіше, але не заощаджує трафік і не оптимізує роботу додатка.</string>
     <string name="sett_cache_quality_oomrisk">Це може призвести до нестабільної роботи програми!</string>
 	<string name="sett_clear_img_cache">Очистити</string>
     <string name="img_cache_cleared">Кеш очищен!</string>

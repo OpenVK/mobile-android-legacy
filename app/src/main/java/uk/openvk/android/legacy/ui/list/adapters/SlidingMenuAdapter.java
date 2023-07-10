@@ -65,7 +65,11 @@ public class SlidingMenuAdapter extends BaseAdapter {
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.list_item_sliding_menu, parent, false);
+            // Fixes SlidingMenu lag: https://github.com/jfeinstein10/SlidingMenu/issues/262#issuecomment-73592083
+            view.setTag("menu_list" + i);
         }
+
+        String tag = (String) view.getTag();
 
         final int position = i;
 

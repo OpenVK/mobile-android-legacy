@@ -138,12 +138,14 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         });
 
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-        if(global_prefs.getString("photos_quality", "").equals("medium")) {
+        if(global_prefs.getString("photos_quality", "").equals("low")) {
             image_quality.setSummary(quality_array[0]);
-        } else if(global_prefs.getString("photos_quality", "").equals("high")) {
+        } else if(global_prefs.getString("photos_quality", "").equals("medium")) {
             image_quality.setSummary(quality_array[1]);
-        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
+        } else if(global_prefs.getString("photos_quality", "").equals("high")) {
             image_quality.setSummary(quality_array[2]);
+        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
+            image_quality.setSummary(quality_array[3]);
         }
     }
 
@@ -170,20 +172,24 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 SharedPreferences.Editor editor = global_prefs.edit();
                 if(quality_seek.getProgress() == 0) {
-                    editor.putString("photos_quality", "medium");
+                    editor.putString("photos_quality", "low");
                 } else if(quality_seek.getProgress() == 1) {
-                    editor.putString("photos_quality", "high");
+                    editor.putString("photos_quality", "medium");
                 } else if(quality_seek.getProgress() == 2) {
+                    editor.putString("photos_quality", "high");
+                } else if(quality_seek.getProgress() == 3) {
                     editor.putString("photos_quality", "original");
                 }
                 editor.commit();
                 final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-                if(global_prefs.getString("photos_quality", "").equals("medium")) {
+                if(global_prefs.getString("photos_quality", "").equals("low")) {
                     image_quality.setSummary(quality_array[0]);
-                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
+                } else if(global_prefs.getString("photos_quality", "").equals("medium")) {
                     image_quality.setSummary(quality_array[1]);
-                } else if(global_prefs.getString("photos_quality", "").equals("original")) {
+                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
                     image_quality.setSummary(quality_array[2]);
+                } else if(global_prefs.getString("photos_quality", "").equals("original")) {
+                    image_quality.setSummary(quality_array[3]);
                 }
                 dialog.dismiss();
             }
@@ -191,7 +197,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         final TextView quality_value = ((TextView) quality_choose_view.findViewById(R.id.quality_label));
         final TextView quality_comm = ((TextView) quality_choose_view.findViewById(R.id.comment_label));
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-        quality_seek.setMax(2);
+        quality_seek.setMax(3);
 
         quality_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -201,7 +207,11 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                     quality_comm.setText(R.string.sett_cache_quality_lowres);
                     quality_comm.setTextColor(getResources().getColor(R.color.holo_blue_dark));
                     quality_comm.setVisibility(View.VISIBLE);
-                } else if(i == 1 && heap_size <= 67108864L) {
+                } else if(i == 1) {
+                    quality_comm.setText(R.string.sett_cache_quality_medres);
+                    quality_comm.setTextColor(getResources().getColor(R.color.holo_blue_dark));
+                    quality_comm.setVisibility(View.VISIBLE);
+                } else if(i == 2 && heap_size <= 67108864L) {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         quality_comm.setTextColor(Color.parseColor("#ff0000"));
                     } else {
@@ -217,11 +227,11 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                     }
                     quality_comm.setText(R.string.sett_cache_quality_oomrisk);
                     quality_comm.setVisibility(View.VISIBLE);
-                } else if(i == 1) {
+                } else if(i == 2) {
                     quality_comm.setText(R.string.sett_cache_quality_highres);
                     quality_comm.setTextColor(getResources().getColor(R.color.holo_blue_dark));
                     quality_comm.setVisibility(View.VISIBLE);
-                } else if(i == 2) {
+                } else if(i == 3) {
                     quality_comm.setText(R.string.sett_cache_quality_highestres);
                     quality_comm.setTextColor(getResources().getColor(R.color.holo_blue_dark));
                     quality_comm.setVisibility(View.VISIBLE);
@@ -243,13 +253,15 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         dialog.build(builder, getResources().getString(R.string.sett_cache_quality_alt), "", quality_choose_view);
         dialog.show();
 
-        if(global_prefs.getString("photos_quality", "").equals("medium")) {
+        if(global_prefs.getString("photos_quality", "").equals("low")) {
             quality_seek.setProgress(2);
             quality_seek.setProgress(0);
-        } else if(global_prefs.getString("photos_quality", "").equals("high")) {
+        } else if(global_prefs.getString("photos_quality", "").equals("medium")) {
             quality_seek.setProgress(1);
-        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
+        } else if(global_prefs.getString("photos_quality", "").equals("high")) {
             quality_seek.setProgress(2);
+        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
+            quality_seek.setProgress(3);
         }
         dialog.show();
     }

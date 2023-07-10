@@ -156,7 +156,8 @@
                 android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#e3e4e6" />
+                android:background="#e3e4e6"
+                android:tag="wall" />
 
             <TextView
                 android:id="@+id/deactivated_info"

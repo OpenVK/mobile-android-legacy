@@ -677,14 +677,19 @@
 	<string name="sett_forced_caching">Forced caching</string>
 	<string name="sett_cache_quality">Quality</string>
     <string-array name="sett_cache_quality_array">
+        <item>Low</item>
         <item>Medium</item>
         <item>High</item>
         <item>Original</item>
     </string-array>
     <string name="sett_cache_quality_alt">Image Quality</string>
-    <string name="sett_cache_quality_highres">Allows you to see clearer, but does not save traffic.</string>
-    <string name="sett_cache_quality_highestres">Allows you to see even clearer, but does not save traffic.</string>
-    <string name="sett_cache_quality_lowres">Useful for saving traffic and device resources.</string>
+    <string name="sett_cache_quality_lowres">It is intended for the maximum possible saving of traffic and device resources.
+          By sacrificing quality as much as possible, the application can run as quickly as possible.</string>
+    <string name="sett_cache_quality_medres">The optimal quality has been selected for app working.</string>
+    <string name="sett_cache_quality_highres">Allows you to see clearer, but does not save traffic
+        and does not optimize the application.</string>
+    <string name="sett_cache_quality_highestres">Allows you to see even clearer, but does not save traffic
+        and does not optimize the application.</string>
     <string name="sett_cache_quality_oomrisk">This may cause the application to become unstable!</string>
 	<string name="sett_clear_img_cache">Clear</string>
 	<string name="img_cache_cleared">Cache cleared!</string>

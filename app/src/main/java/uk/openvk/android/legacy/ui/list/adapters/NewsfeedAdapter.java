@@ -161,6 +161,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         }
 
         void bind(final int position) {
+            convertView.setTag("newsfeed_posts" + position);
+            String tag = (String) convertView.getTag();
             final WallPost item = getItem(position);
             if(item.post_source.type.equals("api")) {
                 api_app_indicator.setVisibility(View.VISIBLE);
@@ -352,6 +354,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     error_label.setVisibility(View.VISIBLE);
                 } else if (item.attachments.get(i).status.equals("done") &&
                         item.attachments.get(i).type.equals("photo")) {
+                    LinearLayout.LayoutParams lp =
+                            (LinearLayout.LayoutParams) photo_progress_layout.getLayoutParams();
+                    lp.height = (int) (80 * (ctx.getResources().getDisplayMetrics().scaledDensity));
+                    photo_progress_layout.setLayoutParams(lp);
                     if (item.attachments.get(i).getContent() != null) {
                         post_photo.setImageBitmap(((PhotoAttachment)
                                 item.attachments.get(0).getContent()).photo);
