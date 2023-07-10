@@ -387,6 +387,17 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 post_video.setLayoutParams(lp);
                             }
                         });
+                        post_video.getViewTreeObserver().addOnGlobalLayoutListener(
+                            new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
+                                    float attachment_height = widescreen_aspect_ratio * 9;
+                                    LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) post_video.getLayoutParams();
+                                    lp.height = (int) attachment_height;
+                                    post_video.setLayoutParams(lp);
+                                }
+                        });
                         post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
