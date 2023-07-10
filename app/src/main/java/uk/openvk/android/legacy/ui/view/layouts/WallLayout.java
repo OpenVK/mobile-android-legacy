@@ -125,7 +125,12 @@ public class WallLayout extends LinearLayout {
                 wallView.setLayoutManager(llm);
                 wallView.setAdapter(wallAdapter);
             } else {
-                wallAdapter.notifyDataSetChanged();
+                wallView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        wallAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -136,7 +141,12 @@ public class WallLayout extends LinearLayout {
         if(wallAdapter != null) {
             wallView = (RecyclerView) findViewById(R.id.news_listview);
             wallItems.set(position, item);
-            wallAdapter.notifyItemChanged(position);
+            wallView.post(new Runnable() {
+                @Override
+                public void run() {
+                    wallAdapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 
@@ -229,7 +239,12 @@ public class WallLayout extends LinearLayout {
                         }
                     }
                 }
-                wallAdapter.notifyDataSetChanged();
+                wallView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        wallAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -312,7 +327,12 @@ public class WallLayout extends LinearLayout {
                 }
             }
             try {
-                wallAdapter.notifyDataSetChanged();
+                wallView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        wallAdapter.notifyDataSetChanged();
+                    }
+                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -363,7 +383,12 @@ public class WallLayout extends LinearLayout {
 
     public void refreshAdapter() {
         if(wallAdapter != null) {
-            wallAdapter.notifyDataSetChanged();
+            wallView.post(new Runnable() {
+                @Override
+                public void run() {
+                    wallAdapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 }
