@@ -342,7 +342,11 @@ public class WallLayout extends LinearLayout {
                 wallView.post(new Runnable() {
                     @Override
                     public void run() {
-                        wallAdapter.notifyDataSetChanged();
+                        try {
+                            wallAdapter.notifyDataSetChanged();
+                        } catch (Exception ignore) {
+
+                        }
                     }
                 });
             } catch (Exception ex) {
