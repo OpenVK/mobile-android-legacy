@@ -385,11 +385,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                 group = ovk_api.groups.getList().get(0);
                 updateLayout(group);
                 progressLayout.setVisibility(View.GONE);
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    groupNestedScrollView.setVisibility(View.VISIBLE);
-                } else {
-                    groupScrollView.setVisibility(View.VISIBLE);
-                }
+                groupScrollView.setVisibility(View.VISIBLE);
                 setJoinButtonListener(group.id);
                 group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
                 ovk_api.wall.get(ovk_api.wrapper, -group.id, 25);
