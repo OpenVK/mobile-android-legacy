@@ -84,18 +84,18 @@ public class Ovk implements Parcelable {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
                 JSONObject statistics = json.getJSONObject("response").getJSONObject("statistics");
-                int users_count = 0;
-                int online_users_count = 0;
-                int active_users_count = 0;
-                int groups_count = 0;
-                int wall_posts_count = 0;
-                if(statistics.has("users_count")) users_count = statistics.getInt("users_count");
+                long users_count = 0;
+                long online_users_count = 0;
+                long active_users_count = 0;
+                long groups_count = 0;
+                long wall_posts_count = 0;
+                if(statistics.has("users_count")) users_count = statistics.getLong("users_count");
                 if(statistics.has("online_users_count")) online_users_count =
-                        statistics.getInt("online_users_count");
+                        statistics.getLong("online_users_count");
                 if(statistics.has("active_users_count")) active_users_count =
-                        statistics.getInt("active_users_count");
-                if(statistics.has("groups_count")) groups_count = statistics.getInt("groups_count");
-                if(statistics.has("wall_posts_count")) wall_posts_count = statistics.getInt("wall_posts_count");
+                        statistics.getLong("active_users_count");
+                if(statistics.has("groups_count")) groups_count = statistics.getLong("groups_count");
+                if(statistics.has("wall_posts_count")) wall_posts_count = statistics.getLong("wall_posts_count");
                 instance_stats = new InstanceStatistics(users_count, online_users_count, active_users_count,
                         groups_count, wall_posts_count);
                 JSONObject admins = json.getJSONObject("response").getJSONObject("administrators");

@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,7 @@ public class InstanceCountersAdapter extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null) {
@@ -79,9 +81,18 @@ public class InstanceCountersAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.list_item_instance_counter, null);
         }
         if(convertView != null) {
-            TextView count = convertView.findViewById(R.id.instance_count);
+            TextView counter = convertView.findViewById(R.id.instance_count);
             TextView label = convertView.findViewById(R.id.instance_label);
-            count.setText(String.format("%s", (Integer) getItem(position)));
+            long count = (Long) getItem(position);
+            if(count >= 1000000000L) {
+                counter.setText(String.format("%.1fB", (double)count / (double)1000000000));
+            } else if(count >= 1000000L) {
+                counter.setText(String.format("%.1fM", (double)count / (double)1000000));
+            } else if(count >= 1000L) {
+                counter.setText(String.format("%.1fK", (double)count / (double)1000));
+            } else {
+                counter.setText(String.format("%s", count));
+            }
             int res_id = 0;
             if(position == 0) {
                 res_id = R.plurals.instance_users;

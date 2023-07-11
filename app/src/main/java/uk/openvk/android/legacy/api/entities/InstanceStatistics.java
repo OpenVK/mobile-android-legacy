@@ -16,13 +16,13 @@ package uk.openvk.android.legacy.api.entities;
  **/
 
 public class InstanceStatistics {
-    public int users_count;
-    public int online_users_count;
-    public int active_users_count;
-    public int groups_count;
-    public int wall_posts_count;
-    public InstanceStatistics(int users_count, int online_users_count, int active_users_count,
-                              int groups_count, int wall_posts_count) {
+    public long users_count;
+    public long online_users_count;
+    public long active_users_count;
+    public long groups_count;
+    public long wall_posts_count;
+    public InstanceStatistics(long users_count, long online_users_count, long active_users_count,
+                              long groups_count, long wall_posts_count) {
         this.users_count = users_count;
         this.online_users_count = online_users_count;
         this.active_users_count = active_users_count;

@@ -113,15 +113,20 @@ public class ActionBarLayout extends LinearLayout {
         if(counters != null) {
             long total_count = (counters.friends_requests + counters.new_messages);
             if (total_count > 9999999) {
-                ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%sM", (int) ((double) total_count / (double) 1000000)));
+                ((TextView) findViewById(R.id.notif_badge)).setText(
+                        String.format("%sM", (int) ((double) total_count / (double) 1000000)));
             } else if (total_count > 999999) {
-                ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%.1fM", ((double) total_count / (double) 1000000)));
+                ((TextView) findViewById(R.id.notif_badge)).setText(
+                        String.format("%.1fM", ((double) total_count / (double) 1000000)));
             } else if (total_count > 9999) {
-                ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%sK", (int) ((double) total_count / (double) 1000)));
+                ((TextView) findViewById(R.id.notif_badge)).setText(
+                        String.format("%sK", (int) ((double) total_count / (double) 1000)));
             } else if (total_count > 999) {
-                ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%.1fK", ((double) total_count / (double) 1000)));
+                ((TextView) findViewById(R.id.notif_badge)).setText(
+                        String.format("%.1fK", ((double) total_count / (double) 1000)));
             } else {
-                ((TextView) findViewById(R.id.notif_badge)).setText(String.format("%s", total_count));
+                ((TextView) findViewById(R.id.notif_badge)).setText(
+                        String.format("%s", total_count));
             }
             if (total_count > 0) {
                 (findViewById(R.id.notif_badge)).setVisibility(VISIBLE);
