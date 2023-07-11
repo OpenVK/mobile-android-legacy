@@ -105,6 +105,12 @@ public class SlidingMenuLayout extends LinearLayout {
                 }
             }
         });
+        (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toogleAccountMenu();
+            }
+        });
         TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
         TextView version_name = findViewById(R.id.version_label);
