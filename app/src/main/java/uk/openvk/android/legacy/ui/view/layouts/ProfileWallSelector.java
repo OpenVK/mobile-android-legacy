@@ -57,6 +57,6 @@ public class ProfileWallSelector extends LinearLayout {
     }
 
     public void setToGroup() {
-        ((TextView) findViewById(R.id.profile_wall_owner_posts_tab)).setVisibility(GONE);
+        (findViewById(R.id.profile_wall_owner_posts_tab)).setVisibility(GONE);
     }
 }
