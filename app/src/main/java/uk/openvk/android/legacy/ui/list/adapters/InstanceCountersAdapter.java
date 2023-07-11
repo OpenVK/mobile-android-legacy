@@ -50,7 +50,7 @@ public class InstanceCountersAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Long getItem(int position) {
         if(position == 0) {
             return statistics.users_count;
         } else if(position == 1) {
@@ -62,9 +62,9 @@ public class InstanceCountersAdapter extends BaseAdapter {
         } else if(position == 4) {
             return statistics.wall_posts_count;
         } else if(position == 5) {
-            return admins;
+            return (long) admins;
         } else {
-            return 0;
+            return 0L;
         }
     }
 
@@ -107,13 +107,16 @@ public class InstanceCountersAdapter extends BaseAdapter {
             } else if(position == 5) {
                 res_id = R.plurals.instance_administrators;
             }
+
+            int end_number = Global.getEndNumberFromLong((Long) getItem(position));
+
             if(position == 1) {
                 label.setText(ctx.getResources().getString(res_id));
             } else {
                 label.setText(Global.getPluralQuantityString(
                         ctx,
                         res_id,
-                        (Integer) getItem(position)
+                        end_number
                 ));
             }
         }

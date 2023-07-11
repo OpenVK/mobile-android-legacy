@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ellipsize="marquee"
-        android:fontFamily="sans-serif-condensed"
         android:marqueeRepeatLimit="marquee_forever"
         android:singleLine="true"
         android:text="0"
