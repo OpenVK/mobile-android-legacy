@@ -159,7 +159,7 @@
                 <uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector
                     android:id="@+id/wall_selector"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="42dp" />
 
                 <uk.openvk.android.legacy.ui.view.layouts.WallLayout
                     android:id="@+id/wall_layout"
