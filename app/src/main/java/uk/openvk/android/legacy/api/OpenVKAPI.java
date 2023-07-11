@@ -78,5 +78,6 @@ public class OpenVKAPI {
         wall = new Wall();
         notes = new Notes();
         photos = new Photos();
+        ovk = new Ovk();
     }
 }

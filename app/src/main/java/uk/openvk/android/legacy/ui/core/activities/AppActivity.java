@@ -1080,13 +1080,11 @@ public class AppActivity extends TranslucentFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
             } else if(message == HandlerMessages.OVK_CHECK_HTTP) {
-                ovk_api.ovk = new Ovk();
                 mainSettingsFragment.setConnectionType(
                         HandlerMessages.OVK_CHECK_HTTP, ovk_api.wrapper.proxy_connection);
                 ovk_api.ovk.getVersion(ovk_api.wrapper);
                 ovk_api.ovk.aboutInstance(ovk_api.wrapper);
             } else if(message == HandlerMessages.OVK_CHECK_HTTPS) {
-                ovk_api.ovk = new Ovk();
                 mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTPS,
                         ovk_api.wrapper.proxy_connection);
                 ovk_api.ovk.getVersion(ovk_api.wrapper);

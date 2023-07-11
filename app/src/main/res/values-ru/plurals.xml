@@ -43,6 +43,34 @@
         <item quantity="many">%d голосов</item>
     </plurals>
 
+    <plurals name="instance_users">
+        <item quantity="other">пользователей</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">пользователь</item>
+        <item quantity="few">пользователя</item>
+        <item quantity="many">пользователей</item>
+    </plurals>
+
+    <plurals name="instance_active_users">
+        <item quantity="other">активных</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">активный</item>
+        <item quantity="few">активных</item>
+        <item quantity="many">активных</item>
+    </plurals>
+
+    <plurals name="instance_posts">
+        <item quantity="other">записей</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">запись</item>
+        <item quantity="few">записи</item>
+        <item quantity="many">записей</item>
+    </plurals>
+
+    <plurals name="instance_administrators">
+        <item quantity="other">администраторов</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">администратор</item>
+        <item quantity="few">администратора</item>
+        <item quantity="many">администраторов</item>
+    </plurals>
+
     <plurals name="profile_friends">
         <item quantity="other">друзей</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">друг</item>

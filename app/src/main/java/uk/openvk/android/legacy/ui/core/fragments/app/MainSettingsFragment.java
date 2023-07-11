@@ -489,17 +489,27 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
     public void setAboutInstanceData(Ovk ovk) {
         TextView users_counter = (TextView) about_instance_view.findViewById(R.id.instance_users_count);
-        users_counter.setText(getResources().getString(R.string.instance_users_count, ovk.instance_stats.users_count));
+        users_counter.setText(
+                Global.getPluralQuantityString(getContext(), R.plurals.instance_users, ovk.instance_stats.users_count)
+        );
         TextView online_users_counter = (TextView) about_instance_view.findViewById(R.id.instance_online_users_count);
         online_users_counter.setText(getResources().getString(R.string.instance_online_users_count, ovk.instance_stats.online_users_count));
         TextView active_users_counter = (TextView) about_instance_view.findViewById(R.id.instance_active_users_count);
-        active_users_counter.setText(getResources().getString(R.string.instance_active_users_count, ovk.instance_stats.active_users_count));
+        active_users_counter.setText(
+                Global.getPluralQuantityString(getContext(), R.plurals.instance_active_users, ovk.instance_stats.active_users_count)
+        );
         TextView groups_counter = (TextView) about_instance_view.findViewById(R.id.instance_groups_count);
-        groups_counter.setText(getResources().getString(R.string.instance_groups_count, ovk.instance_stats.groups_count));
+        groups_counter.setText(
+                Global.getPluralQuantityString(getContext(), R.plurals.groups, ovk.instance_stats.groups_count)
+        );
         TextView wall_posts_counter = (TextView) about_instance_view.findViewById(R.id.instance_wall_posts_count);
-        wall_posts_counter.setText(getResources().getString(R.string.instance_wall_posts_count, ovk.instance_stats.wall_posts_count));
+        wall_posts_counter.setText(
+                Global.getPluralQuantityString(getContext(), R.plurals.instance_posts, ovk.instance_stats.wall_posts_count)
+        );
         TextView admins_counter = (TextView) about_instance_view.findViewById(R.id.instance_admins_count);
-        admins_counter.setText(getResources().getString(R.string.instance_admins_count, ovk.instance_admins.size()));
+        admins_counter.setText(
+                Global.getPluralQuantityString(getContext(), R.plurals.instance_administrators, ovk.instance_admins.size())
+        );
         ((LinearLayout) about_instance_view.findViewById(R.id.instance_statistics_ll)).setVisibility(View.VISIBLE);
         ((TextView) about_instance_view.findViewById(R.id.instance_links_label2)).setVisibility(View.GONE);
         ((TextView) about_instance_view.findViewById(R.id.instance_links_label3)).setVisibility(View.GONE);

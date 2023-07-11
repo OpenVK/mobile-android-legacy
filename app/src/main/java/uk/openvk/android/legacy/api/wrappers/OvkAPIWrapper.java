@@ -1020,6 +1020,8 @@ public class OvkAPIWrapper {
     }
 
     public void checkHTTPS() {
+        OkHttpClient httpClient = null;
+        HttpClient httpClientLegacy = null;
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             BasicHttpParams basicHttpParams = new BasicHttpParams();
             HttpProtocolParams.setUseExpectContinue(basicHttpParams, false);
@@ -1051,6 +1053,8 @@ public class OvkAPIWrapper {
         url = String.format("http://%s", server);
         if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Checking %s...", server));
         final String fUrl = url;
+        final HttpClient finalHttpClientLegacy = httpClientLegacy;
+        final OkHttpClient finalHttpClient = httpClient;
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
@@ -1070,12 +1074,12 @@ public class OvkAPIWrapper {
                 }
                 try {
                     if(legacy_mode) {
-                        HttpResponse response = httpClientLegacy.execute(request_legacy);
+                        HttpResponse response = finalHttpClientLegacy.execute(request_legacy);
                         StatusLine statusLine = response.getStatusLine();
                         response_body = EntityUtils.toString(response.getEntity());
                         response_code = statusLine.getStatusCode();
                     } else {
-                        Response response = httpClient.newCall(request).execute();
+                        Response response = finalHttpClient.newCall(request).execute();
                         response_body = response.body().string();
                         response_code = response.code();
                     }
