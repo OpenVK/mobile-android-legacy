@@ -318,7 +318,11 @@ public class Newsfeed implements Parcelable {
                             }
                             break;
                         case "high":
-                            photoAttachment.url = photo_high_size;
+                            if(photo_high_size != null && photo_high_size.length() > 0) {
+                                photoAttachment.url = photo_high_size;
+                            } else {
+                                photoAttachment.url = photo_medium_size;
+                            }
                             if(!photo_sizes.getJSONObject(5).isNull("width")) {
                                 photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
                             } else {
@@ -331,7 +335,13 @@ public class Newsfeed implements Parcelable {
                             }
                             break;
                         case "original":
-                            photoAttachment.url = photo_original_size;
+                            if(photo_original_size != null && photo_original_size.length() > 0) {
+                                photoAttachment.url = photo_original_size;
+                            } else if(photo_high_size != null && photo_high_size.length() > 0) {
+                                photoAttachment.url = photo_high_size;
+                            } else {
+                                photoAttachment.url = photo_medium_size;
+                            }
                             if(!photo_sizes.getJSONObject(5).isNull("width")) {
                                 photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
                             } else {
