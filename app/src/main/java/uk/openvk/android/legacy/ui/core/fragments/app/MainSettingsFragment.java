@@ -514,8 +514,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         );
         TextView groups_counter = (TextView) about_instance_view.findViewById(R.id.instance_groups_count);
         groups_counter.setText(
-                String.format("%s %s",
-                        ovk.instance_stats.groups_count,
+                String.format("%s",
                         Global.getPluralQuantityString(
                                 getContext(),
                                 R.plurals.groups,
