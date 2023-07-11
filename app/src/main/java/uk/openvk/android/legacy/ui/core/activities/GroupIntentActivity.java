@@ -285,13 +285,8 @@ public class GroupIntentActivity extends TranslucentActivity {
     private void installLayouts() {
         progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            groupNestedScrollView = (InfinityNestedScrollView) findViewById(R.id.group_scrollview);
-            groupNestedScrollView.setVisibility(View.GONE);
-        } else {
-            groupScrollView = (InfinityScrollView) findViewById(R.id.group_scrollview);
-            groupScrollView.setVisibility(View.GONE);
-        }
+        groupScrollView = (InfinityScrollView) findViewById(R.id.group_scrollview);
+        groupScrollView.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
