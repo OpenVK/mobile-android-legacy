@@ -67,6 +67,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     private Context ctx;
     public LruCache memCache;
     private int resize_videoattachviews;
+    private int resize_photoattachments;
 
     public NewsfeedAdapter(Context context, ArrayList<WallPost> posts) {
         ctx = context;
@@ -327,6 +328,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         item.attachments.get(i).type.equals("photo")) {
                     photo_progress_layout.setVisibility(View.GONE);
                     if (item.attachments.get(i).getContent() != null) {
+                        if(resize_photoattachments < 1) {
+                            resize_photoattachments++;
+                        }
                         post_photo.setImageBitmap(((PhotoAttachment)
                                 item.attachments.get(0).getContent()).photo);
                         post_photo.setVisibility(View.VISIBLE);
