@@ -18,7 +18,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="#ffffff"
+    android:background="#e3e4e6"
     android:orientation="horizontal"
     android:paddingBottom="4dip"
     android:paddingLeft="11dip"
