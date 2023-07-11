@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -48,6 +49,8 @@ import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
@@ -364,7 +367,6 @@ public class Global {
                     }
                 }
             }
-            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -514,8 +516,25 @@ public class Global {
                         editor.putString("current_instance", accountArray.get(selectedPosition[0]).instance);
                         editor.putLong("current_uid", accountArray.get(selectedPosition[0]).id);
                         editor.commit();
-                        Toast.makeText(ctx, R.string.sett_app_restart_required,
-                                Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                        if(ctx instanceof Activity) {
+                            ((Activity) ctx).finish();
+                            Intent intent = new Intent(ctx, AppActivity.class);
+                            ctx.startActivity(intent);
+                            System.exit(0);
+                        } else {
+                            Toast.makeText(ctx, R.string.sett_app_restart_required,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                ctx.getResources().getString(R.string.add),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(ctx, AuthActivity.class);
+                        ctx.startActivity(intent);
                     }
                 });
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,

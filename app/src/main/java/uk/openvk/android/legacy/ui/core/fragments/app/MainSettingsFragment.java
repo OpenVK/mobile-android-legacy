@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.Timer;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
@@ -587,81 +588,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     }
 
     public void openChangeAccountDialog() {
-        int valuePos = 0;
-        selectedPosition = 0;
-        if(global_prefs == null) {
-            global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        }
-        long current_uid = global_prefs.getLong("current_uid", 0);
-        String current_instance = global_prefs.getString("current_instance", "");
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        String package_name = getContext().getApplicationContext().getPackageName();
-        @SuppressLint("SdCardPath") String profile_path =
-                String.format("/data/data/%s/shared_prefs", package_name);
-        File prefs_directory = new File(profile_path);
-        File[] prefs_files = prefs_directory.listFiles();
-        String file_extension;
-        String account_names[] = new String[0];
-        Context app_ctx = getContext().getApplicationContext();
-        accountArray.clear();
-        try {
-            for (File prefs_file : prefs_files) {
-                String filename = prefs_file.getName();
-                if (prefs_file.getName().startsWith("instance")
-                        && prefs_file.getName().endsWith(".xml")) {
-                    SharedPreferences prefs =
-                            getContext().getSharedPreferences(
-                                    filename.substring(0, filename.length() - 4), 0);
-                    String name = prefs.getString("account_name", "[Unknown account]");
-                    long uid = prefs.getLong("uid", 0);
-                    String server = prefs.getString("server", "");
-                    if(server.length() > 0 && uid > 0 && name.length() > 0) {
-                        InstanceAccount account = new InstanceAccount(name, uid, server);
-                        accountArray.add(account);
-                    }
-                }
-            }
-            account_names = new String[accountArray.size()];
-            for(int i = 0; i < accountArray.size(); i++) {
-                account_names[i] = accountArray.get(i).name;
-                if (accountArray.get(i).instance.equals(current_instance)) {
-                    valuePos = i;
-                }
-            }
-            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        builder.setSingleChoiceItems(account_names, valuePos,
-            new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    selectedPosition = which;
-                }
-            }
-        );
-        OvkAlertDialog dialog = new OvkAlertDialog(getContext());
-        dialog.build(builder, getResources().getString(R.string.sett_account), "", null, "listDlg");
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = global_prefs.edit();
-                        editor.putString("current_instance", accountArray.get(selectedPosition).instance);
-                        editor.putLong("current_uid", accountArray.get(selectedPosition).id);
-                        editor.commit();
-                        Toast.makeText(getContext(), R.string.sett_app_restart_required,
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                getResources().getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        dialog.show();
+        Global global = new Global();
+        global.openChangeAccountDialog(getActivity(), global_prefs);
     }
 }
