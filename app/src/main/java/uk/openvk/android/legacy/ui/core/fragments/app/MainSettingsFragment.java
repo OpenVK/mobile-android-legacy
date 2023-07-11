@@ -1,18 +1,14 @@
 package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.accounts.AccountManager;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
@@ -20,19 +16,17 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Timer;
 
 import uk.openvk.android.legacy.BuildConfig;
@@ -52,6 +46,7 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.core.activities.NetworkSettingsActivity;
+import uk.openvk.android.legacy.ui.list.adapters.InstanceCountersAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -444,7 +439,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     private void openAboutInstanceDialog() {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(getContext());
-        about_instance_view = getLayoutInflater(null).inflate(R.layout.layout_about_instance, null, false);
+        about_instance_view = getLayoutInflater(null).inflate(R.layout.dialog_about_instance, null, false);
         TextView server_name = (TextView) about_instance_view.findViewById(R.id.server_addr_label2);
         ((TextView) about_instance_view.findViewById(R.id.connection_type_label2)).setText(getResources().getString(R.string.loading));
         ((TextView) about_instance_view.findViewById(R.id.instance_version_label2)).setText(getResources().getString(R.string.loading));
@@ -488,61 +483,30 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     }
 
     public void setAboutInstanceData(Ovk ovk) {
-        TextView users_counter = (TextView) about_instance_view.findViewById(R.id.instance_users_count);
-        users_counter.setText(
-                String.format("%s %s", ovk.instance_stats.users_count,
-                    Global.getPluralQuantityString(
-                            getContext(),
-                            R.plurals.instance_users,
-                            ovk.instance_stats.users_count
-                    )
-                )
-        );
-        TextView online_users_counter = (TextView) about_instance_view.findViewById(R.id.instance_online_users_count);
-        online_users_counter.setText(getResources().getString(R.string.instance_online_users_count,
-                ovk.instance_stats.online_users_count));
-        TextView active_users_counter = (TextView) about_instance_view.findViewById(R.id.instance_active_users_count);
-        active_users_counter.setText(
-                String.format("%s %s",
-                        ovk.instance_stats.active_users_count,
-                        Global.getPluralQuantityString(
-                                getContext(),
-                                R.plurals.instance_active_users,
-                                ovk.instance_stats.active_users_count
-                        )
-                )
-        );
-        TextView groups_counter = (TextView) about_instance_view.findViewById(R.id.instance_groups_count);
-        groups_counter.setText(
-                String.format("%s",
-                        Global.getPluralQuantityString(
-                                getContext(),
-                                R.plurals.groups,
-                                ovk.instance_stats.groups_count
-                        )
-                )
-        );
-        TextView wall_posts_counter = (TextView) about_instance_view.findViewById(R.id.instance_wall_posts_count);
-        wall_posts_counter.setText(
-                String.format("%s %s",
-                        ovk.instance_stats.wall_posts_count,
-                        Global.getPluralQuantityString(
-                                getContext(),
-                                R.plurals.instance_posts,
-                                ovk.instance_stats.wall_posts_count
-                        )
-                )
-        );
-        TextView admins_counter = (TextView) about_instance_view.findViewById(R.id.instance_admins_count);
-        admins_counter.setText(
-                String.format("%s %s",
-                        ovk.instance_admins.size(),
-                        Global.getPluralQuantityString(
-                                getContext(),
-                                R.plurals.instance_administrators,
-                                ovk.instance_admins.size())
-                )
-        );
+        InstanceCountersAdapter adapter = new InstanceCountersAdapter(getContext(), ovk.instance_stats, ovk.instance_admins);
+        GridView instance_gridview = ((GridView) about_instance_view.findViewById(R.id.instance_grid_view));
+        ((GridView) about_instance_view.findViewById(R.id.instance_grid_view)).setAdapter(adapter);
+
+        int totalHeight = 0;
+        int items = adapter.getCount();
+        int rows = 0;
+        int columns = 4;
+
+        View listItem = adapter.getView(0, null, instance_gridview);
+        listItem.measure(0, 0);
+        totalHeight = listItem.getMeasuredHeight();
+
+        float x = 1;
+        if( items > columns ){
+            x = items/columns;
+            rows = (int) (x + 1);
+            totalHeight *= rows;
+        }
+
+        ViewGroup.LayoutParams params = instance_gridview.getLayoutParams();
+        params.height = (int) (totalHeight + (8 * getResources().getDisplayMetrics().scaledDensity));
+        instance_gridview.setLayoutParams(params);
+
         ((LinearLayout) about_instance_view.findViewById(R.id.instance_statistics_ll)).setVisibility(View.VISIBLE);
         ((TextView) about_instance_view.findViewById(R.id.instance_links_label2)).setVisibility(View.GONE);
         ((TextView) about_instance_view.findViewById(R.id.instance_links_label3)).setVisibility(View.GONE);

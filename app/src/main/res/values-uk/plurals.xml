@@ -65,10 +65,10 @@
     </plurals>
 
     <plurals name="instance_administrators">
-        <item quantity="other">адміністраторів</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">адміністратор</item>
-        <item quantity="few">адміністратора</item>
-        <item quantity="many">адміністраторів</item>
+        <item quantity="other">адмін-ів</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">адмін.</item>
+        <item quantity="few">адмін-а</item>
+        <item quantity="many">адмін-ів</item>
     </plurals>
 
     <plurals name="profile_friends">

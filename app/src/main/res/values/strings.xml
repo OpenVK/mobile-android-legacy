@@ -1101,6 +1101,7 @@
 	<string name="instance_statistics">Statistics:</string>
 	<string name="instance_users_count">%d users</string>
 	<string name="instance_online_users_count">%d online users</string>
+	<string name="instance_online_users">online users</string>
 	<string name="instance_active_users_count">%d active users</string>
 	<string name="instance_groups_count">%d groups</string>
 	<string name="instance_wall_posts_count">%d wall posts</string>

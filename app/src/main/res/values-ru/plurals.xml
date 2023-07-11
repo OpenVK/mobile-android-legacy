@@ -44,10 +44,10 @@
     </plurals>
 
     <plurals name="instance_users">
-        <item quantity="other">пользователей</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">пользователь</item>
-        <item quantity="few">пользователя</item>
-        <item quantity="many">пользователей</item>
+        <item quantity="other">пользов-ей</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">пользов-ь</item>
+        <item quantity="few">пользов-я</item>
+        <item quantity="many">пользов-ей</item>
     </plurals>
 
     <plurals name="instance_active_users">
@@ -65,10 +65,10 @@
     </plurals>
 
     <plurals name="instance_administrators">
-        <item quantity="other">администраторов</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">администратор</item>
-        <item quantity="few">администратора</item>
-        <item quantity="many">администраторов</item>
+        <item quantity="other">админ-ов</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">админ.</item>
+        <item quantity="few">админ-а</item>
+        <item quantity="many">админ-ов</item>
     </plurals>
 
     <plurals name="profile_friends">

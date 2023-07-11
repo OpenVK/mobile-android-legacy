@@ -1198,6 +1198,7 @@
     <string name="instance_statistics">Статистика:</string>
     <string name="instance_users_count">%d користувачів</string>
     <string name="instance_online_users_count">%d в мережі</string>
+    <string name="instance_online_users">в мережі</string>
     <string name="instance_active_users_count">%d активних</string>
     <string name="instance_groups_count">%d груп</string>
     <string name="instance_wall_posts_count">%d записів</string>

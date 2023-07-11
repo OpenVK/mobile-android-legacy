@@ -45,7 +45,7 @@
         <item quantity="other">active users</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">active user</item>
         <item quantity="few">active user</item>
-        <item quantity="many">active user</item>
+        <item quantity="many">active users</item>
     </plurals>
 
     <plurals name="instance_posts">
@@ -56,10 +56,10 @@
     </plurals>
 
     <plurals name="instance_administrators">
-        <item quantity="other">administrators</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">administrator</item>
-        <item quantity="few">administrators</item>
-        <item quantity="many">administrators</item>
+        <item quantity="other">admins</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">admin</item>
+        <item quantity="few">admins</item>
+        <item quantity="many">admins</item>
     </plurals>
 
     <plurals name="profile_friends">
