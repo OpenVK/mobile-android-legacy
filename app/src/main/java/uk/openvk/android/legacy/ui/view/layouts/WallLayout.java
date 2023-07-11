@@ -299,8 +299,8 @@ public class WallLayout extends LinearLayout {
                         item.avatar = bitmap;
                     }
                     wallItems.set(i, item);
-                } catch (OutOfMemoryError err) {
-                    err.printStackTrace();
+                } catch (Exception | OutOfMemoryError ex) {
+                    ex.printStackTrace();
                 }
             }
             wallAdapter.notifyDataSetChanged();

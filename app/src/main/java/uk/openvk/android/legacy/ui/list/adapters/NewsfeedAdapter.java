@@ -66,6 +66,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     private ArrayList<WallPost> items = new ArrayList<>();
     private Context ctx;
     public LruCache memCache;
+    private int resize_videoattachviews;
 
     public NewsfeedAdapter(Context context, ArrayList<WallPost> posts) {
         ctx = context;
@@ -350,6 +351,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         post_video.setAttachment(videoAttachment);
                         post_video.setVisibility(View.VISIBLE);
                         post_video.setThumbnail(item.owner_id);
+                        if(resize_videoattachviews < 1) {
+                            post_video.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
+                                    float attachment_height = widescreen_aspect_ratio * 9;
+                                    LinearLayout.LayoutParams lp =
+                                            ((LinearLayout.LayoutParams) post_video.getLayoutParams());
+                                    lp.height = (int) attachment_height;
+                                    post_video.setLayoutParams(lp);
+                                }
+                            });
+                            resize_videoattachviews++;
+                        }
                         post_video.getViewTreeObserver().addOnGlobalLayoutListener(
                                 new ViewTreeObserver.OnGlobalLayoutListener() {
                                     @Override
