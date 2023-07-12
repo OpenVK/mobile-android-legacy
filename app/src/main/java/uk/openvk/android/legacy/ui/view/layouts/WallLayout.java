@@ -326,8 +326,8 @@ public class WallLayout extends LinearLayout {
                 wallView.setLayoutParams(layoutParams);
             } else {
                 wallView = (RecyclerView) findViewById(R.id.wall_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
+                        (500 * (getResources().getDisplayMetrics().density)),
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 wallView.setLayoutParams(layoutParams);

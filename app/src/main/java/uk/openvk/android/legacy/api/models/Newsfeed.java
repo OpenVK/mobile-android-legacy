@@ -323,12 +323,12 @@ public class Newsfeed implements Parcelable {
                             } else {
                                 photoAttachment.url = photo_medium_size;
                             }
-                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
+                            if(!photo_sizes.getJSONObject(8).isNull("width")) {
                                 photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
                             } else {
                                 photoAttachment.size[0] = 1024;
                             }
-                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
+                            if(!photo_sizes.getJSONObject(8).isNull("height")) {
                                 photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
                             } else {
                                 photoAttachment.size[1] = 768;
@@ -342,12 +342,12 @@ public class Newsfeed implements Parcelable {
                             } else {
                                 photoAttachment.url = photo_medium_size;
                             }
-                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
+                            if(!photo_sizes.getJSONObject(8).isNull("width")) {
                                 photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
                             } else {
                                 photoAttachment.size[0] = 2560;
                             }
-                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
+                            if(!photo_sizes.getJSONObject(8).isNull("height")) {
                                 photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
                             } else {
                                 photoAttachment.size[1] = 1920;

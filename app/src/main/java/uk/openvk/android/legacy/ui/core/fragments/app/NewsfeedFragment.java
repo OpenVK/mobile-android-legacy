@@ -312,7 +312,7 @@ public class NewsfeedFragment extends Fragment {
                         newsfeedView.setLayoutParams(layoutParams);
                     } else {
                         LinearLayout.LayoutParams layoutParams = new LinearLayout.
-                                LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                LayoutParams((int) (500 * (getResources().getDisplayMetrics().density)),
                                 ViewGroup.LayoutParams.WRAP_CONTENT);
                         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                         newsfeedView.setLayoutParams(layoutParams);
