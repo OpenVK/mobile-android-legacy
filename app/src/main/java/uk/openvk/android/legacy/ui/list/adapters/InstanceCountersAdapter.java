@@ -77,7 +77,7 @@ public class InstanceCountersAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null) {
-            LayoutInflater inflater = ctx.getSystemService(LayoutInflater.class);
+            LayoutInflater inflater = LayoutInflater.from(ctx);
             convertView = inflater.inflate(R.layout.list_item_instance_counter, null);
         }
         if(convertView != null) {
