@@ -13,3 +13,4 @@ ffmp-arm/build.gradle
 app/.signing/app.prop
 app/.signing/openvk.ks
 app/.signing/openvk.jks
+*.li
