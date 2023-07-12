@@ -1520,45 +1520,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void viewPhotoAttachment(int position) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = ovk_api.wall.getWallItems().get(position);
-            intent.putExtra("where", "wall");
-        } else {
-            item = ovk_api.newsfeed.getWallPosts().get(position);
-            intent.putExtra("where", "newsfeed");
-        }
-        try {
-            if (global_prefs.getString("current_screen", "").equals("profile")) {
-                intent.putExtra("local_photo_addr",
-                        String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
-                                getCacheDir(),
-                                item.owner_id, item.post_id));
-            } else {
-                intent.putExtra("local_photo_addr",
-                        String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                getCacheDir(),
-                                item.owner_id, item.post_id));
-            }
-            if(item.attachments != null) {
-                for(int i = 0; i < item.attachments.size(); i++) {
-                    if(item.attachments.get(i).type.equals("photo")) {
-                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).
-                                getContent());
-                        intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", item.author_id);
-                        intent.putExtra("photo_id", photo.id);
-                    }
-                }
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void selectNewsSpinnerItem(int position) {
         Spinner spinner = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {

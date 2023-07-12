@@ -39,6 +39,7 @@ import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
+import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.view.layouts.CommonAttachView;
@@ -302,7 +303,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 loadPhotoAttachment((PhotoAttachment) repost.attachments.get(i).getContent(),
                                         repost.owner_id, repost.post_id, original_post_photo);
                             } else {
-                                loadPhotoPlaceholder((PhotoAttachment) repost.attachments.get(i).getContent(),
+                                loadPhotoPlaceholder(repost, (PhotoAttachment) repost.attachments.get(i).getContent(),
                                         original_post_photo);
                             }
                             original_post_photo.setVisibility(View.VISIBLE);
@@ -347,7 +348,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     if(item.attachments.get(i).status.equals("done")) {
                         loadPhotoAttachment(photoAttachment, item.owner_id, item.post_id, post_photo);
                     } else {
-                        loadPhotoPlaceholder(photoAttachment, post_photo);
+                        loadPhotoPlaceholder(item, photoAttachment, post_photo);
                     }
                 } else if (item.attachments.get(i).status.equals("not_supported") &&
                         !item.attachments.get(i).type.equals("note")) {
@@ -525,7 +526,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             });
         }
 
-        private void loadPhotoPlaceholder(PhotoAttachment photoAttachment, ImageView view) {
+        private void loadPhotoPlaceholder(final WallPost post, PhotoAttachment photoAttachment, ImageView view) {
             Drawable drawable = ctx.getResources().getDrawable(R.drawable.photo_placeholder);
             Canvas canvas = new Canvas();
             Bitmap bitmap = Bitmap.createBitmap(
@@ -535,6 +536,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             drawable.setBounds(0, 0, photoAttachment.size[0], photoAttachment.size[1]);
             drawable.draw(canvas);
             view.setImageBitmap(bitmap);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewPhotoAttachment(post);
+                }
+            });
         }
 
         private void loadPhotoAttachment(PhotoAttachment photoAttachment,
@@ -582,6 +589,43 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             });
+        }
+
+        public void viewPhotoAttachment(WallPost post) {
+            WallPost item;
+            Intent intent = new Intent(ctx.getApplicationContext(), PhotoViewerActivity.class);
+            if (isWall) {
+                intent.putExtra("where", "wall");
+            } else {
+                intent.putExtra("where", "newsfeed");
+            }
+            try {
+                if (isWall) {
+                    intent.putExtra("local_photo_addr",
+                            String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
+                                    ctx.getCacheDir(),
+                                    post.owner_id, post.post_id));
+                } else {
+                    intent.putExtra("local_photo_addr",
+                            String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                    ctx.getCacheDir(),
+                                    post.owner_id, post.post_id));
+                }
+                if(post.attachments != null) {
+                    for(int i = 0; i < post.attachments.size(); i++) {
+                        if(post.attachments.get(i).type.equals("photo")) {
+                            PhotoAttachment photo = ((PhotoAttachment) post.attachments.get(i).
+                                    getContent());
+                            intent.putExtra("original_link", photo.original_url);
+                            intent.putExtra("author_id", post.author_id);
+                            intent.putExtra("photo_id", photo.id);
+                        }
+                    }
+                }
+                ctx.startActivity(intent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
