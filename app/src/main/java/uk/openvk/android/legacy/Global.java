@@ -563,7 +563,7 @@ public class Global {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(ctx, AuthActivity.class);
                         intent.putExtra("accountAuthenticatorResponse",
-                                new AccountAuthenticatorResponse(Parcel.obtain()));
+                                "vedroid parcel rofl xdddddd");
                         Bundle bundle = new Bundle();
                         intent.putExtra("intent", intent);
                         ctx.startActivity(intent);
