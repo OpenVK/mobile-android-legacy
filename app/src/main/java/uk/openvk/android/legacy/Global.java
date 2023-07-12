@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy;
 
 import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,6 +16,8 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.IdRes;
 import android.support.annotation.PluralsRes;
 import android.support.v7.preference.PreferenceManager;
@@ -559,6 +562,10 @@ public class Global {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(ctx, AuthActivity.class);
+                        intent.putExtra("accountAuthenticatorResponse",
+                                new AccountAuthenticatorResponse(Parcel.obtain()));
+                        Bundle bundle = new Bundle();
+                        intent.putExtra("intent", intent);
                         ctx.startActivity(intent);
                     }
                 });
