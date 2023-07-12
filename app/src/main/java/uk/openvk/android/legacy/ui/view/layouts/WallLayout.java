@@ -117,7 +117,7 @@ public class WallLayout extends LinearLayout {
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
-        wallAdapter = new NewsfeedAdapter(ctx, wallItems);
+        wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
         wallView = (RecyclerView) findViewById(R.id.wall_listview);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         wallView.setLayoutManager(llm);

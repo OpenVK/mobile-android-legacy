@@ -81,6 +81,10 @@ import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
     private final String instance;
+    private final boolean isWall;
+    private final ImageLoaderConfiguration imageLoaderConfig;
+    private final DisplayImageOptions displayimageOptions;
+    private final ImageLoader imageLoader;
     private String where;
     private ArrayList<WallPost> items = new ArrayList<>();
     private Context ctx;
@@ -88,10 +92,24 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     private int resize_videoattachviews;
     private int resize_photoattachments;
 
-    public NewsfeedAdapter(Context context, ArrayList<WallPost> posts) {
+    public NewsfeedAdapter(Context context, ArrayList<WallPost> posts, boolean isWall) {
         ctx = context;
         items = posts;
         instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
+        this.isWall = isWall;
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        this.imageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
+                        defaultDisplayImageOptions(displayimageOptions)
+                        .memoryCacheSize(33554432) // 32 MB memory cache
+                        .writeDebugLogs()
+                        .build();
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+        this.imageLoader = ImageLoader.getInstance();
+        imageLoader.init(NewsfeedAdapter.this.imageLoaderConfig);
     }
 
     @Override
@@ -539,25 +557,17 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         private void loadPhotoAttachment(PhotoAttachment photoAttachment,
                                          long owner_id, long post_id, ImageView view) {
-            DisplayImageOptions displayimageOptions =
-                    new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
 
-            ImageLoaderConfiguration config =
-                    new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
-                            defaultDisplayImageOptions(displayimageOptions)
-                            .memoryCacheSize(33554432) // 32 MB memory cache
-                            .writeDebugLogs()
-                            .build();
-
-            if (ImageLoader.getInstance().isInited()) {
-                ImageLoader.getInstance().destroy();
-            }
-            ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.init(config);
-
-            Bitmap bitmap = imageLoader.loadImageSync("file://data/data/" + ctx.getPackageName() + "/cache"
+            String full_filename = "file://data/data/" + ctx.getPackageName() + "/cache"
                     + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
-                    photoAttachment.filename);
+                    photoAttachment.filename;
+            if(isWall) {
+                full_filename = "file://data/data/" + ctx.getPackageName() + "/cache"
+                        + "/" + instance + "/photos_cache/wall_photo_attachments/" +
+                        photoAttachment.filename;
+            }
+
+            Bitmap bitmap = imageLoader.loadImageSync(full_filename);
             view.setImageBitmap(bitmap);
         }
 
