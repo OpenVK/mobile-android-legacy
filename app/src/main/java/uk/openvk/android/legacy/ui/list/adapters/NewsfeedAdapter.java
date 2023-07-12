@@ -7,16 +7,10 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,39 +22,27 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.Global;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
-import uk.openvk.android.legacy.api.models.Newsfeed;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
-import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.view.layouts.CommonAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
-import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -102,7 +84,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         this.imageLoaderConfig =
                 new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
                         defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(33554432) // 32 MB memory cache
+                        .memoryCacheSize(16777216) // 16 MB memory cache
                         .writeDebugLogs()
                         .build();
         if (ImageLoader.getInstance().isInited()) {
@@ -558,11 +540,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private void loadPhotoAttachment(PhotoAttachment photoAttachment,
                                          long owner_id, long post_id, ImageView view) {
 
-            String full_filename = "file://data/data/" + ctx.getPackageName() + "/cache"
+            String full_filename = ctx.getCacheDir()
                     + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
                     photoAttachment.filename;
             if(isWall) {
-                full_filename = "file://data/data/" + ctx.getPackageName() + "/cache"
+                full_filename = ctx.getCacheDir()
                         + "/" + instance + "/photos_cache/wall_photo_attachments/" +
                         photoAttachment.filename;
             }
