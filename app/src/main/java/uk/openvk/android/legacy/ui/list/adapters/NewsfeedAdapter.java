@@ -74,6 +74,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     public LruCache memCache;
     private int resize_videoattachviews;
     private int resize_photoattachments;
+    private int photo_fail_count;
 
     public NewsfeedAdapter(Context context, ArrayList<WallPost> posts, boolean isWall) {
         ctx = context;
@@ -538,7 +539,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 drawable.draw(canvas);
                 view.setImageBitmap(bitmap);
             } catch (OutOfMemoryError ignored) {
-
+                imageLoader.clearMemoryCache();
+                // Retrying again
+                if(photo_fail_count < 5) {
+                    photo_fail_count++;
+                    loadPhotoPlaceholder(post, photoAttachment, view);
+                }
             }
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -550,18 +556,24 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         private void loadPhotoAttachment(PhotoAttachment photoAttachment,
                                          long owner_id, long post_id, ImageView view) {
-
-            String full_filename = "file://" + ctx.getCacheDir()
-                    + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
-                    photoAttachment.filename;
-            if(isWall) {
-                full_filename = "file://" + ctx.getCacheDir()
-                        + "/" + instance + "/photos_cache/wall_photo_attachments/" +
+            try {
+                String full_filename = "file://" + ctx.getCacheDir()
+                        + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
                         photoAttachment.filename;
-            }
+                if (isWall) {
+                    full_filename = "file://" + ctx.getCacheDir()
+                            + "/" + instance + "/photos_cache/wall_photo_attachments/" +
+                            photoAttachment.filename;
+                }
 
-            Bitmap bitmap = imageLoader.loadImageSync(full_filename);
-            view.setImageBitmap(bitmap);
+                Bitmap bitmap = imageLoader.loadImageSync(full_filename);
+                view.setImageBitmap(bitmap);
+            } catch (Exception ex) {
+                if(photo_fail_count < 5) {
+                    photo_fail_count++;
+                    loadPhotoAttachment(photoAttachment, owner_id, post_id, view);
+                }
+            }
         }
 
         public void repost(int position) {
