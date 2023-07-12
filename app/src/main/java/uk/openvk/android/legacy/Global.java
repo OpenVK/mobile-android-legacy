@@ -562,8 +562,7 @@ public class Global {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(ctx, AuthActivity.class);
-                        intent.putExtra("accountAuthenticatorResponse",
-                                "vedroid parcel rofl xdddddd");
+                        intent.putExtra("authFromAppActivity", true);
                         Bundle bundle = new Bundle();
                         intent.putExtra("intent", intent);
                         ctx.startActivity(intent);
