@@ -82,7 +82,9 @@ public class NoteActivity extends TranslucentActivity {
                         "   </body>" +
                         "</html>";
                 WebSettings settings = webView.getSettings();
-                settings.setPluginState(WebSettings.PluginState.ON);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    settings.setPluginState(WebSettings.PluginState.ON);
+                }
                 settings.setSupportZoom(true);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     webView.loadDataWithBaseURL(null, page, "text/html; charset=UTF-8", "UTF-8", null);
