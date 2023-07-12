@@ -540,11 +540,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private void loadPhotoAttachment(PhotoAttachment photoAttachment,
                                          long owner_id, long post_id, ImageView view) {
 
-            String full_filename = ctx.getCacheDir()
+            String full_filename = "file://" + ctx.getCacheDir()
                     + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
                     photoAttachment.filename;
             if(isWall) {
-                full_filename = ctx.getCacheDir()
+                full_filename = "file://" + ctx.getCacheDir()
                         + "/" + instance + "/photos_cache/wall_photo_attachments/" +
                         photoAttachment.filename;
             }
