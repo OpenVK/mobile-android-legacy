@@ -529,13 +529,17 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private void loadPhotoPlaceholder(final WallPost post, PhotoAttachment photoAttachment, ImageView view) {
             Drawable drawable = ctx.getResources().getDrawable(R.drawable.photo_placeholder);
             Canvas canvas = new Canvas();
-            Bitmap bitmap = Bitmap.createBitmap(
-                    photoAttachment.size[0], photoAttachment.size[1], Bitmap.Config.ARGB_8888
-            );
-            canvas.setBitmap(bitmap);
-            drawable.setBounds(0, 0, photoAttachment.size[0], photoAttachment.size[1]);
-            drawable.draw(canvas);
-            view.setImageBitmap(bitmap);
+            try {
+                Bitmap bitmap = Bitmap.createBitmap(
+                        photoAttachment.size[0], photoAttachment.size[1], Bitmap.Config.ARGB_8888
+                );
+                canvas.setBitmap(bitmap);
+                drawable.setBounds(0, 0, photoAttachment.size[0], photoAttachment.size[1]);
+                drawable.draw(canvas);
+                view.setImageBitmap(bitmap);
+            } catch (OutOfMemoryError ignored) {
+
+            }
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
