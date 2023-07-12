@@ -540,6 +540,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 view.setImageBitmap(bitmap);
             } catch (OutOfMemoryError ignored) {
                 imageLoader.clearMemoryCache();
+                imageLoader.clearDiskCache();
                 // Retrying again
                 if(photo_fail_count < 5) {
                     photo_fail_count++;
@@ -568,7 +569,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
                 Bitmap bitmap = imageLoader.loadImageSync(full_filename);
                 view.setImageBitmap(bitmap);
-            } catch (Exception ex) {
+            } catch (OutOfMemoryError oom) {
+                imageLoader.clearMemoryCache();
+                imageLoader.clearDiskCache();
+                // Retrying again
                 if(photo_fail_count < 5) {
                     photo_fail_count++;
                     loadPhotoAttachment(photoAttachment, owner_id, post_id, view);
