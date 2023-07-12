@@ -309,29 +309,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/photo_progress_layout"
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="#10000000"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <ProgressBar
-                android:id="@+id/photo_progress"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:indeterminateDrawable="@drawable/progress_dark"
-                android:padding="12dp"
-                android:visibility="visible" />
-        </LinearLayout>
-
     </LinearLayout>
 
     <ImageView

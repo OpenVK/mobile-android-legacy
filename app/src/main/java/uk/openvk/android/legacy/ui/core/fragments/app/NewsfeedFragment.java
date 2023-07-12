@@ -191,7 +191,7 @@ public class NewsfeedFragment extends Fragment {
                                                         item.repost.newsfeed_item.owner_id,
                                                         item.repost.newsfeed_item.post_id), options);
                                         if (bitmap != null) {
-                                            photoAttachment.photo = bitmap;
+                                            bitmap.recycle();
                                             attachment.status = "done";
                                             item.repost.newsfeed_item.attachments.set(0, attachment);
                                         }
@@ -222,7 +222,7 @@ public class NewsfeedFragment extends Fragment {
                                                     instance,
                                                     item.owner_id, item.post_id), options);
                                     if (bitmap != null) {
-                                        photoAttachment.photo = bitmap;
+                                        bitmap.recycle();
                                         attachment.status = "done";
                                         item.attachments.set(0, attachment);
                                     } else if(photoAttachment.url.length() > 0) {

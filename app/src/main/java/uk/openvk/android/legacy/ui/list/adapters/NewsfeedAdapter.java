@@ -6,11 +6,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,17 +28,30 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
+import uk.openvk.android.legacy.api.models.Newsfeed;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
@@ -129,7 +148,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final CommonAttachView attachment_view;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
-        private LinearLayout photo_progress_layout;
 
         public Holder(View view) {
             super(view);
@@ -157,7 +175,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.repost_expand_text_btn = view.findViewById(R.id.repost_expand_text_btn);
             this.api_app_indicator = view.findViewById(R.id.api_app_indicator);
             this.verified_icon = view.findViewById(R.id.verified_icon);
-            this.photo_progress_layout = view.findViewById(R.id.photo_progress_layout);
         }
 
         void bind(final int position) {
@@ -278,10 +295,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("not_supported")) {
                         error_label.setText(ctx.getResources().getString(R.string.not_supported));
                         error_label.setVisibility(View.VISIBLE);
-                    } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("done")
-                            && item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
+                    } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
                         if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
-                            original_post_photo.setImageBitmap(((PhotoAttachment) item.repost.newsfeed_item.attachments.get(i).getContent()).photo);
+                            WallPost repost = item.repost.newsfeed_item;
+                            if(repost.attachments.get(i).status.equals("done")) {
+                                loadPhotoAttachment((PhotoAttachment) repost.attachments.get(i).getContent(),
+                                        repost.owner_id, repost.post_id, original_post_photo);
+                            } else {
+                                loadPhotoPlaceholder((PhotoAttachment) repost.attachments.get(i).getContent(),
+                                        original_post_photo);
+                            }
                             original_post_photo.setVisibility(View.VISIBLE);
                         }
                     } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
@@ -313,15 +336,19 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
 
             error_label.setVisibility(View.GONE);
-            photo_progress_layout.setVisibility(View.GONE);
             post_photo.setVisibility(View.GONE);
             post_video.setVisibility(View.GONE);
             pollAttachView.setVisibility(View.GONE);
 
             for(int i = 0; i < item.attachments.size(); i++) {
-                if (item.attachments.get(i).status.equals("loading")) {
-                    photo_progress_layout.setVisibility(View.VISIBLE);
-                    post_photo.setImageBitmap(null);
+                if (item.attachments.get(i).type.equals("photo")) {
+                    post_photo.setVisibility(View.VISIBLE);
+                    PhotoAttachment photoAttachment = (PhotoAttachment) item.attachments.get(i).getContent();
+                    if(item.attachments.get(i).status.equals("done")) {
+                        loadPhotoAttachment(photoAttachment, item.owner_id, item.post_id, post_photo);
+                    } else {
+                        loadPhotoPlaceholder(photoAttachment, post_photo);
+                    }
                 } else if (item.attachments.get(i).status.equals("not_supported") &&
                         !item.attachments.get(i).type.equals("note")) {
                     error_label.setText(ctx.getResources().getString(R.string.not_supported));
@@ -329,29 +356,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 } else if (item.attachments.get(i).status.equals("error")) {
                     error_label.setText(ctx.getResources().getString(R.string.attachment_load_err));
                     error_label.setVisibility(View.VISIBLE);
-                } else if (item.attachments.get(i).status.equals("done") &&
-                        item.attachments.get(i).type.equals("photo")) {
-                    photo_progress_layout.setVisibility(View.GONE);
-                    if (item.attachments.get(i).getContent() != null) {
-                        if(resize_photoattachments < 1) {
-                            resize_photoattachments++;
-                        }
-                        post_photo.setImageBitmap(((PhotoAttachment)
-                                item.attachments.get(0).getContent()).photo);
-                        post_photo.setVisibility(View.VISIBLE);
-                        post_photo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                    ((AppActivity) ctx).viewPhotoAttachment(position);
-                                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                                    ((ProfileIntentActivity) ctx).viewPhotoAttachment(position);
-                                } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                                    ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
-                                }
-                            }
-                        });
-                    }
                 } else if (item.attachments.get(i).status.equals("done") &&
                         item.attachments.get(i).type.equals("video")) {
                     if (item.attachments.get(i).getContent() != null) {
@@ -519,6 +523,42 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             });
+        }
+
+        private void loadPhotoPlaceholder(PhotoAttachment photoAttachment, ImageView view) {
+            Drawable drawable = ctx.getResources().getDrawable(R.drawable.photo_placeholder);
+            Canvas canvas = new Canvas();
+            Bitmap bitmap = Bitmap.createBitmap(
+                    photoAttachment.size[0], photoAttachment.size[1], Bitmap.Config.ARGB_8888
+            );
+            canvas.setBitmap(bitmap);
+            drawable.setBounds(0, 0, photoAttachment.size[0], photoAttachment.size[1]);
+            drawable.draw(canvas);
+            view.setImageBitmap(bitmap);
+        }
+
+        private void loadPhotoAttachment(PhotoAttachment photoAttachment,
+                                         long owner_id, long post_id, ImageView view) {
+            DisplayImageOptions displayimageOptions =
+                    new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+
+            ImageLoaderConfiguration config =
+                    new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
+                            defaultDisplayImageOptions(displayimageOptions)
+                            .memoryCacheSize(33554432) // 32 MB memory cache
+                            .writeDebugLogs()
+                            .build();
+
+            if (ImageLoader.getInstance().isInited()) {
+                ImageLoader.getInstance().destroy();
+            }
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.init(config);
+
+            Bitmap bitmap = imageLoader.loadImageSync("file://data/data/" + ctx.getPackageName() + "/cache"
+                    + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
+                    photoAttachment.filename);
+            view.setImageBitmap(bitmap);
         }
 
         public void repost(int position) {

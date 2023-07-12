@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.seppius.i18n.plurals.PluralResources;
 
 import org.acra.ACRA;
@@ -79,6 +81,10 @@ public class OvkApplication extends Application {
         config = getResources().getConfiguration();
 
         initializeACRA();
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).memoryCacheSize(400000)
+			.build();
+        ImageLoader.getInstance().init(config);
 
         createSettings(global_prefs, instance_prefs);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
