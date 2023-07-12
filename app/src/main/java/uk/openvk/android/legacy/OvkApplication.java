@@ -130,7 +130,7 @@ public class OvkApplication extends Application {
         }
 
         if(!global_prefs.contains("photos_quality")) {
-            if(heap_size <= 100663296L) {
+            if(heap_size <= 201326592L) {
                 global_prefs_editor.putString("photos_quality", "medium");
             } else {
                 global_prefs_editor.putString("photos_quality", "high");
