@@ -201,7 +201,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         if (logout_preference != null) {
             if(getActivity() instanceof AppActivity) {
                 AppActivity appActivity = ((AppActivity) getActivity());
-                if(appActivity.ovk_api.account.first_name != null &&
+                if(appActivity.ovk_api.account != null &&
+                        appActivity.ovk_api.account.first_name != null &&
                         appActivity.ovk_api.account.last_name != null) {
                     logout_preference.setSummary(
                             String.format("%s %s", appActivity.ovk_api.account.first_name,

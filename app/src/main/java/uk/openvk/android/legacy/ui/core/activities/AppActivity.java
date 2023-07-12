@@ -174,8 +174,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             try {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .adjustLayoutSize(getResources().getConfiguration().orientation);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception ignored) {
             }
         }
         Bundle data = new Bundle();
