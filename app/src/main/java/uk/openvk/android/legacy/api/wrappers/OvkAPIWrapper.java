@@ -11,6 +11,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import org.pixmob.httpclient.HttpClient;
+import org.pixmob.httpclient.HttpClientException;
 import org.pixmob.httpclient.HttpRequestBuilder;
 import org.pixmob.httpclient.HttpResponse;
 
@@ -31,6 +32,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Error;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -210,16 +212,10 @@ public class OvkAPIWrapper {
                     try {
                         if (legacy_mode) {
                             HttpResponse response = null;
-                            try {
-                                response = request_legacy.execute();
-                                assert response != null;
-                                response.read(response_body);
-                                response_code = response.getStatusCode();
-                            } catch (Exception ex) {
-                                Log.e(OvkApplication.API_TAG, ex.getMessage());
-                                if (ex.getMessage().startsWith("Authorization required"))
-                                    sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
-                            }
+                            response = request_legacy.execute();
+                            assert response != null;
+                            response_body = response.readString();
+                            response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
@@ -278,8 +274,18 @@ public class OvkAPIWrapper {
                     } catch (ParseException e) {
                         e.printStackTrace();
                         sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
-                    } catch (IOException ignored) {
-
+                    } catch (HttpClientException | IOException ex) {
+                        if (ex.getMessage().startsWith("Authorization required")) {
+                            response_code = 401;
+                            sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                            String code_str = ex.getMessage().substring
+                                    (ex.getMessage().length() - 3);
+                            response_code = Integer.parseInt(code_str);
+                            if(response_code == 400) {
+                                sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
+                            }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
@@ -333,12 +339,17 @@ public class OvkAPIWrapper {
                             try {
                                 response = request_legacy.execute();
                                 assert response != null;
-                                response.read(response_body);
+                                response_body = response.readString();
                                 response_code = response.getStatusCode();
                             } catch (IOException ex) {
                                 Log.e(OvkApplication.API_TAG, ex.getMessage());
-                                if (ex.getMessage().startsWith("Authorization required"))
-                                    sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                                if (ex.getMessage().startsWith("Authorization required")) {
+                                    response_code = 401;
+                                } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                                    String code_str = ex.getMessage().substring
+                                            (ex.getMessage().length() - 3, ex.getMessage().length());
+                                    response_code = Integer.parseInt(code_str);
+                                }
                             }
                         } else {
                             Response response = httpClient.newCall(request).execute();
@@ -347,7 +358,7 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if (logging_enabled)
-                                Log.e(OvkApplication.API_TAG, String.format("Connected (%d)", response_code));
+                                Log.d(OvkApplication.API_TAG, String.format("Connected (%d)", response_code));
                             if (response_code == 400) {
                                 sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                             } else if (response_code == 401) {
@@ -377,7 +388,6 @@ public class OvkAPIWrapper {
                                 sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
                             }
                         }
-                        ;
                     } catch (ProtocolException | ConnectException |
                             javax.net.ssl.SSLProtocolException | UnknownHostException e) {
                         if (logging_enabled) {
@@ -407,8 +417,18 @@ public class OvkAPIWrapper {
                     } catch (ParseException e) {
                         e.printStackTrace();
                         sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
-                    } catch (IOException ignored) {
-
+                    } catch (IOException | HttpClientException ex) {
+                        if (ex.getMessage().startsWith("Authorization required")) {
+                            response_code = 401;
+                            sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                            String code_str = ex.getMessage().substring
+                                    (ex.getMessage().length() - 3);
+                            response_code = Integer.parseInt(code_str);
+                            if(response_code == 400) {
+                                sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
+                            }
+                        }
                     } catch (Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
@@ -465,10 +485,23 @@ public class OvkAPIWrapper {
                     }
                     try {
                         if (legacy_mode) {
-                            HttpResponse response = request_legacy.execute();
-                            assert response != null;
-                            response.read(response_body);
-                            response_code = response.getStatusCode();
+                            HttpResponse response = null;
+                            try {
+                                response = request_legacy.execute();
+                                assert response != null;
+                                response_body = response.readString();
+                                response_code = response.getStatusCode();
+                            } catch (IOException ex) {
+                                Log.e(OvkApplication.API_TAG, ex.getMessage());
+                                if (ex.getMessage().startsWith("Authorization required")) {
+                                    response_code = 401;
+                                } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                                    String code_str = ex.getMessage().substring
+                                            (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                                    Log.e(OvkApplication.API_TAG, "[" + code_str + "]");
+                                    response_code = Integer.parseInt(code_str);
+                                }
+                            }
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
@@ -544,8 +577,14 @@ public class OvkAPIWrapper {
                         if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (IOException ignored) {
-
+                    } catch (IOException | HttpClientException ex) {
+                        if (ex.getMessage().startsWith("Authorization required")) {
+                            response_code = 401;
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                            String code_str = ex.getMessage().substring
+                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                            response_code = Integer.parseInt(code_str);
+                        }
                     } catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                         e.printStackTrace();
@@ -587,10 +626,23 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        HttpResponse response = request_legacy.execute();
-                        assert response != null;
-                        response.read(response_body);
-                        response_code = response.getStatusCode();
+                        HttpResponse response = null;
+                        try {
+                            response = request_legacy.execute();
+                            assert response != null;
+                            response_body = response.readString();
+                            response_code = response.getStatusCode();
+                        } catch (IOException ex) {
+                            Log.e(OvkApplication.API_TAG, ex.getMessage());
+                            if (ex.getMessage().startsWith("Authorization required")) {
+                                response_code = 401;
+                            } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                                String code_str = ex.getMessage().substring
+                                        (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                                Log.e(OvkApplication.API_TAG, "[" + code_str + "]");
+                                response_code = Integer.parseInt(code_str);
+                            }
+                        }
                     } else {
                         request = new Request.Builder()
                                 .url(fUrl)
@@ -682,9 +734,15 @@ public class OvkAPIWrapper {
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, error.description);
-                    } catch (IOException ignored) {
-
-                    } catch (OutOfMemoryError | Exception e) {
+                    } catch (IOException | HttpClientException ex) {
+                        if (ex.getMessage().startsWith("Authorization required")) {
+                            response_code = 401;
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                            String code_str = ex.getMessage().substring
+                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                            response_code = Integer.parseInt(code_str);
+                        }
+                    }  catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
                         e.printStackTrace();
                     }
@@ -739,9 +797,10 @@ public class OvkAPIWrapper {
                     }
                     try {
                         if(legacy_mode) {
-                            HttpResponse response = request_legacy.execute();
+                            HttpResponse response = null;
+                            response = request_legacy.execute();
                             assert response != null;
-                            response.read(response_body);
+                            response_body = response.readString();
                             response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
@@ -785,7 +844,7 @@ public class OvkAPIWrapper {
                                                 method, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
                             }
-                        };
+                        }
                     } catch (ConnectException | ProtocolException e) {
                         if (logging_enabled) {
                             if (e.getMessage() != null) {
@@ -830,8 +889,14 @@ public class OvkAPIWrapper {
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, error.description);
-                    } catch (IOException ignored) {
-
+                    } catch (IOException | HttpClientException ex) {
+                        if (ex.getMessage().startsWith("Authorization required")) {
+                            response_code = 401;
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                            String code_str = ex.getMessage().substring
+                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                            response_code = Integer.parseInt(code_str);
+                        }
                     } catch (Exception e) {
                         if(e.getMessage().equals("Scheme 'https' not registered.")) {
                             Log.e(OvkApplication.API_TAG, String.format("WTF? %s", fUrl));
