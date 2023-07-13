@@ -364,7 +364,11 @@ public final class HttpRequestBuilder {
                 throw new HttpClientException("Response timeout from " + uri, e);
             }
         } catch (IOException e) {
-            throw new HttpClientException("Connection failed to " + uri, e);
+            if(e.getMessage().contains("authentication challenge")) {
+                throw new HttpClientException("Authorization required in " + uri, e);
+            } else {
+                throw new HttpClientException("Connection failed to " + uri, e);
+            }
         } finally {
             if (conn != null) {
                 if (payloadStream != null) {

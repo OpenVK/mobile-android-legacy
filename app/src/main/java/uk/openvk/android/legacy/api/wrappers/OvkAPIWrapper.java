@@ -209,10 +209,17 @@ public class OvkAPIWrapper {
                     }
                     try {
                         if (legacy_mode) {
-                            HttpResponse response = request_legacy.execute();
-                            assert response != null;
-                            response.read(response_body);
-                            response_code = response.getStatusCode();
+                            HttpResponse response = null;
+                            try {
+                                response = request_legacy.execute();
+                                assert response != null;
+                                response.read(response_body);
+                                response_code = response.getStatusCode();
+                            } catch (Exception ex) {
+                                Log.e(OvkApplication.API_TAG, ex.getMessage());
+                                if (ex.getMessage().contains("authentication challenge"))
+                                    sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                            }
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
@@ -322,10 +329,17 @@ public class OvkAPIWrapper {
                     }
                     try {
                         if (legacy_mode) {
-                            HttpResponse response = request_legacy.execute();
-                            assert response != null;
-                            response.read(response_body);
-                            response_code = response.getStatusCode();
+                            HttpResponse response = null;
+                            try {
+                                response = request_legacy.execute();
+                                assert response != null;
+                                response.read(response_body);
+                                response_code = response.getStatusCode();
+                            } catch (IOException ex) {
+                                Log.e(OvkApplication.API_TAG, ex.getMessage());
+                                if (ex.getMessage().contains("authentication challenge"))
+                                    sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                            }
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
