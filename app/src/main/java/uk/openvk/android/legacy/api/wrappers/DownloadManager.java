@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 
 import org.pixmob.httpclient.HttpClient;
+import org.pixmob.httpclient.HttpClientException;
 import org.pixmob.httpclient.HttpRequestBuilder;
 import org.pixmob.httpclient.HttpResponse;
 
@@ -306,10 +307,17 @@ public class DownloadManager {
                                     String.format("Downloaded from %s (%s): %d kB (%d/%d)",
                                             short_address, response_code, (int) (filesize / 1024), i + 1,
                                             photoAttachments.size()));
-                        } catch (IOException e) {
+                        } catch (IOException | HttpClientException ex) {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
-                                    String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
+                                    String.format("Download error: %s (%d/%d)", ex.getMessage(), i + 1,
                                             photoAttachments.size()));
+                            if (ex.getMessage().startsWith("Authorization required")) {
+                                response_code = 401;
+                            } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                                String code_str = ex.getMessage().substring
+                                        (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                                response_code = Integer.parseInt(code_str);
+                            }
                         } catch (Exception e) {
                             photoAttachment.error = e.getClass().getSimpleName();
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
@@ -481,6 +489,14 @@ public class DownloadManager {
                         } else {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s", response_code));
+                        }
+                    } catch (IOException | HttpClientException ex) {
+                        if (ex.getMessage().startsWith("Authorization required")) {
+                            response_code = 401;
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                            String code_str = ex.getMessage().substring
+                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                            response_code = Integer.parseInt(code_str);
                         }
                     } catch (Exception e) {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG,
