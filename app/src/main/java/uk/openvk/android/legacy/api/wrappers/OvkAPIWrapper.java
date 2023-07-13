@@ -217,7 +217,7 @@ public class OvkAPIWrapper {
                                 response_code = response.getStatusCode();
                             } catch (Exception ex) {
                                 Log.e(OvkApplication.API_TAG, ex.getMessage());
-                                if (ex.getMessage().contains("authentication challenge"))
+                                if (ex.getMessage().startsWith("Authorization required"))
                                     sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
                             }
                         } else {
@@ -337,7 +337,7 @@ public class OvkAPIWrapper {
                                 response_code = response.getStatusCode();
                             } catch (IOException ex) {
                                 Log.e(OvkApplication.API_TAG, ex.getMessage());
-                                if (ex.getMessage().contains("authentication challenge"))
+                                if (ex.getMessage().startsWith("Authorization required"))
                                     sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
                             }
                         } else {
