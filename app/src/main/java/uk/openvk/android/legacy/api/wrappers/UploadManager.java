@@ -234,6 +234,10 @@ public class UploadManager {
                     } else if (file_f.getName().endsWith(".gif")) {
                         mime = "image/gif";
                     }
+                    String short_address = address;
+                    if(address.length() > 25) {
+                        short_address = address.substring(0, 24);
+                    }
                     if (legacy_mode) {
 
                     } else {
@@ -259,6 +263,7 @@ public class UploadManager {
                                                 }
                                         )
                         );
+
                         RequestBody requestBody = builder.build();
                         Request request = new Request.Builder()
                                 .addHeader("Content-Type", "multipart/form-data")
@@ -267,7 +272,7 @@ public class UploadManager {
                                 .build();
                         if (logging_enabled) Log.d(OvkApplication.UL_TAG,
                                 String.format("Uploading to %s... (%d kB)\r\nHeaders: %s",
-                                        address, file_f.length() / 1024, request.headers()
+                                        short_address, file_f.length() / 1024, request.headers()
                                                 .toMultimap()));
                         Response response = httpClient.newCall(request).execute();
                         response_body = response.body().string();
@@ -277,15 +282,16 @@ public class UploadManager {
                         Log.v(OvkApplication.UL_TAG, "Uploaded!");
                         if(logging_enabled) Log.d(OvkApplication.UL_TAG,
                                 String.format("Getting response from %s (%s): [%s]",
-                                        address, response_code, response_body));
-                        sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, response_body);
+                                        short_address, response_code, response_body));
+                        sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, file_f.getName(), response_body);
                     } else {
                         if(logging_enabled) Log.e(OvkApplication.UL_TAG,
                                 String.format("Getting response from %s (%s): [%s]",
-                                        address, response_code, response_body));
+                                        short_address, response_code, response_body));
+                        sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
                     }
                 } catch (Exception e) {
-                    sendMessage(HandlerMessages.UPLOAD_ERROR, "");
+                    sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
                 }
             }
         };
@@ -293,16 +299,19 @@ public class UploadManager {
         thread.start();
     }
 
-    private void sendMessage(int message, String response) {
+    private void sendMessage(int message, String filename, String response) {
         Message msg = new Message();
         msg.what = message;
         Bundle bundle = new Bundle();
+        bundle.putString("filename", filename);
         bundle.putString("response", response);
         msg.setData(bundle);
         if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
             ((AuthActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
             ((AppActivity) ctx).handler.sendMessage(msg);
+        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            ((NewPostActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
             ((QuickSearchActivity) ctx).handler.sendMessage(msg);
         } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {

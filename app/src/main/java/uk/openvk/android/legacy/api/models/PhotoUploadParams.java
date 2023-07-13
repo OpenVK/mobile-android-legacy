@@ -23,7 +23,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 
 public class PhotoUploadParams {
     private JSONParser jsonParser;
-    public long server;
+    public String server;
     public String photo;
     public String hash;
 
@@ -31,7 +31,7 @@ public class PhotoUploadParams {
         try {
             jsonParser = new JSONParser();
             JSONObject json = jsonParser.parseJSON(response);
-            server = json.getLong("server");
+            server = json.getString("server");
             photo = json.getString("photo");
             hash = json.getString("hash");
         } catch (JSONException e) {

@@ -55,9 +55,35 @@ public class Photos {
                 JSONObject item = photos.getJSONObject(i);
                 Photo photo = new Photo();
                 photo.id = item.getLong("id");
-                photo.album_id = item.getLong("album_id");
+                if(item.isNull("album_id")) {
+                    photo.album_id = 0;
+                } else {
+                    photo.album_id = item.getLong("album_id");
+                }
                 photo.owner_id = item.getLong("owner_id");
+                list.add(photo);
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void parseOnePhoto(String response) {
+        try {
+            if(list == null) {
+                list = new ArrayList<>();
+            }
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONObject item = json.getJSONArray("response").getJSONObject(0);
+            Photo photo = new Photo();
+            photo.id = item.getLong("id");
+            if(item.isNull("album_id")) {
+                photo.album_id = 0;
+            } else {
+                photo.album_id = item.getLong("album_id");
+            }
+            photo.owner_id = item.getLong("owner_id");
+            list.add(photo);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

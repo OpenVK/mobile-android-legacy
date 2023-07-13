@@ -1384,7 +1384,7 @@ public class OvkAPIWrapper {
                 msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
             } else if(method.startsWith("Photos.save")) {
                 msg.what = HandlerMessages.PHOTOS_SAVE;
-                newpost_a.ovk_api.photos.parse(data.getString("response"));
+                newpost_a.ovk_api.photos.parseOnePhoto(data.getString("response"));
             }
             newpost_a.handler.sendMessage(msg);
         } else if(activity instanceof QuickSearchActivity) {

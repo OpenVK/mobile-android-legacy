@@ -292,12 +292,16 @@ public class NewPostActivity extends TranslucentActivity {
                 PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
                 ovk_api.photos.saveWallPhoto(ovk_api.wrapper, params.photo, params.hash);
             } else if(message == HandlerMessages.PHOTOS_SAVE) {
-                int pos = filesAdapter.searchByFileName(file.filename);
-                files.get(pos).setPhoto(ovk_api.photos.list.get(0));
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    if(activity_menu != null && activity_menu.size() >= 1) {
-                        activity_menu.getItem(0).setEnabled(true);
+                try {
+                    int pos = filesAdapter.searchByFileName(file.filename);
+                    files.get(pos).setPhoto(ovk_api.photos.list.get(0));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        if (activity_menu != null && activity_menu.size() >= 1) {
+                            activity_menu.getItem(0).setEnabled(true);
+                        }
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             } else if(message == HandlerMessages.ACCESS_DENIED){
                 Toast.makeText(getApplicationContext(),
