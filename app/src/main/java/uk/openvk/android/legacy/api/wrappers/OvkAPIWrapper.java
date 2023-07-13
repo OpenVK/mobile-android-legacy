@@ -613,7 +613,7 @@ public class OvkAPIWrapper {
                         if(legacy_mode) {
                             HttpResponse response = request_legacy.execute();
                             assert response != null;
-                            response.read(response_body);
+                            response_body = response.readString();
                             response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
