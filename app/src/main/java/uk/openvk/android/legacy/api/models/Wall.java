@@ -567,8 +567,8 @@ public class Wall implements Parcelable {
     }
 
     public void post(OvkAPIWrapper wrapper, long owner_id, String post, String attachments) {
-        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s&attachments=",
-                owner_id, URLEncoder.encode(post)), attachments);
+        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s&attachments=%s",
+                owner_id, URLEncoder.encode(post), attachments));
     }
 
     public void getComments(OvkAPIWrapper wrapper, long owner_id, long post_id) {
