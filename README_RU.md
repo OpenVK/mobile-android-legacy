@@ -28,7 +28,7 @@ _Работает на OpenVK API._
 
 ## Используемые библиотеки
 1. [Android Support Library v24 for 1.6+](https://developer.android.com/topic/libraries/support-library) (Apache License 2.0)
-2. [Apache Wrapped HTTP Client 4.1.2](https://mvnrepository.com/artifact/org.jbundle.util.osgi.wrapped/org.jbundle.util.osgi.wrapped.org.apache.http.client/4.1.2#gradle) (Apache License 2.0)
+2. [HttpUrlWrapper](https://github.com/tinelix/httpurlwrapper) (Apache License 2.0)
 3. [PhotoView 1.2.5](https://github.com/Baseflow/PhotoView/tree/v1.2.5) (Apache License 2.0)
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)

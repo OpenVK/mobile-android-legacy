@@ -8,47 +8,25 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpProtocolParams;
+import org.pixmob.httpclient.HttpClient;
+import org.pixmob.httpclient.HttpRequestBuilder;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Headers;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.http2.Header;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.TrackingRequestBody;
@@ -104,21 +82,9 @@ public class UploadManager {
         try {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 Log.v(OvkApplication.DL_TAG, "Starting DownloadManager in Legacy Mode...");
-                BasicHttpParams basicHttpParams = new BasicHttpParams();
-                HttpProtocolParams.setUseExpectContinue(basicHttpParams, false);
-                HttpProtocolParams.setUserAgent(basicHttpParams, generateUserAgent(ctx));
-                HttpConnectionParams.setSocketBufferSize(basicHttpParams, 8192);
-                HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);
-                HttpConnectionParams.setSoTimeout(basicHttpParams, 30000);
-                SchemeRegistry schemeRegistry = new SchemeRegistry();
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-                if (use_https) {
-                    schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-                } else {
-                    basicHttpParams.setParameter("http.protocol.handle-redirects",false);
-                }
-                httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams,
-                        schemeRegistry), basicHttpParams);
+                httpClientLegacy = new HttpClient(ctx);
+                httpClientLegacy.setConnectTimeout(30);
+                httpClientLegacy.setReadTimeout(30);
                 this.legacy_mode = true;
             } else {
                 Log.v(OvkApplication.UL_TAG, "Starting UploadManager...");
@@ -176,8 +142,7 @@ public class UploadManager {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
-                        httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                        // Not supported
                     } else {
                         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
                                 .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
@@ -219,7 +184,7 @@ public class UploadManager {
         final File file_f = file;
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
-            private HttpGet request_legacy = null;
+            private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
             private String response_body = "";
 
@@ -235,8 +200,8 @@ public class UploadManager {
                         mime = "image/gif";
                     }
                     String short_address = address;
-                    if(address.length() > 25) {
-                        short_address = address.substring(0, 24);
+                    if(address.length() > 50) {
+                        short_address = address.substring(0, 49);
                     }
                     if (legacy_mode) {
 

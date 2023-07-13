@@ -1174,7 +1174,7 @@
     <string name="send_bug_report">Надіслати баг-репорт</string>
     <string name="debug_on_pre_jellybean">Для надсилання журналу увімкніть налагодження USB.</string>
     <string name="use_legacy_http_client">Використовувати застарілий HTTP(S)-клієнт</string>
-    <string name="use_legacy_http_client_description">Використовувати обернутий HTTP(S)-клієнт Apache, призначений для застарілих версій Android</string>
+    <string name="use_legacy_http_client_description">Використовувати обернутий HTTP(S)-клієнт HttpUrlConnection, призначений для застарілих версій Android</string>
     <string name="use_legacy_http_client_okhttp_err">Вимкнення неможливо через непідтримувану версію Android</string>
     <string name="use_legacy_http_client_apachew_err">Увімкнення неможливе через непідтримувану версію Android</string>
     <string name="terminate">Завершити процес</string>

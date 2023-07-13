@@ -8,21 +8,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpProtocolParams;
+import org.pixmob.httpclient.HttpClient;
+import org.pixmob.httpclient.HttpRequestBuilder;
+import org.pixmob.httpclient.HttpResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -94,21 +82,9 @@ public class DownloadManager {
         try {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 Log.v(OvkApplication.DL_TAG, "Starting DownloadManager in Legacy Mode...");
-                BasicHttpParams basicHttpParams = new BasicHttpParams();
-                HttpProtocolParams.setUseExpectContinue(basicHttpParams, false);
-                HttpProtocolParams.setUserAgent(basicHttpParams, generateUserAgent(ctx));
-                HttpConnectionParams.setSocketBufferSize(basicHttpParams, 8192);
-                HttpConnectionParams.setConnectionTimeout(basicHttpParams, 30000);
-                HttpConnectionParams.setSoTimeout(basicHttpParams, 30000);
-                SchemeRegistry schemeRegistry = new SchemeRegistry();
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-                if (use_https) {
-                    schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-                } else {
-                    basicHttpParams.setParameter("http.protocol.handle-redirects",false);
-                }
-                httpClientLegacy = new DefaultHttpClient(new ThreadSafeClientConnManager(basicHttpParams,
-                        schemeRegistry), basicHttpParams);
+                httpClientLegacy = new HttpClient(ctx);
+                httpClientLegacy.setConnectTimeout(30);
+                httpClientLegacy.setReadTimeout(30);
                 this.legacy_mode = true;
             } else {
                 Log.v(OvkApplication.DL_TAG, "Starting DownloadManager...");
@@ -166,8 +142,7 @@ public class DownloadManager {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
-                        httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                        // Not supported
                     } else {
                         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
                                 .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
@@ -208,8 +183,7 @@ public class DownloadManager {
         Log.v("DownloadManager", String.format("Downloading %d photos...", photoAttachments.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
-            private HttpGet request_legacy = null;
-            StatusLine statusLine = null;
+            private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
             long filesize = 0;
             long content_length = 0;
@@ -284,8 +258,7 @@ public class DownloadManager {
                             }
 
                             if (legacy_mode) {
-                                request_legacy = new HttpGet(url);
-                                request_legacy.getParams().setParameter("timeout", 30000);
+                                request_legacy = httpClientLegacy.get(url);
                             } else {
                                 request = new Request.Builder()
                                         .url(url)
@@ -293,10 +266,10 @@ public class DownloadManager {
                             }
 
                             if (legacy_mode) {
-                                HttpResponse response = httpClientLegacy.execute(request_legacy);
-                                StatusLine statusLine = response.getStatusLine();
-                                response_in = response.getEntity().getContent();
-                                content_length = response.getEntity().getContentLength();
+                                HttpResponse response = request_legacy.execute();
+                                assert response != null;
+                                response_in = response.getPayload();
+                                content_length = response.getContentLength();
                                 if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                     FileOutputStream fos = new FileOutputStream(downloadedFile);
                                     int inByte;
@@ -309,7 +282,7 @@ public class DownloadManager {
                                     if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
                                 }
                                 response_in.close();
-                                response_code = statusLine.getStatusCode();
+                                response_code = response.getStatusCode();
                             } else {
                                 Response response = httpClient.newCall(request).execute();
                                 response_code = response.code();
@@ -399,8 +372,7 @@ public class DownloadManager {
         }
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
-            private HttpGet request_legacy = null;
-            StatusLine statusLine = null;
+            private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
             long filesize = 0;
             long content_length = 0;
@@ -458,8 +430,7 @@ public class DownloadManager {
 
                     if(logging_enabled) Log.v("DownloadManager", String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
-                        request_legacy = new HttpGet(url);
-                        request_legacy.getParams().setParameter("timeout", 30000);
+                        request_legacy = httpClientLegacy.get(url);
                     } else {
                         request = new Request.Builder()
                                 .url(url)
@@ -467,10 +438,10 @@ public class DownloadManager {
                     }
                     try {
                         if (legacy_mode) {
-                            HttpResponse response = httpClientLegacy.execute(request_legacy);
-                            StatusLine statusLine = response.getStatusLine();
-                            response_in = response.getEntity().getContent();
-                            content_length = response.getEntity().getContentLength();
+                            HttpResponse response = request_legacy.execute();
+                            assert response != null;
+                            response_in = response.getPayload();
+                            content_length = response.getContentLength();
                             if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 int inByte;
@@ -483,7 +454,7 @@ public class DownloadManager {
                                 if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
                             }
                             response_in.close();
-                            response_code = statusLine.getStatusCode();
+                            response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();

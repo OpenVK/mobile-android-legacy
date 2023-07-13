@@ -1,0 +1,1 @@
+int raw hc_keystore 0x7f020000

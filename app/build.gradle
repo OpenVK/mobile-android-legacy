@@ -124,7 +124,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //noinspection GradleDependency,GradleCompatible
     compile 'com.android.support:recyclerview-v7:24.0.0'
-    compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     //noinspection GradleDependency
     compile 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.commit451:PhotoView:1.2.5'
@@ -148,4 +147,5 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'ch.acra:acra:4.6.0'
     compile project(':twemojicon')
+    compile project(':wrhttp')
 }

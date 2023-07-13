@@ -9,24 +9,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
+import org.pixmob.httpclient.HttpClient;
+import org.pixmob.httpclient.HttpRequestBuilder;
+import org.pixmob.httpclient.HttpResponse;
 
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -83,22 +68,10 @@ public class LongPollWrapper {
         this.ctx = ctx;
         this.use_https = use_https;
         if(legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
-            BasicHttpParams basicHttpParams = new BasicHttpParams();
-            HttpProtocolParams.setUseExpectContinue((HttpParams) basicHttpParams, false);
-            HttpProtocolParams.setUserAgent((HttpParams) basicHttpParams, generateUserAgent(ctx));
-            HttpConnectionParams.setSocketBufferSize((HttpParams) basicHttpParams, 8192);
-            HttpConnectionParams.setConnectionTimeout((HttpParams) basicHttpParams, 30000);
-            HttpConnectionParams.setSoTimeout((HttpParams) basicHttpParams, 30000);
-            SchemeRegistry schemeRegistry = new SchemeRegistry();
-            if (use_https) {
-                schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            } else {
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            }
-            httpClientLegacy = (HttpClient) new DefaultHttpClient((ClientConnectionManager)
-                    new ThreadSafeClientConnManager((HttpParams) basicHttpParams, schemeRegistry),
-                    (HttpParams) basicHttpParams);
+            Log.v(OvkApplication.DL_TAG, "Starting DownloadManager in Legacy Mode...");
+            httpClientLegacy = new HttpClient(ctx);
+            httpClientLegacy.setConnectTimeout(30);
+            httpClientLegacy.setReadTimeout(30);
             this.legacy_mode = true;
         } else {
             httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
@@ -146,16 +119,14 @@ public class LongPollWrapper {
         Thread thread = null;
         Runnable longPollRunnable = new Runnable() {
             private Request request = null;
-            private HttpGet request_legacy = null;
-            StatusLine statusLine = null;
+            private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
             private String response_body = "";
 
             @Override
             public void run() {
                 if (legacy_mode) {
-                    request_legacy = new HttpGet(fUrl);
-                    request_legacy.getParams().setParameter("timeout", 30000);
+                    request_legacy = httpClientLegacy.get(fUrl);
                 } else {
                     request = new Request.Builder()
                                 .url(fUrl)
@@ -167,10 +138,10 @@ public class LongPollWrapper {
                     }
                     while(isActivated) {
                         if (legacy_mode) {
-                            HttpResponse response = httpClientLegacy.execute(request_legacy);
-                            StatusLine statusLine = response.getStatusLine();
-                            response_body = EntityUtils.toString(response.getEntity());
-                            response_code = statusLine.getStatusCode();
+                            HttpResponse response = request_legacy.execute();
+                            assert response != null;
+                            response.read(response_body);
+                            response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
@@ -246,8 +217,7 @@ public class LongPollWrapper {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        HttpHost proxy = new HttpHost(address_array[0], Integer.valueOf(address_array[1]));
-                        httpClientLegacy.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                        // Not supported
                     } else {
                         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).
                                 writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
