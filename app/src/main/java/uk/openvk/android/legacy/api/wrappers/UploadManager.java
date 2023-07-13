@@ -237,7 +237,7 @@ public class UploadManager {
                     } else {
                         RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                                 .addPart(Headers.of("Content-Disposition",
-                                        "form-data; name=\"image\"; filename=\"" + file_f.getName() + "\""),
+                                        "form-data; name=\"image\"; filename=\"photo\""),
                                         new TrackingRequestBody(file_f, mime,
                                                 new TrackingRequestBody.LoadTrackListener() {
                                             @Override
