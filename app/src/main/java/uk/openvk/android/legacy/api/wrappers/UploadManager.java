@@ -258,8 +258,8 @@ public class UploadManager {
                                 .url(address)
                                 .post(requestBody)
                                 .build();
-                        if (logging_enabled) Log.d(OvkApplication.DL_TAG,
-                                String.format("Uploading to %s... (%d KB)",
+                        if (logging_enabled) Log.d(OvkApplication.UL_TAG,
+                                String.format("Uploading to %s... (%d kB)",
                                         address, file_f.length() / 1024));
                         Response response = httpClient.newCall(request).execute();
                         response_body = response.body().string();

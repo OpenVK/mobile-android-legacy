@@ -129,11 +129,16 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap photo = BitmapFactory.decodeFile(file.filename, options);
-                if(photo.getWidth() > 600 && photo.getHeight() > 600)
-                    photo = Bitmap.createScaledBitmap(photo, 600,
-                            (int) ((double)600 / ((double) photo.getWidth() / (double) photo.getHeight())),
+                if(photo.getWidth() > 600 && photo.getHeight() > 600) {
+                    Bitmap photo_scaled = Bitmap.createScaledBitmap(photo, 600,
+                            (int) ((double) 600 / ((double) photo.getWidth() / (double) photo.getHeight())),
                             false);
-                photo_view.setImageBitmap(photo);
+                    photo.recycle();
+                    photo = null;
+                    photo_view.setImageBitmap(photo_scaled);
+                } else {
+                    photo_view.setImageBitmap(photo);
+                }
             } catch (OutOfMemoryError ignored) {
 
             }
