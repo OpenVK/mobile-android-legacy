@@ -336,7 +336,8 @@ public class NewPostActivity extends TranslucentActivity {
             onBackPressed();
         } else if(item.getItemId() == R.id.sendpost) {
             EditText statusEditText = findViewById(R.id.status_text_edit);
-            if(statusEditText.getText().toString().length() == 0) {
+            if(statusEditText.getText().toString().length() == 0 &&
+                    (files == null || files.size() == 0)) {
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
             } else if(!connection_status) {
@@ -345,7 +346,11 @@ public class NewPostActivity extends TranslucentActivity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(), createAttachmentsList());
+                    if(files == null || files.size() == 0) {
+                        ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString());
+                    } else {
+                        ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(), createAttachmentsList());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
