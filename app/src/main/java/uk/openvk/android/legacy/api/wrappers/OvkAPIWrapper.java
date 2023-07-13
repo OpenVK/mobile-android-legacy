@@ -336,21 +336,10 @@ public class OvkAPIWrapper {
                     try {
                         if (legacy_mode) {
                             HttpResponse response = null;
-                            try {
-                                response = request_legacy.execute();
-                                assert response != null;
-                                response_body = response.readString();
-                                response_code = response.getStatusCode();
-                            } catch (IOException ex) {
-                                Log.e(OvkApplication.API_TAG, ex.getMessage());
-                                if (ex.getMessage().startsWith("Authorization required")) {
-                                    response_code = 401;
-                                } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                                    String code_str = ex.getMessage().substring
-                                            (ex.getMessage().length() - 3, ex.getMessage().length());
-                                    response_code = Integer.parseInt(code_str);
-                                }
-                            }
+                            response = request_legacy.execute();
+                            assert response != null;
+                            response_body = response.readString();
+                            response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
@@ -486,22 +475,10 @@ public class OvkAPIWrapper {
                     try {
                         if (legacy_mode) {
                             HttpResponse response = null;
-                            try {
-                                response = request_legacy.execute();
-                                assert response != null;
-                                response_body = response.readString();
-                                response_code = response.getStatusCode();
-                            } catch (IOException ex) {
-                                Log.e(OvkApplication.API_TAG, ex.getMessage());
-                                if (ex.getMessage().startsWith("Authorization required")) {
-                                    response_code = 401;
-                                } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                                    String code_str = ex.getMessage().substring
-                                            (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
-                                    Log.e(OvkApplication.API_TAG, "[" + code_str + "]");
-                                    response_code = Integer.parseInt(code_str);
-                                }
-                            }
+                            response = request_legacy.execute();
+                            assert response != null;
+                            response_body = response.readString();
+                            response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_body = response.body().string();
@@ -626,23 +603,7 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        HttpResponse response = null;
-                        try {
-                            response = request_legacy.execute();
-                            assert response != null;
-                            response_body = response.readString();
-                            response_code = response.getStatusCode();
-                        } catch (IOException ex) {
-                            Log.e(OvkApplication.API_TAG, ex.getMessage());
-                            if (ex.getMessage().startsWith("Authorization required")) {
-                                response_code = 401;
-                            } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                                String code_str = ex.getMessage().substring
-                                        (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
-                                Log.e(OvkApplication.API_TAG, "[" + code_str + "]");
-                                response_code = Integer.parseInt(code_str);
-                            }
-                        }
+                        request_legacy = httpClientLegacy.get(fUrl);
                     } else {
                         request = new Request.Builder()
                                 .url(fUrl)
@@ -742,7 +703,7 @@ public class OvkAPIWrapper {
                                     (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
                             response_code = Integer.parseInt(code_str);
                         }
-                    }  catch (OutOfMemoryError | Exception e) {
+                    } catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
                         e.printStackTrace();
                     }

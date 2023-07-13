@@ -4,9 +4,6 @@
 .DS_Store
 /build
 app/.externalNativeBuild
-ffmp-arm/build.gradle
-/fmp/build
-/fmp/build
 /emoji-view/build
 /actionbar/build
 /popupmenu/build
