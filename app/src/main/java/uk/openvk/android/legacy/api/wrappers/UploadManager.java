@@ -218,6 +218,8 @@ public class UploadManager {
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
+            int response_code = 0;
+            private String response_body = "";
 
             @Override
             public void run() {
@@ -259,24 +261,17 @@ public class UploadManager {
                         if (logging_enabled) Log.d(OvkApplication.DL_TAG,
                                 String.format("Uploading to %s... (%d KB)",
                                         address, file_f.length() / 1024));
-                        httpClient.newCall(request).enqueue(new Callback() {
-                            @Override
-                            public void onFailure(final Call call, final IOException e) {
-                                sendMessage(HandlerMessages.UPLOAD_ERROR, e.getMessage());
-                            }
-
-                            @Override
-                            public void onResponse(final Call call, final Response response) throws IOException {
-                                if (!response.isSuccessful()) {
-                                    sendMessage(HandlerMessages.UPLOAD_ERROR, "");
-                                    return;
-                                }
-                                Log.v(OvkApplication.DL_TAG, "Uploaded!");
-                                sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, response.body().string());
-                            }
-                        });
+                        Response response = httpClient.newCall(request).execute();
+                        response_body = response.body().string();
+                        response_code = response.code();
                     }
-
+                    if (response_code == 200) {
+                        Log.v(OvkApplication.UL_TAG, "Uploaded!");
+                        if(logging_enabled) Log.d(OvkApplication.UL_TAG,
+                                String.format("Getting response from %s (%s): [%s]",
+                                        address, response_code, response_body));
+                        sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, response_body);
+                    }
                 } catch (Exception e) {
                     sendMessage(HandlerMessages.UPLOAD_ERROR, "");
                 }
