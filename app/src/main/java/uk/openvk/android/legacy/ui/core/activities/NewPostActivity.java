@@ -345,7 +345,7 @@ public class NewPostActivity extends TranslucentActivity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString());
+                    ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(), createAttachmentsList());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
