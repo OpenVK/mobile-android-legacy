@@ -102,19 +102,6 @@ public class WallLayout extends LinearLayout {
         }
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        try {
-            int heightMeasureSpec_custom = MeasureSpec.makeMeasureSpec(
-                    Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec_custom);
-            ViewGroup.LayoutParams params = getLayoutParams();
-            params.height = getMeasuredHeight();
-        } catch (Exception ignored) {
-
-        }
-    }
-
     public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
         wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
