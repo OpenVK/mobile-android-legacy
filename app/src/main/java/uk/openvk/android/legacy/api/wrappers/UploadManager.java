@@ -246,6 +246,8 @@ public class UploadManager {
                                                     updateLoadProgress(file_f.getName(), address, position, max);
                                                 } else if(max < 8192L) {
                                                     updateLoadProgress(file_f.getName(), address, position, max);
+                                                } else if(position == max) {
+                                                    updateLoadProgress(file_f.getName(), address, position, max);
                                                 }
                                             }
                                         }))

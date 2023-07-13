@@ -83,6 +83,7 @@ public class NewPostActivity extends TranslucentActivity {
     private ArrayList<UploadableFile> files;
     private UploadableFilesAdapter filesAdapter;
     private UploadableFile file;
+    private Menu activity_menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -293,6 +294,11 @@ public class NewPostActivity extends TranslucentActivity {
             } else if(message == HandlerMessages.PHOTOS_SAVE) {
                 int pos = filesAdapter.searchByFileName(file.filename);
                 files.get(pos).setPhoto(ovk_api.photos.list.get(0));
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    if(activity_menu != null && activity_menu.size() >= 1) {
+                        activity_menu.getItem(0).setEnabled(true);
+                    }
+                }
             } else if(message == HandlerMessages.ACCESS_DENIED){
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.posting_access_denied), Toast.LENGTH_LONG).show();
@@ -315,6 +321,7 @@ public class NewPostActivity extends TranslucentActivity {
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.newpost, menu);
+        activity_menu = menu;
         return true;
     }
 
@@ -360,6 +367,11 @@ public class NewPostActivity extends TranslucentActivity {
                 files.add(upload_file);
                 filesAdapter.notifyDataSetChanged();
                 ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, "");
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    if(activity_menu != null && activity_menu.size() >= 1) {
+                        activity_menu.getItem(0).setEnabled(false);
+                    }
+                }
             } else {
                 Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
             }
