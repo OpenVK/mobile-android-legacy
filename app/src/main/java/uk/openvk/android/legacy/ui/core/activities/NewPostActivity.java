@@ -285,7 +285,7 @@ public class NewPostActivity extends TranslucentActivity {
                 String filename = data.getString("filename");
                 int pos = filesAdapter.searchByFileName(filename);
                 file = files.get(pos);
-                file.progress = data.getLong("position");
+                file.progress = file.length;
                 files.set(pos, file);
                 filesAdapter.notifyDataSetChanged();
                 PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
@@ -352,14 +352,14 @@ public class NewPostActivity extends TranslucentActivity {
             }
             Uri uri = data.getData();
             File file = new File(uriToFilename(uri));
-            if(file.exists() && ovk_api.photos.wallUploadServer != null) {
+            if(file.exists() && ovk_api.photos.ownerPhotoUploadServer != null) {
                 findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
                 UploadableFile upload_file = new UploadableFile(uriToFilename(uri), file);
                 upload_file.length = file.length();
                 Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
                 files.add(upload_file);
                 filesAdapter.notifyDataSetChanged();
-                ovk_api.ulman.uploadFile(ovk_api.photos.wallUploadServer, file, "");
+                ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, "");
             } else {
                 Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
             }

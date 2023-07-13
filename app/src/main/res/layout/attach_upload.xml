@@ -35,10 +35,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-condensed"
             android:singleLine="true"
-            android:text="0 / 0 B"
+            android:text="240 / 320 kB"
             android:textColor="#ffffff"
-            android:textSize="10sp"
+            android:textSize="12sp"
             tools:ignore="SmallSp" />
     </LinearLayout>
 

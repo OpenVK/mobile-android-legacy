@@ -28,6 +28,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 public class Photos {
     private JSONParser jsonParser;
     public String wallUploadServer;
+    public String ownerPhotoUploadServer;
     public ArrayList<Photo> list;
 
     public Photos() {
@@ -36,9 +37,9 @@ public class Photos {
 
     public void parseUploadServer(String response, String method) {
         try {
-            if (method.equals("Photos.getWallUploadServer")) {
+            if (method.equals("Photos.getOwnerPhotoUploadServer")) {
                 JSONObject json = jsonParser.parseJSON(response);
-                wallUploadServer = json.getJSONObject("response").getString("upload_url");
+                ownerPhotoUploadServer = json.getJSONObject("response").getString("upload_url");
             }
         } catch (Exception ex) {
             ex.printStackTrace();

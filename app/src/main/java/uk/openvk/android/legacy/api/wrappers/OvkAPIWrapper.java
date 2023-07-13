@@ -1380,8 +1380,8 @@ public class OvkAPIWrapper {
             if(method.equals("Wall.post")) {
                 msg.what = HandlerMessages.WALL_POST;
             } else if(method.startsWith("Photos.get") && method.endsWith("Server")) {
-                msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
                 newpost_a.ovk_api.photos.parseUploadServer(data.getString("response"), method);
+                msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
             } else if(method.startsWith("Photos.save")) {
                 msg.what = HandlerMessages.PHOTOS_SAVE;
                 newpost_a.ovk_api.photos.parse(data.getString("response"));

@@ -56,6 +56,7 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
@@ -118,7 +119,7 @@ public class UploadManager {
                         schemeRegistry), basicHttpParams);
                 this.legacy_mode = true;
             } else {
-                Log.v(OvkApplication.DL_TAG, "Starting DownloadManager...");
+                Log.v(OvkApplication.UL_TAG, "Starting UploadManager...");
                 SSLContext sslContext = null;
                 try {
                     sslContext = SSLContext.getInstance("SSL");
@@ -207,12 +208,13 @@ public class UploadManager {
     }
 
 
-    public void uploadFile(final String address, final File file, final String where) {
+    public void uploadFile(final String address, File file, final String where) {
         if (file == null) {
             Log.e(OvkApplication.UL_TAG, "File is empty. Upload canceled.");
             return;
         }
         Log.v(OvkApplication.UL_TAG, String.format("Uploading file to %s...", address));
+        final File file_f = file;
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpGet request_legacy = null;
@@ -221,11 +223,11 @@ public class UploadManager {
             public void run() {
                 try {
                     String mime = "application/octet-stream";
-                    if (file.getName().endsWith(".jpeg") || file.getName().endsWith(".jpg")) {
+                    if (file_f.getName().endsWith(".jpeg") || file_f.getName().endsWith(".jpg")) {
                         mime = "image/jpeg";
-                    } else if (file.getName().endsWith(".png")) {
+                    } else if (file_f.getName().endsWith(".png")) {
                         mime = "image/png";
-                    } else if (file.getName().endsWith(".gif")) {
+                    } else if (file_f.getName().endsWith(".gif")) {
                         mime = "image/gif";
                     }
                     if (legacy_mode) {
@@ -233,12 +235,18 @@ public class UploadManager {
                     } else {
                         RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                                 .addPart(Headers.of("Content-Disposition",
-                                        "form-data; name=\"image\"; filename=\"" + file.getName() + "\""),
-                                        new TrackingRequestBody(file, mime,
+                                        "form-data; name=\"image\"; filename=\"" + file_f.getName() + "\""),
+                                        new TrackingRequestBody(file_f, mime,
                                                 new TrackingRequestBody.LoadTrackListener() {
                                             @Override
                                             public void onLoad(long position, long max) {
-                                                updateLoadProgress(file.getName(), address, position, max);
+                                                if ((max >= 1048576L && position % 4096 == 0)) {
+                                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                                } else if(max >= 8192L && position % 64 == 0) {
+                                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                                } else if(max < 8192L) {
+                                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                                }
                                             }
                                         }))
                                 .build();
@@ -246,7 +254,9 @@ public class UploadManager {
                                 .url(address)
                                 .post(requestBody)
                                 .build();
-
+                        if (logging_enabled) Log.d(OvkApplication.DL_TAG,
+                                String.format("Uploading to %s... (%d KB)",
+                                        address, file_f.length() / 1024));
                         httpClient.newCall(request).enqueue(new Callback() {
                             @Override
                             public void onFailure(final Call call, final IOException e) {
@@ -264,9 +274,7 @@ public class UploadManager {
                             }
                         });
                     }
-                    if (logging_enabled) Log.d(OvkApplication.DL_TAG,
-                            String.format("Uploading from %s... (%d KB)",
-                                    server, file.length() / 1024));
+
                 } catch (Exception e) {
                     sendMessage(HandlerMessages.UPLOAD_ERROR, "");
                 }
@@ -311,6 +319,10 @@ public class UploadManager {
         bundle.putLong("position", position);
         bundle.putLong("length", length);
         msg.setData(bundle);
+        if(ctx instanceof NewPostActivity) {
+            NewPostActivity newpost_a = ((NewPostActivity) ctx);
+            newpost_a.handler.sendMessage(msg);
+        }
     }
 
     public boolean clearCache(File dir) {

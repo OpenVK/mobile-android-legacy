@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -113,19 +114,32 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
                 if(file.progress < file.length) {
                     progress_layout.setVisibility(View.VISIBLE);
                 } else {
-                    progress_layout.setVisibility(View.GONE);
+                    progress_layout.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            progress_layout.setVisibility(View.GONE);
+                        }
+                    }, 2000);
                 }
             }
-            Log.d(OvkApplication.APP_TAG, "Filesize: " + file.length + " bytes");
         }
 
         private void loadBitmap(UploadableFile file) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap photo = BitmapFactory.decodeFile(file.filename, options);
-            photo_view.setImageBitmap(photo);
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap photo = BitmapFactory.decodeFile(file.filename, options);
+                if(photo.getWidth() > 600 && photo.getHeight() > 600)
+                    photo = Bitmap.createScaledBitmap(photo, 600,
+                            (int) ((double)600 / ((double) photo.getWidth() / (double) photo.getHeight())),
+                            false);
+                photo_view.setImageBitmap(photo);
+            } catch (OutOfMemoryError ignored) {
+
+            }
         }
 
+        @SuppressLint("DefaultLocale")
         private void setUploadProgress(UploadableFile file) {
             String b = ctx.getResources().getString(R.string.fsize_b);
             String kb = ctx.getResources().getString(R.string.fsize_kb);
@@ -133,16 +147,18 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             String gb = ctx.getResources().getString(R.string.fsize_gb);
             if(file.length >= 1073741824L) {
                 progress_status.setText(
-                        String.format("%s / %s %s",
-                                file.progress / 1024 / 1024 / 1024, file.length / 1024 / 1024 / 1024, gb));
+                        String.format("%.1f / %s.1f %s",
+                                (double)file.progress / (double)1024 / (double)1024 / (double)1024,
+                                (double)file.length / (double)1024 / (double)1024 / (double)1024, gb));
             } else if(file.length >= 1048576L) {
                 progress_status.setText(
-                        String.format("%s / %s %s",
-                                file.progress / 1024 / 1024, file.length / 1024 / 1024, mb));
+                        String.format("%.1f / %.1f %s",
+                                (double)file.progress / (double)1024 / (double)1024,
+                                (double)file.length / (double)1024 / (double)1024, mb));
             } else if(file.length >= 1024L) {
                 progress_status.setText(
-                        String.format("%s / %s %s",
-                                file.progress / 1024, file.length / 1024, kb));
+                        String.format("%.1f / %.1f %s",
+                                (double)file.progress / (double)1024, (double)file.length / (double)1024, kb));
             } else {
                 progress_status.setText(
                         String.format("%s / %s %s",

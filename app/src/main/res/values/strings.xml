@@ -234,7 +234,7 @@
 	<string name="date_ago_now">Just now</string>
 	<string name="message">Message</string>
 	<string name="fsize_b">bytes</string>
-	<string name="fsize_kb">KB</string>
+	<string name="fsize_kb">kB</string>
 	<string name="fsize_mb">MB</string>
 	<string name="fsize_gb">GB</string>
 	<string name="delete">Delete</string>
