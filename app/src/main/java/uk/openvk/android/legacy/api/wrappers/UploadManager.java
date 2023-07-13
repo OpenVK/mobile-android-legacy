@@ -238,26 +238,30 @@ public class UploadManager {
 
                     } else {
                         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-                        builder.addPart(Headers.of("Content-Disposition",
-                                "form-data; name=\"photo\"; filename=\"" + file.getName() + "\""),
-                                new TrackingRequestBody(file_f, mime,
-                                        new TrackingRequestBody.LoadTrackListener() {
-                                            @Override
-                                            public void onLoad(long position, long max) {
-                                                if ((max >= 1048576L && position % 4096 == 0)) {
-                                                    updateLoadProgress(file_f.getName(), address, position, max);
-                                                } else if(max >= 8192L && position % 64 == 0) {
-                                                    updateLoadProgress(file_f.getName(), address, position, max);
-                                                } else if(max < 8192L) {
-                                                    updateLoadProgress(file_f.getName(), address, position, max);
-                                                } else if(position == max) {
-                                                    updateLoadProgress(file_f.getName(), address, position, max);
+                        builder.addPart(
+                                Headers.of(
+                                        "Content-Disposition",
+                                        "form-data; name=\"photo\"; filename=\"" + file.getName() + "\""),
+                                        new TrackingRequestBody(file_f, mime,
+                                                new TrackingRequestBody.LoadTrackListener() {
+                                                    @Override
+                                                    public void onLoad(long position, long max) {
+                                                        if ((max >= 1048576L && position % 4096 == 0)) {
+                                                            updateLoadProgress(file_f.getName(), address, position, max);
+                                                        } else if(max >= 8192L && position % 64 == 0) {
+                                                            updateLoadProgress(file_f.getName(), address, position, max);
+                                                        } else if(max < 8192L) {
+                                                            updateLoadProgress(file_f.getName(), address, position, max);
+                                                        } else if(position == max) {
+                                                            updateLoadProgress(file_f.getName(), address, position, max);
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        }));
-                        builder.addPart(Headers.of("Content-Type", "application/json"), null);
+                                        )
+                        );
                         RequestBody requestBody = builder.build();
                         Request request = new Request.Builder()
+                                .addHeader("Content-Type", "multipart/form-data")
                                 .url(address)
                                 .post(requestBody)
                                 .build();
