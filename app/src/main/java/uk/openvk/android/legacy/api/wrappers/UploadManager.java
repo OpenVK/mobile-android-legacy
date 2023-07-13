@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -47,6 +48,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http2.Header;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.TrackingRequestBody;
@@ -208,7 +210,7 @@ public class UploadManager {
     }
 
 
-    public void uploadFile(final String address, File file, final String where) {
+    public void uploadFile(final String address, final File file, final String where) {
         if (file == null) {
             Log.e(OvkApplication.UL_TAG, "File is empty. Upload canceled.");
             return;
@@ -235,11 +237,11 @@ public class UploadManager {
                     if (legacy_mode) {
 
                     } else {
-                        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                                .addPart(Headers.of("Content-Disposition",
-                                        "form-data; name=\"image\"; filename=\"photo\""),
-                                        new TrackingRequestBody(file_f, mime,
-                                                new TrackingRequestBody.LoadTrackListener() {
+                        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                        builder.addPart(Headers.of("Content-Disposition",
+                                "form-data; name=\"photo\"; filename=\"" + file.getName() + "\""),
+                                new TrackingRequestBody(file_f, mime,
+                                        new TrackingRequestBody.LoadTrackListener() {
                                             @Override
                                             public void onLoad(long position, long max) {
                                                 if ((max >= 1048576L && position % 4096 == 0)) {
@@ -252,25 +254,31 @@ public class UploadManager {
                                                     updateLoadProgress(file_f.getName(), address, position, max);
                                                 }
                                             }
-                                        }))
-                                .build();
+                                        }));
+                        builder.addPart(Headers.of("Content-Type", "application/json"), null);
+                        RequestBody requestBody = builder.build();
                         Request request = new Request.Builder()
                                 .url(address)
                                 .post(requestBody)
                                 .build();
                         if (logging_enabled) Log.d(OvkApplication.UL_TAG,
-                                String.format("Uploading to %s... (%d kB)",
-                                        address, file_f.length() / 1024));
+                                String.format("Uploading to %s... (%d kB)\r\nHeaders: %s",
+                                        address, file_f.length() / 1024, request.headers()
+                                                .toMultimap()));
                         Response response = httpClient.newCall(request).execute();
                         response_body = response.body().string();
                         response_code = response.code();
                     }
-                    if (response_code == 200) {
+                    if (response_code == 202) {
                         Log.v(OvkApplication.UL_TAG, "Uploaded!");
                         if(logging_enabled) Log.d(OvkApplication.UL_TAG,
                                 String.format("Getting response from %s (%s): [%s]",
                                         address, response_code, response_body));
                         sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, response_body);
+                    } else {
+                        if(logging_enabled) Log.e(OvkApplication.UL_TAG,
+                                String.format("Getting response from %s (%s): [%s]",
+                                        address, response_code, response_body));
                     }
                 } catch (Exception e) {
                     sendMessage(HandlerMessages.UPLOAD_ERROR, "");
