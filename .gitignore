@@ -11,3 +11,4 @@ app/.signing/app.prop
 app/.signing/openvk.ks
 app/.signing/openvk.jks
 *.li
+wrhttp/build/outputs/aar/wrhttp-release.aar
