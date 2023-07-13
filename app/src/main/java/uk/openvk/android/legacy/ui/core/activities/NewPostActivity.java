@@ -212,7 +212,8 @@ public class NewPostActivity extends TranslucentActivity {
                 @Override
                 public void performAction(View view) {
                     EditText statusEditText = findViewById(R.id.status_text_edit);
-                    if (statusEditText.getText().toString().length() == 0) {
+                    if (statusEditText.getText().toString().length() == 0 &&
+                            (files == null || files.size() == 0)) {
                         Toast.makeText(getApplicationContext(),
                                 getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
                     } else {
