@@ -91,8 +91,8 @@ public class OvkAPIWrapper {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 Log.v(OvkApplication.API_TAG, "Starting OvkAPIWrapper in Legacy mode...");
                 httpClientLegacy = new HttpClient(ctx);
-                httpClientLegacy.setConnectTimeout(30);
-                httpClientLegacy.setReadTimeout(30);
+                httpClientLegacy.setConnectTimeout(30000);
+                httpClientLegacy.setReadTimeout(30000);
                 this.legacy_mode = true;
             } else {
                 Log.v(OvkApplication.API_TAG, "Starting OvkAPIWrapper...");

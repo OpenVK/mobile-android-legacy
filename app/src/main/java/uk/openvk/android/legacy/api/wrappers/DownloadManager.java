@@ -83,8 +83,8 @@ public class DownloadManager {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 Log.v(OvkApplication.DL_TAG, "Starting DownloadManager in Legacy Mode...");
                 httpClientLegacy = new HttpClient(ctx);
-                httpClientLegacy.setConnectTimeout(30);
-                httpClientLegacy.setReadTimeout(30);
+                httpClientLegacy.setConnectTimeout(30000);
+                httpClientLegacy.setReadTimeout(30000);
                 this.legacy_mode = true;
             } else {
                 Log.v(OvkApplication.DL_TAG, "Starting DownloadManager...");
