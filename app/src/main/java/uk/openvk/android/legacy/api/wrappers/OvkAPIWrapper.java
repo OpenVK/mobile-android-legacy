@@ -1085,6 +1085,15 @@ public class OvkAPIWrapper {
                     if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
+                } catch (IOException | HttpClientException ex) {
+                    if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                        String code_str = ex.getMessage().substring
+                                (ex.getMessage().length() - 3);
+                        response_code = Integer.parseInt(code_str);
+                        if(response_code == 301) {
+                            sendMessage(HandlerMessages.OVK_CHECK_HTTPS, "");
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
