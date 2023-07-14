@@ -12,4 +12,4 @@ app/.signing/openvk.ks
 app/.signing/openvk.jks
 *.li
 *.aar
-wrhttp/build/
+/wrhttp/build/
