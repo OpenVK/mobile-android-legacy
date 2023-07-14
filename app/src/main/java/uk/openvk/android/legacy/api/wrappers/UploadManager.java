@@ -142,7 +142,7 @@ public class UploadManager {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        // Not supported
+                        httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
                     } else {
                         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
                                 .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)

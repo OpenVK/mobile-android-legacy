@@ -192,6 +192,7 @@ public final class HttpRequestBuilder {
         return this;
     }
 
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "StatementWithEmptyBody"})
     public HttpResponse execute() throws HttpClientException {
         HttpURLConnection conn = null;
         UncloseableInputStream payloadStream = null;
@@ -226,8 +227,19 @@ public final class HttpRequestBuilder {
                     uri += buf;
                 }
             }
-
-            conn = (HttpURLConnection) new URL(uri).openConnection();
+            if(hc.getProxy() == null) {
+                if (uri.startsWith("https")) {
+                    conn = (HttpURLConnection) new URL(uri).openConnection();
+                } else {
+                    conn = (HttpsURLConnection) new URL(uri).openConnection();
+                }
+            } else {
+                if (uri.startsWith("https")) {
+                    conn = (HttpURLConnection) new URL(uri).openConnection(hc.getProxy());
+                } else {
+                    conn = (HttpsURLConnection) new URL(uri).openConnection(hc.getProxy());
+                }
+            }
             conn.setConnectTimeout(hc.getConnectTimeout());
             conn.setReadTimeout(hc.getReadTimeout());
             conn.setAllowUserInteraction(false);
@@ -376,7 +388,7 @@ public final class HttpRequestBuilder {
                     // http://docs.oracle.com/javase/6/docs/technotes/guides/net/http-keepalive.html
                     try {
                         while (payloadStream.read(buffer) != -1) {
-                            ;
+
                         }
                     } catch (IOException ignore) {
                     }

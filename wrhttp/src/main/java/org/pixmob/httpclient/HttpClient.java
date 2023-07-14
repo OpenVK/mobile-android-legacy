@@ -21,6 +21,8 @@ import static org.pixmob.httpclient.Constants.HTTP_HEAD;
 import static org.pixmob.httpclient.Constants.HTTP_POST;
 import static org.pixmob.httpclient.Constants.HTTP_PUT;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,7 @@ public final class HttpClient {
     private int readTimeout;
     private String userAgent;
     private final Map<String, String> inMemoryCookies = new HashMap<String, String>(8);
+    private Proxy proxy;
 
     /**
      * Create a new instance for this {@link Context}.
@@ -172,5 +175,16 @@ public final class HttpClient {
     private static final String getDefaultUserAgent() {
         return "PixmobHttpClient (" + Build.MANUFACTURER + " " + Build.MODEL + "; Android "
                 + Build.VERSION.RELEASE + "/" + Build.VERSION.SDK_INT + ")";
+    }
+
+    /**
+     * Set the proxy server.
+     */
+    public void setProxy(String address, int port) {
+        proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(address, port));
+    }
+
+    public Proxy getProxy() {
+        return proxy;
     }
 }
