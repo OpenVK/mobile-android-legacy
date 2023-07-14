@@ -1044,7 +1044,7 @@ public class OvkAPIWrapper {
         url = String.format("http://%s", server);
         if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Checking %s...", server));
         final String fUrl = url;
-        final HttpClient finalHttpClientLegacy = httpClientLegacy;
+        final HttpClient finalHttpClientLegacy = new HttpClient(ctx);
         final OkHttpClient finalHttpClient = httpClient;
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
