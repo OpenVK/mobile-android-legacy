@@ -331,7 +331,7 @@ public final class HttpRequestBuilder {
                         }
                     }
                     conn.setFixedLengthStreamingMode(contentStream.available() +
-                            body_header.length() + "--*****--\r\n".length());
+                            body_header.length() + "\r\n--*****--\r\n".length());
 
                     final OutputStream out = conn.getOutputStream();
                     out.write(body_header.getBytes());
@@ -340,7 +340,7 @@ public final class HttpRequestBuilder {
                     while((bytes = contentStream.read()) != -1) {
                         out.write(bytes);
                     }
-                    out.write("--*****--\r\n".getBytes());
+                    out.write("\r\n--*****--\r\n".getBytes());
                     out.flush();
                 } else {
                     conn.setFixedLengthStreamingMode(0);

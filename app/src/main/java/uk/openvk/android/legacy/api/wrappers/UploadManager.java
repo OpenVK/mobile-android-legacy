@@ -218,43 +218,11 @@ public class UploadManager {
                                 "form-data; name=\"photo\"; filename=\"" + file.getName() + "\"");
                         request_legacy.content(new FileInputStream(file_f), mime);
                         final String finalShort_address = short_address;
-                        request_legacy.to(new HttpResponseHandler() {
-                            @Override
-                            public void onResponse(HttpResponse response) throws Exception {
-                                super.onResponse(response);
-                                response_body = response.readString();
-                                response_code = response.getStatusCode();
-                                if (response_code == 202) {
-                                    Log.v(OvkApplication.UL_TAG, "Uploaded!");
-                                    if(logging_enabled) Log.d(OvkApplication.UL_TAG,
-                                            String.format("Getting response from %s (%s): [%s]",
-                                                    finalShort_address, response_code, response_body));
-                                    sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, file_f.getName(), response_body);
-                                } else {
-                                    if(logging_enabled) Log.e(OvkApplication.UL_TAG,
-                                            String.format("Getting response from %s (%s): [%s]",
-                                                    finalShort_address, response_code, response_body));
-                                    sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
-                                }
-                            }
-                        });
                         HttpResponse response = null;
                         response = request_legacy.execute();
                         assert response != null;
                         response_body = response.readString();
                         response_code = response.getStatusCode();
-                        if (response_code == 202) {
-                            Log.v(OvkApplication.UL_TAG, "Uploaded!");
-                            if(logging_enabled) Log.d(OvkApplication.UL_TAG,
-                                    String.format("Getting response from %s (%s): [%s]",
-                                            finalShort_address, response_code, response_body));
-                            sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, file_f.getName(), response_body);
-                        } else {
-                            if(logging_enabled) Log.e(OvkApplication.UL_TAG,
-                                    String.format("Getting response from %s (%s): [%s]",
-                                            finalShort_address, response_code, response_body));
-                            sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
-                        }
                     } else {
                         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                         builder.addPart(
