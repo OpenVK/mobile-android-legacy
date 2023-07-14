@@ -9,12 +9,17 @@ import android.os.Message;
 import android.util.Log;
 
 import org.pixmob.httpclient.HttpClient;
+import org.pixmob.httpclient.HttpClientException;
 import org.pixmob.httpclient.HttpRequestBuilder;
+import org.pixmob.httpclient.HttpRequestHandler;
 import org.pixmob.httpclient.HttpResponse;
+import org.pixmob.httpclient.HttpResponseHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -208,15 +213,48 @@ public class UploadManager {
                     }
                     if (legacy_mode) {
                         HttpRequestBuilder request_legacy = httpClientLegacy.post(address);
-                        request_legacy.header("Content-Type", "multipart/form-data");
-                        request_legacy.header("Content-Disposition",
+                        request_legacy.header("Content-Type", "multipart/form-data; boundary=*****");
+                        request_legacy.contentDisposition(
                                 "form-data; name=\"photo\"; filename=\"" + file.getName() + "\"");
                         request_legacy.content(new FileInputStream(file_f), mime);
+                        final String finalShort_address = short_address;
+                        request_legacy.to(new HttpResponseHandler() {
+                            @Override
+                            public void onResponse(HttpResponse response) throws Exception {
+                                super.onResponse(response);
+                                response_body = response.readString();
+                                response_code = response.getStatusCode();
+                                if (response_code == 202) {
+                                    Log.v(OvkApplication.UL_TAG, "Uploaded!");
+                                    if(logging_enabled) Log.d(OvkApplication.UL_TAG,
+                                            String.format("Getting response from %s (%s): [%s]",
+                                                    finalShort_address, response_code, response_body));
+                                    sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, file_f.getName(), response_body);
+                                } else {
+                                    if(logging_enabled) Log.e(OvkApplication.UL_TAG,
+                                            String.format("Getting response from %s (%s): [%s]",
+                                                    finalShort_address, response_code, response_body));
+                                    sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
+                                }
+                            }
+                        });
                         HttpResponse response = null;
                         response = request_legacy.execute();
                         assert response != null;
                         response_body = response.readString();
                         response_code = response.getStatusCode();
+                        if (response_code == 202) {
+                            Log.v(OvkApplication.UL_TAG, "Uploaded!");
+                            if(logging_enabled) Log.d(OvkApplication.UL_TAG,
+                                    String.format("Getting response from %s (%s): [%s]",
+                                            finalShort_address, response_code, response_body));
+                            sendMessage(HandlerMessages.UPLOADED_SUCCESSFULLY, file_f.getName(), response_body);
+                        } else {
+                            if(logging_enabled) Log.e(OvkApplication.UL_TAG,
+                                    String.format("Getting response from %s (%s): [%s]",
+                                            finalShort_address, response_code, response_body));
+                            sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
+                        }
                     } else {
                         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                         builder.addPart(
@@ -266,6 +304,18 @@ public class UploadManager {
                                 String.format("Getting response from %s (%s): [%s]",
                                         short_address, response_code, response_body));
                         sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");
+                    }
+                } catch (IOException | HttpClientException ex) {
+                    ex.printStackTrace();
+                    if (ex.getMessage().startsWith("Authorization required")) {
+                        response_code = 401;
+                    } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                        String code_str = ex.getMessage().substring
+                                (ex.getMessage().length() - 3);
+                        response_code = Integer.parseInt(code_str);
+                        if(logging_enabled) Log.e(OvkApplication.UL_TAG,
+                                String.format("Getting response from %s (%s)",
+                                        address, response_code));
                     }
                 } catch (Exception e) {
                     sendMessage(HandlerMessages.UPLOAD_ERROR, file_f.getName(), "");

@@ -700,7 +700,7 @@ public class OvkAPIWrapper {
                             response_code = 401;
                         } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
                             String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                                    (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);
                         }
                     } catch (OutOfMemoryError | Exception e) {
@@ -855,7 +855,7 @@ public class OvkAPIWrapper {
                             response_code = 401;
                         } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
                             String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
+                                    (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);
                         }
                     } catch (Exception e) {
