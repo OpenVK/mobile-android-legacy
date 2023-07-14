@@ -227,18 +227,13 @@ public final class HttpRequestBuilder {
                     uri += buf;
                 }
             }
+
+            boolean isHttps = uri.startsWith("https://");
+
             if(hc.getProxy() == null) {
-                if (uri.startsWith("https")) {
-                    conn = (HttpURLConnection) new URL(uri).openConnection();
-                } else {
-                    conn = (HttpsURLConnection) new URL(uri).openConnection();
-                }
+                conn = (HttpURLConnection) new URL(uri).openConnection();
             } else {
-                if (uri.startsWith("https")) {
-                    conn = (HttpURLConnection) new URL(uri).openConnection(hc.getProxy());
-                } else {
-                    conn = (HttpsURLConnection) new URL(uri).openConnection(hc.getProxy());
-                }
+                conn = (HttpURLConnection) new URL(uri).openConnection(hc.getProxy());
             }
             conn.setConnectTimeout(hc.getConnectTimeout());
             conn.setReadTimeout(hc.getReadTimeout());
