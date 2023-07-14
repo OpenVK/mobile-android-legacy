@@ -1428,57 +1428,65 @@ public class AppActivity extends TranslucentFragmentActivity {
     }
 
     public void voteInPoll(int item_pos, int answer) {
-        this.item_pos = item_pos;
-        this.poll_answer = answer;
-        WallPost item;
-        if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
-            item = ovk_api.newsfeed.getWallPosts().get(item_pos);
-        } else {
-            item = ovk_api.wall.getWallItems().get(item_pos);
-        }
-        for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-            if (item.attachments.get(attachment_index).type.equals("poll")) {
-                PollAttachment pollAttachment = ((PollAttachment) item.attachments
-                        .get(attachment_index).getContent());
-                pollAttachment.user_votes = 1;
-                if (!pollAttachment.answers.get(answer).is_voted) {
-                    pollAttachment.answers.get(answer).is_voted = true;
-                }
-                if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    ovk_api.newsfeed.getWallPosts().set(item_pos, item);
-                } else {
-                    ovk_api.wall.getWallItems().set(item_pos, item);
-                }
-                pollAttachment.vote(ovk_api.wrapper, pollAttachment.answers.get(answer).id);
+        try {
+            this.item_pos = item_pos;
+            this.poll_answer = answer;
+            WallPost item;
+            if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                item = ovk_api.newsfeed.getWallPosts().get(item_pos);
+            } else {
+                item = ovk_api.wall.getWallItems().get(item_pos);
             }
+            for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                if (item.attachments.get(attachment_index).type.equals("poll")) {
+                    PollAttachment pollAttachment = ((PollAttachment) item.attachments
+                            .get(attachment_index).getContent());
+                    pollAttachment.user_votes = 1;
+                    if (!pollAttachment.answers.get(answer).is_voted) {
+                        pollAttachment.answers.get(answer).is_voted = true;
+                    }
+                    if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                        ovk_api.newsfeed.getWallPosts().set(item_pos, item);
+                    } else {
+                        ovk_api.wall.getWallItems().set(item_pos, item);
+                    }
+                    pollAttachment.vote(ovk_api.wrapper, pollAttachment.answers.get(answer).id);
+                }
+            }
+        } catch (Exception ex) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void removeVoteInPoll(int item_pos) {
-        this.item_pos = item_pos;
-        WallPost item;
-        if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
-            item = ovk_api.newsfeed.getWallPosts().get(item_pos);
-        } else {
-            item = ovk_api.wall.getWallItems().get(item_pos);
-        }
-        for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-            if(item.attachments.get(attachment_index).type.equals("poll")) {
-                PollAttachment pollAttachment = ((PollAttachment) item.attachments
-                        .get(attachment_index).getContent());
-                pollAttachment.user_votes = 0;
-                for (int i = 0; i < pollAttachment.answers.size(); i++) {
-                    if (pollAttachment.answers.get(i).is_voted) {
-                        pollAttachment.answers.get(i).is_voted = false;
-                    }
-                }
-                if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
-                    ovk_api.newsfeed.getWallPosts().set(item_pos, item);
-                } else {
-                    ovk_api.wall.getWallItems().set(item_pos, item);
-                }
-                pollAttachment.unvote(ovk_api.wrapper);
+        try {
+            this.item_pos = item_pos;
+            WallPost item;
+            if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                item = ovk_api.newsfeed.getWallPosts().get(item_pos);
+            } else {
+                item = ovk_api.wall.getWallItems().get(item_pos);
             }
+            for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                if(item.attachments.get(attachment_index).type.equals("poll")) {
+                    PollAttachment pollAttachment = ((PollAttachment) item.attachments
+                            .get(attachment_index).getContent());
+                    pollAttachment.user_votes = 0;
+                    for (int i = 0; i < pollAttachment.answers.size(); i++) {
+                        if (pollAttachment.answers.get(i).is_voted) {
+                            pollAttachment.answers.get(i).is_voted = false;
+                        }
+                    }
+                    if(global_prefs.getString("current_screen", "").equals("newsfeed")) {
+                        ovk_api.newsfeed.getWallPosts().set(item_pos, item);
+                    } else {
+                        ovk_api.wall.getWallItems().set(item_pos, item);
+                    }
+                    pollAttachment.unvote(ovk_api.wrapper);
+                }
+            }
+        } catch (Exception ex) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
