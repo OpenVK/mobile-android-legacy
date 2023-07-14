@@ -10,8 +10,11 @@ import android.util.Log;
 
 import org.pixmob.httpclient.HttpClient;
 import org.pixmob.httpclient.HttpRequestBuilder;
+import org.pixmob.httpclient.HttpResponse;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -204,7 +207,16 @@ public class UploadManager {
                         short_address = address.substring(0, 49);
                     }
                     if (legacy_mode) {
-
+                        HttpRequestBuilder request_legacy = httpClientLegacy.post(address);
+                        request_legacy.header("Content-Type", "multipart/form-data");
+                        request_legacy.header("Content-Disposition",
+                                "form-data; name=\"photo\"; filename=\"" + file.getName() + "\"");
+                        request_legacy.content(new FileInputStream(file_f), mime);
+                        HttpResponse response = null;
+                        response = request_legacy.execute();
+                        assert response != null;
+                        response_body = response.readString();
+                        response_code = response.getStatusCode();
                     } else {
                         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                         builder.addPart(

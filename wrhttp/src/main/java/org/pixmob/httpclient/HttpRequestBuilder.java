@@ -80,6 +80,7 @@ public final class HttpRequestBuilder {
     private boolean contentSet;
     private String contentType;
     private HttpResponseHandler handler;
+    private InputStream contentStream;
 
     HttpRequestBuilder(final HttpClient hc, final String uri, final String method) {
         this.hc = hc;
@@ -110,6 +111,15 @@ public final class HttpRequestBuilder {
         this.content = content;
         this.contentType = contentType;
         if (content != null) {
+            contentSet = true;
+        }
+        return this;
+    }
+
+    public HttpRequestBuilder content(InputStream in, String contentType) {
+        this.contentStream = in;
+        this.contentType = contentType;
+        if (in != null) {
             contentSet = true;
         }
         return this;
@@ -291,6 +301,22 @@ public final class HttpRequestBuilder {
 
                     final OutputStream out = conn.getOutputStream();
                     out.write(content);
+                    out.flush();
+                } else if (contentStream != null) {
+                    conn.setDoOutput(true);
+                    if (!contentSet) {
+                        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset="
+                                + CONTENT_CHARSET);
+                    } else if (contentType != null) {
+                        conn.setRequestProperty("Content-Type", contentType);
+                    }
+                    conn.setFixedLengthStreamingMode(contentStream.available());
+
+                    final OutputStream out = conn.getOutputStream();
+                    int bytes = 0;
+                    while((bytes = contentStream.read()) != -1) {
+                        out.write(bytes);
+                    }
                     out.flush();
                 } else {
                     conn.setFixedLengthStreamingMode(0);
