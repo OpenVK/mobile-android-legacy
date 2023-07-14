@@ -38,10 +38,12 @@ public final class HttpResponse {
     private final Map<String, String> cookies;
     private final Map<String, List<String>> headers;
     private InputStream payload;
+    private long contentLength;
 
     HttpResponse(final int statusCode, final InputStream payload, final Map<String, List<String>> rawHeaders,
-            final Map<String, String> cookies) {
+            final Map<String, String> cookies, long contentLength) {
         this.statusCode = statusCode;
+        this.contentLength = contentLength;
         this.payload = payload;
         this.cookies = Collections.unmodifiableMap(cookies);
 
@@ -89,17 +91,6 @@ public final class HttpResponse {
      * Get the content length for this response, or <code>0</code> if unknown.
      */
     public long getContentLength() {
-        long contentLength = 0;
-        for (Map.Entry<String, List<String>> me :
-                getHeaders().entrySet()) {
-            if(me.getKey().equals("Content-Length")) {
-                contentLength = Long.parseLong(getHeaders().get(me.getKey()).get(0));
-                if (contentLength == 0) {
-                    return 0;
-                }
-            }
-        }
-
         return contentLength;
     }
 

@@ -342,7 +342,8 @@ public final class HttpRequestBuilder {
                 payloadStream = new UncloseableInputStream(getInputStream(conn));
             }
             final HttpResponse resp = new HttpResponse(statusCode, payloadStream,
-                    headerFields == null ? NO_HEADERS : headerFields, inMemoryCookies);
+                    headerFields == null ? NO_HEADERS : headerFields, inMemoryCookies,
+                    conn.getContentLength());
             if (handler != null) {
                 try {
                     handler.onResponse(resp);
