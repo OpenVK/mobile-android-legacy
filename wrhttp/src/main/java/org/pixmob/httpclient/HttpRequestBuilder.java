@@ -84,6 +84,7 @@ public final class HttpRequestBuilder {
     private HttpResponseHandler handler;
     private InputStream contentStream;
     private String contentDisposition;
+    private HttpProgressHandler progressHandler;
 
     HttpRequestBuilder(final HttpClient hc, final String uri, final String method) {
         this.hc = hc;
@@ -94,6 +95,13 @@ public final class HttpRequestBuilder {
     public HttpRequestBuilder with(HttpRequestHandler handler) {
         if (handler != null) {
             reqHandlers.add(handler);
+        }
+        return this;
+    }
+
+    public HttpRequestBuilder withProgressHandler(HttpProgressHandler handler) {
+        if(handler != null) {
+            progressHandler = new HttpProgressHandler();
         }
         return this;
     }
@@ -330,15 +338,29 @@ public final class HttpRequestBuilder {
                                     contentDisposition, streamContentType);
                         }
                     }
+
+                    long streamLength = contentStream.available();
                     conn.setFixedLengthStreamingMode(contentStream.available() +
                             body_header.length() + "\r\n--*****--\r\n".length());
 
                     final OutputStream out = conn.getOutputStream();
                     out.write(body_header.getBytes());
                     int bytes = 0;
+                    long upload_filesize = 0;
 
                     while((bytes = contentStream.read()) != -1) {
                         out.write(bytes);
+                        upload_filesize++;
+                        if(upload_filesize % 32 == 0) {
+                            if(progressHandler != null) {
+                                try {
+                                    progressHandler.onProgress(upload_filesize,
+                                            streamLength);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
                     }
                     out.write("\r\n--*****--\r\n".getBytes());
                     out.flush();

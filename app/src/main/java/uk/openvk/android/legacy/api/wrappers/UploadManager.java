@@ -10,6 +10,7 @@ import android.util.Log;
 
 import org.pixmob.httpclient.HttpClient;
 import org.pixmob.httpclient.HttpClientException;
+import org.pixmob.httpclient.HttpProgressHandler;
 import org.pixmob.httpclient.HttpRequestBuilder;
 import org.pixmob.httpclient.HttpRequestHandler;
 import org.pixmob.httpclient.HttpResponse;
@@ -217,6 +218,21 @@ public class UploadManager {
                         request_legacy.contentDisposition(
                                 "form-data; name=\"photo\"; filename=\"" + file.getName() + "\"");
                         request_legacy.content(new FileInputStream(file_f), mime);
+                        request_legacy.withProgressHandler(new HttpProgressHandler() {
+                            @Override
+                            public void onProgress(long position, long max) throws Exception {
+                                super.onProgress(position, max);
+                                if ((max >= 1048576L && position % 4096 == 0)) {
+                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                } else if(max >= 8192L && position % 64 == 0) {
+                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                } else if(max < 8192L) {
+                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                } else if(position == max) {
+                                    updateLoadProgress(file_f.getName(), address, position, max);
+                                }
+                            }
+                        });
                         final String finalShort_address = short_address;
                         HttpResponse response = null;
                         response = request_legacy.execute();
