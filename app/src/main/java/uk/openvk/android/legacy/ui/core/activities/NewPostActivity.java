@@ -372,7 +372,7 @@ public class NewPostActivity extends TranslucentActivity {
             }
             Uri uri = data.getData();
             File file = new File(uriToFilename(uri));
-            if(file.exists() && ovk_api.photos.ownerPhotoUploadServer != null) {
+            if(file.exists()) {
                 findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
                 UploadableFile upload_file = new UploadableFile(uriToFilename(uri), file);
                 upload_file.length = file.length();
