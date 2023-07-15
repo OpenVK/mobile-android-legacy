@@ -232,7 +232,7 @@ public class DownloadManager {
                         filename = photoAttachment.filename;
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
                         try {
-                            if(downloadedFile.exists()) {
+                            if(downloadedFile.exists() || !downloadedFile.isDirectory()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 byte[] bytes = new byte[1];
                                 bytes[0] = 0;
