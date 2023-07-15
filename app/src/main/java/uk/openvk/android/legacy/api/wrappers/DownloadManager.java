@@ -453,33 +453,25 @@ public class DownloadManager {
                             assert response != null;
                             response_in = response.getPayload();
                             content_length = response.getContentLength();
-                            if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
-                                FileOutputStream fos = new FileOutputStream(downloadedFile);
-                                int inByte;
-                                while ((inByte = response_in.read()) != -1) {
-                                    fos.write(inByte);
-                                    filesize++;
-                                }
-                                fos.close();
-                            } else {
-                                if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
+                            FileOutputStream fos = new FileOutputStream(downloadedFile);
+                            int inByte;
+                            while ((inByte = response_in.read()) != -1) {
+                                fos.write(inByte);
+                                filesize++;
                             }
+                            fos.close();
                             response_in.close();
                             response_code = response.getStatusCode();
                         } else {
                             Response response = httpClient.newCall(request).execute();
                             response_code = response.code();
-                            if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
-                                FileOutputStream fos = new FileOutputStream(downloadedFile);
-                                int inByte;
-                                while ((inByte = response.body().byteStream().read()) != -1) {
-                                    fos.write(inByte);
-                                    filesize++;
-                                }
-                                fos.close();
-                            } else {
-                                if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
+                            FileOutputStream fos = new FileOutputStream(downloadedFile);
+                            int inByte;
+                            while ((inByte = response.body().byteStream().read()) != -1) {
+                                fos.write(inByte);
+                                filesize++;
                             }
+                            fos.close();
                             response.body().byteStream().close();
                             if (response != null){
                                 response.close();
