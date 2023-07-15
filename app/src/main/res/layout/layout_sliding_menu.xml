@@ -74,6 +74,7 @@
         android:layout_height="wrap_content"
         android:background="#8f000000"
         android:scrollbars="none"
+        android:divider="@drawable/left_item_up"
         android:visibility="gone" />
 
     <ListView

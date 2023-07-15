@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -176,6 +177,7 @@ public class SlidingMenuLayout extends LinearLayout {
         accountMenuTargetHeight = (int) (account_menu_view.getAdapter().getCount() *
                 ((47 * (getResources().getDisplayMetrics().scaledDensity)) +
                         account_menu_view.getDividerHeight()));
+        account_menu_view.setCacheColorHint(Color.TRANSPARENT);
         this.showAccountMenu = !this.showAccountMenu;
         final View arrow = findViewById(R.id.arrow);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
