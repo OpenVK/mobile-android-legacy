@@ -954,6 +954,7 @@
 	</string-array>
 	<string name="profile_inactive_banned">Сторінка була заблокована за скаргами користувачів. Можливо, вона була зламана.</string>
 	<string name="profile_inactive_deleted">Сторінка користувача видалена. інформація недоступна.</string>
+    <string name="profile_no_info">Інформація щодо цього профілю відсутня</string>
 	<string name="add_photo_gallery">Завантажити з галереї</string>
 	<string name="add_photo_camera">Зробити знімок</string>
 	<string name="notification_in_chat">(в бесіді)</string>

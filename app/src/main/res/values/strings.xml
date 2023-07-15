@@ -901,6 +901,7 @@
 	</string-array>
 	<string name="profile_inactive_banned">This profile has been temporarily suspended due to security concerns.</string>
 	<string name="profile_inactive_deleted">This user deleted their page. Information unavailable.</string>
+    <string name="profile_no_info">There is no information for this profile</string>
 	<string name="add_photo_gallery">Choose from Gallery</string>
 	<string name="add_photo_camera">Take a picture</string>
 	<string name="notification_in_chat">(in a chat)</string>

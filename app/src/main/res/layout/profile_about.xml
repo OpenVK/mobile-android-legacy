@@ -55,11 +55,28 @@
             android:paddingTop="10dp">
 
 
+            <TextView
+                android:id="@+id/no_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_msg_error"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:text="@string/profile_no_info"
+                android:textColor="@color/timestamp_color"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:visibility="gone"
+                tools:ignore="HardcodedText,RtlHardcoded" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/about_rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:nestedScrollingEnabled="false"/>
+                android:nestedScrollingEnabled="false"
+                android:visibility="visible">
+
+            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
 
     </LinearLayout>

@@ -823,6 +823,7 @@
 	<string name="friends_of_user">Друзья %s</string>
 	<string name="profile_inactive_banned">Страница была заблокирована по жалобам пользователей. Возможно, она была взломана.</string>
 	<string name="profile_inactive_deleted">Страница пользователя удалена. Информация недоступна.</string>
+    <string name="profile_no_info">Информация по этому профилю отсутствует</string>
 	<string name="add_photo_gallery">Загрузить из галереи</string>
 	<string name="add_photo_camera">Сделать снимок</string>
 	<string name="notification_in_chat">(в беседе)</string>

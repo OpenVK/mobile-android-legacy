@@ -123,6 +123,7 @@ public class AboutProfileLayout extends LinearLayout {
             }
         } else {
             findViewById(R.id.about_profile).setVisibility(GONE);
+            findViewById(R.id.no_info).setVisibility(VISIBLE);
         }
     }
 
