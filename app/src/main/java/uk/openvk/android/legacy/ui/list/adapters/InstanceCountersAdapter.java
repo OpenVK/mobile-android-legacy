@@ -113,11 +113,15 @@ public class InstanceCountersAdapter extends BaseAdapter {
             if(position == 1) {
                 label.setText(ctx.getResources().getString(res_id));
             } else {
-                label.setText(Global.getPluralQuantityString(
+                String plural_str = Global.getPluralQuantityString(
                         ctx,
                         res_id,
                         end_number
-                ));
+                );
+                if(plural_str.length() == 0) {
+                    plural_str = ctx.getResources().getQuantityString(res_id, end_number);
+                }
+                label.setText(plural_str);
             }
         }
         return convertView;

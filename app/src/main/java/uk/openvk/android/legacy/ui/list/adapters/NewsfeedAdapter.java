@@ -222,205 +222,215 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             });
-            if(item.text.length() > 0) {
-                post_text.setVisibility(View.VISIBLE);
-                String text = item.text.replaceAll("&lt;", "<")
-                        .replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&")
-                        .replaceAll("&quot;", "\"");
-                String[] lines = text.split("\r\n|\r|\n");
-                String text_llines = "";
-                if(lines.length > 8) {
-                    for (int line_no = 0; line_no < 8; line_no++) {
-                        if (line_no == 7) {
-                            if (lines[line_no].length() > 0)
-                                text_llines += String.format("%s...", lines[line_no]);
-                        } else if (line_no == 6) {
-                            if (lines[line_no + 1].length() == 0) {
-                                text_llines += String.format("%s", lines[line_no]);
+            if(!item.is_explicit) {
+                if (item.text.length() > 0) {
+                    post_text.setVisibility(View.VISIBLE);
+                    String text = item.text.replaceAll("&lt;", "<")
+                            .replaceAll("&gt;", ">")
+                            .replaceAll("&amp;", "&")
+                            .replaceAll("&quot;", "\"");
+                    String[] lines = text.split("\r\n|\r|\n");
+                    String text_llines = "";
+                    if (lines.length > 8) {
+                        for (int line_no = 0; line_no < 8; line_no++) {
+                            if (line_no == 7) {
+                                if (lines[line_no].length() > 0)
+                                    text_llines += String.format("%s...", lines[line_no]);
+                            } else if (line_no == 6) {
+                                if (lines[line_no + 1].length() == 0) {
+                                    text_llines += String.format("%s", lines[line_no]);
+                                } else {
+                                    text_llines += String.format("%s\r\n", lines[line_no]);
+                                }
                             } else {
                                 text_llines += String.format("%s\r\n", lines[line_no]);
                             }
-                        } else {
-                            text_llines += String.format("%s\r\n", lines[line_no]);
                         }
-                    }
-                    post_text.setText(Global.formatLinksAsHtml(text_llines));
-                    expand_text_btn.setVisibility(View.VISIBLE);
-                } else {
-                    OvkExpandableText expandableText = Global.formatLinksAsHtml(text, 500);
-                    post_text.setText(expandableText.sp_text);
-                    if (expandableText.expandable) {
+                        post_text.setText(Global.formatLinksAsHtml(text_llines));
                         expand_text_btn.setVisibility(View.VISIBLE);
                     } else {
-                        expand_text_btn.setVisibility(View.GONE);
-                    }
-                }
-            } else {
-                post_text.setVisibility(View.GONE);
-                expand_text_btn.setVisibility(View.GONE);
-            }
-
-            if(item.repost != null) {
-                repost_info.setVisibility(View.VISIBLE);
-                original_poster_name.setText(item.repost.name);
-                original_post_info.setText(item.repost.time);
-                String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<")
-                        .replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
-                String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
-                if(repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
-                    String text_llines = "";
-                    for(int line_no = 0; line_no < 8; line_no++) {
-                        if(line_no == 7) {
-                            text_llines += String.format("%s...", repost_lines[line_no]);
+                        OvkExpandableText expandableText = Global.formatLinksAsHtml(text, 500);
+                        post_text.setText(expandableText.sp_text);
+                        if (expandableText.expandable) {
+                            expand_text_btn.setVisibility(View.VISIBLE);
                         } else {
-                            text_llines += String.format("%s\r\n", repost_lines[line_no]);
+                            expand_text_btn.setVisibility(View.GONE);
                         }
                     }
-                    original_post_text.setText(text_llines);
-                    repost_expand_text_btn.setVisibility(View.VISIBLE);
-                } else if(repost_text.length() > 500) {
-                    original_post_text.setText(String.format("%s...", repost_text.substring(0, 500)));
-                    repost_expand_text_btn.setVisibility(View.VISIBLE);
                 } else {
-                    original_post_text.setText(repost_text);
-                    repost_expand_text_btn.setVisibility(View.GONE);
+                    post_text.setVisibility(View.GONE);
+                    expand_text_btn.setVisibility(View.GONE);
                 }
-                for(int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
-                    if (item.repost.newsfeed_item.attachments.get(i).status.equals("loading")) {
-                        try {
-                            photo_progress.setVisibility(View.VISIBLE);
-                        } catch (Exception ignored) {
-                        }
-                        original_post_photo.setImageBitmap(null);
-                    } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("not_supported")) {
-                        error_label.setText(ctx.getResources().getString(R.string.not_supported));
-                        error_label.setVisibility(View.VISIBLE);
-                    } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
-                        if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
-                            WallPost repost = item.repost.newsfeed_item;
-                            if(repost.attachments.get(i).status.equals("done")) {
-                                loadPhotoAttachment((PhotoAttachment) repost.attachments.get(i).getContent(),
-                                        repost.owner_id, repost.post_id, original_post_photo);
+
+                if (item.repost != null) {
+                    repost_info.setVisibility(View.VISIBLE);
+                    original_poster_name.setText(item.repost.name);
+                    original_post_info.setText(item.repost.time);
+                    String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<")
+                            .replaceAll("&gt;", ">")
+                            .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                    String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
+                    if (repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
+                        String text_llines = "";
+                        for (int line_no = 0; line_no < 8; line_no++) {
+                            if (line_no == 7) {
+                                text_llines += String.format("%s...", repost_lines[line_no]);
                             } else {
-                                loadPhotoPlaceholder(repost, (PhotoAttachment) repost.attachments.get(i).getContent(),
-                                        original_post_photo);
+                                text_llines += String.format("%s\r\n", repost_lines[line_no]);
                             }
-                            original_post_photo.setVisibility(View.VISIBLE);
                         }
-                    } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
-                        if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
-                            PollAttachment pollAttachment = ((PollAttachment) item.repost.
-                                    newsfeed_item.attachments.get(i).getContent());
-                            original_post_poll.createAdapter(ctx, position, pollAttachment.answers,
-                                    pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
-                            original_post_poll.setPollInfo(pollAttachment.question,
-                                    pollAttachment.anonymous, pollAttachment.end_date);
-                            original_post_poll.setVisibility(View.VISIBLE);
+                        original_post_text.setText(text_llines);
+                        repost_expand_text_btn.setVisibility(View.VISIBLE);
+                    } else if (repost_text.length() > 500) {
+                        original_post_text.setText(String.format("%s...", repost_text.substring(0, 500)));
+                        repost_expand_text_btn.setVisibility(View.VISIBLE);
+                    } else {
+                        original_post_text.setText(repost_text);
+                        repost_expand_text_btn.setVisibility(View.GONE);
+                    }
+                    for (int i = 0; i < item.repost.newsfeed_item.attachments.size(); i++) {
+                        if (item.repost.newsfeed_item.attachments.get(i).status.equals("loading")) {
+                            try {
+                                photo_progress.setVisibility(View.VISIBLE);
+                            } catch (Exception ignored) {
+                            }
+                            original_post_photo.setImageBitmap(null);
+                        } else if (item.repost.newsfeed_item.attachments.get(i).status.equals("not_supported")) {
+                            error_label.setText(ctx.getResources().getString(R.string.not_supported));
+                            error_label.setVisibility(View.VISIBLE);
+                        } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("photo")) {
+                            if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
+                                WallPost repost = item.repost.newsfeed_item;
+                                if (repost.attachments.get(i).status.equals("done")) {
+                                    loadPhotoAttachment((PhotoAttachment) repost.attachments.get(i).getContent(),
+                                            repost.owner_id, repost.post_id, original_post_photo);
+                                } else {
+                                    loadPhotoPlaceholder(repost, (PhotoAttachment) repost.attachments.get(i).getContent(),
+                                            original_post_photo);
+                                }
+                                original_post_photo.setVisibility(View.VISIBLE);
+                            }
+                        } else if (item.repost.newsfeed_item.attachments.get(i).type.equals("poll")) {
+                            if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
+                                PollAttachment pollAttachment = ((PollAttachment) item.repost.
+                                        newsfeed_item.attachments.get(i).getContent());
+                                original_post_poll.createAdapter(ctx, position, pollAttachment.answers,
+                                        pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                                original_post_poll.setPollInfo(pollAttachment.question,
+                                        pollAttachment.anonymous, pollAttachment.end_date);
+                                original_post_poll.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
+                    repost_info.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                                ((AppActivity) ctx).openWallRepostComments(position, view);
+                            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                                ((ProfileIntentActivity) ctx).openWallRepostComments(position, view);
+                            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                                ((GroupIntentActivity) ctx).openWallRepostComments(position, view);
+                            }
+                        }
+                    });
+                } else {
+                    repost_info.setVisibility(View.GONE);
                 }
-                repost_info.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).openWallRepostComments(position, view);
-                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).openWallRepostComments(position, view);
-                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                            ((GroupIntentActivity) ctx).openWallRepostComments(position, view);
-                        }
-                    }
-                });
             } else {
-                repost_info.setVisibility(View.GONE);
+                error_label.setText(ctx.getResources().getString(R.string.post_load_nsfw));
+                error_label.setVisibility(View.VISIBLE);
+                post_text.setVisibility(View.GONE);
             }
 
-            error_label.setVisibility(View.GONE);
+            if(!item.is_explicit) {
+                error_label.setVisibility(View.GONE);
+            }
             post_photo.setVisibility(View.GONE);
             post_video.setVisibility(View.GONE);
             pollAttachView.setVisibility(View.GONE);
 
-            for(int i = 0; i < item.attachments.size(); i++) {
-                if (item.attachments.get(i).type.equals("photo")) {
-                    post_photo.setVisibility(View.VISIBLE);
-                    PhotoAttachment photoAttachment = (PhotoAttachment) item.attachments.get(i).getContent();
-                    if(item.attachments.get(i).status.equals("done")) {
-                        loadPhotoAttachment(photoAttachment, item.owner_id, item.post_id, post_photo);
-                    } else {
-                        loadPhotoPlaceholder(item, photoAttachment, post_photo);
-                    }
-                } else if (item.attachments.get(i).status.equals("not_supported") &&
-                        !item.attachments.get(i).type.equals("note")) {
-                    error_label.setText(ctx.getResources().getString(R.string.not_supported));
-                    error_label.setVisibility(View.VISIBLE);
-                } else if (item.attachments.get(i).status.equals("error")) {
-                    error_label.setText(ctx.getResources().getString(R.string.attachment_load_err));
-                    error_label.setVisibility(View.VISIBLE);
-                } else if (item.attachments.get(i).status.equals("done") &&
-                        item.attachments.get(i).type.equals("video")) {
-                    if (item.attachments.get(i).getContent() != null) {
-                        final VideoAttachment videoAttachment = (VideoAttachment)
-                                item.attachments.get(i).getContent();
-                        post_video.setAttachment(videoAttachment);
-                        post_video.setVisibility(View.VISIBLE);
-                        post_video.setThumbnail(item.owner_id);
-                        if(resize_videoattachviews < 1) {
-                            post_video.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
-                                    float attachment_height = widescreen_aspect_ratio * 9;
-                                    LinearLayout.LayoutParams lp =
-                                            ((LinearLayout.LayoutParams) post_video.getLayoutParams());
-                                    lp.height = (int) attachment_height;
-                                    post_video.setLayoutParams(lp);
-                                }
-                            });
-                            resize_videoattachviews++;
+            if(!item.is_explicit) {
+                for (int i = 0; i < item.attachments.size(); i++) {
+                    if (item.attachments.get(i).type.equals("photo")) {
+                        post_photo.setVisibility(View.VISIBLE);
+                        PhotoAttachment photoAttachment = (PhotoAttachment) item.attachments.get(i).getContent();
+                        if (item.attachments.get(i).status.equals("done")) {
+                            loadPhotoAttachment(photoAttachment, item.owner_id, item.post_id, post_photo);
+                        } else {
+                            loadPhotoPlaceholder(item, photoAttachment, post_photo);
                         }
-                        post_video.getViewTreeObserver().addOnGlobalLayoutListener(
-                                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    } else if (item.attachments.get(i).status.equals("not_supported") &&
+                            !item.attachments.get(i).type.equals("note")) {
+                        error_label.setText(ctx.getResources().getString(R.string.not_supported));
+                        error_label.setVisibility(View.VISIBLE);
+                    } else if (item.attachments.get(i).status.equals("error")) {
+                        error_label.setText(ctx.getResources().getString(R.string.attachment_load_err));
+                        error_label.setVisibility(View.VISIBLE);
+                    } else if (item.attachments.get(i).status.equals("done") &&
+                            item.attachments.get(i).type.equals("video")) {
+                        if (item.attachments.get(i).getContent() != null) {
+                            final VideoAttachment videoAttachment = (VideoAttachment)
+                                    item.attachments.get(i).getContent();
+                            post_video.setAttachment(videoAttachment);
+                            post_video.setVisibility(View.VISIBLE);
+                            post_video.setThumbnail(item.owner_id);
+                            if (resize_videoattachviews < 1) {
+                                post_video.post(new Runnable() {
                                     @Override
-                                    public void onGlobalLayout() {
+                                    public void run() {
                                         float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
                                         float attachment_height = widescreen_aspect_ratio * 9;
-                                        post_video.getLayoutParams().height = (int) attachment_height;
+                                        LinearLayout.LayoutParams lp =
+                                                ((LinearLayout.LayoutParams) post_video.getLayoutParams());
+                                        lp.height = (int) attachment_height;
+                                        post_video.setLayoutParams(lp);
                                     }
                                 });
-                        post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(ctx, VideoPlayerActivity.class);
-                                intent.putExtra("attachment", videoAttachment);
-                                intent.putExtra("files", videoAttachment.files);
-                                intent.putExtra("owner_id", item.owner_id);
-                                ctx.startActivity(intent);
+                                resize_videoattachviews++;
                             }
-                        });
-                    }
-                } else if (item.attachments.get(i).type.equals("poll")) {
-                    if (item.attachments.get(i).getContent() != null) {
-                        PollAttachment pollAttachment = ((PollAttachment)
-                                item.attachments.get(i).getContent());
-                        pollAttachView.createAdapter(ctx, position, pollAttachment.answers,
-                                pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
-                        pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
-                                pollAttachment.end_date);
-                        pollAttachView.setVisibility(View.VISIBLE);
-                    }
-                } else if (item.attachments.get(i).type.equals("note")) {
-                    if (item.attachments.get(i).getContent() != null) {
-                        CommonAttachment commonAttachment = ((CommonAttachment)
-                                item.attachments.get(i).getContent());
-                        attachment_view.setAttachment(item.attachments.get(i));
-                        Intent intent = new Intent(ctx, NoteActivity.class);
-                        intent.putExtra("title", commonAttachment.title);
-                        intent.putExtra("content", commonAttachment.text);
-                        intent.putExtra("author", item.name);
-                        attachment_view.setIntent(intent);
-                        attachment_view.setVisibility(View.VISIBLE);
+                            post_video.getViewTreeObserver().addOnGlobalLayoutListener(
+                                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                                        @Override
+                                        public void onGlobalLayout() {
+                                            float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
+                                            float attachment_height = widescreen_aspect_ratio * 9;
+                                            post_video.getLayoutParams().height = (int) attachment_height;
+                                        }
+                                    });
+                            post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(ctx, VideoPlayerActivity.class);
+                                    intent.putExtra("attachment", videoAttachment);
+                                    intent.putExtra("files", videoAttachment.files);
+                                    intent.putExtra("owner_id", item.owner_id);
+                                    ctx.startActivity(intent);
+                                }
+                            });
+                        }
+                    } else if (item.attachments.get(i).type.equals("poll")) {
+                        if (item.attachments.get(i).getContent() != null) {
+                            PollAttachment pollAttachment = ((PollAttachment)
+                                    item.attachments.get(i).getContent());
+                            pollAttachView.createAdapter(ctx, position, pollAttachment.answers,
+                                    pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                            pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
+                                    pollAttachment.end_date);
+                            pollAttachView.setVisibility(View.VISIBLE);
+                        }
+                    } else if (item.attachments.get(i).type.equals("note")) {
+                        if (item.attachments.get(i).getContent() != null) {
+                            CommonAttachment commonAttachment = ((CommonAttachment)
+                                    item.attachments.get(i).getContent());
+                            attachment_view.setAttachment(item.attachments.get(i));
+                            Intent intent = new Intent(ctx, NoteActivity.class);
+                            intent.putExtra("title", commonAttachment.title);
+                            intent.putExtra("content", commonAttachment.text);
+                            intent.putExtra("author", item.name);
+                            attachment_view.setIntent(intent);
+                            attachment_view.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }

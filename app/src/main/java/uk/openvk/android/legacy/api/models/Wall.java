@@ -247,6 +247,9 @@ public class Wall implements Parcelable {
                     try { // handle floating crash
                         avatars.add(avatar);
                         item.verified_author = verified_author;
+                        if(post.has("is_explicit")) {
+                            item.is_explicit = post.getBoolean("is_explicit");
+                        }
                         this.items.add(item);
                     } catch (ArrayIndexOutOfBoundsException ignored) {
                         Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +

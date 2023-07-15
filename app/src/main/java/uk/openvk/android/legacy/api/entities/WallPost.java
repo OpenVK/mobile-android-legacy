@@ -54,6 +54,7 @@ public class WallPost implements Parcelable {
     public PostCounters counters;
     public long author_id;
     public boolean verified_author;
+    public boolean is_explicit;
     public ArrayList<Attachment> attachments;
     public WallPostSource post_source;
     private String json_str;
@@ -176,6 +177,10 @@ public class WallPost implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setExplicit(boolean value) {
+        this.is_explicit = value;
     }
 
     private ArrayList<Attachment> createAttachmentsList(

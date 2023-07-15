@@ -1216,6 +1216,7 @@
     <string name="wall_err_text">Хмммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
     <string name="invalid_session">Сесія недійсна. Будь ласка, авторизуйтесь ще раз.</string>
     <string name="attachment_load_err">Помилка завантаження вкладення</string>
+    <string name="post_load_nsfw">Цей пост може містити контент для дорослих</string>
     <string name="sett_splash">Заставка під час запуску</string>
     <string name="rules_link">Правила</string>
     <string name="privacy_link">Приватність</string>

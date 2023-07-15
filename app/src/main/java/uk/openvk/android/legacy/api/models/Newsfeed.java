@@ -228,6 +228,9 @@ public class Newsfeed implements Parcelable {
                             }
                         }
                     }
+                    if(post.has("is_explicit")) {
+                        item.is_explicit = post.getBoolean("is_explicit");
+                    }
                     item.verified_author = verified_author;
                     PhotoAttachment avatar = new PhotoAttachment();
                     avatar.url = avatar_url;

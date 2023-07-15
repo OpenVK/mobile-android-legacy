@@ -381,6 +381,7 @@
     <string name="friends_add">Добавить</string>
     <string name="friends_decline">Скрыть</string>
     <string name="sett_splash">Заставка при запуске</string>
+    <string name="post_load_nsfw">Данный пост может содержать контент для взрослых</string>
     <string name="sett_ringtone">Сигнал уведомления</string>
     <string name="friend_req_accepted">Заявка принята</string>
     <string name="friend_req_declined">Заявка отклонена</string>

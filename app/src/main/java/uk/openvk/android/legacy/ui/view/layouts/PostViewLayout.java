@@ -284,54 +284,56 @@ public class PostViewLayout extends LinearLayout {
     }
 
     public void loadWallPhoto(WallPost post, String where) {
-        try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = null;
-            Bitmap repost_bitmap = null;
-            if(post.repost != null) {
-                if(where.equals("newsfeed")) {
-                    repost_bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                    getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
-                                    post.repost.newsfeed_item.post_id), options);
-                } else {
-                    repost_bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
-                            getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
-                                    post.repost.newsfeed_item.post_id), options);
+        if(!post.is_explicit) {
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = null;
+                Bitmap repost_bitmap = null;
+                if (post.repost != null) {
+                    if (where.equals("newsfeed")) {
+                        repost_bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                        getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
+                                        post.repost.newsfeed_item.post_id), options);
+                    } else {
+                        repost_bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                        getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
+                                        post.repost.newsfeed_item.post_id), options);
+                    }
                 }
+                if (where.equals("newsfeed")) {
+                    bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                    getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
+                } else {
+                    bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                    getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
+                }
+                final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
+                final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
+                if (bitmap != null) {
+                    final float aspect_ratio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
+                    post_photo.setImageBitmap(bitmap);
+                    post_photo.setVisibility(View.VISIBLE);
+                } else {
+                    Log.e(OvkApplication.APP_TAG,
+                            String.format("'%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s' not found",
+                                    getContext().getCacheDir(), instance, post.owner_id, post.post_id));
+                    post_photo.setVisibility(GONE);
+                }
+                if (repost_bitmap != null) {
+                    repost_photo.setImageBitmap(repost_bitmap);
+                    repost_photo.setVisibility(View.VISIBLE);
+                    post_photo.setVisibility(GONE);
+                }
+            } catch (OutOfMemoryError error) {
+                Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
+            } catch (Exception ex) {
+                Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
             }
-            if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
-            } else {
-                bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
-                                getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
-            }
-            final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
-            final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
-            if (bitmap != null) {
-                final float aspect_ratio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
-                post_photo.setImageBitmap(bitmap);
-                post_photo.setVisibility(View.VISIBLE);
-            } else {
-                Log.e(OvkApplication.APP_TAG,
-                        String.format("'%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s' not found",
-                                getContext().getCacheDir(), instance, post.owner_id, post.post_id));
-                post_photo.setVisibility(GONE);
-            }
-            if(repost_bitmap != null) {
-                repost_photo.setImageBitmap(repost_bitmap);
-                repost_photo.setVisibility(View.VISIBLE);
-                post_photo.setVisibility(GONE);
-            }
-        } catch (OutOfMemoryError error) {
-            Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
-        } catch (Exception ex) {
-            Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
         }
     }
 
