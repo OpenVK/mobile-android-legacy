@@ -37,6 +37,7 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
+import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.OvkRefreshableHeaderLayout;
@@ -90,7 +91,7 @@ public class NewsfeedFragment extends Fragment {
         newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
         if(newsfeedAdapter == null) {
             newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts, false);
-            llm = new LinearLayoutManager(ctx);
+            llm = new WrappedLinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             newsfeedView.setLayoutManager(llm);
             newsfeedView.setAdapter(newsfeedAdapter);

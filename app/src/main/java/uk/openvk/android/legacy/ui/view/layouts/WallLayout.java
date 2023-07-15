@@ -29,6 +29,7 @@ import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -66,7 +67,7 @@ public class WallLayout extends LinearLayout {
 
         this.addView(view);
 
-        llm = new LinearLayoutManager(context);
+        llm = new WrappedLinearLayoutManager(context);
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
