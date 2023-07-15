@@ -173,7 +173,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             try {
                 ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                 ovk_api.account.getProfileInfo(ovk_api.wrapper);
-                String args = Global.getUrlArguments(path);
+                args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
                     downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
                             global_prefs.getBoolean("legacyHttpClient", false));
