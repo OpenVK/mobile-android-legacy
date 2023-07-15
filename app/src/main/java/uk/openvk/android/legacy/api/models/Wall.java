@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.api.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
@@ -451,20 +453,25 @@ public class Wall implements Parcelable {
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
                     attachment_obj.status = attachment_status;
                     attachment_obj.setContent(photoAttachment);
-                    attachments_list.add(attachment_obj);
-                    switch (quality) {
-                        case "low":
-                            photos_lsize.add(photoAttachment);
-                            break;
-                        case "medium":
-                            photos_msize.add(photoAttachment);
-                            break;
-                        case "high":
-                            photos_hsize.add(photoAttachment);
-                            break;
-                        case "original":
-                            photos_osize.add(photoAttachment);
-                            break;
+                    try { // handle floating crash
+                        attachments_list.add(attachment_obj);
+                        switch (quality) {
+                            case "low":
+                                photos_lsize.add(photoAttachment);
+                                break;
+                            case "medium":
+                                photos_msize.add(photoAttachment);
+                                break;
+                            case "high":
+                                photos_hsize.add(photoAttachment);
+                                break;
+                            case "original":
+                                photos_osize.add(photoAttachment);
+                                break;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
                     }
                 } else if (attachment.getString("type").equals("video")) {
                     JSONObject video = attachment.getJSONObject("video");
@@ -502,7 +509,12 @@ public class Wall implements Parcelable {
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
                     attachment_obj.status = attachment_status;
                     attachment_obj.setContent(videoAttachment);
-                    attachments_list.add(attachment_obj);
+                    try {
+                        attachments_list.add(attachment_obj);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
+                    }
                 } else if (attachment.getString("type").equals("poll")) {
                     JSONObject poll_attachment = attachment.getJSONObject("poll");
                     PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"),
@@ -531,19 +543,34 @@ public class Wall implements Parcelable {
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
                     attachment_obj.status = attachment_status;
                     attachment_obj.setContent(pollAttachment);
-                    attachments_list.add(attachment_obj);
+                    try { // handle floating crash
+                        attachments_list.add(attachment_obj);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
+                    }
                 } else if (attachment.getString("type").equals("note")) {
                     CommonAttachment commonAttachment = new CommonAttachment(
                             attachment.getString("title"), attachment.getString("text"));
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
                     attachment_obj.status = "done";
                     attachment_obj.setContent(commonAttachment);
-                    attachments_list.add(attachment_obj);
+                    try { // handle floating crash
+                        attachments_list.add(attachment_obj);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
+                    }
                 } else {
                     attachment_status = "not_supported";
                     Attachment attachment_obj = new Attachment(attachment.getString("type"));
                     attachment_obj.status = attachment_status;
-                    attachments_list.add(attachment_obj);
+                    try { // handle floating crash
+                        attachments_list.add(attachment_obj);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
+                    }
                 }
             }
         } catch (JSONException ex) {
