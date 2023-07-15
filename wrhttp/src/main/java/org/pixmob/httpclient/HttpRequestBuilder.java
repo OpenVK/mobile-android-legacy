@@ -385,12 +385,6 @@ public final class HttpRequestBuilder {
             if (statusCode == -1) {
                 throw new HttpClientException("Invalid response from " + uri);
             }
-            if (!expectedStatusCodes.isEmpty() && !expectedStatusCodes.contains(statusCode)) {
-                throw new HttpClientException("Expected status code " + expectedStatusCodes + ", got "
-                        + statusCode);
-            } else if (expectedStatusCodes.isEmpty() && statusCode / 100 != 2) {
-                throw new HttpClientException("Expected status code 2xx, got " + statusCode);
-            }
 
             final Map<String, List<String>> headerFields = conn.getHeaderFields();
             final Map<String, String> inMemoryCookies = hc.getInMemoryCookies();

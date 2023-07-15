@@ -43,7 +43,7 @@ public class Error {
     }
 
     public void parse(String response) {
-        if(response.startsWith("{") && response.startsWith("}")) {
+        if(response.startsWith("{") && response.endsWith("}")) {
             JSONObject json = jsonParser.parseJSON(response);
             if (json != null) {
                 try {
