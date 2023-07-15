@@ -34,6 +34,7 @@ import java.util.Locale;
 import dev.tinelix.retro_ab.ActionBar;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
@@ -155,9 +156,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             try {
                 ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                 ovk_api.account.getProfileInfo(ovk_api.wrapper);
-                if (path.startsWith("openvk://profile/")) {
-                    args = path.substring("openvk://profile/".length());
-                }
+                args = Global.getUrlArguments(path);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();

@@ -588,4 +588,18 @@ public class Global {
         }
         return true;
     }
+
+    public static String getUrlArguments(String path) {
+        String args = "";
+        if (path.startsWith("openvk://profile/")) {
+            args = path.substring("openvk://profile/".length());
+        } else if(path.startsWith("https://openvk.su/")) {
+            args = path.substring("https://openvk.su/".length());
+        } else if(path.startsWith("https://openvk.uk/")) {
+            args = path.substring("https://openvk.uk/".length());
+        } else if(path.startsWith("http://openvk.xyz/")) {
+            args = path.substring("http://openvk.xyz/".length());
+        }
+        return args;
+    }
 }

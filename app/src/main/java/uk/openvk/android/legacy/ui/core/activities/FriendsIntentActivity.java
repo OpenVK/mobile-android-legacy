@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
@@ -118,8 +119,8 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                 return;
             }
             try {
-                if (path.startsWith("openvk://friends/")) {
-                    String args = path.substring("openvk://friends/".length());
+                String args = Global.getUrlArguments(path);
+                if(args.length() > 0) {
                     ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                     ovk_api.users = new Users();
                     ovk_api.friends = new Friends();

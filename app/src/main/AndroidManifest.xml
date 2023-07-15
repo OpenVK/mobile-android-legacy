@@ -93,6 +93,21 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="openvk" android:host="profile" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/id"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/id"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/id" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".ui.core.activities.FriendsIntentActivity"
@@ -106,6 +121,21 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="openvk" android:host="friends" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/friends"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/friends"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/friends" />
             </intent-filter>
         </activity>
 
@@ -121,6 +151,21 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="openvk" android:host="group" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/club"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/club"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/club" />
             </intent-filter>
         </activity>
 
