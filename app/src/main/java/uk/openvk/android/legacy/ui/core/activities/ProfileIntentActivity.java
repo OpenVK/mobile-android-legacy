@@ -319,13 +319,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                             }
                             activity_menu.removeItem(0);
                         }
-                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                            if(ovk_api.account.id == user.id) {
-                                createActionPopupMenu(popup_menu.getMenu(), "account", true);
-                            } else {
-                                createActionPopupMenu(popup_menu.getMenu(), "profile", true);
-                            }
-                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -371,6 +364,9 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
                     ovk_api.wall.get(ovk_api.wrapper, user.id, 25);
                     ovk_api.friends.get(ovk_api.wrapper, user.id, 10, "profile_counter");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        createActionPopupMenu(popup_menu.getMenu(), "account", true);
+                    }
                 } else {
                     profileFragment.hideHeaderButtons(this, getWindowManager());
                     if(activity_menu != null) {
@@ -378,6 +374,13 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     }
                     if(popup_menu != null) {
                         popup_menu.getMenu().getItem(0).setVisible(false);
+                    }
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        if(ovk_api.account.id == user.id) {
+                            createActionPopupMenu(popup_menu.getMenu(), "account", true);
+                        } else {
+                            createActionPopupMenu(popup_menu.getMenu(), "profile", true);
+                        }
                     }
                     profileFragment.hideTabSelector();
                     profileFragment.getHeader().hideExpandArrow();
@@ -395,12 +398,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                             );
                         }
                     }
-                }
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    if(popup_menu == null) {
-                        popup_menu = new android.support.v7.widget.PopupMenu(this, null);
-                    }
-                    createActionPopupMenu(popup_menu.getMenu(), "account", true);
                 }
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
@@ -775,6 +772,9 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 }
             }
             if (enable) {
+                if(actionBar.getActionCount() > 0) {
+                    actionBar.removeAllActions();
+                }
                 dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
                         new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
                                 R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {

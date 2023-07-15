@@ -116,10 +116,11 @@ public class AboutProfileLayout extends LinearLayout {
             PublicPageAboutAdapter aboutAdapter = new PublicPageAboutAdapter(getContext(), items);
             about_rv.setLayoutManager(new LinearLayoutManager(getContext()));
             about_rv.setAdapter(aboutAdapter);
-            if(aboutAdapter.getItemCount() > 0) {
+            findViewById(R.id.about_profile).setVisibility(VISIBLE);
+            if(aboutAdapter.getItemCount() == 0) {
                 findViewById(R.id.about_profile).setVisibility(VISIBLE);
-            } else {
-                findViewById(R.id.about_profile).setVisibility(GONE);
+                findViewById(R.id.about_rv).setVisibility(GONE);
+                findViewById(R.id.no_info).setVisibility(VISIBLE);
             }
         } else {
             findViewById(R.id.about_profile).setVisibility(VISIBLE);
