@@ -116,6 +116,9 @@ public class WallPost implements Parcelable {
             owner_id = post.getLong("owner_id");
             post_id = post.getLong("id");
             author_id = post.getLong("from_id");
+            if(post.has("is_explicit")) {
+                is_explicit = post.getBoolean("is_explicit");
+            }
             createAttachmentsList(owner_id, post_id, attachments);
             long dt_sec = post.getLong("date");
             Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
