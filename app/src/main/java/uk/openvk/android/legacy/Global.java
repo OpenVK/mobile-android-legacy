@@ -593,6 +593,8 @@ public class Global {
         String args = "";
         if (path.startsWith("openvk://profile/")) {
             args = path.substring("openvk://profile/".length());
+        } else if (path.startsWith("openvk://group/")) {
+            args = path.substring("openvk://group/".length());
         } else if(path.startsWith("https://openvk.su/")) {
             args = path.substring("https://openvk.su/".length());
         } else if(path.startsWith("https://openvk.uk/")) {
