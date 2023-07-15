@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
@@ -95,7 +97,12 @@ public class Groups implements Parcelable {
                 photoAttachment.url = group.avatar_msize_url;
                 photoAttachment.filename = String.format("avatar_%s", group.id);
                 avatars.add(photoAttachment);
-                this.groups.add(group);
+                try { // handle floating crash
+                    this.groups.add(group);
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                    Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                            "be overestimated.");
+                }
             }
             if(downloadManager != null) {
                 downloadManager.downloadPhotosToCache(avatars, "group_avatars");

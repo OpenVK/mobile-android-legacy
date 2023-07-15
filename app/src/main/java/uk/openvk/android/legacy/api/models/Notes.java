@@ -1,10 +1,13 @@
 package uk.openvk.android.legacy.api.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -50,7 +53,12 @@ public class Notes {
                 note.title = item.getString("title");
                 note.content = item.getString("text");
                 note.date = item.getLong("date");
-                list.add(note);
+                try { // handle floating crash
+                    list.add(note);
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                    Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                            "be overestimated.");
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

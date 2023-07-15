@@ -23,6 +23,8 @@ import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
+import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
+import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -63,15 +65,15 @@ public class ConversationsFragment extends Fragment {
         conversationsAdapter = new ConversationsListAdapter(ctx, this.conversations, account);
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if(app.isTablet && app.swdp >= 760) {
-            LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
         } else if(app.isTablet && app.swdp >= 600) {
-            LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
         } else {
-            LinearLayoutManager llm = new LinearLayoutManager(ctx);
+            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(llm);
         }

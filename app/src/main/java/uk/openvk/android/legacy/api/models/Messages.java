@@ -1,10 +1,13 @@
 package uk.openvk.android.legacy.api.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.LongPollServer;
@@ -93,7 +96,12 @@ public class Messages {
                     conversation.lastMsgTime = last_msg.getInt("date");
                     conversation.lastMsgText = last_msg.getString("text");
                     conversation.lastMsgAuthorId = last_msg.getInt("from_id");
-                    conversations.add(conversation);
+                    try { // handle floating crash
+                        conversations.add(conversation);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
+                    }
                 }
                 downloadManager.downloadPhotosToCache(avatars, "conversations_avatars");
             } catch (Exception ex) {

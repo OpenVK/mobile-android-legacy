@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.User;
@@ -73,7 +75,12 @@ public class Users implements Parcelable {
             }
             for (int i = 0; i < users.length(); i++) {
                 User user = new User(users.getJSONObject(i));
-                this.users.add(user);
+                try {
+                    this.users.add(user);
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                    Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                            "be overestimated.");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,7 +102,12 @@ public class Users implements Parcelable {
                 photoAttachment.url = user.avatar_msize_url;
                 photoAttachment.filename = String.format("avatar_%s", user.id);
                 avatars.add(photoAttachment);
-                this.users.add(user);
+                try { // handle floating crash
+                    this.users.add(user);
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                    Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                            "be overestimated.");
+                }
             }
             if(downloadManager != null) {
                 downloadManager.downloadPhotosToCache(avatars, "profile_avatars");

@@ -25,6 +25,8 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
+import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
+import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -69,15 +71,15 @@ public class GroupsFragment extends Fragment {
         if (groupsAdapter == null) {
             groupsAdapter = new GroupsListAdapter(ctx, groups);
             if(app.isTablet && app.swdp >= 760) {
-                LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
+                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
                 ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
             } else if(app.isTablet && app.swdp >= 600) {
-                LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
+                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
                 ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
             } else {
-                LinearLayoutManager llm = new LinearLayoutManager(ctx);
+                LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
                 llm.setOrientation(LinearLayoutManager.VERTICAL);
                 ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(llm);
             }

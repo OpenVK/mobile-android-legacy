@@ -244,9 +244,14 @@ public class Wall implements Parcelable {
                     PhotoAttachment avatar = new PhotoAttachment();
                     avatar.url = avatar_url;
                     avatar.filename = String.format("avatar_%s", author_id);
-                    avatars.add(avatar);
-                    item.verified_author = verified_author;
-                    this.items.add(item);
+                    try { // handle floating crash
+                        avatars.add(avatar);
+                        item.verified_author = verified_author;
+                        this.items.add(item);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                "be overestimated.");
+                    }
                 }
                 switch (quality) {
                     case "low":
@@ -333,8 +338,13 @@ public class Wall implements Parcelable {
                         }
                     }
                     comment.attachments = attachments_list;
-                    avatars.add(photoAttachment);
-                    this.comments.add(comment);
+                    try { // handle floating crash
+                        avatars.add(photoAttachment);
+                        this.comments.add(comment);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                            Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                    }
                 }
                 switch (quality) {
                     case "low":

@@ -2,12 +2,14 @@ package uk.openvk.android.legacy.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
@@ -82,7 +84,12 @@ public class Friends implements Parcelable {
                     photoAttachment.url = friend.avatar_url;
                     photoAttachment.filename = String.format("avatar_%s", friend.id);
                     avatars.add(photoAttachment);
-                    this.friends.add(friend);
+                    try { // handle floating crash
+                        this.friends.add(friend);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                    }
                 }
                 if (downloadPhoto) {
                     downloadManager.downloadPhotosToCache(avatars, "friend_avatars");
