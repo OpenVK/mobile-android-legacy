@@ -872,10 +872,10 @@ public class GroupIntentActivity extends TranslucentActivity {
             ((WallLayout) findViewById(R.id.wall_layout)).loadPhotos();
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final InfinityNestedScrollView scrollView = findViewById(R.id.group_scrollview);
-            scrollView.setOnScrollListener(new OnNestedScrollListener() {
+            final InfinityScrollView scrollView = findViewById(R.id.group_scrollview);
+            scrollView.setOnScrollListener(new OnScrollListener() {
                 @Override
-                public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
                     View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
