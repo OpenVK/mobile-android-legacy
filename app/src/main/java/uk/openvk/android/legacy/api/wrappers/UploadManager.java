@@ -94,6 +94,7 @@ public class UploadManager {
                 httpClientLegacy = new HttpClient(ctx);
                 httpClientLegacy.setConnectTimeout(30000);
                 httpClientLegacy.setReadTimeout(30000);
+                httpClientLegacy.setUserAgent(generateUserAgent(ctx));
                 this.legacy_mode = true;
             } else {
                 Log.v(OvkApplication.UL_TAG, "Starting UploadManager...");
@@ -268,6 +269,7 @@ public class UploadManager {
                                 .addHeader("Content-Type", "multipart/form-data")
                                 .url(address)
                                 .post(requestBody)
+                                .addHeader("User-Agent", generateUserAgent(ctx))
                                 .build();
                         if (logging_enabled) Log.d(OvkApplication.UL_TAG,
                                 String.format("Uploading to %s... (%d kB)\r\nHeaders: %s",

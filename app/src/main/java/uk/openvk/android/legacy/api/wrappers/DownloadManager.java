@@ -86,6 +86,7 @@ public class DownloadManager {
                 httpClientLegacy = new HttpClient(ctx);
                 httpClientLegacy.setConnectTimeout(30000);
                 httpClientLegacy.setReadTimeout(30000);
+                httpClientLegacy.setUserAgent(generateUserAgent(ctx));
                 this.legacy_mode = true;
             } else {
                 Log.v(OvkApplication.DL_TAG, "Starting DownloadManager...");
@@ -263,6 +264,7 @@ public class DownloadManager {
                             } else {
                                 request = new Request.Builder()
                                         .url(url)
+                                        .addHeader("User-Agent", generateUserAgent(ctx))
                                         .build();
                             }
 
@@ -442,6 +444,7 @@ public class DownloadManager {
                     } else {
                         request = new Request.Builder()
                                 .url(url)
+                                .addHeader("User-Agent", generateUserAgent(ctx))
                                 .build();
                     }
                     try {

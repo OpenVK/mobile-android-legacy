@@ -72,6 +72,7 @@ public class LongPollWrapper {
             httpClientLegacy = new HttpClient(ctx);
             httpClientLegacy.setConnectTimeout(30);
             httpClientLegacy.setReadTimeout(30);
+            httpClientLegacy.setUserAgent(generateUserAgent(ctx));
             this.legacy_mode = true;
         } else {
             httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
