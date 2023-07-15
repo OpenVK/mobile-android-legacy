@@ -41,9 +41,10 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
 13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
+15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 
 ## OpenVK Legacy License
-[GNU (Affero) GPL v3.0](COPYING) or later version.
+[GNU Affero GPL v3.0](COPYING) or later version.
 
 ## Links
 [OpenVK API docs](https://docs.openvk.su/openvk_engine/api/description/)\

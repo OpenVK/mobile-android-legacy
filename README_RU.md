@@ -37,13 +37,14 @@ _Работает на OpenVK API._
 8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
-11. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
+11. [Модификация SwipeRefreshLayout с классическим PTR](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
 12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
 13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
+15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 
 ## Лицензия OpenVK Legacy
-[GNU (Affero) GPL v3.0](COPYING) или более поздней версии.
+[GNU Affero GPL v3.0](COPYING) или более поздней версии.
 
 ## Ссылки
 [Документация по OpenVK API](https://docs.openvk.su/openvk_engine/api/description/)\

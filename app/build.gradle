@@ -146,6 +146,7 @@ dependencies {
     compile 'com.seppius.plurals:android-i18n-plurals:1.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'ch.acra:acra:4.6.0'
+    compile 'com.nineoldandroids:library:2.4.0'
     compile project(':twemojicon')
     compile project(':wrhttp')
 }
