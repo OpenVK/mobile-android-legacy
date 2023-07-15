@@ -561,6 +561,22 @@ public class OvkAPIWrapper {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
                             response_code = Integer.parseInt(code_str);
+                            if (response_code == 400) {
+                                error = new Error();
+                                error.parse(response_body);
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
+                                if (error.code == 3) {
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
+                                } else if (error.code == 5) {
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
+                                } else if (error.code == 15) {
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
+                                } else if (error.code == 100) {
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
+                                }
+                            }
                         }
                     } catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
@@ -702,6 +718,22 @@ public class OvkAPIWrapper {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);
+                            if (response_code == 400) {
+                                error = new Error();
+                                error.parse(response_body);
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
+                                if (error.code == 3) {
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
+                                } else if (error.code == 5) {
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
+                                } else if (error.code == 15) {
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
+                                } else if (error.code == 100) {
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
+                                }
+                            }
                         }
                     } catch (OutOfMemoryError | Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
@@ -857,6 +889,22 @@ public class OvkAPIWrapper {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);
+                            if (response_code == 400) {
+                                error = new Error();
+                                error.parse(response_body);
+                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                                server, method, response_code, error.description, error.code));
+                                if (error.code == 3) {
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
+                                } else if (error.code == 5) {
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method,  error.description);
+                                } else if (error.code == 15) {
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
+                                } else if (error.code == 100) {
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
+                                }
+                            }
                         }
                     } catch (Exception e) {
                         if(e.getMessage().equals("Scheme 'https' not registered.")) {
