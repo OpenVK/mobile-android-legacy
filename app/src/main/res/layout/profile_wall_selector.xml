@@ -115,6 +115,7 @@
                 android:paddingLeft="11dip"
                 android:paddingRight="11dip"
                 android:scaleType="center"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ic_profile_addpost" />
 
             <ProgressBar
