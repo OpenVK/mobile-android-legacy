@@ -1,16 +1,24 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.RecyclerView;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,8 +28,8 @@ import android.widget.TextView;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.entities.Account;
+import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -40,6 +48,7 @@ import uk.openvk.android.legacy.api.entities.Account;
 
 public class SlidingMenuLayout extends LinearLayout {
 
+    private int accountMenuTargetHeight;
     private String instance;
     private boolean showAccountMenu;
 
@@ -48,6 +57,10 @@ public class SlidingMenuLayout extends LinearLayout {
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
+        ListView account_menu_view = findViewById(R.id.account_menu_view);
+        account_menu_view.measure(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT);
+        accountMenuTargetHeight = account_menu_view.getMeasuredHeight();
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -165,8 +178,11 @@ public class SlidingMenuLayout extends LinearLayout {
 
     private void toogleAccountMenu() {
         final ListView account_menu_view = findViewById(R.id.account_menu_view);
+        accountMenuTargetHeight = (int) (account_menu_view.getAdapter().getCount() *
+                ((47 * (getResources().getDisplayMetrics().scaledDensity)) +
+                        account_menu_view.getDividerHeight()));
         this.showAccountMenu = !this.showAccountMenu;
-        View arrow = findViewById(R.id.arrow);
+        final View arrow = findViewById(R.id.arrow);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             float[] fArr = new float[2];
             fArr[0] = this.showAccountMenu ? 0 : -180;
@@ -180,9 +196,75 @@ public class SlidingMenuLayout extends LinearLayout {
             arrow.startAnimation(anim);
         }
         if(account_menu_view.getVisibility() == VISIBLE) {
-            account_menu_view.setVisibility(GONE);
+            ValueAnimator animator = ValueAnimator.ofInt(accountMenuTargetHeight, 1);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int value = (Integer) valueAnimator.getAnimatedValue();
+                    ViewGroup.LayoutParams layoutParams = account_menu_view.getLayoutParams();
+                    layoutParams.height = value;
+                    account_menu_view.setLayoutParams(layoutParams);
+                }
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    arrow.setEnabled(false);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    arrow.setEnabled(true);
+                    account_menu_view.setVisibility(GONE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animator.setDuration(300);
+            animator.start();
         } else {
-            account_menu_view.setVisibility(VISIBLE);
+            ValueAnimator animator = ValueAnimator.ofInt(1, accountMenuTargetHeight);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int value = (Integer) valueAnimator.getAnimatedValue();
+                    ViewGroup.LayoutParams layoutParams = account_menu_view.getLayoutParams();
+                    layoutParams.height = value;
+                    account_menu_view.setLayoutParams(layoutParams);
+                }
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    arrow.setEnabled(false);
+                    account_menu_view.setVisibility(VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    arrow.setEnabled(true);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animator.setDuration(300);
+            animator.start();
         }
     }
     
