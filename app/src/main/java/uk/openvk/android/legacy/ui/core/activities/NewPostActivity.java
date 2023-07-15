@@ -386,7 +386,7 @@ public class NewPostActivity extends TranslucentActivity {
                     }
                 }
             } else {
-                Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
         }
     }
