@@ -366,6 +366,8 @@ public class NewPostActivity extends TranslucentActivity {
             if (ovk_api.photos.wallUploadServer.length() > 0) {
                 Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
                 return;
+            } else if(data == null) {
+                return;
             }
             Uri uri = data.getData();
             File file = new File(uriToFilename(uri));
