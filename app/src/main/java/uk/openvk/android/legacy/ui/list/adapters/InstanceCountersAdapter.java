@@ -108,7 +108,7 @@ public class InstanceCountersAdapter extends BaseAdapter {
                 res_id = R.plurals.instance_administrators;
             }
 
-            int end_number = Global.getEndNumberFromLong((Long) getItem(position));
+            int end_number = Global.getEndNumberFromLong(getItem(position));
 
             if(position == 1) {
                 label.setText(ctx.getResources().getString(res_id));

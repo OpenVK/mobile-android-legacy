@@ -11,9 +11,6 @@
         android:id="@+id/instance_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
         android:singleLine="true"
         android:text="0"
         android:textSize="20dip"
@@ -23,6 +20,9 @@
         android:id="@+id/instance_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:elevation="1dp"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
         android:text="online users" />
 </LinearLayout>

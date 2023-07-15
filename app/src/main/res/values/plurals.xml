@@ -37,29 +37,21 @@
     <plurals name="instance_users">
         <item quantity="other">users</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">user</item>
-        <item quantity="few">users</item>
-        <item quantity="many">users</item>
     </plurals>
 
     <plurals name="instance_active_users">
         <item quantity="other">active users</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">active user</item>
-        <item quantity="few">active user</item>
-        <item quantity="many">active users</item>
     </plurals>
 
     <plurals name="instance_posts">
         <item quantity="other">posts</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">post</item>
-        <item quantity="few">posts</item>
-        <item quantity="many">posts</item>
     </plurals>
 
     <plurals name="instance_administrators">
         <item quantity="other">admins</item>
         <item quantity="one" tools:ignore="ImpliedQuantity">admin</item>
-        <item quantity="few">admins</item>
-        <item quantity="many">admins</item>
     </plurals>
 
     <plurals name="profile_friends">
