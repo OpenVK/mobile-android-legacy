@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.entities;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,13 +43,27 @@ public class Error {
     }
 
     public void parse(String response) {
-        JSONObject json = jsonParser.parseJSON(response);
-        if(json != null) {
-            try {
-                description = json.getString("error_msg");
-                code = json.getInt("error_code");
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(response.startsWith("{") && response.startsWith("}")) {
+            JSONObject json = jsonParser.parseJSON(response);
+            if (json != null) {
+                try {
+                    description = json.getString("error_msg");
+                    code = json.getInt("error_code");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            JSONArray json = jsonParser.parseJSONArray(response);
+            if (json != null) {
+                try {
+                    if(json.length() > 0) {
+                        description = json.getJSONObject(0).getString("error_msg");
+                        code = json.getJSONObject(0).getInt("error_code");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

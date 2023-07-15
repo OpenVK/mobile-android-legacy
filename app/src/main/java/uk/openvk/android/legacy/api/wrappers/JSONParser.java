@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.wrappers;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +34,16 @@ public class JSONParser {
             ex.printStackTrace();
         }
         return jsonObject;
+    }
+
+    public JSONArray parseJSONArray(String string) {
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(string);
+        } catch (JSONException ex){
+            ex.printStackTrace();
+        }
+        return jsonArray;
     }
 
     public Account getAccount(String jsonString) {
