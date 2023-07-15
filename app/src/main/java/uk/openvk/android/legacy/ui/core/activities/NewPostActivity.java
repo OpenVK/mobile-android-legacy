@@ -363,7 +363,7 @@ public class NewPostActivity extends TranslucentActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (requestCode == 4) {
-            if (ovk_api.photos.wallUploadServer.length() > 0) {
+            if (ovk_api.photos.wallUploadServer == null && ovk_api.photos.wallUploadServer.length() > 0) {
                 Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
                 return;
             } else if(data == null || data.getData() == null) {
