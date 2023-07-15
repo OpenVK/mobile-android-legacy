@@ -364,7 +364,7 @@ public class NewPostActivity extends TranslucentActivity {
     {
         if (requestCode == 4) {
             if (ovk_api.photos.ownerPhotoUploadServer == null ||
-                    ovk_api.photos.ownerPhotoUploadServer.length() > 0) {
+                    ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
                 Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
                 return;
             } else if(data == null || data.getData() == null) {
