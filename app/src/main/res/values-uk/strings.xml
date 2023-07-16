@@ -1180,7 +1180,7 @@
     <string name="use_legacy_http_client_apachew_err">Увімкнення неможливе через непідтримувану версію Android</string>
     <string name="terminate">Завершити процес</string>
     <string name="dnd_mode">Режим \"Не турбувати\"</string>
-    <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s</string>
+    <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s. Відкрийте в будь-якому файлі менеджера.</string>
     <string name="allow_permisssion_in_storage_title">Потрібні дозволи</string>
     <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять
         пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про додаток\"?</string>

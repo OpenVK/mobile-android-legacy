@@ -283,6 +283,12 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
             ab_profile_photo.setBackground(null);
             ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.photo_loading));
             ab_profile_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            ab_profile_photo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openPeerIntent();
+                }
+            });
             profile_photo.setActionView(ab_profile_photo);
             activity_menu = menu;
             handler.sendEmptyMessageDelayed(UiMessages.RIGHT_AVATAR_IN_ACTIONBAR, 20);
@@ -301,21 +307,23 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(item.getItemId() == android.R.id.home) {
                 onBackPressed();
-            } else if(item.getItemId() == R.id.profile_photo) {
-                if(peer_id > 0) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setPackage("uk.openvk.android.legacy");
-                    i.setData(Uri.parse("openvk://profile/id" + peer_id));
-                    startActivity(i);
-                } else {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setPackage("uk.openvk.android.legacy");
-                    i.setData(Uri.parse("openvk://group/club" + -peer_id));
-                    startActivity(i);
-                }
             }
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    public void openPeerIntent() {
+        if(peer_id > 0) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
+            i.setData(Uri.parse("openvk://profile/id" + peer_id));
+            startActivity(i);
+        } else {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
+            i.setData(Uri.parse("openvk://group/club" + -peer_id));
+            startActivity(i);
+        }
     }
 
     private void setConversationView() {

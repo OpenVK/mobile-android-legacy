@@ -1085,9 +1085,10 @@
     <string name="use_legacy_http_client_apachew_err">Unable to turn on due to an unsupported Android version</string>
 	<string name="terminate">Terminate process</string>
 	<string name="dnd_mode">DND mode</string>
-	<string name="saved_logs_successfully">Log saved to Device Memory/%1$s</string>
+	<string name="saved_logs_successfully">Log saved to Device Memory/%1$s. Open in any file manager.</string>
 	<string name="allow_permisssion_in_storage_title">Permissions required</string>
-	<string name="allow_permisssion_in_storage">To save data to the Device Memory, application needs special permissions.\n\nOpen the \"About application\" system settings section?</string>
+	<string name="allow_permisssion_in_storage">To save data to the Device Memory,
+		application needs special permissions.\n\nOpen the \"About application\" system settings section?</string>
 	<string name="open_btn">Оpen</string>
 	<string name="birthday">Birthday</string>
 	<string name="post_fail_empty">Before posting, be sure to write something and repeat it again.</string>
