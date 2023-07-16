@@ -204,7 +204,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 instance_prefs_editor = instance_prefs.edit();
                 instance_prefs_editor.putString("access_token", "");
                 instance_prefs_editor.putString("server", "");
-                instance_prefs_editor.putLong("uin", 0);
+                instance_prefs_editor.putLong("uid", 0);
                 instance_prefs_editor.putString("account_name", "");
                 instance_prefs_editor.commit();
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);

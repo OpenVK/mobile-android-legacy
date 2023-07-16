@@ -296,7 +296,8 @@ public class AuthActivity extends TranslucentAuthActivity {
     }
 
     private void checkHttpsEnabled(boolean isHttp) {
-        if(isHttp && !global_prefs.getBoolean("useHTTPS", false)) {
+        if(isHttp && !global_prefs.getBoolean("useHTTPS", false)
+                && !global_prefs.getBoolean("useProxy", false)) {
             final OvkAlertDialog http_disabled_dlg;
             http_disabled_dlg = new OvkAlertDialog(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
