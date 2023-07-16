@@ -233,11 +233,11 @@ public class AuthActivity extends TranslucentAuthActivity {
         if (instance.startsWith("http://")) {
             instance_edit.setText(instance.substring(7));
             instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
-        } else if (instance.startsWith("https://") && !global_prefs.getBoolean("useProxy", false)) {
+        } else if (instance.startsWith("https://")) {
             instance_edit.setText(instance.substring(8));
             instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
             checkHttpsEnabled(instance.startsWith("https"));
-            if(!global_prefs.getBoolean("useHTTPS", false)) {
+            if(!global_prefs.getBoolean("useHTTPS", false) && !global_prefs.getBoolean("useProxy", false)) {
                 return;
             }
         }
