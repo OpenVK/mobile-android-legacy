@@ -233,7 +233,7 @@ public class AuthActivity extends TranslucentAuthActivity {
         if (instance.startsWith("http://")) {
             instance_edit.setText(instance.substring(7));
             instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
-        } else if (instance.startsWith("https://")) {
+        } else if (instance.startsWith("https://") && !global_prefs.getBoolean("useProxy", false)) {
             instance_edit.setText(instance.substring(8));
             instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
             checkHttpsEnabled(instance.startsWith("https"));
