@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -155,96 +156,14 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 peer_id = extras.getLong("peer_id");
                 conv_title = extras.getString("conv_title");
                 peer_online = extras.getInt("online");
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    getActionBar().setTitle(conv_title);
-                    if(peer_online == 1) {
-                        getActionBar().setSubtitle(R.string.online);
-                    } else {
-                        getActionBar().setSubtitle(R.string.offline);
-                    }
-                    getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setDisplayShowHomeEnabled(true);
-                    getActionBar().setDisplayUseLogoEnabled(false);
-                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                        getActionBar().setBackgroundDrawable(
-                                getResources().getDrawable(R.drawable.bg_actionbar_gray));
-                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                        getActionBar().setBackgroundDrawable(
-                                getResources().getDrawable(R.drawable.bg_actionbar_black));
-                    }
-                } else {
-                    ActionBar actionBar = findViewById(R.id.actionbar);
-                    actionBar.setTitle(conv_title);
-                    if(peer_online == 1) {
-                        actionBar.setSubtitle(R.string.online);
-                    } else {
-                        actionBar.setSubtitle(R.string.offline);
-                    }
-                    actionBar.setHomeLogo(R.drawable.ic_ab_app);
-                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                    actionBar.setDisplayHomeAsUpEnabled(true);
-                    actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
-                        @Override
-                        public void performAction(View view) {
-                            onBackPressed();
-                        }
-                    });
-                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-                    } else {
-                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                    }
-                }
+                installLayouts();
                 conversation.getHistory(ovk_api.wrapper, peer_id);
             }
         } else {
             peer_id = savedInstanceState.getInt("peer_id");
             conv_title = (String) savedInstanceState.getSerializable("conv_title");
             peer_online = savedInstanceState.getInt("online");
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                getActionBar().setTitle(conv_title);
-                if(peer_online == 1) {
-                    getActionBar().setSubtitle(R.string.online);
-                } else {
-                    getActionBar().setSubtitle(R.string.offline);
-                }
-                getActionBar().setDisplayHomeAsUpEnabled(true);
-                getActionBar().setDisplayShowHomeEnabled(true);
-                getActionBar().setDisplayUseLogoEnabled(false);
-                if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                    getActionBar().setBackgroundDrawable(
-                            getResources().getDrawable(R.drawable.bg_actionbar_gray));
-                } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                    getActionBar().setBackgroundDrawable(
-                            getResources().getDrawable(R.drawable.bg_actionbar_black));
-                }
-            } else {
-                ActionBar actionBar = findViewById(R.id.actionbar);
-                actionBar.setTitle(conv_title);
-                if(peer_online == 1) {
-                    actionBar.setSubtitle(R.string.online);
-                } else {
-                    actionBar.setSubtitle(R.string.offline);
-                }
-                actionBar.setHomeLogo(R.drawable.ic_ab_app);
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
-                    @Override
-                    public void performAction(View view) {
-                        onBackPressed();
-                    }
-                });
-                if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-                } else {
-                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                }
-            }
+            installLayouts();
             conversation.getHistory(ovk_api.wrapper, peer_id);
         }
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
@@ -444,6 +363,76 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     }
 
     private void installLayouts() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setTitle(conv_title);
+            if(peer_online == 1) {
+                getActionBar().setSubtitle(R.string.online);
+            } else {
+                getActionBar().setSubtitle(R.string.offline);
+            }
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayShowHomeEnabled(true);
+            getActionBar().setDisplayUseLogoEnabled(false);
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
+                if (bitmap != null) {
+                    getActionBar().setLogo(new BitmapDrawable(getResources(), bitmap));
+                } else {
+                    getActionBar().setLogo(getResources().getDrawable(R.drawable.photo_loading));
+                }
+            } catch (OutOfMemoryError oom) {
+                oom.printStackTrace();
+            }
+        } else {
+            ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setTitle(conv_title);
+            if(peer_online == 1) {
+                actionBar.setSubtitle(R.string.online);
+            } else {
+                actionBar.setSubtitle(R.string.offline);
+            }
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
+                @Override
+                public void performAction(View view) {
+                    onBackPressed();
+                }
+            });
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
+                if (bitmap != null) {
+                    actionBar.setRightLogo(new BitmapDrawable(getResources(), bitmap));
+                } else {
+                    actionBar.setRightLogo(R.drawable.photo_loading);
+                }
+            } catch (OutOfMemoryError oom) {
+                oom.printStackTrace();
+            }
+        }
         actionBar = (ActionBar) findViewById(R.id.actionbar);
     }
 

@@ -22,6 +22,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +44,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
     private LayoutInflater mInflater;
     private RelativeLayout mBarView;
     private ImageView mLogoView;
+    private ImageView mRightLogoView;
     private View mBackIndicator;
     //private View mHomeView;
     private TextView mTitleView;
@@ -62,6 +64,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         addView(mBarView);
 
         mLogoView = (ImageView) mBarView.findViewById(R.id.actionbar_home_logo);
+        mRightLogoView = (ImageView) mBarView.findViewById(R.id.actionbar_right_logo);
         mHomeLayout = (RelativeLayout) mBarView.findViewById(R.id.actionbar_home_bg);
         mHomeBtn = (ImageButton) mBarView.findViewById(R.id.actionbar_home_btn);
         mBackIndicator = mBarView.findViewById(R.id.actionbar_home_is_back);
@@ -93,7 +96,7 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
     }
 
     /**
-     * Shows the provided logo to the left in the action bar.
+     * Shows the provided logo to the left or right in the action bar.
      *
      * This is meant to be used instead of the setHomeAction and does not draw
      * a divider to the left of the provided logo.
@@ -105,6 +108,22 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
         mLogoView.setImageResource(resId);
         mLogoView.setVisibility(View.VISIBLE);
         mHomeLayout.setVisibility(View.GONE);
+    }
+
+    public void setHomeLogo(BitmapDrawable bitmapDrawable) {
+        mLogoView.setImageDrawable(bitmapDrawable);
+        mLogoView.setVisibility(View.VISIBLE);
+        mHomeLayout.setVisibility(View.GONE);
+    }
+
+    public void setRightLogo(int resId) {
+        mRightLogoView.setImageResource(resId);
+        mRightLogoView.setVisibility(View.VISIBLE);
+    }
+
+    public void setRightLogo(BitmapDrawable bitmapDrawable) {
+        mRightLogoView.setImageDrawable(bitmapDrawable);
+        mRightLogoView.setVisibility(View.VISIBLE);
     }
 
     /* Emulating Honeycomb, setdisplayHomeAsUpEnabled takes a boolean

@@ -111,43 +111,62 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_toLeftOf="@id/actionbar_progress"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <dev.tinelix.retro_ab.ScrollingTextView
-                    android:id="@+id/actionbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@id/actionbar_progress"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
 
-                    android:ellipsize="marquee"
-                    android:lines="1"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:paddingLeft="4dip"
-                    android:paddingRight="4dip"
-                    android:scrollHorizontally="true"
-                    android:text="Title"
-                    android:textColor="@color/actionbar_title"
-                    android:textSize="16sp" />
+                    <dev.tinelix.retro_ab.ScrollingTextView
+                        android:id="@+id/actionbar_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
 
-                <dev.tinelix.retro_ab.ScrollingTextView
-                    android:id="@+id/actionbar_subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-4dip"
-                    android:ellipsize="marquee"
-                    android:lines="1"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:paddingLeft="4dip"
-                    android:paddingRight="4dip"
-                    android:scrollHorizontally="true"
-                    android:text="Subtitle"
-                    android:textColor="@color/actionbar_subtitle"
+                        android:ellipsize="marquee"
+                        android:lines="1"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingLeft="4dip"
+                        android:paddingRight="4dip"
+                        android:scrollHorizontally="true"
+                        android:text="Title"
+                        android:textColor="@color/actionbar_title"
+                        android:textSize="16sp" />
+
+                    <dev.tinelix.retro_ab.ScrollingTextView
+                        android:id="@+id/actionbar_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-4dip"
+                        android:ellipsize="marquee"
+                        android:lines="1"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingLeft="4dip"
+                        android:paddingRight="4dip"
+                        android:scrollHorizontally="true"
+                        android:text="Subtitle"
+                        android:textColor="@color/actionbar_subtitle"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/actionbar_right_logo"
+                    android:layout_width="@dimen/actionbar_height"
+                    android:layout_height="@dimen/actionbar_height"
+                    android:layout_alignParentRight="false"
+                    android:background="@null"
+                    android:src="@drawable/icon"
+                    android:scaleType="centerCrop"
                     android:visibility="gone" />
 
             </LinearLayout>
 
         </RelativeLayout>
+
     </RelativeLayout>
 </RelativeLayout>

@@ -128,6 +128,41 @@
                         android:textColor="@color/white"
                         android:textSize="18sp" />
 
+                    </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/title_with_subtitle_ab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/ab_title2"
+                            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:text="Title"
+                            android:textColor="@color/white"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/ab_subtitle2"
+                            style="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:text="Title" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
 
