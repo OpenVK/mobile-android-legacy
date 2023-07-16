@@ -21,9 +21,9 @@
         android:id="@+id/save"
         android:showAsAction="ifRoom"
         android:title="@string/save"
-        tools:ignore="UnusedAttribute"></item>
+        tools:ignore="AppCompatResource,UnusedAttribute"></item>
     <item android:id="@+id/copy_link" android:title="@string/copy_link" android:showAsAction="never"
-        tools:ignore="UnusedAttribute"></item>
+        tools:ignore="AppCompatResource,UnusedAttribute"></item>
     <!--<item android:id="@+id/send_to_friend" android:title="@string/send_to_friend" android:showAsAction="never"></item>
     <item android:id="@+id/save_to_album" android:title="@string/save_to_album" android:showAsAction="never"></item>!-->
     

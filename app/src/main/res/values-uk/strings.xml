@@ -156,6 +156,9 @@
     <string name="log_in">Увійти</string>
     <string name="auth_error_title">Помилка авторизації</string>
     <string name="auth_error">При вході сталася помилка. Перевірте введені дані і спробуйте ще раз.</string>
+    <string name="auth_error_https_disabled">Для забезпечення HTTPS-з\'єднання на пристрої має бути увімкнена
+         «Захищене з\'єднання». Увімкнути?\r\n\r\nУВАГА! Вона може працювати на старих пристроях.
+    </string>
     <string name="wall">Стіна</string>
     <string name="friends">Друзі</string>
     <string name="post_to_wall">Написати на стіні</string>

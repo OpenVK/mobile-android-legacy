@@ -167,6 +167,9 @@
 	<string name="default_instance_no_https" translatable="false">openvk.xyz</string>
 	<string name="auth_error_title">Error logging in</string>
 	<string name="auth_error">An error occurred while trying to log in. Please check your login and password and try again.</string>
+    <string name="auth_error_https_disabled">To ensure a HTTPS connection, the device must be enabled.
+         "Secure connection" setting. Enable?\r\n\r\nWARNING! It may not work on older devices.
+    </string>
 	<string name="wall">Wall</string>
 	<string name="friends">Friends</string>
 	<string name="post_to_wall">Post to wall</string>

@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Authorization;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -82,6 +83,7 @@ public class AuthActivity extends TranslucentAuthActivity {
     private JSONParser jsonParser = new JSONParser();
     private int twofactor_fail = -1;
     private Authorization auth;
+    private ArrayList<InstancesListItem> instances_list;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,7 @@ public class AuthActivity extends TranslucentAuthActivity {
         XLinearLayout auth_layout = ((XLinearLayout) findViewById(R.id.auth_layout));
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+        loadInstances();
         if(!app.isTablet) {
             auth_layout.setOnKeyboardStateListener(new OnKeyboardStateListener() {
                 @Override
@@ -202,6 +205,26 @@ public class AuthActivity extends TranslucentAuthActivity {
         });
     }
 
+    private void loadInstances() {
+        instances_list = new ArrayList<>();
+        for(int instances_index = 0; instances_index < getResources().getStringArray(
+                R.array.official_instances_list).length; instances_index++) {
+            String instance = getResources().getStringArray(R.array.official_instances_list)[instances_index];
+            boolean secured;
+            String regexp = Pattern.quote("|");
+            secured = instance.split(regexp)[1].equals("HTTPS");
+            instances_list.add(new InstancesListItem(instance.split(regexp)[0], true, secured));
+        }
+        for(int instances_index = 0; instances_index < getResources().getStringArray(
+                R.array.instances_list).length; instances_index++) {
+            String instance = getResources().getStringArray(R.array.instances_list)[instances_index];
+            boolean secured;
+            String regexp = Pattern.quote("|");
+            secured = instance.split(regexp)[1].equals("HTTPS");
+            instances_list.add(new InstancesListItem(instance.split(regexp)[0], false, secured));
+        }
+    }
+
     private void authorize() {
         String instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
@@ -213,6 +236,10 @@ public class AuthActivity extends TranslucentAuthActivity {
         } else if (instance.startsWith("https://")) {
             instance_edit.setText(instance.substring(8));
             instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+            checkHttpsEnabled(instance.startsWith("https"));
+            if(!global_prefs.getBoolean("useHTTPS", false)) {
+                return;
+            }
         }
         if (instance.contains("vkontakte.ru") || instance.contains("vk.com") || instance.contains("vk.ru")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -247,6 +274,14 @@ public class AuthActivity extends TranslucentAuthActivity {
             }
 
         } else if(username.length() > 0 && password.length() > 0) {
+            for (int i = 0; i < instances_list.size(); i++) {
+                if(instances_list.get(i).server.equals(instance) && instances_list.get(i).secured) {
+                    checkHttpsEnabled(instances_list.get(i).secured);
+                    if(!global_prefs.getBoolean("useHTTPS", false)) {
+                        return;
+                    }
+                }
+            }
             ovk_api.requireHTTPS(global_prefs.getBoolean("useHTTPS", true));
             ovk_api.setServer(instance);
             ovk_api.authorize(username, password);
@@ -257,6 +292,35 @@ public class AuthActivity extends TranslucentAuthActivity {
         } else {
             Toast.makeText(this, getResources().getString(R.string.authdata_required),
                     Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void checkHttpsEnabled(boolean isHttp) {
+        if(isHttp && !global_prefs.getBoolean("useHTTPS", false)) {
+            final OvkAlertDialog http_disabled_dlg;
+            http_disabled_dlg = new OvkAlertDialog(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
+            builder.setMessage(R.string.auth_error_https_disabled);
+            builder.setNegativeButton(android.R.string.no, null);
+            http_disabled_dlg.build(builder, getResources().getString(R.string.ovk_warning_title),
+                    getResources().getString(R.string.auth_error_https_disabled), null);
+            http_disabled_dlg.setButton(DialogInterface.BUTTON_POSITIVE,
+                    getResources().getString(android.R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            http_disabled_dlg.dismiss();
+                            global_prefs.edit().putBoolean("useHTTPS", true).commit();
+                            authorize();
+                        }
+                    });
+            http_disabled_dlg.setButton(DialogInterface.BUTTON_NEGATIVE,
+                    getResources().getString(android.R.string.no), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            http_disabled_dlg.dismiss();
+                        }
+                    });
+            if (!AuthActivity.this.isFinishing()) http_disabled_dlg.show();
         }
     }
 
@@ -275,23 +339,6 @@ public class AuthActivity extends TranslucentAuthActivity {
     private void showInstancesDialog() {
         alertDialog = new OvkAlertDialog(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
-        ArrayList<InstancesListItem> instances_list = new ArrayList<>();
-        for(int instances_index = 0; instances_index < getResources().getStringArray(
-                R.array.official_instances_list).length; instances_index++) {
-            String instance = getResources().getStringArray(R.array.official_instances_list)[instances_index];
-            boolean secured;
-            String regexp = Pattern.quote("|");
-            secured = instance.split(regexp)[1].equals("HTTPS");
-            instances_list.add(new InstancesListItem(instance.split(regexp)[0], true, secured));
-        }
-        for(int instances_index = 0; instances_index < getResources().getStringArray(
-                R.array.instances_list).length; instances_index++) {
-            String instance = getResources().getStringArray(R.array.instances_list)[instances_index];
-            boolean secured;
-            String regexp = Pattern.quote("|");
-            secured = instance.split(regexp)[1].equals("HTTPS");
-            instances_list.add(new InstancesListItem(instance.split(regexp)[0], false, secured));
-        }
         InstancesListAdapter instancesAdapter = new InstancesListAdapter(
                 AuthActivity.this, instances_list);
         builder.setSingleChoiceItems(instancesAdapter, -1, null);
