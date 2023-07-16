@@ -275,10 +275,9 @@ public class AuthActivity extends TranslucentAuthActivity {
 
         } else if(username.length() > 0 && password.length() > 0) {
             for (int i = 0; i < instances_list.size(); i++) {
-                if(instances_list.get(i).server.equals(instance) && instances_list.get(i).secured
-                        && !global_prefs.getBoolean("useProxy", false)) {
+                if(instances_list.get(i).server.equals(instance) && instances_list.get(i).secured) {
                     checkHttpsEnabled(instances_list.get(i).secured);
-                    if(!global_prefs.getBoolean("useHTTPS", false)) {
+                    if(!global_prefs.getBoolean("useHTTPS", false) && !global_prefs.getBoolean("useProxy", false)) {
                         return;
                     }
                 }
