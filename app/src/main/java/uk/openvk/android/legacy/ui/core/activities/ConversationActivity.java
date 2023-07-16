@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -29,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -193,6 +196,29 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         };
         registerReceiver(lpReceiver, new IntentFilter(
                 "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
+    }
+
+    @SuppressLint("AppCompatCustomView")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // Add VK3-like chat photo to right to ActionBar (pre-ViewImageLoader method)
+            MenuItem profile_photo = menu.add(0, 0, 0, R.string.profile);
+            profile_photo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            final ImageView ab_profile_photo = new ImageView(this) {
+                @SuppressWarnings("SuspiciousNameCombination")
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    int height = View.MeasureSpec.getSize(heightMeasureSpec);
+                    int width = height;
+                    setMeasuredDimension(width, height);
+                }
+            };
+            ab_profile_photo.setImageBitmap(conversation.avatar);
+            profile_photo.setActionView(ab_profile_photo);
+        }
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -386,11 +412,6 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 Bitmap bitmap = BitmapFactory.decodeFile(
                         String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
                                 getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
-                if (bitmap != null) {
-                    getActionBar().setLogo(new BitmapDrawable(getResources(), bitmap));
-                } else {
-                    getActionBar().setLogo(getResources().getDrawable(R.drawable.photo_loading));
-                }
             } catch (OutOfMemoryError oom) {
                 oom.printStackTrace();
             }
