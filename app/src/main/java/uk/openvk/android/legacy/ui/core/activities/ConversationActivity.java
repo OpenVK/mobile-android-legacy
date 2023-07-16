@@ -24,12 +24,14 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -55,6 +57,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
+import uk.openvk.android.legacy.ui.core.enumerations.UiMessages;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.view.layouts.ConversationPanel;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesListAdapter;
@@ -101,6 +104,8 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
     private String last_lp_message;
     private int keyboard_height;
     private int minKbHeight;
+    private Menu activity_menu;
+    private ImageView ab_profile_photo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +190,66 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         );
     }
 
+    private void installLayouts() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setTitle(conv_title);
+            if(peer_online == 1) {
+                getActionBar().setSubtitle(R.string.online);
+            } else {
+                getActionBar().setSubtitle(R.string.offline);
+            }
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayShowHomeEnabled(true);
+            getActionBar().setDisplayUseLogoEnabled(false);
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+            }
+        } else {
+            ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setTitle(conv_title);
+            if(peer_online == 1) {
+                actionBar.setSubtitle(R.string.online);
+            } else {
+                actionBar.setSubtitle(R.string.offline);
+            }
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
+                @Override
+                public void performAction(View view) {
+                    onBackPressed();
+                }
+            });
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+            } else {
+                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            }
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
+                if (bitmap != null) {
+                    actionBar.setRightLogo(new BitmapDrawable(getResources(), bitmap));
+                } else {
+                    actionBar.setRightLogo(R.drawable.photo_loading);
+                }
+            } catch (OutOfMemoryError oom) {
+                oom.printStackTrace();
+            }
+        }
+        actionBar = (ActionBar) findViewById(R.id.actionbar);
+    }
+
     private void registerBroadcastReceiver() {
         lpReceiver = new LongPollReceiver(this) {
             @Override
@@ -198,12 +263,12 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
     }
 
-    @SuppressLint("AppCompatCustomView")
+    @SuppressLint({"AppCompatCustomView", "DrawAllocation"})
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             // Add VK3-like chat photo to right to ActionBar (pre-ViewImageLoader method)
-            MenuItem profile_photo = menu.add(0, 0, 0, R.string.profile);
+            MenuItem profile_photo = menu.add(0, R.id.profile_photo, 0, R.string.profile);
             profile_photo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             final ImageView ab_profile_photo = new ImageView(this) {
                 @SuppressWarnings("SuspiciousNameCombination")
@@ -214,11 +279,14 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     setMeasuredDimension(width, height);
                 }
             };
-            ab_profile_photo.setImageBitmap(conversation.avatar);
+            ab_profile_photo.setBackground(null);
+            ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.photo_loading));
+            ab_profile_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
             profile_photo.setActionView(ab_profile_photo);
+            activity_menu = menu;
+            handler.sendEmptyMessageDelayed(UiMessages.RIGHT_AVATAR_IN_ACTIONBAR, 20);
         }
-
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -388,75 +456,6 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void installLayouts() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().setTitle(conv_title);
-            if(peer_online == 1) {
-                getActionBar().setSubtitle(R.string.online);
-            } else {
-                getActionBar().setSubtitle(R.string.offline);
-            }
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setDisplayShowHomeEnabled(true);
-            getActionBar().setDisplayUseLogoEnabled(false);
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                getActionBar().setBackgroundDrawable(
-                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                getActionBar().setBackgroundDrawable(
-                        getResources().getDrawable(R.drawable.bg_actionbar_black));
-            }
-            try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
-                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
-            } catch (OutOfMemoryError oom) {
-                oom.printStackTrace();
-            }
-        } else {
-            ActionBar actionBar = findViewById(R.id.actionbar);
-            actionBar.setTitle(conv_title);
-            if(peer_online == 1) {
-                actionBar.setSubtitle(R.string.online);
-            } else {
-                actionBar.setSubtitle(R.string.offline);
-            }
-            actionBar.setHomeLogo(R.drawable.ic_ab_app);
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
-                @Override
-                public void performAction(View view) {
-                    onBackPressed();
-                }
-            });
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            }
-            try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
-                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
-                if (bitmap != null) {
-                    actionBar.setRightLogo(new BitmapDrawable(getResources(), bitmap));
-                } else {
-                    actionBar.setRightLogo(R.drawable.photo_loading);
-                }
-            } catch (OutOfMemoryError oom) {
-                oom.printStackTrace();
-            }
-        }
-        actionBar = (ActionBar) findViewById(R.id.actionbar);
-    }
-
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             conversation_adapter = new MessagesListAdapter(this, history, peer_id);
@@ -480,6 +479,20 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 conversation.getHistory(ovk_api.wrapper, peer_id);
             }
             last_lp_message = data.getString("response");
+        } else if(message == UiMessages.RIGHT_AVATAR_IN_ACTIONBAR) {
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
+                if(activity_menu != null) {
+                    ab_profile_photo = activity_menu.getItem(0).getActionView().findViewById(R.id.profile_photo);
+                    ab_profile_photo.setImageBitmap(bitmap);
+                }
+            } catch (OutOfMemoryError | Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
