@@ -1102,7 +1102,8 @@ public class AppActivity extends TranslucentFragmentActivity {
                                 getBoolean("enableNotification", true),
                         notifMan.isRepeat(last_longpoll_response, data.getString("response")));
                 last_longpoll_response = data.getString("response");
-            } else if(message == HandlerMessages.INVALID_TOKEN) {
+            } else if(message == HandlerMessages.INVALID_TOKEN
+                    || message == HandlerMessages.BANNED_ACCOUNT) {
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
                 AccountManager am = AccountManager.get(this);
