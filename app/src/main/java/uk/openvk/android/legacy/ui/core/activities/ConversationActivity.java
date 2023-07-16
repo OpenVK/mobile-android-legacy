@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -300,6 +301,18 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(item.getItemId() == android.R.id.home) {
                 onBackPressed();
+            } else if(item.getItemId() == R.id.profile_photo) {
+                if(peer_id > 0) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setPackage("uk.openvk.android.legacy");
+                    i.setData(Uri.parse("openvk://profile/id" + peer_id));
+                    startActivity(i);
+                } else {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setPackage("uk.openvk.android.legacy");
+                    i.setData(Uri.parse("openvk://group/club" + -peer_id));
+                    startActivity(i);
+                }
             }
         }
         return super.onMenuItemSelected(featureId, item);
