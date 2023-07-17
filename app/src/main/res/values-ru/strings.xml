@@ -103,6 +103,7 @@
 
     <string name="app_version_text">Версия: %1$s\r\nКоммит: %2$s</string>
     <string name="app_version_s">Версия %1$s (%2$s)</string>
+    <string name="vk_not_supported">Извините, но этот клиент несовместим с API ВКонтакте.</string>
 
     <string-array name="like_menu">
 	    <item>Не нравится</item>
@@ -362,6 +363,8 @@
     <string name="sync_not_supported">Не поддерживается на этом устройстве</string>
     <string name="sync_text">Добавить к Вашим контактам на телефоне информацию и фотографии друзей OpenVK?</string>
     <string name="sett_sync">Синхронизация контактов</string>
+    <string name="sett_safe_viewing">Безопасный просмотр публикаций</string>
+    <string name="sett_safe_viewing_summary">Фильтр скрывает публикации, содержающее контент для взрослых</string>
     <string name="log_out_warning">При выходе из учётной записи из устройства будут удалены все связанные с ней данные. Продолжить?</string>
 
     <string name="widget_player">OpenVK - аудиоплеер</string>
@@ -384,7 +387,7 @@
     <string name="friends_add">Добавить</string>
     <string name="friends_decline">Скрыть</string>
     <string name="sett_splash">Заставка при запуске</string>
-    <string name="post_load_nsfw">Данный пост может содержать контент для взрослых</string>
+    <string name="post_load_nsfw">Данная публикация может содержать контент для взрослых</string>
     <string name="sett_ringtone">Сигнал уведомления</string>
     <string name="friend_req_accepted">Заявка принята</string>
     <string name="friend_req_declined">Заявка отклонена</string>
@@ -629,7 +632,7 @@
         <item>Исходное</item>
     </string-array>
     <string name="sett_cache_quality_alt">Качество изображений</string>
-    <string name="sett_cache_quality_lowres">Максимально жертвуя качеством, данные могут загружаться
+    <string name="sett_cache_quality_lowres">Изображения могут загружаться
         как можно быстрее в условиях низкой скорости интернета.</string>
     <string name="sett_cache_quality_medres">Выбрано оптимальное качество для работы приложения.</string>
     <string name="sett_cache_quality_highres">Позволяет видеть четче, но не экономит трафик и не оптимизирует работу приложения.</string>
@@ -1026,7 +1029,7 @@
     <string name="allow_permisssion_in_storage">Для сохранения данных в память устройства приложению нужны специальные разрешения.\n\nОткрыть раздел системных настроек \"О приложении\"?</string>
     <string name="open_btn">Открыть</string>
     <string name="birthday">День рождения</string>
-    <string name="post_fail_empty">Прежде чем запостить, обязательно напишите что-нибудь и повторите еще раз.</string>
+    <string name="post_fail_empty">Прежде чем опубликовать запись, обязательно напишите что-нибудь и повторите еще раз.</string>
     <string name="on_wall">%1$s на стене %2$s</string>
     <string name="debug_incompatibillity_error">Требуется Android 4.1 или выше</string>
     <string name="about_instance">Об инстанции</string>
@@ -1064,6 +1067,5 @@
     <string name="interface_theme">Тема оформления</string>
     <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина.\r\nВы можете узнать что-то новое в ленте всех новостей.</string>
     <string name="retry_short">Повторить</string>
-    <string name="vk_not_supported">Извините, но этот клиент несовместим с API ВКонтакте.</string>
     <string name="notes">Заметки</string>
 </resources>

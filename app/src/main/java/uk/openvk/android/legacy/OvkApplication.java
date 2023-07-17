@@ -114,19 +114,16 @@ public class OvkApplication extends Application {
         SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
         SharedPreferences.Editor instance_prefs_editor = instance_prefs.edit();
 
-        if(!instance_prefs.contains("server")) {
-            instance_prefs_editor.putString("server", "");
-        }
-
-        if(!global_prefs.contains("owner_id")) {
-            global_prefs_editor.putInt("owner_id", 0);
-        }
-        long heap_size = global.getHeapSize();
-
         // Create preference parameters
 
+        long heap_size = global.getHeapSize();
+
+        if(!global_prefs.contains("uiLanguage")) {
+            global_prefs_editor.putString("uiLanguage", "System");
+        }
+
         if(!global_prefs.contains("uiTheme")) {
-            global_prefs_editor.putString("uiTheme", "default");
+            global_prefs_editor.putString("uiTheme", "Blue");
         }
 
         if(!global_prefs.contains("photos_quality")) {
@@ -137,10 +134,6 @@ public class OvkApplication extends Application {
             } else {
                 global_prefs_editor.putString("photos_quality", "high");
             }
-        }
-
-        if(!instance_prefs.contains("account_password")) {
-            instance_prefs_editor.putString("account_password", "");
         }
 
         if(!global_prefs.contains("useHTTPS")) {
@@ -180,15 +173,8 @@ public class OvkApplication extends Application {
             global_prefs_editor.putBoolean("forcedCaching", true);
         }
 
-        if(global_prefs.contains("account_password") &&
-                global_prefs.getString("account_password", "").length() > 0) {
-            try {
-                global_prefs_editor.putString("encrypted_account_password",
-                        Global.GetSHA256Hash(global_prefs.getString("account_password", "")));
-            } catch (NoSuchAlgorithmException e) {
-                global_prefs_editor.putString("encrypted_account_password", "");
-            }
-            global_prefs_editor.putString("account_password", "");
+        if(!global_prefs.contains("safeViewing")) {
+            global_prefs_editor.putBoolean("safeViewing", true);
         }
 
         if(!global_prefs.contains("current_instance")) {
@@ -206,7 +192,7 @@ public class OvkApplication extends Application {
 
     public static Locale getLocale(Context ctx) {
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String language = global_prefs.getString("interfaceLanguage", "System");
+        String language = global_prefs.getString("uiLanguage", "System");
         String language_code;
         switch (language) {
             case "English":

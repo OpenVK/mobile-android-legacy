@@ -388,6 +388,8 @@
 	<string name="sync_not_supported">Not supported on this device</string>
 	<string name="sync_text">Do you want to add your OpenVK friends\' info and pictures to your phone contacts?</string>
 	<string name="sett_sync">Contacts sync</string>
+	<string name="sett_safe_viewing">Safe Viewing Posts</string>
+	<string name="sett_safe_viewing_summary">The filter hides posts containing NSFW content</string>
 	<string name="log_out_warning">Logging out will delete all data related to this account from this device. Continue?</string>
 	<string name="widget_news">OpenVK – news</string>
 	<string name="widget_player">OpenVK – music</string>
@@ -686,7 +688,7 @@
         <item>Original</item>
     </string-array>
     <string name="sett_cache_quality_alt">Image Quality</string>
-    <string name="sett_cache_quality_lowres">Sacrificing quality as much as possible, data can be loaded
+    <string name="sett_cache_quality_lowres">Images can be loaded
          as soon as possible in conditions of low Internet speed.</string>
     <string name="sett_cache_quality_medres">The optimal quality has been selected for app working.</string>
     <string name="sett_cache_quality_highres">Allows you to see clearer, but does not save traffic

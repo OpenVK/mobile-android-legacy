@@ -68,6 +68,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     private final ImageLoaderConfiguration imageLoaderConfig;
     private final DisplayImageOptions displayimageOptions;
     private final ImageLoader imageLoader;
+    private boolean safeViewing;
     private String where;
     private ArrayList<WallPost> items = new ArrayList<>();
     private Context ctx;
@@ -80,6 +81,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         ctx = context;
         items = posts;
         instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
+        safeViewing = PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean("safeViewing", true);
         this.isWall = isWall;
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
@@ -222,7 +224,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             });
-            if(!item.is_explicit) {
+            if(!item.is_explicit || !safeViewing) {
                 if (item.text.length() > 0) {
                     post_text.setVisibility(View.VISIBLE);
                     String text = item.text.replaceAll("&lt;", "<")
@@ -343,14 +345,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 post_text.setVisibility(View.GONE);
             }
 
-            if(!item.is_explicit) {
+            if(!item.is_explicit || !safeViewing) {
                 error_label.setVisibility(View.GONE);
             }
             post_photo.setVisibility(View.GONE);
             post_video.setVisibility(View.GONE);
             pollAttachView.setVisibility(View.GONE);
 
-            if(!item.is_explicit) {
+            if(!item.is_explicit || !safeViewing) {
                 for (int i = 0; i < item.attachments.size(); i++) {
                     if (item.attachments.get(i).type.equals("photo")) {
                         post_photo.setVisibility(View.VISIBLE);

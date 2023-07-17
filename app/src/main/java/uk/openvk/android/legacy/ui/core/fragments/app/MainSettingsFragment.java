@@ -294,7 +294,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
 
     private void showUiLanguageSelectionDialog() {
         int valuePos = 0;
-        String value = global_prefs.getString("interfaceLanguage", "System");
+        String value = global_prefs.getString("uiLanguage", "System");
         String[] array = getResources().getStringArray(R.array.interface_languages);
         selectedPosition = 0;
         switch (value) {
@@ -324,7 +324,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = global_prefs.edit();
-                        editor.putString("interfaceLanguage",
+                        editor.putString("uiLanguage",
                                 getResources().getStringArray(R.array.interface_languages)[selectedPosition]);
                         editor.commit();
                         Toast.makeText(getContext(), R.string.sett_app_restart_required,

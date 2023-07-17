@@ -40,6 +40,10 @@
 			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true"/>
 			-->
+        <CheckBoxPreference android:title="@string/sett_safe_viewing"
+            android:layout="@layout/pref_widget_checkbox"
+            android:summary="@string/sett_safe_viewing_summary" android:key="safeViewing"/>
+
 		<Preference android:title="@string/sett_advanced"
 			android:layout="@layout/pref_widget"
 			android:summary="" android:key="advanced"/>
