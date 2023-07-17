@@ -596,6 +596,19 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
         SharedPreferences.Editor editor = global_prefs.edit();
         editor.putString("notifyRingtone", uri);
         editor.commit();
+        Preference notif_ringtone = findPreference("notifyRingtone");
+        if (notif_ringtone != null) {
+            Uri notif_uri = Uri.parse("content://settings/system/notification_sound");
+            if (global_prefs.getString("notifyRingtone", "content://settings/system/notification_sound")
+                    .equals("content://settings/system/notification_sound")) {
+                notif_ringtone.setSummary("OpenVK");
+            } else {
+                notif_uri = Uri.parse(global_prefs.getString("notifyRingtone",
+                        "content://settings/system/notification_sound"));
+                Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), notif_uri);
+                notif_ringtone.setSummary(ringtone.getTitle(getContext()));
+            }
+        }
     }
 
     public void openChangeAccountDialog() {
