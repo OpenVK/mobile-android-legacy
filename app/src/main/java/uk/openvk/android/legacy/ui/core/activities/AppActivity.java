@@ -134,6 +134,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         if(getAndroidAccounts()) {
             setContentView(R.layout.activity_app);
         } else {
+            setTheme(R.style.BaseStyle_NoActionBar_NoShadow);
             return;
         }
         inBackground = true;
