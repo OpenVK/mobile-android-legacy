@@ -609,13 +609,13 @@ public class Global {
 
     public static String formatFileSize(Resources res, long size, String f) {
         if(size >= 1073741824L) {
-            return String.format(f, (double)size / 1024, res.getString(R.string.fsize_gb));
+            return String.format(f, (double)size / 1024 / 1024 / 1024, res.getString(R.string.fsize_gb));
         } else if(size >= 1048576L) {
-            return String.format(f, (double)size / 1024, res.getString(R.string.fsize_mb));
+            return String.format(f, (double)size / 1024 / 1024, res.getString(R.string.fsize_mb));
         } else if(size >= 1024L) {
             return String.format(f, (double)size / 1024, res.getString(R.string.fsize_kb));
         } else {
-            return String.format("%s %s", (double)size / 1024, res.getString(R.string.fsize_b));
+            return String.format("%s %s", (double)size, res.getString(R.string.fsize_b));
         }
     }
 }
