@@ -134,7 +134,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         if(getAndroidAccounts()) {
             setContentView(R.layout.activity_app);
         } else {
-            setTheme(R.style.BaseStyle_NoActionBar_NoShadow);
             return;
         }
         inBackground = true;
@@ -198,8 +197,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     private boolean getAndroidAccounts() {
         ArrayList<InstanceAccount> accountArray = new ArrayList<>();
         Global.loadAccounts(this, accountArray, instance_prefs);
-        if(androidAccount == null || (instance_prefs.getString("access_token", "").length() == 0 ||
-                instance_prefs.getString("server", "").length() == 0)) {
+        if(androidAccount == null) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
             instance_prefs_editor = instance_prefs.edit();
@@ -208,9 +206,11 @@ public class AppActivity extends TranslucentFragmentActivity {
             instance_prefs_editor.putLong("uid", 0);
             instance_prefs_editor.putString("account_name", "");
             instance_prefs_editor.commit();
-            if(accountArray.size() >= 1) {
+            global_prefs_editor.putString("current_instance", "");
+            global_prefs_editor.commit();
+            if(accountArray.size() >= 1 && global_prefs.getString("current_instance", "").length() == 0) {
                 Global global = new Global();
-                global.openChangeAccountDialog(this, global_prefs);
+                global.openChangeAccountDialog(this, global_prefs, false);
                 return false;
             } else {
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);
@@ -227,15 +227,20 @@ public class AppActivity extends TranslucentFragmentActivity {
     @SuppressLint("CommitTransaction")
     @Override
     public void onBackPressed() {
-        if(selectedFragment instanceof NewsfeedFragment) {
-            super.onBackPressed();
-            if(lpReceiver != null) {
-                unregisterReceiver(lpReceiver);
+        try {
+            if (selectedFragment instanceof NewsfeedFragment) {
+                super.onBackPressed();
+                if (lpReceiver != null) {
+                    unregisterReceiver(lpReceiver);
+                }
+                finish();
+                System.exit(0);
+            } else {
+                fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             }
+        } catch (Exception ex) {
             finish();
             System.exit(0);
-        } else {
-            fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
         }
     }
 
@@ -1122,9 +1127,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                 instance_prefs_editor.commit();
                 ArrayList<InstanceAccount> accounts = new ArrayList<>();
                 Global.loadAccounts(this, accounts, instance_prefs);
-                if(accounts.size() > 1) {
+                if(accounts.size() >= 1) {
                     Global global = new Global();
-                    global.openChangeAccountDialog(this, global_prefs);
+                    global.openChangeAccountDialog(this, global_prefs, false);
                 } else {
                     Intent activity = new Intent(getApplicationContext(), MainActivity.class);
                     activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

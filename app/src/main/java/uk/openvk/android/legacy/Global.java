@@ -577,6 +577,99 @@ public class Global {
         dialog.show();
     }
 
+    public void openChangeAccountDialog(final Context ctx, SharedPreferences global_prefs,
+                                        boolean cancelable) {
+        int valuePos = 0;
+        final ArrayList<InstanceAccount> accountArray = new ArrayList<>();
+        final int[] selectedPosition = {0};
+        if(global_prefs == null) {
+            global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        }
+        long current_uid = global_prefs.getLong("current_uid", 0);
+        String current_instance = global_prefs.getString("current_instance", "");
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        String package_name = ctx.getApplicationContext().getPackageName();
+        @SuppressLint("SdCardPath") String profile_path =
+                String.format("/data/data/%s/shared_prefs", package_name);
+        File prefs_directory = new File(profile_path);
+        File[] prefs_files = prefs_directory.listFiles();
+        String file_extension;
+        String account_names[] = new String[0];
+        Context app_ctx = ctx.getApplicationContext();
+        accountArray.clear();
+        try {
+            for (File prefs_file : prefs_files) {
+                String filename = prefs_file.getName();
+                if (prefs_file.getName().startsWith("instance")
+                        && prefs_file.getName().endsWith(".xml")) {
+                    SharedPreferences prefs =
+                            ctx.getSharedPreferences(
+                                    filename.substring(0, filename.length() - 4), 0);
+                    String name = prefs.getString("account_name", "[Unknown account]");
+                    long uid = prefs.getLong("uid", 0);
+                    String server = prefs.getString("server", "");
+                    if(server.length() > 0 && uid > 0 && name.length() > 0) {
+                        InstanceAccount account = new InstanceAccount(name, uid, server);
+                        accountArray.add(account);
+                    }
+                }
+            }
+            account_names = new String[accountArray.size()];
+            for(int i = 0; i < accountArray.size(); i++) {
+                account_names[i] = accountArray.get(i).name;
+                if (accountArray.get(i).instance.equals(current_instance)) {
+                    valuePos = i;
+                }
+            }
+            Log.d(OvkApplication.APP_TAG, String.format("Files: %s", account_names.length));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        builder.setSingleChoiceItems(account_names, valuePos,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedPosition[0] = which;
+                    }
+                }
+        );
+        OvkAlertDialog dialog = new OvkAlertDialog(ctx);
+        dialog.build(builder, ctx.getResources().getString(R.string.sett_account), "", null, "listDlg");
+        final SharedPreferences finalGlobal_prefs = global_prefs;
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, ctx.getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = finalGlobal_prefs.edit();
+                        editor.putString("current_instance", accountArray.get(selectedPosition[0]).instance);
+                        editor.putLong("current_uid", accountArray.get(selectedPosition[0]).id);
+                        editor.commit();
+                        dialog.dismiss();
+                        if(ctx instanceof Activity) {
+                            ((Activity) ctx).finish();
+                            Intent intent = new Intent(ctx, AppActivity.class);
+                            ctx.startActivity(intent);
+                            System.exit(0);
+                        } else {
+                            Toast.makeText(ctx, R.string.sett_app_restart_required,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                ctx.getResources().getString(R.string.add),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(ctx, AuthActivity.class);
+                        intent.putExtra("authFromAppActivity", true);
+                        ctx.startActivity(intent);
+                    }
+                });
+        dialog.setCancelable(cancelable);
+        dialog.show();
+    }
+
     public static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;
