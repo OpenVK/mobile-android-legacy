@@ -85,27 +85,6 @@
 	</PreferenceCategory>
 
 
-	<PreferenceCategory
-		android:layout="@layout/pref_category"
-		android:title="@string/sett_account">
-        <!-- maybe implement
-            <Preference android:title="@string/sett_news_banned"
-                android:summary="@string/sett_news_banned_summary" android:key="newsBanned"/>
-        !-->
-
-		<Preference
-			android:key="changeAccount"
-			android:layout="@layout/pref_widget"
-			android:summary=""
-			android:title="@string/change_account" />
-
-		<Preference
-			android:key="logOut"
-			android:layout="@layout/pref_widget"
-			android:summary=""
-			android:title="@string/log_out" />
-	</PreferenceCategory>
-
     <PreferenceCategory android:title="@string/interface_category"  android:layout="@layout/pref_category">
 
         <Preference android:title="@string/interface_language"
@@ -124,6 +103,27 @@
             android:layout="@layout/pref_widget_checkbox"
             android:defaultValue="true"/>
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/pref_category"
+        android:title="@string/sett_account">
+        <!-- maybe implement
+            <Preference android:title="@string/sett_news_banned"
+                android:summary="@string/sett_news_banned_summary" android:key="newsBanned"/>
+        !-->
+
+        <Preference
+            android:key="changeAccount"
+            android:layout="@layout/pref_widget"
+            android:summary=""
+            android:title="@string/change_account" />
+
+        <Preference
+            android:key="logOut"
+            android:layout="@layout/pref_widget"
+            android:summary=""
+            android:title="@string/log_out" />
     </PreferenceCategory>
 
 	<PreferenceCategory
