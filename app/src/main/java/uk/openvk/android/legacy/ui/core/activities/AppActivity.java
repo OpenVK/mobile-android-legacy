@@ -1,6 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
-import android.accounts.AccountManager;
+import android.accounts.*;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -127,21 +127,21 @@ public class AppActivity extends TranslucentFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_app);
-        inBackground = true;
-        menu_id = R.menu.newsfeed;
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        getAndroidAccounts();
-        if(instance_prefs.getString("access_token", "").length() == 0 ||
-                instance_prefs.getString("server", "").length() == 0) {
-            finish();
+        global_prefs_editor = global_prefs.edit();
+        instance_prefs_editor = instance_prefs.edit();
+        if(getAndroidAccounts()) {
+            setContentView(R.layout.activity_app);
+        } else {
+            return;
         }
+        inBackground = true;
+        menu_id = R.menu.newsfeed;
         ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
 
         last_longpoll_response = "";
-        global_prefs_editor = global_prefs.edit();
-        instance_prefs_editor = instance_prefs.edit();
+
         installFragments();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
@@ -194,10 +194,11 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    private void getAndroidAccounts() {
+    private boolean getAndroidAccounts() {
         ArrayList<InstanceAccount> accountArray = new ArrayList<>();
         Global.loadAccounts(this, accountArray, instance_prefs);
-        if(androidAccount == null) {
+        if(androidAccount == null || (instance_prefs.getString("access_token", "").length() == 0 ||
+                instance_prefs.getString("server", "").length() == 0)) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
             instance_prefs_editor = instance_prefs.edit();
@@ -206,15 +207,19 @@ public class AppActivity extends TranslucentFragmentActivity {
             instance_prefs_editor.putLong("uid", 0);
             instance_prefs_editor.putString("account_name", "");
             instance_prefs_editor.commit();
-            if(accountArray.size() > 1) {
+            if(accountArray.size() >= 1) {
                 Global global = new Global();
                 global.openChangeAccountDialog(this, global_prefs);
+                return false;
             } else {
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(activity);
                 finish();
+                return false;
             }
+        } else {
+            return true;
         }
     }
 
@@ -1108,15 +1113,23 @@ public class AppActivity extends TranslucentFragmentActivity {
                         getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
                 AccountManager am = AccountManager.get(this);
                 am.removeAccount(androidAccount, null, null);
+                instance_prefs_editor = instance_prefs.edit();
                 instance_prefs_editor.putString("access_token", "");
                 instance_prefs_editor.putString("server", "");
-                instance_prefs_editor.putLong("uin", 0);
+                instance_prefs_editor.putLong("uid", 0);
                 instance_prefs_editor.putString("account_name", "");
                 instance_prefs_editor.commit();
-                Intent activity = new Intent(getApplicationContext(), MainActivity.class);
-                activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(activity);
-                finish();
+                ArrayList<InstanceAccount> accounts = new ArrayList<>();
+                Global.loadAccounts(this, accounts, instance_prefs);
+                if(accounts.size() > 1) {
+                    Global global = new Global();
+                    global.openChangeAccountDialog(this, global_prefs);
+                } else {
+                    Intent activity = new Intent(getApplicationContext(), MainActivity.class);
+                    activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(activity);
+                    finish();
+                }
             } else if (message < 0) {
                 if(data.containsKey("method")) {
                     try {
@@ -1570,7 +1583,11 @@ public class AppActivity extends TranslucentFragmentActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(lpReceiver);
+        try {
+            unregisterReceiver(lpReceiver);
+        } catch (Exception ignored) {
+
+        }
         super.onDestroy();
     }
 

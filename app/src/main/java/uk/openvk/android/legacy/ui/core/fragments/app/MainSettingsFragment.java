@@ -411,7 +411,11 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 editor.commit();
                 if(getActivity() instanceof AppActivity) {
                     AccountManager am = AccountManager.get(getContext());
-                    am.removeAccount(((AppActivity) getActivity()).androidAccount, null, null);
+                    try {
+                        am.removeAccount(((AppActivity) getActivity()).androidAccount, null, null);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
                 DownloadManager dlm = new DownloadManager(getActivity(), false,
                         global_prefs.getBoolean("legacyHttpClient", false));
