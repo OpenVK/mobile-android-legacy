@@ -363,7 +363,7 @@
     <string name="sync_not_supported">Не поддерживается на этом устройстве</string>
     <string name="sync_text">Добавить к Вашим контактам на телефоне информацию и фотографии друзей OpenVK?</string>
     <string name="sett_sync">Синхронизация контактов</string>
-    <string name="sett_safe_viewing">Безопасный просмотр публикаций</string>
+    <string name="sett_safe_viewing">Безопасный просмотр публ.</string>
     <string name="sett_safe_viewing_summary">Фильтр скрывает публикации, содержающие контент для взрослых</string>
     <string name="log_out_warning">При выходе из учётной записи из устройства будут удалены все связанные с ней данные. Продолжить?</string>
 
