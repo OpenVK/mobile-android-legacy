@@ -201,10 +201,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
             instance_prefs_editor = instance_prefs.edit();
-            instance_prefs_editor.putString("access_token", "");
-            instance_prefs_editor.putString("server", "");
-            instance_prefs_editor.putLong("uid", 0);
-            instance_prefs_editor.putString("account_name", "");
+            instance_prefs_editor.clear();
             instance_prefs_editor.commit();
             global_prefs_editor.putString("current_instance", "");
             global_prefs_editor.commit();
@@ -1120,10 +1117,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 AccountManager am = AccountManager.get(this);
                 am.removeAccount(androidAccount, null, null);
                 instance_prefs_editor = instance_prefs.edit();
-                instance_prefs_editor.putString("access_token", "");
-                instance_prefs_editor.putString("server", "");
-                instance_prefs_editor.putLong("uid", 0);
-                instance_prefs_editor.putString("account_name", "");
+                instance_prefs_editor.clear();
                 instance_prefs_editor.commit();
                 ArrayList<InstanceAccount> accounts = new ArrayList<>();
                 Global.loadAccounts(this, accounts, instance_prefs);

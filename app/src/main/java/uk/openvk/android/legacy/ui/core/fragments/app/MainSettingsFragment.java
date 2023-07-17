@@ -403,11 +403,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                 SharedPreferences.Editor editor =
                         ((OvkApplication) getContext().getApplicationContext())
                                 .getAccountPreferences().edit();
-                editor.putString("access_token", "");
-                editor.putString("server", "");
-                editor.putString("account_name", "");
-                editor.putLong("uid", 0);
-                editor.putString("account_password_hash", "");
+                editor.clear();
                 editor.commit();
                 if(getActivity() instanceof AppActivity) {
                     AccountManager am = AccountManager.get(getContext());
