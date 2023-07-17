@@ -615,7 +615,7 @@ public class Global {
         } else if(size >= 1024L) {
             return String.format(f, (double)size / 1024, res.getString(R.string.fsize_kb));
         } else {
-            return String.format(f, (double)size / 1024, res.getString(R.string.fsize_b));
+            return String.format("%s %s", (double)size / 1024, res.getString(R.string.fsize_b));
         }
     }
 }
