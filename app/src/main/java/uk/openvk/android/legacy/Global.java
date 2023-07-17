@@ -389,8 +389,7 @@ public class Global {
             for (int i = 0; i < accountArray.size(); i++) {
                 account_names[i] = accountArray.get(i).name;
                 if (account_names[i].equals(instance_prefs.getString("account_name", "")) &&
-                        instance_prefs.getString("server", "").equals(
-                                global_prefs.getString("current_instance", ""))) {
+                        instance_prefs.getString("server", "").equals(current_instance)) {
                     if (ctx instanceof AppActivity) {
                         AppActivity app_a = ((AppActivity) ctx);
                         app_a.androidAccount = accounts[i];
