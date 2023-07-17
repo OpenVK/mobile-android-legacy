@@ -629,7 +629,7 @@ public class DownloadManager {
                     if (aFilelist.isDirectory()) {
                         File[] filelist2 = new File(aFilelist.getAbsolutePath()).listFiles();
                         for (File aFilelist2 : filelist2) {
-                            foldersize += filelist2.length;
+                            foldersize += aFilelist2.length();
                         }
                     } else {
                         foldersize += aFilelist.length();
