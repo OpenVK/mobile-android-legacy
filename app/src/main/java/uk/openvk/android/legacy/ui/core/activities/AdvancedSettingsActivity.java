@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -109,8 +110,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
     private void setListeners() {
         final Preference clear_image_cache = findPreference("clearImageCache");
         long cache_size = dlManager.getCacheSize();
-        String cache_size_in_megabytes = String.format("%.2f %s", (double)cache_size / 1024, getResources().getString(R.string.fsize_mb));
-        clear_image_cache.setSummary(cache_size_in_megabytes);
+        clear_image_cache.setSummary(Global.formatFileSize(getResources(), cache_size, "%.2f %s"));
         if(cache_size == 0) {
             clear_image_cache.setEnabled(false);
         }
@@ -119,8 +119,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
             public boolean onPreferenceClick(Preference preference) {
                 dlManager.clearCache(null);
                 long cache_size = dlManager.getCacheSize();
-                String cache_size_in_megabytes = String.format("%.2f %s", (double)cache_size / 1024, getResources().getString(R.string.fsize_mb));
-                clear_image_cache.setSummary(cache_size_in_megabytes);
+                clear_image_cache.setSummary(Global.formatFileSize(getResources(), cache_size, "%.2f %s"));
                 if(cache_size == 0) {
                     clear_image_cache.setEnabled(false);
                 }
