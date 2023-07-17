@@ -200,20 +200,20 @@ public class AppActivity extends TranslucentFragmentActivity {
         if(androidAccount == null) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+            instance_prefs_editor = instance_prefs.edit();
+            instance_prefs_editor.putString("access_token", "");
+            instance_prefs_editor.putString("server", "");
+            instance_prefs_editor.putLong("uid", 0);
+            instance_prefs_editor.putString("account_name", "");
+            instance_prefs_editor.commit();
             if(accountArray.size() > 1) {
-                instance_prefs_editor = instance_prefs.edit();
-                instance_prefs_editor.putString("access_token", "");
-                instance_prefs_editor.putString("server", "");
-                instance_prefs_editor.putLong("uid", 0);
-                instance_prefs_editor.putString("account_name", "");
-                instance_prefs_editor.commit();
+                Global global = new Global();
+                global.openChangeAccountDialog(this, global_prefs);
+            } else {
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(activity);
                 finish();
-            } else {
-                Global global = new Global();
-                global.openChangeAccountDialog(this, global_prefs);
             }
         }
     }
