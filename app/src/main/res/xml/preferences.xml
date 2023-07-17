@@ -34,11 +34,12 @@
 			android:summary="@string/sett_update_on_open_summary" android:key="refreshOnOpen"
 			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true"/>
-			
+
+        <!-- maybe implement
 		<CheckBoxPreference android:title="@string/sett_bdays" android:key="notifyBDays"
 			android:layout="@layout/pref_widget_checkbox"
 			android:defaultValue="true"/>
-			
+			-->
 		<Preference android:title="@string/sett_advanced"
 			android:layout="@layout/pref_widget"
 			android:summary="" android:key="advanced"/>
