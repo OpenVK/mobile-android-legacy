@@ -1,0 +1,4 @@
+1. Added pictures, videos, polls full support in "Comments" activity (thanks to a little refactoring)
+2. Replaced the original Emojicon library (https://github.com/rockerhieu/emojicon) with its Twemojicon fork (https://github.com/tinelix/twemojicon).
+3. Reason: rockerhieu/emojicon#17
+4. Added ACRA 4.6.0 (Application Crash Reporting for Android)

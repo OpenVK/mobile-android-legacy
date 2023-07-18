@@ -1,0 +1,1 @@
+1. Not again, but again. This time, all localization is now completely synchronized with the language change setting, so some inscriptions where they were displayed in the system language are no longer there.

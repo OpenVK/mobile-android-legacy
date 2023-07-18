@@ -1,0 +1,4 @@
+1. Instances that use the HTTPS encryption (and may not work on old devices) are now marked with the "HTTPS" green label feature.
+2. An the two-factor authentication dialog is redefined and approaching the design that was in VKontakte 3.10 app.
+3. Significantly improved translation of strings, usually containing plurals.
+4. Added an animation of rotating the arrow in the profile header, which is played at the moment of hiding and revealing detailed information about the profile.

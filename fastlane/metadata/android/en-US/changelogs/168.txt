@@ -1,0 +1,3 @@
+1. Fixed a behavior that breaks the processing of external links by the operating system if they end with a / or contain a + symbol.
+2. "Rules" and "Privacy" links on Android 2.x are shown after updating the instance data.
+3. Added a return page with the message "There is silence in the local feed for now", replacing the empty local news feed.

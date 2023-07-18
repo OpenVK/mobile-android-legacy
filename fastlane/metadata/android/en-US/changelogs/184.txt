@@ -1,0 +1,1 @@
+1. Starting from the 183rd assembly, forced caching of images for a period of 15 seconds to 24 hours was introduced to speed up the loading of content, but this did not solve the error of loading part of the content. In the 184th assembly, it was improved with a new period from 60 seconds to 3 days.

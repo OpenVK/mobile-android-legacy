@@ -1,0 +1,6 @@
+1. Fixed infinite scroll.
+2. Now thumbnails for vids are fully working, they are shown even during video loading. Yes, it's still a GIF, but it's what it is.
+3. Added highlighting of slidein menu items.
+4. Added the ability to force caching when necessary, if not all photos have loaded adequately.
+5. Friend requests in the tablet interface are now displayed in a grid. The remaining lists will be migrating from ListView to RecyclerView soon, so the grid should now appear in the lists of friends, correspondence, groups, and members.
+6. Fixes for other known bugs and crashes.

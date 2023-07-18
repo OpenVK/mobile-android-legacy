@@ -1,0 +1,4 @@
+1. The misunderstanding has been completely corrected, or more precisely, a typo in the name of one of the languages (well, it happens 🤷‍♂️).
+2. Cached directories are now sorted. Slightly compact but comfortable.
+3. In previous builds, clearing the cache in advanced settings either did not work or did not work completely. Now you no longer need to climb through the OS settings in the hope of saving space, as this has already been fixed.
+4. The comments layout has very early support for photos, but without any implementation on the API side, so it remains only to wait for the improvement of the Wall.getComments method.

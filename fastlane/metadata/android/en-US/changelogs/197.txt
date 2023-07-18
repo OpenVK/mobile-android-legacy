@@ -1,0 +1,2 @@
+1. Fixed invalid picture URL crash.
+2. Added infinity scroll in group walls and profiles.

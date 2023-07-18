@@ -1,0 +1,3 @@
+1. Improved HTTP proxy support.
+2. When switching to settings, the sliding menu is now permanently hidden.
+3. The x86 version of the ijkplayer library has been reverted.

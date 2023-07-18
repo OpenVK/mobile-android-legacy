@@ -1,0 +1,5 @@
+1. The ijkplayer library has been updated to version 0.8.2, and its version for the x86 platform has been removed due to uselessness, due to which the size of the APK file has slightly decreased from 19.1 to 18.3 MB.
+2. Added video seeking. It does not work quite correctly and only in some positions.
+3. The content area is no longer cropped in some devices running Android 10.
+4. The profile of the deleted profile no longer leaves any stubs, which, by the way, do not work anyway.
+5. Enabled one day forced photos caching (> 5 MB)

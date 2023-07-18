@@ -1,0 +1,2 @@
+1. Domain openvk.co changed to openvk.xyz.
+2. Fixed "floating" bug when switching to a fragment of the application settings.

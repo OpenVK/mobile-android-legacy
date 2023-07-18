@@ -1,0 +1,4 @@
+1. The tablet mode of the interface has been fixed again (the problem was that they forgot to update the layout)
+2. As in VK 3.x, you can also fit the video in width and return the optimal resolution back.
+3. The logic for processing JSON requests has been redone, now in a separate thread, thanks to which the application has become a little less freezing, but this does not fix the ANR state completely, since the RecyclerView component for lists was involved in the hang.
+4. Account avatar hotfix.

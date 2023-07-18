@@ -1,0 +1,4 @@
+1. Added support for displaying emoji characters in Android 4.3 and below, thanks to the EmojiView library (aka Emojicon)
+2. Improved performance in Android 2.x.
+
+P. S. Yes, I almost forgot about semantic versioning. We didn't reset the build (or patch) number, which is why we violated the Semantic Versioning system, sorry.

@@ -1,0 +1,2 @@
+1. Added a new way to show the name of group members, this time used in other API methods. At the same time, compatibility with instances that were not updated before the commit openvk/openvk@d9b595d is saved.
+2. The API client has been re-sorted, the uk.openvk.android.legacy.api.entities package for single objects (User, Group, Message, WallPost, etc.) has been added, and the uk.openvk.android.legacy.api.models package uses their collections (Users, Groups, Messages, Wall, Newsfeed, etc.) to match the structuring style of the OpenVK web version.

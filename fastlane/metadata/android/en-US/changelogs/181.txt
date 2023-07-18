@@ -1,0 +1,4 @@
+1. Slightly rewritten the AboutProfileLayout class, which is responsible for information about a profile or group. And yes, there is no empty area left!
+2. The transparent statusbar has been returned, which was before the rewriting of all application sources, but now the implementation is somewhat different from the old code base.
+3. Fix with the choice of app.
+4. Fit content window fix for Android 11+

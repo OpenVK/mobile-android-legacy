@@ -1,0 +1,5 @@
+1. Added playback of embedded videos. Please note that full video playback is available only in Android 3.1+, otherwise you have to install a third-party player.
+2. All basic layouts of the interface have been refactored: instead of any primitive objects of the View class, fragments are used. This makes the application work much more efficiently, but at the same time there are jambs in switching (it will be fixed later, okda).
+3. The settings screen has been redesigned.
+4. Now the emoji panel immediately hides when you open the keyboard, which makes scrolling through messages comfortable.
+5. Fixed a bug associated with scrolling posts in the feed.

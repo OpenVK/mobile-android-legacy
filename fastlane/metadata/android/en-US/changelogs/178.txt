@@ -1,0 +1,2 @@
+1. Added ovk.tinelix.ru to the list of unofficial ones. It can work with or without TLS.
+2. Clicking the "Rules" and "Privacy" links in the "About Instance" dialog now goes to the corresponding page instead of a stub.

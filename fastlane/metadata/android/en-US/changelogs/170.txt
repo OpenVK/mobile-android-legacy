@@ -1,0 +1,4 @@
+1. Due to the fact that the new design did not work everywhere in Android 2.1 and 2.2, it was decided to leave undocumented styling options only for Android 2.3.
+2. Since the Base64 encryption method was officially added in Android 2.2, Android 2.1 stores passwords in HEX format.
+3. Fixed crashes.
+4. Improved design for Android 2.3 in terms of pop-up lists.

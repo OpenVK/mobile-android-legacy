@@ -1,0 +1,4 @@
+1. Improved the readability of the source code by dividing long lines, largely creeping out beyond the vertical bar. This allows viewing without the need for horizontal scrolling.
+2. There were ticks in the posts, the news feed was fixed. A similar fix is waiting for OpenVK Refresh, you just have to wait until it comes out.
+3. The app no longer crashes after a successful attempt to post a comment.
+4. Fixed minor bugs.

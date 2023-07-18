@@ -1,0 +1,12 @@
+1. Bugs fixed:
+   + fixed the list of participants in the group
+   + slightly reworked text reduction and conversion of links to HTML
+   + fixed crash after an unsuccessful execution of the Account.getCounters method
+   + fixed photo caching again
+   + minor bugs fixed
+2. Partially earned video previews.
+3. Instead of 50 first posts, only 25 are displayed, and this should also reduce the load on the UI thread.
+
+Known issues:
+1. Some previews may show color "blotches" artifacts, probably due to some difference in color space.
+2. Infinite scroll works very strangely.

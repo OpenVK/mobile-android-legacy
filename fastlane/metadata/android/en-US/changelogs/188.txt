@@ -1,0 +1,5 @@
+In this version of the client, the main focus is on simplifying the code of both the AppActivity itself and switching between fragments, already in a separate FragmentNavigation class, and a full implementation of the top menu for Android 2.x.
+
+Other changes:
+1. In the action bar (top action bar), the choice between the subscription feed and the global feed is now on top of the spinner.
+2. Fixed display of information in the "About instance" window.

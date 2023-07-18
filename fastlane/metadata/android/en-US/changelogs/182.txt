@@ -1,0 +1,2 @@
+1. The library required for video decoding has been changed again - instead of FFmpegMediaPlayer, ijkplayer 0.4.1 is used.
+2. APK file size has been significantly reduced from 41MB to 19MB. This is related to the above change.

@@ -1,0 +1,6 @@
+1. Finally there is Pull-To-Refresh, made in a human way, and it really looks like VK 3.x.
+2. The link to the rules in the "About instance" window now leads to /terms.
+3. Fixed "endless" authorization in cases where:
+   + the user is trying to connect to an instance that does not have access via HTTP (not HTTPS!)
+   + disabled secure connection in the client settings (this can be checked in the "Network settings" item)
+   + not enabled connection through proxy server

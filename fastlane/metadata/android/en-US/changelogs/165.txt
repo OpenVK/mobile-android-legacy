@@ -1,0 +1,2 @@
+1. If the "Update news on startup" checkbox is unchecked, then the application will remember the last state that it had before the exit. In the last assembly, there was an opportunity, but there was a crash when trying to open a profile.
+2. Automatic highlighting of links and e-mail in messages is enabled.

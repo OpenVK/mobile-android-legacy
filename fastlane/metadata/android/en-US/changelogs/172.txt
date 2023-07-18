@@ -1,0 +1,1 @@
+1. In this build, there was a slight rollback of changes, i.e., instead of the Android-Pull-To-Refresh library, the round progressbar from the support library is used again. Believe me, this is a necessary measure, since Android-Pull-To-Refresh did not work better with scrolling anyway. This is for the best.

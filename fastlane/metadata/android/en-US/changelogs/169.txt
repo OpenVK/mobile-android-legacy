@@ -1,0 +1,3 @@
+1. As mentioned yesterday, the dialogs have been redesigned to match the general design of the application specifically for owners of Android 2.x devices. The new UI class OvkAlertDialog is responsible for this - a clone of the system AlertDialog with changes regarding the design of buttons.
+2. Added encoding of e-mail in URL format, which makes it possible to authorize with some characters in the e-mail field.
+3. Fixed bugs in settings and localization. By the way, the Ukrainian locale did not work due to the fact that I did not correct the typos in the name everywhere in the if/else logic (i.e., if/else).

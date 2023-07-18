@@ -1,0 +1,5 @@
+1. Taken from the beta version.
+2. Remember the trick where you can get an access token after confirming with a password? The vulnerability was that SHA-256 hashing was not initially used to store passwords, which made it easy to hack an account from a rooted device. Now it has been fixed.
+3. You can change the interface language without entering the OS settings. Currently only three languages are available.
+4. The application now reports that the instance is currently unavailable.
+5. Links have been added to the "About the instance" dialog leading to the rules of the instance and its privacy policy.

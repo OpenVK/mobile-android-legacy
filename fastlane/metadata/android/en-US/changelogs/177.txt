@@ -1,0 +1,6 @@
+1. The action bar has been redesigned. Two libraries are now used as a basis: Retro-ActionBar and Retro-PopupMenu.
+2. Fixed a crash when trying to open an application on a tablet.
+3. Fixed scrolling feed.
+4. Improved settings design.
+
+⚠️ Due to the fact that the test signatures do not match, a direct update is not possible. Please remove the old build before installation.

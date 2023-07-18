@@ -1,0 +1,5 @@
+1. Fixed cosmetic bugs seen in issues #110 and #111.
+2. Added display of commits in the item "About the application" and the side menu after the version.
+3. The news feed in landscape mode of the telephone interface is fully adapted and does not take up much space in width.
+
+⚠️ Direct update not possible due to signature mismatch, but only for the last time.

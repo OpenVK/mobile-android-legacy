@@ -1,0 +1,6 @@
+1. Added photo view in comments
+2. Now there is a little more debugging information: in addition to information about the tested version of Android, it includes the name of the brand and model of the device, as well as the instance address in case of searching for specific errors that are not reproduced on other devices or OpenVK instances
+3. Correct re-sorting of layout file names, as in OpenVK Refresh
+4. Opening a user, group is carried out without a choice and only by the application itself
+5. Hidden large bottom space in Android 10 and above in cases where the navigation bar is hidden and physical buttons are used instead
+6. Scroll fixes for Android 2.x

@@ -1,0 +1,3 @@
+1. User avatars in friend requests are now cut off.
+2. Fixed a bug due to which only recently submitted comments were displayed.
+3. Fixed bugs with displaying group avatar.

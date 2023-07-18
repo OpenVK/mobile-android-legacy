@@ -1,0 +1,4 @@
+1. A long-awaited innovation - reposts. As in the web version, you can only send a repost to your personal wall.
+2. The behavior of incorrect display of URLs has been fixed again, but in other places.
+3. The list of subscribed groups displays the number of participants in the signatures.
+4. The round progressbar was replaced by another component from the support library - Android-PullToRefresh (https://github.com/chrisbanes/Android-PullToRefresh) in a modified form to comply with the general style of the application. By the way, the bug when trying to scroll up has already been fixed.
