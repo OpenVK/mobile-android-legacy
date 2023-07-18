@@ -613,7 +613,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     }
 
     public void openChangeAccountDialog() {
-        Global global = new Global();
+        Global global = new Global(getActivity());
         global.openChangeAccountDialog(getActivity(), global_prefs);
     }
 }
