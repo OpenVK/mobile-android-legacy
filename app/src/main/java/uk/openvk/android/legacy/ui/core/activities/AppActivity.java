@@ -60,6 +60,7 @@ import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.*;
+import uk.openvk.android.legacy.ui.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
@@ -194,9 +195,11 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    private boolean getAndroidAccounts() {
+    public boolean getAndroidAccounts() {
         ArrayList<InstanceAccount> accountArray = new ArrayList<>();
-        Global.loadAccounts(this, accountArray, instance_prefs);
+        AccountManager accountManager = AccountManager.get(this);
+        accountManager.addOnAccountsUpdatedListener(new AccountsUpdateListener(this), null, false);
+        Global.loadAccounts(this, accountArray, accountManager, instance_prefs);
         if(androidAccount == null) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
@@ -1120,7 +1123,9 @@ public class AppActivity extends TranslucentFragmentActivity {
                 instance_prefs_editor.clear();
                 instance_prefs_editor.commit();
                 ArrayList<InstanceAccount> accounts = new ArrayList<>();
-                Global.loadAccounts(this, accounts, instance_prefs);
+                AccountManager accountManager = AccountManager.get(this);
+                accountManager.addOnAccountsUpdatedListener(new AccountsUpdateListener(this), null, false);
+                Global.loadAccounts(this, accounts, accountManager, instance_prefs);
                 if(accounts.size() >= 1) {
                     Global global = new Global();
                     global.openChangeAccountDialog(this, global_prefs, false);

@@ -405,6 +405,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                                 .getAccountPreferences().edit();
                 editor.clear();
                 editor.commit();
+                global_prefs.edit().putString("current_instance", "").commit();
                 if(getActivity() instanceof AppActivity) {
                     AccountManager am = AccountManager.get(getContext());
                     try {

@@ -466,7 +466,6 @@ public class AuthActivity extends TranslucentAuthActivity {
                         account.id, server, auth
                 );
                 connectionDialog.close();
-                auth = new Authorization(response);
                 if (connectionDialog != null) connectionDialog.cancel();
                 if(!getIntent().hasExtra("accountAuthenticatorResponse") &&
                         !getIntent().hasExtra("authFromAppActivity")) {
