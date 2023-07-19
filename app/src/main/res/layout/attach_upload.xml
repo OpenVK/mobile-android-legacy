@@ -23,6 +23,13 @@
         android:orientation="vertical"
         android:visibility="visible">
 
+        <ImageView
+            android:id="@+id/error_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_holo_error_light" />
+
         <ProgressBar
             android:id="@+id/upload_progress"
             style="?android:attr/progressBarStyle"

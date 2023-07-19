@@ -28,6 +28,8 @@ public class UploadableFile {
     public long progress;
     public long length;
     private Photo photo;
+    public String status;
+
     public UploadableFile(String filename, File file) {
         this.filename = filename;
         this.file = file;

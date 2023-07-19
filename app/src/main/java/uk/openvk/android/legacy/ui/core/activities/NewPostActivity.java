@@ -281,6 +281,7 @@ public class NewPostActivity extends TranslucentActivity {
                 int pos = filesAdapter.searchByFileName(filename);
                 UploadableFile file = files.get(pos);
                 file.progress = data.getLong("position");
+                file.status = "uploading";
                 files.set(pos, file);
                 filesAdapter.notifyDataSetChanged();
             } else if(message == HandlerMessages.UPLOADED_SUCCESSFULLY) {
@@ -288,10 +289,19 @@ public class NewPostActivity extends TranslucentActivity {
                 int pos = filesAdapter.searchByFileName(filename);
                 file = files.get(pos);
                 file.progress = file.length;
+                file.status = "uploaded";
                 files.set(pos, file);
                 filesAdapter.notifyDataSetChanged();
                 PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
                 ovk_api.photos.saveWallPhoto(ovk_api.wrapper, params.photo, params.hash);
+            } else if(message == HandlerMessages.UPLOAD_ERROR) {
+                String filename = data.getString("filename");
+                int pos = filesAdapter.searchByFileName(filename);
+                file = files.get(pos);
+                file.status = "error";
+                files.set(pos, file);
+                filesAdapter.notifyDataSetChanged();
+                PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
             } else if(message == HandlerMessages.PHOTOS_SAVE) {
                 try {
                     int pos = filesAdapter.searchByFileName(file.filename);
@@ -336,7 +346,8 @@ public class NewPostActivity extends TranslucentActivity {
             onBackPressed();
         } else if(item.getItemId() == R.id.sendpost) {
             EditText statusEditText = findViewById(R.id.status_text_edit);
-            if(statusEditText.getText().toString().length() == 0 &&
+            String post_content = statusEditText.getText().toString();
+            if((post_content.length() == 0 || post_content.startsWith(" ")) &&
                     (files == null || files.size() == 0)) {
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
@@ -347,9 +358,9 @@ public class NewPostActivity extends TranslucentActivity {
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
                     if(files == null || files.size() == 0) {
-                        ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString());
+                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content);
                     } else {
-                        ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(), createAttachmentsList());
+                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content, createAttachmentsList());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -97,6 +98,8 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
         public TextView item_subtitle;
         public LinearLayout progress_layout;
         public TextView progress_status;
+        public ProgressBar progress;
+        public ImageView error_icon;
 
         public Holder(View convertView) {
             super(convertView);
@@ -104,6 +107,8 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             photo_view = convertView.findViewById(R.id.attach_photo_view);
             progress_layout = convertView.findViewById(R.id.upload_layout);
             progress_status = convertView.findViewById(R.id.upload_status);
+            progress = convertView.findViewById(R.id.upload_progress);
+            error_icon = convertView.findViewById(R.id.error_icon);
         }
 
         void bind(final int position) {
@@ -114,12 +119,16 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
                 if(file.progress < file.length) {
                     progress_layout.setVisibility(View.VISIBLE);
                 } else {
-                    progress_layout.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            progress_layout.setVisibility(View.GONE);
-                        }
-                    }, 2000);
+                    if(file.status.equals("uploaded")) {
+                        progress_layout.setVisibility(View.GONE);
+                    }
+                }
+
+                if(file.status.equals("error")) {
+                    progress_layout.setVisibility(View.VISIBLE);
+                    progress.setVisibility(View.GONE);
+                    error_icon.setVisibility(View.VISIBLE);
+                    progress_status.setText(ctx.getResources().getString(R.string.error));
                 }
             }
         }
