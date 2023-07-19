@@ -494,7 +494,7 @@ public class OvkAPIWrapper {
                             } else if (response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
                                                 server, method, response_code, error.description, error.code));
                                 if (error.code == 3) {
@@ -503,7 +503,7 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
                                 } else if (error.code == 15) {
                                     sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
-                                } else if (error.code == 100) {
+                                } else if (error.code == 10 || error.code == 100) {
                                     sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
                                 }
                             } else if (response_code == 301 && !use_https) {
