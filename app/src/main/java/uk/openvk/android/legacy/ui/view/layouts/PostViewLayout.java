@@ -156,7 +156,7 @@ public class PostViewLayout extends LinearLayout {
 
     public void setPost(WallPost item, final Context ctx) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
-        if(item.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
+        if(!item.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
             if (item.text.length() > 0) {
                 String text = item.text;
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
@@ -292,7 +292,7 @@ public class PostViewLayout extends LinearLayout {
     }
 
     public void loadWallPhoto(WallPost post, String where) {
-        if(post.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
+        if(!post.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
