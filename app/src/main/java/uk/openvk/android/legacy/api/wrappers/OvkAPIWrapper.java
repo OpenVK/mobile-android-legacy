@@ -778,7 +778,7 @@ public class OvkAPIWrapper {
                             } else if(response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
                                                 server, method, response_code, error.description, error.code));
                                 if(error.code == 3) {
@@ -861,7 +861,7 @@ public class OvkAPIWrapper {
                             if (response_code == 400) {
                                 error = new Error();
                                 error.parse(response_body);
-                                if(logging_enabled) Log.d(OvkApplication.API_TAG,
+                                if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
                                                 server, method, response_code, error.description, error.code));
                                 if (error.code == 3) {
