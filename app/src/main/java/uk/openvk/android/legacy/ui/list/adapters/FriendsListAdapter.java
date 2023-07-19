@@ -179,5 +179,11 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         }
     }
 
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
+
 }
 

@@ -135,4 +135,10 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
             });
         }
     }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
 }

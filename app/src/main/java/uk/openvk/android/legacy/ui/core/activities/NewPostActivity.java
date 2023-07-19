@@ -327,7 +327,12 @@ public class NewPostActivity extends TranslucentActivity {
                     } else if(data.getString("method").startsWith("Photos.save")) {
                         try {
                             int pos = filesAdapter.searchByFileName(file.filename);
-                            files.get(pos).setPhoto(ovk_api.photos.list.get(0));
+                            if(files.get(pos).status.equals("uploading") || files.get(pos).status.equals("uploaded")) {
+                                UploadableFile file = files.get(pos);
+                                file.status = "error";
+                                files.set(pos, file);
+                                filesAdapter.notifyDataSetChanged();
+                            }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                                 if (activity_menu != null && activity_menu.size() >= 1) {
                                     activity_menu.getItem(0).setEnabled(true);
