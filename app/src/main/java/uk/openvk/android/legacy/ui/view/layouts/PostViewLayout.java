@@ -298,27 +298,49 @@ public class PostViewLayout extends LinearLayout {
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = null;
                 Bitmap repost_bitmap = null;
+                boolean post_attachment_not_loaded = false;
+                boolean repost_attachment_not_loaded = false;
                 if (post.repost != null) {
-                    if (where.equals("newsfeed")) {
-                        repost_bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                        getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
-                                        post.repost.newsfeed_item.post_id), options);
-                    } else {
-                        repost_bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
-                                        getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
-                                        post.repost.newsfeed_item.post_id), options);
+                    if(post.repost.newsfeed_item.attachments != null) {
+                        for (int i = 0; i < post.repost.newsfeed_item.attachments.size(); i++) {
+                            Attachment attachment = post.repost.newsfeed_item.attachments.get(i);
+                            if (attachment.status.equals("loading") && attachment.type.equals("photo")) {
+                                repost_attachment_not_loaded = true;
+                            }
+                        }
+                    }
+                    if(!repost_attachment_not_loaded) {
+                        if (where.equals("newsfeed")) {
+                            repost_bitmap = BitmapFactory.decodeFile(
+                                    String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                            getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
+                                            post.repost.newsfeed_item.post_id), options);
+                        } else {
+                            repost_bitmap = BitmapFactory.decodeFile(
+                                    String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                            getContext().getCacheDir(), instance, post.repost.newsfeed_item.owner_id,
+                                            post.repost.newsfeed_item.post_id), options);
+                        }
                     }
                 }
-                if (where.equals("newsfeed")) {
-                    bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                    getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
-                } else {
-                    bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
-                                    getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
+                if(post.attachments != null) {
+                    for (int i = 0; i < post.attachments.size(); i++) {
+                        Attachment attachment = post.attachments.get(i);
+                        if (attachment.status.equals("loading") && attachment.type.equals("photo")) {
+                            post_attachment_not_loaded = true;
+                        }
+                    }
+                }
+                if(post_attachment_not_loaded) {
+                    if (where.equals("newsfeed")) {
+                        bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
+                                        getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
+                    } else {
+                        bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
+                                        getContext().getCacheDir(), instance, post.owner_id, post.post_id), options);
+                    }
                 }
                 final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
                 final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
