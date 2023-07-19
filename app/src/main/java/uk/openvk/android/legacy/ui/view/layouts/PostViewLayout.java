@@ -255,16 +255,16 @@ public class PostViewLayout extends LinearLayout {
                 repost_info.setVisibility(View.GONE);
             }
 
-            if (item.counters != null) {
-                ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s", item.counters.likes));
-            }
-
             PollAttachView pollAttachView = findViewById(R.id.poll_layout);
         } else {
             TextView error_label = findViewById(R.id.error_label);
             error_label.setText(ctx.getResources().getString(R.string.post_load_nsfw));
             error_label.setVisibility(View.VISIBLE);
             (findViewById(R.id.post_view)).setVisibility(GONE);
+        }
+
+        if (item.counters != null) {
+            ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s", item.counters.likes));
         }
 
     }
