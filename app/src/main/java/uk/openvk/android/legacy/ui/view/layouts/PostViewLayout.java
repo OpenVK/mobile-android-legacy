@@ -65,7 +65,7 @@ public class PostViewLayout extends LinearLayout {
     public String state;
     public JSONArray newsfeed;
     public String send_request;
-    public SharedPreferences global_sharedPreferences;
+    public SharedPreferences global_prefs;
     private CommentsListAdapter commentsAdapter;
     private RecyclerView commentsView;
     private LinearLayoutManager llm;
@@ -83,6 +83,7 @@ public class PostViewLayout extends LinearLayout {
         layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
         instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(getContext());
     }
 
     public void createAdapter(Context ctx, ArrayList<Comment> comments) {
@@ -155,109 +156,116 @@ public class PostViewLayout extends LinearLayout {
 
     public void setPost(WallPost item, final Context ctx) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
-        if(item.text.length() > 0) {
-            String text = item.text;
-            Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
-                    "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]" +
-                    "{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
-            Matcher matcher = pattern.matcher(text);
-            boolean regexp_search = matcher.find();
-            int regexp_results = 0;
-            text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                    .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
-            while(regexp_search) {
-                if(regexp_results == 0) {
-                    text = text.replace("\n", "<br>");
-                }
-                String block = matcher.group();
-                if(block.startsWith("[") && block.endsWith("]")) {
-                    OvkLink link = new OvkLink();
-                    String[] markup = block.replace("[", "").replace("]", "").split("\\|");
-                    link.screen_name = markup[0];
-                    if (markup.length == 2) {
-                        if (markup[0].startsWith("id")) {
-                            link.url = String.format("openvk://profile/%s", markup[0]);
-                            link.name = markup[1];
-                        } else if (markup[0].startsWith("club")) {
-                            link.url = String.format("openvk://group/%s", markup[0]);
-                            link.name = markup[1];
-                        }
-                        link.name = markup[1];
-                        if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
-                        }
+        if(item.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
+            if (item.text.length() > 0) {
+                String text = item.text;
+                Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
+                        "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]" +
+                        "{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+                Matcher matcher = pattern.matcher(text);
+                boolean regexp_search = matcher.find();
+                int regexp_results = 0;
+                text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                while (regexp_search) {
+                    if (regexp_results == 0) {
+                        text = text.replace("\n", "<br>");
                     }
-                } else if(block.startsWith("https://") || block.startsWith("http://")) {
-                    text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
-                }
-                regexp_results = regexp_results + 1;
-                regexp_search = matcher.find();
-            }
-            if(regexp_results > 0) {
-                ((TextView) findViewById(R.id.post_view)).setAutoLinkMask(0);
-                ((TextView) findViewById(R.id.post_view)).setText(Html.fromHtml(text));
-            } else {
-                ((TextView) findViewById(R.id.post_view)).setText(text);
-            }
-            ((TextView) findViewById(R.id.post_view)).setMovementMethod(LinkMovementMethod.getInstance());
-        } else {
-            ((TextView) findViewById(R.id.post_view)).setVisibility(GONE);
-        }
-        ((TextView) findViewById(R.id.wall_view_time)).setText(item.info);
-
-        if(item.avatar != null) {
-            ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);
-        }
-
-        LinearLayout repost_info = ((LinearLayout) findViewById(R.id.post_attach_container));
-
-        if(item.repost != null) {
-            TextView original_poster_name = ((TextView) findViewById(R.id.post_retweet_name));
-            TextView original_post_info = ((TextView) findViewById(R.id.post_retweet_time));
-            TextView original_post_text = ((TextView) findViewById(R.id.post_retweet_text));
-            TextView repost_expand_text_btn = ((TextView) findViewById(R.id.repost_expand_text_btn));
-            ImageView original_post_photo = (ImageView) findViewById(R.id.repost_photo);
-            PollAttachView original_post_poll = (PollAttachView) findViewById(R.id.repost_poll_layout);
-            repost_info.setVisibility(View.VISIBLE);
-            original_poster_name.setText(item.repost.newsfeed_item.name);
-            original_post_info.setText(item.repost.newsfeed_item.info);
-            original_post_text.setText(item.repost.newsfeed_item.text);
-            original_post_text.setMovementMethod(LinkMovementMethod.getInstance());
-            String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
-            if(repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
-                String text_llines = "";
-                for(int line_no = 0; line_no < 8; line_no++) {
-                    if(line_no == 7) {
-                        text_llines += String.format("%s...", repost_lines[line_no]);
-                    } else {
-                        text_llines += String.format("%s\r\n", repost_lines[line_no]);
+                    String block = matcher.group();
+                    if (block.startsWith("[") && block.endsWith("]")) {
+                        OvkLink link = new OvkLink();
+                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                        link.screen_name = markup[0];
+                        if (markup.length == 2) {
+                            if (markup[0].startsWith("id")) {
+                                link.url = String.format("openvk://profile/%s", markup[0]);
+                                link.name = markup[1];
+                            } else if (markup[0].startsWith("club")) {
+                                link.url = String.format("openvk://group/%s", markup[0]);
+                                link.name = markup[1];
+                            }
+                            link.name = markup[1];
+                            if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                            }
+                        }
+                    } else if (block.startsWith("https://") || block.startsWith("http://")) {
+                        text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
                     }
+                    regexp_results = regexp_results + 1;
+                    regexp_search = matcher.find();
                 }
-                original_post_text.setText(text_llines);
-                repost_expand_text_btn.setVisibility(View.VISIBLE);
-            } else if(item.repost.newsfeed_item.text.length() > 500) {
-                original_post_text.setText(String.format("%s...",
-                        item.repost.newsfeed_item.text.substring(0, 500)));
-                repost_expand_text_btn.setVisibility(View.VISIBLE);
+                if (regexp_results > 0) {
+                    ((TextView) findViewById(R.id.post_view)).setAutoLinkMask(0);
+                    ((TextView) findViewById(R.id.post_view)).setText(Html.fromHtml(text));
+                } else {
+                    ((TextView) findViewById(R.id.post_view)).setText(text);
+                }
+                ((TextView) findViewById(R.id.post_view)).setMovementMethod(LinkMovementMethod.getInstance());
             } else {
+                ((TextView) findViewById(R.id.post_view)).setVisibility(GONE);
+            }
+            ((TextView) findViewById(R.id.wall_view_time)).setText(item.info);
+
+            if (item.avatar != null) {
+                ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);
+            }
+
+            LinearLayout repost_info = ((LinearLayout) findViewById(R.id.post_attach_container));
+
+            if (item.repost != null) {
+                TextView original_poster_name = ((TextView) findViewById(R.id.post_retweet_name));
+                TextView original_post_info = ((TextView) findViewById(R.id.post_retweet_time));
+                TextView original_post_text = ((TextView) findViewById(R.id.post_retweet_text));
+                TextView repost_expand_text_btn = ((TextView) findViewById(R.id.repost_expand_text_btn));
+                ImageView original_post_photo = (ImageView) findViewById(R.id.repost_photo);
+                PollAttachView original_post_poll = (PollAttachView) findViewById(R.id.repost_poll_layout);
+                repost_info.setVisibility(View.VISIBLE);
+                original_poster_name.setText(item.repost.newsfeed_item.name);
+                original_post_info.setText(item.repost.newsfeed_item.info);
                 original_post_text.setText(item.repost.newsfeed_item.text);
-                repost_expand_text_btn.setVisibility(View.GONE);
-            }
-            repost_info.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ((WallPostActivity) ctx).openWallRepostComments();
+                original_post_text.setMovementMethod(LinkMovementMethod.getInstance());
+                String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
+                if (repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
+                    String text_llines = "";
+                    for (int line_no = 0; line_no < 8; line_no++) {
+                        if (line_no == 7) {
+                            text_llines += String.format("%s...", repost_lines[line_no]);
+                        } else {
+                            text_llines += String.format("%s\r\n", repost_lines[line_no]);
+                        }
+                    }
+                    original_post_text.setText(text_llines);
+                    repost_expand_text_btn.setVisibility(View.VISIBLE);
+                } else if (item.repost.newsfeed_item.text.length() > 500) {
+                    original_post_text.setText(String.format("%s...",
+                            item.repost.newsfeed_item.text.substring(0, 500)));
+                    repost_expand_text_btn.setVisibility(View.VISIBLE);
+                } else {
+                    original_post_text.setText(item.repost.newsfeed_item.text);
+                    repost_expand_text_btn.setVisibility(View.GONE);
                 }
-            });
+                repost_info.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ((WallPostActivity) ctx).openWallRepostComments();
+                    }
+                });
+            } else {
+                repost_info.setVisibility(View.GONE);
+            }
+
+            if (item.counters != null) {
+                ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s", item.counters.likes));
+            }
+
+            PollAttachView pollAttachView = findViewById(R.id.poll_layout);
         } else {
-            repost_info.setVisibility(View.GONE);
+            TextView error_label = findViewById(R.id.error_label);
+            error_label.setText(ctx.getResources().getString(R.string.post_load_nsfw));
+            error_label.setVisibility(View.VISIBLE);
+            (findViewById(R.id.post_view)).setVisibility(GONE);
         }
-
-        if(item.counters != null) {
-            ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s", item.counters.likes));
-        }
-
-        PollAttachView pollAttachView = findViewById(R.id.poll_layout);
 
     }
 
@@ -284,7 +292,7 @@ public class PostViewLayout extends LinearLayout {
     }
 
     public void loadWallPhoto(WallPost post, String where) {
-        if(!post.is_explicit) {
+        if(post.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;

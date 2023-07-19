@@ -269,6 +269,23 @@
                         android:visibility="gone"
                         tools:ignore="ContentDescription" />
 
+                    <TextView
+                        android:id="@+id/error_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dip"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginRight="10dip"
+                        android:drawableLeft="@drawable/ic_msg_error"
+                        android:drawablePadding="4dp"
+                        android:gravity="center_vertical"
+                        android:text="TextView"
+                        android:textColor="@color/timestamp_color"
+                        android:textSize="12sp"
+                        android:textStyle="italic"
+                        android:visibility="gone"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
+
                     <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
                         android:id="@+id/post_video"
                         android:layout_width="match_parent"
@@ -276,7 +293,9 @@
                         android:layout_marginBottom="10dip"
                         android:layout_marginLeft="10dip"
                         android:layout_marginRight="10dip"
-                        android:visibility="gone" />
+                        android:visibility="gone" >
+
+                    </uk.openvk.android.legacy.ui.view.layouts.VideoAttachView>
 
                     <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
                         android:id="@+id/poll_layout"
