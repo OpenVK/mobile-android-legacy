@@ -113,6 +113,9 @@ public class InstanceCountersAdapter extends BaseAdapter {
             if(position == 1) {
                 label.setText(ctx.getResources().getString(res_id));
             } else {
+                if(count >= 1000L) {
+                    end_number = 9;
+                }
                 String plural_str = Global.getPluralQuantityString(
                         ctx,
                         res_id,
