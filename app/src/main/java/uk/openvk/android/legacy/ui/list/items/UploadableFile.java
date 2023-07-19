@@ -45,6 +45,7 @@ public class UploadableFile {
             mime = "image/gif";
             photo = new Photo();
         }
+        this.status = "prepared";
         this.mime = mime;
     }
 
