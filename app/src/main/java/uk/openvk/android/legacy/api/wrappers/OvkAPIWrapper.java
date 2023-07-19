@@ -789,7 +789,7 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
                                 } else if (error.code == 18) {
                                     sendMessage(HandlerMessages.BANNED_ACCOUNT, method, error.description);
-                                } else if(error.code == 100) {
+                                } else if (error.code == 10 || error.code == 100) {
                                     sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                                 } else if(error.code == 945) {
                                     sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
@@ -870,7 +870,7 @@ public class OvkAPIWrapper {
                                     sendMessage(HandlerMessages.INVALID_TOKEN, method,  error.description);
                                 } else if (error.code == 15) {
                                     sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
-                                } else if (error.code == 100) {
+                                } else if (error.code == 10 || error.code == 100) {
                                     sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
                                 }
                             }
