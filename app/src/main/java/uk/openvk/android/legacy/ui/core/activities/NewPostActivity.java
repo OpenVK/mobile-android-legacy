@@ -301,7 +301,6 @@ public class NewPostActivity extends TranslucentActivity {
                 file.status = "error";
                 files.set(pos, file);
                 filesAdapter.notifyDataSetChanged();
-                PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
             } else if(message == HandlerMessages.PHOTOS_SAVE) {
                 try {
                     int pos = filesAdapter.searchByFileName(file.filename);
@@ -319,11 +318,25 @@ public class NewPostActivity extends TranslucentActivity {
                         getResources().getString(R.string.posting_access_denied), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();
             } else if(message < 0){
-                if(data.containsKey("method") && data.getString("method").equals("Wall.post")) {
-                    Toast.makeText(getApplicationContext(),
-                            getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
-                    if (connectionDialog != null)
-                        connectionDialog.cancel();
+                if(data.containsKey("method")) {
+                    if (data.getString("method").equals("Wall.post")) {
+                        Toast.makeText(getApplicationContext(),
+                                getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
+                        if (connectionDialog != null)
+                            connectionDialog.cancel();
+                    } else if(data.getString("method").startsWith("Photos.save")) {
+                        try {
+                            int pos = filesAdapter.searchByFileName(file.filename);
+                            files.get(pos).setPhoto(ovk_api.photos.list.get(0));
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                                if (activity_menu != null && activity_menu.size() >= 1) {
+                                    activity_menu.getItem(0).setEnabled(true);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
             }
         } catch (Exception ex) {
