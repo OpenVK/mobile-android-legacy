@@ -157,6 +157,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             }
         }
 
+        @SuppressWarnings("MalformedFormatString")
         @SuppressLint("DefaultLocale")
         private void setUploadProgress(UploadableFile file) {
             String b = ctx.getResources().getString(R.string.fsize_b);
