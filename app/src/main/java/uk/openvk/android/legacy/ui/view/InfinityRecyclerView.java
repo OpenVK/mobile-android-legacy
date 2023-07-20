@@ -67,7 +67,7 @@ public class InfinityRecyclerView extends RecyclerView {
 
                 if (!isLoading) {
                     if (linearLayoutManager != null &&
-                            linearLayoutManager.findLastCompletelyVisibleItemPosition() == getAdapter().getItemCount() - 2) {
+                            linearLayoutManager.findLastCompletelyVisibleItemPosition() == getAdapter().getItemCount() - 6) {
                         listener.onRecyclerScroll(recyclerView, dx, dy);
                         isLoading = true;
                     }
