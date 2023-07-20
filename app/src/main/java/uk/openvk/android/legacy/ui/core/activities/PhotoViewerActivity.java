@@ -319,7 +319,7 @@ public class PhotoViewerActivity extends Activity {
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
                         } else {
-                            allowPermissionDialog();
+                            Global.allowPermissionDialog(this, false);
                         }
                     } else {
                         destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
@@ -328,7 +328,7 @@ public class PhotoViewerActivity extends Activity {
                             R.string.photo_save_ok, Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        allowPermissionDialog();
+                        Global.allowPermissionDialog(this, false);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_LONG).show();
                     }
