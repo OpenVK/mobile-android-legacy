@@ -21,7 +21,6 @@
     відкритим вихідним кодом, несумісною з ВКонтакте.<br><br>Будь ласка, авторизуйтеся ТІЛЬКИ
     до зареєстрованого облікового запису OpenVK в одній з існуючих інстанцій.]]></string>
     <string name="dont_show_warn">Більше не показувати</string>
-    <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
     <string name="creating_account">Створення облікового запису…</string>
     <string name="loading">Завантаження…</string>
@@ -378,7 +377,6 @@
     </string-array>
     <string name="sett_update_interval">Інтервал оновлення</string>
 
-    <string name="contact_profile_title">OpenVK</string>
     <string name="contact_profile_subtitle">Відкрити профіль</string>
 
     <string name="create_album">Створити альбом</string>
@@ -1152,7 +1150,6 @@
 	<string name="save_to_album">Зберегти в альбом</string>
 	<string name="add_photo_from_album">Вибрати з альбому</string>
 	<string name="saved_to_album">Фотографія була збережена в альбом \"Збережені фотографії\".</string>
-    <string name="profile_telegram">Telegram</string>
     <string name="telegram_not_installed">Встановiть програму Telegram</string>
     <string name="newpost_export_tg">Експорт до Telegram</string>
     <string name="set_default_account">Використовувати як основний</string>
