@@ -29,7 +29,7 @@
         android:orientation="horizontal"
         android:paddingBottom="4dip"
         android:paddingLeft="11dip"
-        android:paddingRight="11dip"
+        android:paddingRight="6dip"
         android:paddingTop="4dip">
 
         <LinearLayout
