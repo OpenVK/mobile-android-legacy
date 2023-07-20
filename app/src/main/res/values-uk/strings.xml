@@ -1187,7 +1187,9 @@
     <string name="dnd_mode">Режим \"Не турбувати\"</string>
     <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s. Відкрийте в будь-якому файлі менеджера.</string>
     <string name="allow_permisssion_in_storage_title">Потрібні дозволи</string>
-    <string name="allow_permisssion_in_storage">Для збереження даних у пам\'ять
+    <string name="allow_write_permisssion_in_storage">Для збереження даних у пам\'ять
+        пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про додаток\"?</string>
+    <string name="allow_read_permisssion_in_storage">Для читання даних із пам\'яті
         пристрою потрібні спеціальні дозволи програмі.\n\nВідкрити розділ системних налаштувань \"Про додаток\"?</string>
     <string name="open_btn">Відкрити</string>
     <string name="birthday">День народження</string>

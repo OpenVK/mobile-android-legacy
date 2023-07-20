@@ -1026,7 +1026,10 @@
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>
     <string name="saved_logs_successfully">Журнал сохранен в Память устройства/%1$s. Откройте в любом файловом менеджере.</string>
     <string name="allow_permisssion_in_storage_title">Требуются разрешения</string>
-    <string name="allow_permisssion_in_storage">Для сохранения данных в память устройства приложению нужны специальные разрешения.\n\nОткрыть раздел системных настроек \"О приложении\"?</string>
+    <string name="allow_write_permisssion_in_storage">Для сохранения данных в память устройства приложению нужны специальные разрешения.
+        \n\nОткрыть раздел системных настроек \"О приложении\"?</string>
+    <string name="allow_read_permisssion_in_storage">Для чтения данных из памяти устройства приложению нужны специальные разрешения.
+        \n\nОткрыть раздел системных настроек \"О приложении\"?</string>
     <string name="open_btn">Открыть</string>
     <string name="birthday">День рождения</string>
     <string name="post_fail_empty">Прежде чем опубликовать запись, обязательно напишите что-нибудь и повторите еще раз.</string>

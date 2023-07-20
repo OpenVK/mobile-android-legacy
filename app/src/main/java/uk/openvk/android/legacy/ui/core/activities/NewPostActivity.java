@@ -1,9 +1,11 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
@@ -401,24 +404,42 @@ public class NewPostActivity extends TranslucentActivity {
             }
             Uri uri = data.getData();
             String path = uriToFilename(uri);
-            File file = new File(path);
-            if(file.exists()) {
-                findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
-                UploadableFile upload_file = new UploadableFile(uriToFilename(uri), file);
-                upload_file.length = file.length();
-                Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
-                files.add(upload_file);
-                filesAdapter.notifyDataSetChanged();
-                ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, "");
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    if(activity_menu != null && activity_menu.size() >= 1) {
-                        activity_menu.getItem(0).setEnabled(false);
-                    }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    uploadFile(path);
+                } else {
+                    Global.allowPermissionDialog(this, true);
                 }
             } else {
-                Log.e(OvkApplication.APP_TAG, String.format("'%s' not found!", path));
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                try {
+                    uploadFile(path);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
             }
+        }
+    }
+
+    private void uploadFile(String path) {
+        File file = new File(path);
+        if(file.exists()) {
+            findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
+            UploadableFile upload_file = new UploadableFile(path, file);
+            upload_file.length = file.length();
+            Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
+            files.add(upload_file);
+            filesAdapter.notifyDataSetChanged();
+            ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, "");
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                if(activity_menu != null && activity_menu.size() >= 1) {
+                    activity_menu.getItem(0).setEnabled(false);
+                }
+            }
+        } else {
+            Log.e(OvkApplication.APP_TAG, String.format("'%s' not found!", path));
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
         }
     }
 

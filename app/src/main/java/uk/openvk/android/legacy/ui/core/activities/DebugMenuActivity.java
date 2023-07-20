@@ -292,7 +292,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                             file.createNewFile();
                         }
                     } else {
-                        allowPermissionDialog();
+                        Global.allowPermissionDialog(this, false);
                         return false;
                     }
                 } else {
@@ -350,7 +350,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                 Log.e("OpenVK Legacy", "Could not save log to file: " + e.getMessage());
                 e.printStackTrace();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    allowPermissionDialog();
+                    Global.allowPermissionDialog(this, false);
                 } else {
                     Toast.makeText(getApplicationContext(),
                             R.string.debug_on_pre_jellybean, Toast.LENGTH_LONG).show();
@@ -363,29 +363,5 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                     R.string.debug_on_pre_jellybean, Toast.LENGTH_LONG).show();
             return false;
         }
-    }
-
-    public void allowPermissionDialog() {
-        AlertDialog dialog;
-        AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
-        builder.setTitle(getResources().getString(R.string.allow_permisssion_in_storage_title));
-        builder.setMessage(getResources().getString(R.string.allow_permisssion_in_storage));
-        builder.setPositiveButton(getResources().getString(R.string.open_btn), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                return;
-            }
-        });
-        dialog = builder.create();
-        dialog.show();
     }
 }

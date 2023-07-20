@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.PluralsRes;
 import android.support.v7.preference.PreferenceManager;
@@ -53,6 +54,7 @@ import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
@@ -734,5 +736,33 @@ public class Global {
                     size, res.getString(R.string.fsize_b)
             );
         }
+    }
+
+    public static void allowPermissionDialog(final Context ctx, boolean readPerm) {
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setTitle(ctx.getResources().getString(R.string.allow_permisssion_in_storage_title));
+        if(readPerm) {
+            builder.setMessage(ctx.getResources().getString(R.string.allow_read_permisssion_in_storage));
+        } else {
+            builder.setMessage(ctx.getResources().getString(R.string.allow_write_permisssion_in_storage));
+        }
+        builder.setPositiveButton(ctx.getResources().getString(R.string.open_btn), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", ctx.getPackageName(), null);
+                intent.setData(uri);
+                ctx.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton(ctx.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                return;
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
     }
 }
