@@ -423,7 +423,7 @@ public class NewPostActivity extends TranslucentActivity {
     }
 
     private String uriToFilename(Uri uri) {
-        return RealPathUtil.getRealPathFromURI(this, getContentResolver(), uri);
+        return RealPathUtil.getRealPathFromURI(this, uri);
     }
 
 }
