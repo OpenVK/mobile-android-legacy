@@ -400,7 +400,8 @@ public class NewPostActivity extends TranslucentActivity {
                 return;
             }
             Uri uri = data.getData();
-            File file = new File(uriToFilename(uri));
+            String path = uriToFilename(uri);
+            File file = new File(path);
             if(file.exists()) {
                 findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
                 UploadableFile upload_file = new UploadableFile(uriToFilename(uri), file);
@@ -415,13 +416,14 @@ public class NewPostActivity extends TranslucentActivity {
                     }
                 }
             } else {
+                Log.e(OvkApplication.APP_TAG, String.format("'%s' not found!", path));
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private String uriToFilename(Uri uri) {
-        return RealPathUtil.getRealPathFromURI(this, uri);
+        return RealPathUtil.getRealPathFromURI(this, getContentResolver(), uri);
     }
 
 }
