@@ -1019,7 +1019,7 @@
     <string name="use_legacy_http_client_description">Использовать обернутый HTTP(S)-клиент HttpUrlConnection, предназначенный для устаревших версий Android</string>
     <string name="use_legacy_http_client_okhttp_err">Отключение невозможно из-за неподдерживаемой версии Android</string>
     <string name="use_legacy_http_client_apachew_err">Включение невозможно из-за неподдерживаемой версии Android</string>
-    <string name="cause_app_to_crash">Вызвать сбой программы</string>
+    <string name="cause_app_to_crash">Вызвать сбой приложения</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>
     <string name="saved_logs_successfully">Журнал сохранен в Память устройства/%1$s. Откройте в любом файловом менеджере.</string>
