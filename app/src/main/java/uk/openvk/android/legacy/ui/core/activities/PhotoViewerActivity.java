@@ -200,7 +200,7 @@ public class PhotoViewerActivity extends Activity {
 
     private void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.ACCESS_DENIED_MARSHMALLOW) {
-            allowPermissionDialog();
+            Global.allowPermissionDialog(this, false);
         } else if(message == HandlerMessages.ORIGINAL_PHOTO) {
             bfOptions = new BitmapFactory.Options();
             bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -243,30 +243,6 @@ public class PhotoViewerActivity extends Activity {
         } else if(message == 40000) {
             ((ZoomableImageView) findViewById(R.id.picture_view)).rescale();
         }
-    }
-
-    private void allowPermissionDialog() {
-        AlertDialog dialog;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getResources().getString(R.string.allow_permisssion_in_storage_title));
-        builder.setMessage(getResources().getString(R.string.allow_permisssion_in_storage));
-        builder.setPositiveButton(getResources().getString(R.string.open_btn), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                return;
-            }
-        });
-        dialog = builder.create();
-        dialog.show();
     }
 
     @Override
