@@ -184,5 +184,11 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             }
         }
     }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
+    }
 }
 
