@@ -123,6 +123,8 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
     }
 
     private void setListeners() {
+        PreferenceCategory generalCategory = (PreferenceCategory) findPreference("general_category");
+
         Preference logToFile = (Preference) findPreference("logToFile");
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             logToFile.setEnabled(false);
@@ -187,6 +189,11 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
         } else {
             PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("debug_menu");
             preferenceScreen.removePreference(dangerZoneCategory);
+        }
+
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            generalCategory.removePreference(causeAppToCrash);
+            generalCategory.removePreference(legacy_http_client);
         }
     }
 

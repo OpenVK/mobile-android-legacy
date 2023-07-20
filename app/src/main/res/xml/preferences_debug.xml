@@ -19,6 +19,7 @@
 
     <PreferenceCategory
         android:title="@string/sett_general"
+        android:key="general_category"
         android:layout="@layout/pref_category">
 
     <Preference
