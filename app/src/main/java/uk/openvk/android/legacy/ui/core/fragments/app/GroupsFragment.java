@@ -24,9 +24,11 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
+import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -48,7 +50,7 @@ public class GroupsFragment extends Fragment {
     public String state;
     public String send_request;
     public SharedPreferences global_sharedPreferences;
-    private RecyclerView groupsListView;
+    private InfinityRecyclerView groupsListView;
     private ArrayList<Group> groups;
     private GroupsListAdapter groupsAdapter;
     private boolean loading_more_groups = false;
@@ -131,17 +133,22 @@ public class GroupsFragment extends Fragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         loading_more_groups = false;
-        // TODO: Add infinity scroll for RecyclerView (must be inside InfinityNestedScrollView / InfinityScrollView)
-        /* if(infinity_scroll) {
-                    if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                        if(!loading_more_friends) {
+        groupsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
+            @Override
+            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
+                View view = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
+                int diff = (view.getBottom() - (recyclerView.getHeight() + recyclerView.getScrollY()));
+                if(infinity_scroll) {
+                    if (diff == 0) {
+                        if(!loading_more_groups) {
                             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_friends = true;
-                                ((AppActivity) ctx).loadMoreFriends();
+                                loading_more_groups = true;
+                                ((AppActivity) ctx).loadMoreGroups();
                             }
                         }
                     }
                 }
-        */
+            }
+        });
     }
 }

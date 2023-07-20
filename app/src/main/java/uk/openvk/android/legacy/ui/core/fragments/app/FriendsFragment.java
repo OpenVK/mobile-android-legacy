@@ -27,10 +27,12 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
+import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -53,7 +55,7 @@ public class FriendsFragment extends Fragment {
     public String state;
     public String send_request;
     public SharedPreferences global_sharedPreferences;
-    private RecyclerView friendsListView;
+    private InfinityRecyclerView friendsListView;
     private ArrayList<Friend> friends;
     private ArrayList<Friend> requests;
     private FriendsListAdapter friendsAdapter;
@@ -208,18 +210,23 @@ public class FriendsFragment extends Fragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         loading_more_friends = false;
-        // TODO: Add infinity scroll for RecyclerView (must be inside InfinityNestedScrollView / InfinityScrollView)
-        /* if(infinity_scroll) {
-                    if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                        if(!loading_more_groups) {
+        friendsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
+            @Override
+            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
+                View view = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
+                int diff = (view.getBottom() - (recyclerView.getHeight() + recyclerView.getScrollY()));
+                if(infinity_scroll) {
+                    if (diff == 0) {
+                        if(!loading_more_friends) {
                             if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_groups = true;
-                                ((AppActivity) ctx).loadMoreGroups();
+                                loading_more_friends = true;
+                                ((AppActivity) ctx).loadMoreFriends();
                             }
                         }
                     }
                 }
-        */
+            }
+        });
     }
 
     private void setupTabHost(TabHost tabhost, String where) {
