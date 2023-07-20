@@ -146,6 +146,15 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                 return false;
             }
         });
+
+        Preference causeAppToCrash = findPreference("causeAppToCrash");
+        causeAppToCrash.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                throw new UnsupportedOperationException("App crash test");
+            }
+        });
+
         Preference terminate_process = findPreference("terminate");
         terminate_process.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -154,14 +163,6 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                 android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(1);
                 return false;
-            }
-        });
-
-        Preference causeAppToCrash = findPreference("causeAppToCrash");
-        causeAppToCrash.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                throw new UnsupportedOperationException("App crash test");
             }
         });
 
