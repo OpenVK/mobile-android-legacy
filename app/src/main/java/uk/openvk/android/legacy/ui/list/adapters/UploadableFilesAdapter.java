@@ -172,8 +172,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             } else if(file.length >= 104857600L) {
                 progress_status.setText(
                         String.format("%d / %d %s",
-                                (double)file.progress / (double)1024 / (double)1024,
-                                (double)file.length / (double)1024 / (double)1024, mb));
+                                file.progress / 1024 / 1024, file.length / 1024 / 1024, mb));
             } else if(file.length >= 1048576L) {
                 progress_status.setText(
                         String.format("%.1f / %.1f %s",
@@ -182,7 +181,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             } else if(file.length >= 102400L) {
                 progress_status.setText(
                         String.format("%d / %d %s",
-                                (double)file.progress / (double)1024, (double)file.length / (double)1024, kb));
+                                file.progress / 1024, file.length / 1024, kb));
             } else if(file.length >= 1024L) {
                 progress_status.setText(
                         String.format("%.1f / %.1f %s",
