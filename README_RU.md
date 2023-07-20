@@ -49,3 +49,7 @@ _Работает на OpenVK API._
 ## Ссылки
 [Документация по OpenVK API](https://docs.openvk.su/openvk_engine/api/description/)\
 [OpenVK Mobile](https://openvk.uk/app)
+
+<a href="https://codeberg.org/OpenVK/mobile-android-legacy">
+    <img alt="Get it on Codeberg" src="https://codeberg.org/Codeberg/GetItOnCodeberg/media/branch/main/get-it-on-blue-on-white.png" height="60">
+</a>
