@@ -256,10 +256,14 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(password_edit.getText().length() > 0) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                } else {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                try {
+                    if (password_edit.getText().length() > 0) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    } else {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    }
+                } catch (NullPointerException ignored) {
+
                 }
             }
 
