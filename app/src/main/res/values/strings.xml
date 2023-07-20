@@ -1087,6 +1087,7 @@
 	<string name="use_legacy_http_client_description">Use HttpUrlConnection wrapped HTTP(S) client designed for legacy versions of Android</string>
     <string name="use_legacy_http_client_okhttp_err">Unable to turn off due to an unsupported Android version</string>
     <string name="use_legacy_http_client_apachew_err">Unable to turn on due to an unsupported Android version</string>
+    <string name="cause_app_to_crash">Cause application to crash</string>
 	<string name="terminate">Terminate process</string>
 	<string name="dnd_mode">DND mode</string>
 	<string name="saved_logs_successfully">Log saved to Device Memory/%1$s. Open in any file manager.</string>

@@ -157,6 +157,14 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
             }
         });
 
+        Preference causeAppToCrash = findPreference("causeAppToCrash");
+        causeAppToCrash.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                throw new UnsupportedOperationException("App crash test");
+            }
+        });
+
         Preference legacy_http_client = findPreference("legacyHttpClient");
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {

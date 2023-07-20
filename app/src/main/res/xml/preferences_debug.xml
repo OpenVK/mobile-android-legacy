@@ -45,6 +45,11 @@
         android:layout="@layout/pref_widget"
         android:title="@string/terminate" />
 
+    <Preference
+        android:key="causeAppToCrash"
+        android:title="@string/cause_app_to_crash"
+        android:layout="@layout/pref_widget"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

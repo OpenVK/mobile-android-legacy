@@ -1180,6 +1180,7 @@
     <string name="use_legacy_http_client_description">Використовувати обернутий HTTP(S)-клієнт HttpUrlConnection, призначений для застарілих версій Android</string>
     <string name="use_legacy_http_client_okhttp_err">Вимкнення неможливо через непідтримувану версію Android</string>
     <string name="use_legacy_http_client_apachew_err">Увімкнення неможливе через непідтримувану версію Android</string>
+    <string name="cause_app_to_crash">Викликати збій програми</string>
     <string name="terminate">Завершити процес</string>
     <string name="dnd_mode">Режим \"Не турбувати\"</string>
     <string name="saved_logs_successfully">Журнал збережено в Пам\'ять пристрою/%1$s. Відкрийте в будь-якому файлі менеджера.</string>
