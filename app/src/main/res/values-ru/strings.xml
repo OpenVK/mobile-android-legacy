@@ -21,7 +21,6 @@
     открытым исходным кодом, несовместимая с ВКонтакте.<br><br>Пожалуйста, авторизуйтесь ТОЛЬКО
     в зарегистрированный аккаунт OpenVK в одной из существующих инстанций.]]></string>
     <string name="dont_show_warn">Больше не показывать</string>
-    <string name="app_name">OpenVK</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
     <string name="loading">Загрузка…</string>
     <string name="creating_account">Создание аккаунта…</string>
@@ -331,7 +330,6 @@
     </string-array>
     <string name="sett_update_interval">Интервал обновления</string>
 
-    <string name="contact_profile_title">OpenVK</string>
     <string name="contact_profile_subtitle">Открыть профиль</string>
 
     <string name="create_album">Создать альбом</string>
@@ -786,7 +784,6 @@
 	<string name="last_seen_profile_f">была в сети %s</string>
 
 	<string name="profile_info_contacts">Контактная информация</string>
-	<string name="profile_telegram">Telegram</string>
 	<string name="profile_info_education">Образование</string>
 	<string name="profile_school">Школа</string>
 	<string name="profile_info_personal">Личная информация</string>

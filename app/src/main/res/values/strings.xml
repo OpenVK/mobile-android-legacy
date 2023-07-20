@@ -20,7 +20,7 @@
 	<a href="https://github.com/openvk/openvk">OpenVK</a> instances, an open source network that is not compatible with VKontakte / VK.
 	<br><br>Please log in ONLY to the registered OpenVK account in one of the existing instances.]]></string>
 	<string name="dont_show_warn">Don\'t show again</string>
-	<string name="app_name">OpenVK</string>
+	<string name="app_name" translatable="false">OpenVK</string>
 	<string name="full_app_name">OpenVK Legacy for Android</string>
 	<string name="loading">Loading…</string>
 	<string name="creating_account">Creating account…</string>
@@ -357,8 +357,7 @@
 		<item>Disable</item>
 	</string-array>
 	<string name="sett_update_interval">Update interval</string>
-	<string name="contact_profile_title">OpenVK</string>
-	<string name="contact_profile_subtitle">View profile</string>
+        <string name="contact_profile_subtitle">View profile</string>
 	<string name="create_album">Create an album</string>
 	<string name="create_album_title">Title</string>
 	<string name="create_album_description">Description</string>
@@ -853,7 +852,7 @@
 	<string name="last_seen_profile_f">last seen %s</string>
 
 	<string name="profile_info_contacts">Contacts</string>
-	<string name="profile_telegram">Telegram</string>
+	<string name="profile_telegram" translatable="false">Telegram</string>
 	<string name="profile_info_education">Education</string>
 	<string name="profile_school">School</string>
 	<string name="profile_info_personal">Personal info</string>
