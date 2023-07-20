@@ -84,7 +84,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
     public int searchByFileName(String filename) {
         int result = 0;
         for(int i = 0; i < objects.size(); i++) {
-            if(objects.get(i).filename.equals(filename)) {
+            if(objects.get(i).filename.endsWith(filename)) {
                 result = i;
             }
         }
