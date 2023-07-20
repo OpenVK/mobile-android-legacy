@@ -292,7 +292,7 @@
         </service>
 
         <activity android:name=".ui.core.activities.CrashReporterActivity"
-            android:theme="@style/BaseStyle"
+            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
     </application>
