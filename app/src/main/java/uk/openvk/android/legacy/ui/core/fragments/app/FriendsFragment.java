@@ -209,22 +209,11 @@ public class FriendsFragment extends Fragment {
     }
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
-        loading_more_friends = false;
+        friendsListView.setLoading(!infinity_scroll);
         friendsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
             @Override
             public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                View view = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
-                int diff = (view.getBottom() - (recyclerView.getHeight() + recyclerView.getScrollY()));
-                if(infinity_scroll) {
-                    if (diff == 0) {
-                        if(!loading_more_friends) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_friends = true;
-                                ((AppActivity) ctx).loadMoreFriends();
-                            }
-                        }
-                    }
-                }
+                ((AppActivity) ctx).loadMoreFriends();
             }
         });
     }
