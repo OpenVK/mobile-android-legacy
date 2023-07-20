@@ -27,6 +27,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
@@ -213,7 +214,11 @@ public class FriendsFragment extends Fragment {
         friendsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
             @Override
             public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                ((AppActivity) ctx).loadMoreFriends();
+                if(ctx instanceof AppActivity) {
+                    ((AppActivity) ctx).loadMoreFriends();
+                } else if(ctx instanceof FriendsIntentActivity) {
+                    ((FriendsIntentActivity) ctx).loadMoreFriends();
+                }
             }
         });
     }
