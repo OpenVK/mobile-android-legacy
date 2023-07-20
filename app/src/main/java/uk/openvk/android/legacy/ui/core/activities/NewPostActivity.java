@@ -282,7 +282,7 @@ public class NewPostActivity extends TranslucentActivity {
             } else if(message == HandlerMessages.UPLOAD_PROGRESS) {
                 String filename = data.getString("filename");
                 int pos = filesAdapter.searchByFileName(filename);
-                UploadableFile file = files.get(pos);
+                file = files.get(pos);
                 file.progress = data.getLong("position");
                 file.status = "uploading";
                 files.set(pos, file);
@@ -331,7 +331,7 @@ public class NewPostActivity extends TranslucentActivity {
                         try {
                             int pos = filesAdapter.searchByFileName(file.filename);
                             if(files.get(pos).status.equals("uploading") || files.get(pos).status.equals("uploaded")) {
-                                UploadableFile file = files.get(pos);
+                                file = files.get(pos);
                                 file.status = "error";
                                 files.set(pos, file);
                                 filesAdapter.notifyDataSetChanged();
@@ -431,7 +431,7 @@ public class NewPostActivity extends TranslucentActivity {
             Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
             files.add(upload_file);
             filesAdapter.notifyDataSetChanged();
-            ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, "");
+            ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, path);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 if(activity_menu != null && activity_menu.size() >= 1) {
                     activity_menu.getItem(0).setEnabled(false);
