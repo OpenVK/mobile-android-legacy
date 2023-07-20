@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
+import android.view.View;
 
 import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 
@@ -78,5 +79,17 @@ public class InfinityRecyclerView extends RecyclerView {
 
     public void setLoading(boolean loading) {
         isLoading = loading;
+    }
+
+    @Override
+    public void setAdapter(Adapter adapter) {
+        super.setAdapter(adapter);
+        isLoading = false;
+    }
+
+    @Override
+    public void onViewAdded(View child) {
+        super.onViewAdded(child);
+        isLoading = false;
     }
 }

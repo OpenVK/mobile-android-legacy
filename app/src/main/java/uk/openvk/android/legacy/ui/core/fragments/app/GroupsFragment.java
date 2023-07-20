@@ -132,21 +132,12 @@ public class GroupsFragment extends Fragment {
     }
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
-        loading_more_groups = false;
+        groupsListView.setLoading(!infinity_scroll);
         groupsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
             @Override
             public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                View view = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
-                int diff = (view.getBottom() - (recyclerView.getHeight() + recyclerView.getScrollY()));
-                if(infinity_scroll) {
-                    if (diff == 0) {
-                        if(!loading_more_groups) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_groups = true;
-                                ((AppActivity) ctx).loadMoreGroups();
-                            }
-                        }
-                    }
+                if(ctx instanceof AppActivity) {
+                    ((AppActivity) ctx).loadMoreGroups();
                 }
             }
         });
