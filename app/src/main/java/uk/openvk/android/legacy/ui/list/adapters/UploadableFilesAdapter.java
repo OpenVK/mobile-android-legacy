@@ -166,7 +166,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             String gb = ctx.getResources().getString(R.string.fsize_gb);
             if(file.length >= 1073741824L) {
                 progress_status.setText(
-                        String.format("%.1f / %s.1f %s",
+                        String.format("%.1f / %.1f %s",
                                 (double)file.progress / (double)1024 / (double)1024 / (double)1024,
                                 (double)file.length / (double)1024 / (double)1024 / (double)1024, gb));
             } else if(file.length >= 104857600L) {
