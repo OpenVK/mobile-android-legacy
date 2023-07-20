@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import uk.openvk.android.legacy.R;
 
@@ -31,7 +32,7 @@ public class WallErrorLayout extends LinearLayout{
     public WallErrorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.wall_error_layout, null);
+                R.layout.layout_wall_error, null);
 
         this.addView(view);
 
@@ -39,5 +40,9 @@ public class WallErrorLayout extends LinearLayout{
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+    }
+
+    public void setErrorText(String err_text) {
+        ((TextView) findViewById(R.id.error_text)).setText(err_text);
     }
 }

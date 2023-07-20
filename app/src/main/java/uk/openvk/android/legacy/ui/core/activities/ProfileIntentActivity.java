@@ -420,8 +420,17 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 ovk_api.users.getUser(ovk_api.wrapper, ovk_api.users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET) {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                        .createAdapter(this, ovk_api.wall.getWallItems());
+                if(ovk_api.wall.getWallItems().size() > 0) {
+                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                            .createAdapter(this, ovk_api.wall.getWallItems());
+                    profileFragment.loading_more_posts = true;
+                    profileFragment.setScrollingPositions(this, false, true);
+                } else {
+                    WallErrorLayout wall_error = ((WallErrorLayout) profileFragment.getView()
+                            .findViewById(R.id.wall_error_layout));
+                    wall_error.setErrorText(getResources().getString(R.string.no_news));
+                    wall_error.setVisibility(View.VISIBLE);
+                }
                 ProfileWallSelector selector = findViewById(R.id.wall_selector);
                 selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -430,8 +439,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     }
                 });
                 selector.showNewPostIcon();
-                profileFragment.loading_more_posts = true;
-                profileFragment.setScrollingPositions(this, false, true);
             } else if (message == HandlerMessages.WALL_GET_MORE) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .createAdapter(this, ovk_api.wall.getWallItems());

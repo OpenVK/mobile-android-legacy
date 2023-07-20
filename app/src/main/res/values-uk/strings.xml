@@ -1219,7 +1219,7 @@
         Закрийте всі програми, які не використовуються, і повторіть спробу.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Офіційна інстанція OpenVK</string>
-    <string name="wall_err_text">Хмммм, в інстанції стіна зламалася. Повторіть спробу пізніше.</string>
+    <string name="wall_err_text">Помилка завантаження стіни</string>
     <string name="invalid_session">Сесія недійсна. Будь ласка, авторизуйтесь ще раз.</string>
     <string name="attachment_load_err">Помилка завантаження вкладення</string>
     <string name="post_load_nsfw">Ця публікація може містити контент для дорослих</string>

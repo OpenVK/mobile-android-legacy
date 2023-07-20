@@ -1057,7 +1057,7 @@
     <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>
     <string name="invalid_session">Сессия недействительна. Пожалуйста, авторизуйтесь еще раз.</string>
-    <string name="wall_err_text">Хмммм, в инстанции стена сломалась. Повторите попытку позже.</string>
+    <string name="wall_err_text">Ошибка загрузки стены</string>
     <string name="attachment_load_err">Ошибка загрузки вложения</string>
     <string name="rules_link">Правила</string>
     <string name="privacy_link">Приватность</string>
