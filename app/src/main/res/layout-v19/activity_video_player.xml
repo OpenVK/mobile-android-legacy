@@ -44,7 +44,7 @@
         android:id="@+id/statusbartint_view"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:background="@color/transparent_statusbar_color_black" />
+        android:background="#88000000" />
 
     <FrameLayout
         android:id="@+id/video_progress_wrap"

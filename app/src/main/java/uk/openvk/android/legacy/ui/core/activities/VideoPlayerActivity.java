@@ -16,10 +16,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,6 +30,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ValueAnimator;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.IOException;
@@ -530,7 +534,6 @@ public class VideoPlayerActivity extends Activity {
         if(handler == null) {
             handler = new Handler(Looper.myLooper());
         }
-        findViewById(R.id.video_bottombar).setVisibility(View.VISIBLE);
         if(hideCtrl != null) {
             handler.removeCallbacks(hideCtrl);
         } else {
@@ -547,9 +550,56 @@ public class VideoPlayerActivity extends Activity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE;
             getWindow().getDecorView().setSystemUiVisibility(uiOptions);
-            findViewById(R.id.statusbartint_view).getLayoutParams().height = getStatusBarHeight();
-            findViewById(R.id.statusbartint_view).setVisibility(View.VISIBLE);
         }
+        // Resize top view
+        TypedValue tv = new TypedValue();
+        int actionBarHeight = 0;
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            actionBarHeight =
+                    TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+        ValueAnimator animator = ValueAnimator.ofInt(1, getStatusBarHeight() + actionBarHeight);
+        final View statusbar_tint = findViewById(R.id.statusbartint_view);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int value = (Integer) valueAnimator.getAnimatedValue();
+                if(statusbar_tint != null) {
+                    ViewGroup.LayoutParams layoutParams = statusbar_tint.getLayoutParams();
+                    layoutParams.height = value;
+                    statusbar_tint.setLayoutParams(layoutParams);
+                }
+                ViewGroup.LayoutParams layoutParams = findViewById(R.id.video_bottombar).getLayoutParams();
+                layoutParams.height = value;
+                findViewById(R.id.video_bottombar).setLayoutParams(layoutParams);
+            }
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if(statusbar_tint != null) {
+                    statusbar_tint.setVisibility(View.VISIBLE);
+                }
+                findViewById(R.id.video_bottombar).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.setDuration(200);
+        animator.start();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().show();
         }
@@ -566,13 +616,55 @@ public class VideoPlayerActivity extends Activity {
                 }
             }
         }, 50);
-        handler.postDelayed(new Runnable() {
+        // Resize top view
+        TypedValue tv = new TypedValue();
+        int actionBarHeight = 0;
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            actionBarHeight =
+                    TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+        ValueAnimator animator = ValueAnimator.ofInt(getStatusBarHeight() + actionBarHeight, 1);
+        final View statusbar_tint = findViewById(R.id.statusbartint_view);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public void run() {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-                findViewById(R.id.statusbartint_view).setVisibility(View.GONE);
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int value = (Integer) valueAnimator.getAnimatedValue();
+                if(statusbar_tint != null) {
+                    ViewGroup.LayoutParams layoutParams = statusbar_tint.getLayoutParams();
+                    layoutParams.height = value;
+                    statusbar_tint.setLayoutParams(layoutParams);
+                }
+                ViewGroup.LayoutParams layoutParams = findViewById(R.id.video_bottombar).getLayoutParams();
+                layoutParams.height = value;
+                findViewById(R.id.video_bottombar).setLayoutParams(layoutParams);
             }
-        }, 300);
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if(statusbar_tint != null) {
+                    statusbar_tint.setVisibility(View.GONE);
+                }
+                findViewById(R.id.video_bottombar).setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.setDuration(200);
+        animator.start();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();
         }
