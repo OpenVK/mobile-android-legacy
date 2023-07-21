@@ -598,7 +598,7 @@ public class VideoPlayerActivity extends Activity {
 
             }
         });
-        animator.setDuration(200);
+        animator.setDuration(250);
         animator.start();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             handler.postDelayed(new Runnable() {
