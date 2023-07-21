@@ -121,6 +121,8 @@ public class PhotoViewerActivity extends Activity {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.photo));
+                    getActionBar().setBackgroundDrawable(
+                            getResources().getDrawable(R.drawable.bg_actionbar_black_transparent));
                     getActionBar().hide();
 
                 } catch (Exception ex) {
