@@ -623,7 +623,7 @@ public class VideoPlayerActivity extends Activity {
             actionBarHeight =
                     TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
         }
-        ValueAnimator animator = ValueAnimator.ofInt(getStatusBarHeight() + actionBarHeight, 1);
+        final ValueAnimator animator = ValueAnimator.ofInt(getStatusBarHeight() + actionBarHeight, 1);
         final View statusbar_tint = findViewById(R.id.statusbartint_view);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -664,7 +664,12 @@ public class VideoPlayerActivity extends Activity {
             }
         });
         animator.setDuration(200);
-        animator.start();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animator.start();
+            }
+        }, 100);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();
         }
