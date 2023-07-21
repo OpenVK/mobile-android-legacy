@@ -601,7 +601,12 @@ public class VideoPlayerActivity extends Activity {
         animator.setDuration(200);
         animator.start();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getActionBar().show();
+                }
+            }, 100);
         }
     }
 
