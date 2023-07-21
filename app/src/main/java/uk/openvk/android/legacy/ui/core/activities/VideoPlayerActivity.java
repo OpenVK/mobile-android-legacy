@@ -674,7 +674,7 @@ public class VideoPlayerActivity extends Activity {
             public void run() {
                 animator.start();
             }
-        }, 50);
+        }, 20);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().hide();
         }
