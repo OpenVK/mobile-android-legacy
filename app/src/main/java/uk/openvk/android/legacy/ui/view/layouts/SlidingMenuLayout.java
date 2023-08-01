@@ -46,7 +46,7 @@ public class SlidingMenuLayout extends LinearLayout {
 
     private int accountMenuTargetHeight;
     private String instance;
-    private boolean showAccountMenu;
+    public boolean showAccountMenu;
 
     public SlidingMenuLayout(final Context context) {
         super(context);
@@ -172,7 +172,7 @@ public class SlidingMenuLayout extends LinearLayout {
         }
     }
 
-    private void toogleAccountMenu() {
+    public void toogleAccountMenu() {
         final ListView account_menu_view = findViewById(R.id.account_menu_view);
         accountMenuTargetHeight = (int) (account_menu_view.getAdapter().getCount() *
                 ((47 * (getResources().getDisplayMetrics().scaledDensity)) +

@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.utils;
 
 import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -32,54 +33,75 @@ import uk.openvk.android.legacy.OvkApplication;
 @SuppressLint("Recycle")
 public class RealPathUtil {
     public static String getRealPathFromURI(Context context, Uri uri) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            String filePath = "";
-            if (DocumentsContract.isDocumentUri(context, uri)) {
-                String wholeID = DocumentsContract.getDocumentId(uri);
-                // Split at colon, use second item in the array
-                Log.d(OvkApplication.APP_TAG, wholeID);
-                String[] splits = wholeID.split(":");
-                if (splits.length == 2) {
-                    String id = splits[1];
-                    if(splits[0].equals("primary")) {
-                        return Environment.getExternalStorageDirectory() + "/" + id;
-                    } else {
-                        String[] column = {MediaStore.Images.Media.DATA};
-                        // where id is equal to
-                        String sel = MediaStore.Images.Media._ID + "=?";
-                        Cursor cursor = context.getContentResolver()
-                                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                        column, sel, new String[]{id}, null);
-                        assert cursor != null;
-                        int columnIndex = cursor.getColumnIndex(column[0]);
-                        if (cursor.moveToFirst()) {
-                            filePath = cursor.getString(columnIndex);
-                        }
-                        cursor.close();
-                    }
+        String selection = null;
+        String[] selectionArgs = null;
+        // Uri is different in versions after KITKAT (Android 4.4), we need to
+        if (Build.VERSION.SDK_INT >= 19 && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                return Environment.getExternalStorageDirectory() + "/" + split[1];
+            } else if (isDownloadsDocument(uri)) {
+                final String id = DocumentsContract.getDocumentId(uri);
+                uri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+            } else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+                if ("image".equals(type)) {
+                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
-            } else {
-                filePath = uri.getPath();
+                selection = "_id=?";
+                selectionArgs = new String[]{
+                        split[1]
+                };
             }
-            return filePath;
-        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            String result = null;
-            CursorLoader cursorLoader = new CursorLoader(context, uri, proj, null, null, null);
-            Cursor cursor = cursorLoader.loadInBackground();
-            if (cursor != null) {
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                cursor.moveToFirst();
-                result = cursor.getString(column_index);
-            }
-            return result;
-        } else {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
-            assert cursor != null;
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
         }
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+
+            if (isGooglePhotosUri(uri)) {
+                return uri.getLastPathSegment();
+            }
+
+            String[] projection = {
+                    MediaStore.Images.Media.DATA
+            };
+            Cursor cursor = null;
+            try {
+                cursor = context.getContentResolver()
+                        .query(uri, projection, selection, selectionArgs, null);
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                if (cursor.moveToFirst()) {
+                    return cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+        return null;
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 }

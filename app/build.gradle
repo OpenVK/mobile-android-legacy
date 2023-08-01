@@ -69,8 +69,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 199
-        versionName "1.1.199-pbeta"
+        versionCode 200
+        versionName "1.1.200-beta"
     }
     buildTypes {
         release {
@@ -87,8 +87,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 199
-            versionName "1.1.199-pbeta.d"
+            versionCode 200
+            versionName "1.1.200-beta"
             signingConfig signingConfigs.debug
         }
         releaseConfig {

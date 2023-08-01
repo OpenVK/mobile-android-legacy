@@ -282,43 +282,45 @@ public class ProfileFragment extends Fragment {
 
     public void loadAvatar(User user, String quality) {
         try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(
-                    String.format("%s/%s/photos_cache/profile_avatars/avatar_%s",
-                            getContext().getCacheDir(), instance, user.id), options);
-            switch (quality) {
-                case "medium":
-                    if (bitmap != null) {
-                        user.avatar = bitmap;
-                    } else if (user.avatar_msize_url.length() > 0) {
-                        user.avatar = null;
-                    } else {
-                        user.avatar = null;
-                    }
-                    break;
-                case "high":
-                    if (bitmap != null) {
-                        user.avatar = bitmap;
-                    } else if (user.avatar_hsize_url.length() > 0) {
-                        user.avatar = null;
-                    } else {
-                        user.avatar = null;
-                    }
-                    break;
-                default:
-                    if (bitmap != null) {
-                        user.avatar = bitmap;
-                    } else if (user.avatar_osize_url.length() > 0) {
-                        user.avatar = null;
-                    } else {
-                        user.avatar = null;
-                    }
-                    break;
+            if (getContext() != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/profile_avatars/avatar_%s",
+                                getContext().getCacheDir(), instance, user.id), options);
+                switch (quality) {
+                    case "medium":
+                        if (bitmap != null) {
+                            user.avatar = bitmap;
+                        } else if (user.avatar_msize_url.length() > 0) {
+                            user.avatar = null;
+                        } else {
+                            user.avatar = null;
+                        }
+                        break;
+                    case "high":
+                        if (bitmap != null) {
+                            user.avatar = bitmap;
+                        } else if (user.avatar_hsize_url.length() > 0) {
+                            user.avatar = null;
+                        } else {
+                            user.avatar = null;
+                        }
+                        break;
+                    default:
+                        if (bitmap != null) {
+                            user.avatar = bitmap;
+                        } else if (user.avatar_osize_url.length() > 0) {
+                            user.avatar = null;
+                        } else {
+                            user.avatar = null;
+                        }
+                        break;
+                }
+                if (user.avatar != null)
+                    ((ImageView) view.findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
             }
-            if (user.avatar != null)
-                ((ImageView) view.findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
-        } catch (OutOfMemoryError ex) {
+        } catch(OutOfMemoryError ex){
             ex.printStackTrace();
         }
     }

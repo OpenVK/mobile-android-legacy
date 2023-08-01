@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -161,11 +162,10 @@ public class NewPostActivity extends TranslucentActivity {
         findViewById(R.id.newpost_btn_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
+                Intent intent =  new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,
-                        getResources().getString(R.string.add_photo_gallery)), 4);
+                startActivityForResult(intent, 4);
             }
         });
     }
@@ -403,21 +403,21 @@ public class NewPostActivity extends TranslucentActivity {
                 return;
             }
             Uri uri = data.getData();
-            String path = uriToFilename(uri);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    uploadFile(path);
+            try {
+                String path = uriToFilename(uri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        uploadFile(path);
+                    } else {
+                        Global.allowPermissionDialog(this, true);
+                    }
                 } else {
-                    Global.allowPermissionDialog(this, true);
-                }
-            } else {
-                try {
                     uploadFile(path);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
                 }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
         }
     }

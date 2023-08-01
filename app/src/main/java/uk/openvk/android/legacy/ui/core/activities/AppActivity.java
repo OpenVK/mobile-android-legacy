@@ -402,11 +402,30 @@ public class AppActivity extends TranslucentFragmentActivity {
             }
             menu = new SlidingMenu(this);
             Global.setSlidingMenu(this, slidingmenuLayout, menu);
+            menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
+                @Override
+                public void onClosed() {
+                    if(slidingmenuLayout.showAccountMenu) {
+                        slidingmenuLayout.toogleAccountMenu();
+                    }
+                }
+            });
         } else {
             try {
                 slidingmenuLayout = findViewById(R.id.sliding_menu);
                 slidingmenuLayout.setAccountProfileListener(this);
                 slidingmenuLayout.setVisibility(View.VISIBLE);
+                slidingmenuLayout.setOnSystemUiVisibilityChangeListener(
+                        new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+                        if(visibility == View.GONE) {
+                            if (slidingmenuLayout.showAccountMenu) {
+                                slidingmenuLayout.toogleAccountMenu();
+                            }
+                        }
+                    }
+                });
             } catch (Exception ex) {
                 while(slidingmenuLayout == null) {
                     slidingmenuLayout = new SlidingMenuLayout(this);
@@ -414,6 +433,14 @@ public class AppActivity extends TranslucentFragmentActivity {
                 ((OvkApplication) getApplicationContext()).isTablet = false;
                 menu = new SlidingMenu(this);
                 Global.setSlidingMenu(this, slidingmenuLayout, menu);
+                menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
+                    @Override
+                    public void onClosed() {
+                        if(slidingmenuLayout.showAccountMenu) {
+                            slidingmenuLayout.toogleAccountMenu();
+                        }
+                    }
+                });
             }
         }
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
@@ -1004,10 +1031,15 @@ public class AppActivity extends TranslucentFragmentActivity {
                     profileFragment.setCounter(ovk_api.user, "friends",  ovk_api.friends.count);
                 }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
-                conversationsFragment.createAdapter(this, conversations, ovk_api.account);
-                if (global_prefs.getString("current_screen", "").equals("messages")) {
+                if(conversations.size() > 0) {
+                    conversationsFragment.createAdapter(this, conversations, ovk_api.account);
+                    if (global_prefs.getString("current_screen", "").equals("messages")) {
+                        progressLayout.setVisibility(View.GONE);
+                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    }
+                } else {
                     progressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    setErrorPage(data, "ovk", message, false);
                 }
             } else if(message == HandlerMessages.LIKES_ADD) {
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {
@@ -1097,10 +1129,15 @@ public class AppActivity extends TranslucentFragmentActivity {
             } else if(message == HandlerMessages.WALL_REPOST) {
                 Toast.makeText(this, getResources().getString(R.string.repost_ok_wall), Toast.LENGTH_LONG).show();
             } else if(message == HandlerMessages.NOTES_GET) {
-                notesFragment.createAdapter(this, ovk_api.notes.list);
-                if (global_prefs.getString("current_screen", "").equals("notes")) {
+                if(ovk_api.notes.list.size() > 0) {
+                    notesFragment.createAdapter(this, ovk_api.notes.list);
+                    if (global_prefs.getString("current_screen", "").equals("notes")) {
+                        progressLayout.setVisibility(View.GONE);
+                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    }
+                } else {
                     progressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    setErrorPage(data, "ovk", message, false);
                 }
             } else if(message == HandlerMessages.OVK_CHECK_HTTP) {
                 mainSettingsFragment.setConnectionType(
@@ -1206,12 +1243,20 @@ public class AppActivity extends TranslucentFragmentActivity {
             errorLayout.setRetryAction(this);
             errorLayout.setReason(reason);
             if (icon.equals("ovk")) {
-                if(((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
+                if(reason == HandlerMessages.NOTES_GET) {
                     errorLayout.setTitle(
-                            getResources().getString(R.string.local_newsfeed_no_posts));
+                            getResources().getString(R.string.no_notes));
+                } else if(reason == HandlerMessages.MESSAGES_CONVERSATIONS) {
+                    errorLayout.setTitle(
+                            getResources().getString(R.string.no_messages));
                 } else {
-                    errorLayout.setTitle(
-                            getResources().getString(R.string.no_news));
+                    if (((Spinner) ab_layout.findViewById(R.id.spinner)).getSelectedItemPosition() == 0) {
+                        errorLayout.setTitle(
+                                getResources().getString(R.string.local_newsfeed_no_posts));
+                    } else {
+                        errorLayout.setTitle(
+                                getResources().getString(R.string.no_news));
+                    }
                 }
             } else {
                 errorLayout.setTitle(getResources().getString(R.string.err_text));

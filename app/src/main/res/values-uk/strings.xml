@@ -258,6 +258,7 @@
     	<item>Останній з %d коментарів</item>
     </string-array>
     <string name="no_news">Немає новин</string>
+    <string name="no_notes">Немає нотаток</string>
     <string name="no_messages">Немає повідомлень</string>
     <string name="no_friends">Список друзів порожній</string>
     <string name="no_online_friends">Ваших друзів немає в мережі</string>

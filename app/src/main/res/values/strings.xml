@@ -252,6 +252,7 @@
 		<item>Last out of %d comments</item>
 	</string-array>
 	<string name="no_news">No news</string>
+	<string name="no_notes">No notes</string>
 	<string name="no_messages">No messages</string>
 	<string name="no_friends">You have no friends</string>
 	<string name="no_online_friends">All your friends are offline</string>
