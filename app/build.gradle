@@ -95,8 +95,8 @@ android {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 199
-            versionName '1.1.199-pbeta.r'
+            versionCode 200
+            versionName '1.1.200-beta.r'
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -107,8 +107,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 199
-            versionName "1.1.199-pbeta.f"
+            versionCode 200
+            versionName "1.1.200-beta.f"
             if (file('.signing/app.prop').exists()) {
                 signingConfig signingConfigs.release
             }
