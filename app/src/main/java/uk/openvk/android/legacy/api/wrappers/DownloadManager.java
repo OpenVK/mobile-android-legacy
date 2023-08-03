@@ -327,7 +327,7 @@ public class DownloadManager {
                                             photoAttachments.size()));
                         }
                     }
-                    if(i % 5 == 0 || i == photoAttachments.size() - 1) {
+                    if(i % 10 == 0 || i == photoAttachments.size() - 1) {
                         switch (where) {
                             case "account_avatar":
                                 sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
