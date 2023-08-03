@@ -29,10 +29,10 @@ def getGitHubCommit = {
 
 android {
     signingConfigs {
-        if (file('.signing/app.prop').exists()) {
+        if (file('.signing/app-release.prop').exists()) {
             release {
                 Properties props = new Properties();
-                props.load(new FileInputStream(file(".signing/app.prop")))
+                props.load(new FileInputStream(file(".signing/app-release.prop")))
                 storeFile file(props['RELEASE_STORE_FILE'])
                 storePassword props['RELEASE_STORE_PASSWORD']
                 keyAlias props['RELEASE_KEY_ALIAS']
@@ -69,8 +69,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 200
-        versionName "1.1.200-beta"
+        versionCode 201
+        versionName "1.1.201-beta.u"
     }
     buildTypes {
         release {
@@ -87,17 +87,17 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 200
-            versionName "1.1.200-beta"
+            versionCode 201
+            versionName "1.1.201-beta"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 200
-            versionName '1.1.200-beta.r'
-            if (file('.signing/app.prop').exists()) {
+            versionCode 201
+            versionName '1.1.201-beta.r'
+            if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
         }
@@ -107,9 +107,9 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 200
-            versionName "1.1.200-beta.f"
-            if (file('.signing/app.prop').exists()) {
+            versionCode 201
+            versionName "1.1.201-beta.f"
+            if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
         }

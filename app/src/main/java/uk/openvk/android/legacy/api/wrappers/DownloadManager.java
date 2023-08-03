@@ -327,43 +327,45 @@ public class DownloadManager {
                                             photoAttachments.size()));
                         }
                     }
+                    if(i % 5 == 0 || i == photoAttachments.size() - 1) {
+                        switch (where) {
+                            case "account_avatar":
+                                sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
+                                break;
+                            case "profile_avatars":
+                                sendMessage(HandlerMessages.PROFILE_AVATARS, where);
+                                break;
+                            case "newsfeed_avatars":
+                                sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
+                                break;
+                            case "group_avatars":
+                                sendMessage(HandlerMessages.GROUP_AVATARS, where);
+                                break;
+                            case "newsfeed_photo_attachments":
+                                sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
+                                break;
+                            case "wall_photo_attachments":
+                                sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
+                                break;
+                            case "wall_avatars":
+                                sendMessage(HandlerMessages.WALL_AVATARS, where);
+                                break;
+                            case "friend_avatars":
+                                sendMessage(HandlerMessages.FRIEND_AVATARS, where);
+                                break;
+                            case "comment_avatars":
+                                sendMessage(HandlerMessages.COMMENT_AVATARS, where);
+                                break;
+                            case "comment_photos":
+                                sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
+                                break;
+                            case "conversations_avatars":
+                                sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
+                                break;
+                        }
+                    }
                 }
                 Log.v("DownloadManager", "Downloaded!");
-                switch (where) {
-                    case "account_avatar":
-                        sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
-                        break;
-                    case "profile_avatars":
-                        sendMessage(HandlerMessages.PROFILE_AVATARS, where);
-                        break;
-                    case "newsfeed_avatars":
-                        sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
-                        break;
-                    case "group_avatars":
-                        sendMessage(HandlerMessages.GROUP_AVATARS, where);
-                        break;
-                    case "newsfeed_photo_attachments":
-                        sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
-                        break;
-                    case "wall_photo_attachments":
-                        sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
-                        break;
-                    case "wall_avatars":
-                        sendMessage(HandlerMessages.WALL_AVATARS, where);
-                        break;
-                    case "friend_avatars":
-                        sendMessage(HandlerMessages.FRIEND_AVATARS, where);
-                        break;
-                    case "comment_avatars":
-                        sendMessage(HandlerMessages.COMMENT_AVATARS, where);
-                        break;
-                    case "comment_photos":
-                        sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
-                        break;
-                    case "conversations_avatars":
-                        sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
-                        break;
-                }
             }
         };
 
