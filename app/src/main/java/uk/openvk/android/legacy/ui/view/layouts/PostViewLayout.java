@@ -385,6 +385,7 @@ public class PostViewLayout extends LinearLayout {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, VideoPlayerActivity.class);
+                intent.putExtra("title", video.title);
                 intent.putExtra("attachment", video);
                 intent.putExtra("files", video.files);
                 intent.putExtra("owner_id", owner_id);

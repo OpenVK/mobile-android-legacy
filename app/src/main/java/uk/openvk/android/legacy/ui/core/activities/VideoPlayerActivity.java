@@ -132,6 +132,9 @@ public class VideoPlayerActivity extends Activity {
             if(data.containsKey("attachment")) {
                 video = data.getParcelable("attachment");
                 assert video != null;
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    getActionBar().setTitle(data.getString("title"));
+                }
                 owner_id = data.getLong("owner_id");
                 setThumbnail();
             } if(data.containsKey("files")) {
@@ -213,6 +216,14 @@ public class VideoPlayerActivity extends Activity {
                 imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(IMediaPlayer mp) {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            getActionBar().setSubtitle(
+                                    String.format("%s, %s, %s",
+                                            imp.getMediaInfo().mMeta.mVideoStream.mCodecName,
+                                            imp.getVideoHeight(),
+                                            imp.getMediaInfo().mMeta.mVideoStream.mBitrate)
+                            );
+                        }
                         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         ready = true;
                         findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);

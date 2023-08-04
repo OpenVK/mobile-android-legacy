@@ -1038,8 +1038,10 @@ public class AppActivity extends TranslucentFragmentActivity {
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     }
                 } else {
-                    progressLayout.setVisibility(View.GONE);
-                    setErrorPage(data, "ovk", message, false);
+                    if(selectedFragment instanceof ConversationsFragment) {
+                        progressLayout.setVisibility(View.GONE);
+                        setErrorPage(data, "ovk", message, false);
+                    }
                 }
             } else if(message == HandlerMessages.LIKES_ADD) {
                 if (global_prefs.getString("current_screen", "").equals("newsfeed")) {

@@ -404,6 +404,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 @Override
                                 public void onClick(View v) {
                                     Intent intent = new Intent(ctx, VideoPlayerActivity.class);
+                                    intent.putExtra("title", videoAttachment.title);
                                     intent.putExtra("attachment", videoAttachment);
                                     intent.putExtra("files", videoAttachment.files);
                                     intent.putExtra("owner_id", item.owner_id);
