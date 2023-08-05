@@ -43,6 +43,9 @@ _Работает на OpenVK API._
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
 15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 
+## Пока что неиспользованные библиотеки
+1. [FFmpeg 4.0.4](https://github.com/FFmpeg/FFmpeg/tree/n4.0.4) (LGPLv3.0)
+
 ## Лицензия OpenVK Legacy
 [GNU Affero GPL v3.0](COPYING) или более поздней версии.
 

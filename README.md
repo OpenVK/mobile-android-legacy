@@ -43,6 +43,9 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
 15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 
+## So far unused libraries
+1. [FFmpeg 4.0.4](https://github.com/FFmpeg/FFmpeg/tree/n4.0.4) (LGPLv3.0)
+
 ## OpenVK Legacy License
 [GNU Affero GPL v3.0](COPYING) or later version.
 
