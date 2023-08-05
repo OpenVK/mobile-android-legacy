@@ -133,20 +133,15 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
     //noinspection GradleDependency
     compile 'com.takisoft.fix:preference-v7:24.0.0.1'
-    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
-    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
-    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
-    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
-    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile project(':actionbar')
-    compile project(':popupmenu')
+    compile project(':modules:actionbar')
+    compile project(':modules:popupmenu')
     compile 'com.reginald.swiperefresh:library:1.1.2'
     // Android 2.x plurals patch
     compile 'com.seppius.plurals:android-i18n-plurals:1.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'ch.acra:acra:4.6.0'
     compile 'com.nineoldandroids:library:2.4.0'
-    compile project(':twemojicon')
-    compile project(':wrhttp')
+    compile project(':modules:twemojicon')
+    compile project(':modules:wrhttp')
 }

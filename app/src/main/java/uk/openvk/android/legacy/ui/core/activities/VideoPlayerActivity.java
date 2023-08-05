@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -219,7 +220,7 @@ public class VideoPlayerActivity extends Activity {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             getActionBar().setSubtitle(
                                     String.format("%s, %s, %s",
-                                            imp.getMediaInfo().mMeta.mVideoStream.mCodecName,
+                                            getAvCodec("video"),
                                             imp.getVideoHeight(),
                                             imp.getMediaInfo().mMeta.mVideoStream.mBitrate)
                             );
@@ -436,6 +437,22 @@ public class VideoPlayerActivity extends Activity {
                 seekProgress(seekBar.getProgress());
             }
         });
+    }
+
+    private String getAvCodec(String type) {
+        if(type.equals("video")) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
+                return imp.getMediaInfo().mMeta.mVideoStream.mCodecName;
+            } else {
+                return "N/A";
+            }
+        } else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
+                return imp.getMediaInfo().mMeta.mAudioStream.mCodecName;
+            } else {
+                return "N/A";
+            }
+        }
     }
 
     private void seekProgress(int progress) {

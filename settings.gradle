@@ -1,2 +1,2 @@
-include ':app', ':slidingmenu', ':popupmenu', ':actionbar', ':twemojicon'
-include ':wrhttp'
+include ':app', ':modules:slidingmenu', ':modules:popupmenu', ':modules:actionbar', ':modules:twemojicon'
+include ':modules:wrhttp'
