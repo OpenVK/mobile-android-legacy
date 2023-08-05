@@ -4,9 +4,12 @@
 .DS_Store
 /build
 app/.externalNativeBuild
-/modules/emoji-view/build
+/modules/actionbar/build
+/modules/twemoji/build
+/modules/slidingmenu/build
 /modules/actionbar/build
 /modules/popupmenu/build
+/modules/wrhttp/build
 app/.signing/app.prop
 app/.signing/openvk.ks
 app/.signing/openvk.jks

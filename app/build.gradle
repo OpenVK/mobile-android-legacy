@@ -134,6 +134,11 @@ dependencies {
     //noinspection GradleDependency
     compile 'com.takisoft.fix:preference-v7:24.0.0.1'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
+    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
+    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
+    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
+    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
     compile project(':modules:actionbar')
     compile project(':modules:popupmenu')
     compile 'com.reginald.swiperefresh:library:1.1.2'
