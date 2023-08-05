@@ -4,7 +4,7 @@ apply from: 'gradle-mvn-push.gradle'
 ext.emojiconVersionName = "1.2"
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 29
     buildToolsVersion '29.0.0'
 
     defaultConfig {
