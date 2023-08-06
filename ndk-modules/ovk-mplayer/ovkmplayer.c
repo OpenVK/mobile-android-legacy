@@ -15,9 +15,3 @@ JNIEXPORT char* JNICALL Java_uk_openvk_android_legacy_utils_MediaPlayer_testStri
     char* hello = "Hello World from C++!";
     return hello;
 }
-
-
-
-
-
-
