@@ -20,7 +20,7 @@ import android.widget.Toast;
  */
 
 public class MediaPlayer {
-    static {
+    /*static {
         System.loadLibrary("ovkmplayer");
     }
 
@@ -28,5 +28,5 @@ public class MediaPlayer {
 
     public MediaPlayer(Context ctx) {
         Toast.makeText(ctx, testString(), Toast.LENGTH_LONG).show();
-    }
+    }*/
 }
