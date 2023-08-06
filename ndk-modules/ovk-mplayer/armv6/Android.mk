@@ -22,7 +22,7 @@ include $(CLEAR_VARS)
 
 FFMPEG_VERSION := 4.0.4
 
-LOCAL_MODULE := ffmpeg-prebuilt
+LOCAL_MODULE := ovkmplayer
 
 LOCAL_SRC_FILES := ../../ffmpeg-android-builder/ffmpeg/android/armv6/libffmpeg-v${FFMPEG_VERSION}.so
 
@@ -36,10 +36,10 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
-LOCAL_MODULE := ffmpeg-player
-LOCAL_SRC_FILES := ffmpeg-player.c
+LOCAL_MODULE := ovkmplayer
+LOCAL_SRC_FILES := ovkmplayer.c
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../ffmpeg-android-builder/ffmpeg/android/armv6/include
-LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
+LOCAL_SHARED_LIBRARY := ovkmplayer
 LOCAL_LDLIBS    := -llog -ljnigraphics -lz -lm $(LOCAL_PATH)/../../ffmpeg-android-builder/ffmpeg/android/armv6/libffmpeg-v${FFMPEG_VERSION}.so
 
 include $(BUILD_SHARED_LIBRARY)
