@@ -6,9 +6,9 @@ LOCAL_PATH := $(call my-dir)
 #declare the prebuilt library
 
 
-ifeq($(ANDROID_ARCH_ABI),armeabi)
+ifeq($(TARGET_ARCH_ABI),armeabi)
 	ANDROID_ARCH = armv6
-ifeq($(ANDROID_ARCH_ABI),armeabi-v7a)
+ifeq($(TARGET_ARCH_ABI),armeabi-v7a)
 	ANDROID_ARCH = armv7
 else
 	ANDROID_ARCH = armv8
