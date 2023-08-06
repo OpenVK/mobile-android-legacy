@@ -120,7 +120,7 @@ android {
     }
     externalNativeBuild {
         ndkBuild {
-            path '../ndk-modules/ffmpeg-android-builder/ffmp-armv6/Android.mk'
+            path '../ndk-modules/ovk-mplayer/armv6/Android.mk'
         }
     }
 }
