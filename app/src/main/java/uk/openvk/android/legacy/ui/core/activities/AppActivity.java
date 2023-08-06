@@ -66,6 +66,7 @@ import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
 import uk.openvk.android.legacy.ui.view.layouts.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
+import uk.openvk.android.legacy.utils.MediaPlayer;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -132,6 +133,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
+        new MediaPlayer(this);
         if(getAndroidAccounts()) {
             setContentView(R.layout.activity_app);
         } else {
