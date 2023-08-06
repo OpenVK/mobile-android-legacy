@@ -5,16 +5,15 @@ LOCAL_PATH := $(call my-dir)
 
 #declare the prebuilt library
 
-
-ifeq($(TARGET_ARCH_ABI),armeabi)
-	ANDROID_ARCH = armv6
-ifeq($(TARGET_ARCH_ABI),armeabi-v7a)
-	ANDROID_ARCH = armv7
-else
-	ANDROID_ARCH = armv8
-endif
-
 include $(CLEAR_VARS)
+
+ifeq ($(TARGET_ARCH_ABI),armeabi)
+   ANDROID_ARCH = armv6
+else ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+   ANDROID_ARCH = armv7
+else
+   ANDROID_ARCH = armv8-a
+endif
 
 FFMPEG_VERSION := 4.0.4
 
