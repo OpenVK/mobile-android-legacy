@@ -126,7 +126,7 @@ android {
     }
     externalNativeBuild {
         ndkBuild {
-            path 'src/main/jni/ovk-mplayer/Android.mk'
+            path '../ndk-modules/ovkmplayer/Android.mk'
         }
     }
 }
