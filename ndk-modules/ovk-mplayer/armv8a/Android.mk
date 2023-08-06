@@ -34,8 +34,8 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
-LOCAL_MODULE := ovkmplayer
-LOCAL_SRC_FILES := ovkmplayer.c
+LOCAL_MODULE := ffmpeg-player
+LOCAL_SRC_FILES := ffmpeg-player.c
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../ffmpeg/android/armv8-a/include
 LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
 LOCAL_LDLIBS    := -llog -ljnigraphics -lz -lm $(LOCAL_PATH)/../../ffmpeg-android-builder/ffmpeg/android/armv8-a/libffmpeg-v${FFMPEG_VERSION}.so
