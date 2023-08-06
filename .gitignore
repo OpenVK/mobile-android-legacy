@@ -16,3 +16,4 @@ app/.signing/openvk.jks
 *.li
 *.aar
 /wrhttp/build/
+*.so

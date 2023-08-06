@@ -138,6 +138,8 @@ public class AppActivity extends TranslucentFragmentActivity {
         } else {
             return;
         }
+
+        new MediaPlayer(this);
         inBackground = true;
         menu_id = R.menu.newsfeed;
         ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
