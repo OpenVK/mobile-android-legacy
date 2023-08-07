@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.widget.Toast;
@@ -22,16 +23,23 @@ import android.widget.Toast;
 
 public class MediaPlayer {
     public static LibraryLoader libLoader = new LibraryLoader() {
+        @SuppressLint("UnsafeDynamicallyLoadedCode")
         @Override
-        public void loadSharedLibrary(String library_name) throws UnsatisfiedLinkError,
+        public void loadSharedLibrary(Context ctx, String library_name) throws UnsatisfiedLinkError,
                 SecurityException, Exception {
-            System.loadLibrary(library_name);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                System.loadLibrary(library_name);
+            } else {
+                System.load(String.format("/data/data/%s/lib/lib%s.so", ctx.getPackageName(), library_name));
+            }
         }
     };
+    private final Context ctx;
 
     private static native String testString();
 
     public MediaPlayer(Context ctx) {
+        this.ctx = ctx;
         if(libLoader != null) {
             initMediaPlayer(libLoader);
             Toast.makeText(ctx, testString(), Toast.LENGTH_LONG).show();
@@ -41,11 +49,11 @@ public class MediaPlayer {
     private void initMediaPlayer(LibraryLoader loader) {
         try {
             if(Build.CPU_ABI.equals("arm64-v8a")) {
-                loader.loadSharedLibrary("ffmpeg-v4.0.4");
+                loader.loadSharedLibrary(ctx, "ffmpeg-v4.0.4");
             } else {
-                loader.loadSharedLibrary("ffmpeg-v0.8.5");
+                loader.loadSharedLibrary(ctx, "ffmpeg-v0.8.5");
             }
-            loader.loadSharedLibrary("ovkmplayer");
+            loader.loadSharedLibrary(ctx, "ovkmplayer");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <string.h>
 
-extern "C"
+__attribute__ ((visibility("default")))
 JNIEXPORT jstring JNICALL
 Java_uk_openvk_android_legacy_utils_MediaPlayer_testString(
         JNIEnv* env,

@@ -1,5 +1,7 @@
 package uk.openvk.android.legacy.utils;
 
+import android.content.Context;
+
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -17,5 +19,5 @@ package uk.openvk.android.legacy.utils;
  */
 
 public interface LibraryLoader {
-    void loadSharedLibrary(String library_name) throws UnsatisfiedLinkError, SecurityException, Exception;
+    void loadSharedLibrary(Context ctx, String library_name) throws UnsatisfiedLinkError, SecurityException, Exception;
 }
