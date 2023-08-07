@@ -29,6 +29,7 @@ elif [ $1 == "4.0.4" ]; then
 else
     echo "Wrong argument: ./build-android [version == '0.8.5' or '4.0.4']"
     exit 1;
+fi;
 
 # Create directories in jniLibs
 mkdir -p ../../app/src/main/jniLibs/armeabi
