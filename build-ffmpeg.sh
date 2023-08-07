@@ -11,5 +11,5 @@ chmod -R 0777 . && chmod +x ./build-android.sh
 ./build-android.sh armv6
 ./build-android.sh armv7
 ./build-android.sh armv8a
-cp -R ./ffmpeg/android ../../app/src/main/jniLibs
+cp -R *.so ./ffmpeg/android ../../app/src/main/jniLibs
 echo "OpenVK Legacy | Done!"
