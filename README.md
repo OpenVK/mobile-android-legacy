@@ -27,12 +27,14 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used - 0.8.5 (recommended for greater compatibility with Android 2.x) and 4.0.4.
 
 To compile them you need:
-+ **Linux distro or WSL2** \
++ **GNU/Linux distro or WSL2** \
   Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
 
   Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
-+ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
-  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable. Can't build FFmpeg 0.8.5 on `r11c` due to a static libs linking error.
++ **[Android NDK r8e](http://web.archive.org/web/20130629195058/http://developer.android.com/tools/sdk/ndk/index.html#Downloads) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
+  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
+
+  Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.5 support in older versions of Android.
 
   Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
 + **Installed dependencies** \
