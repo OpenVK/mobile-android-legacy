@@ -6,8 +6,8 @@ echo "OpenVK Legacy | FFmpeg for Android building..."
 echo;
 git submodule init
 git submodule update
-git checkout -b ffmpeg-0.8.5
 cd ndk-modules/ffmpeg-android-builder
+git checkout -b ffmpeg-0.8.5
 chmod -R 0777 . && chmod +x ./build-android.sh
 ./build-android.sh armv6
 ./build-android.sh armv7
