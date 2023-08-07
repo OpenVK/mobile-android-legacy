@@ -1,6 +1,6 @@
 #!/bin/bash
 #  Automatic FFmpeg 0.8.5 for Android build script using builder by Tinelix
-#  FFmpeg and FFmpeg for Android builder by Tinelix licensed under LGPLv3 or later version.
+#  NOTICE: FFmpeg and FFmpeg for Android builder by Tinelix licensed under LGPLv3 or later version.
 
 echo "OpenVK Legacy | FFmpeg for Android building..."
 git submodule init
