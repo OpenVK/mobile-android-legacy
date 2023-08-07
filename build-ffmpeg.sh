@@ -27,7 +27,8 @@ elif [ $1 == "4.0.4" ]; then
     chmod -R 0777 . && chmod +x ./build-android.sh
     ./build-android.sh armv8a
 else
-    echo "Wrong argument: ./build-android [version == '0.8.5' or '4.0.4']"
+    echo;
+    echo "[ERROR] Wrong argument: ./build-ffmpeg.sh [version == '0.8.5' or '4.0.4']"
     exit 1;
 fi;
 
