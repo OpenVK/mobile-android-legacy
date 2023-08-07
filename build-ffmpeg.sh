@@ -12,6 +12,7 @@ chmod -R 0777 . && chmod +x ./build-android.sh
 ./build-android.sh armv6
 ./build-android.sh armv7
 # FFmpeg 0.8.5 not buildable under ARMv8a 64-bit
+git reset --hard
 git checkout -b ffmpeg-4.0.4
 ./build-android.sh armv8a
 cp -R *.so ./ffmpeg/android ../../app/src/main/jniLibs
