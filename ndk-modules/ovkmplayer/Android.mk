@@ -14,15 +14,10 @@ else
 endif
 
 LOCAL_MODULE := ffmpeg-prebuilt
-
 LOCAL_SRC_FILES := ../../app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg-v${FFMPEG_VERSION}.so
-
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
-
 LOCAL_EXPORT_LDLIBS := ../../app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg-v${FFMPEG_VERSION}.so
-
 LOCAL_PRELINK_MODULE := true
-
 LOCAL_LDFLAGS += -ljnigraphics
 
 include $(PREBUILT_SHARED_LIBRARY)
