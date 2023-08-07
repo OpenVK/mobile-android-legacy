@@ -19,9 +19,9 @@ chmod -R 0777 . && chmod +x ./build-android.sh
 ./build-android.sh armv8a
 
 # Create directories in jniLibs
-mkdir ../../app/src/main/jniLibs/armeabi
-mkdir ../../app/src/main/jniLibs/armeabi-v7a
-mkdir ../../app/src/main/jniLibs/arm64-v8a
+mkdir -p ../../app/src/main/jniLibs/armeabi
+mkdir -p ../../app/src/main/jniLibs/armeabi-v7a
+mkdir -p ../../app/src/main/jniLibs/arm64-v8a
 
 echo "OpenVK Legacy | Copying libraries to project..."
 echo;
