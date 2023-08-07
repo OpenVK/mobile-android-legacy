@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.widget.Toast;
 
 /**
@@ -39,7 +40,11 @@ public class MediaPlayer {
 
     private void initMediaPlayer(LibraryLoader loader) {
         try {
-            loader.loadSharedLibrary("ffmpeg-v4.0.4");
+            if(Build.CPU_ABI.equals("arm64-v8a")) {
+                loader.loadSharedLibrary("ffmpeg-v4.0.4");
+            } else {
+                loader.loadSharedLibrary("ffmpeg-v0.8.5");
+            }
             loader.loadSharedLibrary("ovkmplayer");
         } catch (Exception ex) {
             ex.printStackTrace();
