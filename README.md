@@ -22,7 +22,19 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 * **via [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 
 ## Building
-We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) along with Java 7 for perfect support of libraries (such as legacy resource format and Gradle 2.3.2) developed for Android 2.1 Eclair and above.
+We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive), Android NDK r10e and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
+
+To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used - 0.8.5 (recommended for greater compatibility with Android 2.x) and 4.0.4.
+
+To compile them you need:
++ **Linux distro or WSL2**
+  Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS. Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
++ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)**
+  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable. Can't build on `r11c` due to a static libs linking error.
++ **Installed dependencies**
+  See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
++ **Scripts for FFmpeg builder**
+  Run the command inside the OpenVK Legacy repository in terminal: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
@@ -33,7 +45,7 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Twemojicon (Emojicon with Twemoji pack)](https://github.com/tinelix/twemojicon) (Apache License 2.0)
-7. [ijkplayer 0.8.2](https://github.com/bilibili/ijkplayer/tree/k0.6.2) (LGPL 2.1+)
+7. [FFmpeg 0.8.5](https://github.com/tinelix/ffmpeg-android-builder/tree/ffmpeg-0.8.5) and [FFmpeg 4.0.4](https://github.com/tinelix/ffmpeg-android-builder/tree/ffmpeg-0.8.5) with builder (LGPLv3.0)
 8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
@@ -42,9 +54,6 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
 15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
-
-## So far unused libraries
-1. [FFmpeg 4.0.4](https://github.com/FFmpeg/FFmpeg/tree/n4.0.4) (LGPLv3.0)
 
 ## OpenVK Legacy License
 [GNU Affero GPL v3.0](COPYING) or later version.

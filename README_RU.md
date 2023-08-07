@@ -24,6 +24,18 @@ _Работает на OpenVK API._
 ## Сборка
 Мы советуем использовать [Android Studio 2.3.2](https://developer.android.com/studio/archive) вместе с Java 7 для идеальной поддержки библиотек (такие как устаревший формат ресурсов и Gradle 2.3.2), разработанные для Android 2.1 Eclair и выше.
 
+Для обеспечения поддержки ненативных кодеков (Theora, VP8, Opus, MP3onMP4) используются две версии FFmpeg - 0.8.5 (рекомендован для совместимости с Android 2.x) и 4.0.4.
+
+Чтобы собрать их, вам понадобится:
++ **Дистрибутив Linux или WSL2**
+  Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем добавления сборки под Windows/Cygwin и macOS. Проверено на Ubuntu 12.04 LTS, может быть также возможна в последних версиях.
++ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)**
+  Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`. Сборкана `r11c` невозможна из-за ошибки связывания статических библиотек.
++ **Установленные зависимости**
+  Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
++ **Скрипты для сборщика FFmpeg**
+  Запустите команду внутри репозитория OpenVK Legacy в терминале: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`
+
 **ВНИМАНИЕ!** После возникновения ошибки `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` в задаче `:[package_name]:mockableAndroidJar`, при использовании Android SDK Build-tools 28 и выше необходимо очистить проект (Clean Project).
 
 ## Используемые библиотеки
