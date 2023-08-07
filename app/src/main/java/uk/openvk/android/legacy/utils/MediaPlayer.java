@@ -20,13 +20,29 @@ import android.widget.Toast;
  */
 
 public class MediaPlayer {
-    static {
-        System.loadLibrary("ovkmplayer");
-    }
+    public static LibraryLoader libLoader = new LibraryLoader() {
+        @Override
+        public void loadSharedLibrary(String library_name) throws UnsatisfiedLinkError,
+                SecurityException, Exception {
+            System.loadLibrary(library_name);
+        }
+    };
 
     private static native String testString();
 
     public MediaPlayer(Context ctx) {
-        Toast.makeText(ctx, testString(), Toast.LENGTH_LONG).show();
+        if(libLoader != null) {
+            initMediaPlayer(libLoader);
+            Toast.makeText(ctx, testString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void initMediaPlayer(LibraryLoader loader) {
+        try {
+            loader.loadSharedLibrary("ffmpeg-v4.0.4");
+            loader.loadSharedLibrary("ovkmplayer");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

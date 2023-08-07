@@ -138,7 +138,7 @@ public class AppActivity extends TranslucentFragmentActivity {
         } else {
             return;
         }
-
+        Log.d(OvkApplication.APP_TAG, String.format("Running dummy MediaPlayer in %s arch", Build.CPU_ABI));
         new MediaPlayer(this);
         inBackground = true;
         menu_id = R.menu.newsfeed;

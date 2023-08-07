@@ -2,13 +2,9 @@ package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -16,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -27,33 +22,14 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import tv.danmaku.ijk.media.player.IMediaPlayer;
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -77,7 +53,6 @@ public class VideoPlayerActivity extends Activity {
     private MediaController mediaCtrl;
     private VideoView video_view;
     private MediaPlayer mp;
-    private IMediaPlayer imp;
     private boolean ready;
     private Handler handler;
     private Runnable hideCtrl;
@@ -211,6 +186,7 @@ public class VideoPlayerActivity extends Activity {
     }
 
     private void createMediaPlayer(Uri uri) {
+        /*
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
             try {
                 imp = new IjkMediaPlayer();
@@ -437,10 +413,11 @@ public class VideoPlayerActivity extends Activity {
                 seekProgress(seekBar.getProgress());
             }
         });
+        */
     }
 
     private String getAvCodec(String type) {
-        if(type.equals("video")) {
+        /*if(type.equals("video")) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
                 return imp.getMediaInfo().mMeta.mVideoStream.mCodecName;
             } else {
@@ -452,19 +429,19 @@ public class VideoPlayerActivity extends Activity {
             } else {
                 return "N/A";
             }
-        }
+        }*/ return "N/A";
     }
 
     private void seekProgress(int progress) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+        /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
             imp.seekTo(progress * 1000);
         } else {
             mp.seekTo(progress * 1000);
-        }
+        }*/
     }
 
     private void resizeVideo() {
-        SurfaceView mSurfaceView = findViewById(R.id.video_surface_view);
+        /*SurfaceView mSurfaceView = findViewById(R.id.video_surface_view);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                 && !Build.CPU_ABI.equals("x86_64")) {
             if(!fitVideo) {
@@ -499,11 +476,11 @@ public class VideoPlayerActivity extends Activity {
             } else {
                 fitVideo = false;
             }
-        }
+        }*/
     }
 
     private void rescaleVideo(SurfaceView vsv, SurfaceHolder vsh) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
+        /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                 && !Build.CPU_ABI.equals("x86_64")) {
             vsh.setFixedSize(imp.getVideoWidth(), imp.getVideoHeight());
             // Get the width of the frame
@@ -546,7 +523,7 @@ public class VideoPlayerActivity extends Activity {
                 lp.height = screenHeight;
             }
             vsv.setLayoutParams(lp);
-        }
+        }*/
     }
 
     public int getStatusBarHeight() {
@@ -709,7 +686,7 @@ public class VideoPlayerActivity extends Activity {
     }
 
     private void playVideo() {
-        try {
+        /*try {
             if(!isPlaying()) {
                 handler.postDelayed(hideCtrl, 5000);
             }
@@ -729,11 +706,11 @@ public class VideoPlayerActivity extends Activity {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
+        }*/
     }
 
     private boolean isPlaying() {
-        try {
+        /*try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                     && !Build.CPU_ABI.equals("x86_64")) {
                 return imp.isPlaying();
@@ -742,12 +719,13 @@ public class VideoPlayerActivity extends Activity {
             }
         } catch (Exception ex) {
             return false;
-        }
+        }*/
+        return false;
     }
 
     @SuppressLint("DefaultLocale")
     private void updateControlPanel() {
-        if(ready) {
+        /*if(ready) {
             int pos = 0;
             int duration = 0;
             try {
@@ -811,7 +789,7 @@ public class VideoPlayerActivity extends Activity {
                 ((ImageButton) findViewById(R.id.video_btn)).setImageDrawable(getResources().
                         getDrawable(R.drawable.ic_video_play));
             }
-        }
+        }*/
     }
 
     @Override
@@ -824,7 +802,7 @@ public class VideoPlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        ready = false;
+        /*ready = false;
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
                     && !Build.CPU_ABI.equals("x86_64")) {
@@ -841,7 +819,7 @@ public class VideoPlayerActivity extends Activity {
         } catch (Exception ignored){
 
         }
-        handler.removeCallbacks(hideCtrl);
+        handler.removeCallbacks(hideCtrl);*/
         super.onDestroy();
     }
 
