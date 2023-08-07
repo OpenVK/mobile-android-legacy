@@ -33,7 +33,7 @@ To compile them you need:
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable. Can't build on `r11c` due to a static libs linking error.
 + **Installed dependencies**
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
-+ **Scripts for FFmpeg builder**
++ **Scripts that build FFmpeg from source**
   Run the command inside the OpenVK Legacy repository in terminal: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.

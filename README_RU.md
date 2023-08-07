@@ -33,7 +33,7 @@ _Работает на OpenVK API._
   Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`. Сборка на `r11c` невозможна из-за ошибки связывания статических библиотек.
 + **Установленные зависимости**
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
-+ **Скрипты для сборщика FFmpeg**
++ **Скрипты, собирающие FFmpeg из исходных кодов**
   Запустите команду внутри репозитория OpenVK Legacy в терминале: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`
 
 **ВНИМАНИЕ!** После возникновения ошибки `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` в задаче `:[package_name]:mockableAndroidJar`, при использовании Android SDK Build-tools 28 и выше необходимо очистить проект (Clean Project).
