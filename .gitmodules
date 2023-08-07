@@ -1,3 +1,4 @@
 [submodule "ndk-modules/ffmpeg-android-builder"]
 	path = ndk-modules/ffmpeg-android-builder
 	url = https://github.com/tinelix/ffmpeg-android-builder
+	branch = ffmpeg-0.8.5
