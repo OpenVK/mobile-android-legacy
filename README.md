@@ -34,7 +34,7 @@ To compile them you need:
 + **Installed dependencies**
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
 + **Scripts that build FFmpeg from source**
-  Run the command inside the OpenVK Legacy repository in terminal: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`. FFmpeg source codes and the builder for Android are in submodules of the `ndk-modules` directory.
+  Run the command inside the OpenVK Legacy repository in terminal: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`. The source codes of the FFmpeg libraries, as well as the builder for Android, are located in the submodules of the `ndk-modules` directory.
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
