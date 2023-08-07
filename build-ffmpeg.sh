@@ -20,8 +20,8 @@ if [[ -z $1 ]]; then
     chmod -R 0777 . && chmod +x ./build-android.sh
     ./build-android.sh armv8a
 elif [ $1 == "0.8.5" ]; then
-    ./build-android.sh armv6
-    ./build-android.sh armv7
+    ./build-android.sh armv6 r8e
+    ./build-android.sh armv7 r8e
 elif [ $1 == "4.0.4" ]; then
     cd ../ffmpeg-builder-4.0.4
     chmod -R 0777 . && chmod +x ./build-android.sh
