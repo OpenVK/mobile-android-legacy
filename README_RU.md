@@ -30,7 +30,7 @@ _Работает на OpenVK API._
 + **Дистрибутив Linux или WSL2**
   Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем добавления сборки под Windows/Cygwin и macOS. Проверено на Ubuntu 12.04 LTS, может быть также возможна в последних версиях.
 + **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)**
-  Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`. Сборкана `r11c` невозможна из-за ошибки связывания статических библиотек.
+  Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`. Сборка на `r11c` невозможна из-за ошибки связывания статических библиотек.
 + **Установленные зависимости**
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
 + **Скрипты для сборщика FFmpeg**
