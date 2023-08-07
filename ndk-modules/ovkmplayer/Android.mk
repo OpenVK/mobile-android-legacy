@@ -7,7 +7,11 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-FFMPEG_VERSION := 4.0.4
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+    FFMPEG_VERSION := 4.0.4
+else
+    FFMPEG_VERSION := 0.8.5
+fi
 
 LOCAL_MODULE := ffmpeg-prebuilt
 
