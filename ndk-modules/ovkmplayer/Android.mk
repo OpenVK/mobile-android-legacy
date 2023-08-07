@@ -11,7 +11,7 @@ ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
     FFMPEG_VERSION := 4.0.4
 else
     FFMPEG_VERSION := 0.8.5
-fi
+endif
 
 LOCAL_MODULE := ffmpeg-prebuilt
 
