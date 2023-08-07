@@ -30,7 +30,7 @@ To compile them you need:
 + **Linux distro or WSL2**
   Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS. Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
 + **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)**
-  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable. Can't build on `r11c` due to a static libs linking error.
+  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable. Can't build FFmpeg 0.8.5 on `r11c` due to a static libs linking error.
 + **Installed dependencies**
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
 + **Scripts that build FFmpeg from source**
