@@ -25,8 +25,8 @@ mkdir ../../app/src/main/jniLibs/arm64-v8a
 
 echo "OpenVK Legacy | Copying libraries to project..."
 echo;
+cp ./ffmpeg/android/arm64-v8a/libffmpeg-4.0.4.so ../app/src/main/jniLibs/arm64-v8a
+cd ../ffmpeg-builder-0.8.5
 cp ./ffmpeg/android/armeabi/libffmpeg-0.8.5.so ../../app/src/main/jniLibs/armeabi
 cp ./ffmpeg/android/armeabi-v7a/libffmpeg-0.8.5.so ../../app/src/main/jniLibs/armeabi-v7a
-cd ../ffmpeg-builder-0.8.5
-cp ./ffmpeg/android/arm64-v8a/libffmpeg-4.0.4.so ../app/src/main/jniLibs/arm64-v8a
 echo "OpenVK Legacy | Done!"
