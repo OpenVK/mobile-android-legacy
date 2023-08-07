@@ -27,15 +27,17 @@ We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/a
 To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used - 0.8.5 (recommended for greater compatibility with Android 2.x) and 4.0.4.
 
 To compile them you need:
-+ **Linux distro or WSL2**
-  Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS. Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
-+ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)**
++ **Linux distro or WSL2** \
+  Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
+
+  Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
++ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable. Can't build FFmpeg 0.8.5 on `r11c` due to a static libs linking error.
 
   Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
-+ **Installed dependencies**
++ **Installed dependencies** \
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
-+ **Scripts that build FFmpeg from source**
++ **Scripts that build FFmpeg from source** \
   Run the command inside the OpenVK Legacy repository in terminal: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`. The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the submodules of the `ndk-modules` directory.
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.

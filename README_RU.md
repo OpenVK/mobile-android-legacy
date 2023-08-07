@@ -27,15 +27,15 @@ _Работает на OpenVK API._
 Для обеспечения поддержки ненативных кодеков (Theora, VP8, Opus, MP3onMP4) используются две версии FFmpeg - 0.8.5 (рекомендован для совместимости с Android 2.x) и 4.0.4.
 
 Чтобы собрать их, вам понадобится:
-+ **Дистрибутив Linux или WSL2**
++ **Дистрибутив Linux или WSL2** \
   Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем добавления сборки под Windows/Cygwin и macOS. Проверено на Ubuntu 12.04 LTS, может быть также возможна в последних версиях.
-+ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)**
++ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
   Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`. Сборка FFmpeg 0.8.5 на `r11c` невозможна из-за ошибки связывания статических библиотек.
 
   Также абсолютный путь к NDK (в котором содержится директория `platforms`) в настройках проекта необходимо изменить, чтобы синхронизация с Gradle шла корректно.
-+ **Установленные зависимости**
++ **Установленные зависимости** \
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
-+ **Скрипты, собирающие FFmpeg из исходных кодов**
++ **Скрипты, собирающие FFmpeg из исходных кодов** \
   Запустите команду внутри репозитория OpenVK Legacy в терминале: `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`. Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодулях директории `ndk-modules`.
 
 
