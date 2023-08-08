@@ -1,0 +1,5 @@
+/ffmpeg/android
+*.so
+ffmp-armv6/ffmpeg-player.c
+ffmp-armv7/ffmpeg-player.c
+ffmp-armv8a/ffmpeg-player.c
