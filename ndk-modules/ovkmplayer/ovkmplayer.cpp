@@ -19,6 +19,7 @@
 #include <jni.h>
 #include <string.h>
 #include <stdio.h>
+#include "ffmpeg-0.8.5/libavcodec"
 
 char version[7] = "0.0.1";
 
