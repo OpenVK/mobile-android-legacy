@@ -34,17 +34,16 @@
 #include <android/bitmap.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/avstring.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/pixdesc.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/imgutils.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/samplefmt.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavformat/avformat.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavformat/url.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavformat/avio.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libswscale/swscale.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavcodec/avcodec.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavcodec/opt.h>
-#include <../ffmpeg-builder-0.8.5/ffmpeg/libavcodec/avfft.h>
+#include <libavutil/avstring.h>
+#include <libavutil/pixdesc.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/samplefmt.h>
+#include <libavformat/avformat.h>
+#include <libavformat/url.h>
+#include <libavformat/avio.h>
+#include <libswscale/swscale.h>
+#include <libavcodec/avcodec.h>
+#include <libavcodec/avfft.h>
 
 /*for Android logs*/
 #define LOG_TAG "OVK-MP"
