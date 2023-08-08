@@ -32,7 +32,9 @@ else
     exit 1;
 fi;
 
-# Create directories in jniLibs
+# Create directories in jniLibs and ovkmplayer
+mkdir -p ../ovkmplayer/ffmpeg-0.8.5/
+mkdir -p ../ovkmplayer/ffmpeg-4.0.4/
 mkdir -p ../../app/src/main/jniLibs/armeabi
 mkdir -p ../../app/src/main/jniLibs/armeabi-v7a
 mkdir -p ../../app/src/main/jniLibs/arm64-v8a
@@ -42,15 +44,21 @@ echo;
 
 if [[ -z $1 ]]; then
     cp ./ffmpeg/android/arm64-v8a/libffmpeg.so ../../app/src/main/jniLibs/arm64-v8a
+    cp -R ./ffmpeg/android/arm64-v8a/include ../ovkmplayer/ffmpeg-4.0.4/
     cd ../ffmpeg-builder-0.8.5
     cp ./ffmpeg/android/armeabi/libffmpeg.so ../../app/src/main/jniLibs/armeabi
     cp ./ffmpeg/android/armeabi-v7a/libffmpeg.so ../../app/src/main/jniLibs/armeabi-v7a
+        cp -R ./ffmpeg/android/armeabi/include ../ovkmplayer/ffmpeg-0.8.5/
+    cp -R ./ffmpeg/android/armeabi-v7a/include ../ovkmplayer/ffmpeg-0.8.5/
 elif [ $1 == "0.8.5" ]; then
     cd ../ffmpeg-builder-0.8.5
     cp ./ffmpeg/android/armeabi/libffmpeg.so ../../app/src/main/jniLibs/armeabi
     cp ./ffmpeg/android/armeabi-v7a/libffmpeg.so ../../app/src/main/jniLibs/armeabi-v7a
+    cp -R ./ffmpeg/android/armeabi/include ../ovkmplayer/ffmpeg-0.8.5/
+    cp -R ./ffmpeg/android/armeabi-v7a/include ../ovkmplayer/ffmpeg-0.8.5/
 else
     cp ./ffmpeg/android/arm64-v8a/libffmpeg.so ../../app/src/main/jniLibs/arm64-v8a
+    cp -R ./ffmpeg/android/armeabi-v7a/include ../ovkmplayer/ffmpeg-4.0.4/
 fi;
 
 echo "OpenVK Legacy | Done!"

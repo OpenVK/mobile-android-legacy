@@ -25,7 +25,7 @@ char version[7] = "0.0.1";
 extern "C" {
     JNIEXPORT jstring JNICALL
     Java_uk_openvk_android_legacy_utils_OvkMediaPlayer_showLogo(JNIEnv *env, jobject instance) {
-        char* logo = (char *) "Logo";
+        char logo[256] = "Logo";
         sprintf(logo, "OpenVK Media Player ver. %s for Android"
                 "\r\nOpenVK Media Player for Android is part of OpenVK Legacy Android-app "
                 "licensed under AGPLv3 or later version."

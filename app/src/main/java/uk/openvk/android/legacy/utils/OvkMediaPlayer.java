@@ -6,6 +6,8 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import uk.openvk.android.legacy.BuildConfig;
+
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -26,15 +28,22 @@ public class OvkMediaPlayer {
     private final Context ctx;
     String MPLAY_TAG = "OVK-MPLAY";
 
-    static {
-        System.loadLibrary("ffmpeg");
-        System.loadLibrary("ovkmplayer");
-    }
-
     private native String showLogo();
 
+    @SuppressLint({"UnsafeDynamicallyLoadedCode", "SdCardPath"})
+    private static void loadLibrary(Context ctx, String name) {
+        if(BuildConfig.BUILD_TYPE.equals("release")) {
+            System.loadLibrary(String.format("%s", name));
+        } else {
+            // unsafe but changeable
+            System.load(String.format("/data/data/%s/lib/lib%s.so", ctx.getPackageName(), name));
+        }
+    }
+
     public OvkMediaPlayer(Context ctx) {
-        Log.v(MPLAY_TAG, showLogo());
         this.ctx = ctx;
+        loadLibrary(ctx, "ffmpeg");
+        loadLibrary(ctx, "ovkmplayer");
+        Log.v(MPLAY_TAG, showLogo());
     }
 }
