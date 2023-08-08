@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -23,16 +24,18 @@ import android.widget.Toast;
 
 public class MediaPlayer {
     private final Context ctx;
+    String MPLAY_TAG = "OVK-MPLAY";
 
     static {
         System.loadLibrary("ffmpeg");
         System.loadLibrary("ovkmplayer");
     }
 
-    private native String testString();
+    private native String showLogo();
 
     public MediaPlayer(Context ctx) {
+        Log.v(MPLAY_TAG, showLogo());
+        Toast.makeText(ctx, showLogo(), Toast.LENGTH_LONG).show();
         this.ctx = ctx;
-        Toast.makeText(ctx, testString(), Toast.LENGTH_LONG).show();
     }
 }

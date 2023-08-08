@@ -1,10 +1,34 @@
+/**
+ * OPENVK LEGACY LICENSE NOTIFICATION
+ *
+ * This file is part of OpenVK Legacy.
+ *
+ * OpenVK Legacy is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU Affero General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program. If not, see https://www.gnu.org/licenses/.
+ *
+ * Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 #include <jni.h>
 #include <string.h>
+#include <stdio.h>
+
+char version[7] = "0.0.1";
 
 extern "C" {
     JNIEXPORT jstring JNICALL
-    Java_uk_openvk_android_legacy_utils_MediaPlayer_testString(JNIEnv *env, jobject instance) {
-        char hello[72] = "Hello from C++";
-        return env->NewStringUTF(hello);
+    Java_uk_openvk_android_legacy_utils_MediaPlayer_showLogo(JNIEnv *env, jobject instance) {
+        char logo[512];
+        sprintf(logo, "OpenVK Media Player ver. %s for Android"
+                "\r\nOpenVK Media Player for Android is part of OpenVK Legacy Android-app "
+                "licensed under AGPLv3 or later version.", version);
+        return env->NewStringUTF(logo);
     }
 };
