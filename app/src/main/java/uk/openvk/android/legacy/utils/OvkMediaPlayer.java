@@ -22,7 +22,7 @@ import android.widget.Toast;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class MediaPlayer {
+public class OvkMediaPlayer {
     private final Context ctx;
     String MPLAY_TAG = "OVK-MPLAY";
 
@@ -33,9 +33,8 @@ public class MediaPlayer {
 
     private native String showLogo();
 
-    public MediaPlayer(Context ctx) {
+    public OvkMediaPlayer(Context ctx) {
         Log.v(MPLAY_TAG, showLogo());
-        Toast.makeText(ctx, showLogo(), Toast.LENGTH_LONG).show();
         this.ctx = ctx;
     }
 }

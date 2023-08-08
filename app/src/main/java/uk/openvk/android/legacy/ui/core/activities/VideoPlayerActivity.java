@@ -310,10 +310,10 @@ public class VideoPlayerActivity extends Activity {
                 err_dlg.show();
             }
         } else {
-            mp = new MediaPlayer();
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            mp = new OvkMediaPlayer();
+            mp.setOnPreparedListener(new OvkMediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(MediaPlayer mp) {
+                public void onPrepared(OvkMediaPlayer mp) {
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     ready = true;
                     findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
@@ -336,9 +336,9 @@ public class VideoPlayerActivity extends Activity {
                     });
                 }
             });
-            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            mp.setOnErrorListener(new OvkMediaPlayer.OnErrorListener() {
                 @Override
-                public boolean onError(MediaPlayer mp, int what, int extra) {
+                public boolean onError(OvkMediaPlayer mp, int what, int extra) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     isErr = true;
                     mp.release();
@@ -365,8 +365,8 @@ public class VideoPlayerActivity extends Activity {
                         }
                     });
                     int error_reason_id = R.string.video_err_decode;
-                    if(extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT
-                            || what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+                    if(extra == OvkMediaPlayer.MEDIA_ERROR_TIMED_OUT
+                            || what == OvkMediaPlayer.MEDIA_ERROR_SERVER_DIED) {
                         error_reason_id = R.string.video_err_network;
                     }
                     err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(error_reason_id), null);
@@ -375,10 +375,10 @@ public class VideoPlayerActivity extends Activity {
                     return false;
                 }
             });
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            mp.setOnCompletionListener(new OvkMediaPlayer.OnCompletionListener() {
                 @SuppressLint("DefaultLocale")
                 @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
+                public void onCompletion(OvkMediaPlayer mediaPlayer) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     if(mp.getDuration() > 0) {
                         ((TextView) findViewById(R.id.video_time2)).setText(
