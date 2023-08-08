@@ -6,6 +6,7 @@ echo "OpenVK Legacy | FFmpeg for Android building..."
 echo;
 cd ndk-modules/ovkmplayer
 chmod -R 0777 .
+git clone https://github.com/tinelix/ffmpeg-android-builder
 
 # argument == ffmpeg version, if not specified compiling all versions
 if [[ -z $1 ]]; then
