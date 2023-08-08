@@ -5,7 +5,7 @@
 echo "OpenVK Legacy | FFmpeg for Android building..."
 echo;
 cd ndk-modules/ovkmplayer
-chmod -R 0777 .
+chmod -R 0777 . && chmod +x ./build-android-0.8.5.sh && chmod +x ./build-android-4.0.4.sh
 git clone https://github.com/tinelix/ffmpeg-android-builder builder
 cd builder
 
