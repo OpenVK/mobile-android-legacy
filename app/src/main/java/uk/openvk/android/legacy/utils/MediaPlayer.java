@@ -24,12 +24,12 @@ import android.widget.Toast;
 public class MediaPlayer {
     private final Context ctx;
 
-    private static native String testString();
-
     static {
         System.loadLibrary("ffmpeg");
         System.loadLibrary("ovkmplayer");
     }
+
+    private native String testString();
 
     public MediaPlayer(Context ctx) {
         this.ctx = ctx;
