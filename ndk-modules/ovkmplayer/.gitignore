@@ -1,5 +1,3 @@
-/ffmpeg/android
+/ffmpeg-0.8.5/android
+/ffmpeg-4.0.4/android
 *.so
-ffmp-armv6/ffmpeg-player.c
-ffmp-armv7/ffmpeg-player.c
-ffmp-armv8a/ffmpeg-player.c
