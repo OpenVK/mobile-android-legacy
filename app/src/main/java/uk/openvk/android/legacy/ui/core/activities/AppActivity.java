@@ -66,7 +66,7 @@ import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
 import uk.openvk.android.legacy.ui.view.layouts.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-import uk.openvk.android.legacy.utils.OvkMediaPlayer;
+import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -138,8 +138,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         } else {
             return;
         }
-        Log.d(OvkApplication.APP_TAG, String.format("Running dummy OvkMediaPlayer in %s arch", Build.CPU_ABI));
-        new OvkMediaPlayer(this);
         inBackground = true;
         menu_id = R.menu.newsfeed;
         ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);

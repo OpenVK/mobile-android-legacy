@@ -16,7 +16,7 @@
 
 LOCAL_PATH := $(call my-dir)
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-   FFMPEG_VERSION = 4.0.4
+   FFMPEG_VERSION = 2.6
 else
    FFMPEG_VERSION = 0.8.5
 endif
@@ -38,7 +38,11 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
 LOCAL_MODULE := ovkmplayer
-LOCAL_SRC_FILES := ovkmplayer.cpp
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+    LOCAL_SRC_FILES := ovkmplayer.cpp
+else
+    LOCAL_SRC_FILES := ovkmplayer-legacy.cpp
+endif
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)
 LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
