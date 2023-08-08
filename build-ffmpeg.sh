@@ -2,13 +2,13 @@
 #  FFmpeg 0.8.5 & 4.0.4 for Android automatic build script using builder by Tinelix
 #  NOTICE: FFmpeg and FFmpeg for Android builder by Tinelix licensed under LGPLv3 or later version.
 
-echo "OpenVK Legacy | FFmpeg for Android building..."
-echo;
+echo "OpenVK Legacy | Downloading from https://github.com/tinelix/ffmpeg-android-builder..."
 cd ndk-modules/ovkmplayer
 git clone https://github.com/tinelix/ffmpeg-android-builder builder
 cd builder
 chmod -R 0777 . && chmod +x ./build-android-0.8.5.sh && chmod +x ./build-android-4.0.4.sh
 
+echo "OpenVK Legacy | FFmpeg for Android building..."
 # argument == ffmpeg version, if not specified compiling all versions
 if [[ -z $1 ]]; then
     # Build FFmpeg 0.8.5 & 4.0.4
