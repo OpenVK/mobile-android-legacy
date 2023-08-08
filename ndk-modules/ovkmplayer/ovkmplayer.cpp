@@ -34,15 +34,17 @@
 #include <android/bitmap.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
-#include <ffmpeg-0.8.5/libavutil/avstring.h>
-#include <ffmpeg-0.8.5/libavutil/pixdesc.h>
-#include <ffmpeg-0.8.5/libavutil/imgutils.h>
-#include <ffmpeg-0.8.5/libavutil/samplefmt.h>
-#include <ffmpeg-0.8.5/libavformat/avformat.h>
-#include <ffmpeg-0.8.5/libswscale/swscale.h>
-#include <ffmpeg-0.8.5/libavcodec/avcodec.h>
-#include <ffmpeg-0.8.5/libavcodec/opt.h>
-#include <ffmpeg-0.8.5/libavcodec/avfft.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/avstring.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/pixdesc.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/imgutils.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavutil/samplefmt.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavformat/avformat.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavformat/url.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavformat/avio.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libswscale/swscale.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavcodec/avcodec.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavcodec/opt.h>
+#include <../ffmpeg-builder-0.8.5/ffmpeg/libavcodec/avfft.h>
 
 /*for Android logs*/
 #define LOG_TAG "OVK-MP"
@@ -131,6 +133,5 @@ extern "C" {
             return;
         }
         LOGI(10, "get video info ends");
-        return env->NewStringUTF(logo);
     }
 };
