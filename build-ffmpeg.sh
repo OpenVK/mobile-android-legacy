@@ -28,9 +28,9 @@ else
 fi;
 
 # Create directories in jniLibs and ovkmplayer
-mkdir -p ../../app/src/main/jniLibs/armeabi
-mkdir -p ../../app/src/main/jniLibs/armeabi-v7a
-mkdir -p ../../app/src/main/jniLibs/arm64-v8a
+mkdir -p ../../../app/src/main/jniLibs/armeabi
+mkdir -p ../../../app/src/main/jniLibs/armeabi-v7a
+mkdir -p ../../../app/src/main/jniLibs/arm64-v8a
 
 echo "OpenVK Legacy | Copying libraries to project..."
 echo;
