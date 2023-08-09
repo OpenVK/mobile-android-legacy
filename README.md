@@ -31,7 +31,7 @@ To compile them you need:
   Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
 
   Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
-+ **[Android NDK r8e](http://web.archive.org/web/20130629195058/http://developer.android.com/tools/sdk/ndk/index.html#Downloads) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
++ **[Android NDK r7](http://web.archive.org/web/20111128081351/http://developer.android.com/sdk/ndk/index.html) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
 
   Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.5 support in older versions of Android.
@@ -39,11 +39,13 @@ To compile them you need:
   Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
 + **Installed dependencies** \
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos).
+
+  To run 32-bit executables, including NDK r7, you will need to install the following packages: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` for Ubuntu/Debian/Linux Mint.
 + **Scripts that build FFmpeg from source** \
   Run the command inside the OpenVK Legacy repository in terminal:
   ```sh
    chmod +x ./build-ffmpeg.sh && \
-   ANDROID_NDK_HOME=[path_to_r8e] ./build-ffmpeg.sh 0.8.5 && \
+   ANDROID_NDK_HOME=[path_to_r7] ./build-ffmpeg.sh 0.8.5 && \
    ANDROID_NDK_HOME=[path_to_r11c] ./build-ffmpeg.sh 2.6
   ```
 
