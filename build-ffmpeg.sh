@@ -36,14 +36,14 @@ echo "OpenVK Legacy | Copying libraries to project..."
 echo;
 
 if [[ -z $1 ]]; then
-    cp ./ffmpeg-2.6/android/arm64-v8a/libffmpeg.so ../../app/src/main/jniLibs/arm64-v8a
-    cp ./ffmpeg-0.8.5/android/armeabi/libffmpeg.so ../../app/src/main/jniLibs/armeabi
-    cp ./ffmpeg-0.8.5/android/armeabi-v7a/libffmpeg.so ../../app/src/main/jniLibs/armeabi-v7a
+    cp ./ffmpeg-2.6/android/arm64-v8a/libffmpeg.so ../../../app/src/main/jniLibs/arm64-v8a
+    cp ./ffmpeg-0.8.5/android/armeabi/libffmpeg.so ../../../app/src/main/jniLibs/armeabi
+    cp ./ffmpeg-0.8.5/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
 elif [ $1 == "0.8.5" ]; then
-    cp ./ffmpeg-0.8.5/android/armeabi/libffmpeg.so ../../app/src/main/jniLibs/armeabi
-    cp ./ffmpeg-0.8.5/android/armeabi-v7a/libffmpeg.so ../../app/src/main/jniLibs/armeabi-v7a
+    cp ./ffmpeg-0.8.5/android/armeabi/libffmpeg.so ../../../app/src/main/jniLibs/armeabi
+    cp ./ffmpeg-0.8.5/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
 else
-    cp ./ffmpeg-2.6/android/arm64-v8a/libffmpeg.so ../../app/src/main/jniLibs/arm64-v8a
+    cp ./ffmpeg-2.6/android/arm64-v8a/libffmpeg.so ../../../app/src/main/jniLibs/arm64-v8a
 fi;
 
 echo "OpenVK Legacy | Done!"

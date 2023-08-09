@@ -150,10 +150,6 @@ extern "C" {
                     LOGE(1, "[ERROR] Cannot find a video stream");
                 }
                 return NULL;
-            } else {
-                if(debug_mode) {
-                    LOGI(10, "[INFO] Video codec: %s", lVideoCodec->name);
-                }
             }
             if (gVideoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
@@ -188,10 +184,6 @@ extern "C" {
                     LOGE(1, "[ERROR] Cannot find a video stream");
                 }
                 return NULL;
-            } else {
-                if(debug_mode) {
-                    LOGI(10, "[INFO] Audio codec: %s", lAudioCodec->name);
-                }
             }
             if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
@@ -204,9 +196,6 @@ extern "C" {
             #ifdef SELECTIVE_DECODING
                     gAudioCodecCtx->allow_selective_decoding = 1;
             #endif
-            if(debug_mode) {
-                LOGI(10, "[DEBUG] Opening audio codec...");
-            }
             if (avcodec_open(gAudioCodecCtx, lAudioCodec) < 0) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Can't open the audio codec!");
@@ -254,32 +243,23 @@ jobject generateTrackInfo(
     jclass track_class;
     try {
         if (type == AVMEDIA_TYPE_VIDEO) {
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Loading OvkVideoTrack Java class");
-            }
             // Load OvkVideoTrack class
             track_class = env->FindClass(
                     "uk/openvk/android/legacy/utils/media/OvkVideoTrack"
             );
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Loading OvkVideoTrack Java class method");
-            }
             // Load OvkVideoTrack class method
             jmethodID video_track_init = env->GetMethodID(
                     track_class, "<init>", "()V"
             );
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Loading OvkVideoTrack Java class field (codec_name)");
-            }
             jfieldID codec_name_field = env->GetFieldID(
                     track_class, "codec_name", "Ljava/lang/String;"
             );
             jfieldID frame_size_field = env->GetFieldID(track_class, "frame_size", "[I");
             jfieldID bitrate_field = env->GetFieldID(
-                    track_class, "bitrate", "Ljava/lang/Integer;"
+                    track_class, "bitrate", "I"
             );
             jfieldID frame_rate_field = env->GetFieldID(
-                    track_class, "frame_rate", "Ljava/lang/Float;"
+                    track_class, "frame_rate", "F"
             );
 
             jobject track = env->NewObject(track_class, video_track_init);
@@ -295,17 +275,10 @@ jobject generateTrackInfo(
             env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
             return track;
         } else {
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Loading OvkAudioTrack Java class");
-            }
             // Load OvkAudioTrack class
             track_class = env->FindClass(
                     "uk/openvk/android/legacy/utils/media/OvkAudioTrack"
             );
-
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Loading OvkAudioTrack Java class method");
-            }
             // Load OvkVideoTrack class methods
             jmethodID audio_track_init = env->GetMethodID(
                     track_class, "<init>", "()V"

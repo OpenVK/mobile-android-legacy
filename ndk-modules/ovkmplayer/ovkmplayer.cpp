@@ -158,13 +158,9 @@ extern "C" {
                                                     0);
             if (gAudioStreamIndex == AVERROR_STREAM_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Cannot find a video stream");
+                    LOGE(1, "[ERROR] Cannot find a audio stream");
                 }
                 return NULL;
-            } else {
-                if(debug_mode) {
-                    LOGI(10, "[INFO] Audio codec: %s", lAudioCodec->name);
-                }
             }
             if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
@@ -173,22 +169,19 @@ extern "C" {
                 return NULL;
             }
             /*open the codec*/
-            gAudioCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
-            if(debug_mode) {
-                LOGI(10, "[INFO] Frame size: %dx%d", gVideoCodecCtx->height, gVideoCodecCtx->width);
-            }
+            gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
             #ifdef SELECTIVE_DECODING
                     gAudioCodecCtx->allow_selective_decoding = 1;
             #endif
-            if (avcodec_open2(gVideoCodecCtx, lAudioCodec, NULL) < 0) {
+            if (avcodec_open2(gAudioCodecCtx, lAudioCodec, NULL) < 0) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Can't open the audio codec!");
                 }
                 return NULL;
             }
             return generateTrackInfo(
-                    env, instance, gFormatCtx->streams[gVideoStreamIndex],
-                    lAudioCodec, gVideoCodecCtx, AVMEDIA_TYPE_AUDIO
+                    env, instance, gFormatCtx->streams[gAudioStreamIndex],
+                    lAudioCodec, gAudioCodecCtx, AVMEDIA_TYPE_AUDIO
             );
         }
 
@@ -215,6 +208,15 @@ extern "C" {
 jobject generateTrackInfo(
         JNIEnv* env, jobject instance, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type
 ) {
+    // JNI field types (bad stuff, don't you agree?)
+    // [JNI] => [java]
+    // "[?"  => ?[] == int[], bool[], long[] and etc.
+    // "I"   => int
+    // "J"   => long (aka. int64)
+    // "Z"   => boolean
+    // "D"   => double
+    // "F"   => float
+
     jclass track_class;
     try {
         if (type == AVMEDIA_TYPE_VIDEO) {
@@ -238,15 +240,17 @@ jobject generateTrackInfo(
                     track_class, "frame_rate", "Ljava/lang/Float;"
             );
 
+            jobject track = env->NewObject(track_class, video_track_init);
+
             // Load OvkVideoTrack values form fields (class variables)
-            env->SetObjectField(track_class, codec_name_field, env->NewStringUTF(pCodec->name));
-            jintArray array = (jintArray) env->GetObjectField(track_class, frame_size_field);
+            env->SetObjectField(track, codec_name_field, env->NewStringUTF(pCodec->name));
+            jintArray array = (jintArray) env->GetObjectField(track, frame_size_field);
             jint *frame_size = env->GetIntArrayElements(array, 0);
             frame_size[0] = pCodecCtx->width;
             frame_size[1] = pCodecCtx->height;
             env->ReleaseIntArrayElements(array, frame_size, 0);
-            env->SetIntField(track_class, bitrate_field, pCodecCtx->bit_rate);
-            env->SetFloatField(track_class, frame_rate_field, pStream->avg_frame_rate.num);
+            env->SetIntField(track, bitrate_field, pCodecCtx->bit_rate);
+            env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
         } else {
             // Load OvkAudioTrack class
             track_class = env->FindClass(
@@ -260,19 +264,22 @@ jobject generateTrackInfo(
                     track_class, "codec_name", "Ljava/lang/String;"
             );
             jfieldID bitrate_field = env->GetFieldID(
-                    track_class, "bitrate", "Ljava/lang/Integer;"
+                    track_class, "bitrate", "J"
             );
             jfieldID sample_rate_field = env->GetFieldID(
-                    track_class, "frame_rate", "Ljava/lang/Integer;"
+                    track_class, "sample_rate", "J"
             );
             jfieldID channels_field = env->GetFieldID(
-                    track_class, "channels", "Ljava/lang/Integer;"
+                    track_class, "channels", "I"
             );
 
+            jobject track = env->NewObject(track_class, audio_track_init);
+
             // Load OvkAudioTrack values form fields (class variables)
-            env->SetObjectField(instance, codec_name_field, env->NewStringUTF(pCodec->name));
-            env->SetIntField(instance, bitrate_field, pCodecCtx->bit_rate);
-            env->SetIntField(instance, channels_field, pCodecCtx->channels);
+            env->SetObjectField(track, codec_name_field, env->NewStringUTF(pCodec->name));
+            env->SetLongField(track, sample_rate_field, pCodecCtx->sample_rate);
+            env->SetLongField(track, bitrate_field, pCodecCtx->bit_rate);
+            env->SetIntField(track, channels_field, pCodecCtx->channels);
         }
     } catch (...) {
         if(debug_mode) {
