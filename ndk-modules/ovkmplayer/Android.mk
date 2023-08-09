@@ -45,6 +45,7 @@ else
 endif
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)
+LOCAL_CPP_FEATURES := exceptions
 LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
 LOCAL_LDLIBS    := -llog -lz -lm $(LOCAL_PATH)/../../app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
 

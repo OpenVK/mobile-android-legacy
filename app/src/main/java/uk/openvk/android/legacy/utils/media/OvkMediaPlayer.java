@@ -31,12 +31,17 @@ public class OvkMediaPlayer {
     private final Context ctx;
     String MPLAY_TAG = "OVK-MPLAY";
 
+    public static final int FFMPEG_ERROR_EOF = -541478725;
+
     private native String showLogo();
-    private native OvkMediaTrack getTrackInfo(String filename, int type);
+    private native Object getTrackInfo(String filename, int type);
+    private native int getLastErrorCode();
+    private native void setDebugMode(boolean value);
 
     @SuppressLint({"UnsafeDynamicallyLoadedCode", "SdCardPath"})
     private static void loadLibrary(Context ctx, String name) {
-        if(BuildConfig.BUILD_TYPE.equals("release")) {
+        if(BuildConfig.BUILD_TYPE.equals("release")
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             System.loadLibrary(String.format("%s", name));
         } else {
             // unsafe but changeable
@@ -49,11 +54,15 @@ public class OvkMediaPlayer {
         loadLibrary(ctx, "ffmpeg");
         loadLibrary(ctx, "ovkmplayer");
         Log.v(MPLAY_TAG, showLogo());
+        setDebugMode(true);
     }
 
     public ArrayList<OvkMediaTrack> getMediaInfo(String filename) {
         ArrayList<OvkMediaTrack> tracks = new ArrayList<>();
         OvkVideoTrack video_track = (OvkVideoTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_VIDEO);
+        if(getLastErrorCode() == FFMPEG_ERROR_EOF) {
+            return null;
+        }
         OvkAudioTrack audio_track = (OvkAudioTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_AUDIO);
         tracks.add(video_track);
         tracks.add(audio_track);
