@@ -29,10 +29,10 @@ _Работает на OpenVK API._
 Чтобы собрать их, вам понадобится:
 + **Дистрибутив GNU/Linux или WSL2** \
   Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем добавления сборки под Windows/Cygwin и macOS. Сборка проверена на Ubuntu 12.04 LTS, может быть также возможна в последних версиях дистрибутивов.
-+ **[Android NDK r7](http://web.archive.org/web/20111128081351/http://developer.android.com/sdk/ndk/index.html) и [Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
++ **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) и [Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
   Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`.
 
-  Android NDK `r7` настоятельно рекомендуется для предоставления поддержки FFmpeg 0.8.5 в старых версиях Android.
+  Android NDK `r8e` настоятельно рекомендуется для предоставления поддержки FFmpeg 0.8.5 в старых версиях Android.
 
   Также абсолютный путь к NDK (в котором содержится директория `platforms`) в настройках проекта необходимо изменить так, чтобы синхронизация с Gradle шла корректно.
 + **Установленные зависимости** \
