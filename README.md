@@ -34,7 +34,7 @@ To compile them you need:
 + **[Android NDK r7](http://web.archive.org/web/20111128081351/http://developer.android.com/sdk/ndk/index.html) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
 
-  Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.5 support in older versions of Android.
+  Android NDK `r7` is highly recommended for providing FFmpeg 0.8.5 support in older versions of Android.
 
   Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
 + **Installed dependencies** \
@@ -49,7 +49,7 @@ To compile them you need:
    ANDROID_NDK_HOME=[path_to_r11c] ./build-ffmpeg.sh 2.6
   ```
 
-  TODO: Restore FFMPEG Android builder submodule
+  TODO: Restore FFmpeg Android builder submodule
   ~~The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the submodules of the `ndk-modules` directory.~~
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.

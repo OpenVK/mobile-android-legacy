@@ -29,20 +29,22 @@ _Работает на OpenVK API._
 Чтобы собрать их, вам понадобится:
 + **Дистрибутив GNU/Linux или WSL2** \
   Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем добавления сборки под Windows/Cygwin и macOS. Сборка проверена на Ubuntu 12.04 LTS, может быть также возможна в последних версиях дистрибутивов.
-+ **[Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
++ **[Android NDK r7](http://web.archive.org/web/20111128081351/http://developer.android.com/sdk/ndk/index.html) и [Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
   Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`.
 
-  Android NDK `r8e` настоятельно рекомендуется для предоставления поддержки FFmpeg 0.8.5 в старых версиях Android.
+  Android NDK `r7` настоятельно рекомендуется для предоставления поддержки FFmpeg 0.8.5 в старых версиях Android.
 
   Также абсолютный путь к NDK (в котором содержится директория `platforms`) в настройках проекта необходимо изменить так, чтобы синхронизация с Gradle шла корректно.
 + **Установленные зависимости** \
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
+
+  Для запуска исполняемых файлов, включая NDK r7, необходимо доустановить следующие пакеты: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` для Ubuntu/Debian/Linux Mint.
 + **Скрипты, собирающие FFmpeg из исходных кодов** \
   Запустите команду внутри репозитория OpenVK Legacy в терминале:
   `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`
 
-  Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодулях директории `ndk-modules`.
-
+  TODO: Восстановить подмодуль сборщика FFmpeg для Android.
+  ~~Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодулях директории `ndk-modules`.~~
 
 **ВНИМАНИЕ!** После возникновения ошибки `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` в задаче `:[package_name]:mockableAndroidJar`, при использовании Android SDK Build-tools 28 и выше необходимо очистить проект (Clean Project).
 
