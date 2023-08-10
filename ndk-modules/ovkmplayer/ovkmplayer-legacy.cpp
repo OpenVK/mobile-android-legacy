@@ -23,6 +23,7 @@
 #include <time.h>
 #include <math.h>
 #include <limits.h>
+#include <wchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -46,6 +47,7 @@ extern "C"{
 
 // Android implementations headers
 #include <android/log.h>
+#include <builder/ffmpeg-2.6/android/arm64-v8a/include/libavutil/frame.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
@@ -83,6 +85,16 @@ jobject generateTrackInfo(JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCod
 
 bool debug_mode;
 
+AVDictionary *avFormatOptions = NULL;
+AVDictionary *avCodecOptions = NULL;
+
+jint g_playbackState;
+jint FFMPEG_PLAYBACK_STOPPED = 0;
+jint FFMPEG_PLAYBACK_PLAYING = 1;
+jint FFMPEG_PLAYBACK_PAUSED = 2;
+
+int gFrameCount;
+
 extern "C" {
     JNIEXPORT jstring JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_showLogo(JNIEnv *env, jobject instance) {
@@ -106,12 +118,12 @@ extern "C" {
         }
     }
 
-    JNIEXPORT jobject JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo(
+    JNIEXPORT jint JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile(
             JNIEnv *env, jobject instance,
-            jstring filename_,
-            jint type) {
+            jstring filename_) {
         const char *filename = env->GetStringUTFChars(filename_, 0);
+        gFileName = (char *) filename;
         if(debug_mode) {
             LOGD(10, "[DEBUG] Registering FFmpeg units...");
         }
@@ -123,7 +135,7 @@ extern "C" {
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't open file: %d", gErrorCode);
             }
-            return NULL;    //open file failed
+            return gErrorCode;    //open file failed
         }
         /*retrieve stream information*/
         if ((gErrorCode = av_find_stream_info(gFormatCtx)) < 0) {
@@ -132,8 +144,100 @@ extern "C" {
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't find stream information: %s (%d)", error_string, gErrorCode);
             }
-            return NULL;
+            return gErrorCode;
         }
+    }
+
+    JNIEXPORT jint JNICALL
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderFrames
+                (JNIEnv *env, jobject instance, jintArray buffer, jlong gFrameNumber) {
+        if(g_playbackState == FFMPEG_PLAYBACK_PLAYING) {
+            int               err, i, got_frame, frame_size;
+            AVDictionaryEntry *e;
+            AVCodecContext    *pCodecCtx = NULL;
+            AVCodec           *pCodec = NULL;
+            AVFrame           *pFrame = NULL;
+            AVFrame           *pFrameRGB = NULL;
+            AVPacket          packet;
+            int               endOfVideo;
+            uint8_t *output_buf, *frame_buf;
+
+            AVStream *pVideoStream = gFormatCtx->streams[gVideoStreamIndex];
+            pCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
+            pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
+
+            if(pCodec == NULL) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                }
+                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
+                gErrorCode = -2;
+                return gErrorCode;
+            }
+
+            e = NULL;
+            while ((e = av_dict_get(avCodecOptions, "", e, AV_DICT_IGNORE_SUFFIX))) {
+                if(debug_mode) {
+                    LOGE(10, "avcodec_open2: option \"%s\" not recognized", e->key);
+                    gErrorCode = -2;
+                    return gErrorCode;
+                }
+            }
+
+            pFrame = avcodec_alloc_frame();
+            pFrameRGB = avcodec_alloc_frame();
+            frame_size = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
+                                        pCodecCtx->height);
+            frame_buf = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
+            if(pFrame == NULL || pFrameRGB == NULL) {
+                if(debug_mode) {
+                    LOGE(10, "[ERROR] Cannot allocate video frames");
+                }
+                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
+                gErrorCode = -3;
+                return gErrorCode;
+            } else if (av_read_frame(gFormatCtx, &packet) >= 0 && packet.stream_index == gVideoStreamIndex) {
+                avpicture_fill((AVPicture *) pFrameRGB, frame_buf, PIX_FMT_RGB24,
+                                   pCodecCtx->width, pCodecCtx->height);
+                avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
+                if (got_frame) {
+                    frame_buf = (uint8_t *) pFrameRGB->data;
+                }
+                av_free_packet(&packet);
+                return 1;
+            }
+        }
+    }
+
+    JNIEXPORT jobject JNICALL
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
+                (JNIEnv *env, jobject instance, jint state) {
+        g_playbackState = state;
+        if(state == FFMPEG_PLAYBACK_PLAYING) {
+
+        }
+    }
+
+    JNIEXPORT jint JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getPlaybackState
+            (JNIEnv *env, jobject instance) {
+        return g_playbackState;
+    }
+
+    JNIEXPORT jobject JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo(
+            JNIEnv *env, jobject instance,
+            jstring filename_,
+            jint type) {
+        const char *filename = env->GetStringUTFChars(filename_, 0);
+        if(gFileName == NULL) {
+            gFileName = (char *) filename;
+            if(Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile
+                    (env, instance, filename_) < 0) {
+                return NULL;
+            }
+        }
+
         if (type == 0) {
             AVCodec *lVideoCodec;
             /*some global variables initialization*/
@@ -217,6 +321,14 @@ extern "C" {
     ) {
         return gErrorCode;
     }
+
+    JNIEXPORT jlong JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getFrameCount(
+            JNIEnv *env, jobject instance
+    ) {
+        return gFrameCount;
+    }
+
 
     JNIEXPORT jstring JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getLastErrorString(

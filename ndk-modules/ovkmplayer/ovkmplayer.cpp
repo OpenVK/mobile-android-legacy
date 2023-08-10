@@ -50,6 +50,11 @@ AVCodecContext *gAudioCodecCtx;
 
 bool debug_mode;
 
+jint g_playbackState;
+jint FFMPEG_PLAYBACK_STOPPED = 0;
+jint FFMPEG_PLAYBACK_PLAYING = 2;
+jint FFMPEG_PLAYBACK_PAUSED = 1;
+
 jobject generateTrackInfo(JNIEnv* env, jobject instance,
                           AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
 
@@ -187,6 +192,21 @@ extern "C" {
 
         env->ReleaseStringUTFChars(filename_, filename);
     };
+
+    JNIEXPORT jobject JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
+            (JNIEnv *env, jobject instance, jint state) {
+        g_playbackState = state;
+        if(state == FFMPEG_PLAYBACK_PLAYING) {
+
+        }
+    }
+
+    JNIEXPORT jint JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getPlaybackState
+                                                (JNIEnv *env, jobject instance) {
+        return g_playbackState;
+    }
 
     JNIEXPORT jint JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getLastErrorCode(

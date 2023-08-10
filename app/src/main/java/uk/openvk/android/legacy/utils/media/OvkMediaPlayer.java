@@ -32,9 +32,14 @@ public class OvkMediaPlayer {
     String MPLAY_TAG = "OVK-MPLAY";
 
     public static final int FFMPEG_ERROR_EOF = -541478725;
+    public static final int STATE_STOPPED = 0;
+    public static final int STATE_PLAYING = 1;
+    public static final int STATE_PAUSED = 2;
 
     private native String showLogo();
     private native Object getTrackInfo(String filename, int type);
+    private native int getPlaybackState();
+    private native void setPlaybackState(int playbackState);
     private native int getLastErrorCode();
     private native void setDebugMode(boolean value);
 
@@ -75,5 +80,12 @@ public class OvkMediaPlayer {
             Log.e(MPLAY_TAG, "Audio track not found!");
         }
         return tracks;
+    }
+
+    public void play() {
+        if(getPlaybackState() == STATE_PAUSED) {
+            setPlaybackState(STATE_PLAYING);
+
+        }
     }
 }
