@@ -1,5 +1,5 @@
 #!/bin/bash
-#  FFmpeg 0.8.5 & 4.0.4 for Android automatic build script using builder by Tinelix
+#  FFmpeg 0.7.1, 0.8.5 & 4.0.4 for Android automatic build script using builder by Tinelix
 #  NOTICE: FFmpeg and FFmpeg for Android builder by Tinelix licensed under LGPLv3 or later version.
 
 echo "OpenVK Legacy | Downloading from https://github.com/tinelix/ffmpeg-android-builder..."
@@ -45,6 +45,9 @@ if [[ -z $1 ]]; then
 elif [ $1 == "0.8.5" ]; then
     cp ./ffmpeg-0.8.5/android/armeabi/libffmpeg.so ../../../app/src/main/jniLibs/armeabi
     cp ./ffmpeg-0.8.5/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
+elif [ $1 == "0.7.1" ]; then
+    cp ./ffmpeg-0.7.1/android/armeabi/libffmpeg.so ../../../app/src/main/jniLibs/armeabi
+    cp ./ffmpeg-0.7.1/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
 else
     cp ./ffmpeg-2.6/android/arm64-v8a/libffmpeg.so ../../../app/src/main/jniLibs/arm64-v8a
 fi;
