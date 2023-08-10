@@ -49,6 +49,7 @@ extern "C"{
 
 // Android implementations headers
 #include <android/log.h>
+
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
     #include <libavutil/avstring.h>
@@ -61,6 +62,7 @@ extern "C" {
     #include <libswscale/swscale.h>
     #include <libavcodec/avcodec.h>
     #include <libavcodec/avfft.h>
+    #include <libavdevice/avdevice.h>
 }
 
 /*for Android logs*/
@@ -96,6 +98,16 @@ jint FFMPEG_PLAYBACK_PAUSED = 2;
 int gFrameCount;
 
 extern "C" {
+JNIEXPORT void JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_initFFmpeg(JNIEnv *env, jobject instance) {
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Initializing FFmpeg...");
+        }
+        av_register_all();
+        avcodec_register_all();
+
+    }
+
     JNIEXPORT jstring JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_showLogo(JNIEnv *env, jobject instance) {
         char logo[256] = "Logo";
@@ -129,15 +141,17 @@ extern "C" {
         }
         gFileName = (char *) filename;
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Registering FFmpeg units...");
-        }
-        av_register_all();
-        if(debug_mode) {
             LOGD(10, "[DEBUG] Opening file %s...", filename);
         }
         if ((gErrorCode = av_open_input_file(&gFormatCtx, filename, NULL, 0, NULL)) != 0) {
             char error_string[192];
-            av_strerror(gErrorCode, error_string, 192);
+            if(gErrorCode == -2) {
+                sprintf(error_string, "File not found");
+            } else {
+                if (av_strerror(gErrorCode, error_string, 192) < 0) {
+                    strerror_r(-gErrorCode, error_string, 192);
+                }
+            }
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't open file: %d (%s)", gErrorCode, error_string);
             }
@@ -227,11 +241,21 @@ extern "C" {
     }
 
     JNIEXPORT jobject JNICALL
-        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
-                (JNIEnv *env, jobject instance, jint state) {
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
+            (JNIEnv *env, jobject instance, jint state) {
         g_playbackState = state;
         if(state == FFMPEG_PLAYBACK_PLAYING) {
-
+            if(debug_mode) {
+                LOGD(1, "[DEBUG] Setting playback state to \"Playing\"...");
+            }
+        } else if(state == FFMPEG_PLAYBACK_PAUSED){
+            if(debug_mode) {
+                LOGD(1, "[DEBUG] Setting playback state to \"Paused\"...");
+            }
+        } else if(state == FFMPEG_PLAYBACK_STOPPED) {
+            if(debug_mode) {
+                LOGD(1, "[DEBUG] Setting playback state to \"Stopped\"...");
+            }
         }
     }
 
@@ -282,7 +306,8 @@ extern "C" {
             }
 
             if(debug_mode) {
-                LOGD(10, "[DEBUG] Video stream detected. Opening...");
+                LOGD(10, "[DEBUG] Total streams: %d |  Video stream #%d detected. Opening...",
+                     gFormatCtx->nb_streams, gVideoStreamIndex + 1);
             }
 
             /*open the codec*/
@@ -328,10 +353,11 @@ extern "C" {
                 return NULL;
             }
 
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Audio stream detected. Opening...");
-            }
             /*open the codec*/
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
+                     gFormatCtx->nb_streams, gAudioStreamIndex + 1);
+            }
             gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
             LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", gAudioCodecCtx->codec->name,
                  gAudioCodecCtx->sample_rate);

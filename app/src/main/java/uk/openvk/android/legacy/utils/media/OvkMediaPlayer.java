@@ -83,6 +83,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private OnCompletionListener onCompletionListener;
     private Handler handler;
 
+    private native void initFFmpeg();
     private native String showLogo();
     private native Object getTrackInfo(String filename, int type);
     private native int getPlaybackState();
@@ -121,6 +122,7 @@ public class OvkMediaPlayer extends MediaPlayer {
         loadLibrary(ctx, "ovkmplayer");
         Log.v(MPLAY_TAG, showLogo());
         setDebugMode(true);
+        initFFmpeg();
         handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -196,6 +198,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                     Message msg = new Message();
                     msg.what = MESSAGE_ERROR;
                     msg.getData().putInt("error_code", getLastErrorCode());
+                    handler.sendMessage(msg);
                     setPlaybackState(STATE_STOPPED);
                 } else if(getMediaInfo() == null) {
                     Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));

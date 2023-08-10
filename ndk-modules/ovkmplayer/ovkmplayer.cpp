@@ -28,6 +28,7 @@ extern "C" {
     #include <libavutil/imgutils.h>
     #include <libavformat/avformat.h>
     #include <libavformat/url.h>
+    #include <libavdevice/avdevice.h>
 }
 
 /*for Android logs*/
@@ -64,6 +65,16 @@ jobject generateTrackInfo(JNIEnv* env, jobject instance,
                           AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
 
 extern "C" {
+    JNIEXPORT void JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_initFFmpeg(JNIEnv *env, jobject instance) {
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Initializing FFmpeg...");
+        }
+        av_register_all();
+        avcodec_register_all();
+        gFormatCtx = avformat_alloc_context();
+    }
+
     JNIEXPORT jstring JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_showLogo(JNIEnv *env, jobject instance) {
         char logo[256] = "Logo";
@@ -98,17 +109,14 @@ extern "C" {
         const char *filename = env->GetStringUTFChars(filename_, 0);
         gFileName = (char *) filename;
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Registering FFmpeg units...");
-        }
-        av_register_all();
-        avcodec_register_all();
-        if(debug_mode) {
             LOGD(10, "[DEBUG] Opening file %s...", filename);
         }
         if ((gErrorCode = avformat_open_input(&gFormatCtx, filename, NULL, NULL)) != 0) {
             if(debug_mode) {
                 char error_string[192];
-                av_strerror(gErrorCode, error_string, 192);
+                if(av_strerror(gErrorCode, error_string, 192) < 0) {
+                    strerror_r(-gErrorCode, error_string, 192);
+                }
                 LOGE(1, "[ERROR] Can't open file: %d (%s)", gErrorCode, error_string);
             }
             g_playbackState = 0;
@@ -237,6 +245,12 @@ extern "C" {
                 g_playbackState = 0;
                 return NULL;
             }
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Total streams: %d |  Video stream #%d detected. Opening...",
+                     gFormatCtx->nb_streams, gVideoStreamIndex + 1);
+            }
+
             /*open the codec*/
             gVideoCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
             if(debug_mode) {
@@ -272,10 +286,6 @@ extern "C" {
                     LOGE(1, "[ERROR] Cannot find a audio stream");
                 }
                 return NULL;
-            } else {
-                if(debug_mode) {
-                    LOGI(10, "[INFO] Audio codec: %s", lAudioCodec->name);
-                }
             }
 
             if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
@@ -285,6 +295,12 @@ extern "C" {
                 }
                 return NULL;
             }
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Total streams: %d |  Audio stream #%d detected. Opening...",
+                     gFormatCtx->nb_streams, gAudioStreamIndex + 1);
+            }
+
             /*open the codec*/
             gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
             #ifdef SELECTIVE_DECODING
@@ -311,15 +327,15 @@ extern "C" {
         g_playbackState = state;
         if(state == FFMPEG_PLAYBACK_PLAYING) {
             if(debug_mode) {
-                LOGE(1, "[DEBUG] Setting playback state to \"Playing\"...");
+                LOGD(1, "[DEBUG] Setting playback state to \"Playing\"...");
             }
         } else if(state == FFMPEG_PLAYBACK_PAUSED){
             if(debug_mode) {
-                LOGE(1, "[DEBUG] Setting playback state to \"Paused\"...");
+                LOGD(1, "[DEBUG] Setting playback state to \"Paused\"...");
             }
         } else if(state == FFMPEG_PLAYBACK_STOPPED) {
             if(debug_mode) {
-                LOGE(1, "[DEBUG] Setting playback state to \"Stopped\"...");
+                LOGD(1, "[DEBUG] Setting playback state to \"Stopped\"...");
             }
         }
     }
