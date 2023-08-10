@@ -16,7 +16,7 @@
 
 LOCAL_PATH := $(call my-dir)
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-   FFMPEG_VERSION = 2.6
+   FFMPEG_VERSION = 3.1.4
 else
    FFMPEG_VERSION = 0.8.5
 endif
