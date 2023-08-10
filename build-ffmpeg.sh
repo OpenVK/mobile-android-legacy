@@ -20,8 +20,8 @@ elif [ $1 == "0.7.1" ]; then
     ./build-android-0.7.1.sh armv6 r5b
     ./build-android-0.7.1.sh armv7 r5b
 elif [ $1 == "0.8.5" ]; then
-    ./build-android-0.8.5.sh armv6 r8e
-    ./build-android-0.8.5.sh armv7 r8e
+    ./build-android-0.8.5.sh armv6 r5b
+    ./build-android-0.8.5.sh armv7 r5b
 elif [ $1 == "2.6" ]; then
     ./build-android-2.6.sh armv8a
 else
