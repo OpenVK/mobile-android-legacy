@@ -31,6 +31,8 @@
 #include <assert.h>
 
 // Non-standard 'stdint' implementation
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
 extern "C"{
     #ifdef __cplusplus
     #define __STDC_CONSTANT_MACROS
@@ -128,13 +130,16 @@ extern "C" {
         }
         av_register_all();
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Opening file...");
+            LOGD(10, "[DEBUG] Opening file %s...", filename);
         }
         if ((gErrorCode = av_open_input_file(&gFormatCtx, filename, NULL, 0, NULL)) != 0) {
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't open file: %d", gErrorCode);
             }
             return gErrorCode;    //open file failed
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Searching stream information...", filename);
         }
         /*retrieve stream information*/
         if ((gErrorCode = av_find_stream_info(gFormatCtx)) < 0) {
@@ -149,7 +154,8 @@ extern "C" {
 
     JNIEXPORT jint JNICALL
         Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderFrames
-                (JNIEnv *env, jobject instance, jintArray buffer, jlong gFrameNumber) {
+                (JNIEnv *env, jobject instance, jobject buffer, jlong gFrameNumber) {
+        uint8_t* pFrameBuffer = (uint8_t *) (env)->GetDirectBufferAddress(buffer);
         if(g_playbackState == FFMPEG_PLAYBACK_PLAYING) {
             int               err, i, got_frame, frame_size;
             AVDictionaryEntry *e;
@@ -159,7 +165,7 @@ extern "C" {
             AVFrame           *pFrameRGB = NULL;
             AVPacket          packet;
             int               endOfVideo;
-            uint8_t *output_buf, *frame_buf;
+            uint8_t *output_buf;
 
             AVStream *pVideoStream = gFormatCtx->streams[gVideoStreamIndex];
             pCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
@@ -187,7 +193,7 @@ extern "C" {
             pFrameRGB = avcodec_alloc_frame();
             frame_size = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
                                         pCodecCtx->height);
-            frame_buf = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
+            pFrameBuffer = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
             if(pFrame == NULL || pFrameRGB == NULL) {
                 if(debug_mode) {
                     LOGE(10, "[ERROR] Cannot allocate video frames");
@@ -195,15 +201,21 @@ extern "C" {
                 g_playbackState = FFMPEG_PLAYBACK_STOPPED;
                 gErrorCode = -3;
                 return gErrorCode;
-            } else if (av_read_frame(gFormatCtx, &packet) >= 0 && packet.stream_index == gVideoStreamIndex) {
-                avpicture_fill((AVPicture *) pFrameRGB, frame_buf, PIX_FMT_RGB24,
+            } else if (packet.stream_index == gVideoStreamIndex) {
+                int ret = av_read_frame(gFormatCtx, &packet);
+                if(ret >= 0) {
+                    avpicture_fill((AVPicture *) pFrameRGB, pFrameBuffer, PIX_FMT_RGB24,
                                    pCodecCtx->width, pCodecCtx->height);
-                avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
-                if (got_frame) {
-                    frame_buf = (uint8_t *) pFrameRGB->data;
+                    avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
+                    if (got_frame) {
+                        pFrameBuffer = (uint8_t *) pFrameRGB->data;
+                    }
+                    av_free_packet(&packet);
+                    return 1;
+                } else if(ret == AVERROR_EOF){
+                    g_playbackState = FFMPEG_PLAYBACK_STOPPED;
+                    return 0;
                 }
-                av_free_packet(&packet);
-                return 1;
             }
         }
     }
@@ -278,19 +290,19 @@ extern "C" {
             );
         } else {
             AVCodec *lAudioCodec;
-            /*find the video stream and its decoder*/
+            /*find the audio stream and its decoder*/
             gAudioStreamIndex = av_find_best_stream(gFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
                                                     &lAudioCodec,
                                                     0);
             if (gAudioStreamIndex == AVERROR_STREAM_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Cannot find a video stream");
+                    LOGE(1, "[ERROR] Cannot find a audio stream");
                 }
                 return NULL;
             }
             if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                    LOGE(1, "[ERROR] Audio stream found, but decoder is unavailable.");
                 }
                 return NULL;
             }
@@ -425,3 +437,4 @@ jobject generateTrackInfo(
     }
     return NULL;
 }
+#pragma clang diagnostic pop

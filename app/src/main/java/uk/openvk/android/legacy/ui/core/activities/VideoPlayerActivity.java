@@ -2,6 +2,9 @@ package uk.openvk.android.legacy.ui.core.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -22,14 +26,19 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -52,7 +61,7 @@ public class VideoPlayerActivity extends Activity {
     private String url;
     private MediaController mediaCtrl;
     private VideoView video_view;
-    private MediaPlayer mp;
+    private OvkMediaPlayer mp;
     private boolean ready;
     private Handler handler;
     private Runnable hideCtrl;
@@ -186,131 +195,11 @@ public class VideoPlayerActivity extends Activity {
     }
 
     private void createMediaPlayer(Uri uri) {
-        /*
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
-            try {
-                imp = new IjkMediaPlayer();
-                imp.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(IMediaPlayer mp) {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            getActionBar().setSubtitle(
-                                    String.format("%s, %s, %s",
-                                            getAvCodec("video"),
-                                            imp.getVideoHeight(),
-                                            imp.getMediaInfo().mMeta.mVideoStream.mBitrate)
-                            );
-                        }
-                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                        ready = true;
-                        findViewById(R.id.video_progress_wrap).setVisibility(View.GONE);
-                        findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
-                        vsv = findViewById(R.id.video_surface_view);
-                        SurfaceHolder vsh = vsv.getHolder();
-                        rescaleVideo(vsv, vsh);
-                        vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-                        mp.setDisplay(vsh);
-                        mp.start();
-                        new Handler(Looper.myLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(!isError()) {
-                                    updateControlPanel();
-                                }
-                                new Handler(Looper.myLooper()).postDelayed(this, 200);
-                            }
-                        });
-                        handler.postDelayed(hideCtrl, 5000);
-                    }
-                });
-                imp.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
-                    @Override
-                    public boolean onError(IMediaPlayer mp, int what, int extra) {
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                        isErr = true;
-                        mp.release();
-                        handler.removeCallbacks(hideCtrl);
-                        Log.e(OvkApplication.APP_TAG, String.format("Cannot load video. Code: %s", what));
-                        OvkAlertDialog err_dlg;
-                        err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
-                        findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
-                        builder.setCancelable(false);
-                        builder.setMessage(R.string.error);
-                        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        });
-                        builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent tp_player = new Intent(Intent.ACTION_VIEW);
-                                tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
-                                startActivity(tp_player);
-                                finish();
-                            }
-                        });
-                        int error_reason_id = R.string.video_err_decode;
-                        if(extra == IMediaPlayer.MEDIA_ERROR_TIMED_OUT
-                                || what == IMediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-                            error_reason_id = R.string.video_err_network;
-                        }
-                        err_dlg.build(builder, getResources().getString(R.string.error),
-                                getResources().getString(error_reason_id), null);
-                        err_dlg.show();
-                        return false;
-                    }
-                });
-                imp.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-                    @SuppressLint("DefaultLocale")
-                    @Override
-                    public void onCompletion(IMediaPlayer iMediaPlayer) {
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                        if(imp.getDuration() > 0) {
-                            ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d",
-                                    duration / 60, duration % 60));
-                            ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
-                        }
-                        showPlayControls();
-                    }
-                });
-
-                try {
-                    imp.setDataSource(this, uri);
-                    imp.prepareAsync();
-                } catch (IllegalArgumentException | IOException | IllegalStateException |
-                        SecurityException e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception ex) {
-                OvkAlertDialog err_dlg;
-                err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
-                AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
-                builder.setCancelable(false);
-                builder.setMessage(R.string.error);
-                builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                });
-                builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent tp_player = new Intent(Intent.ACTION_VIEW);
-                        tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
-                        startActivity(tp_player);
-                        finish();
-                    }
-                });
-                err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),
-                        null);
-                err_dlg.show();
-            }
-        } else {
-            mp = new OvkMediaPlayer();
+        OvkMediaPlayer mp = new OvkMediaPlayer(this);
+        Log.d(OvkApplication.APP_TAG, "Getting audio info...");
+        mp.setDataSource(url);
+        try {
+            mp.prepare();
             mp.setOnPreparedListener(new OvkMediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(OvkMediaPlayer mp) {
@@ -328,7 +217,7 @@ public class VideoPlayerActivity extends Activity {
                     new Handler(Looper.myLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-                            if(!isError()) {
+                            if (!isError()) {
                                 updateControlPanel();
                             }
                             new Handler(Looper.myLooper()).postDelayed(this, 200);
@@ -338,7 +227,7 @@ public class VideoPlayerActivity extends Activity {
             });
             mp.setOnErrorListener(new OvkMediaPlayer.OnErrorListener() {
                 @Override
-                public boolean onError(OvkMediaPlayer mp, int what, int extra) {
+                public boolean onError(OvkMediaPlayer mp, int what) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     isErr = true;
                     mp.release();
@@ -348,6 +237,7 @@ public class VideoPlayerActivity extends Activity {
                     err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
                     findViewById(R.id.video_thumbnail).setVisibility(View.GONE);
                     AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+                    builder.setCancelable(false);
                     builder.setMessage(R.string.error);
                     builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
@@ -365,24 +255,20 @@ public class VideoPlayerActivity extends Activity {
                         }
                     });
                     int error_reason_id = R.string.video_err_decode;
-                    if(extra == OvkMediaPlayer.MEDIA_ERROR_TIMED_OUT
-                            || what == OvkMediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-                        error_reason_id = R.string.video_err_network;
-                    }
-                    err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(error_reason_id), null);
+                    err_dlg.build(builder, getResources().getString(R.string.error),
+                            getResources().getString(error_reason_id), null);
                     err_dlg.show();
-
                     return false;
                 }
             });
             mp.setOnCompletionListener(new OvkMediaPlayer.OnCompletionListener() {
                 @SuppressLint("DefaultLocale")
                 @Override
-                public void onCompletion(OvkMediaPlayer mediaPlayer) {
+                public void onCompleted(OvkMediaPlayer mp) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                    if(mp.getDuration() > 0) {
-                        ((TextView) findViewById(R.id.video_time2)).setText(
-                                String.format("%d:%02d", duration / 60, duration % 60));
+                    if (mp.getDuration() > 0) {
+                        ((TextView) findViewById(R.id.video_time1)).setText(String.format("%d:%02d",
+                                duration / 60, duration % 60));
                         ((SeekBar) findViewById(R.id.video_seekbar)).setProgress(duration);
                     }
                     showPlayControls();
@@ -392,44 +278,35 @@ public class VideoPlayerActivity extends Activity {
             try {
                 mp.setDataSource(this, uri);
                 mp.prepareAsync();
-            } catch (IllegalArgumentException | IOException | IllegalStateException | SecurityException e) {
+            } catch (IllegalArgumentException | IllegalStateException |
+                    SecurityException e) {
                 e.printStackTrace();
             }
+        } catch (Exception ex) {
+            OvkAlertDialog err_dlg;
+            err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+            builder.setCancelable(false);
+            builder.setMessage(R.string.error);
+            builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
+                }
+            });
+            builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent tp_player = new Intent(Intent.ACTION_VIEW);
+                    tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
+                    startActivity(tp_player);
+                    finish();
+                }
+            });
+            err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),
+                    null);
+            err_dlg.show();
         }
-        ((SeekBar) findViewById(R.id.video_seekbar)).setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                ((SeekBar) findViewById(R.id.video_seekbar)).requestFocus();
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                seekProgress(seekBar.getProgress());
-            }
-        });
-        */
-    }
-
-    private String getAvCodec(String type) {
-        /*if(type.equals("video")) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
-                return imp.getMediaInfo().mMeta.mVideoStream.mCodecName;
-            } else {
-                return "N/A";
-            }
-        } else {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Build.CPU_ABI.equals("x86_64")) {
-                return imp.getMediaInfo().mMeta.mAudioStream.mCodecName;
-            } else {
-                return "N/A";
-            }
-        }*/ return "N/A";
     }
 
     private void seekProgress(int progress) {

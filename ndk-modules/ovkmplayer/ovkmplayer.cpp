@@ -48,12 +48,17 @@ int gAudioStreamIndex;    // audio stream index
 AVCodecContext *gVideoCodecCtx;
 AVCodecContext *gAudioCodecCtx;
 
+AVDictionary *avFormatOptions = NULL;
+AVDictionary *avCodecOptions = NULL;
+
 bool debug_mode;
 
 jint g_playbackState;
 jint FFMPEG_PLAYBACK_STOPPED = 0;
 jint FFMPEG_PLAYBACK_PLAYING = 2;
 jint FFMPEG_PLAYBACK_PAUSED = 1;
+
+jlong gFrameCount;
 
 jobject generateTrackInfo(JNIEnv* env, jobject instance,
                           AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
@@ -81,14 +86,14 @@ extern "C" {
         }
     }
 
-    JNIEXPORT jobject JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo(
+    JNIEXPORT jint JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile(
             JNIEnv *env, jobject instance,
-            jstring filename_,
-            jint type) {
+            jstring filename_) {
         const char *filename = env->GetStringUTFChars(filename_, 0);
+        gFileName = (char *) filename;
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Registering FFmpeg (en/de)codecs/protocols...");
+            LOGD(10, "[DEBUG] Registering FFmpeg units...");
         }
         av_register_all();
         if(debug_mode) {
@@ -98,9 +103,8 @@ extern "C" {
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't open file: %d", gErrorCode);
             }
-            return NULL;    //open file failed
+            return gErrorCode;    //open file failed
         }
-        LOGD(10, "[DEBUG] Searching stream info...");
         /*retrieve stream information*/
         if ((gErrorCode = avformat_find_stream_info(gFormatCtx, NULL)) < 0) {
             char error_string[192];
@@ -108,7 +112,90 @@ extern "C" {
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't find stream information: %s (%d)", error_string, gErrorCode);
             }
-            return NULL;
+            return gErrorCode;
+        }
+    }
+
+    JNIEXPORT jint JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderFrames
+            (JNIEnv *env, jobject instance, jobject buffer, jlong gFrameNumber) {
+        uint8_t* pFrameBuffer = (uint8_t *) (env)->GetDirectBufferAddress(buffer);
+        if(g_playbackState == FFMPEG_PLAYBACK_PLAYING) {
+            int               err, i, got_frame, frame_size;
+            AVDictionaryEntry *e;
+            AVCodecContext    *pCodecCtx = NULL;
+            AVCodec           *pCodec = NULL;
+            AVFrame           *pFrame = NULL;
+            AVFrame           *pFrameRGB = NULL;
+            AVPacket          packet;
+            int               endOfVideo;
+            uint8_t *output_buf;
+
+            AVStream *pVideoStream = gFormatCtx->streams[gVideoStreamIndex];
+            pCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
+            pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
+
+            if(pCodec == NULL) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                }
+                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
+                gErrorCode = -2;
+                return gErrorCode;
+            }
+
+            e = NULL;
+            while ((e = av_dict_get(avCodecOptions, "", e, AV_DICT_IGNORE_SUFFIX))) {
+                if(debug_mode) {
+                    LOGE(10, "avcodec_open2: option \"%s\" not recognized", e->key);
+                    gErrorCode = -2;
+                    return gErrorCode;
+                }
+            }
+
+            pFrame = avcodec_alloc_frame();
+            pFrameRGB = avcodec_alloc_frame();
+            frame_size = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
+                                            pCodecCtx->height);
+            pFrameBuffer = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
+            if(pFrame == NULL || pFrameRGB == NULL) {
+                if(debug_mode) {
+                    LOGE(10, "[ERROR] Cannot allocate video frames");
+                }
+                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
+                gErrorCode = -3;
+                return gErrorCode;
+            } else if (packet.stream_index == gVideoStreamIndex) {
+                int ret = av_read_frame(gFormatCtx, &packet);
+                if(ret >= 0) {
+                    avpicture_fill((AVPicture *) pFrameRGB, pFrameBuffer, PIX_FMT_RGB24,
+                                   pCodecCtx->width, pCodecCtx->height);
+                    avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
+                    if (got_frame) {
+                        pFrameBuffer = (uint8_t *) pFrameRGB->data;
+                    }
+                    av_free_packet(&packet);
+                    return 1;
+                } else if(ret == AVERROR_EOF){
+                    g_playbackState = FFMPEG_PLAYBACK_STOPPED;
+                    return 0;
+                }
+            }
+        }
+    }
+
+    JNIEXPORT jobject JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo(
+            JNIEnv *env, jobject instance,
+            jstring filename_,
+            jint type) {
+        const char *filename = env->GetStringUTFChars(filename_, 0);
+        if(gFileName == NULL) {
+            gFileName = (char *) filename;
+            if(Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile
+                       (env, instance, filename_) < 0) {
+                return NULL;
+            }
         }
         if (type == 0) {
             AVCodec *lVideoCodec;
@@ -206,6 +293,13 @@ extern "C" {
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getPlaybackState
                                                 (JNIEnv *env, jobject instance) {
         return g_playbackState;
+    }
+
+    JNIEXPORT jlong JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getFrameCount(
+            JNIEnv *env, jobject instance
+    ) {
+        return gFrameCount;
     }
 
     JNIEXPORT jint JNICALL

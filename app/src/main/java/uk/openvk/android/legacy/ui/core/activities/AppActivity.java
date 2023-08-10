@@ -144,10 +144,6 @@ public class AppActivity extends TranslucentFragmentActivity {
 
         last_longpoll_response = "";
 
-        OvkMediaPlayer mediaPlayer = new OvkMediaPlayer(this);
-        Log.d(OvkApplication.APP_TAG, "Getting audio info...");
-        mediaPlayer.getMediaInfo("http://ovk.tinelix.ru/assets/packages/static/openvk/audio/nomusic.mp3");
-
         installFragments();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
