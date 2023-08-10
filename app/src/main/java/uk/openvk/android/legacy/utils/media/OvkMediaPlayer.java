@@ -152,38 +152,48 @@ public class OvkMediaPlayer extends MediaPlayer {
     @Override
     public void setDisplay(SurfaceHolder sh) {
         this.holder = sh;
-        super.setDisplay(sh);
+        //super.setDisplay(sh);
     }
 
     @Override
     public void prepare() throws IOException, IllegalStateException {
         if(openMediaFile(dataSourceUrl) < 0) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
+            onErrorListener.onError(this, getLastErrorCode());
         } else if(getMediaInfo() == null) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
+            onErrorListener.onError(this, getLastErrorCode());
+        } else {
+            onPreparedListener.onPrepared(this);
         }
-        onPreparedListener.onPrepared(this);
     }
 
     @Override
     public void prepareAsync() throws IllegalStateException {
         if(openMediaFile(dataSourceUrl) < 0) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
+            onErrorListener.onError(this, getLastErrorCode());
+            setPlaybackState(STATE_STOPPED);
         } else if(getMediaInfo() == null) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
+            onErrorListener.onError(this, getLastErrorCode());
+            setPlaybackState(STATE_STOPPED);
+        } else {
+            onPreparedListener.onPrepared(this);
         }
-        onPreparedListener.onPrepared(this);
     }
 
     @Override
     public void start() throws IllegalStateException {
         if(getPlaybackState() == STATE_STOPPED || getPlaybackState() == STATE_PAUSED) {
+            Log.d(MPLAY_TAG, "Playing...");
             setPlaybackState(STATE_PLAYING);
             if(tracks != null) {
                 if(tracks.size() == 1) {
                     if (tracks.get(0) instanceof OvkVideoTrack) {
                         startRenderingFrames();
                     } else if (tracks.get(0) instanceof OvkAudioTrack) {
+                        Log.d(MPLAY_TAG, "Decoding audio...");
                         decodeAudio((OvkAudioTrack) tracks.get(0));
                     }
                 } else if(tracks.size() == 2) {
@@ -235,7 +245,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             @Override
             public void run() {
                 byte[] buffer = new byte[buf_size];
-                while (isPlaying()) {
+                while (getPlaybackState() == STATE_PLAYING) {
                     try {
                         synchronized (audio_track) {
                             audio_track.wait();
@@ -305,7 +315,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                     Paint fpaint = new Paint();
                     fpaint.setTextSize(15);
                     fpaint.setColor(Color.parseColor("#222222"));
-                    while (isPlaying()) {
+                    while (getPlaybackState() == STATE_PLAYING) {
                         if(holder != null && holder.lockCanvas() != null) {
                             int_buf.rewind();
                             renderFrames(int_buf, frames_count++);

@@ -151,14 +151,8 @@ public class VideoPlayerActivity extends Activity {
                 /  gnutls or securetransport enabled.
                 /  E/IJKMEDIA: https://[CDN address]: Protocol not found
                 */
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD &&
-                        !Build.CPU_ABI.equals("x86_64")) {
-                    url.replace("https", "http");
-                }
 
-                Uri uri = Uri.parse(url);
-
-                createMediaPlayer(uri);
+                createMediaPlayer(url);
                 (findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -194,12 +188,9 @@ public class VideoPlayerActivity extends Activity {
         ((ImageView) findViewById(R.id.video_thumbnail)).setImageBitmap(thumbnail);
     }
 
-    private void createMediaPlayer(Uri uri) {
+    private void createMediaPlayer(String url) {
         OvkMediaPlayer mp = new OvkMediaPlayer(this);
-        Log.d(OvkApplication.APP_TAG, "Getting audio info...");
-        mp.setDataSource(url);
         try {
-            mp.prepare();
             mp.setOnPreparedListener(new OvkMediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(OvkMediaPlayer mp) {
@@ -276,13 +267,14 @@ public class VideoPlayerActivity extends Activity {
             });
 
             try {
-                mp.setDataSource(this, uri);
+                mp.setDataSource(url);
                 mp.prepareAsync();
             } catch (IllegalArgumentException | IllegalStateException |
                     SecurityException e) {
                 e.printStackTrace();
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             OvkAlertDialog err_dlg;
             err_dlg = new OvkAlertDialog(VideoPlayerActivity.this);
             AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);

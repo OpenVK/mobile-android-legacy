@@ -31,7 +31,7 @@ extern "C" {
 }
 
 /*for Android logs*/
-#define LOG_TAG "OVK-MP"
+#define LOG_TAG "OVK-MPLAY-LIB"
 #define LOG_LEVEL 10
 #define LOGD(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);}
 #define LOGI(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__);}
@@ -55,8 +55,8 @@ bool debug_mode;
 
 jint g_playbackState;
 jint FFMPEG_PLAYBACK_STOPPED = 0;
-jint FFMPEG_PLAYBACK_PLAYING = 2;
-jint FFMPEG_PLAYBACK_PAUSED = 1;
+jint FFMPEG_PLAYBACK_PLAYING = 1;
+jint FFMPEG_PLAYBACK_PAUSED = 2;
 
 jlong gFrameCount;
 
@@ -90,19 +90,28 @@ extern "C" {
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile(
             JNIEnv *env, jobject instance,
             jstring filename_) {
+        if(filename_ == NULL) {
+            LOGE(1, "[ERROR] Invalid filename");
+            g_playbackState = 0;
+            return -10;
+        }
         const char *filename = env->GetStringUTFChars(filename_, 0);
         gFileName = (char *) filename;
         if(debug_mode) {
             LOGD(10, "[DEBUG] Registering FFmpeg units...");
         }
         av_register_all();
+        avcodec_register_all();
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Opening file...");
+            LOGD(10, "[DEBUG] Opening file %s...", filename);
         }
         if ((gErrorCode = avformat_open_input(&gFormatCtx, filename, NULL, NULL)) != 0) {
             if(debug_mode) {
-                LOGE(1, "[ERROR] Can't open file: %d", gErrorCode);
+                char error_string[192];
+                av_strerror(gErrorCode, error_string, 192);
+                LOGE(1, "[ERROR] Can't open file: %d (%s)", gErrorCode, error_string);
             }
+            g_playbackState = 0;
             return gErrorCode;    //open file failed
         }
         /*retrieve stream information*/
@@ -112,6 +121,7 @@ extern "C" {
             if(debug_mode) {
                 LOGE(1, "[ERROR] Can't find stream information: %s (%d)", error_string, gErrorCode);
             }
+            g_playbackState = 0;
             return gErrorCode;
         }
     }
@@ -212,6 +222,7 @@ extern "C" {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Cannot find a video stream");
                 }
+                g_playbackState = 0;
                 return NULL;
             } else {
                 if(debug_mode) {
@@ -220,8 +231,10 @@ extern "C" {
             }
             if (gVideoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                    LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
+                         lVideoCodec->name);
                 }
+                g_playbackState = 0;
                 return NULL;
             }
             /*open the codec*/
@@ -236,6 +249,7 @@ extern "C" {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Can't open the video codec!");
                 }
+                g_playbackState = 0;
                 return NULL;
             }
             return generateTrackInfo(
@@ -244,19 +258,30 @@ extern "C" {
             );
         } else {
             AVCodec *lAudioCodec;
+            if(debug_mode) {
+                LOGI(10, "[DEBUG] Getting audio track info...");
+            }
+
             /*find the video stream and its decoder*/
             gAudioStreamIndex = av_find_best_stream(gFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
                                                     &lAudioCodec,
                                                     0);
+
             if (gAudioStreamIndex == AVERROR_STREAM_NOT_FOUND) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Cannot find a audio stream");
                 }
                 return NULL;
+            } else {
+                if(debug_mode) {
+                    LOGI(10, "[INFO] Audio codec: %s", lAudioCodec->name);
+                }
             }
+
             if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                    LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
+                         lAudioCodec->name);
                 }
                 return NULL;
             }
@@ -285,7 +310,17 @@ extern "C" {
             (JNIEnv *env, jobject instance, jint state) {
         g_playbackState = state;
         if(state == FFMPEG_PLAYBACK_PLAYING) {
-
+            if(debug_mode) {
+                LOGE(1, "[DEBUG] Setting playback state to \"Playing\"...");
+            }
+        } else if(state == FFMPEG_PLAYBACK_PAUSED){
+            if(debug_mode) {
+                LOGE(1, "[DEBUG] Setting playback state to \"Paused\"...");
+            }
+        } else if(state == FFMPEG_PLAYBACK_STOPPED) {
+            if(debug_mode) {
+                LOGE(1, "[DEBUG] Setting playback state to \"Stopped\"...");
+            }
         }
     }
 
@@ -332,6 +367,7 @@ jobject generateTrackInfo(
     // "F"   => float
 
     jclass track_class;
+    jobject track;
     try {
         if (type == AVMEDIA_TYPE_VIDEO) {
             // Load OvkVideoTrack class
@@ -354,7 +390,7 @@ jobject generateTrackInfo(
                     track_class, "frame_rate", "Ljava/lang/Float;"
             );
 
-            jobject track = env->NewObject(track_class, video_track_init);
+            track = env->NewObject(track_class, video_track_init);
 
             // Load OvkVideoTrack values form fields (class variables)
             env->SetObjectField(track, codec_name_field, env->NewStringUTF(pCodec->name));
@@ -387,7 +423,7 @@ jobject generateTrackInfo(
                     track_class, "channels", "I"
             );
 
-            jobject track = env->NewObject(track_class, audio_track_init);
+            track = env->NewObject(track_class, audio_track_init);
 
             // Load OvkAudioTrack values form fields (class variables)
             env->SetObjectField(track, codec_name_field, env->NewStringUTF(pCodec->name));
@@ -401,5 +437,5 @@ jobject generateTrackInfo(
         }
         return NULL;
     }
-    return track_class;
+    return track;
 };

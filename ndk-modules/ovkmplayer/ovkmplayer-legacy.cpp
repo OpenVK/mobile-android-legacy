@@ -49,7 +49,6 @@ extern "C"{
 
 // Android implementations headers
 #include <android/log.h>
-
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
     #include <libavutil/avstring.h>
@@ -124,6 +123,10 @@ extern "C" {
             JNIEnv *env, jobject instance,
             jstring filename_) {
         const char *filename = env->GetStringUTFChars(filename_, 0);
+        if(filename_ == NULL) {
+            LOGE(1, "[ERROR] Invalid filename");
+            return -10;
+        }
         gFileName = (char *) filename;
         if(debug_mode) {
             LOGD(10, "[DEBUG] Registering FFmpeg units...");
@@ -133,8 +136,10 @@ extern "C" {
             LOGD(10, "[DEBUG] Opening file %s...", filename);
         }
         if ((gErrorCode = av_open_input_file(&gFormatCtx, filename, NULL, 0, NULL)) != 0) {
+            char error_string[192];
+            av_strerror(gErrorCode, error_string, 192);
             if(debug_mode) {
-                LOGE(1, "[ERROR] Can't open file: %d", gErrorCode);
+                LOGE(1, "[ERROR] Can't open file: %d (%s)", gErrorCode, error_string);
             }
             return gErrorCode;    //open file failed
         }
@@ -173,7 +178,8 @@ extern "C" {
 
             if(pCodec == NULL) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                    LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
+                         gVideoCodecCtx->codec_name);
                 }
                 g_playbackState = FFMPEG_PLAYBACK_STOPPED;
                 gErrorCode = -2;
@@ -260,6 +266,7 @@ extern "C" {
             gVideoStreamIndex = av_find_best_stream(gFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1,
                                                     &lVideoCodec,
                                                     0);
+
             if (gVideoStreamIndex == AVERROR_STREAM_NOT_FOUND) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Cannot find a video stream");
@@ -268,13 +275,20 @@ extern "C" {
             }
             if (gVideoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
+                    LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
+                         lVideoCodec->name);
                 }
                 return NULL;
             }
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Video stream detected. Opening...");
+            }
+
             /*open the codec*/
             gVideoCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
-            LOGI(10, "[INFO] Frame size: %dx%d", gVideoCodecCtx->height, gVideoCodecCtx->width);
+            LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", gVideoCodecCtx->codec->name,
+                 gVideoCodecCtx->height, gVideoCodecCtx->width);
             #ifdef SELECTIVE_DECODING
                     gVideoCodecCtx->allow_selective_decoding = 1;
             #endif
@@ -290,10 +304,16 @@ extern "C" {
             );
         } else {
             AVCodec *lAudioCodec;
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Getting audio track info...");
+            }
+
             /*find the audio stream and its decoder*/
             gAudioStreamIndex = av_find_best_stream(gFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
                                                     &lAudioCodec,
                                                     0);
+
             if (gAudioStreamIndex == AVERROR_STREAM_NOT_FOUND) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Cannot find a audio stream");
@@ -302,12 +322,19 @@ extern "C" {
             }
             if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
-                    LOGE(1, "[ERROR] Audio stream found, but decoder is unavailable.");
+                    LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
+                         lAudioCodec->name);
                 }
                 return NULL;
             }
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Audio stream detected. Opening...");
+            }
             /*open the codec*/
             gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
+            LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", gAudioCodecCtx->codec->name,
+                 gAudioCodecCtx->sample_rate);
             #ifdef SELECTIVE_DECODING
                     gAudioCodecCtx->allow_selective_decoding = 1;
             #endif
