@@ -12,8 +12,8 @@ echo "OpenVK Legacy | FFmpeg for Android building..."
 # argument == ffmpeg version, if not specified compiling all versions
 if [[ -z $1 ]]; then
     # Build FFmpeg 0.8.5 & 2.3 for 32-bit architecture
-    ./build-android-0.8.5.sh armv6
-    ./build-android-0.8.5.sh armv7
+    ./build-android-0.8.5.sh armv6 r8e
+    ./build-android-0.8.5.sh armv7 r8e
     ./build-android-0.8.5.sh x86
     # FFmpeg 0.8.5 not buildable under ARMv8a 64-bit and x64
     ./build-android-2.3.sh armv8a
