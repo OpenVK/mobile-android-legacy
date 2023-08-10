@@ -12,6 +12,9 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
@@ -51,6 +54,8 @@ public class OvkMediaPlayer extends MediaPlayer {
     public static final int STATE_STOPPED = 0;
     public static final int STATE_PLAYING = 1;
     public static final int STATE_PAUSED = 2;
+    public static final int MESSAGE_PREPARE = 10000;
+    public static final int MESSAGE_ERROR = -10000;
     private int audio_buffer_read_pos = 0;
     private int audio_buffer_write_pos = 0;
     private int audio_delay = 0;
@@ -76,6 +81,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private OnPreparedListener onPreparedListener;
     private OnErrorListener onErrorListener;
     private OnCompletionListener onCompletionListener;
+    private Handler handler;
 
     private native String showLogo();
     private native Object getTrackInfo(String filename, int type);
@@ -115,6 +121,18 @@ public class OvkMediaPlayer extends MediaPlayer {
         loadLibrary(ctx, "ovkmplayer");
         Log.v(MPLAY_TAG, showLogo());
         setDebugMode(true);
+        handler = new Handler(Looper.myLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == MESSAGE_ERROR) {
+                    if(msg.getData() != null && msg.getData().getInt("error_code") < 0)
+                    onErrorListener.onError(OvkMediaPlayer.this, msg.getData().getInt("error_code"));
+                } else if(msg.what == MESSAGE_PREPARE) {
+                    onPreparedListener.onPrepared(OvkMediaPlayer.this);
+                }
+                super.handleMessage(msg);
+            }
+        };
     }
 
     public ArrayList<OvkMediaTrack> getMediaInfo(String filename) {
@@ -170,17 +188,28 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @Override
     public void prepareAsync() throws IllegalStateException {
-        if(openMediaFile(dataSourceUrl) < 0) {
-            Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
-            onErrorListener.onError(this, getLastErrorCode());
-            setPlaybackState(STATE_STOPPED);
-        } else if(getMediaInfo() == null) {
-            Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
-            onErrorListener.onError(this, getLastErrorCode());
-            setPlaybackState(STATE_STOPPED);
-        } else {
-            onPreparedListener.onPrepared(this);
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(openMediaFile(dataSourceUrl) < 0) {
+                    Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
+                    Message msg = new Message();
+                    msg.what = MESSAGE_ERROR;
+                    msg.getData().putInt("error_code", getLastErrorCode());
+                    setPlaybackState(STATE_STOPPED);
+                } else if(getMediaInfo() == null) {
+                    Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
+                    Message msg = new Message();
+                    msg.what = MESSAGE_ERROR;
+                    msg.getData().putInt("error_code", getLastErrorCode());
+                    handler.sendMessage(msg);
+                } else {
+                    Message msg = new Message();
+                    msg.what = MESSAGE_PREPARE;
+                    handler.sendMessage(msg);
+                }
+            }
+        }).start();
     }
 
     @Override

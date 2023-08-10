@@ -76,13 +76,13 @@ android {
         release {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
             ndk {
-                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a"
+                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86"
             }
         }
         debug {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
             ndk {
-                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a"
+                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86"
             }
         }
     }

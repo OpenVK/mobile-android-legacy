@@ -313,12 +313,14 @@ public class DownloadManager {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", ex.getMessage(), i + 1,
                                             photoAttachments.size()));
-                            if (ex.getMessage().startsWith("Authorization required")) {
-                                response_code = 401;
-                            } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                                String code_str = ex.getMessage().substring
-                                        (ex.getMessage().length() - 3);
-                                response_code = Integer.parseInt(code_str);
+                            if(ex.getMessage() != null) {
+                                if (ex.getMessage().startsWith("Authorization required")) {
+                                    response_code = 401;
+                                } else if (ex.getMessage().startsWith("Expected status code 2xx")) {
+                                    String code_str = ex.getMessage().substring
+                                            (ex.getMessage().length() - 3);
+                                    response_code = Integer.parseInt(code_str);
+                                }
                             }
                         } catch (Exception e) {
                             photoAttachment.error = e.getClass().getSimpleName();
@@ -488,12 +490,14 @@ public class DownloadManager {
                                     String.format("Download error: %s", response_code));
                         }
                     } catch (IOException | HttpClientException ex) {
-                        if (ex.getMessage().startsWith("Authorization required")) {
-                            response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                            String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 3);
-                            response_code = Integer.parseInt(code_str);
+                        if(ex.getMessage() != null) {
+                            if (ex.getMessage().startsWith("Authorization required")) {
+                                response_code = 401;
+                            } else if (ex.getMessage().startsWith("Expected status code 2xx")) {
+                                String code_str = ex.getMessage().substring
+                                        (ex.getMessage().length() - 3);
+                                response_code = Integer.parseInt(code_str);
+                            }
                         }
                     } catch (Exception e) {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG,
