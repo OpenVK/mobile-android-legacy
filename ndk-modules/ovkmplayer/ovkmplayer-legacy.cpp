@@ -47,7 +47,6 @@ extern "C"{
 
 // Android implementations headers
 #include <android/log.h>
-#include <builder/ffmpeg-2.6/android/arm64-v8a/include/libavutil/frame.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
