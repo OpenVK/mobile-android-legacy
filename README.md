@@ -24,17 +24,19 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 ## Building
 We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive), Android NDK r10e and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
 
-To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used - 0.8.5 (recommended for greater compatibility with Android 2.x) and 4.0.4.
+To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used:
+* FFmpeg 0.8.12 for 32-bit CPU architectures - ARMv5/v6, ARMv7a, x86
+* FFmpeg 3.1.4 for 64-bit CPU architectures - ARMv8a
 
 To compile them you need:
 + **GNU/Linux distro or WSL2** \
   Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
 
-  Tested on Ubuntu 12.04 LTS, can be built in the latest distributions.
+  Tested on Ubuntu 12.04 LTS, can be built in the latest distributions. _FFmpeg old version build on Ubuntu 22.04 LTS? 🤔_
 + **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
 
-  Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.5 support in older versions of Android.
+  Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.12 support in older versions of Android.
 
   Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
 + **Installed dependencies** \
@@ -43,12 +45,11 @@ To compile them you need:
   Run the command inside the OpenVK Legacy repository in terminal:
   ```sh
    chmod +x ./build-ffmpeg.sh && \
-   ANDROID_NDK_HOME=[path_to_r7] ./build-ffmpeg.sh 0.8.5 && \
-   ANDROID_NDK_HOME=[path_to_r11c] ./build-ffmpeg.sh 2.6
+   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.8.12 && \
+   ANDROID_NDK_HOME=[path/to/ndk-r11c] ./build-ffmpeg.sh 3.1.4
   ```
 
-  TODO: Restore FFmpeg Android builder submodule
-  ~~The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the submodules of the `ndk-modules` directory.~~
+  The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the `builder` submodule of the `./ndk-modules/ovkmplayer` directory.
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
