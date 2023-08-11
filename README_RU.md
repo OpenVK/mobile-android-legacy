@@ -41,8 +41,6 @@ _Работает на OpenVK API._
   Также абсолютный путь к NDK (в котором содержится директория `platforms`) в настройках проекта необходимо изменить так, чтобы синхронизация с Gradle шла корректно.
 + **Установленные зависимости** \
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
-
-  Для запуска исполняемых файлов, включая NDK r7, необходимо доустановить следующие пакеты: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` для Ubuntu/Debian/Linux Mint.
 + **Скрипты, собирающие FFmpeg из исходных кодов** \
   Запустите команду внутри репозитория OpenVK Legacy в терминале:
   ```sh
