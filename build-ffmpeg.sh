@@ -3,9 +3,9 @@
 #  NOTICE: FFmpeg and FFmpeg for Android builder by Tinelix licensed under LGPLv3 or later version.
 
 echo "OpenVK Legacy | Downloading from https://github.com/tinelix/ffmpeg-android-builder..."
-cd ndk-modules/ovkmplayer
 git submodule init
 git submodule update
+cd ndk-modules/ovkmplayer
 cd builder
 chmod -R 0777 . && chmod +x ./build-android-3.1.4.sh && chmod +x ./build-android-0.8.5.sh
 
