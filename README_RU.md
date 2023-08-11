@@ -47,7 +47,7 @@ _Работает на OpenVK API._
   Запустите команду внутри репозитория OpenVK Legacy в терминале:
   `chmod +x ./build-ffmpeg.sh && ./build-ffmpeg.sh`
 
-  Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодуле `builder` директории `./ndk-modules/ovkmplayer`.
+  Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодуле `builder` [директории `./ndk-modules/ovkmplayer`](https://github.com/openvk/mobile-android-legacy/tree/main/ndk-modules/ovkmplayer).
 
 **ВНИМАНИЕ!** После возникновения ошибки `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` в задаче `:[package_name]:mockableAndroidJar`, при использовании Android SDK Build-tools 28 и выше необходимо очистить проект (Clean Project).
 
