@@ -22,7 +22,7 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 * **via [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 
 ## Building
-We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive), Android NDK r10e and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
+We recommend using [Android Studio 2.3.2](https://developer.android.com/studio/archive) and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
 
 To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used:
 * FFmpeg 0.8.12 for 32-bit CPU architectures - ARMv5/v6, ARMv7a, x86
