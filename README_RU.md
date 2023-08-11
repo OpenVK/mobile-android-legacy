@@ -33,7 +33,7 @@ _Работает на OpenVK API._
   Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем добавления сборки под Windows/Cygwin и macOS.
 
   Сборка проверена на Ubuntu 12.04 LTS, может быть также возможна в последних версиях дистрибутивов.  _Сборка старой версии FFmpeg на Ubuntu 22.04 LTS? 🤔_
-+ **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) и [Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
++ **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) и [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
   Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`.
 
   Android NDK `r8e` настоятельно рекомендуется для предоставления поддержки FFmpeg 0.8.12 в старых версиях Android.
