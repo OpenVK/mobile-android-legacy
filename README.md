@@ -32,7 +32,7 @@ To compile them you need:
 + **GNU/Linux distro or WSL2** \
   Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
 
-  Tested on Ubuntu 12.04 LTS, can be built in the latest distributions. _FFmpeg old version build on Ubuntu 22.04 LTS? 🤔_
+  Tested on Ubuntu 12.04 LTS and Debian 8.7.1, can be built in the latest distributions. _FFmpeg old version build on Ubuntu 22.04 LTS? 🤔_
 + **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
 
@@ -41,6 +41,8 @@ To compile them you need:
   Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
 + **Installed dependencies** \
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos).
+
+  **OPTIONAL:** To run 32-bit binaries, including NDK r7, you need to install the following packages: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` for Ubuntu/Debian/Linux Mint.
 + **Scripts that build FFmpeg from source** \
   Run the command inside the OpenVK Legacy repository in terminal:
   ```sh
