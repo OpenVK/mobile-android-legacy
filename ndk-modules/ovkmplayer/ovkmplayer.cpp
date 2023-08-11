@@ -171,9 +171,9 @@ extern "C" {
                 }
             }
 
-            pFrame = avcodec_alloc_frame();
-            pFrameRGB = avcodec_alloc_frame();
-            frame_size = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
+            pFrame = av_frame_alloc();
+            pFrameRGB = av_frame_alloc();
+            frame_size = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecCtx->width,
                                             pCodecCtx->height);
             pFrameBuffer = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
             if(pFrame == NULL || pFrameRGB == NULL) {
@@ -186,7 +186,7 @@ extern "C" {
             } else if (packet.stream_index == gVideoStreamIndex) {
                 int ret = av_read_frame(gFormatCtx, &packet);
                 if(ret >= 0) {
-                    avpicture_fill((AVPicture *) pFrameRGB, pFrameBuffer, PIX_FMT_RGB24,
+                    avpicture_fill((AVPicture *) pFrameRGB, pFrameBuffer, AV_PIX_FMT_RGB24,
                                    pCodecCtx->width, pCodecCtx->height);
                     avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
                     if (got_frame) {
