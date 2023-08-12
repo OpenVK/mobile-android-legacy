@@ -1,1 +1,4 @@
 
+[submodule "ndk-modules/ovkmplayer/builder"]
+	path = ndk-modules/ovkmplayer/builder
+	url = https://github.com/tinelix/ffmpeg-android-builder
