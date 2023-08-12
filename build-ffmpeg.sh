@@ -22,11 +22,15 @@ elif [ $1 == "0.8.12" ]; then
     ./build-android-0.8.12.sh armv6 r8e
     ./build-android-0.8.12.sh armv7 r8e
     ./build-android-0.8.12.sh x86 r8e
+elif [ $1 == "0.8.12-r6" ]; then
+    ./build-android-0.8.12.sh armv6 r6
+    ./build-android-0.8.12.sh armv7 r6
+    ./build-android-0.8.12.sh x86 r6
 elif [ $1 == "3.1.4" ]; then
     ./build-android-3.1.4.sh armv8a
 else
     echo;
-    echo "[ERROR] Wrong argument: ./build-ffmpeg.sh [version == '3.1.4' or '0.8.12']"
+    echo "[ERROR] Wrong argument: ./build-ffmpeg.sh [version == '3.1.4' or '0.8.12' or '0.8.12-r6']"
     exit 1;
 fi;
 
@@ -45,6 +49,10 @@ if [[ -z $1 ]]; then
     cp ./ffmpeg-0.8.12/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
     cp ./ffmpeg-0.8.12/android/x86/libffmpeg.so ../../../app/src/main/jniLibs/x86
 elif [ $1 == "0.8.12" ]; then
+    cp ./ffmpeg-0.8.12/android/armeabi/libffmpeg.so ../../../app/src/main/jniLibs/armeabi
+    cp ./ffmpeg-0.8.12/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
+    cp ./ffmpeg-0.8.12/android/x86/libffmpeg.so ../../../app/src/main/jniLibs/x86
+elif [ $1 == "0.8.12-r6" ]; then
     cp ./ffmpeg-0.8.12/android/armeabi/libffmpeg.so ../../../app/src/main/jniLibs/armeabi
     cp ./ffmpeg-0.8.12/android/armeabi-v7a/libffmpeg.so ../../../app/src/main/jniLibs/armeabi-v7a
     cp ./ffmpeg-0.8.12/android/x86/libffmpeg.so ../../../app/src/main/jniLibs/x86
