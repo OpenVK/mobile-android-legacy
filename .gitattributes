@@ -1,1 +1,7 @@
+*.c text
+*.h text
+*.cpp text
+*.java text
+*.gradle text
+
 *.sh text eol=lf
