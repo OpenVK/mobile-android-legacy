@@ -467,13 +467,17 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                ctx.getCacheDir(), instance, item.author_id), options);
-                if(bitmap != null) {
-                    avatar.setImageBitmap(bitmap);
-                } else {
-                    avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                    ctx.getCacheDir(), instance, item.author_id), options);
+                    if (bitmap != null) {
+                        avatar.setImageBitmap(bitmap);
+                    } else {
+                        avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+                    }
+                } catch (OutOfMemoryError ignored) {
+
                 }
             }
 
