@@ -358,6 +358,7 @@ JNIEXPORT void JNICALL
                 LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
                      gFormatCtx->nb_streams, gAudioStreamIndex + 1);
             }
+            LOGI(10, "[INFO] Duration: %d", gFormatCtx->streams[gAudioStreamIndex]->duration);
             gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
             LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", gAudioCodecCtx->codec->name,
                  gAudioCodecCtx->sample_rate);
