@@ -29,7 +29,6 @@ def getGitHubCommit = {
 }
 
 android {
-    flavorDimensions "default"
     signingConfigs {
         if (file('.signing/app-release.prop').exists()) {
             release {
@@ -155,27 +154,27 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     //noinspection GradleDependency,GradleCompatible
-    implementation 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
     //noinspection GradleDependency
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'com.commit451:PhotoView:1.2.5'
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile 'com.commit451:PhotoView:1.2.5'
     //noinspection GradleDependency,GradleCompatible
-    implementation 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:support-v4:24.0.0'
     //noinspection GradleDependency,GradleCompatible
-    implementation 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
     //noinspection GradleDependency
-    implementation 'com.takisoft.fix:preference-v7:24.0.0.1'
-    implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    implementation project(':modules:actionbar')
-    implementation project(':modules:popupmenu')
-    implementation 'com.reginald.swiperefresh:library:1.1.2'
+    compile 'com.takisoft.fix:preference-v7:24.0.0.1'
+    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    compile project(':modules:actionbar')
+    compile project(':modules:popupmenu')
+    compile 'com.reginald.swiperefresh:library:1.1.2'
     // Android 2.x plurals patch
-    implementation 'com.seppius.plurals:android-i18n-plurals:1.1'
-    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    implementation 'ch.acra:acra:4.6.0'
-    implementation 'com.nineoldandroids:library:2.4.0'
-    implementation project(':modules:twemojicon')
-    implementation project(':modules:wrhttp')
+    compile 'com.seppius.plurals:android-i18n-plurals:1.1'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'ch.acra:acra:4.6.0'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile project(':modules:twemojicon')
+    compile project(':modules:wrhttp')
 }
