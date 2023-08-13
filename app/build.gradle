@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+import org.apache.tools.ant.taskdefs.condition.Os
 
 def getGitHubCommit = {
     try {
@@ -28,6 +29,7 @@ def getGitHubCommit = {
 }
 
 android {
+    flavorDimensions "default"
     signingConfigs {
         if (file('.signing/app-release.prop').exists()) {
             release {
@@ -76,13 +78,13 @@ android {
         release {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
             ndk {
-                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86"
+                abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             }
         }
         debug {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
             ndk {
-                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86"
+                abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             }
         }
     }
@@ -129,30 +131,51 @@ android {
             path '../ndk-modules/ovkmplayer/Android.mk'
         }
     }
+    task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
+        def ndkDir = android.ndkDirectory
+        def projDir = project.projectDir.toString();
+        println  "Project Directory:   ${projDir}";
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine "$ndkDir\\ndk-build.cmd",
+                    "NDK_PROJECT_PATH=$projDir/app/src/main",
+                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
+                    "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
+                    "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
+        } else {
+            commandLine "$ndkDir/ndk-build.sh",
+                    "NDK_PROJECT_PATH=$projDir/app/src/main",
+                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
+                    "APP_BUILD_SCRIPT=$projDir/ndk-modules/ovkmplayer/Android.mk",
+                    "NDK_APPLICATION_MK=$projDir/ndk-modules/ovkmplayer/Application.mk"
+        }
+    }
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     //noinspection GradleDependency,GradleCompatible
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    implementation 'com.android.support:recyclerview-v7:24.0.0'
     //noinspection GradleDependency
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.commit451:PhotoView:1.2.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.commit451:PhotoView:1.2.5'
     //noinspection GradleDependency,GradleCompatible
-    compile 'com.android.support:support-v4:24.0.0'
+    implementation 'com.android.support:support-v4:24.0.0'
     //noinspection GradleDependency,GradleCompatible
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    implementation 'com.android.support:appcompat-v7:24.0.0'
     //noinspection GradleDependency
-    compile 'com.takisoft.fix:preference-v7:24.0.0.1'
-    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile project(':modules:actionbar')
-    compile project(':modules:popupmenu')
-    compile 'com.reginald.swiperefresh:library:1.1.2'
+    implementation 'com.takisoft.fix:preference-v7:24.0.0.1'
+    implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    implementation project(':modules:actionbar')
+    implementation project(':modules:popupmenu')
+    implementation 'com.reginald.swiperefresh:library:1.1.2'
     // Android 2.x plurals patch
-    compile 'com.seppius.plurals:android-i18n-plurals:1.1'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'ch.acra:acra:4.6.0'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile project(':modules:twemojicon')
-    compile project(':modules:wrhttp')
+    implementation 'com.seppius.plurals:android-i18n-plurals:1.1'
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    implementation 'ch.acra:acra:4.6.0'
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation project(':modules:twemojicon')
+    implementation project(':modules:wrhttp')
 }

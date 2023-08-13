@@ -22,7 +22,7 @@ _Работает на OpenVK API._
 * **через [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 
 ## Сборка
-Мы советуем использовать [Android Studio 2.3.2](https://developer.android.com/studio/archive) вместе с Java 7 для идеальной поддержки библиотек (такие как устаревший формат ресурсов и Gradle 2.3.2), разработанные для Android 2.1 Eclair и выше.
+Мы советуем использовать [Android Studio 3.1.2](https://developer.android.com/studio/archive) вместе с Java 7 для идеальной поддержки библиотек, разработанные для Android 2.1 Eclair и выше.
 
 Для обеспечения поддержки ненативных кодеков (Theora, VP8, Opus, MP3onMP4) используются две версии FFmpeg:
 * **FFmpeg 0.8.5** для 32-битных процессорных архитектур - ARMv5/ARMv6, ARMv7, x86

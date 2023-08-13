@@ -15,6 +15,7 @@
 #  NOTICE: FFmpeg and FFmpeg custom builder for Android licensed under LGPLv3.0 or later version.
 
 LOCAL_PATH := $(call my-dir)
+PROJECT_PATH := $(call my-dir)/../..
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
    FFMPEG_VERSION = 3.1.4
 else
@@ -26,9 +27,9 @@ FFMPEG_PATH = $(call my-dir)/builder/ffmpeg-$(FFMPEG_VERSION)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := ffmpeg-prebuilt
-LOCAL_SRC_FILES := ../../app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
-LOCAL_EXPORT_LDLIBS := ../../app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
+LOCAL_SRC_FILES := $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
+LOCAL_EXPORT_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
+LOCAL_EXPORT_LDLIBS :=  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
 LOCAL_PRELINK_MODULE := true
 LOCAL_LDFLAGS += -ljnigraphics
 
@@ -43,11 +44,11 @@ ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 else
     LOCAL_SRC_FILES := ovkmplayer-legacy.cpp
 endif
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/builder/ffmpeg-$(FFMPEG_VERSION)
+LOCAL_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
+LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)
 LOCAL_CPP_FEATURES := exceptions
 LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
-LOCAL_LDLIBS    := -llog -lz -lm $(LOCAL_PATH)/../../app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
+LOCAL_LDLIBS    := -llog -lz -lm  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
 
 include $(BUILD_SHARED_LIBRARY)
 
