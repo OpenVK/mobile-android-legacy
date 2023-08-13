@@ -476,6 +476,7 @@ public class VideoPlayerActivity extends Activity {
         animator.start();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             handler.postDelayed(new Runnable() {
+                @SuppressLint("NewApi")
                 @Override
                 public void run() {
                     getActionBar().show();

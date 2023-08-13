@@ -309,7 +309,7 @@ public class DownloadManager {
                                     String.format("Downloaded from %s (%s): %d kB (%d/%d)",
                                             short_address, response_code, (int) (filesize / 1024), i + 1,
                                             photoAttachments.size()));
-                        } catch (IOException | HttpClientException ex) {
+                        } catch (IOException | HttpClientException | OutOfMemoryError ex) {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", ex.getMessage(), i + 1,
                                             photoAttachments.size()));

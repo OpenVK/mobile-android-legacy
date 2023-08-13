@@ -77,6 +77,7 @@ char *gFileName;	  //the file name of the video
 int gErrorCode;
 
 AVFormatContext *gFormatCtx;
+AVFormatContext *gTempFormatCtx;
 int gVideoStreamIndex;    // video stream index
 int gAudioStreamIndex;    // audio stream index
 
@@ -143,7 +144,10 @@ JNIEXPORT void JNICALL
         if(debug_mode) {
             LOGD(10, "[DEBUG] Opening file %s...", filename);
         }
-        if ((gErrorCode = av_open_input_file(&gFormatCtx, filename, NULL, 0, NULL)) != 0) {
+
+        gFormatCtx = avformat_alloc_context();
+
+        if ((gErrorCode = avformat_open_input(&gFormatCtx, filename, NULL, 0)) != 0) {
             char error_string[192];
             if(gErrorCode == -2) {
                 sprintf(error_string, "File not found");
@@ -158,7 +162,7 @@ JNIEXPORT void JNICALL
             return gErrorCode;    //open file failed
         }
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Searching stream information...", filename);
+            LOGD(10, "[DEBUG] Searching A/V streams...", filename);
         }
         /*retrieve stream information*/
         if ((gErrorCode = av_find_stream_info(gFormatCtx)) < 0) {
@@ -169,6 +173,43 @@ JNIEXPORT void JNICALL
             }
             return gErrorCode;
         }
+    }
+
+    AVFormatContext* openTempFile(char* filename) {
+        if(filename == NULL) {
+            LOGE(1, "[ERROR] Invalid filename");
+            return NULL;
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Opening temporary file %s...", filename);
+        }
+        if ((gErrorCode = av_open_input_file(&gTempFormatCtx, filename, NULL, 0, NULL)) != 0) {
+            char error_string[192];
+            if(gErrorCode == -2) {
+                sprintf(error_string, "File not found");
+            } else {
+                if (av_strerror(gErrorCode, error_string, 192) < 0) {
+                    strerror_r(-gErrorCode, error_string, 192);
+                }
+            }
+            if(debug_mode) {
+                LOGE(1, "[ERROR] Can't open file: %d (%s)", gErrorCode, error_string);
+            }
+            return NULL;    //open file failed
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Searching A/V streams...");
+        }
+        /*retrieve stream information*/
+        if ((gErrorCode = av_find_stream_info(gTempFormatCtx)) < 0) {
+            char error_string[192];
+            av_strerror(gErrorCode, error_string, 192);
+            if(debug_mode) {
+                LOGE(1, "[ERROR] Can't find stream information: %s (%d)", error_string, gErrorCode);
+            }
+            return NULL;
+        }
+        return gTempFormatCtx;
     }
 
     JNIEXPORT jint JNICALL
@@ -270,12 +311,26 @@ JNIEXPORT void JNICALL
             JNIEnv *env, jobject instance,
             jstring filename_,
             jint type) {
-        const char *filename = env->GetStringUTFChars(filename_, 0);
-        if(gFileName == NULL) {
-            gFileName = (char *) filename;
-            if(Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile
-                    (env, instance, filename_) < 0) {
-                return NULL;
+        int videoStreamIndex = -1;    // video stream index
+        int audioStreamIndex = -1;    // audio stream index
+
+        AVCodecContext *videoCodecCtx = NULL;
+        AVCodecContext *audioCodecCtx = NULL;
+        const char *filename;
+        if(gTempFormatCtx == NULL) {
+            if (filename_ == NULL) {
+                if (Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_openMediaFile
+                            (env, instance, reinterpret_cast<jstring>(gFileName)) < 0) {
+                    return NULL;
+                } else {
+                    gTempFormatCtx = gFormatCtx;
+                }
+            } else {
+                filename = env->GetStringUTFChars(filename_, 0);
+                gTempFormatCtx = openTempFile(const_cast<char *>(filename));
+                if (gTempFormatCtx == NULL) {
+                    return NULL;
+                }
             }
         }
 
@@ -287,17 +342,17 @@ JNIEXPORT void JNICALL
             }
 
             /*find the video stream and its decoder*/
-            gVideoStreamIndex = av_find_best_stream(gFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1,
+            gVideoStreamIndex = av_find_best_stream(gTempFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1,
                                                     &lVideoCodec,
                                                     0);
 
-            if (gVideoStreamIndex == AVERROR_STREAM_NOT_FOUND) {
+            if (videoStreamIndex == AVERROR_STREAM_NOT_FOUND) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Cannot find a video stream");
                 }
                 return NULL;
             }
-            if (gVideoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
+            if (videoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
                          lVideoCodec->name);
@@ -307,25 +362,25 @@ JNIEXPORT void JNICALL
 
             if(debug_mode) {
                 LOGD(10, "[DEBUG] Total streams: %d |  Video stream #%d detected. Opening...",
-                     gFormatCtx->nb_streams, gVideoStreamIndex + 1);
+                     gTempFormatCtx->nb_streams, videoStreamIndex + 1);
             }
 
             /*open the codec*/
-            gVideoCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
-            LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", gVideoCodecCtx->codec->name,
-                 gVideoCodecCtx->height, gVideoCodecCtx->width);
+            gVideoCodecCtx = gTempFormatCtx->streams[videoStreamIndex]->codec;
+            LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", videoCodecCtx->codec_name,
+                 videoCodecCtx->height, videoCodecCtx->width);
             #ifdef SELECTIVE_DECODING
                     gVideoCodecCtx->allow_selective_decoding = 1;
             #endif
-            if (avcodec_open(gVideoCodecCtx, lVideoCodec) < 0) {
+            if (avcodec_open(videoCodecCtx, lVideoCodec) < 0) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Can't open the video codec!");
                 }
                 return NULL;
             }
             return generateTrackInfo(
-                    env, gFormatCtx->streams[gVideoStreamIndex],
-                    lVideoCodec, gVideoCodecCtx, AVMEDIA_TYPE_VIDEO
+                    env, gTempFormatCtx->streams[videoStreamIndex],
+                    lVideoCodec, videoCodecCtx, AVMEDIA_TYPE_VIDEO
             );
         } else {
             AVCodec *lAudioCodec;
@@ -335,7 +390,7 @@ JNIEXPORT void JNICALL
             }
 
             /*find the audio stream and its decoder*/
-            gAudioStreamIndex = av_find_best_stream(gFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
+            gAudioStreamIndex = av_find_best_stream(gTempFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
                                                     &lAudioCodec,
                                                     0);
 
@@ -356,28 +411,152 @@ JNIEXPORT void JNICALL
             /*open the codec*/
             if(debug_mode) {
                 LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
-                     gFormatCtx->nb_streams, gAudioStreamIndex + 1);
+                     gTempFormatCtx->nb_streams, audioStreamIndex + 1);
             }
-            LOGI(10, "[INFO] Duration: %d", gFormatCtx->streams[gAudioStreamIndex]->duration);
-            gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
-            LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", gAudioCodecCtx->codec->name,
-                 gAudioCodecCtx->sample_rate);
+            LOGI(10, "[INFO] Duration: %d", gTempFormatCtx->streams[audioStreamIndex]->duration);
+            audioCodecCtx = gFormatCtx->streams[audioStreamIndex]->codec;
+            LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
+                 audioCodecCtx->sample_rate);
             #ifdef SELECTIVE_DECODING
                     gAudioCodecCtx->allow_selective_decoding = 1;
             #endif
-            if (avcodec_open(gAudioCodecCtx, lAudioCodec) < 0) {
+            if (avcodec_open(audioCodecCtx, lAudioCodec) < 0) {
                 if(debug_mode) {
                     LOGE(1, "[ERROR] Can't open the audio codec!");
                 }
                 return NULL;
             }
             return generateTrackInfo(
-                    env, gFormatCtx->streams[gAudioStreamIndex],
-                    lAudioCodec, gAudioCodecCtx, AVMEDIA_TYPE_AUDIO
+                    env, gTempFormatCtx->streams[audioStreamIndex],
+                    lAudioCodec, audioCodecCtx, AVMEDIA_TYPE_AUDIO
             );
         }
-
+        if(filename_ != NULL)
         env->ReleaseStringUTFChars(filename_, filename);
+    };
+
+    JNIEXPORT jobject JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo2(
+            JNIEnv *env, jobject instance,
+            jint type) {
+
+        int videoStreamIndex = -1;    // video stream index
+        int audioStreamIndex = -1;    // audio stream index
+
+        AVCodecContext *videoCodecCtx = NULL;
+        AVCodecContext *audioCodecCtx = NULL;
+        const char *filename;
+        if(gFormatCtx == NULL) {
+            if (gTempFormatCtx == NULL) {
+                if (openTempFile(gFileName) == NULL) {
+                    return NULL;
+                }
+            }
+        } else {
+            gTempFormatCtx = gFormatCtx;
+        }
+
+        if (type == 0) {
+            AVCodec *lVideoCodec;
+            /*some global variables initialization*/
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Getting video track info...");
+            }
+
+            /*find the video stream and its decoder*/
+            gVideoStreamIndex = av_find_best_stream(gTempFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1,
+                                                    &lVideoCodec,
+                                                    0);
+
+            if (videoStreamIndex == AVERROR_STREAM_NOT_FOUND) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Cannot find a video stream");
+                }
+                return NULL;
+            }
+            if (videoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
+                         lVideoCodec->name);
+                }
+                return NULL;
+            }
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Total streams: %d | Video stream #%d detected. Opening...",
+                     gTempFormatCtx->nb_streams, videoStreamIndex + 1);
+            }
+
+            /*open the codec*/
+            gVideoCodecCtx = gTempFormatCtx->streams[videoStreamIndex]->codec;
+            if(gTempFormatCtx->streams[videoStreamIndex]->) {
+                LOGE(10, "[ERROR] Stream opening fail");
+                return NULL;
+            }
+            LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", videoCodecCtx->codec_name,
+                 videoCodecCtx->height, videoCodecCtx->width);
+    #ifdef SELECTIVE_DECODING
+            gVideoCodecCtx->allow_selective_decoding = 1;
+    #endif
+            if (avcodec_open(videoCodecCtx, lVideoCodec) < 0) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Can't open the video codec!");
+                }
+                return NULL;
+            }
+            return generateTrackInfo(
+                    env, gTempFormatCtx->streams[videoStreamIndex],
+                    lVideoCodec, videoCodecCtx, AVMEDIA_TYPE_VIDEO
+            );
+        } else {
+            AVCodec *lAudioCodec;
+
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Getting audio track info...");
+            }
+
+            /*find the audio stream and its decoder*/
+            gAudioStreamIndex = av_find_best_stream(gTempFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
+                                                    &lAudioCodec,
+                                                    0);
+
+            if (gAudioStreamIndex == AVERROR_STREAM_NOT_FOUND) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Cannot find a audio stream");
+                }
+                return NULL;
+            }
+            if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
+                         lAudioCodec->name);
+                }
+                return NULL;
+            }
+
+            /*open the codec*/
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
+                     gTempFormatCtx->nb_streams, audioStreamIndex + 1);
+            }
+            LOGI(10, "[INFO] Duration: %d", gTempFormatCtx->streams[audioStreamIndex]->duration);
+            audioCodecCtx = gFormatCtx->streams[audioStreamIndex]->codec;
+            LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
+                 audioCodecCtx->sample_rate);
+            #ifdef SELECTIVE_DECODING
+                    gAudioCodecCtx->allow_selective_decoding = 1;
+            #endif
+            if (avcodec_open(audioCodecCtx, lAudioCodec) < 0) {
+                if(debug_mode) {
+                    LOGE(1, "[ERROR] Can't open the audio codec!");
+                }
+                return NULL;
+            }
+            return generateTrackInfo(
+                    env, gTempFormatCtx->streams[audioStreamIndex],
+                    lAudioCodec, audioCodecCtx, AVMEDIA_TYPE_AUDIO
+            );
+        }
     };
 
     JNIEXPORT jint JNICALL

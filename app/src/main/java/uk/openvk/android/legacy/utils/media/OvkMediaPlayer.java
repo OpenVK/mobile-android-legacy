@@ -86,6 +86,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native void initFFmpeg();
     private native String showLogo();
     private native Object getTrackInfo(String filename, int type);
+    private native Object getTrackInfo2(int type);
     private native int getPlaybackState();
     private native void setPlaybackState(int playbackState);
     private native int openMediaFile(String filename);
@@ -139,11 +140,21 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     public ArrayList<OvkMediaTrack> getMediaInfo(String filename) {
         ArrayList<OvkMediaTrack> tracks = new ArrayList<>();
-        OvkVideoTrack video_track = (OvkVideoTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_VIDEO);
-        if(getLastErrorCode() == FFMPEG_ERROR_EOF) {
-            return null;
+        OvkVideoTrack video_track;
+        OvkAudioTrack audio_track;
+        if(filename == null) {
+            video_track = (OvkVideoTrack) getTrackInfo2(OvkMediaTrack.TYPE_VIDEO);
+            if (getLastErrorCode() == FFMPEG_ERROR_EOF) {
+                return null;
+            }
+            audio_track = (OvkAudioTrack) getTrackInfo2(OvkMediaTrack.TYPE_AUDIO);
+        } else {
+            video_track = (OvkVideoTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_VIDEO);
+            if (getLastErrorCode() == FFMPEG_ERROR_EOF) {
+                return null;
+            }
+            audio_track = (OvkAudioTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_AUDIO);
         }
-        OvkAudioTrack audio_track = (OvkAudioTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_AUDIO);
         tracks.add(video_track);
         tracks.add(audio_track);
         if(audio_track != null) {
@@ -160,7 +171,7 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     public ArrayList<OvkMediaTrack> getMediaInfo() {
         if(tracks == null) {
-            tracks = getMediaInfo(dataSourceUrl);
+            tracks = getMediaInfo(null);
         }
         return tracks;
     }
@@ -184,6 +195,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
             onErrorListener.onError(this, getLastErrorCode());
         } else {
+            getMediaInfo();
             onPreparedListener.onPrepared(this);
         }
     }
