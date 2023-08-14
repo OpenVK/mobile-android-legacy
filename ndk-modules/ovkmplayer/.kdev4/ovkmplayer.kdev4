@@ -43,5 +43,21 @@ Environment=
 Executable=
 Type=4
 
+[CustomDefinesAndIncludes][ProjectPath0]
+Path=.
+parseAmbiguousAsCPP=true
+parserArguments=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++11
+parserArgumentsC=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c99
+parserArgumentsCuda=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -std=c++11
+parserArgumentsOpenCL=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunused-parameter -Wunreachable-code -Wall -cl-std=CL1.1
+
+[CustomDefinesAndIncludes][ProjectPath0][Compiler]
+Name=None
+
+[CustomDefinesAndIncludes][ProjectPath0][Includes]
+1=D:/Android/NDK/android-ndk-r11c/platforms/android-5/arch-arm/usr/include
+2=D:/Data/tretdm/Documents/GitHub/mobile-android-legacy/ndk-modules/ovkmplayer/builder/ffmpeg-0.8.12
+3=D:/Data/tretdm/Documents/GitHub/mobile-android-legacy/ndk-modules/ovkmplayer/builder/ffmpeg-3.1.4
+
 [Project]
 VersionControlSupport=kdevgit
