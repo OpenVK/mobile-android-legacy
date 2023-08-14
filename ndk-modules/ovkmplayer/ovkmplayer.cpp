@@ -29,6 +29,7 @@ extern "C" {
     #include <libavformat/avformat.h>
     #include <libavformat/url.h>
     #include <libavdevice/avdevice.h>
+    #include <libavutil/frame.h>
 }
 
 /*for Android logs*/

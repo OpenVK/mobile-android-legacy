@@ -540,7 +540,7 @@ JNIEXPORT void JNICALL
                 lAudioCodec = avcodec_find_decoder(
                         gTempFormatCtx->streams[audioStreamIndex]->codec->codec_id);
 
-                audioCodecCtx = lAudioCodec->;
+                audioCodecCtx = (AVCodecContext*)lAudioCodec->init;
                 LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
                      audioCodecCtx->sample_rate);
                 #ifdef SELECTIVE_DECODING
