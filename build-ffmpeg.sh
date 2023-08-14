@@ -7,7 +7,7 @@ git submodule init
 git submodule update
 cd ndk-modules/ovkmplayer
 cd builder
-git checkout
+git checkout origin/main
 chmod -R 0777 . && chmod +x ./build-android-3.1.4.sh && chmod +x ./build-android-0.8.5.sh
 
 echo "OpenVK Legacy | FFmpeg for Android building..."
