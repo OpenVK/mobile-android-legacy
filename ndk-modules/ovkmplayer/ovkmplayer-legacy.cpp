@@ -367,6 +367,7 @@ JNIEXPORT void JNICALL
 
             /*open the codec*/
             gVideoCodecCtx = gTempFormatCtx->streams[videoStreamIndex]->codec;
+            LOGI(10, "[INFO] Codec initialized. Reading...");
             LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", videoCodecCtx->codec_name,
                  videoCodecCtx->height, videoCodecCtx->width);
             #ifdef SELECTIVE_DECODING
@@ -415,6 +416,7 @@ JNIEXPORT void JNICALL
             }
             LOGI(10, "[INFO] Duration: %d", gTempFormatCtx->streams[audioStreamIndex]->duration);
             audioCodecCtx = gFormatCtx->streams[audioStreamIndex]->codec;
+            LOGI(10, "[INFO] Codec initialized. Reading...");
             LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
                  audioCodecCtx->sample_rate);
             #ifdef SELECTIVE_DECODING
@@ -488,7 +490,11 @@ JNIEXPORT void JNICALL
                 }
 
                 /*open the codec*/
-                gVideoCodecCtx = gTempFormatCtx->streams[videoStreamIndex]->codec;
+                lVideoCodec = avcodec_find_decoder(
+                        gTempFormatCtx->streams[videoStreamIndex]->codec->codec_id);
+                LOGI(10, "[INFO] Codec initializing...");
+                videoCodecCtx = (AVCodecContext*)lVideoCodec->init;
+                LOGI(10, "[INFO] Codec initialized. Reading...");
                 LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", videoCodecCtx->codec_name,
                      videoCodecCtx->height, videoCodecCtx->width);
                 #ifdef SELECTIVE_DECODING
@@ -539,8 +545,9 @@ JNIEXPORT void JNICALL
                      gTempFormatCtx->streams[audioStreamIndex]->duration);
                 lAudioCodec = avcodec_find_decoder(
                         gTempFormatCtx->streams[audioStreamIndex]->codec->codec_id);
-
+                LOGI(10, "[INFO] Codec initializing...");
                 audioCodecCtx = (AVCodecContext*)lAudioCodec->init;
+                LOGI(10, "[INFO] Codec initialized. Reading...");
                 LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
                      audioCodecCtx->sample_rate);
                 #ifdef SELECTIVE_DECODING

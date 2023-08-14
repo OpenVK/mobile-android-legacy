@@ -146,6 +146,11 @@ android {
     tasks.withType(JavaCompile) {
         compileTask -> compileTask.dependsOn ndkBuild
     }
+    externalNativeBuild {
+        ndkBuild {
+            path '../ndk-modules/ovkmplayer/Android.mk'
+        }
+    }
 }
 
 dependencies {
