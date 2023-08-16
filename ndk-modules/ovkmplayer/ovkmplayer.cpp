@@ -25,11 +25,17 @@
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
+    #include <libavutil/avstring.h>
+    #include <libavutil/pixdesc.h>
     #include <libavutil/imgutils.h>
+    #include <libavutil/samplefmt.h>
     #include <libavformat/avformat.h>
     #include <libavformat/url.h>
+    #include <libavformat/avio.h>
+    #include <libswscale/swscale.h>
+    #include <libavcodec/avcodec.h>
+    #include <libavcodec/avfft.h>
     #include <libavdevice/avdevice.h>
-    #include <libavutil/frame.h>
 }
 
 /*for Android logs*/
@@ -44,6 +50,7 @@ char *gFileName;	      //file name of the video
 int gErrorCode;
 
 AVFormatContext *gFormatCtx;
+AVFormatContext *gTempFormatCtx;
 int gVideoStreamIndex;    // video stream index
 int gAudioStreamIndex;    // audio stream index
 
@@ -62,7 +69,7 @@ jint FFMPEG_PLAYBACK_PAUSED = 2;
 
 jlong gFrameCount;
 
-jobject generateTrackInfo(JNIEnv* env, jobject instance,
+jobject generateTrackInfo(JNIEnv* env,
                           AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
 
 extern "C" {
@@ -133,6 +140,43 @@ extern "C" {
             g_playbackState = 0;
             return gErrorCode;
         }
+    }
+
+    AVFormatContext* openTempFile(char* filename) {
+        if(filename == NULL) {
+            LOGE(1, "[ERROR] Invalid filename");
+            return NULL;
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Opening temporary file %s...", filename);
+        }
+        if ((gErrorCode = avformat_open_input(&gTempFormatCtx, filename, NULL, 0)) != 0) {
+            char error_string[192];
+            if(gErrorCode == -2) {
+                sprintf(error_string, "File not found");
+            } else {
+                if (av_strerror(gErrorCode, error_string, 192) < 0) {
+                    strerror_r(-gErrorCode, error_string, 192);
+                }
+            }
+            if(debug_mode) {
+                LOGE(1, "[ERROR] Can't open file: %d (%s)", gErrorCode, error_string);
+            }
+            return NULL;    //open file failed
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Searching A/V streams...");
+        }
+        /*retrieve stream information*/
+        if ((gErrorCode = avformat_find_stream_info(gTempFormatCtx, NULL)) < 0) {
+            char error_string[192];
+            av_strerror(gErrorCode, error_string, 192);
+            if(debug_mode) {
+                LOGE(1, "[ERROR] Can't find stream information: %s (%d)", error_string, gErrorCode);
+            }
+            return NULL;
+        }
+        return gTempFormatCtx;
     }
 
     JNIEXPORT jint JNICALL
@@ -268,7 +312,7 @@ extern "C" {
                 return NULL;
             }
             return generateTrackInfo(
-                    env, instance, gFormatCtx->streams[gVideoStreamIndex],
+                    env, gFormatCtx->streams[gVideoStreamIndex],
                     lVideoCodec, gVideoCodecCtx, AVMEDIA_TYPE_VIDEO
             );
         } else {
@@ -314,13 +358,136 @@ extern "C" {
                 return NULL;
             }
             return generateTrackInfo(
-                    env, instance, gFormatCtx->streams[gAudioStreamIndex],
+                    env, gFormatCtx->streams[gAudioStreamIndex],
                     lAudioCodec, gAudioCodecCtx, AVMEDIA_TYPE_AUDIO
             );
         }
 
         env->ReleaseStringUTFChars(filename_, filename);
     };
+
+JNIEXPORT jobject JNICALL
+Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo2(
+        JNIEnv *env, jobject instance,
+        jint type) {
+
+    int videoStreamIndex = -1;    // video stream index
+    int audioStreamIndex = -1;    // audio stream index
+
+    AVCodecContext *videoCodecCtx = NULL;
+    AVCodecContext *audioCodecCtx = NULL;
+    const char *filename;
+    if(gFormatCtx == NULL) {
+        if (gTempFormatCtx == NULL) {
+            if (openTempFile(gFileName) == NULL) {
+                return NULL;
+            }
+        }
+    } else {
+        gTempFormatCtx = gFormatCtx;
+    }
+    try {
+        if (type == 0) {
+            AVCodec *lVideoCodec;
+            /*some global variables initialization*/
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Getting video track info...");
+            }
+
+            /*find the video stream and its decoder*/
+            videoStreamIndex = -1;
+            for(int i = 0; i < gTempFormatCtx->nb_streams; i++) {
+                if(gTempFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+                    videoStreamIndex = i;
+                    videoCodecCtx = gTempFormatCtx->streams[i]->codec;
+                    if (debug_mode) {
+                        LOGD(10, "[DEBUG] Total streams: %d | Video stream #%d detected. Opening...",
+                             gTempFormatCtx->nb_streams, videoStreamIndex);
+                    }
+                }
+            }
+
+            if (videoStreamIndex < 0) {
+                if (debug_mode) {
+                    LOGE(1, "[ERROR] Cannot find a video stream");
+                }
+                return NULL;
+            }
+
+            /*open the codec*/
+            lVideoCodec = avcodec_find_decoder(
+                    gTempFormatCtx->streams[videoStreamIndex]->codec->codec_id);
+            LOGI(10, "[INFO] Codec initialized. Reading...");
+#ifdef SELECTIVE_DECODING
+            gVideoCodecCtx->allow_selective_decoding = 1;
+#endif
+            if (avcodec_open2(videoCodecCtx, lVideoCodec, NULL) < 0) {
+                if (debug_mode) {
+                    LOGE(1, "[ERROR] Can't open the video codec!");
+                }
+                return NULL;
+            }
+            return generateTrackInfo(
+                    env, gTempFormatCtx->streams[videoStreamIndex],
+                    lVideoCodec, videoCodecCtx, AVMEDIA_TYPE_VIDEO
+            );
+        } else {
+            AVCodec *lAudioCodec;
+
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Getting audio track info...");
+            }
+
+            /*find the audio stream and its decoder*/
+            audioStreamIndex = -1;
+            for(int i = 0; i < gTempFormatCtx->nb_streams; i++) {
+                if(gTempFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+                    audioStreamIndex = i;
+                    audioCodecCtx = gTempFormatCtx->streams[i]->codec;
+                    if (debug_mode) {
+                        LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
+                             gTempFormatCtx->nb_streams, audioStreamIndex + 1);
+                    }
+                }
+            }
+
+            if (audioStreamIndex < 0) {
+                if (debug_mode) {
+                    LOGE(1, "[ERROR] Cannot find a audio stream");
+                }
+                return NULL;
+            }
+
+            if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
+                if (debug_mode) {
+                    LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
+                         lAudioCodec->name);
+                }
+                return NULL;
+            }
+
+            /*open the codec*/
+            lAudioCodec = avcodec_find_decoder(
+                    gTempFormatCtx->streams[audioStreamIndex]->codec->codec_id);
+            LOGI(10, "[INFO] Codec initialized. Reading...");
+#ifdef SELECTIVE_DECODING
+            gAudioCodecCtx->allow_selective_decoding = 1;
+#endif
+            if (avcodec_open2(audioCodecCtx, lAudioCodec, NULL) < 0) {
+                if (debug_mode) {
+                    LOGE(1, "[ERROR] Can't open the audio codec!");
+                }
+                return NULL;
+            }
+            return generateTrackInfo(
+                    env, gTempFormatCtx->streams[audioStreamIndex],
+                    lAudioCodec, audioCodecCtx, AVMEDIA_TYPE_AUDIO
+            );
+        }
+    } catch (const char* error_message) {
+        return NULL;
+    }
+};
 
     JNIEXPORT jobject JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
@@ -372,7 +539,7 @@ extern "C" {
 }
 
 jobject generateTrackInfo(
-        JNIEnv* env, jobject instance, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type
+        JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type
 ) {
     // JNI field types (bad stuff, don't you agree?)
     // [JNI] => [java]

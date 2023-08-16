@@ -167,8 +167,12 @@ public class OvkMediaPlayer extends MediaPlayer {
                             audio_track.codec_name, audio_track.sample_rate,
                             audio_track.bitrate, audio_track.channels)
             );
-        } else {
-            Log.e(MPLAY_TAG, "Audio track not found!");
+        } else if(video_track != null){
+            Log.d(MPLAY_TAG,
+                    String.format("V: %s, %sx%s, %s bps, %s fps",
+                            video_track.codec_name, video_track.frame_size[0],
+                            video_track.frame_size[1], video_track.bitrate, video_track.frame_rate)
+            );
         }
         return tracks;
     }

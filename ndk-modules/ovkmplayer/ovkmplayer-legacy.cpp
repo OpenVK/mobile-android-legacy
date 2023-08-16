@@ -106,7 +106,6 @@ JNIEXPORT void JNICALL
         }
         av_register_all();
         avcodec_register_all();
-
     }
 
     JNIEXPORT jstring JNICALL
@@ -466,37 +465,29 @@ JNIEXPORT void JNICALL
                 }
 
                 /*find the video stream and its decoder*/
-                gVideoStreamIndex = av_find_best_stream(gTempFormatCtx, AVMEDIA_TYPE_VIDEO, -1, -1,
-                                                        &lVideoCodec,
-                                                        0);
+                videoStreamIndex = -1;
+                for(int i = 0; i < gTempFormatCtx->nb_streams; i++) {
+                    if(gTempFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+                        videoStreamIndex = i;
+                        videoCodecCtx = gTempFormatCtx->streams[i]->codec;
+                        if (debug_mode) {
+                            LOGD(10, "[DEBUG] Total streams: %d | Video stream #%d detected. Opening...",
+                                 gTempFormatCtx->nb_streams, videoStreamIndex);
+                        }
+                    }
+                }
 
-                if (videoStreamIndex == AVERROR_STREAM_NOT_FOUND) {
+                if (videoStreamIndex < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Cannot find a video stream");
                     }
                     return NULL;
                 }
-                if (videoStreamIndex == AVERROR_DECODER_NOT_FOUND) {
-                    if (debug_mode) {
-                        LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
-                             lVideoCodec->name);
-                    }
-                    return NULL;
-                }
-
-                if (debug_mode) {
-                    LOGD(10, "[DEBUG] Total streams: %d | Video stream #%d detected. Opening...",
-                         gTempFormatCtx->nb_streams, videoStreamIndex + 1);
-                }
 
                 /*open the codec*/
                 lVideoCodec = avcodec_find_decoder(
                         gTempFormatCtx->streams[videoStreamIndex]->codec->codec_id);
-                LOGI(10, "[INFO] Codec initializing...");
-                videoCodecCtx = (AVCodecContext*)lVideoCodec->init;
                 LOGI(10, "[INFO] Codec initialized. Reading...");
-                LOGI(10, "[INFO] Video codec: %s | Frame size: %dx%d", videoCodecCtx->codec_name,
-                     videoCodecCtx->height, videoCodecCtx->width);
                 #ifdef SELECTIVE_DECODING
                     gVideoCodecCtx->allow_selective_decoding = 1;
                 #endif
@@ -518,16 +509,25 @@ JNIEXPORT void JNICALL
                 }
 
                 /*find the audio stream and its decoder*/
-                gAudioStreamIndex = av_find_best_stream(gTempFormatCtx, AVMEDIA_TYPE_AUDIO, -1, -1,
-                                                        &lAudioCodec,
-                                                        0);
+                audioStreamIndex = -1;
+                for(int i = 0; i < gTempFormatCtx->nb_streams; i++) {
+                    if(gTempFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+                        audioStreamIndex = i;
+                        audioCodecCtx = gTempFormatCtx->streams[i]->codec;
+                        if (debug_mode) {
+                            LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
+                                 gTempFormatCtx->nb_streams, audioStreamIndex + 1);
+                        }
+                    }
+                }
 
-                if (gAudioStreamIndex == AVERROR_STREAM_NOT_FOUND) {
+                if (audioStreamIndex < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Cannot find a audio stream");
                     }
                     return NULL;
                 }
+
                 if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
@@ -537,19 +537,9 @@ JNIEXPORT void JNICALL
                 }
 
                 /*open the codec*/
-                if (debug_mode) {
-                    LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
-                         gTempFormatCtx->nb_streams, audioStreamIndex + 1);
-                }
-                LOGI(10, "[INFO] Duration: %d",
-                     gTempFormatCtx->streams[audioStreamIndex]->duration);
                 lAudioCodec = avcodec_find_decoder(
                         gTempFormatCtx->streams[audioStreamIndex]->codec->codec_id);
-                LOGI(10, "[INFO] Codec initializing...");
-                audioCodecCtx = (AVCodecContext*)lAudioCodec->init;
                 LOGI(10, "[INFO] Codec initialized. Reading...");
-                LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
-                     audioCodecCtx->sample_rate);
                 #ifdef SELECTIVE_DECODING
                                 gAudioCodecCtx->allow_selective_decoding = 1;
                 #endif
