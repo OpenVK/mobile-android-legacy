@@ -39,7 +39,6 @@
         <FrameLayout
             android:id="@+id/app_fragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="@dimen/actionbar_size"/>
+            android:layout_height="match_parent" />
 
 </LinearLayout>

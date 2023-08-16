@@ -127,11 +127,15 @@ public class OvkMediaPlayer extends MediaPlayer {
         handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                if(msg.what == MESSAGE_ERROR) {
-                    if(msg.getData() != null && msg.getData().getInt("error_code") < 0)
-                    onErrorListener.onError(OvkMediaPlayer.this, msg.getData().getInt("error_code"));
-                } else if(msg.what == MESSAGE_PREPARE) {
-                    onPreparedListener.onPrepared(OvkMediaPlayer.this);
+                try {
+                    if (msg.what == MESSAGE_ERROR) {
+                        if (msg.getData() != null && msg.getData().getInt("error_code") < 0)
+                            onErrorListener.onError(OvkMediaPlayer.this, msg.getData().getInt("error_code"));
+                    } else if (msg.what == MESSAGE_PREPARE) {
+                        onPreparedListener.onPrepared(OvkMediaPlayer.this);
+                    }
+                } catch (Exception ignored) {
+
                 }
                 super.handleMessage(msg);
             }

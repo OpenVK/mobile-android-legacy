@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -125,7 +126,7 @@ public class AppActivity extends TranslucentFragmentActivity {
     public android.accounts.Account androidAccount;
     public OpenVKAPI ovk_api;
 
-    @SuppressLint("CommitPrefEdits")
+    @SuppressLint({"CommitPrefEdits", "HandlerLeak"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,7 +152,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             Global.fixWindowPadding(getWindow(), getTheme());
         }
 
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
@@ -416,17 +417,19 @@ public class AppActivity extends TranslucentFragmentActivity {
                 slidingmenuLayout = findViewById(R.id.sliding_menu);
                 slidingmenuLayout.setAccountProfileListener(this);
                 slidingmenuLayout.setVisibility(View.VISIBLE);
-                slidingmenuLayout.setOnSystemUiVisibilityChangeListener(
-                        new View.OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int visibility) {
-                        if(visibility == View.GONE) {
-                            if (slidingmenuLayout.showAccountMenu) {
-                                slidingmenuLayout.toogleAccountMenu();
-                            }
-                        }
-                    }
-                });
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    slidingmenuLayout.setOnSystemUiVisibilityChangeListener(
+                            new View.OnSystemUiVisibilityChangeListener() {
+                                @Override
+                                public void onSystemUiVisibilityChange(int visibility) {
+                                    if (visibility == View.GONE) {
+                                        if (slidingmenuLayout.showAccountMenu) {
+                                            slidingmenuLayout.toogleAccountMenu();
+                                        }
+                                    }
+                                }
+                            });
+                }
             } catch (Exception ex) {
                 while(slidingmenuLayout == null) {
                     slidingmenuLayout = new SlidingMenuLayout(this);
@@ -1668,28 +1671,30 @@ public class AppActivity extends TranslucentFragmentActivity {
             builder.setNegativeButton(R.string.cancel, null);
             final OvkAlertDialog dialog = new OvkAlertDialog(this);
             dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                    if(ok_btn != null) {
-                        ok_btn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                try {
-                                    String msg_text = ((EditText)
-                                            repost_view.findViewById(R.id.text_edit)).getText()
-                                            .toString();
-                                    ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
-                                    dialog.close();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        if(ok_btn != null) {
+                            ok_btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        String msg_text = ((EditText)
+                                                repost_view.findViewById(R.id.text_edit)).getText()
+                                                .toString();
+                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
+                                        dialog.close();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
             dialog.show();
         }
     }
