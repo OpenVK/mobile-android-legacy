@@ -98,6 +98,9 @@ jint FFMPEG_PLAYBACK_PAUSED = 2;
 
 int gFrameCount;
 
+AVCodec *gVideoCodec;
+AVCodec *gAudioCodec;
+
 extern "C" {
 JNIEXPORT void JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_initFFmpeg(JNIEnv *env, jobject instance) {
@@ -214,69 +217,103 @@ JNIEXPORT void JNICALL
     JNIEXPORT jint JNICALL
         Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderFrames
                 (JNIEnv *env, jobject instance, jobject buffer, jlong gFrameNumber) {
-        uint8_t* pFrameBuffer = (uint8_t *) (env)->GetDirectBufferAddress(buffer);
-        if(g_playbackState == FFMPEG_PLAYBACK_PLAYING) {
-            int               err, i, got_frame, frame_size;
+            uint8_t *pFrameBuffer = (uint8_t *) (env)->GetDirectBufferAddress(buffer);
+            AVPacket avpkt;
             AVDictionaryEntry *e;
-            AVCodecContext    *pCodecCtx = NULL;
-            AVCodec           *pCodec = NULL;
-            AVFrame           *pFrame = NULL;
-            AVFrame           *pFrameRGB = NULL;
-            AVPacket          packet;
-            int               endOfVideo;
-            uint8_t *output_buf;
-
-            AVStream *pVideoStream = gFormatCtx->streams[gVideoStreamIndex];
-            pCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
-            pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-
-            if(pCodec == NULL) {
-                if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but '%s' decoder is unavailable.",
-                         gVideoCodecCtx->codec_name);
-                }
-                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
-                gErrorCode = -2;
-                return gErrorCode;
-            }
-
+            AVFrame *pFrame, *pFrameRGB;
+            int frameDecoded;
+            int framesReadCount = 0;
             e = NULL;
-            while ((e = av_dict_get(avCodecOptions, "", e, AV_DICT_IGNORE_SUFFIX))) {
-                if(debug_mode) {
-                    LOGE(10, "avcodec_open2: option \"%s\" not recognized", e->key);
-                    gErrorCode = -2;
-                    return gErrorCode;
-                }
+            while ((
+                e = av_dict_get(avCodecOptions, "", e, AV_DICT_IGNORE_SUFFIX)
+            )) {
+                LOGI(10, "[ERROR] avcodec_open2: option \"%s\" not recognized", e->key);
             }
 
             pFrame = avcodec_alloc_frame();
             pFrameRGB = avcodec_alloc_frame();
-            frame_size = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
-                                        pCodecCtx->height);
-            pFrameBuffer = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
-            if(pFrame == NULL || pFrameRGB == NULL) {
-                if(debug_mode) {
-                    LOGE(10, "[ERROR] Cannot allocate video frames");
-                }
-                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
-                gErrorCode = -3;
-                return gErrorCode;
-            } else if (packet.stream_index == gVideoStreamIndex) {
-                int ret = av_read_frame(gFormatCtx, &packet);
-                if(ret >= 0) {
-                    avpicture_fill((AVPicture *) pFrameRGB, pFrameBuffer, PIX_FMT_RGB24,
-                                   pCodecCtx->width, pCodecCtx->height);
-                    avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
-                    if (got_frame) {
-                        pFrameBuffer = (uint8_t *) pFrameRGB->data;
-                    }
-                    av_free_packet(&packet);
-                    return 1;
-                } else if(ret == AVERROR_EOF){
-                    g_playbackState = FFMPEG_PLAYBACK_STOPPED;
-                    return 0;
-                }
+
+            //while(av_read_frame(gFormatCtx, &avpkt) >= 0) {
+            //if(debug_mode) {
+            LOGI(10, "[DEBUG] Video decoding at position #%d", framesReadCount);
+            //}
+            //avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
+            //if(!frameDecoded) {
+            //continue;
+            //}
+            //av_samples_fill_arrays(pFrameRGB->data, pFrameRGB->linesize, pFrame->data[0],
+            //PIX_FMT_RGBA, gVideoCodecCtx->width, gVideoCodecCtx->height, 1);
+
+            //pFrameRGB->data[0] = window_buffer.bits;
+            //pFrameRGB->linesize[0] = window_buffer.stride * 4;
+            //framesReadCount++;
+        }
+
+    JNIEXPORT void JNICALL
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderAudio
+                (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Decoding audio stream #%d", gAudioStreamIndex)
+        }
+        jclass mplayer_class = env->GetObjectClass(instance);
+        jmethodID decodeAudio = env->GetMethodID(mplayer_class, "decodeAudio", "([BI)V");
+        int AUDIO_INBUF_SIZE = 4096;
+        int output_size, data_size, decoded_data_size = 0;
+        uint8_t *output_buf, input_buf[AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE];
+        AVPacket avpkt;
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] AVPacket initializing...")
+        }
+        av_init_packet(&avpkt);
+        if(!gAudioCodec) {
+            return;
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Output buffer allocating...");
+        }
+        output_buf = (uint8_t*) malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
+        avpkt.data = input_buf;
+        avpkt.size = (int) gFormatCtx->file_size;
+        while(avpkt.size > 0) {
+            output_size = (AVCODEC_MAX_AUDIO_FRAME_SIZE / 3) * 2;
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Decoding packet in position %d...", decoded_data_size);
             }
+            data_size = avcodec_decode_audio3(gAudioCodecCtx,
+                                              (int16_t*) output_buf, &output_size, &avpkt);
+            decoded_data_size += data_size;
+            if (data_size < 0) {
+                if(debug_mode) {
+                    LOGE(10, "[ERROR] Audio decoding error at position %d", decoded_data_size)
+                }
+                exit(1);
+            }
+            if(output_size > 0) {
+                if(debug_mode) {
+                    LOGD(10, "[DEBUG] Calling decodeAudio method to OvkMediaPlayer...");
+                }
+                jbyte *bytes = env->GetByteArrayElements(buffer, NULL);
+                memcpy(bytes, output_buf, (size_t) output_size); //
+                env->ReleaseByteArrayElements(buffer, bytes, 0);
+                env->CallVoidMethod(instance, decodeAudio, buffer, output_size);
+            }
+            avpkt.size -= data_size;
+            avpkt.data += data_size;
+            if (avpkt.size < 4096) {
+                /* Refill the input buffer, to avoid trying to decode
+                 * incomplete frames. Instead of this, one could also use
+                 * a parser, or use a proper container format through
+                 * libavformat. */
+                memmove(input_buf, avpkt.data, avpkt.size);
+                avpkt.data = input_buf;
+                data_size = AUDIO_INBUF_SIZE - avpkt.size;
+                if (data_size > 0)
+                    avpkt.size += data_size;
+            }
+            free(output_buf);
+
+            avcodec_close(gAudioCodecCtx);
+            av_free(gAudioCodec);
         }
     }
 
@@ -444,21 +481,9 @@ JNIEXPORT void JNICALL
         int videoStreamIndex = -1;    // video stream index
         int audioStreamIndex = -1;    // audio stream index
 
-        AVCodecContext *videoCodecCtx = NULL;
-        AVCodecContext *audioCodecCtx = NULL;
         const char *filename;
-        if(gFormatCtx == NULL) {
-            if (gTempFormatCtx == NULL) {
-                if (openTempFile(gFileName) == NULL) {
-                    return NULL;
-                }
-            }
-        } else {
-            gTempFormatCtx = gFormatCtx;
-        }
         try {
             if (type == 0) {
-                AVCodec *lVideoCodec;
                 /*some global variables initialization*/
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Getting video track info...");
@@ -466,18 +491,18 @@ JNIEXPORT void JNICALL
 
                 /*find the video stream and its decoder*/
                 videoStreamIndex = -1;
-                for(int i = 0; i < gTempFormatCtx->nb_streams; i++) {
-                    if(gTempFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-                        videoStreamIndex = i;
-                        videoCodecCtx = gTempFormatCtx->streams[i]->codec;
+                for(int i = 0; i < gFormatCtx->nb_streams; i++) {
+                    if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+                        gVideoStreamIndex = i;
+                        gVideoCodecCtx = gFormatCtx->streams[i]->codec;
                         if (debug_mode) {
                             LOGD(10, "[DEBUG] Total streams: %d | Video stream #%d detected. Opening...",
-                                 gTempFormatCtx->nb_streams, videoStreamIndex);
+                                 gFormatCtx->nb_streams, gVideoStreamIndex);
                         }
                     }
                 }
 
-                if (videoStreamIndex < 0) {
+                if (gVideoStreamIndex < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Cannot find a video stream");
                     }
@@ -485,24 +510,23 @@ JNIEXPORT void JNICALL
                 }
 
                 /*open the codec*/
-                lVideoCodec = avcodec_find_decoder(
-                        gTempFormatCtx->streams[videoStreamIndex]->codec->codec_id);
+                gVideoCodec = avcodec_find_decoder(
+                        gFormatCtx->streams[gVideoStreamIndex]->codec->codec_id);
                 LOGI(10, "[INFO] Codec initialized. Reading...");
                 #ifdef SELECTIVE_DECODING
                     gVideoCodecCtx->allow_selective_decoding = 1;
                 #endif
-                if (avcodec_open(videoCodecCtx, lVideoCodec) < 0) {
+                if (avcodec_open(gVideoCodecCtx, gVideoCodec) < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Can't open the video codec!");
                     }
                     return NULL;
                 }
                 return generateTrackInfo(
-                        env, gTempFormatCtx->streams[videoStreamIndex],
-                        lVideoCodec, videoCodecCtx, AVMEDIA_TYPE_VIDEO
+                        env, gFormatCtx->streams[gVideoStreamIndex],
+                        gVideoCodec, gVideoCodecCtx, AVMEDIA_TYPE_VIDEO
                 );
             } else {
-                AVCodec *lAudioCodec;
 
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Getting audio track info...");
@@ -510,18 +534,18 @@ JNIEXPORT void JNICALL
 
                 /*find the audio stream and its decoder*/
                 audioStreamIndex = -1;
-                for(int i = 0; i < gTempFormatCtx->nb_streams; i++) {
-                    if(gTempFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
-                        audioStreamIndex = i;
-                        audioCodecCtx = gTempFormatCtx->streams[i]->codec;
+                for(int i = 0; i < gFormatCtx->nb_streams; i++) {
+                    if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+                        gAudioStreamIndex = i;
+                        gAudioCodecCtx = gFormatCtx->streams[i]->codec;
                         if (debug_mode) {
                             LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
-                                 gTempFormatCtx->nb_streams, audioStreamIndex + 1);
+                                 gFormatCtx->nb_streams, gAudioStreamIndex);
                         }
                     }
                 }
 
-                if (audioStreamIndex < 0) {
+                if (gAudioStreamIndex < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Cannot find a audio stream");
                     }
@@ -531,27 +555,27 @@ JNIEXPORT void JNICALL
                 if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
-                             lAudioCodec->name);
+                             gAudioCodec->name);
                     }
                     return NULL;
                 }
 
                 /*open the codec*/
-                lAudioCodec = avcodec_find_decoder(
-                        gTempFormatCtx->streams[audioStreamIndex]->codec->codec_id);
+                gAudioCodec = avcodec_find_decoder(
+                        gFormatCtx->streams[gAudioStreamIndex]->codec->codec_id);
                 LOGI(10, "[INFO] Codec initialized. Reading...");
                 #ifdef SELECTIVE_DECODING
                                 gAudioCodecCtx->allow_selective_decoding = 1;
                 #endif
-                if (avcodec_open(audioCodecCtx, lAudioCodec) < 0) {
+                if (avcodec_open(gAudioCodecCtx, gAudioCodec) < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Can't open the audio codec!");
                     }
                     return NULL;
                 }
                 return generateTrackInfo(
-                        env, gTempFormatCtx->streams[audioStreamIndex],
-                        lAudioCodec, audioCodecCtx, AVMEDIA_TYPE_AUDIO
+                        env, gFormatCtx->streams[gAudioStreamIndex],
+                        gAudioCodec, gAudioCodecCtx, AVMEDIA_TYPE_AUDIO
                 );
             }
         } catch (const char* error_message) {
@@ -582,7 +606,7 @@ JNIEXPORT void JNICALL
         av_strerror(gErrorCode, error_str, 192);
         return env->NewStringUTF(error_str);
     }
-};
+}
 
 jobject generateTrackInfo(
         JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type
@@ -607,18 +631,18 @@ jobject generateTrackInfo(
             jmethodID video_track_init = env->GetMethodID(
                     track_class, "<init>", "()V"
             );
+            jobject track = env->NewObject(track_class, video_track_init);
+
             jfieldID codec_name_field = env->GetFieldID(
                     track_class, "codec_name", "Ljava/lang/String;"
             );
             jfieldID frame_size_field = env->GetFieldID(track_class, "frame_size", "[I");
             jfieldID bitrate_field = env->GetFieldID(
-                    track_class, "bitrate", "I"
+                    track_class, "bitrate", "J"
             );
             jfieldID frame_rate_field = env->GetFieldID(
                     track_class, "frame_rate", "F"
             );
-
-            jobject track = env->NewObject(track_class, video_track_init);
 
             // Load OvkVideoTrack values form fields (class variables)
             env->SetObjectField(track, codec_name_field, env->NewStringUTF(pCodec->name));
@@ -627,7 +651,7 @@ jobject generateTrackInfo(
             frame_size[0] = pCodecCtx->width;
             frame_size[1] = pCodecCtx->height;
             env->ReleaseIntArrayElements(array, frame_size, 0);
-            env->SetIntField(track, bitrate_field, pCodecCtx->bit_rate);
+            env->SetLongField(track, bitrate_field, pCodecCtx->bit_rate);
             env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
             return track;
         } else {

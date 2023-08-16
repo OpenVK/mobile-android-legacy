@@ -184,53 +184,16 @@ public class ProfileFragment extends Fragment {
 
     public void setDMButtonListener(final Context ctx, final long peer_id, WindowManager wm) {
         float smallestWidth = Global.getSmalledWidth(wm);
-        if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
-            ((Button) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).getConversationById(peer_id);
-                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                        ((ProfileIntentActivity) ctx).getConversationById(peer_id);
-                    }
+        (view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    ((AppActivity) ctx).getConversationById(peer_id);
+                } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                    ((ProfileIntentActivity) ctx).getConversationById(peer_id);
                 }
-            });
-        } else if(((OvkApplication)getContext().getApplicationContext()).isTablet && smallestWidth < 800) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).getConversationById(peer_id);
-                        } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).getConversationById(peer_id);
-                        }
-                    }
-                });
-            } else {
-                ((Button) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).getConversationById(peer_id);
-                        } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).getConversationById(peer_id);
-                        }
-                    }
-                });
             }
-        } else {
-            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).getConversationById(peer_id);
-                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                        ((ProfileIntentActivity) ctx).getConversationById(peer_id);
-                    }
-                }
-            });
-        }
+        });
     }
 
     public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {

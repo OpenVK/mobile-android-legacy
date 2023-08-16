@@ -91,6 +91,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native void setPlaybackState(int playbackState);
     private native int openMediaFile(String filename);
     private native int renderFrames(IntBuffer buffer, long frame_number);
+    private native void renderAudio(byte[] buffer, int length);
     public native int getLastErrorCode();
     private native void setDebugMode(boolean value);
 
@@ -167,7 +168,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                             audio_track.codec_name, audio_track.sample_rate,
                             audio_track.bitrate, audio_track.channels)
             );
-        } else if(video_track != null){
+        } if(video_track != null){
             Log.d(MPLAY_TAG,
                     String.format("V: %s, %sx%s, %s bps, %s fps",
                             video_track.codec_name, video_track.frame_size[0],
@@ -241,19 +242,29 @@ public class OvkMediaPlayer extends MediaPlayer {
             Log.d(MPLAY_TAG, "Playing...");
             setPlaybackState(STATE_PLAYING);
             if(tracks != null) {
+                OvkAudioTrack track = null;
+                for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+                    if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
+                        track = (OvkAudioTrack) tracks.get(tracks_index);
+                    }
+                }
+                int ch_config = track.channels == 2 ?
+                        AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+                int bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
+                        AudioFormat.ENCODING_PCM_16BIT);
                 if(tracks.size() == 1) {
                     if (tracks.get(0) instanceof OvkVideoTrack) {
                         startRenderingFrames();
                     } else if (tracks.get(0) instanceof OvkAudioTrack) {
-                        Log.d(MPLAY_TAG, "Decoding audio...");
-                        decodeAudio((OvkAudioTrack) tracks.get(0));
+                        //Log.d(MPLAY_TAG, "Decoding audio...");
+                        //renderAudio(audio_buffer, bufferSize);
                     }
                 } else if(tracks.size() == 2) {
                     if (tracks.get(0) instanceof OvkVideoTrack) {
                         startRenderingFrames();
                     }
                     if (tracks.get(1) instanceof OvkAudioTrack) {
-                        decodeAudio((OvkAudioTrack) tracks.get(1));
+                        //renderAudio(audio_buffer, bufferSize);
                     }
                 }
             }
@@ -261,81 +272,27 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     @SuppressWarnings("deprecation")
-    private void decodeAudio(final OvkAudioTrack track) {
-        int ch_mask = track.channels == 2 ?
-                AudioFormat.CHANNEL_OUT_STEREO : AudioFormat.CHANNEL_OUT_MONO;
-        this.minAudioBufferSize = (int) (
-                AudioTrack.getMinBufferSize(
-                        (int) track.sample_rate, ch_mask, AudioFormat.ENCODING_PCM_16BIT
-                ) * 1.5f
-        );
-        final int buf_size = minAudioBufferSize > 0 ? minAudioBufferSize : 2048;
-        audio_buffer = new byte[buf_size * 50];
-        final AudioTrack audio_track;
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            AudioTrack.Builder builder = new AudioTrack.Builder();
-            builder.setAudioFormat(new AudioFormat.Builder()
-                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                    .setSampleRate((int) track.sample_rate)
-                    .setChannelMask(ch_mask)
-                    .build())
-                    .setBufferSizeInBytes(buf_size);
-
-            audio_track = builder.build();
-        } else {
-            audio_track =
-                    new AudioTrack(
-                            AudioManager.STREAM_MUSIC,
-                            (int) track.sample_rate, ch_mask,
-                            AudioFormat.ENCODING_PCM_16BIT, buf_size, 1
-                    );
+    private void decodeAudio(byte[] buffer, int length) {
+        OvkAudioTrack track = null;
+        for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+            if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
+                track = (OvkAudioTrack) tracks.get(tracks_index);
+            }
         }
+        if(track == null) {
+            return;
+        }
+        int ch_config = track.channels == 2 ?
+                AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+        int bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
+                AudioFormat.ENCODING_PCM_16BIT);
+
+        AudioTrack audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
+                ch_config,
+                AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
 
         audio_track.play();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                byte[] buffer = new byte[buf_size];
-                while (getPlaybackState() == STATE_PLAYING) {
-                    try {
-                        synchronized (audio_track) {
-                            audio_track.wait();
-                        }
-                        if (audio_buffer_write_pos > audio_buffer_read_pos) {
-                            audio_delay =
-                                    (int) (((audio_buffer_write_pos - audio_buffer_read_pos)
-                                            + (buf_size / track.channels)) / (track.sample_rate * 2));
-                        } else {
-                            audio_delay = (
-                                    (int) (((audio_buffer.length - audio_buffer_read_pos)
-                                            + audio_buffer_write_pos)
-                                            + (buf_size / track.channels) / (track.sample_rate * 2)));
-                        }
-                        if (audio_delay > 0.7d) {
-                            audio_buffer_read_pos = audio_buffer_write_pos - buf_size;
-                            if (audio_buffer_read_pos < 0) {
-                                audio_buffer_read_pos += audio_buffer.length;
-                            }
-                        }
-                        long system_ms = System.currentTimeMillis();
-                        if (audio_buffer_read_pos + buf_size < audio_buffer.length) {
-                            System.arraycopy(audio_buffer, audio_buffer_read_pos, buffer, 0, buf_size);
-                            audio_buffer_read_pos += buf_size;
-                        } else {
-                            int range = audio_buffer.length - audio_buffer_read_pos;
-                            int range2 = buf_size - range;
-                            System.arraycopy(audio_buffer, audio_buffer_read_pos, buffer, 0, range);
-                            System.arraycopy(audio_buffer, 0, buffer, range, range2);
-                            audio_buffer_read_pos = range2;
-                        }
-                        audio_track.write(buffer, 0, buf_size);
-                    } catch (Exception ex) {
-                        return;
-                    }
-                }
-            }
-        }).start();
+        audio_track.write(buffer, 0, bufferSize);
     }
 
     private void startRenderingFrames() {
