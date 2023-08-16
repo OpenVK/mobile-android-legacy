@@ -153,12 +153,18 @@ public class OvkMediaPlayer extends MediaPlayer {
                 return null;
             }
             audio_track = (OvkAudioTrack) getTrackInfo2(OvkMediaTrack.TYPE_AUDIO);
+            if(video_track == null && audio_track == null) {
+                return null;
+            }
         } else {
             video_track = (OvkVideoTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_VIDEO);
             if (getLastErrorCode() == FFMPEG_ERROR_EOF) {
                 return null;
             }
             audio_track = (OvkAudioTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_AUDIO);
+            if(video_track == null && audio_track == null) {
+                return null;
+            }
         }
         tracks.add(video_track);
         tracks.add(audio_track);
@@ -239,32 +245,36 @@ public class OvkMediaPlayer extends MediaPlayer {
     @Override
     public void start() throws IllegalStateException {
         if(getPlaybackState() == STATE_STOPPED || getPlaybackState() == STATE_PAUSED) {
-            Log.d(MPLAY_TAG, "Playing...");
-            setPlaybackState(STATE_PLAYING);
             if(tracks != null) {
+                Log.d(MPLAY_TAG, "Playing...");
+                setPlaybackState(STATE_PLAYING);
                 OvkAudioTrack track = null;
                 for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
                     if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
                         track = (OvkAudioTrack) tracks.get(tracks_index);
                     }
                 }
-                int ch_config = track.channels == 2 ?
-                        AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-                int bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
-                        AudioFormat.ENCODING_PCM_16BIT);
+                int ch_config = 0;
+                int bufferSize = 0;
+                if(track != null) {
+                    ch_config = track.channels == 2 ?
+                            AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+                    bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
+                            AudioFormat.ENCODING_PCM_16BIT);
+                }
                 if(tracks.size() == 1) {
                     if (tracks.get(0) instanceof OvkVideoTrack) {
                         startRenderingFrames();
                     } else if (tracks.get(0) instanceof OvkAudioTrack) {
                         //Log.d(MPLAY_TAG, "Decoding audio...");
-                        //renderAudio(audio_buffer, bufferSize);
+                        renderAudio(audio_buffer, bufferSize);
                     }
                 } else if(tracks.size() == 2) {
                     if (tracks.get(0) instanceof OvkVideoTrack) {
                         startRenderingFrames();
                     }
                     if (tracks.get(1) instanceof OvkAudioTrack) {
-                        //renderAudio(audio_buffer, bufferSize);
+                        renderAudio(audio_buffer, bufferSize);
                     }
                 }
             }

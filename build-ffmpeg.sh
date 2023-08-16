@@ -29,6 +29,8 @@ elif [ $1 == "0.8.12-r6" ]; then
     ./build-android-0.8.12.sh x86 r6
 elif [ $1 == "3.1.4" ]; then
     ./build-android-3.1.4.sh armv8a
+elif [ $1 == "3.1.4-tls" ]; then
+    ./build-android-3.1.4.sh armv8a securetr
 else
     echo;
     echo "[ERROR] Wrong argument: ./build-ffmpeg.sh [version == '3.1.4' or '0.8.12' or '0.8.12-r6']"
