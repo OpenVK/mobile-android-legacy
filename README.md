@@ -38,7 +38,7 @@ To compile them you need:
 
   Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.12 support in older versions of Android.
 
-  Also, the absolute path to the NDK (which contains the `platforms` directory) in the project settings must be changed so that synchronization with Gradle goes correctly.
+  Also, in the project settings, specify the path to Android NDK r11c.
 + **Installed dependencies** \
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos).
 

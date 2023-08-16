@@ -38,7 +38,7 @@ _Работает на OpenVK API._
 
   Android NDK `r8e` настоятельно рекомендуется для предоставления поддержки FFmpeg 0.8.12 в старых версиях Android.
 
-  Также абсолютный путь к NDK (в котором содержится директория `platforms`) в настройках проекта необходимо изменить так, чтобы синхронизация с Gradle шла корректно.
+  Также в настройках проекта укажите путь к Android NDK r11c.
 + **Установленные зависимости** \
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
 
