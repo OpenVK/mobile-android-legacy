@@ -42,15 +42,15 @@ _Работает на OpenVK API._
 + **Установленные зависимости** \
   Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
 
-  **ОПЦИОНАЛЬНО:** Для запуска 32-битных исполняемых файлов, включая NDK r7, необходимо доустановить следующие пакеты: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` для Ubuntu/Debian/Linux Mint.
+  **ОПЦИОНАЛЬНО:** Для запуска 32-битных исполняемых файлов, включая NDK r6, необходимо доустановить следующие пакеты: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` или `ia32-libs` для Ubuntu/Debian/Linux Mint.
 + **Скрипты, собирающие FFmpeg из исходных кодов** \
   Запустите команду внутри репозитория OpenVK Legacy в терминале:
   ```sh
-   chmod +x ./build-ffmpeg.sh && \
-   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.8.12 && \
+   chmod +x ./build-ffmpeg.sh
+   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.8.12
+   # или: ANDROID_NDK_HOME=[path/to/ndk-r6] ./build-ffmpeg.sh 0.8.12-r6
    ANDROID_NDK_HOME=[path/to/ndk-r11c] ./build-ffmpeg.sh 3.1.4
   ```
-
 
   Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодуле `builder` [директории `./ndk-modules/ovkmplayer`](https://github.com/openvk/mobile-android-legacy/tree/main/ndk-modules/ovkmplayer).
 

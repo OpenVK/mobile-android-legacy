@@ -42,12 +42,13 @@ To compile them you need:
 + **Installed dependencies** \
   See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos).
 
-  **OPTIONAL:** To run 32-bit binaries, including NDK r7, you need to install the following packages: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` or `ia32-libs` for Ubuntu/Debian/Linux Mint.
+  **OPTIONAL:** To run 32-bit binaries, including NDK r6, you need to install the following packages: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` or `ia32-libs` for Ubuntu/Debian/Linux Mint.
 + **Scripts that build FFmpeg from source** \
   Run the command inside the OpenVK Legacy repository in terminal:
   ```sh
-   chmod +x ./build-ffmpeg.sh && \
-   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.8.12 && \
+   chmod +x ./build-ffmpeg.sh
+   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.8.12
+   # or: ANDROID_NDK_HOME=[path/to/ndk-r6] ./build-ffmpeg.sh 0.8.12-r6
    ANDROID_NDK_HOME=[path/to/ndk-r11c] ./build-ffmpeg.sh 3.1.4
   ```
 
