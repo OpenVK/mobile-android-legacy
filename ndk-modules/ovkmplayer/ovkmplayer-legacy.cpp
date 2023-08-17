@@ -518,7 +518,7 @@ JNIEXPORT void JNICALL
                 }
 
                 /*find the video stream and its decoder*/
-                videoStreamIndex = -1;
+                gVideoStreamIndex = -1;
                 for(int i = 0; i < gFormatCtx->nb_streams; i++) {
                     if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
                         gVideoStreamIndex = i;
@@ -561,7 +561,7 @@ JNIEXPORT void JNICALL
                 }
 
                 /*find the audio stream and its decoder*/
-                audioStreamIndex = -1;
+                gAudioStreamIndex = -1;
                 for(int i = 0; i < gFormatCtx->nb_streams; i++) {
                     if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
                         gAudioStreamIndex = i;
