@@ -139,8 +139,8 @@ android {
             commandLine "$ndkDir/ndk-build.sh",
                     "NDK_PROJECT_PATH=$projDir/app/src/main",
                     "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
-                    "APP_BUILD_SCRIPT=$projDir/ndk-modules/ovkmplayer/Android.mk",
-                    "NDK_APPLICATION_MK=$projDir/ndk-modules/ovkmplayer/Application.mk"
+                    "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
+                    "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
         }
     }
     tasks.withType(JavaCompile) {
