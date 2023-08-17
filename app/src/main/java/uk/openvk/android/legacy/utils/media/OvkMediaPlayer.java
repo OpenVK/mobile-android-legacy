@@ -56,6 +56,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     public static final int STATE_PAUSED = 2;
     public static final int MESSAGE_PREPARE = 10000;
     public static final int MESSAGE_ERROR = -10000;
+    public static final int MESSAGE_AUDIO_DECODING = 100;
     private int audio_buffer_read_pos = 0;
     private int audio_buffer_write_pos = 0;
     private int audio_delay = 0;
@@ -134,6 +135,8 @@ public class OvkMediaPlayer extends MediaPlayer {
                             onErrorListener.onError(OvkMediaPlayer.this, msg.getData().getInt("error_code"));
                     } else if (msg.what == MESSAGE_PREPARE) {
                         onPreparedListener.onPrepared(OvkMediaPlayer.this);
+                    } else if(msg.what == MESSAGE_AUDIO_DECODING) {
+                        decodeAudioFromMessage();
                     }
                 } catch (Exception ignored) {
 
@@ -141,6 +144,53 @@ public class OvkMediaPlayer extends MediaPlayer {
                 super.handleMessage(msg);
             }
         };
+    }
+
+    private void decodeAudioFromMessage() {
+        OvkAudioTrack track = null;
+        Log.d(MPLAY_TAG, "Checking audio buffer...");
+        if(buffer == null) {
+            Log.e(MPLAY_TAG, "Audio buffer is empty");
+            return;
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i < 240; i++) {
+                if(i >= 240 - 1) {
+                    builder.append(String.format("%s", audio_buffer[i]));
+                } else {
+                    builder.append(String.format("%s ", buffer[i]));
+                }
+            }
+            Log.d(MPLAY_TAG,
+                    String.format("Buffer size: %d\r\nDump: [%s]",
+                            buffer.length, builder.toString()));
+        }
+        Log.d(MPLAY_TAG, "Checking audio track...");
+        for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+            if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
+                track = (OvkAudioTrack) tracks.get(tracks_index);
+            }
+        }
+        if(track == null) {
+            Log.e(MPLAY_TAG, "Audio track not found");
+            return;
+        }
+        int ch_config = track.channels == 2 ?
+                AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+        int bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
+                AudioFormat.ENCODING_PCM_16BIT);
+
+        AudioTrack audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
+                ch_config,
+                AudioFormat.ENCODING_PCM_16BIT, audio_buffer.length*2, AudioTrack.MODE_STREAM);
+        audio_track.play();
+        Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
+        int length = audio_buffer.length;
+        while (length > 0) {
+            length -= audio_track.write(audio_buffer, 0, 512);
+        }
+        audio_track.stop();
+        audio_track.release();
     }
 
     public ArrayList<OvkMediaTrack> getMediaInfo(String filename) {
@@ -283,49 +333,8 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @SuppressWarnings("deprecation")
     private void decodeAudio(byte[] buffer, int length) {
-        OvkAudioTrack track = null;
-        Log.d(MPLAY_TAG, "Checking audio buffer...");
-        if(buffer == null) {
-            Log.e(MPLAY_TAG, "Audio buffer is empty");
-            return;
-        } else {
-            StringBuilder builder = new StringBuilder();
-            for(int i = 0; i < 240; i++) {
-                if(i >= 240 - 1) {
-                    builder.append(String.format("%s", buffer[i]));
-                } else {
-                    builder.append(String.format("%s ", buffer[i]));
-                }
-            }
-            Log.d(MPLAY_TAG,
-                    String.format("Buffer size: %d\r\nDump: [%s]",
-                            buffer.length, builder.toString()));
-        }
-        Log.d(MPLAY_TAG, "Checking audio track...");
-        for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-            if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
-                track = (OvkAudioTrack) tracks.get(tracks_index);
-            }
-        }
-        if(track == null) {
-            Log.e(MPLAY_TAG, "Audio track not found");
-            return;
-        }
-        int ch_config = track.channels == 2 ?
-                AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-        int bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
-                AudioFormat.ENCODING_PCM_16BIT);
-
-        AudioTrack audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
-                ch_config,
-                AudioFormat.ENCODING_PCM_16BIT, length*2, AudioTrack.MODE_STREAM);
-        audio_track.play();
-        Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
-        while (length > 0) {
-            length -= audio_track.write(buffer, 0, 512);
-        }
-        audio_track.stop();
-        audio_track.release();
+        this.audio_buffer = buffer;
+        handler.sendEmptyMessage(MESSAGE_AUDIO_DECODING);
     }
 
     private void startRenderingFrames() {
