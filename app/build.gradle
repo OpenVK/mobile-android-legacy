@@ -131,16 +131,16 @@ android {
         println  "Project Directory:   ${projDir}";
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             commandLine "$ndkDir\\ndk-build.cmd",
-                    "NDK_PROJECT_PATH=$projDir/src/main",
-                    "NDK_LIBS_OUT=$projDir/src/main/jniLibs",
+                    "NDK_PROJECT_PATH=$projDir/app/src/main",
+                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
                     "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
                     "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
         } else {
             commandLine "$ndkDir/ndk-build.sh",
-                    "NDK_PROJECT_PATH=$projDir/src/main",
-                    "NDK_LIBS_OUT=$projDir/src/main/jniLibs",
-                    "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
-                    "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
+                    "NDK_PROJECT_PATH=$projDir/app/src/main",
+                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
+                    "APP_BUILD_SCRIPT=$projDir/ndk-modules/ovkmplayer/Android.mk",
+                    "NDK_APPLICATION_MK=$projDir/ndk-modules/ovkmplayer/Application.mk"
         }
     }
     tasks.withType(JavaCompile) {
