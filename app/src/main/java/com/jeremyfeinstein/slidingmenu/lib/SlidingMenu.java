@@ -1000,7 +1000,7 @@ public class SlidingMenu extends RelativeLayout {
 		int bottomPadding = insets.bottom;
         int navigation_height = 0;
         int navigation_width = 0;
-        if(Build.VERSION.SDK_INT >= 29) {
+        if(Build.VERSION.SDK_INT >= 21) {
             Resources resources = getContext().getResources();
             int nav_height_id = resources.getIdentifier("navigation_bar_height", "dimen", "android");
             int nav_width_id = resources.getIdentifier("navigation_bar_width", "dimen", "android");
@@ -1017,28 +1017,34 @@ public class SlidingMenu extends RelativeLayout {
             }
             if (!mActionbarOverlay) {
                 Log.v(TAG, "setting padding!");
-                switch (rotation) {
-                    case Surface.ROTATION_0:
-                        setPadding(leftPadding, topPadding, rightPadding, navigation_height);
-                        break;
-                    case Surface.ROTATION_90:
-                    	if(navigation_width > 60) {
+				switch (rotation) {
+					default:
+						if (navigation_width > 60) {
+							setPadding(navigation_width, topPadding, rightPadding, bottomPadding);
+						} else {
+							setPadding(leftPadding, topPadding, rightPadding, navigation_width);
+						}
+						break;
+					case Surface.ROTATION_0:
+						setPadding(leftPadding, topPadding, rightPadding, navigation_height);
+						break;
+					case Surface.ROTATION_90:
+						if (navigation_width > 60) {
 							setPadding(leftPadding, topPadding, navigation_width, bottomPadding);
 						} else {
 							setPadding(leftPadding, topPadding, rightPadding, navigation_width);
 						}
-                        break;
-                    case Surface.ROTATION_180:
-                        setPadding(leftPadding, nav_height_id, rightPadding, bottomPadding);
-                        break;
-                    default:
-                        if(navigation_width > 60) {
-                            setPadding(navigation_width, topPadding, rightPadding, bottomPadding);
+						break;
+					case Surface.ROTATION_180:
+                        if (navigation_width > 60) {
+                            setPadding(leftPadding, topPadding, navigation_width, bottomPadding);
                         } else {
                             setPadding(leftPadding, topPadding, rightPadding, navigation_width);
                         }
-                        break;
-                }
+						break;
+					case Surface.ROTATION_270:
+						break;
+				}
             }
         } else {
             if (!mActionbarOverlay) {

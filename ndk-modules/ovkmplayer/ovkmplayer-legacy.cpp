@@ -279,6 +279,8 @@ JNIEXPORT void JNICALL
         int output_size, data_size, decoded_data_size = 0;
         short *output_buf, input_buf[AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE];
         AVPacket avpkt;
+        int received_frame = 0;
+        int total_frames = 0;
         if(debug_mode) {
             LOGD(10, "[DEBUG] AVPacket initializing...")
         }
@@ -293,56 +295,34 @@ JNIEXPORT void JNICALL
         avpkt.data = (uint8_t*) input_buf;
         avpkt.size = (int) gFormatCtx->file_size;
         int read_frame_status = -1;
-        while((read_frame_status = av_read_frame(gFormatCtx, &avpkt)) == 0) {
-            output_size = (AVCODEC_MAX_AUDIO_FRAME_SIZE / 3) * 2;
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Decoding packet in position %d...", decoded_data_size);
-            }
-            data_size = avcodec_decode_audio3(gAudioCodecCtx,
-                                              output_buf, &length, &avpkt);
-            if(avpkt.size == 0) {
-                LOGE(10, "[ERROR] AVPacket read error", decoded_data_size)
-                break;
-            } else if (data_size < 0) {
-                if(debug_mode) {
-                    LOGE(10, "[ERROR] Audio decoding error at position %d. "
-                            "Result: %d", decoded_data_size, data_size)
+        while (read_frame_status = av_read_frame(gFormatCtx, &avpkt) >= 0) {
+            if (gFormatCtx->streams[avpkt.stream_index]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+                int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 2;
+                int size=avpkt.size;
+                while(size > 0) {
+                    int len = avcodec_decode_audio3(gFormatCtx->streams[avpkt.stream_index]->codec,
+                                                    (int16_t *) output_buf, &data_size, &avpkt);
+                    if(len < 0) {
+                        break;
+                    }
+                    size = avpkt.size-len;
                 }
-                break;
-            } else if(data_size == 0) {
-                if(debug_mode) {
-                    LOGE(10, "[DEBUG] EOF detected at position %d", decoded_data_size)
-                }
-                break;
             }
-            decoded_data_size += data_size;
-            if(output_size > 0) {
-                if(debug_mode) {
-                    LOGD(10, "[DEBUG] Calling decodeAudio method to OvkMediaPlayer...");
-                }
-                jbyte *bytes = env->GetByteArrayElements(buffer, NULL);
-                memcpy(bytes, output_buf, (size_t) length); //
-                env->CallVoidMethod(instance, decodeAudio, buffer, length);
-                env->ReleaseByteArrayElements(buffer, bytes, 0);
-            }
-            avpkt.size -= data_size;
-            avpkt.data += data_size;
-            if (avpkt.size < 4096) {
-                /* Refill the input buffer, to avoid trying to decode
-                 * incomplete frames. Instead of this, one could also use
-                 * a parser, or use a proper container format through
-                 * libavformat. */
-                memmove(input_buf, avpkt.data, avpkt.size);
-                avpkt.data = (uint8_t*) input_buf;
-                data_size = AUDIO_INBUF_SIZE - avpkt.size;
-                if (data_size > 0)
-                    avpkt.size += data_size;
-            }
-            free(output_buf);
-
-            avcodec_close(gAudioCodecCtx);
-            av_free(gAudioCodec);
+            received_frame++;
+            total_frames++;
         }
+        if(read_frame_status < 0) {
+            total_frames++;
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Decoding result:\r\nReceived frames: %d | Total frames: %d",
+                 received_frame, total_frames);
+            LOGD(10, "[DEBUG] Calling decodeAudio method to OvkMediaPlayer...");
+        }
+        buffer = env->NewByteArray((jsize)AVCODEC_MAX_AUDIO_FRAME_SIZE * 2);
+        env->SetByteArrayRegion(buffer, 0, (jsize)AVCODEC_MAX_AUDIO_FRAME_SIZE * 2, (jbyte*)output_buf);
+        env->CallVoidMethod(instance, decodeAudio, buffer, length);
+        env->DeleteLocalRef(buffer);
     }
 
     JNIEXPORT jobject JNICALL

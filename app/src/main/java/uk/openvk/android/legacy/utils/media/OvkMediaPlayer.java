@@ -284,12 +284,31 @@ public class OvkMediaPlayer extends MediaPlayer {
     @SuppressWarnings("deprecation")
     private void decodeAudio(byte[] buffer, int length) {
         OvkAudioTrack track = null;
+        Log.d(MPLAY_TAG, "Checking audio buffer...");
+        if(buffer == null) {
+            Log.e(MPLAY_TAG, "Audio buffer is empty");
+            return;
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i < 240; i++) {
+                if(i >= 240 - 1) {
+                    builder.append(String.format("%s", buffer[i]));
+                } else {
+                    builder.append(String.format("%s ", buffer[i]));
+                }
+            }
+            Log.d(MPLAY_TAG,
+                    String.format("Buffer size: %d\r\nDump: [%s]",
+                            buffer.length, builder.toString()));
+        }
+        Log.d(MPLAY_TAG, "Checking audio track...");
         for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
             if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
                 track = (OvkAudioTrack) tracks.get(tracks_index);
             }
         }
         if(track == null) {
+            Log.e(MPLAY_TAG, "Audio track not found");
             return;
         }
         int ch_config = track.channels == 2 ?
@@ -299,10 +318,14 @@ public class OvkMediaPlayer extends MediaPlayer {
 
         AudioTrack audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
                 ch_config,
-                AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
-
+                AudioFormat.ENCODING_PCM_16BIT, length*2, AudioTrack.MODE_STREAM);
         audio_track.play();
-        audio_track.write(buffer, 0, bufferSize);
+        Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
+        while (length > 0) {
+            length -= audio_track.write(buffer, 0, 512);
+        }
+        audio_track.stop();
+        audio_track.release();
     }
 
     private void startRenderingFrames() {
