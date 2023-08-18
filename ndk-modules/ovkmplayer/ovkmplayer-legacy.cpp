@@ -300,6 +300,7 @@ JNIEXPORT void JNICALL
         }
         jclass mplayer_class = env->GetObjectClass(instance);
         jmethodID decodeAudio = env->GetMethodID(mplayer_class, "decodeAudio", "([BI)V");
+        jmethodID completePlayback = env->GetMethodID(mplayer_class, "completePlayback", "()V");
         int AUDIO_INBUF_SIZE = 4096;
         int output_size;
         int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
@@ -353,8 +354,7 @@ JNIEXPORT void JNICALL
             LOGD(10, "[DEBUG] Decoding result:\r\nReceived frames: %d | Total frames: %d",
                  received_frame, total_frames);
         }
-        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
-                (env, instance, FFMPEG_PLAYBACK_STOPPED);
+        env->CallVoidMethod(instance, completePlayback);
     }
 
 

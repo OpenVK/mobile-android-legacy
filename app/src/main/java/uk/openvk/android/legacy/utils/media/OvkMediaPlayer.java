@@ -340,6 +340,16 @@ public class OvkMediaPlayer extends MediaPlayer {
         }
     }
 
+    private void completePlayback() {
+        setPlaybackState(STATE_STOPPED);
+        if(audio_track != null) {
+            audio_track.stop();
+        }
+        if(onCompletionListener != null) {
+            onCompletionListener.onCompleted(this);
+        }
+    }
+
     private void startRenderingFrames() {
         new Thread(new Runnable() {
             @SuppressWarnings("Since15")

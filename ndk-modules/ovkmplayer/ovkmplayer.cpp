@@ -304,10 +304,8 @@ extern "C" {
                 env->ReleaseByteArrayElements(buffer, bytes, 0);
                 env->CallVoidMethod(instance, decodeAudio, buffer, sizeof(buffer));
             }
+            av_free(&avpkt);
             free(output_buf);
-
-            avcodec_close(gAudioCodecCtx);
-            av_free(gAudioCodec);
         }
     }
 
