@@ -122,6 +122,31 @@ JNIEXPORT void JNICALL
         return env->NewStringUTF(logo);
     }
 
+    JNIEXPORT jobject JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
+            (JNIEnv *env, jobject instance, jint state) {
+        g_playbackState = state;
+        if(state == FFMPEG_PLAYBACK_PLAYING) {
+            if(debug_mode) {
+                LOGD(1, "[DEBUG] Setting playback state to \"Playing\"...");
+            }
+        } else if(state == FFMPEG_PLAYBACK_PAUSED){
+            if(debug_mode) {
+                LOGD(1, "[DEBUG] Setting playback state to \"Paused\"...");
+            }
+        } else if(state == FFMPEG_PLAYBACK_STOPPED) {
+            if(debug_mode) {
+                LOGD(1, "[DEBUG] Setting playback state to \"Stopped\"...");
+            }
+        }
+    }
+
+    JNIEXPORT jint JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getPlaybackState
+            (JNIEnv *env, jobject instance) {
+        return g_playbackState;
+    }
+
     JNIEXPORT void JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setDebugMode(
             JNIEnv *env, jobject instance, jboolean value
@@ -328,33 +353,10 @@ JNIEXPORT void JNICALL
             LOGD(10, "[DEBUG] Decoding result:\r\nReceived frames: %d | Total frames: %d",
                  received_frame, total_frames);
         }
-
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
+                (env, instance, FFMPEG_PLAYBACK_STOPPED);
     }
 
-    JNIEXPORT jobject JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_setPlaybackState
-            (JNIEnv *env, jobject instance, jint state) {
-        g_playbackState = state;
-        if(state == FFMPEG_PLAYBACK_PLAYING) {
-            if(debug_mode) {
-                LOGD(1, "[DEBUG] Setting playback state to \"Playing\"...");
-            }
-        } else if(state == FFMPEG_PLAYBACK_PAUSED){
-            if(debug_mode) {
-                LOGD(1, "[DEBUG] Setting playback state to \"Paused\"...");
-            }
-        } else if(state == FFMPEG_PLAYBACK_STOPPED) {
-            if(debug_mode) {
-                LOGD(1, "[DEBUG] Setting playback state to \"Stopped\"...");
-            }
-        }
-    }
-
-    JNIEXPORT jint JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getPlaybackState
-            (JNIEnv *env, jobject instance) {
-        return g_playbackState;
-    }
 
     JNIEXPORT jobject JNICALL
     Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_getTrackInfo(

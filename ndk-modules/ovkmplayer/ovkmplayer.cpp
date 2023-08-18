@@ -302,7 +302,7 @@ extern "C" {
                     LOGD(10, "[DEBUG] Calling decodeAudio method to OvkMediaPlayer...");
                 }
                 env->ReleaseByteArrayElements(buffer, bytes, 0);
-                env->CallVoidMethod(instance, decodeAudio, buffer, data_size);
+                env->CallVoidMethod(instance, decodeAudio, buffer, sizeof(buffer));
             }
             free(output_buf);
 
