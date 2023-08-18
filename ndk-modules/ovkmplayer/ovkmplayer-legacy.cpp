@@ -276,7 +276,9 @@ JNIEXPORT void JNICALL
         jclass mplayer_class = env->GetObjectClass(instance);
         jmethodID decodeAudio = env->GetMethodID(mplayer_class, "decodeAudio", "([BI)V");
         int AUDIO_INBUF_SIZE = 4096;
-        int output_size, data_size, decoded_data_size = 0;
+        int output_size;
+        int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
+        int decoded_data_size = 0;
         short *output_buf, input_buf[AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE];
         AVPacket avpkt;
         int received_frame = 0;
@@ -291,25 +293,33 @@ JNIEXPORT void JNICALL
         if(debug_mode) {
             LOGD(10, "[DEBUG] Output buffer allocating...");
         }
-        output_buf = (short*) malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE);
-        avpkt.data = (uint8_t*) input_buf;
-        avpkt.size = (int) gFormatCtx->file_size;
+        output_buf = (short*) malloc((size_t)data_size);
         int read_frame_status = -1;
-        while (read_frame_status = av_read_frame(gFormatCtx, &avpkt) >= 0) {
-            if (gFormatCtx->streams[avpkt.stream_index]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
-                int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 2;
-                int size=avpkt.size;
+        avpkt.data = (uint8_t*) input_buf;
+        while ((read_frame_status = av_read_frame(gFormatCtx, &avpkt)) >= 0) {
+            data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
+            if (avpkt.stream_index == gAudioStreamIndex) {
+                int size = avpkt.size;
                 while(size > 0) {
-                    int len = avcodec_decode_audio3(gFormatCtx->streams[avpkt.stream_index]->codec,
-                                                    (int16_t *) output_buf, &data_size, &avpkt);
+                    int len = avcodec_decode_audio3(gAudioCodecCtx, output_buf, &data_size, &avpkt);
                     if(len < 0) {
                         break;
+                    } else {
+                        if(debug_mode) {
+                            LOGD(10, "[DEBUG] Decoding frame #%d | Length: %d of %d",
+                                 total_frames + 1, len, size);
+                        }
+                        received_frame++;
                     }
-                    size = avpkt.size-len;
+                    buffer = env->NewByteArray((jsize)data_size);
+                    env->SetByteArrayRegion(buffer, 0, (jsize)data_size, (jbyte*)output_buf);
+                    env->CallVoidMethod(instance, decodeAudio, buffer, length);
+                    env->DeleteLocalRef(buffer);
+                    size -= len;
                 }
+
+                total_frames++;
             }
-            received_frame++;
-            total_frames++;
         }
         if(read_frame_status < 0) {
             total_frames++;
@@ -317,12 +327,8 @@ JNIEXPORT void JNICALL
         if(debug_mode) {
             LOGD(10, "[DEBUG] Decoding result:\r\nReceived frames: %d | Total frames: %d",
                  received_frame, total_frames);
-            LOGD(10, "[DEBUG] Calling decodeAudio method to OvkMediaPlayer...");
         }
-        buffer = env->NewByteArray((jsize)AVCODEC_MAX_AUDIO_FRAME_SIZE * 2);
-        env->SetByteArrayRegion(buffer, 0, (jsize)AVCODEC_MAX_AUDIO_FRAME_SIZE * 2, (jbyte*)output_buf);
-        env->CallVoidMethod(instance, decodeAudio, buffer, length);
-        env->DeleteLocalRef(buffer);
+
     }
 
     JNIEXPORT jobject JNICALL
