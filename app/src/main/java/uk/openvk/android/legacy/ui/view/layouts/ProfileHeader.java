@@ -129,17 +129,21 @@ public class ProfileHeader extends RelativeLayout {
         } else {
             ((TextView) findViewById(R.id.profile_last_seen)).setText("");
         }
-        ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(VISIBLE);
-        if(ls_platform == 4) {
-            ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
-                    getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
-        } else if(ls_platform == 2) {
-            ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
-                    getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
-        } else if(ls_platform == 1) {
-            ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
-                    getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
-        } else {
+        try {
+            ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(VISIBLE);
+            if (ls_platform == 4) {
+                ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
+            } else if (ls_platform == 2) {
+                ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
+            } else if (ls_platform == 1) {
+                ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
+            } else {
+                ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(GONE);
+            }
+        } catch (OutOfMemoryError ignored) {
             ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(GONE);
         }
     }

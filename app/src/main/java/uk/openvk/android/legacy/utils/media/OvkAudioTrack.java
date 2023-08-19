@@ -18,10 +18,10 @@ package uk.openvk.android.legacy.utils.media;
 
 public class OvkAudioTrack extends OvkMediaTrack {
     public String codec_name;
-    public long frame_size;
-    public long sample_rate;
-    public long bitrate;
-    public int channels;
+    public long frame_size;     // in fps
+    public long sample_rate;    // in Hz
+    public long bitrate;        // in bps
+    public int channels;        // 1 for "mono", 2 for "stereo" or 3+ for "surround"
     public OvkAudioTrack() {
 
     }

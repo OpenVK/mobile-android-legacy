@@ -18,9 +18,10 @@ package uk.openvk.android.legacy.utils.media;
 
 public class OvkVideoTrack extends OvkMediaTrack {
     public String codec_name;
-    public int frame_size[] = new int[2];
-    public long bitrate;
-    public float frame_rate;
+    public int frame_size[] = new int[2]; // <- width = [0], height = [1]
+    public long bitrate;                  // <- in bps
+    public float frame_rate;              // <- in fps
+    public long sample_rate;              // <- in Hz
     public OvkVideoTrack() {
 
     }

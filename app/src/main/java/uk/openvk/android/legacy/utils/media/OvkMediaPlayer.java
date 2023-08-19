@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.utils.media;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -56,6 +57,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     public static final int STATE_PLAYING = 1;
     public static final int STATE_PAUSED = 2;
     public static final int MESSAGE_PREPARE = 10000;
+    public static final int MESSAGE_COMPLETE = 10001;
     public static final int MESSAGE_ERROR = -10000;
     public static final int MESSAGE_AUDIO_DECODING = 100;
     boolean prepared_audio_buffer;
@@ -80,13 +82,15 @@ public class OvkMediaPlayer extends MediaPlayer {
     };
     private SurfaceHolder holder;
     private int minAudioBufferSize;
+    private int minVideoBufferSize;
     private byte[] audio_buffer;
+    private byte[] video_buffer;
     private OnPreparedListener onPreparedListener;
     private OnErrorListener onErrorListener;
     private OnCompletionListener onCompletionListener;
     private Handler handler;
     private AudioTrack audio_track;
-
+    private final Object frameLocker = new Object();
     private native void initFFmpeg();
     private native String showLogo();
     private native Object getTrackInfo(String filename, int type);
@@ -95,7 +99,8 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native void setPlaybackState(int playbackState);
     private native int openMediaFile(String filename);
     private native int renderFrames(IntBuffer buffer, long frame_number);
-    private native void renderAudio(byte[] buffer, int length);
+    private native void decodeAudio(byte[] buffer, int length);
+    private native void decodeVideo(byte[] buffer, int length);
     public native int getLastErrorCode();
     private native void setDebugMode(boolean value);
 
@@ -138,6 +143,14 @@ public class OvkMediaPlayer extends MediaPlayer {
                             onErrorListener.onError(OvkMediaPlayer.this, msg.getData().getInt("error_code"));
                     } else if (msg.what == MESSAGE_PREPARE) {
                         onPreparedListener.onPrepared(OvkMediaPlayer.this);
+                    } else if(msg.what == MESSAGE_COMPLETE) {
+                        setPlaybackState(STATE_STOPPED);
+                        if(audio_track != null) {
+                            audio_track.stop();
+                        }
+                        if(onCompletionListener != null) {
+                            onCompletionListener.onCompleted(OvkMediaPlayer.this);
+                        }
                     }
                 } catch (Exception ignored) {
 
@@ -148,6 +161,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
 
+    @SuppressWarnings("MalformedFormatString")
     public ArrayList<OvkMediaTrack> getMediaInfo(String filename) {
         ArrayList<OvkMediaTrack> tracks = new ArrayList<>();
         OvkVideoTrack video_track;
@@ -181,8 +195,9 @@ public class OvkMediaPlayer extends MediaPlayer {
             );
         } if(video_track != null){
             Log.d(MPLAY_TAG,
-                    String.format("V: %s, %sx%s, %s bps, %s fps",
-                            video_track.codec_name, video_track.frame_size[0],
+                    String.format("V: %s, %.2f MHz, %sx%s, %s bps, %s fps",
+                            video_track.codec_name, ((double)video_track.sample_rate / 1000 / 1000),
+                            video_track.frame_size[0],
                             video_track.frame_size[1], video_track.bitrate, video_track.frame_rate)
             );
         }
@@ -253,37 +268,44 @@ public class OvkMediaPlayer extends MediaPlayer {
             if(tracks != null) {
                 Log.d(MPLAY_TAG, "Playing...");
                 setPlaybackState(STATE_PLAYING);
-                OvkAudioTrack track = null;
+                OvkAudioTrack audio_track = null;
+                OvkVideoTrack video_track = null;
                 for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
                     if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
-                        track = (OvkAudioTrack) tracks.get(tracks_index);
+                        audio_track = (OvkAudioTrack) tracks.get(tracks_index);
+                    } if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
+                        video_track = (OvkVideoTrack) tracks.get(tracks_index);
                     }
                 }
                 int ch_config = 0;
-                int bufferSize = 0;
-                if(track != null) {
-                    ch_config = track.channels == 2 ?
+                int bpp = Integer.parseInt(Build.VERSION.SDK) > 9 ? 24 : 16;
+                if(audio_track != null) {
+                    ch_config = audio_track.channels == 2 ?
                             AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-                    bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
+                    minAudioBufferSize = AudioTrack.getMinBufferSize((int) audio_track.sample_rate, ch_config,
                             AudioFormat.ENCODING_PCM_16BIT);
                 }
-                final int finalBufferSize = bufferSize;
+                if(video_track != null) {
+                    minVideoBufferSize = video_track.frame_size[0] * video_track.frame_size[1] * bpp;
+                }
+                final int finalAudioBufferSize = minAudioBufferSize;
+                final int finalVideoBufferSize = minVideoBufferSize;
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         if(tracks.size() == 1) {
                             if (tracks.get(0) instanceof OvkVideoTrack) {
-                                startRenderingFrames();
+                                decodeVideo(video_buffer, finalVideoBufferSize);
                             } else if (tracks.get(0) instanceof OvkAudioTrack) {
                                 //Log.d(MPLAY_TAG, "Decoding audio...");
-                                renderAudio(audio_buffer, finalBufferSize);
+                                decodeAudio(audio_buffer, finalAudioBufferSize);
                             }
                         } else if(tracks.size() == 2) {
                             if (tracks.get(0) instanceof OvkVideoTrack) {
-                                startRenderingFrames();
+                                decodeVideo(video_buffer, finalVideoBufferSize);
                             }
                             if (tracks.get(1) instanceof OvkAudioTrack) {
-                                renderAudio(audio_buffer, finalBufferSize);
+                                decodeAudio(audio_buffer, finalAudioBufferSize);
                             }
                         }
                     }
@@ -293,13 +315,12 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     @SuppressWarnings("deprecation")
-    private void decodeAudio(final byte[] buffer, final int length) {
+    private void renderAudio(final byte[] buffer, final int length) {
         int state = getPlaybackState();
         if(state == STATE_PLAYING) {
-            this.audio_buffer = buffer;
             OvkAudioTrack track = null;
             Log.d(MPLAY_TAG, "Checking audio buffer...");
-            if (audio_buffer == null) {
+            if (buffer == null) {
                 Log.e(MPLAY_TAG, "Audio buffer is empty");
                 return;
             }
@@ -316,8 +337,6 @@ public class OvkMediaPlayer extends MediaPlayer {
                 }
                 int ch_config = track.channels == 2 ?
                         AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-                int bufferSize = AudioTrack.getMinBufferSize((int) track.sample_rate, ch_config,
-                        AudioFormat.ENCODING_PCM_16BIT);
 
                 audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
                         ch_config,
@@ -341,57 +360,39 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     private void completePlayback() {
-        setPlaybackState(STATE_STOPPED);
-        if(audio_track != null) {
-            audio_track.stop();
-        }
-        if(onCompletionListener != null) {
-            onCompletionListener.onCompleted(this);
+        handler.sendEmptyMessage(MESSAGE_COMPLETE);
+    }
+
+    private void renderVideoFrames(final byte[] buffer, final int length) {
+        Canvas c = new Canvas();
+        OvkVideoTrack videoTrack = (OvkVideoTrack) tracks.get(0);
+        int frame_width = videoTrack.frame_size[0];
+        int frame_height = videoTrack.frame_size[1];
+        if(frame_width > 0 && frame_height > 0) {
+            try {
+                synchronized (frameLocker) {
+                    frameLocker.wait();
+                }
+                c = holder.lockCanvas();
+                // RGB_565  == 65K colours (16 bit)
+                // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
+                int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
+                Bitmap.Config bmp_config =
+                        bpp == 24 ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+                Paint paint = new Paint();
+                Bitmap bmp = BitmapFactory.decodeByteArray(buffer, 0, length)
+                        .copy(bmp_config, true);
+                c.drawBitmap(bmp, 0, 0, paint);
+                holder.unlockCanvasAndPost(c);
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
     }
 
-    private void startRenderingFrames() {
-        new Thread(new Runnable() {
-            @SuppressWarnings("Since15")
-            @Override
-            public void run() {
-                Canvas c;
-                OvkVideoTrack videoTrack = (OvkVideoTrack) tracks.get(0);
-                int frame_width = videoTrack.frame_size[0];
-                int frame_height = videoTrack.frame_size[1];
-                if(frame_width > 0 && frame_height > 0) {
-                    // RGB_565  == 65K colours (16 bit)
-                    // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
-                    int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
-                    IntBuffer int_buf = ByteBuffer.allocateDirect(
-                            frame_width * frame_height * bpp
-                    ).asIntBuffer();
-                    Bitmap.Config bmp_config =
-                            bpp == 24 ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-                    Bitmap bmp = Bitmap.createBitmap(frame_width, frame_height, bmp_config);
-                    float scaleFactor = ctx.getResources().getDisplayMetrics().heightPixels
-                            / frame_height;
-                    Paint bitmap_paint = new Paint();
-                    bitmap_paint.setFilterBitmap(true);
-                    Rect srcRect =
-                            new Rect(0, 0, frame_width, frame_height);
-                    new Timer().scheduleAtFixedRate(getFpsTimerTask, 1000L, 1000L);
-                    Paint fpaint = new Paint();
-                    fpaint.setTextSize(15);
-                    fpaint.setColor(Color.parseColor("#222222"));
-                    try {
-                        while (getPlaybackState() == STATE_PLAYING) {
-                            if (holder != null && holder.lockCanvas() != null) {
-                                int_buf.rewind();
-                                renderFrames(int_buf, frames_count++);
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+    @Override
+    public int getDuration() {
+        return 0;
     }
 
     @Override

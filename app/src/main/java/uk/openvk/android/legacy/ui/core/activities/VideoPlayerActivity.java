@@ -405,83 +405,91 @@ public class VideoPlayerActivity extends Activity {
     }
 
     public void showPlayControls() {
-        if(handler == null) {
-            handler = new Handler(Looper.myLooper());
-        }
-        if(hideCtrl != null) {
-            handler.removeCallbacks(hideCtrl);
-        } else {
-            hideCtrl = new Runnable() {
-                @Override
-                public void run() {
-                    hidePlayControls();
+        try {
+            if (handler == null) {
+                handler = new Handler(Looper.myLooper());
+            }
+            if (hideCtrl != null) {
+                handler.removeCallbacks(hideCtrl);
+            } else {
+                hideCtrl = new Runnable() {
+                    @Override
+                    public void run() {
+                        hidePlayControls();
+                    }
+                };
+            }
+            if (isPlaying()) {
+                handler.postDelayed(hideCtrl, 5000);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE;
+                getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+            }
+            // Resize top view
+            TypedValue tv = new TypedValue();
+            int actionBarHeight = 0;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                    actionBarHeight =
+                            TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
                 }
-            };
-        }
-        if(isPlaying()) {
-            handler.postDelayed(hideCtrl, 5000);
-        }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE;
-            getWindow().getDecorView().setSystemUiVisibility(uiOptions);
-        }
-        // Resize top view
-        TypedValue tv = new TypedValue();
-        int actionBarHeight = 0;
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            actionBarHeight =
-                    TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        }
-        ValueAnimator animator = ValueAnimator.ofInt(1, getStatusBarHeight() + actionBarHeight);
-        final View statusbar_tint = findViewById(R.id.statusbartint_view);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int value = (Integer) valueAnimator.getAnimatedValue();
-                if(statusbar_tint != null) {
-                    ViewGroup.LayoutParams layoutParams = statusbar_tint.getLayoutParams();
+            } else {
+                actionBarHeight = 50;
+            }
+            ValueAnimator animator = ValueAnimator.ofInt(1, getStatusBarHeight() + actionBarHeight);
+            final View statusbar_tint = findViewById(R.id.statusbartint_view);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int value = (Integer) valueAnimator.getAnimatedValue();
+                    if (statusbar_tint != null) {
+                        ViewGroup.LayoutParams layoutParams = statusbar_tint.getLayoutParams();
+                        layoutParams.height = value;
+                        statusbar_tint.setLayoutParams(layoutParams);
+                    }
+                    ViewGroup.LayoutParams layoutParams = findViewById(R.id.video_bottombar).getLayoutParams();
                     layoutParams.height = value;
-                    statusbar_tint.setLayoutParams(layoutParams);
+                    findViewById(R.id.video_bottombar).setLayoutParams(layoutParams);
                 }
-                ViewGroup.LayoutParams layoutParams = findViewById(R.id.video_bottombar).getLayoutParams();
-                layoutParams.height = value;
-                findViewById(R.id.video_bottombar).setLayoutParams(layoutParams);
-            }
-        });
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                if(statusbar_tint != null) {
-                    statusbar_tint.setVisibility(View.VISIBLE);
-                }
-                findViewById(R.id.video_bottombar).setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        animator.setDuration(200);
-        animator.start();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            handler.postDelayed(new Runnable() {
-                @SuppressLint("NewApi")
+            });
+            animator.addListener(new Animator.AnimatorListener() {
                 @Override
-                public void run() {
-                    getActionBar().show();
+                public void onAnimationStart(Animator animation) {
+                    if (statusbar_tint != null) {
+                        statusbar_tint.setVisibility(View.VISIBLE);
+                    }
+                    findViewById(R.id.video_bottombar).setVisibility(View.VISIBLE);
                 }
-            }, 100);
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animator.setDuration(200);
+            animator.start();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                handler.postDelayed(new Runnable() {
+                    @SuppressLint("NewApi")
+                    @Override
+                    public void run() {
+                        getActionBar().show();
+                    }
+                }, 100);
+            }
+        } catch (Exception ignored) {
+
         }
     }
 

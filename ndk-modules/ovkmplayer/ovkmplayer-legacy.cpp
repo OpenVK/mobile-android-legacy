@@ -63,6 +63,7 @@ extern "C" {
     #include <libavcodec/avcodec.h>
     #include <libavcodec/avfft.h>
     #include <libavdevice/avdevice.h>
+    #include <libavutil/pixfmt.h>
 }
 
 /*for Android logs*/
@@ -240,13 +241,14 @@ JNIEXPORT void JNICALL
         return gTempFormatCtx;
     }
 
-    JNIEXPORT jint JNICALL
-        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderFrames
-                (JNIEnv *env, jobject instance, jobject buffer, jlong gFrameNumber) {
-        uint8_t *pFrameBuffer = (uint8_t *) (env)->GetDirectBufferAddress(buffer);
+    JNIEXPORT void JNICALL
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeVideo
+                (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
         AVPacket avpkt;
         AVDictionaryEntry *e;
         AVFrame *pFrame, *pFrameRGB;
+        jclass mplayer_class = env->GetObjectClass(instance);
+        jmethodID renderVideoFrames = env->GetMethodID(mplayer_class, "renderVideoFrames", "([BI)V");
         void *bitmap_buffer = malloc(
                 (size_t)gVideoCodecCtx->width * gVideoCodecCtx->height * 24);
         int frameDecoded;
@@ -257,7 +259,7 @@ JNIEXPORT void JNICALL
         // Allocate an AVFrame structure
         pFrameRGB = avcodec_alloc_frame();
         if(pFrameRGB == NULL)
-            return -1;
+            return;
         avcodec_get_frame_defaults(pFrame);
         if(debug_mode) {
             LOGD(10, "[DEBUG] AVPacket initializing...")
@@ -267,39 +269,72 @@ JNIEXPORT void JNICALL
         int data_size = avcodec_decode_video2(gVideoCodecCtx,
                                     pFrame, &frameDecoded, &avpkt);
         int read_frame_status = -1;
-        jobject bitmap = createBitmap(env, gVideoCodecCtx->width, gVideoCodecCtx->height);
 
         avpicture_fill((AVPicture *)pFrameRGB, (uint8_t*)bitmap_buffer, PIX_FMT_RGBA,
                        gVideoCodecCtx->width, gVideoCodecCtx->height);
         while (av_read_frame(gFormatCtx, &avpkt) >= 0) {
+            data_size = pFrame->width * pFrame->height * 24;
             if (avpkt.stream_index == gVideoStreamIndex) {
                 if (debug_mode) {
-                    LOGI(10, "[DEBUG] Video decoding at position #%d", framesReadCount);
+                    LOGD(10, "[DEBUG] Video decoding at position #%d...", framesReadCount);
                 }
                 avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
                 if (!frameDecoded) {
-                    continue;
+                    if (debug_mode) {
+                        LOGE(10, "[ERROR] Frame #%d not decoded.", framesReadCount);
+                    }
+                    break;
                 } else {
-
+                    if (debug_mode) {
+                        LOGD(10, "[DEBUG] Converting video frame to RGB...");
+                    }
                 }
-                //av_samples_fill_arrays(pFrameRGB->data, pFrameRGB->linesize, pFrame->data[0],
-                //PIX_FMT_RGBA, gVideoCodecCtx->width, gVideoCodecCtx->height, 1);
 
-                // pFrameRGB->data[0] = window_buffer.bits;
-                //pFrameRGB->linesize[0] = window_buffer.stride * 4;
-                //framesReadCount++;
+                SwsContext* conversion = sws_getContext(gVideoCodecCtx->width,
+                                                        gVideoCodecCtx->height,
+                                                        (PixelFormat)pFrame->format,
+                                                        gVideoCodecCtx->width,
+                                                        gVideoCodecCtx->height,
+                                                        PIX_FMT_RGBA,
+                                                        SWS_FAST_BILINEAR,
+                                                        NULL,
+                                                        NULL,
+                                                        NULL);
+                sws_scale(conversion, reinterpret_cast<const uint8_t *const *>(pFrame->data),
+                          pFrame->linesize, 0,
+                          gVideoCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
+                sws_freeContext(conversion);
+
+                if (debug_mode) {
+                    LOGD(10, "[DEBUG] Setting pFrameRGB...");
+                }
+
+                pFrameRGB->format = PIX_FMT_RGBA;
+                pFrameRGB->width = pFrame->width;
+                pFrameRGB->height = pFrame->height;
+
+                if (debug_mode) {
+                    LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
+                }
+
+                buffer = env->NewByteArray((jsize)data_size);
+                env->SetByteArrayRegion(buffer, 0, (jsize)data_size, (jbyte*)pFrameRGB->data[0]);
+                env->CallVoidMethod(instance, renderVideoFrames, buffer, length);
+                env->DeleteLocalRef(buffer);
+
+                framesReadCount++;
             }
         }
     }
 
     JNIEXPORT void JNICALL
-        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderAudio
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeAudio
                 (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
         if(debug_mode) {
             LOGD(10, "[DEBUG] Decoding audio stream #%d", gAudioStreamIndex)
         }
         jclass mplayer_class = env->GetObjectClass(instance);
-        jmethodID decodeAudio = env->GetMethodID(mplayer_class, "decodeAudio", "([BI)V");
+        jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
         jmethodID completePlayback = env->GetMethodID(mplayer_class, "completePlayback", "()V");
         int AUDIO_INBUF_SIZE = 4096;
         int output_size;
@@ -339,7 +374,7 @@ JNIEXPORT void JNICALL
                     }
                     buffer = env->NewByteArray((jsize)data_size);
                     env->SetByteArrayRegion(buffer, 0, (jsize)data_size, (jbyte*)output_buf);
-                    env->CallVoidMethod(instance, decodeAudio, buffer, length);
+                    env->CallVoidMethod(instance, renderAudio, buffer, length);
                     env->DeleteLocalRef(buffer);
                     size -= len;
                 }
@@ -661,6 +696,9 @@ jobject generateTrackInfo(
             jfieldID frame_rate_field = env->GetFieldID(
                     track_class, "frame_rate", "F"
             );
+            jfieldID sample_rate_field = env->GetFieldID(
+                    track_class, "sample_rate", "J"
+            );
 
             // Load OvkVideoTrack values form fields (class variables)
             env->SetObjectField(track, codec_name_field, env->NewStringUTF(pCodec->name));
@@ -670,6 +708,15 @@ jobject generateTrackInfo(
             frame_size[1] = pCodecCtx->height;
             env->ReleaseIntArrayElements(array, frame_size, 0);
             env->SetLongField(track, bitrate_field, pCodecCtx->bit_rate);
+
+            // Referenced from:
+            // https://en.wikipedia.org/wiki/Rec.709
+            // https://en.wikipedia.org/wiki/Sampling_(signal_processing)#Applications
+            //
+            // 1920x1080@60fps = 1920 (active) lpf * 1080 spl * 60 fps = 124.416 MHz
+            long sample_rate = pCodecCtx->width * pCodecCtx->height * pStream->avg_frame_rate.num;
+            env->SetLongField(track, sample_rate_field, sample_rate);
+
             env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
             return track;
         } else {

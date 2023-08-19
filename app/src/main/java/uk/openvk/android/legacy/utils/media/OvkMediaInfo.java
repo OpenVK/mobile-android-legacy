@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 public class OvkMediaInfo {
     public ArrayList<OvkVideoTrack> tracks;
+    public int duration;
+    public long file_size;
     public void OvkMediaInfo() {
 
     }

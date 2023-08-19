@@ -182,76 +182,14 @@ extern "C" {
         return gTempFormatCtx;
     }
 
-    JNIEXPORT jint JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderFrames
-            (JNIEnv *env, jobject instance, jobject buffer, jlong gFrameNumber) {
-        uint8_t* pFrameBuffer = (uint8_t *) (env)->GetDirectBufferAddress(buffer);
-        if(g_playbackState == FFMPEG_PLAYBACK_PLAYING) {
-            int               err, i, got_frame, frame_size;
-            AVDictionaryEntry *e;
-            AVCodecContext    *pCodecCtx = NULL;
-            AVCodec           *pCodec = NULL;
-            AVFrame           *pFrame = NULL;
-            AVFrame           *pFrameRGB = NULL;
-            AVPacket          packet;
-            int               endOfVideo;
-            uint8_t *output_buf;
+    JNIEXPORT void JNICALL
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeVideo
+            (JNIEnv *env, jobject instance, jobject buffer, jint length) {
 
-            AVStream *pVideoStream = gFormatCtx->streams[gVideoStreamIndex];
-            pCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
-            pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-
-            if(pCodec == NULL) {
-                if(debug_mode) {
-                    LOGE(1, "[ERROR] Video stream found, but decoder is unavailable.");
-                }
-                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
-                gErrorCode = -2;
-                return gErrorCode;
-            }
-
-            e = NULL;
-            while ((e = av_dict_get(avCodecOptions, "", e, AV_DICT_IGNORE_SUFFIX))) {
-                if(debug_mode) {
-                    LOGE(10, "avcodec_open2: option \"%s\" not recognized", e->key);
-                    gErrorCode = -2;
-                    return gErrorCode;
-                }
-            }
-
-            pFrame = av_frame_alloc();
-            pFrameRGB = av_frame_alloc();
-            frame_size = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecCtx->width,
-                                            pCodecCtx->height);
-            pFrameBuffer = (uint8_t*) av_malloc(frame_size * sizeof(uint8_t));
-            if(pFrame == NULL || pFrameRGB == NULL) {
-                if(debug_mode) {
-                    LOGE(10, "[ERROR] Cannot allocate video frames");
-                }
-                g_playbackState = FFMPEG_PLAYBACK_STOPPED;
-                gErrorCode = -3;
-                return gErrorCode;
-            } else if (packet.stream_index == gVideoStreamIndex) {
-                int ret = av_read_frame(gFormatCtx, &packet);
-                if(ret >= 0) {
-                    avpicture_fill((AVPicture *) pFrameRGB, pFrameBuffer, AV_PIX_FMT_RGB24,
-                                   pCodecCtx->width, pCodecCtx->height);
-                    avcodec_decode_video2(pCodecCtx, pFrame, &got_frame, &packet);
-                    if (got_frame) {
-                        pFrameBuffer = (uint8_t *) pFrameRGB->data;
-                    }
-                    av_free_packet(&packet);
-                    return 1;
-                } else if(ret == AVERROR_EOF){
-                    g_playbackState = FFMPEG_PLAYBACK_STOPPED;
-                    return 0;
-                }
-            }
-        }
     }
 
     JNIEXPORT void JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_renderAudio
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeAudio
             (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
         if(debug_mode) {
             LOGD(10, "[DEBUG] Decoding audio stream #%d", gAudioStreamIndex)
