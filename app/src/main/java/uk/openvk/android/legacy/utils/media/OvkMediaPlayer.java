@@ -185,22 +185,26 @@ public class OvkMediaPlayer extends MediaPlayer {
                 return null;
             }
         }
-        tracks.add(video_track);
-        tracks.add(audio_track);
+
+
         if(audio_track != null) {
             Log.d(MPLAY_TAG,
                     String.format("A: %s, %s Hz, %s bps, %s",
                             audio_track.codec_name, audio_track.sample_rate,
                             audio_track.bitrate, audio_track.channels)
             );
-        } if(video_track != null){
+            tracks.add(audio_track);
+        }
+        if(video_track != null) {
             Log.d(MPLAY_TAG,
                     String.format("V: %s, %.2f MHz, %sx%s, %s bps, %s fps",
                             video_track.codec_name, ((double)video_track.sample_rate / 1000 / 1000),
                             video_track.frame_size[0],
                             video_track.frame_size[1], video_track.bitrate, video_track.frame_rate)
             );
+            tracks.add(video_track);
         }
+        this.tracks = tracks;
         return tracks;
     }
 
@@ -273,7 +277,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                 for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
                     if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
                         audio_track = (OvkAudioTrack) tracks.get(tracks_index);
-                    } if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
+                    } else if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
                         video_track = (OvkVideoTrack) tracks.get(tracks_index);
                     }
                 }
@@ -290,23 +294,27 @@ public class OvkMediaPlayer extends MediaPlayer {
                 }
                 final int finalAudioBufferSize = minAudioBufferSize;
                 final int finalVideoBufferSize = minVideoBufferSize;
+                final OvkVideoTrack finalVideo_track = video_track;
+                final OvkAudioTrack finalAudio_track = audio_track;
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if(tracks.size() == 1) {
-                            if (tracks.get(0) instanceof OvkVideoTrack) {
-                                decodeVideo(video_buffer, finalVideoBufferSize);
-                            } else if (tracks.get(0) instanceof OvkAudioTrack) {
-                                //Log.d(MPLAY_TAG, "Decoding audio...");
-                                decodeAudio(audio_buffer, finalAudioBufferSize);
-                            }
-                        } else if(tracks.size() == 2) {
-                            if (tracks.get(0) instanceof OvkVideoTrack) {
-                                decodeVideo(video_buffer, finalVideoBufferSize);
-                            }
-                            if (tracks.get(1) instanceof OvkAudioTrack) {
-                                decodeAudio(audio_buffer, finalAudioBufferSize);
-                            }
+                        if(finalVideo_track != null) {
+                            Log.d(MPLAY_TAG, "Decoding video...");
+                            decodeVideo(video_buffer, finalVideoBufferSize);
+                        } else {
+                            Log.e(MPLAY_TAG, "Video track not found. Skipping...");
+                        }
+                    }
+                }).start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(finalAudio_track != null) {
+                            Log.d(MPLAY_TAG, "Decoding audio...");
+                            decodeAudio(audio_buffer, finalAudioBufferSize);
+                        } else {
+                            Log.e(MPLAY_TAG, "Audio track not found. Skipping...");
                         }
                     }
                 }).start();
@@ -365,9 +373,14 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     private void renderVideoFrames(final byte[] buffer, final int length) {
         Canvas c = new Canvas();
-        OvkVideoTrack videoTrack = (OvkVideoTrack) tracks.get(0);
-        int frame_width = videoTrack.frame_size[0];
-        int frame_height = videoTrack.frame_size[1];
+        OvkVideoTrack track = null;
+        for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+            if (tracks.get(tracks_index) instanceof OvkVideoTrack) {
+                track = (OvkVideoTrack) tracks.get(tracks_index);
+            }
+        }
+        int frame_width = track.frame_size[0];
+        int frame_height = track.frame_size[1];
         if(frame_width > 0 && frame_height > 0) {
             try {
                 synchronized (frameLocker) {
