@@ -244,6 +244,9 @@ JNIEXPORT void JNICALL
     JNIEXPORT void JNICALL
         Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeVideo
                 (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Decoding video stream #%d...", gVideoStreamIndex)
+        }
         AVPacket avpkt;
         AVDictionaryEntry *e;
         AVFrame *pFrame, *pFrameRGB;
@@ -252,7 +255,8 @@ JNIEXPORT void JNICALL
         void *bitmap_buffer = malloc(
                 (size_t)gVideoCodecCtx->width * gVideoCodecCtx->height * 24);
         int frameDecoded;
-        int framesReadCount = 0;
+        int received_frame = 0;
+        int total_frames = 0;
         e = NULL;
         int decoded_data_size = (gVideoCodecCtx->width * gVideoCodecCtx->height * 3) / 2;
         pFrame = avcodec_alloc_frame();
@@ -273,15 +277,17 @@ JNIEXPORT void JNICALL
         avpicture_fill((AVPicture *)pFrameRGB, (uint8_t*)bitmap_buffer, PIX_FMT_RGBA,
                        gVideoCodecCtx->width, gVideoCodecCtx->height);
         while (av_read_frame(gFormatCtx, &avpkt) >= 0) {
-            data_size = pFrame->width * pFrame->height * 24;
+            data_size = pFrame->width * pFrame->height * 4;
             if (avpkt.stream_index == gVideoStreamIndex) {
                 if (debug_mode) {
-                    LOGD(10, "[DEBUG] Video decoding at position #%d...", framesReadCount);
+                    LOGD(10, "[DEBUG] Decoding video frame #%d... | Length: %d", total_frames,
+                         avpkt.size);
                 }
+                total_frames++;
                 avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
                 if (!frameDecoded) {
                     if (debug_mode) {
-                        LOGE(10, "[ERROR] Frame #%d not decoded.", framesReadCount);
+                        LOGE(10, "[ERROR] Frame #%d not decoded.", total_frames - 1);
                     }
                     break;
                 } else {
@@ -322,8 +328,12 @@ JNIEXPORT void JNICALL
                 env->CallVoidMethod(instance, renderVideoFrames, buffer, length);
                 env->DeleteLocalRef(buffer);
 
-                framesReadCount++;
+                received_frame++;
             }
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Audio decoding result:\r\nReceived frames: %d | Total frames: %d",
+                 received_frame, total_frames);
         }
     }
 
@@ -331,7 +341,7 @@ JNIEXPORT void JNICALL
         Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeAudio
                 (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Decoding audio stream #%d", gAudioStreamIndex)
+            LOGD(10, "[DEBUG] Decoding audio stream #%d...", gAudioStreamIndex)
         }
         jclass mplayer_class = env->GetObjectClass(instance);
         jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
@@ -386,7 +396,7 @@ JNIEXPORT void JNICALL
             total_frames++;
         }
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Decoding result:\r\nReceived frames: %d | Total frames: %d",
+            LOGD(10, "[DEBUG] Audio decoding result:\r\nReceived frames: %d | Total frames: %d",
                  received_frame, total_frames);
         }
         env->CallVoidMethod(instance, completePlayback);
