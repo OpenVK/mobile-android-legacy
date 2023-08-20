@@ -21,14 +21,15 @@
         android:background="#8f000000"
         android:gravity="center"
         android:orientation="vertical"
+        android:padding="4dp"
         android:visibility="visible">
 
         <ImageView
             android:id="@+id/error_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_holo_error_light"
             android:scaleType="center"
+            android:src="@drawable/ic_holo_error_light"
             android:visibility="gone" />
 
         <ImageView
@@ -51,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
             android:singleLine="true"
             android:text="240 / 320 kB"
             android:textColor="#ffffff"
