@@ -124,11 +124,13 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getActionBar().setHomeButtonEnabled(true);
+            if(getActionBar() != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setHomeButtonEnabled(true);
+                }
+                getActionBar().setDisplayHomeAsUpEnabled(true);
+                getActionBar().setTitle(getResources().getString(R.string.new_status));
             }
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setTitle(getResources().getString(R.string.new_status));
         }
 
         setEmojiconFragment(false);
