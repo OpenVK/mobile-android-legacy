@@ -14,7 +14,8 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/newpost_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -35,7 +36,7 @@
             android:layout_height="fill_parent"
             android:orientation="vertical" >
 
-            <EditText
+            <dev.tinelix.twemojicon.EmojiconEditText
                 android:id="@+id/status_text_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -44,7 +45,7 @@
                 android:gravity="top"
                 android:inputType="textCapSentences|textMultiLine"
                 android:padding="7dip"
-                android:singleLine="false"></EditText>
+                android:singleLine="false" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/newpost_attachments"
@@ -75,7 +76,10 @@
             android:ellipsize="middle"
             android:singleLine="true"
             android:text="Address"
-            android:textColor="#b1b2b5" />
+            android:textColor="#b1b2b5"
+            android:textSize="16sp"
+            android:visibility="visible"
+            tools:ignore="Deprecated,HardcodedText,InefficientWeight,RtlHardcoded" />
 
         <TextView
             android:id="@+id/newpost_friends_only"
@@ -91,7 +95,16 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dip"
             android:src="@drawable/ic_newpost_tg"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription,RtlHardcoded" />
+
+        <ImageButton
+            android:id="@+id/emoji_btn"
+            android:background="@drawable/highlight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:src="@drawable/ic_msg_panel_smiles" />
 
     </LinearLayout>
 
@@ -104,6 +117,7 @@
         android:background="#e5e5e5"/>
 
     <LinearLayout
+        android:id="@+id/attach_buttons"
         android:layout_width="match_parent"
         android:layout_height="48dip"
         android:gravity="center"
@@ -157,4 +171,10 @@
 
     </LinearLayout>
 
-</LinearLayout>
+    <FrameLayout
+        android:id="@+id/emojicons"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:visibility="gone" />
+
+</uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>

@@ -149,7 +149,7 @@
         <item name="android:scrollbarThumbVertical">@drawable/scrollbar_handle_vertical_white</item>
     </style>
     
-    <style name="PopupIfTablet" parent="BaseStyle">
+    <style name="BaseStyle.PopupIfTablet" parent="BaseStyle">
     </style>
 
     <style name="NoTitleAndShadow" parent="BaseStyleNoTitle">

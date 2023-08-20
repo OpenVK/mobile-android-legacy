@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,9 +24,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
@@ -34,6 +42,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import dev.tinelix.twemojicon.EmojiconGridFragment;
+import dev.tinelix.twemojicon.EmojiconsFragment;
+import dev.tinelix.twemojicon.emoji.Emojicon;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -46,10 +57,13 @@ import uk.openvk.android.legacy.api.models.PhotoUploadParams;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.list.adapters.UploadableAttachmentsAdapter;
 import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
+import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.RealPathUtil;
 
@@ -68,7 +82,9 @@ import uk.openvk.android.legacy.utils.RealPathUtil;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class NewPostActivity extends TranslucentActivity {
+public class NewPostActivity extends TranslucentFragmentActivity implements
+        EmojiconGridFragment.OnEmojiconClickedListener,
+        EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
     public String server;
     public String state;
     public String auth_token;
@@ -97,9 +113,14 @@ public class NewPostActivity extends TranslucentActivity {
     public static int RESULT_ATTACH_LOCAL_PHOTO    =   4;
     public static int RESULT_ATTACH_PHOTO          =   5;
     public static int RESULT_ATTACH_NOTE           =   6;
+    private int minKbHeight;
+    private int keyboard_height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            enableDialogMode();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -109,6 +130,18 @@ public class NewPostActivity extends TranslucentActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.new_status));
         }
+
+        setEmojiconFragment(false);
+        if(((OvkApplication) getApplicationContext()).isTablet) {
+            minKbHeight = (int) (320 * getResources().getDisplayMetrics().scaledDensity);
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (200 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (160 * getResources().getDisplayMetrics().scaledDensity);
+        }
+
+        ((XLinearLayout) findViewById(R.id.newpost_root)).setOnKeyboardStateListener(this);
+
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -155,8 +188,37 @@ public class NewPostActivity extends TranslucentActivity {
                 ovk_api.photos.getOwnerUploadServer(ovk_api.wrapper, owner_id);
             }
         }
+
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        int height = getWindow().getDecorView().getHeight();
+                        Rect r = new Rect();
+                        getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                        int visible = r.bottom - r.top;
+                        if(height - visible >= minKbHeight) {
+                            keyboard_height = height - visible - 60;
+                        }
+                    }
+                }
+        );
         createAttachmentsAdapter();
         setUiListeners();
+    }
+
+    private void enableDialogMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            requestWindowFeature(Window.FEATURE_ACTION_BAR);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+                    WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.height = (int) (720 * getResources().getDisplayMetrics().scaledDensity);
+            params.width = (int) (600 * getResources().getDisplayMetrics().scaledDensity);
+            params.alpha = 1.0f;
+            params.dimAmount = 0.5f;
+            getWindow().setAttributes(params);
+        }
     }
 
     private void createAttachmentsAdapter() {
@@ -186,6 +248,47 @@ public class NewPostActivity extends TranslucentActivity {
                     public void onClick(View view) {
                         showAttachMenuDialog();
                     }
+        });
+        (findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
+                    View view = NewPostActivity.this.getCurrentFocus();
+                    if (view != null) {
+                        if (keyboard_height >= minKbHeight) {
+                            findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height;
+                        } else {
+                            findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
+                        }
+                        Log.d(OvkApplication.APP_TAG, String.format("KB height: %s",
+                                findViewById(R.id.emojicons).getLayoutParams().height));
+                        InputMethodManager imm =
+                                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                        view.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                                if(!((OvkApplication) getApplicationContext()).isTablet) {
+                                    findViewById(R.id.attach_buttons).setVisibility(View.GONE);
+                                }
+                            }
+                        }, 200);
+                    } else {
+                        if(!((OvkApplication) getApplicationContext()).isTablet) {
+                            findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
+                        }
+                        findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    findViewById(R.id.emojicons).setVisibility(View.GONE);
+                    if(!((OvkApplication) getApplicationContext()).isTablet) {
+                        findViewById(R.id.attach_buttons).setVisibility(View.VISIBLE);
+                    }
+                }
+            }
         });
     }
 
@@ -306,7 +409,6 @@ public class NewPostActivity extends TranslucentActivity {
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
         }
-
     }
 
     private String createAttachmentsList() {
@@ -518,4 +620,52 @@ public class NewPostActivity extends TranslucentActivity {
         return RealPathUtil.getRealPathFromURI(this, uri);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            minKbHeight = (int) (200 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            minKbHeight = (int) (160 * getResources().getDisplayMetrics().scaledDensity);
+        }
+    }
+
+    private void setEmojiconFragment(boolean useSystemDefault) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.emojicons, EmojiconsFragment.newInstance(useSystemDefault))
+                .commit();
+    }
+
+    @Override
+    public void onEmojiconClicked(Emojicon emojicon) {
+        EmojiconsFragment.input((EditText) findViewById(R.id.conversation_panel)
+                .findViewById(R.id.message_edit), emojicon);
+    }
+
+    @Override
+    public void onEmojiconBackspaceClicked(View v) {
+        EmojiconsFragment.backspace((EditText) findViewById(R.id.conversation_panel)
+                .findViewById(R.id.message_edit));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
+            super.onBackPressed();
+        } else {
+            findViewById(R.id.emojicons).setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onKeyboardStateChanged(boolean param1Boolean) {
+        if(param1Boolean) findViewById(R.id.emojicons).setVisibility(View.GONE);
+        if(!((OvkApplication) getApplicationContext()).isTablet) {
+            if (param1Boolean)
+                findViewById(R.id.attach_buttons).setVisibility(View.GONE);
+            else
+                findViewById(R.id.attach_buttons).setVisibility(View.VISIBLE);
+        }
+    }
 }

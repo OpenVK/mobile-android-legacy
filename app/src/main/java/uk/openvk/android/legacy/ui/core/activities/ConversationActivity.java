@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -138,7 +139,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         } catch (OutOfMemoryError ignored) {
 
         }
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
@@ -280,7 +281,9 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     setMeasuredDimension(width, height);
                 }
             };
-            ab_profile_photo.setBackground(null);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ab_profile_photo.setBackground(null);
+            }
             ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.photo_loading));
             ab_profile_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
             ab_profile_photo.setOnClickListener(new View.OnClickListener() {
@@ -397,6 +400,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                             conversation_adapter.notifyDataSetChanged();
                         }
                         ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
                         messagesList.smoothScrollToPosition(history.size() - 1);
                     } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -434,6 +438,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     conversation_adapter.notifyDataSetChanged();
                 }
                 ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
                 messagesList.smoothScrollToPosition(history.size() -1);
             }
         });
@@ -507,9 +512,11 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                 Bitmap bitmap = BitmapFactory.decodeFile(
                         String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
                                 getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
-                if(activity_menu != null) {
-                    ab_profile_photo = activity_menu.getItem(0).getActionView().findViewById(R.id.profile_photo);
-                    ab_profile_photo.setImageBitmap(bitmap);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    if (activity_menu != null) {
+                        ab_profile_photo = activity_menu.getItem(0).getActionView().findViewById(R.id.profile_photo);
+                        ab_profile_photo.setImageBitmap(bitmap);
+                    }
                 }
             } catch (OutOfMemoryError | Exception ex) {
                 ex.printStackTrace();
