@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,10 +41,13 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.models.PhotoUploadParams;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.list.adapters.UploadableAttachmentsAdapter;
 import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -178,14 +184,37 @@ public class NewPostActivity extends TranslucentActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String url = "openvk://notes/" + "id" + account_id;
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(url));
-                        intent.putExtra("action", "notes_picker");
-                        intent.setPackage("uk.openvk.android.legacy");
-                        startActivityForResult(intent, RESULT_ATTACH_NOTE);
+                        showAttachMenuDialog();
                     }
         });
+    }
+
+    private void showAttachMenuDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final ArrayList<String> functions = new ArrayList<>();
+        builder.setTitle(R.string.attach);
+        functions.add(getResources().getString(R.string.attach_note_to_post));
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
+        builder.setSingleChoiceItems(adapter, -1, null);
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(functions.get(position)
+                        .equals(getResources().getString(R.string.attach_note_to_post))) {
+                    String url = "openvk://notes/" + "id" + account_id;
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    intent.putExtra("action", "notes_picker");
+                    intent.setPackage("uk.openvk.android.legacy");
+                    startActivityForResult(intent, RESULT_ATTACH_NOTE);
+                    dialog.dismiss();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -442,7 +471,7 @@ public class NewPostActivity extends TranslucentActivity {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
         } else if(requestCode == RESULT_ATTACH_NOTE) {
-            if(data.getExtras() != null) {
+            if(data != null && data.getExtras() != null) {
                 Bundle extras = data.getExtras();
                 if(extras.containsKey("attachment")) {
                     UploadableAttachment attach = new UploadableAttachment();
@@ -459,8 +488,6 @@ public class NewPostActivity extends TranslucentActivity {
                 } else {
                     Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
                 }
-            } else {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
         }
     }
