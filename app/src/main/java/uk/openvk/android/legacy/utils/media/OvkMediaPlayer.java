@@ -354,7 +354,13 @@ public class OvkMediaPlayer extends MediaPlayer {
                 prepared_audio_buffer = true;
             }
             Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
-            audio_track.write(buffer, 0, buffer.length);
+            try {
+                synchronized (audio_track) {
+                    audio_track.wait();
+                }
+                audio_track.write(buffer, 0, buffer.length);
+            } catch (Exception ignored) {
+            }
         } else if(state == STATE_STOPPED) {
             if(audio_track != null) {
                 audio_track.stop();
@@ -383,9 +389,7 @@ public class OvkMediaPlayer extends MediaPlayer {
         int frame_height = track.frame_size[1];
         if(frame_width > 0 && frame_height > 0) {
             try {
-                synchronized (frameLocker) {
-                    frameLocker.wait();
-                }
+                Thread.sleep(20);
                 c = holder.lockCanvas();
                 // RGB_565  == 65K colours (16 bit)
                 // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)

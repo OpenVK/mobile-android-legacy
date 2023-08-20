@@ -270,22 +270,21 @@ JNIEXPORT void JNICALL
         }
         av_init_packet(&avpkt);
 
-        int data_size = avcodec_decode_video2(gVideoCodecCtx,
-                                    pFrame, &frameDecoded, &avpkt);
+        int data_size = (int)length;
         int read_frame_status = -1;
 
-        avpicture_fill((AVPicture *)pFrameRGB, (uint8_t*)bitmap_buffer, PIX_FMT_RGBA,
-                       gVideoCodecCtx->width, gVideoCodecCtx->height);
+
         while (av_read_frame(gFormatCtx, &avpkt) >= 0) {
-            data_size = pFrame->width * pFrame->height * 4;
+            data_size = (int)length;
             if (avpkt.stream_index == gVideoStreamIndex) {
+                int size = avpkt.size;
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Decoding video frame #%d... | Length: %d", total_frames,
                          avpkt.size);
                 }
                 total_frames++;
                 avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
-                if (!frameDecoded) {
+                if (!frameDecoded || avpkt.size < 4096) {
                     if (debug_mode) {
                         LOGE(10, "[ERROR] Frame #%d not decoded.", total_frames - 1);
                     }
@@ -306,7 +305,7 @@ JNIEXPORT void JNICALL
                                                         NULL,
                                                         NULL,
                                                         NULL);
-                sws_scale(conversion, reinterpret_cast<const uint8_t *const *>(pFrame->data),
+                sws_scale(conversion, reinterpret_cast<const uint8_t *const *>(pFrameRGB->data),
                           pFrame->linesize, 0,
                           gVideoCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
                 sws_freeContext(conversion);
@@ -322,12 +321,17 @@ JNIEXPORT void JNICALL
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
                 }
-
-                buffer = env->NewByteArray((jsize)data_size);
-                env->SetByteArrayRegion(buffer, 0, (jsize)data_size, (jbyte*)pFrameRGB->data[0]);
-                env->CallVoidMethod(instance, renderVideoFrames, buffer, length);
-                env->DeleteLocalRef(buffer);
-
+                try {
+                    buffer = env->NewByteArray((jsize) data_size);
+                    env->SetByteArrayRegion(buffer, 0, (jsize) data_size,
+                                            (jbyte *) pFrame->data);
+                    env->CallVoidMethod(instance, renderVideoFrames, buffer, length);
+                    env->DeleteLocalRef(buffer);
+                } catch (...) {
+                    if (debug_mode) {
+                        LOGE(10, "[ERROR] Render video frames failed");
+                    }
+                }
                 received_frame++;
             }
         }
