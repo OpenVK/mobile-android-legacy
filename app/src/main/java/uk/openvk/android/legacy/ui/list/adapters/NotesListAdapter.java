@@ -2,12 +2,9 @@ package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +13,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
-import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
+import uk.openvk.android.legacy.ui.core.activities.intents.NotesIntentActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -111,8 +105,17 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Hold
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         showNote(position);
+                    } else if(ctx instanceof NotesIntentActivity){
+                        NotesIntentActivity activity = (NotesIntentActivity) ctx;
+                        Bundle extras = activity.getIntent().getExtras();
+                        if(extras != null && extras.containsKey("action")) {
+                            String action = extras.getString("action");
+                            if(action != null && action.equals("notes_picker")) {
+                                activity.pickNote(position);
+                            }
+                        }
                     }
                 }
             });

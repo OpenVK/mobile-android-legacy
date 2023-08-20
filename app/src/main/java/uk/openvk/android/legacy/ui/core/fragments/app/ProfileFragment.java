@@ -23,18 +23,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Arrays;
-
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
-import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
-import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;

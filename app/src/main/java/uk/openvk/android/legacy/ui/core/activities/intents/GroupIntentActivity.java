@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.ui.core.activities;
+package uk.openvk.android.legacy.ui.core.activities.intents;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -31,11 +31,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
@@ -45,20 +43,19 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.Account;
-import uk.openvk.android.legacy.api.models.Groups;
-import uk.openvk.android.legacy.api.models.Likes;
-import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
+import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
-import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;

@@ -20,40 +20,60 @@ import uk.openvk.android.legacy.api.entities.Photo;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class UploadableFile {
+public class UploadableAttachment {
     public String filename;
     public File file;
+    public String type;
     public String title;
     public String mime;
     public long progress;
     public long length;
-    private Photo photo;
+    public Object content;
     public String status;
+    public String id;
 
-    public UploadableFile(String filename, File file) {
+    public UploadableAttachment(String filename, File file) {
         this.filename = filename;
         this.file = file;
         this.length = file.length();
         String mime = "application/octet-stream";
         if (file.getName().endsWith(".jpeg") || file.getName().endsWith(".jpg")) {
             mime = "image/jpeg";
-            photo = new Photo();
+            content = new Photo();
         } else if (file.getName().endsWith(".png")) {
             mime = "image/png";
-            photo = new Photo();
+            content = new Photo();
         } else if (file.getName().endsWith(".gif")) {
             mime = "image/gif";
-            photo = new Photo();
+            content = new Photo();
         }
         this.status = "prepared";
         this.mime = mime;
     }
 
-    public Photo getPhoto() {
-        return photo;
+    public UploadableAttachment() {
+
     }
 
+    /**
+        @deprecated getContent and setContent for any content types.
+     */
+
+    @Deprecated
+    public Photo getPhoto() {
+        return null;
+    }
+
+    @Deprecated
     public void setPhoto(Photo photo) {
-        this.photo = photo;
+
+    }
+
+    public void setContent(Object obj) {
+        this.content = obj;
+    }
+
+    public Object getContent() {
+        return content;
     }
 }

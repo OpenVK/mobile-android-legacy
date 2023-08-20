@@ -35,12 +35,12 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

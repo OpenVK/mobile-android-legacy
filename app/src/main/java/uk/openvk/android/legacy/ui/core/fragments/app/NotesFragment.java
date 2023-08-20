@@ -51,6 +51,7 @@ public class NotesFragment extends Fragment {
     private NotesListAdapter notesAdapter;
     private boolean loading_more_notes = false;
     private View view;
+    private Context activity_ctx;
     private String instance;
 
     @Nullable
@@ -109,5 +110,9 @@ public class NotesFragment extends Fragment {
                     }
                 }
         */
+    }
+
+    public void setActivityContext(Context ctx) {
+        activity_ctx = ctx;
     }
 }

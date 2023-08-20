@@ -32,19 +32,19 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Error;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
-import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainSettingsActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.NotesIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 
@@ -900,27 +900,29 @@ public class OvkAPIWrapper {
         bundle.putString("response", response);
         msg.setData(bundle);
         try {
-            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+            if (ctx instanceof AuthActivity) {
                 ((AuthActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+            } else if (ctx instanceof AppActivity) {
                 ((AppActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            } else if (ctx instanceof ProfileIntentActivity) {
                 ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            } else if (ctx instanceof GroupIntentActivity) {
                 ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            } else if (ctx instanceof FriendsIntentActivity) {
+                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx instanceof NotesIntentActivity) {
+                ((NotesIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx instanceof MainSettingsActivity) {
                 ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            } else if (ctx instanceof ConversationActivity) {
                 ((ConversationActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            } else if (ctx instanceof NewPostActivity) {
                 ((NewPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            } else if (ctx instanceof QuickSearchActivity) {
                 ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            } else if (ctx instanceof WallPostActivity) {
                 ((WallPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            } else if (ctx instanceof GroupMembersActivity) {
                 ((GroupMembersActivity) ctx).handler.sendMessage(msg);
             }
         } catch (Exception ex) {
@@ -936,27 +938,29 @@ public class OvkAPIWrapper {
             bundle.putString("response", response);
             bundle.putString("method", method);
             msg.setData(bundle);
-            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+            if (ctx instanceof AuthActivity) {
                 ((AuthActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+            } else if (ctx instanceof AppActivity) {
                 ((AppActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            } else if (ctx instanceof ProfileIntentActivity) {
                 ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            } else if (ctx instanceof GroupIntentActivity) {
                 ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            } else if (ctx instanceof FriendsIntentActivity) {
+                ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx instanceof NotesIntentActivity) {
+                ((NotesIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx instanceof MainSettingsActivity) {
                 ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            } else if (ctx instanceof ConversationActivity) {
                 ((ConversationActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            } else if (ctx instanceof NewPostActivity) {
                 ((NewPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            } else if (ctx instanceof QuickSearchActivity) {
                 ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            } else if (ctx instanceof WallPostActivity) {
                 ((WallPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            } else if (ctx instanceof GroupMembersActivity) {
                 ((GroupMembersActivity) ctx).handler.sendMessage(msg);
             }
         } catch (Exception ex) {
@@ -973,27 +977,29 @@ public class OvkAPIWrapper {
             bundle.putString("method", method);
             bundle.putString("args", args);
             msg.setData(bundle);
-            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+            if (ctx instanceof AuthActivity) {
                 ((AuthActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+            } else if (ctx instanceof AppActivity) {
                 ((AppActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            } else if (ctx instanceof ProfileIntentActivity) {
                 ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            } else if (ctx instanceof GroupIntentActivity) {
                 ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            } else if (ctx instanceof FriendsIntentActivity) {
                 ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            } else if (ctx instanceof NotesIntentActivity) {
+                ((NotesIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx instanceof MainSettingsActivity) {
                 ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            } else if (ctx instanceof ConversationActivity) {
                 ((ConversationActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            } else if (ctx instanceof NewPostActivity) {
                 ((NewPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            } else if (ctx instanceof QuickSearchActivity) {
                 ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            } else if (ctx instanceof WallPostActivity) {
                 ((WallPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            } else if (ctx instanceof GroupMembersActivity) {
                 ((GroupMembersActivity) ctx).handler.sendMessage(msg);
             }
         } catch (Exception ex) {
@@ -1011,27 +1017,29 @@ public class OvkAPIWrapper {
             bundle.putString("args", args);
             bundle.putString("where", where);
             msg.setData(bundle);
-            if (ctx.getClass().getSimpleName().equals("AuthActivity")) {
+            if (ctx instanceof AuthActivity) {
                 ((AuthActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+            } else if (ctx instanceof AppActivity) {
                 ((AppActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+            } else if (ctx instanceof ProfileIntentActivity) {
                 ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+            } else if (ctx instanceof GroupIntentActivity) {
                 ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+            } else if (ctx instanceof FriendsIntentActivity) {
                 ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("MainSettingsActivity")) {
+            } else if (ctx instanceof NotesIntentActivity) {
+                ((NotesIntentActivity) ctx).handler.sendMessage(msg);
+            } else if (ctx instanceof MainSettingsActivity) {
                 ((MainSettingsActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+            } else if (ctx instanceof ConversationActivity) {
                 ((ConversationActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("NewPostActivity")) {
+            } else if (ctx instanceof NewPostActivity) {
                 ((NewPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+            } else if (ctx instanceof QuickSearchActivity) {
                 ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+            } else if (ctx instanceof WallPostActivity) {
                 ((WallPostActivity) ctx).handler.sendMessage(msg);
-            } else if (ctx.getClass().getSimpleName().equals("GroupMembersActivity")) {
+            } else if (ctx instanceof GroupMembersActivity) {
                 ((GroupMembersActivity) ctx).handler.sendMessage(msg);
             }
         } catch (Exception ex) {
@@ -1389,6 +1397,14 @@ public class OvkAPIWrapper {
                     break;
             }
             group_a.handler.sendMessage(msg);
+        } else if(activity instanceof NotesIntentActivity) {
+            NotesIntentActivity notes_a = ((NotesIntentActivity) activity);
+            assert method != null;
+            if(method.equals("Notes.get")) {
+                msg.what = HandlerMessages.NOTES_GET;
+                notes_a.ovk_api.notes.parse(data.getString("response"));
+            }
+            notes_a.handler.sendMessage(msg);
         } else if(activity instanceof NewPostActivity) {
             NewPostActivity newpost_a = ((NewPostActivity) activity);
             assert method != null;

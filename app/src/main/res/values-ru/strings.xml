@@ -93,6 +93,10 @@
     <string name="attach_photo">Фотография</string>
     <string name="attach_poll">Опрос</string>
     <string name="attach_link">Ссылка</string>
+    <string name="attach_photo_to_post">Фотографию</string>
+    <string name="attach_poll_to_post">Опрос</string>
+    <string name="attach_link_to_post">Ссылку</string>
+    <string name="attach_note_to_post">Заметку</string>
     <string name="wall_profile_photo_update">Обновлена фотография на странице</string>
 
     <string name="audio_play_error">Произошла ошибка при воспроизведении.</string>

@@ -10,7 +10,6 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,11 +18,9 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
-
-import static uk.openvk.android.legacy.R.string.view;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

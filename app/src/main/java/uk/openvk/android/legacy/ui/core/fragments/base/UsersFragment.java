@@ -24,7 +24,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.FriendsIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.ui.list.adapters.UsersListAdapter;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

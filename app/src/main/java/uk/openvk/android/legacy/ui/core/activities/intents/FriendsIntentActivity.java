@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.ui.core.activities;
+package uk.openvk.android.legacy.ui.core.activities.intents;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,13 +24,10 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Friend;
-import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;

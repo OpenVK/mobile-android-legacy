@@ -144,7 +144,7 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_attach"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/newpost_btn_settings"

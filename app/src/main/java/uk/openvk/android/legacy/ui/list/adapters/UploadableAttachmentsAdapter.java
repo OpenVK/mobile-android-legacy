@@ -5,14 +5,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -20,13 +15,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.User;
-import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
-import uk.openvk.android.legacy.ui.core.fragments.base.UsersFragment;
-import uk.openvk.android.legacy.ui.list.items.UploadableFile;
-import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
+import uk.openvk.android.legacy.api.entities.Note;
+import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -43,13 +34,14 @@ import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFilesAdapter.Holder> {
+public class UploadableAttachmentsAdapter extends
+        RecyclerView.Adapter<UploadableAttachmentsAdapter.Holder> {
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<UploadableFile> objects;
+    ArrayList<UploadableAttachment> objects;
     public boolean opened_sliding_menu;
 
-    public UploadableFilesAdapter(Context context, ArrayList<UploadableFile> items) {
+    public UploadableAttachmentsAdapter(Context context, ArrayList<UploadableAttachment> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -61,7 +53,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
         return objects.size();
     }
 
-    public UploadableFile getItem(int position) {
+    public UploadableAttachment getItem(int position) {
         return objects.get(position);
     }
 
@@ -100,6 +92,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
         public TextView progress_status;
         public ProgressBar progress;
         public ImageView error_icon;
+        public ImageView attach_icon;
 
         public Holder(View convertView) {
             super(convertView);
@@ -109,35 +102,42 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
             progress_status = convertView.findViewById(R.id.upload_status);
             progress = convertView.findViewById(R.id.upload_progress);
             error_icon = convertView.findViewById(R.id.error_icon);
+            attach_icon = convertView.findViewById(R.id.icon);
         }
 
         void bind(final int position) {
-            UploadableFile file = getItem(position);
-            if(file.mime.startsWith("image")) {
-                loadBitmap(file);
-                setUploadProgress(file);
-                if(file.progress < file.length) {
+            UploadableAttachment attach = getItem(position);
+            if(attach.mime != null && attach.mime.startsWith("image")) {
+                loadBitmap(attach);
+                setUploadProgress(attach);
+                if(attach.progress < attach.length) {
                     progress_layout.setVisibility(View.VISIBLE);
                 } else {
-                    if(file.status.equals("uploaded")) {
+                    if(attach.status.equals("uploaded")) {
                         progress_layout.setVisibility(View.GONE);
                     }
                 }
 
-                if(file.status.equals("error")) {
+                if(attach.status.equals("error")) {
                     progress_layout.setVisibility(View.VISIBLE);
                     progress.setVisibility(View.GONE);
                     error_icon.setVisibility(View.VISIBLE);
                     progress_status.setText(ctx.getResources().getString(R.string.error));
                 }
+            } else if(attach.type.equals("note")) {
+                photo_view.setImageBitmap(null);
+                Note note = (Note) attach.getContent();
+                progress_status.setText(note.title);
+                progress.setVisibility(View.GONE);
+                attach_icon.setVisibility(View.VISIBLE);
             }
         }
 
-        private void loadBitmap(UploadableFile file) {
+        private void loadBitmap(UploadableAttachment attach) {
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap photo = BitmapFactory.decodeFile(file.filename, options);
+                Bitmap photo = BitmapFactory.decodeFile(attach.filename, options);
                 if(photo != null) {
                     if (photo.getWidth() > 600 && photo.getHeight() > 600) {
                         Bitmap photo_scaled = Bitmap.createScaledBitmap(photo, 600,
@@ -159,7 +159,7 @@ public class UploadableFilesAdapter extends RecyclerView.Adapter<UploadableFiles
 
         @SuppressWarnings("MalformedFormatString")
         @SuppressLint("DefaultLocale")
-        private void setUploadProgress(UploadableFile file) {
+        private void setUploadProgress(UploadableAttachment file) {
             String b = ctx.getResources().getString(R.string.fsize_b);
             String kb = ctx.getResources().getString(R.string.fsize_kb);
             String mb = ctx.getResources().getString(R.string.fsize_mb);

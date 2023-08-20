@@ -97,6 +97,11 @@
 	<string name="attach_photo">Photo</string>
 	<string name="attach_poll">Poll</string>
 	<string name="attach_link">Link</string>
+	<string name="attach_photo_to_post">Photo</string>
+	<string name="attach_poll_to_post">Poll</string>
+	<string name="attach_link_to_post">Link</string>
+	<string name="attach_note_to_post">Note</string>
+
 	<string name="wall_profile_photo_update">Updated their profile photo</string>
 	<string name="audio_play_error">A playback error has occurred.</string>
 	<string name="cancel">Cancel</string>

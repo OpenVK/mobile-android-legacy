@@ -50,6 +50,8 @@ public class Notes {
             for(int i = 0; i < notes.length(); i++) {
                 JSONObject item = notes.getJSONObject(i);
                 Note note = new Note();
+                note.id = item.getLong("id");
+                note.owner_id = item.getLong("owner_id");
                 note.title = item.getString("title");
                 note.content = item.getString("text");
                 note.date = item.getLong("date");

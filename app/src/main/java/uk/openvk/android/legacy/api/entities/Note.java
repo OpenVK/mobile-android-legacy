@@ -17,11 +17,15 @@ package uk.openvk.android.legacy.api.entities;
  */
 
 public class Note {
+    public long id;
+    public long owner_id;
     public long date;
     public String content;
     public String title;
 
-    public Note(String title, String content, long date) {
+    public Note(long id, long owner_id, String title, String content, long date) {
+        this.id = id;
+        this.owner_id = owner_id;
         this.title = title;
         this.content = content;
         this.date = date;

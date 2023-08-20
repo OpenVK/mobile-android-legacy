@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -21,14 +22,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -38,13 +36,14 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.models.PhotoUploadParams;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
-import uk.openvk.android.legacy.ui.list.adapters.UploadableFilesAdapter;
-import uk.openvk.android.legacy.ui.list.items.UploadableFile;
+import uk.openvk.android.legacy.ui.list.adapters.UploadableAttachmentsAdapter;
+import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.RealPathUtil;
 
@@ -84,10 +83,14 @@ public class NewPostActivity extends TranslucentActivity {
     public Handler handler;
     private long account_id;
     private String account_first_name;
-    private ArrayList<UploadableFile> files;
-    private UploadableFilesAdapter filesAdapter;
-    private UploadableFile file;
+    private ArrayList<UploadableAttachment> attachments;
+    private UploadableAttachmentsAdapter attachmentsAdapter;
+    private UploadableAttachment attach;
     private Menu activity_menu;
+
+    public static int RESULT_ATTACH_LOCAL_PHOTO    =   4;
+    public static int RESULT_ATTACH_PHOTO          =   5;
+    public static int RESULT_ATTACH_NOTE           =   6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +126,7 @@ public class NewPostActivity extends TranslucentActivity {
                     finish();
                 }
 
-                handler = new Handler() {
+                handler = new Handler(Looper.myLooper()) {
                     @Override
                     public void handleMessage(Message message) {
                         final Bundle data = message.getData();
@@ -152,21 +155,36 @@ public class NewPostActivity extends TranslucentActivity {
 
     private void createAttachmentsAdapter() {
         RecyclerView attachments_view = findViewById(R.id.newpost_attachments);
-        files = new ArrayList<>();
-        filesAdapter = new UploadableFilesAdapter(this, files);
+        attachments = new ArrayList<>();
+        attachmentsAdapter = new UploadableAttachmentsAdapter(this, attachments);
         attachments_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        attachments_view.setAdapter(filesAdapter);
+        attachments_view.setAdapter(attachmentsAdapter);
     }
 
     private void setUiListeners() {
-        findViewById(R.id.newpost_btn_photo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent =  new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, 4);
-            }
+        findViewById(R.id.newpost_btn_photo).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent =
+                                new Intent(Intent.ACTION_PICK,
+                                        MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(intent, RESULT_ATTACH_LOCAL_PHOTO);
+                    }
+        });
+        findViewById(R.id.newpost_btn_attach).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String url = "openvk://notes/" + "id" + account_id;
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(url));
+                        intent.putExtra("action", "notes_picker");
+                        intent.setPackage("uk.openvk.android.legacy");
+                        startActivityForResult(intent, RESULT_ATTACH_NOTE);
+                    }
         });
     }
 
@@ -216,7 +234,7 @@ public class NewPostActivity extends TranslucentActivity {
                 public void performAction(View view) {
                     EditText statusEditText = findViewById(R.id.status_text_edit);
                     if (statusEditText.getText().toString().length() == 0 &&
-                            (files == null || files.size() == 0)) {
+                            (attachments == null || attachments.size() == 0)) {
                         Toast.makeText(getApplicationContext(),
                                 getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
                     } else {
@@ -225,7 +243,7 @@ public class NewPostActivity extends TranslucentActivity {
                             connectionDialog.setMessage(getString(R.string.loading));
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
-                            if(files.size() > 0) {
+                            if(attachments.size() > 0) {
                                 ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(),
                                         createAttachmentsList());
                             } else {
@@ -238,12 +256,16 @@ public class NewPostActivity extends TranslucentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.new_status));
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
         } else {
             if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
@@ -259,14 +281,11 @@ public class NewPostActivity extends TranslucentActivity {
 
     private String createAttachmentsList() {
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < files.size(); i++) {
-            UploadableFile file = files.get(i);
-            if(file.mime.startsWith("image")) {
-                Photo photo = file.getPhoto();
-                sb.append(String.format("photo%s_%s", photo.owner_id, photo.id));
-                if(i < files.size() - 1) {
-                    sb.append(",");
-                }
+        for(int i = 0; i < attachments.size(); i++) {
+            UploadableAttachment attach = attachments.get(i);
+            sb.append(attach.id);
+            if(i < attachments.size() - 1) {
+                sb.append(",");
             }
         }
         return sb.toString();
@@ -281,33 +300,35 @@ public class NewPostActivity extends TranslucentActivity {
                 finish();
             } else if(message == HandlerMessages.UPLOAD_PROGRESS) {
                 String filename = data.getString("filename");
-                int pos = filesAdapter.searchByFileName(filename);
-                file = files.get(pos);
-                file.progress = data.getLong("position");
-                file.status = "uploading";
-                files.set(pos, file);
-                filesAdapter.notifyDataSetChanged();
+                int pos = attachmentsAdapter.searchByFileName(filename);
+                attach = attachments.get(pos);
+                attach.progress = data.getLong("position");
+                attach.status = "uploading";
+                attachments.set(pos, attach);
+                attachmentsAdapter.notifyDataSetChanged();
             } else if(message == HandlerMessages.UPLOADED_SUCCESSFULLY) {
                 String filename = data.getString("filename");
-                int pos = filesAdapter.searchByFileName(filename);
-                file = files.get(pos);
-                file.progress = file.length;
-                file.status = "uploaded";
-                files.set(pos, file);
-                filesAdapter.notifyDataSetChanged();
                 PhotoUploadParams params = new PhotoUploadParams(data.getString("response"));
+                int pos = attachmentsAdapter.searchByFileName(filename);
+                attach = attachments.get(pos);
+                attach.progress = attach.length;
+                attach.status = "uploaded";
+                attachments.set(pos, attach);
+                attachmentsAdapter.notifyDataSetChanged();
                 ovk_api.photos.saveWallPhoto(ovk_api.wrapper, params.photo, params.hash);
             } else if(message == HandlerMessages.UPLOAD_ERROR) {
                 String filename = data.getString("filename");
-                int pos = filesAdapter.searchByFileName(filename);
-                file = files.get(pos);
-                file.status = "error";
-                files.set(pos, file);
-                filesAdapter.notifyDataSetChanged();
+                int pos = attachmentsAdapter.searchByFileName(filename);
+                attach = attachments.get(pos);
+                attach.status = "error";
+                attachments.set(pos, attach);
+                attachmentsAdapter.notifyDataSetChanged();
             } else if(message == HandlerMessages.PHOTOS_SAVE) {
                 try {
-                    int pos = filesAdapter.searchByFileName(file.filename);
-                    files.get(pos).setPhoto(ovk_api.photos.list.get(0));
+                    int pos = attachmentsAdapter.searchByFileName(attach.filename);
+                    Photo photo = ovk_api.photos.list.get(0);
+                    attachments.get(pos).setContent(photo);
+                    attach.id = String.format("photo%s_%s", photo.owner_id, photo.id);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                         if (activity_menu != null && activity_menu.size() >= 1) {
                             activity_menu.getItem(0).setEnabled(true);
@@ -329,12 +350,13 @@ public class NewPostActivity extends TranslucentActivity {
                             connectionDialog.cancel();
                     } else if(data.getString("method").startsWith("Photos.save")) {
                         try {
-                            int pos = filesAdapter.searchByFileName(file.filename);
-                            if(files.get(pos).status.equals("uploading") || files.get(pos).status.equals("uploaded")) {
-                                file = files.get(pos);
-                                file.status = "error";
-                                files.set(pos, file);
-                                filesAdapter.notifyDataSetChanged();
+                            int pos = attachmentsAdapter.searchByFileName(attach.filename);
+                            if(attachments.get(pos).status.equals("uploading") ||
+                                    attachments.get(pos).status.equals("uploaded")) {
+                                attach = attachments.get(pos);
+                                attach.status = "error";
+                                attachments.set(pos, attach);
+                                attachmentsAdapter.notifyDataSetChanged();
                             }
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                                 if (activity_menu != null && activity_menu.size() >= 1) {
@@ -369,7 +391,7 @@ public class NewPostActivity extends TranslucentActivity {
             EditText statusEditText = findViewById(R.id.status_text_edit);
             String post_content = statusEditText.getText().toString();
             if((post_content.length() == 0 || post_content.startsWith(" ")) &&
-                    (files == null || files.size() == 0)) {
+                    (attachments == null || attachments.size() == 0)) {
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
             } else if(!connection_status) {
@@ -378,7 +400,7 @@ public class NewPostActivity extends TranslucentActivity {
                     connectionDialog.setMessage(getString(R.string.loading));
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
-                    if(files == null || files.size() == 0) {
+                    if(attachments == null || attachments.size() == 0) {
                         ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content);
                     } else {
                         ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content, createAttachmentsList());
@@ -394,7 +416,7 @@ public class NewPostActivity extends TranslucentActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (requestCode == 4) {
+        if (requestCode == RESULT_ATTACH_LOCAL_PHOTO) {
             if (ovk_api.photos.ownerPhotoUploadServer == null ||
                     ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
                 Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
@@ -419,6 +441,27 @@ public class NewPostActivity extends TranslucentActivity {
                 ex.printStackTrace();
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
+        } else if(requestCode == RESULT_ATTACH_NOTE) {
+            if(data.getExtras() != null) {
+                Bundle extras = data.getExtras();
+                if(extras.containsKey("attachment")) {
+                    UploadableAttachment attach = new UploadableAttachment();
+                    attach.type = "note";
+                    attach.id = extras.getString("attachment");
+                    Note note = new Note();
+                    note.id = extras.getLong("note_id");
+                    note.owner_id = extras.getLong("owner_id");
+                    note.title = extras.getString("note_title");
+                    attach.setContent(note);
+                    attachments.add(attach);
+                    attachmentsAdapter.notifyDataSetChanged();
+                    findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -426,11 +469,11 @@ public class NewPostActivity extends TranslucentActivity {
         File file = new File(path);
         if(file.exists()) {
             findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
-            UploadableFile upload_file = new UploadableFile(path, file);
+            UploadableAttachment upload_file = new UploadableAttachment(path, file);
             upload_file.length = file.length();
             Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
-            files.add(upload_file);
-            filesAdapter.notifyDataSetChanged();
+            attachments.add(upload_file);
+            attachmentsAdapter.notifyDataSetChanged();
             ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, path);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 if(activity_menu != null && activity_menu.size() >= 1) {

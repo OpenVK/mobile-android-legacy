@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.ui.core.activities;
+package uk.openvk.android.legacy.ui.core.activities.intents;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -38,31 +38,29 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.Account;
-import uk.openvk.android.legacy.api.models.Friends;
-import uk.openvk.android.legacy.api.models.Likes;
-import uk.openvk.android.legacy.api.models.Users;
-import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
-import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION

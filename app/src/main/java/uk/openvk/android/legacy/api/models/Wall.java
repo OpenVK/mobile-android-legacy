@@ -29,7 +29,6 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.entities.RepostInfo;
-import uk.openvk.android.legacy.ui.list.items.UploadableFile;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

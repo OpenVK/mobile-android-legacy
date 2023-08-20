@@ -702,6 +702,8 @@ public class Global {
             args = path.substring("openvk://group/".length());
         } else if (path.startsWith("openvk://friends/")) {
             args = path.substring("openvk://friends/".length());
+        } else if (path.startsWith("openvk://notes/")) {
+            args = path.substring("openvk://notes/".length());
         } else if(path.startsWith("https://openvk.su/")) {
             args = path.substring("https://openvk.su/".length());
         } else if(path.startsWith("https://openvk.uk/")) {

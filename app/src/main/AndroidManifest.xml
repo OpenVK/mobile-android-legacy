@@ -76,7 +76,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.ProfileIntentActivity"
+            android:name=".ui.core.activities.intents.ProfileIntentActivity"
             android:label="@string/profile"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -105,7 +105,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.core.activities.FriendsIntentActivity"
+        <activity android:name=".ui.core.activities.intents.FriendsIntentActivity"
             android:label="@string/friends"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -135,7 +135,7 @@
         </activity>
 
         <activity
-            android:name=".ui.core.activities.GroupIntentActivity"
+            android:name=".ui.core.activities.intents.GroupIntentActivity"
             android:label="@string/group"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -161,6 +161,36 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/club" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.core.activities.intents.NotesIntentActivity"
+            android:label="@string/notes"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk" android:host="notes" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/notes"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/notes"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/notes" />
             </intent-filter>
         </activity>
 
