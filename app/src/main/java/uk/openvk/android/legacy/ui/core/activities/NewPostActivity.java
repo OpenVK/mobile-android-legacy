@@ -639,14 +639,12 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
 
     @Override
     public void onEmojiconClicked(Emojicon emojicon) {
-        EmojiconsFragment.input((EditText) findViewById(R.id.conversation_panel)
-                .findViewById(R.id.message_edit), emojicon);
+        EmojiconsFragment.input((EditText) findViewById(R.id.status_text_edit), emojicon);
     }
 
     @Override
     public void onEmojiconBackspaceClicked(View v) {
-        EmojiconsFragment.backspace((EditText) findViewById(R.id.conversation_panel)
-                .findViewById(R.id.message_edit));
+        EmojiconsFragment.backspace((EditText) findViewById(R.id.status_text_edit));
     }
 
     @Override
