@@ -195,7 +195,8 @@ public class NewPostActivity extends TranslucentActivity {
         builder.setTitle(R.string.attach);
         functions.add(getResources().getString(R.string.attach_note_to_post));
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.select_dialog_item, functions);
+                new ArrayAdapter<>(this, R.layout.list_item_select_dialog, R.id.text,
+                        functions);
         builder.setSingleChoiceItems(adapter, -1, null);
         final AlertDialog dialog = builder.create();
         dialog.show();
