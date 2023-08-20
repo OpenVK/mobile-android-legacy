@@ -603,7 +603,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             builder.setTitle(R.string.repost_dlg_title);
             functions.add(ctx.getResources().getString(R.string.repost_own_wall));
             ArrayAdapter<String> adapter =
-                    new ArrayAdapter<>(ctx, android.R.layout.simple_list_item_1, functions);
+                    new ArrayAdapter<>(ctx, android.R.layout.select_dialog_item, functions);
             builder.setSingleChoiceItems(adapter, -1, null);
             final AlertDialog dialog = builder.create();
             dialog.show();
