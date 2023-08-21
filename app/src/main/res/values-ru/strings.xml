@@ -1074,4 +1074,6 @@
     <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина.\r\nВы можете узнать что-то новое в ленте всех новостей.</string>
     <string name="retry_short">Повторить</string>
     <string name="notes">Заметки</string>
+
+    <string name="report_content">Пожаловаться</string>
 </resources>

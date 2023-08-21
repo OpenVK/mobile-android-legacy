@@ -1147,4 +1147,6 @@
 	<string name="retry_short">Retry</string>
 	<string name="vk_not_supported">Sorry, but this client is incompatible with the VK API.</string>
 	<string name="notes">Notes</string>
+
+	<string name="report_content">Report</string>
 </resources>

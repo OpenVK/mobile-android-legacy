@@ -1242,4 +1242,6 @@
     <string name="retry_short">Повторити</string>
     <string name="vk_not_supported">Вибачте, але цей клієнт несумісний з API ВКонтакте.</string>
     <string name="notes">Нонатки</string>
+
+    <string name="report_content">Поскаржитись</string>
 </resources>

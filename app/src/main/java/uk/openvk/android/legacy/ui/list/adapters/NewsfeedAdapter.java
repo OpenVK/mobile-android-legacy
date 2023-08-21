@@ -8,19 +8,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -28,6 +32,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 
+import dev.tinelix.retro_pm.MenuItem;
+import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
@@ -150,6 +156,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private final VideoAttachView post_video;
         private final ImageView verified_icon;
         private final CommonAttachView attachment_view;
+        private final ImageButton options_btn;
+        private PopupMenu p_menu;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
 
@@ -179,10 +187,19 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.repost_expand_text_btn = view.findViewById(R.id.repost_expand_text_btn);
             this.api_app_indicator = view.findViewById(R.id.api_app_indicator);
             this.verified_icon = view.findViewById(R.id.verified_icon);
+            this.options_btn = view.findViewById(R.id.post_options_btn);
         }
 
         void bind(final int position) {
             final WallPost item = getItem(position);
+
+            options_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showPostOptions(view);
+                }
+            });
+
             if(item.post_source.type.equals("api")) {
                 api_app_indicator.setVisibility(View.VISIBLE);
                 switch (item.post_source.platform) {
@@ -542,6 +559,29 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             });
+        }
+
+        private void showPostOptions(View view) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                android.widget.PopupMenu popupMenu =
+                        new android.widget.PopupMenu(view.getContext(), view);
+                popupMenu.getMenu().add(ctx.getResources().getString(R.string.report_content));
+                popupMenu.show();
+            } else {
+                p_menu = new PopupMenu(ctx);
+                p_menu.setHeaderTitle("");
+                p_menu.add(0, ctx.getResources().getString(R.string.report_content));
+                p_menu.setOnItemSelectedListener(new PopupMenu.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(MenuItem item) {
+                        Toast.makeText
+                                (ctx,
+                                        ctx.getResources().getString(R.string.not_implemented),
+                                        Toast.LENGTH_LONG).show();
+                    }
+                });
+                p_menu.show(view);
+            }
         }
 
         private void loadPhotoPlaceholder(final WallPost post, PhotoAttachment photoAttachment, ImageView view) {

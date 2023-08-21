@@ -217,7 +217,12 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
                     WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             WindowManager.LayoutParams params = getWindow().getAttributes();
-            params.height = (int) (720 * getResources().getDisplayMetrics().scaledDensity);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                params.height = (int) (700 * getResources().getDisplayMetrics().scaledDensity);
+            } else {
+                params.height = (int) (720 * getResources().getDisplayMetrics().scaledDensity);
+            }
+
             params.width = (int) (600 * getResources().getDisplayMetrics().scaledDensity);
             params.alpha = 1.0f;
             params.dimAmount = 0.5f;

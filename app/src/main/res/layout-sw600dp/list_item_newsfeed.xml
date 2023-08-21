@@ -151,15 +151,16 @@
 
             </LinearLayout>
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/post_options_btn"
                 android:layout_width="24dp"
                 android:layout_height="32dp"
-                android:layout_alignTop="@+id/poster_name_view"
                 android:layout_alignBottom="@+id/poster_name_view"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="8dip"
+                android:layout_alignTop="@+id/poster_name_view"
                 android:layout_marginRight="4dip"
+                android:layout_marginTop="8dip"
+                android:background="@null"
                 android:src="@drawable/ic_card_menu"
                 tools:ignore="ContentDescription,ObsoleteLayoutParam,RtlHardcoded" />
 
