@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -116,6 +117,7 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
     private int minKbHeight;
     private int keyboard_height;
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if(((OvkApplication) getApplicationContext()).isTablet) {
