@@ -39,6 +39,8 @@ public class Group implements Parcelable {
     public String avatar_msize_url;
     public String avatar_hsize_url;
     public String avatar_osize_url;
+    public String avatar_url;
+    public long avatar_id;
     public long members_count;
     public int is_member;
     public String description;
@@ -86,14 +88,18 @@ public class Group implements Parcelable {
                     avatar_msize_url = group.getString("photo_200");
                 } if (group.has("photo_200_orig")) {
                     avatar_msize_url = group.getString("photo_200_orig");
+                    avatar_url = avatar_msize_url;
                 } if (group.has("photo_400")) {
                     avatar_hsize_url = group.getString("photo_400");
                 } if (group.has("photo_400_orig")) {
                     avatar_hsize_url = group.getString("photo_400_orig");
+                    avatar_url = avatar_hsize_url;
                 } if (group.has("photo_max")) {
                     avatar_osize_url = group.getString("photo_max");
                 } if (group.has("photo_max_orig")) {
                     avatar_osize_url = group.getString("photo_max_orig");
+                    // вова, жду фикса шакалистых авок в photo_max_orig хд
+                    // avatar_url = avatar_osize_url;
                 }
                 if(group.has("members_count")) {
                     members_count = group.getLong("members_count");
@@ -178,7 +184,8 @@ public class Group implements Parcelable {
     }
 
     public void getMembers(OvkAPIWrapper wrapper, int count, String where) {
-        wrapper.sendAPIMethod("Groups.getMembers", String.format("group_id=%s&fields=verified,online,photo_100," +
+        wrapper.sendAPIMethod("Groups.getMembers",
+                String.format("group_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s", id, count), where);
     }
 

@@ -42,6 +42,7 @@ public class User implements Parcelable {
     public String avatar_msize_url;
     public String avatar_hsize_url;
     public String avatar_osize_url;
+    public long avatar_id;
     public int friends_status;
     public String interests;
     public String movies;
@@ -146,18 +147,21 @@ public class User implements Parcelable {
                     avatar_msize_url = user.getString("photo_50");
                 } else if (user.has("photo_100")) {
                     avatar_msize_url = user.getString("photo_100");
-                } else if (user.has("photo_200_orig")) {
-                    avatar_msize_url = user.getString("photo_200_orig");
                 } else if (user.has("photo_200")) {
                     avatar_msize_url = user.getString("photo_200");
+                } else if (user.has("photo_200_orig")) {
+                    avatar_msize_url = user.getString("photo_200_orig");
+                    avatar_url = avatar_msize_url;
                 } else if (user.has("photo_400")) {
                     avatar_hsize_url = user.getString("photo_400");
                 } else if (user.has("photo_400_orig")) {
                     avatar_hsize_url = user.getString("photo_400_orig");
+                    avatar_url = avatar_hsize_url;
                 } else if (user.has("photo_max")) {
                     avatar_osize_url = user.getString("photo_max");
                 } else if (user.has("photo_max_orig")) {
                     avatar_osize_url = user.getString("photo_max_orig");
+                    avatar_url = avatar_osize_url;
                 }
                 if(user.has("deactivated")) {
                     deactivated = user.getString("deactivated");
@@ -235,16 +239,19 @@ public class User implements Parcelable {
                             avatar_msize_url = user.getString("photo_100");
                         } if (user.has("photo_200_orig")) {
                             avatar_msize_url = user.getString("photo_200_orig");
+                            avatar_url = avatar_msize_url;
                         } if (user.has("photo_200")) {
                             avatar_msize_url = user.getString("photo_200");
                         } if (user.has("photo_400")) {
                             avatar_hsize_url = user.getString("photo_400");
                         } if (user.has("photo_400_orig")) {
                             avatar_hsize_url = user.getString("photo_400_orig");
+                            avatar_url = avatar_hsize_url;
                         } if (user.has("photo_max")) {
                             avatar_osize_url = user.getString("photo_max");
                         } if (user.has("photo_max_orig")) {
                             avatar_osize_url = user.getString("photo_max_orig");
+                            avatar_url = avatar_osize_url;
                         }
 
                         friends_status = user.getInt("friend_status");

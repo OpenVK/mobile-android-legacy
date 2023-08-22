@@ -131,19 +131,25 @@ public class Groups implements Parcelable {
     }
 
     public void getGroupByID(OvkAPIWrapper wrapper, long id) {
-        wrapper.sendAPIMethod("Groups.getById", String.format("group_id=%s&fields=verified,photo_200," +
-                "photo_400,photo_max_orig,is_member,members_count,site,description,contacts", id));
+        wrapper.sendAPIMethod("Groups.getById",
+                String.format("group_id=%s&fields=verified,photo_200," +
+                "photo_200_orig,photo_400,photo_max_orig,is_member," +
+                        "members_count,site,description,contacts", id));
     }
 
     public void getGroups(OvkAPIWrapper wrapper, long user_id, long count) {
-        wrapper.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
-                "photo_400,photo_max_orig,is_member,members_count,site,description,contacts&extended=1", user_id, count));
+        wrapper.sendAPIMethod("Groups.get",
+                String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+                "photo_200_orig,photo_400,photo_400_orig,photo_max_orig,is_member," +
+                "members_count,site,description,contacts&extended=1", user_id, count));
     }
 
     public void getGroups(OvkAPIWrapper wrapper, long user_id, int count, int offset) {
-        wrapper.sendAPIMethod("Groups.get", String.format("user_id=%s&count=%s&fields=verified,photo_200," +
-                "photo_400,photo_max_orig,is_member,members_count,site,description,contacts&offset=%s" +
-                "&extended=1", user_id, count, offset), "more_groups");
+        wrapper.sendAPIMethod("Groups.get",
+                String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+                "photo_200_orig,photo_400,photo_400_orig,photo_max_orig,is_member," +
+                        "members_count,site,description,contacts&offset=%s" +
+                        "&extended=1", user_id, count, offset), "more_groups");
     }
 
     public void parse(String response, DownloadManager downloadManager, String quality, boolean downloadPhoto, boolean clear) {

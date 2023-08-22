@@ -174,7 +174,9 @@ public class PhotoViewerActivity extends Activity {
                         downloadManager = new DownloadManager(this, true,
                                 global_prefs.getBoolean("legacyHttpClient", false));
                         downloadManager.setInstance(
-                                PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
+                                PreferenceManager
+                                        .getDefaultSharedPreferences(this)
+                                        .getString("current_instance", ""));
                         downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
                         downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),
@@ -184,11 +186,13 @@ public class PhotoViewerActivity extends Activity {
                         finish();
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     finish();
                 }
             }
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
+            Log.e(OvkApplication.APP_TAG, "PhotoViewerActivity: Empty token");
             finish();
         }
     }

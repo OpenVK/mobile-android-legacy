@@ -29,6 +29,8 @@ import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
+import uk.openvk.android.legacy.ui.view.layouts.GroupHeader;
+import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *

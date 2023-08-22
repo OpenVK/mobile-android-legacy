@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
@@ -9,10 +10,12 @@ import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -73,5 +76,30 @@ public class GroupHeader extends RelativeLayout {
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }
+    }
+
+    public void createGroupPhotoViewer(
+            final long user_id, final String original_url) {
+        ((ImageView) findViewById(R.id.profile_photo)).setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getContext().getApplicationContext(),
+                                PhotoViewerActivity.class);
+                        intent.putExtra("where", "comments");
+                        try {
+                            intent.putExtra("local_photo_addr",
+                                    String.format("%s/profile_photos/avatar_o%s",
+                                            getContext().getCacheDir(),
+                                            user_id));
+                            intent.putExtra("original_link", original_url);
+                            intent.putExtra("author_id", user_id);
+                            intent.putExtra("photo_id", user_id);
+                            getContext().startActivity(intent);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
     }
 }

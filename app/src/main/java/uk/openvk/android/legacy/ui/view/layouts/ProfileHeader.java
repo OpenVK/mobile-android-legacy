@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
@@ -19,6 +20,10 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -172,5 +177,30 @@ public class ProfileHeader extends RelativeLayout {
 
     public void hideExpandArrow() {
         findViewById(R.id.profile_expand).setVisibility(INVISIBLE);
+    }
+
+    public void createProfilePhotoViewer(
+            final long user_id, final String original_url) {
+        ((ImageView) findViewById(R.id.profile_photo)).setOnClickListener(
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getContext().getApplicationContext(),
+                                PhotoViewerActivity.class);
+                        intent.putExtra("where", "comments");
+                        try {
+                            intent.putExtra("local_photo_addr",
+                                    String.format("%s/profile_photos/avatar_o%s",
+                                            getContext().getCacheDir(),
+                                            user_id));
+                            intent.putExtra("original_link", original_url);
+                            intent.putExtra("author_id", user_id);
+                            intent.putExtra("photo_id", user_id);
+                            getContext().startActivity(intent);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+        });
     }
 }

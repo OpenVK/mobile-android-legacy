@@ -118,14 +118,18 @@ public class Users implements Parcelable {
     }
 
     public void getUser(OvkAPIWrapper wrapper, long user_id) {
-        wrapper.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city",
+        wrapper.sendAPIMethod("Users.get",
+                String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                "photo_200_orig,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                                "interests,music,movies,tv,books,city",
                 user_id));
     }
 
     public void getAccountUser(OvkAPIWrapper wrapper, long user_id) {
-        wrapper.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city",
+        wrapper.sendAPIMethod("Users.get",
+                String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                "photo_200_orig,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                                "interests,music,movies,tv,books,city",
                 user_id), "account_user");
     }
 
@@ -142,8 +146,10 @@ public class Users implements Parcelable {
                 ids_list.append(user_ids.get(i));
             }
         }
-        wrapper.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city",
+        wrapper.sendAPIMethod("Users.get",
+                String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                                "interests,music,movies,tv,books,city",
                 ids_list), "peers");
     }
 
@@ -156,8 +162,10 @@ public class Users implements Parcelable {
                 ids_list.append(user_ids.get(i));
             }
         }
-        wrapper.sendAPIMethod("Users.get", String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city",
+        wrapper.sendAPIMethod("Users.get",
+                String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                                "interests,music,movies,tv,books,city",
                 ids_list.toString()));
     }
 
@@ -166,8 +174,10 @@ public class Users implements Parcelable {
     }
 
     public void search(OvkAPIWrapper wrapper, String query) {
-        wrapper.sendAPIMethod("Users.search", String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen,interests,music,movies,tv,books,city",
+        wrapper.sendAPIMethod("Users.search",
+                String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200," +
+                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                                "interests,music,movies,tv,books,city",
                 URLEncoder.encode(query)));
     }
 

@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -63,6 +64,7 @@ import uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.GroupHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
+import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
@@ -135,7 +137,7 @@ public class GroupIntentActivity extends TranslucentActivity {
 
         final Uri uri = getIntent().getData();
 
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
@@ -172,10 +174,15 @@ public class GroupIntentActivity extends TranslucentActivity {
                 ovk_api.account.getProfileInfo(ovk_api.wrapper);
                 args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    downloadManager = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", true),
+                    downloadManager = new DownloadManager(this,
+                            global_prefs.getBoolean("useHTTPS", true),
                             global_prefs.getBoolean("legacyHttpClient", false));
-                    downloadManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
-                    downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
+                    downloadManager.setInstance(
+                            PreferenceManager.
+                                    getDefaultSharedPreferences(this)
+                                    .getString("current_instance", ""));
+                    downloadManager.setForceCaching(
+                            global_prefs.getBoolean("forcedCaching", true));
                     installLayouts();
                 }
             } catch (Exception ex) {
@@ -230,16 +237,23 @@ public class GroupIntentActivity extends TranslucentActivity {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
                         getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.setText(String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
+                if (clipboard != null) {
+                    clipboard.setText(String.format("http://%s/club%s",
+                            instance_prefs.getString("server", ""), group.id));
+                }
             } else {
                 android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
                         getSystemService(Context.CLIPBOARD_SERVICE);
                 android.content.ClipData clip = android.content.ClipData.newPlainText("OpenVK User URL",
-                        String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id));
-                clipboard.setPrimaryClip(clip);
+                        String.format("http://%s/club%s",
+                                instance_prefs.getString("server", ""), group.id));
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(clip);
+                }
             }
         } else if(item.getItemId() == R.id.open_in_browser) {
-            String user_url = String.format("http://%s/club%s", instance_prefs.getString("server", ""), group.id);
+            String user_url = String.format("http://%s/club%s",
+                    instance_prefs.getString("server", ""), group.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(user_url));
             startActivity(i);
@@ -304,9 +318,11 @@ public class GroupIntentActivity extends TranslucentActivity {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
-                    getActionBar().setDisplayShowHomeEnabled(true);
-                    getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.group));
+                    if(getActionBar() != null) {
+                        getActionBar().setDisplayShowHomeEnabled(true);
+                        getActionBar().setDisplayHomeAsUpEnabled(true);
+                        getActionBar().setTitle(getResources().getString(R.string.group));
+                    }
                     if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
                         getActionBar().setBackgroundDrawable(
                                 getResources().getDrawable(R.drawable.bg_actionbar_gray));
@@ -327,12 +343,16 @@ public class GroupIntentActivity extends TranslucentActivity {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setDisplayHomeAsUpEnabled(true);
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
             actionBar.setHomeAction(new ActionBar.Action() {
                 @Override
@@ -623,11 +643,15 @@ public class GroupIntentActivity extends TranslucentActivity {
         } else {
             group.avatar = null;
         }
-        if(group.avatar != null) ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(group.avatar);
+        if(group.avatar != null) {
+            ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(group.avatar);
+            getHeader().createGroupPhotoViewer(group.id, group.avatar_url);
+        }
     }
 
     public void hideSelectedItemBackground(int position) {
-        ((ListView) findViewById(R.id.groups_listview)).setBackgroundColor(getResources().getColor(R.color.transparent));
+        ((ListView) findViewById(R.id.groups_listview))
+                .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void showGroup(int position) {
@@ -823,35 +847,39 @@ public class GroupIntentActivity extends TranslucentActivity {
     public void openRepostDialog(String where, final WallPost post) {
         if(where.equals("own_wall")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg, null, false);
+            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg,
+                    null, false);
             final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
             builder.setView(repost_view);
             builder.setPositiveButton(R.string.ok, null);
             builder.setNegativeButton(R.string.cancel, null);
             final OvkAlertDialog dialog = new OvkAlertDialog(this);
             dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                    if(ok_btn != null) {
-                        ok_btn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                try {
-                                    String msg_text =
-                                            ((EditText)repost_view.findViewById(R.id.text_edit))
-                                                    .getText().toString();
-                                    ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
-                                    dialog.close();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        if(ok_btn != null) {
+                            ok_btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        String msg_text =
+                                                ((EditText)repost_view.findViewById(R.id.text_edit))
+                                                        .getText().toString();
+                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id,
+                                                post.post_id, msg_text);
+                                        dialog.close();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
             dialog.show();
         }
     }
@@ -911,5 +939,9 @@ public class GroupIntentActivity extends TranslucentActivity {
                 }
             });
         }
+    }
+
+    public GroupHeader getHeader() {
+        return findViewById(R.id.group_header);
     }
 }
