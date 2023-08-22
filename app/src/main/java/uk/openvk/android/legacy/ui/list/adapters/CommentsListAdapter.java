@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -22,7 +24,12 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -99,11 +106,13 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             this.comment_photo = view.findViewById(R.id.comm_photo);
         }
 
+        @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
         void bind(final int position) {
             final Comment item = getItem(position);
             author_name.setText(item.author);
             Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
-            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date) + " " + ctx.getResources().getString(R.string.date_at) + " " +
+            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date)
+                    + " " + ctx.getResources().getString(R.string.date_at) + " " +
                     new SimpleDateFormat("HH:mm").format(date));
             reply_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -120,8 +129,10 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                         "\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
                 Matcher matcher = pattern.matcher(item.text);
                 boolean regexp_search = matcher.find();
-                String text = item.text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-                        .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                String text = item.text.replaceAll("&lt;", "<")
+                        .replaceAll("&gt;", ">")
+                        .replaceAll("&amp;", "&").replaceAll("&quot;",
+                                "\"");
                 int regexp_results = 0;
                 while (regexp_search) {
                     if (regexp_results == 0) {
@@ -130,7 +141,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     String block = matcher.group();
                     if (block.startsWith("[") && block.endsWith("]")) {
                         OvkLink link = new OvkLink();
-                        String[] markup = block.replace("[", "").replace("]", "").split("\\|");
+                        String[] markup = block.replace("[", "")
+                                .replace("]", "").split("\\|");
                         link.screen_name = markup[0];
                         if (markup.length == 2) {
                             if (markup[0].startsWith("id")) {
@@ -142,7 +154,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                             }
                             link.name = markup[1];
                             if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                                text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                        link.url, link.name));
                             }
                         }
                     } else if (block.startsWith("https://") || block.startsWith("http://")) {
@@ -228,26 +241,48 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             comment_photo.setVisibility(View.GONE);
             try {
                 for (int i = 0; i < item.attachments.size(); i++) {
-                    if (item.attachments.get(i).type.equals("photo") && item.attachments.get(i).status.equals("done")) {
+                    if (item.attachments.get(i).type.equals("photo")
+                            && item.attachments.get(i).status.equals("done")) {
                         if (item.attachments.get(i).getContent() != null) {
-                            comment_photo.setImageBitmap(((PhotoAttachment) item.attachments.get(i).getContent()).photo);
+                            comment_photo.setImageBitmap(((PhotoAttachment)
+                                    item.attachments.get(i).getContent()).photo);
                             comment_photo.setVisibility(View.VISIBLE);
                             comment_photo.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-//                                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-//                                    ((AppActivity) ctx).viewPhotoAttachment(position);
-//                                } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-//                                    ((ProfileIntentActivity) ctx).viewPhotoAttachment(position);
-//                                } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-//                                    ((GroupIntentActivity) ctx).viewPhotoAttachment(position);
-//                                }
+                                    viewPhotoAttachment(item);
                                 }
                             });
                         }
                     }
                 }
             } catch (Exception ignored) {
+            }
+        }
+
+        public void viewPhotoAttachment(Comment comment) {
+            WallPost item;
+            Intent intent = new Intent(ctx.getApplicationContext(), PhotoViewerActivity.class);
+            intent.putExtra("where", "comments");
+            try {
+                intent.putExtra("local_photo_addr",
+                        String.format("%s/comment_photos/comment_photo_o%sp%s",
+                                ctx.getCacheDir(),
+                                comment.author_id, comment.id));
+                if(comment.attachments != null) {
+                    for(int i = 0; i < comment.attachments.size(); i++) {
+                        if(comment.attachments.get(i).type.equals("photo")) {
+                            PhotoAttachment photo = ((PhotoAttachment) comment.attachments.get(i).
+                                    getContent());
+                            intent.putExtra("original_link", photo.original_url);
+                            intent.putExtra("author_id", comment.author_id);
+                            intent.putExtra("photo_id", photo.id);
+                        }
+                    }
+                }
+                ctx.startActivity(intent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

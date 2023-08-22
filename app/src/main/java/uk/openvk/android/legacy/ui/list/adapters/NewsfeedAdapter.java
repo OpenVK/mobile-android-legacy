@@ -232,11 +232,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             expand_text_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         ((AppActivity) ctx).openWallComments(position, null);
-                    } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                    } else if(ctx instanceof ProfileIntentActivity) {
                         ((ProfileIntentActivity) ctx).openWallComments(position, null);
-                    } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                    } else if(ctx instanceof GroupIntentActivity) {
                         ((GroupIntentActivity) ctx).openWallComments(position, null);
                     }
                 }
@@ -344,11 +344,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     repost_info.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            if (ctx instanceof AppActivity) {
                                 ((AppActivity) ctx).openWallRepostComments(position, view);
-                            } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                            } else if (ctx instanceof ProfileIntentActivity) {
                                 ((ProfileIntentActivity) ctx).openWallRepostComments(position, view);
-                            } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                            } else if (ctx instanceof GroupIntentActivity) {
                                 ((GroupIntentActivity) ctx).openWallRepostComments(position, view);
                             }
                         }
@@ -501,11 +501,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             ((LinearLayout) convertView.findViewById(R.id.poster_ll)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                    if (ctx instanceof ProfileIntentActivity) {
                         ((ProfileIntentActivity) ctx).showAuthorPage(position);
-                    } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                    } else if (ctx instanceof GroupIntentActivity) {
                         ((GroupIntentActivity) ctx).showAuthorPage(position);
-                    } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    } else if (ctx instanceof AppActivity) {
                         ((AppActivity) ctx).showAuthorPage(position);
                     }
                 }
@@ -518,20 +518,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if(!likeAdded) {
                             likeDeleted = true;
                         }
-                        if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        if (ctx instanceof ProfileIntentActivity) {
                             ((ProfileIntentActivity) ctx).deleteLike(position, "post", view);
-                        } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                        } else if (ctx instanceof GroupIntentActivity) {
                             ((GroupIntentActivity) ctx).deleteLike(position, "post", view);
-                        } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        } else if (ctx instanceof AppActivity) {
                             ((AppActivity) ctx).deleteLike(position, "post", view);
                         }
                     } else {
                         if(!likeDeleted) {
                             likeAdded = true;
                         }
-                        if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                        if (ctx instanceof ProfileIntentActivity) {
                             ((ProfileIntentActivity) ctx).addLike(position, "post", view);
-                        } else if (ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                        } else if (ctx instanceof GroupIntentActivity) {
                             ((GroupIntentActivity) ctx).addLike(position, "post", view);
                         } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
                             ((AppActivity) ctx).addLike(position, "post", view);
@@ -550,11 +550,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             comments_counter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         ((AppActivity) ctx).openWallComments(position, view);
-                    } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
+                    } else if(ctx instanceof ProfileIntentActivity) {
                         ((ProfileIntentActivity) ctx).openWallComments(position, view);
-                    } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
+                    } else if(ctx instanceof GroupIntentActivity) {
                         ((GroupIntentActivity) ctx).openWallComments(position, view);
                     }
                 }

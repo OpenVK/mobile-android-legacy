@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -72,7 +73,8 @@ public class WallLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance = PreferenceManager.getDefaultSharedPreferences(
+                getContext()).getString("current_instance", "");
     }
 
     @Override
@@ -260,29 +262,27 @@ public class WallLayout extends LinearLayout {
 
     public void select(int position, String item, String value) {
         if(item.equals("likes")) {
-            if(value.equals("add")) {
-                wallItems.get(position).counters.isLiked = true;
-            } else {
-                wallItems.get(position).counters.isLiked = false;
-            }
+            wallItems.get(position).counters.isLiked = value.equals("add");
             wallAdapter.notifyDataSetChanged();
         }
     }
 
     public void limitWidth(final int width) {
-        this.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                       int leftWas, int topWas, int rightWas, int bottomWas )
-            {
-                int widthWas = rightWas - leftWas;
-                if( v.getWidth() != widthWas ) {
-                    if (v.getWidth() > width) {
-                        wallView.getLayoutParams().width = width;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            this.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                           int leftWas, int topWas, int rightWas, int bottomWas )
+                {
+                    int widthWas = rightWas - leftWas;
+                    if( v.getWidth() != widthWas ) {
+                        if (v.getWidth() > width) {
+                            wallView.getLayoutParams().width = width;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void loadAvatars() {

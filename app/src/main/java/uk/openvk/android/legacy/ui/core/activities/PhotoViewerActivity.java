@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.view.OnApplyWindowInsetsListener;
@@ -103,8 +105,15 @@ public class PhotoViewerActivity extends Activity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        if(getIntent().getExtras() == null) {
+            Toast.makeText(this,
+                    getResources().getString(R.string.error), Toast.LENGTH_LONG).show();
+            return;
+        }
+
         setContentView(R.layout.activity_photo_viewer);
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
@@ -191,7 +200,9 @@ public class PhotoViewerActivity extends Activity {
     }
 
     private void createActionPopupMenu(final Menu menu) {
-        final View menu_container = (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
+        @SuppressLint("InflateParams")
+        final View menu_container =
+                (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
         final ActionBar actionBar = findViewById(R.id.actionbar);
     }
 
@@ -208,6 +219,7 @@ public class PhotoViewerActivity extends Activity {
             bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
             try {
                 Bundle extras = getIntent().getExtras();
+                assert extras != null;
                 bitmap = BitmapFactory.decodeFile(
                         String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
                         getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
@@ -217,7 +229,9 @@ public class PhotoViewerActivity extends Activity {
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.VISIBLE);
                 ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.GONE);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    getActionBar().show();
+                    if(getActionBar() != null) {
+                        getActionBar().show();
+                    }
                 } else {
                     actionBar.setVisibility(View.VISIBLE);
                 }
@@ -258,26 +272,35 @@ public class PhotoViewerActivity extends Activity {
             savePhoto();
         } else if(item.getItemId() == R.id.copy_link) {
             Bundle data = getIntent().getExtras();
-            if(data.containsKey("original_link")) {
-                if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                            getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboard.setText(data.getString("original_link"));
-                } else {
-                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
-                            getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("Photo URL",
-                            data.getString("original_link"));
-                    clipboard.setPrimaryClip(clip);
+            if(data != null) {
+                if (data.containsKey("original_link")) {
+                    if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                        android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                                getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (clipboard != null) {
+                            clipboard.setText(data.getString("original_link"));
+                        }
+                    } else {
+                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                                getSystemService(Context.CLIPBOARD_SERVICE);
+                        android.content.ClipData clip = android.content.ClipData.newPlainText("Photo URL",
+                                data.getString("original_link"));
+                        if (clipboard != null) {
+                            clipboard.setPrimaryClip(clip);
+                        }
+                    }
                 }
             }
         }
         return super.onMenuItemSelected(featureId, item);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void savePhoto() {
         Global global = new Global();
         final Bundle data = getIntent().getExtras();
+        if(getIntent().getExtras() == null)
+            return;
         String cache_path = String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
                 getCacheDir().getAbsolutePath(), instance, getIntent().getExtras().getLong("author_id"),
                 getIntent().getExtras().getLong("photo_id"));

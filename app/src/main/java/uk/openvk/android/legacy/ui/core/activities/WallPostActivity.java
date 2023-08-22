@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -121,7 +122,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 .getText().toString().length() == 0) {
             (commentPanel.findViewById(R.id.send_btn)).setEnabled(false);
         }
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
@@ -187,12 +188,16 @@ public class WallPostActivity extends TranslucentFragmentActivity
                         }
                     });
                     actionBar.setTitle(getResources().getString(R.string.wall_view));
-                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-                    } else {
-                        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    switch (global_prefs.getString("uiTheme", "blue")) {
+                        case "Gray":
+                            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                            break;
+                        case "Black":
+                            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                            break;
+                        default:
+                            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                            break;
                     }
                 }
                 wall = new Wall();
