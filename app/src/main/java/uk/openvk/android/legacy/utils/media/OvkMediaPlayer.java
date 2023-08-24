@@ -302,7 +302,11 @@ public class OvkMediaPlayer extends MediaPlayer {
                     public void run() {
                         if(finalAudio_track != null) {
                             Log.d(MPLAY_TAG, "Decoding media file...");
-                            decodeMedia(finalAudioBufferSize, finalVideoBufferSize);
+                            try {
+                                decodeMedia(finalAudioBufferSize, finalVideoBufferSize);
+                            } catch (OutOfMemoryError oom) {
+                                stop();
+                            }
                         } else {
                             Log.e(MPLAY_TAG, "Audio track not found. Skipping...");
                         }
@@ -416,6 +420,9 @@ public class OvkMediaPlayer extends MediaPlayer {
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
+                        } catch (OutOfMemoryError oom) {
+                            oom.printStackTrace();
+                            stop();
                         }
                     }
                 }
