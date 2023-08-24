@@ -385,6 +385,7 @@ JNIEXPORT void JNICALL
         int received_frame = 0;
         int total_audio_frames = 0;
         int total_video_frames = 0;
+        audio_buf = (short*)malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE * 4);
         if(debug_mode) {
             LOGD(10, "[DEBUG] AVPacket initializing...")
         }
@@ -681,7 +682,6 @@ JNIEXPORT void JNICALL
 
 void decodeAudioFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, short* buffer,
                            int total_frames, int length) {
-    buffer = (short*)malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE * 4);
     jbyteArray buffer2;
     int AUDIO_INBUF_SIZE = 4096;
     int output_size;
@@ -708,7 +708,6 @@ void decodeAudioFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, short*
         env->DeleteLocalRef(buffer2);
         size -= len;
     }
-    free(buffer);
     total_frames++;
 }
 
