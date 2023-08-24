@@ -29,8 +29,10 @@ int android::get_android_api_version(JNIEnv *env) {
     if (result)
         result = (NULL != (sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I")));
 
+    int version = env->GetStaticIntField(versionClass, sdkIntFieldID);
+    env->DeleteLocalRef(versionClass);
     if (result) {
-        return env->GetStaticIntField(versionClass, sdkIntFieldID);
+        return version;
     } else {
         return -1;
     }
