@@ -415,6 +415,8 @@ public class OvkMediaPlayer extends MediaPlayer {
                                                 c.getHeight()),
                                         null);
                                 holder.unlockCanvasAndPost(c);
+                                bmp.recycle();
+                                bbuf.clear();
                             } else {
                                 Log.d(MPLAY_TAG, "Video frame buffer is null");
                             }
