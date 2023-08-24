@@ -846,24 +846,9 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
                 LOGE(10, "[ERROR] Frame #%d not decoded.", total_frames - 1);
             }
             return;
-        } else {
-            if (debug_mode) {
-                LOGD(10, "[DEBUG] Converting video frame to RGB...");
-            }
-        }
-
-
-        if (debug_mode) {
-            LOGD(10, "[DEBUG] Setting pFrameRGB...");
         }
 
         try {
-            if (debug_mode) {
-                LOGD(10, "[DEBUG] pFrameRGB is not null | Size: %d vs. %d", sizeof(buffer), frame_size);
-            }
-            if (debug_mode) {
-                LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
-            }
             PixelFormat pxf;
             // RGB565 by default for Android Canvas.
             if(android::get_android_api_version(env) >= ANDROID_API_CODENAME_GINGERBREAD) {
@@ -876,8 +861,20 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
             int rgbBytes = avpicture_get_size(pxf, gVideoCodecCtx->width,
                                             gVideoCodecCtx->height);
 
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Converting video frame to RGB...");
+            }
+
             buffer = convertYuv2Rgb(pxf, pFrame, rgbBytes);
 
+            if(buffer == NULL) {
+                LOGE(10, "[ERROR] Conversion failed");
+                return;
+            }
+
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
+            }
             buffer2 = env->NewByteArray((jsize) rgbBytes);
             env->SetByteArrayRegion(buffer2, 0, (jsize) rgbBytes,
                                     (jbyte *) buffer);
@@ -886,6 +883,7 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
         } catch (...) {
             if (debug_mode) {
                 LOGE(10, "[ERROR] Render video frames failed");
+                return;
             }
         }
     }
