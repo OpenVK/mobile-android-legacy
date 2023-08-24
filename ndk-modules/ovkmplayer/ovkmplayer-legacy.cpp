@@ -857,7 +857,6 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
                 pxf = PIX_FMT_RGB565;
             }
 
-
             int rgbBytes = avpicture_get_size(pxf, gVideoCodecCtx->width,
                                             gVideoCodecCtx->height);
 
