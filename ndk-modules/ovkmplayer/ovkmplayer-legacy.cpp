@@ -24,7 +24,6 @@
 #include <math.h>
 #include <limits.h>
 #include <wchar.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
 #include <unistd.h>
@@ -64,7 +63,6 @@ extern "C" {
     #include <libavformat/avio.h>
     #include <libswscale/swscale.h>
     #include <libavcodec/avcodec.h>
-    #include <libavcodec/avfft.h>
     #include <libavdevice/avdevice.h>
     #include <libavutil/pixfmt.h>
 }
@@ -96,14 +94,16 @@ int gAudioStreamIndex;    // audio stream index
 AVCodecContext *gVideoCodecCtx;
 AVCodecContext *gAudioCodecCtx;
 
-jobject generateTrackInfo(JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
-jobject createBitmap(JNIEnv* env, int pWidth, int pHeight);
+jobject generateTrackInfo(JNIEnv* env, AVStream* pStream, AVCodec *pCodec,
+                          AVCodecContext *pCodecCtx, int type);
 
-void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int total_frames,
+void decodeVideoFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class,
+                           AVPacket avpkt, int total_frames,
                            int video_length);
 
 void decodeAudioFromPacket(
-        JNIEnv *pEnv, jobject pJobject, AVPacket packet, short* buffer, int i, int length);
+        JNIEnv *pEnv, jobject pJobject, jclass mplayer_class, AVPacket packet,
+        short* buffer, int i, int length);
 
 unsigned char* convertYuv2Rgb(PixelFormat pxf, AVFrame* frame, int length);
 
@@ -396,13 +396,15 @@ JNIEXPORT void JNICALL
         if(debug_mode) {
             LOGD(10, "[DEBUG] Output buffer allocating...");
         }
+
         int read_frame_status = -1;
         while ((read_frame_status = av_read_frame(gFormatCtx, &avpkt)) >= 0) {
             if (avpkt.stream_index == gAudioStreamIndex) {
                 decodeAudioFromPacket(
-                        env, instance, avpkt, audio_buf, total_audio_frames++, audio_length);
+                        env, instance, mplayer_class,
+                        avpkt, audio_buf, total_audio_frames++, audio_length);
             } else if(avpkt.stream_index == gVideoStreamIndex) {
-                decodeVideoFromPacket(env, instance, avpkt, total_video_frames++, video_length);
+                decodeVideoFromPacket(env, instance, mplayer_class, avpkt, total_video_frames++, video_length);
             }
         }
         if(debug_mode) {
@@ -681,14 +683,13 @@ JNIEXPORT void JNICALL
 
 }
 
-void decodeAudioFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, short* buffer,
-                           int total_frames, int length) {
+void decodeAudioFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class, AVPacket avpkt,
+                           short* buffer, int total_frames, int length) {
     jbyteArray buffer2;
     int AUDIO_INBUF_SIZE = 4096;
     int output_size;
     int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
     int decoded_data_size = 0;
-    jclass mplayer_class = env->GetObjectClass(instance);
     jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
     int size = avpkt.size;
     int received_frame = 0;
@@ -710,7 +711,6 @@ void decodeAudioFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, short*
         size -= len;
     }
     total_frames++;
-    env->DeleteLocalRef(mplayer_class);
 }
 
 jobject generateTrackInfo(
@@ -814,7 +814,8 @@ jobject generateTrackInfo(
 }
 #pragma clang diagnostic pop
 
-void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int total_frames, int length) {
+void decodeVideoFromPacket(JNIEnv *env, jobject instance,
+                           jclass mplayer_class, AVPacket avpkt, int total_frames, int length) {
     AVFrame *pFrame = NULL, *pFrameRGB = NULL;
     pFrame = avcodec_alloc_frame();
     pFrameRGB = avcodec_alloc_frame();
@@ -826,7 +827,6 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
         return;
     }
     jbyteArray buffer2;
-    jclass mplayer_class = env->GetObjectClass(instance);
     jmethodID renderVideoFrames = env->GetMethodID(mplayer_class, "renderVideoFrames", "([BI)V");
     int frameDecoded;
     avpicture_fill((AVPicture*) pFrame,
@@ -881,7 +881,6 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
                                     (jbyte *) buffer);
             env->CallVoidMethod(instance, renderVideoFrames, buffer2, rgbBytes);
             env->DeleteLocalRef(buffer2);
-            env->DeleteLocalRef(mplayer_class);
             free(buffer);
         } catch (...) {
             if (debug_mode) {
@@ -890,7 +889,6 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
             }
         }
     }
-    env->DeleteLocalRef(mplayer_class);
 }
 
 unsigned char* convertYuv2Rgb(PixelFormat pxf, AVFrame* frame, int length) {
