@@ -410,6 +410,7 @@ JNIEXPORT void JNICALL
                  total_audio_frames, total_video_frames);
         }
         env->CallVoidMethod(instance, completePlayback);
+        env->DeleteLocalRef(mplayer_class);
     }
 
 
@@ -709,6 +710,7 @@ void decodeAudioFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, short*
         size -= len;
     }
     total_frames++;
+    env->DeleteLocalRef(mplayer_class);
 }
 
 jobject generateTrackInfo(
@@ -888,6 +890,7 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
             }
         }
     }
+    env->DeleteLocalRef(mplayer_class);
 }
 
 unsigned char* convertYuv2Rgb(PixelFormat pxf, AVFrame* frame, int length) {
