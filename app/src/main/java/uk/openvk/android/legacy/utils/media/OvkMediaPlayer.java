@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -99,8 +101,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native void setPlaybackState(int playbackState);
     private native int openMediaFile(String filename);
     private native int renderFrames(IntBuffer buffer, long frame_number);
-    private native void decodeAudio(byte[] buffer, int length);
-    private native void decodeVideo(byte[] buffer, int length);
+    private native void decodeMedia(int audioLength, int videoLength);
     public native int getLastErrorCode();
     private native void setDebugMode(boolean value);
 
@@ -299,20 +300,9 @@ public class OvkMediaPlayer extends MediaPlayer {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if(finalVideo_track != null) {
-                            Log.d(MPLAY_TAG, "Decoding video...");
-                            decodeVideo(video_buffer, finalVideoBufferSize);
-                        } else {
-                            Log.e(MPLAY_TAG, "Video track not found. Skipping...");
-                        }
-                    }
-                }).start();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
                         if(finalAudio_track != null) {
-                            Log.d(MPLAY_TAG, "Decoding audio...");
-                            decodeAudio(audio_buffer, finalAudioBufferSize);
+                            Log.d(MPLAY_TAG, "Decoding media file...");
+                            decodeMedia(finalAudioBufferSize, finalVideoBufferSize);
                         } else {
                             Log.e(MPLAY_TAG, "Audio track not found. Skipping...");
                         }
@@ -355,9 +345,6 @@ public class OvkMediaPlayer extends MediaPlayer {
             }
             Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
             try {
-                synchronized (audio_track) {
-                    audio_track.wait();
-                }
                 audio_track.write(buffer, 0, buffer.length);
             } catch (Exception ignored) {
             }
@@ -378,33 +365,62 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     private void renderVideoFrames(final byte[] buffer, final int length) {
-        Canvas c = new Canvas();
-        OvkVideoTrack track = null;
-        for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-            if (tracks.get(tracks_index) instanceof OvkVideoTrack) {
-                track = (OvkVideoTrack) tracks.get(tracks_index);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Canvas c;
+                OvkVideoTrack track = null;
+                for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+                    if (tracks.get(tracks_index) instanceof OvkVideoTrack) {
+                        track = (OvkVideoTrack) tracks.get(tracks_index);
+                    }
+                }
+                if (track != null) {
+                    int frame_width = track.frame_size[0];
+                    int frame_height = track.frame_size[1];
+                    if (frame_width > 0 && frame_height > 0) {
+                        try {
+                            // RGB_565  == 65K colours (16 bit)
+                            // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
+                            int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
+                            Bitmap.Config bmp_config =
+                                    bpp == 24 ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+                            Paint paint = new Paint();
+                            if(buffer != null && holder != null) {
+                                holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+                                if((c = holder.lockCanvas()) == null) {
+                                    Log.d(MPLAY_TAG, "Lock canvas failed");
+                                    return;
+                                }
+                                ByteBuffer bbuf =
+                                        ByteBuffer.allocateDirect(minVideoBufferSize);
+                                bbuf.rewind();
+                                for(int i = 0; i < buffer.length; i++) {
+                                    bbuf.put(i, buffer[i]);
+                                }
+                                bbuf.rewind();
+                                Bitmap bmp = Bitmap.createBitmap(frame_width, frame_height, bmp_config);
+                                bmp.copyPixelsFromBuffer(bbuf);
+                                float aspect_ratio = (float) frame_width / (float) frame_height;
+                                int scaled_width = (int)(aspect_ratio * (c.getHeight()));
+                                c.drawBitmap(bmp,
+                                        null,
+                                        new RectF(
+                                                ((c.getWidth() - scaled_width) / 2), 0,
+                                                ((c.getWidth() - scaled_width) / 2) + scaled_width,
+                                                c.getHeight()),
+                                        null);
+                                holder.unlockCanvasAndPost(c);
+                            } else {
+                                Log.d(MPLAY_TAG, "Video frame buffer is null");
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             }
-        }
-        int frame_width = track.frame_size[0];
-        int frame_height = track.frame_size[1];
-        if(frame_width > 0 && frame_height > 0) {
-            try {
-                Thread.sleep(20);
-                c = holder.lockCanvas();
-                // RGB_565  == 65K colours (16 bit)
-                // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
-                int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
-                Bitmap.Config bmp_config =
-                        bpp == 24 ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-                Paint paint = new Paint();
-                Bitmap bmp = BitmapFactory.decodeByteArray(buffer, 0, length)
-                        .copy(bmp_config, true);
-                c.drawBitmap(bmp, 0, 0, paint);
-                holder.unlockCanvasAndPost(c);
-            } catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }
+        }).start();
     }
 
     @Override

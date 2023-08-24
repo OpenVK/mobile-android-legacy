@@ -73,6 +73,14 @@ extern "C" {
 #define LOGI(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__);}
 #define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
+void ffmpeg_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
+{
+    LOGD(10, fmt, vargs);
+}
+
 char version[7] = "0.0.1";
 char *gFileName;	  //the file name of the video
 int gErrorCode;
@@ -87,6 +95,16 @@ AVCodecContext *gAudioCodecCtx;
 
 jobject generateTrackInfo(JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
 jobject createBitmap(JNIEnv* env, int pWidth, int pHeight);
+
+void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int total_frames,
+                           int video_length);
+
+void decodeAudioFromPacket(
+        JNIEnv *pEnv, jobject pJobject, AVPacket packet, short* buffer, int i, int length);
+
+unsigned char* convertYuv2Rgb(PixelFormat pxf, AVFrame* frame, int length);
+
+void YCrCb_to_RGB8(int Y, int Cr, int Cb, int& R, int& G, int& B);
 
 bool debug_mode;
 
@@ -154,6 +172,8 @@ JNIEXPORT void JNICALL
     ) {
         if(value == JNI_TRUE) {
             debug_mode = true;
+            av_log_set_level(AV_LOG_VERBOSE);
+            av_log_set_callback(ffmpeg_log_callback);
             LOGD(10, "[DEBUG] Enabled Debug Mode");
         } else {
             LOGD(10, "[DEBUG] Disabled Debug Mode");
@@ -284,7 +304,7 @@ JNIEXPORT void JNICALL
                 }
                 total_frames++;
                 avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
-                if (!frameDecoded || avpkt.size < 4096) {
+                if (!frameDecoded) {
                     if (debug_mode) {
                         LOGE(10, "[ERROR] Frame #%d not decoded.", total_frames - 1);
                     }
@@ -318,13 +338,20 @@ JNIEXPORT void JNICALL
                 pFrameRGB->width = pFrame->width;
                 pFrameRGB->height = pFrame->height;
 
-                if (debug_mode) {
-                    LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
-                }
                 try {
-                    buffer = env->NewByteArray((jsize) data_size);
-                    env->SetByteArrayRegion(buffer, 0, (jsize) data_size,
-                                            (jbyte *) pFrame->data);
+                    if(pFrameRGB->data[0] == NULL) {
+                        LOGE(10, "[ERROR] pFrameRGB is null");
+                        break;
+                    }
+                    if (debug_mode) {
+                        LOGD(10, "[DEBUG] pFrameRGB is not null | Size: %d", sizeof(pFrameRGB->data[0]));
+                    }
+                    if (debug_mode) {
+                        LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
+                    }
+                    buffer = env->NewByteArray((jsize) sizeof(pFrameRGB->data[0]));
+                    env->SetByteArrayRegion(buffer, 0, (jsize) sizeof(pFrameRGB->data[0]),
+                                             (jbyte*) pFrameRGB->data[0]);
                     env->CallVoidMethod(instance, renderVideoFrames, buffer, length);
                     env->DeleteLocalRef(buffer);
                 } catch (...) {
@@ -336,28 +363,26 @@ JNIEXPORT void JNICALL
             }
         }
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Audio decoding result:\r\nReceived frames: %d | Total frames: %d",
+            LOGD(10, "[DEBUG] Video decoding result:\r\nReceived frames: %d | Total frames: %d",
                  received_frame, total_frames);
         }
     }
 
     JNIEXPORT void JNICALL
-        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeAudio
-                (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
+        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeMedia
+                (JNIEnv *env, jobject instance, jint audio_length, jint video_length) {
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Decoding audio stream #%d...", gAudioStreamIndex)
+            LOGD(10, "[DEBUG] Decoding audio stream #%d and video stream #%d...",
+                 gAudioStreamIndex, gVideoStreamIndex)
         }
         jclass mplayer_class = env->GetObjectClass(instance);
-        jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
         jmethodID completePlayback = env->GetMethodID(mplayer_class, "completePlayback", "()V");
-        int AUDIO_INBUF_SIZE = 4096;
-        int output_size;
-        int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
-        int decoded_data_size = 0;
-        short *output_buf, input_buf[AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE];
         AVPacket avpkt;
+        short *audio_buf, input_buf[4096 + FF_INPUT_BUFFER_PADDING_SIZE];
         int received_frame = 0;
-        int total_frames = 0;
+        int total_audio_frames = 0;
+        int total_video_frames = 0;
+        audio_buf = (short*)malloc(AVCODEC_MAX_AUDIO_FRAME_SIZE * 4);
         if(debug_mode) {
             LOGD(10, "[DEBUG] AVPacket initializing...")
         }
@@ -368,40 +393,18 @@ JNIEXPORT void JNICALL
         if(debug_mode) {
             LOGD(10, "[DEBUG] Output buffer allocating...");
         }
-        output_buf = (short*) malloc((size_t)data_size);
         int read_frame_status = -1;
-        avpkt.data = (uint8_t*) input_buf;
         while ((read_frame_status = av_read_frame(gFormatCtx, &avpkt)) >= 0) {
-            data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
             if (avpkt.stream_index == gAudioStreamIndex) {
-                int size = avpkt.size;
-                while(size > 0) {
-                    int len = avcodec_decode_audio3(gAudioCodecCtx, output_buf, &data_size, &avpkt);
-                    if(len < 0) {
-                        break;
-                    } else {
-                        if(debug_mode) {
-                            LOGD(10, "[DEBUG] Decoding frame #%d | Length: %d of %d",
-                                 total_frames + 1, len, size);
-                        }
-                        received_frame++;
-                    }
-                    buffer = env->NewByteArray((jsize)data_size);
-                    env->SetByteArrayRegion(buffer, 0, (jsize)data_size, (jbyte*)output_buf);
-                    env->CallVoidMethod(instance, renderAudio, buffer, length);
-                    env->DeleteLocalRef(buffer);
-                    size -= len;
-                }
-
-                total_frames++;
+                decodeAudioFromPacket(
+                        env, instance, avpkt, audio_buf, total_audio_frames++, audio_length);
+            } else if(avpkt.stream_index == gVideoStreamIndex) {
+                decodeVideoFromPacket(env, instance, avpkt, total_video_frames++, video_length);
             }
         }
-        if(read_frame_status < 0) {
-            total_frames++;
-        }
         if(debug_mode) {
-            LOGD(10, "[DEBUG] Audio decoding result:\r\nReceived frames: %d | Total frames: %d",
-                 received_frame, total_frames);
+            LOGD(10, "[DEBUG] Decoding result:\r\nTotal audio frames: %d | Total video frames: %d",
+                 total_audio_frames, total_video_frames);
         }
         env->CallVoidMethod(instance, completePlayback);
     }
@@ -674,6 +677,37 @@ JNIEXPORT void JNICALL
 
 }
 
+void decodeAudioFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, short* buffer,
+                           int total_frames, int length) {
+    jbyteArray buffer2;
+    int AUDIO_INBUF_SIZE = 4096;
+    int output_size;
+    int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
+    int decoded_data_size = 0;
+    jclass mplayer_class = env->GetObjectClass(instance);
+    jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
+    int size = avpkt.size;
+    int received_frame = 0;
+    while(size > 0) {
+        int len = avcodec_decode_audio3(gAudioCodecCtx, buffer, &data_size, &avpkt);
+        if(len < 0) {
+            break;
+        } else {
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Decoding audio frame #%d | Length: %d of %d",
+                     total_frames + 1, len, size);
+            }
+            received_frame++;
+        }
+        buffer2 = env->NewByteArray((jsize)data_size);
+        env->SetByteArrayRegion(buffer2, 0, (jsize)data_size, (jbyte*)buffer);
+        env->CallVoidMethod(instance, renderAudio, buffer2, length);
+        env->DeleteLocalRef(buffer2);
+        size -= len;
+    }
+    total_frames++;
+}
+
 jobject generateTrackInfo(
         JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type
 ) {
@@ -775,36 +809,125 @@ jobject generateTrackInfo(
 }
 #pragma clang diagnostic pop
 
-jobject createBitmap(JNIEnv *env, int pWidth, int pHeight) {
-    int i;
-    //get Bitmap class and createBitmap method ID
-    jclass javaBitmapClass = (jclass)env->FindClass("android/graphics/Bitmap");
-    jmethodID mid = env->GetStaticMethodID(
-            javaBitmapClass, "createBitmap",
-            "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
-    //create Bitmap.Config
-    //reference: https://forums.oracle.com/thread/1548728
-    const wchar_t* configName = L"ARGB_8888";
-    int len = wcslen(configName);
-    jstring jConfigName;
-    if (sizeof(wchar_t) != sizeof(jchar)) {
-        //wchar_t is defined as different length than jchar(2 bytes)
-        jchar* str = (jchar*)malloc((len+1)*sizeof(jchar));
-        for (i = 0; i < len; ++i) {
-            str[i] = (jchar)configName[i];
-        }
-        str[len] = 0;
-        jConfigName = env->NewString((const jchar*)str, len);
-    } else {
-        //wchar_t is defined same length as jchar(2 bytes)
-        jConfigName = (env)->NewString((const jchar*)configName, len);
+void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int total_frames, int length) {
+    AVFrame *pFrame = NULL, *pFrameRGB = NULL;
+    pFrame = avcodec_alloc_frame();
+    pFrameRGB = avcodec_alloc_frame();
+    int frame_size = avpicture_get_size(PIX_FMT_RGB24, gVideoCodecCtx->width, gVideoCodecCtx->height);
+    unsigned char* buffer = (unsigned char*)av_malloc((size_t)frame_size * 3);
+    if (!buffer) {
+        av_free(pFrame);
+        av_free(pFrameRGB);
+        return;
     }
-    jclass bitmapConfigClass = env->FindClass("android/graphics/Bitmap$Config");
-    jmethodID bmpConfigValueOf =
-            env->GetStaticMethodID(bitmapConfigClass, "valueOf",
-                                   "(Ljava/lang/String;)Landroid/graphics/Bitmap$Config;");
-    jobject javaBitmapConfig = env->CallStaticObjectMethod(bitmapConfigClass,
-                                                               bmpConfigValueOf, jConfigName);
-    //create the bitmap
-    return env->CallStaticObjectMethod(javaBitmapClass, mid, pWidth, pHeight, javaBitmapConfig);
+    jbyteArray buffer2;
+    jclass mplayer_class = env->GetObjectClass(instance);
+    jmethodID renderVideoFrames = env->GetMethodID(mplayer_class, "renderVideoFrames", "([BI)V");
+    int frameDecoded;
+    avpicture_fill((AVPicture*) pFrame,
+                   buffer,
+                   gVideoCodecCtx->pix_fmt,
+                   gVideoCodecCtx->width,
+                   gVideoCodecCtx->height);
+    if (avpkt.stream_index == gVideoStreamIndex) {
+        int size = avpkt.size;
+        if (debug_mode) {
+            LOGD(10, "[DEBUG] Decoding video frame #%d... | Length: %d", total_frames,
+                 avpkt.size);
+        }
+        total_frames++;
+        struct SwsContext *img_convert_ctx = NULL;
+        avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
+        if (!frameDecoded || pFrame == NULL) {
+            if (debug_mode) {
+                LOGE(10, "[ERROR] Frame #%d not decoded.", total_frames - 1);
+            }
+            return;
+        } else {
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Converting video frame to RGB...");
+            }
+        }
+
+
+        if (debug_mode) {
+            LOGD(10, "[DEBUG] Setting pFrameRGB...");
+        }
+
+        try {
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] pFrameRGB is not null | Size: %d vs. %d", sizeof(buffer), frame_size);
+            }
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
+            }
+
+            // RGB565 by default for Android Canvas.
+            PixelFormat pxf = PIX_FMT_RGB565;
+
+            int rgbBytes = avpicture_get_size(pxf, gVideoCodecCtx->width,
+                                            gVideoCodecCtx->height);
+
+            buffer = convertYuv2Rgb(pxf, pFrame, rgbBytes);
+
+            buffer2 = env->NewByteArray((jsize) rgbBytes);
+            env->SetByteArrayRegion(buffer2, 0, (jsize) rgbBytes,
+                                    (jbyte *) buffer);
+            env->CallVoidMethod(instance, renderVideoFrames, buffer2, rgbBytes);
+            env->DeleteLocalRef(buffer2);
+        } catch (...) {
+            if (debug_mode) {
+                LOGE(10, "[ERROR] Render video frames failed");
+            }
+        }
+    }
+}
+
+unsigned char* convertYuv2Rgb(PixelFormat pxf, AVFrame* frame, int length) {
+    unsigned char *buffer = (unsigned char*) malloc((size_t)length);
+    AVFrame* frameRGB = frameRGB = avcodec_alloc_frame();
+
+    PixelFormat output_pxf = pxf;
+
+    avpicture_fill((AVPicture *)frameRGB, (uint8_t*)buffer, output_pxf,
+                   gVideoCodecCtx->width, gVideoCodecCtx->height);
+    SwsContext* sws_ctx = sws_getContext
+            (
+                    gVideoCodecCtx->width,
+                    gVideoCodecCtx->height,
+                    gVideoCodecCtx->pix_fmt,
+                    gVideoCodecCtx->width,
+                    gVideoCodecCtx->height,
+                    output_pxf,
+                    SWS_BILINEAR,
+                    NULL,
+                    NULL,
+                    NULL
+            );
+    const int width = gVideoCodecCtx->width, height = gVideoCodecCtx->height;
+    SwsContext* img_convert_ctx = sws_getContext(width, height,
+                                     gVideoCodecCtx->pix_fmt,
+                                     width, height, output_pxf, SWS_BICUBIC,
+                                     NULL, NULL, NULL);
+
+
+    if(img_convert_ctx == NULL) {
+        LOGE(10, "Cannot initialize the conversion context!");
+        return NULL;
+    }
+    int Y, Cr, Cb;
+    int R, G, B;
+
+    LOGD(10, "Running SWS_Scale...");
+    int ret = sws_scale(img_convert_ctx, (const uint8_t* const*)frame->data, frame->linesize, 0,
+                        gVideoCodecCtx->height, frameRGB->data, frameRGB->linesize);
+    if(frameRGB->data[0] == NULL) {
+        LOGE(10, "SWS_Scale failed");
+    } else {
+        LOGD(10, "SWS_Scale: OK!");
+    }
+
+    avpicture_layout((AVPicture*)frameRGB, output_pxf, width, height, (unsigned char*)buffer, length);
+
+    return buffer;
 }

@@ -409,9 +409,9 @@ extern "C" {
                 lVideoCodec = avcodec_find_decoder(
                         gFormatCtx->streams[gVideoStreamIndex]->codec->codec_id);
                 LOGI(10, "[INFO] Codec initialized. Reading...");
-    #ifdef SELECTIVE_DECODING
+                #ifdef SELECTIVE_DECODING
                 gVideoCodecCtx->allow_selective_decoding = 1;
-    #endif
+                #endif
                 if (avcodec_open2(videoCodecCtx, lVideoCodec, NULL) < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Can't open the video codec!");
