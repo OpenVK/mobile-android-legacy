@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-// Non-standard 'stdint' implementation
+// Non-standard implementations for C++99 standard
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCDFAInspection"
 extern "C"{
@@ -47,10 +47,13 @@ extern "C"{
 #define UINT64_C(c) (c ## ULL)
 #endif
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 // Android implementations headers
 #include <android/log.h>
 
-// FFmpeg implementation headers (using LGPLv3.0 model)
+// FFmpeg 0.8.12 implementation headers (using LGPLv3.0 model)
 extern "C" {
     #include <libavutil/avstring.h>
     #include <libavutil/pixdesc.h>
@@ -66,15 +69,15 @@ extern "C" {
     #include <libavutil/pixfmt.h>
 }
 
-/*for Android logs*/
+// for Android logs
 #define LOG_TAG "OVK-MPLAY-LIB"
 #define LOG_LEVEL 10
 #define LOGD(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);}
 #define LOGI(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__);}
 #define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
 
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+// Other implementations
+#include <android.h>
 
 void ffmpeg_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
 {
@@ -813,7 +816,7 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
     AVFrame *pFrame = NULL, *pFrameRGB = NULL;
     pFrame = avcodec_alloc_frame();
     pFrameRGB = avcodec_alloc_frame();
-    int frame_size = avpicture_get_size(PIX_FMT_RGB24, gVideoCodecCtx->width, gVideoCodecCtx->height);
+    int frame_size = avpicture_get_size(PIX_FMT_RGB32, gVideoCodecCtx->width, gVideoCodecCtx->height);
     unsigned char* buffer = (unsigned char*)av_malloc((size_t)frame_size * 3);
     if (!buffer) {
         av_free(pFrame);
@@ -861,9 +864,14 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
             if (debug_mode) {
                 LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
             }
-
+            PixelFormat pxf;
             // RGB565 by default for Android Canvas.
-            PixelFormat pxf = PIX_FMT_RGB565;
+            if(android::get_android_api_version(env) >= ANDROID_API_CODENAME_GINGERBREAD) {
+                pxf = PIX_FMT_BGR32;
+            } else {
+                pxf = PIX_FMT_RGB565;
+            }
+
 
             int rgbBytes = avpicture_get_size(pxf, gVideoCodecCtx->width,
                                             gVideoCodecCtx->height);

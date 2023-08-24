@@ -40,9 +40,9 @@ include $(CLEAR_VARS)
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
 LOCAL_MODULE := ovkmplayer
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-    LOCAL_SRC_FILES := ovkmplayer.cpp
+    LOCAL_SRC_FILES := ovkmplayer.cpp android.cpp
 else
-    LOCAL_SRC_FILES := ovkmplayer-legacy.cpp
+    LOCAL_SRC_FILES := ovkmplayer-legacy.cpp android.cpp
 endif
 LOCAL_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)

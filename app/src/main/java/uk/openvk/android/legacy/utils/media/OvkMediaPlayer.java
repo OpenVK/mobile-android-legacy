@@ -283,7 +283,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                     }
                 }
                 int ch_config = 0;
-                int bpp = Integer.parseInt(Build.VERSION.SDK) > 9 ? 24 : 16;
+                int bpp = Integer.parseInt(Build.VERSION.SDK) > 9 ? 16 : 24;
                 if(audio_track != null) {
                     ch_config = audio_track.channels == 2 ?
                             AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
@@ -384,7 +384,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                             // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
                             int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
                             Bitmap.Config bmp_config =
-                                    bpp == 24 ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+                                    bpp == 24 ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
                             Paint paint = new Paint();
                             if(buffer != null && holder != null) {
                                 holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
