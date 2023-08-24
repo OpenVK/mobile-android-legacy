@@ -850,7 +850,7 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance, AVPacket avpkt, int to
 
         try {
             PixelFormat pxf;
-            // RGB565 by default for Android Canvas.
+            // RGB565 by default for Android Canvas in pre-Gingerbread devices.
             if(android::get_android_api_version(env) >= ANDROID_API_CODENAME_GINGERBREAD) {
                 pxf = PIX_FMT_BGR32;
             } else {
