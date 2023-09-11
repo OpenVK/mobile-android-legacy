@@ -242,7 +242,8 @@ extern "C" {
                         env, instance, mplayer_class,
                         avpkt, audio_buf, total_audio_frames++, audio_length);
             } else if(avpkt.stream_index == gVideoStreamIndex) {
-                decodeVideoFromPacket(env, instance, mplayer_class, avpkt, total_video_frames++, video_length);
+                decodeVideoFromPacket(env, instance, mplayer_class, avpkt, total_video_frames++,
+                                      video_length);
             }
         }
         if(debug_mode) {
@@ -653,7 +654,9 @@ void decodeAudioFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class, 
         env->SetByteArrayRegion(buffer2, 0, (jsize) data_size, (jbyte *) buffer);
         env->CallVoidMethod(instance, renderAudio, buffer2, length);
         env->DeleteLocalRef(buffer2);
+
     }
+    free(pFrame);
     total_frames++;
 }
 
@@ -721,6 +724,8 @@ void decodeVideoFromPacket(JNIEnv *env, jobject instance,
             env->CallVoidMethod(instance, renderVideoFrames, buffer2, rgbBytes);
             env->DeleteLocalRef(buffer2);
             free(buffer);
+            av_free(pFrameRGB);
+            av_free(pFrame);
         } catch (...) {
             if (debug_mode) {
                 LOGE(10, "[ERROR] Render video frames failed");
