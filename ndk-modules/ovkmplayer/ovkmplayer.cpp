@@ -47,7 +47,11 @@ extern "C" {
 
 void ffmpeg_log_callback(void *ptr, int level, const char *fmt, va_list vargs)
 {
-    LOGD(10, fmt, vargs);
+    try {
+        LOGD(10, fmt, vargs);
+    } catch (...) {
+
+    }
 }
 
 char version[7] = "0.0.1";
@@ -117,8 +121,8 @@ extern "C" {
     ) {
         if(value == JNI_TRUE) {
             debug_mode = true;
-            av_log_set_level(AV_LOG_VERBOSE);
-            av_log_set_callback(ffmpeg_log_callback);
+            //av_log_set_level(AV_LOG_VERBOSE);
+            //av_log_set_callback(ffmpeg_log_callback);
             LOGD(10, "[DEBUG] Enabled Debug Mode");
         } else {
             LOGD(10, "[DEBUG] Disabled Debug Mode");
