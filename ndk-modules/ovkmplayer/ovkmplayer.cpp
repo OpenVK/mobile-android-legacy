@@ -80,9 +80,8 @@ AVCodec *gAudioCodec;
 jobject generateTrackInfo(JNIEnv* env,
                           AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
 
-void decodeVideoFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class,
-                           AVPacket avpkt, int total_frames,
-                           int video_length);
+void decodeVideoFromPacket(JNIEnv *env, jobject instance,
+                           jclass mplayer_class, AVPacket avpkt, int total_frames, int length);
 
 void decodeAudioFromPacket(
         JNIEnv *pEnv, jobject pJobject, jclass mplayer_class, AVPacket packet,
@@ -201,9 +200,53 @@ extern "C" {
     }
 
     JNIEXPORT void JNICALL
-    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeVideo
-            (JNIEnv *env, jobject instance, jobject buffer, jint length) {
+    Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeMedia
+            (JNIEnv *env, jobject instance, jint audio_length, jint video_length) {
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Decoding audio stream #%d and video stream #%d...",
+                 gAudioStreamIndex, gVideoStreamIndex)
+        }
+        jclass mplayer_class = env->GetObjectClass(instance);
+        jmethodID completePlayback = env->GetMethodID(mplayer_class, "completePlayback", "()V");
+        AVPacket avpkt;
+        short *audio_buf, input_buf[4096 + FF_INPUT_BUFFER_PADDING_SIZE];
+        int received_frame = 0;
+        int total_audio_frames = 0;
+        int total_video_frames = 0;
+        audio_buf = (short*)malloc(192000 * 4);
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] AVPacket initializing...")
+        }
+        av_init_packet(&avpkt);
+        if(!gAudioCodec) {
+            LOGE(10, "[ERROR] Audio codec not found.");
+        }
+        if(!gVideoCodec) {
+            LOGE(10, "[ERROR] Video codec not found.");
+        }
+        if(!gAudioCodec && !gVideoCodec) {
+            return;
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Output buffer allocating...");
+        }
 
+        int read_frame_status = -1;
+        while ((read_frame_status = av_read_frame(gFormatCtx, &avpkt)) >= 0) {
+            if (avpkt.stream_index == gAudioStreamIndex) {
+                decodeAudioFromPacket(
+                        env, instance, mplayer_class,
+                        avpkt, audio_buf, total_audio_frames++, audio_length);
+            } else if(avpkt.stream_index == gVideoStreamIndex) {
+                decodeVideoFromPacket(env, instance, mplayer_class, avpkt, total_video_frames++, video_length);
+            }
+        }
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Decoding result:\r\nTotal audio frames: %d | Total video frames: %d",
+                 total_audio_frames, total_video_frames);
+        }
+        env->CallVoidMethod(instance, completePlayback);
+        env->DeleteLocalRef(mplayer_class);
     }
 
     JNIEXPORT jobject JNICALL
@@ -330,26 +373,20 @@ extern "C" {
             JNIEnv *env, jobject instance,
             jint type) {
 
-        int videoStreamIndex = -1;    // video stream index
-        int audioStreamIndex = -1;    // audio stream index
-
-        AVCodecContext *videoCodecCtx = NULL;
-        AVCodecContext *audioCodecCtx = NULL;
         const char *filename;
         try {
             if (type == 0) {
-                AVCodec *lVideoCodec;
                 /*some global variables initialization*/
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Getting video track info...");
                 }
 
                 /*find the video stream and its decoder*/
-                videoStreamIndex = -1;
+                gVideoStreamIndex = -1;
                 for(int i = 0; i < gFormatCtx->nb_streams; i++) {
                     if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
                         gVideoStreamIndex = i;
-                        videoCodecCtx = gFormatCtx->streams[i]->codec;
+                        gVideoCodecCtx = gFormatCtx->streams[i]->codec;
                         if (debug_mode) {
                             LOGD(10, "[DEBUG] Total streams: %d | Video stream #%d detected. Opening...",
                                  gFormatCtx->nb_streams, gVideoStreamIndex);
@@ -365,13 +402,13 @@ extern "C" {
                 }
 
                 /*open the codec*/
-                lVideoCodec = avcodec_find_decoder(
+                gVideoCodec = avcodec_find_decoder(
                         gFormatCtx->streams[gVideoStreamIndex]->codec->codec_id);
                 LOGI(10, "[INFO] Codec initialized. Reading...");
                 #ifdef SELECTIVE_DECODING
                 gVideoCodecCtx->allow_selective_decoding = 1;
                 #endif
-                if (avcodec_open2(videoCodecCtx, lVideoCodec, NULL) < 0) {
+                if (avcodec_open2(gVideoCodecCtx, gVideoCodec, NULL) < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Can't open the video codec!");
                     }
@@ -379,21 +416,20 @@ extern "C" {
                 }
                 return generateTrackInfo(
                         env, gFormatCtx->streams[gVideoStreamIndex],
-                        lVideoCodec, videoCodecCtx, AVMEDIA_TYPE_VIDEO
+                        gVideoCodec, gVideoCodecCtx, AVMEDIA_TYPE_VIDEO
                 );
             } else {
-                AVCodec *lAudioCodec;
 
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Getting audio track info...");
                 }
 
                 /*find the audio stream and its decoder*/
-                audioStreamIndex = -1;
+                gAudioStreamIndex = -1;
                 for(int i = 0; i < gFormatCtx->nb_streams; i++) {
                     if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
                         gAudioStreamIndex = i;
-                        audioCodecCtx = gFormatCtx->streams[i]->codec;
+                        gAudioCodecCtx = gFormatCtx->streams[i]->codec;
                         if (debug_mode) {
                             LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
                                  gFormatCtx->nb_streams, gAudioStreamIndex);
@@ -411,19 +447,19 @@ extern "C" {
                 if (gAudioStreamIndex == AVERROR_DECODER_NOT_FOUND) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Audio stream found, but '%s' decoder is unavailable.",
-                             lAudioCodec->name);
+                             gAudioCodec->name);
                     }
                     return NULL;
                 }
 
                 /*open the codec*/
-                lAudioCodec = avcodec_find_decoder(
+                gAudioCodec = avcodec_find_decoder(
                         gFormatCtx->streams[gAudioStreamIndex]->codec->codec_id);
                 LOGI(10, "[INFO] Codec initialized. Reading...");
     #ifdef SELECTIVE_DECODING
                 gAudioCodecCtx->allow_selective_decoding = 1;
     #endif
-                if (avcodec_open2(audioCodecCtx, lAudioCodec, NULL) < 0) {
+                if (avcodec_open2(gAudioCodecCtx, gAudioCodec, NULL) < 0) {
                     if (debug_mode) {
                         LOGE(1, "[ERROR] Can't open the audio codec!");
                     }
@@ -431,7 +467,7 @@ extern "C" {
                 }
                 return generateTrackInfo(
                         env, gFormatCtx->streams[gAudioStreamIndex],
-                        lAudioCodec, audioCodecCtx, AVMEDIA_TYPE_AUDIO
+                        gAudioCodec, gAudioCodecCtx, AVMEDIA_TYPE_AUDIO
                 );
             }
         } catch (const char* error_message) {
@@ -523,6 +559,9 @@ jobject generateTrackInfo(
             jfieldID frame_rate_field = env->GetFieldID(
                     track_class, "frame_rate", "F"
             );
+            jfieldID sample_rate_field = env->GetFieldID(
+                    track_class, "sample_rate", "J"
+            );
 
             track = env->NewObject(track_class, video_track_init);
 
@@ -533,7 +572,16 @@ jobject generateTrackInfo(
             frame_size[0] = pCodecCtx->width;
             frame_size[1] = pCodecCtx->height;
             env->ReleaseIntArrayElements(array, frame_size, 0);
-            env->SetIntField(track, bitrate_field, pCodecCtx->bit_rate);
+            env->SetLongField(track, bitrate_field, pCodecCtx->bit_rate);
+
+            // Referenced from:
+            // https://en.wikipedia.org/wiki/Rec.709
+            // https://en.wikipedia.org/wiki/Sampling_(signal_processing)#Applications
+            //
+            // 1920x1080@60fps = 1920 (active) lpf * 1080 spl * 60 fps = 124.416 MHz
+            long sample_rate = pCodecCtx->width * pCodecCtx->height * pStream->avg_frame_rate.num;
+            env->SetLongField(track, sample_rate_field, sample_rate);
+
             env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
         } else {
             // Load OvkAudioTrack class
@@ -576,47 +624,31 @@ jobject generateTrackInfo(
 
 void decodeAudioFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class, AVPacket avpkt,
                            short* buffer, int total_frames, int length) {
-    short** buffer2 = NULL;
-    jbyteArray buffer3;
-    int data_size = 192000 * 4;
+    jbyteArray buffer2;
     jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
     int size = avpkt.size;
     int received_frame = 0;
     int decoded_frame;
     int audio_linesize;
-    AVFrame* pFrame = av_frame_alloc();
-    while(size > 0) {
-        int len = avcodec_decode_audio4(gAudioCodecCtx, pFrame, &decoded_frame, &avpkt);
-        if(!decoded_frame) {
-            break;
-        } else {
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Decoding audio frame #%d | Length: %d of %d",
-                     total_frames + 1, len, size);
-            }
-            av_samples_alloc((uint8_t**)(buffer2), &audio_linesize,
-                             pFrame->channels,
-                             pFrame->nb_samples,
-                             (AVSampleFormat)(pFrame->format), 1);
-            data_size = av_samples_get_buffer_size(NULL,
-                                                pFrame->channels,
-                                                pFrame->nb_samples,
-                                                (AVSampleFormat)(pFrame->format),
-                                                1);
-            av_samples_copy((uint8_t**)(buffer2),
-                            pFrame->data,
-                            0, 0,
-                            pFrame->nb_samples,
-                            pFrame->channels,
-                            (AVSampleFormat)(pFrame->format));
-            buffer = buffer2[0];
-            received_frame++;
+    AVFrame *pFrame = av_frame_alloc();
+    int ret = avcodec_decode_audio4(gAudioCodecCtx,
+                                    pFrame,
+                                    &decoded_frame,
+                                    &avpkt);
+    if (decoded_frame) {
+        int data_size = av_samples_get_buffer_size(NULL,
+                                                   gAudioCodecCtx->channels,
+                                                   pFrame->nb_samples,
+                                                   gAudioCodecCtx->sample_fmt,
+                                                   1);
+        if (data_size < 0) {
+            data_size = 192000 * 4;
         }
-        buffer3 = env->NewByteArray((jsize)data_size);
-        env->SetByteArrayRegion(buffer3, 0, (jsize)data_size, (jbyte*)buffer);
-        env->CallVoidMethod(instance, renderAudio, buffer3, length);
-        env->DeleteLocalRef(buffer3);
-        size -= len;
+        buffer = (short *) pFrame->data[0];
+        buffer2 = env->NewByteArray((jsize) data_size);
+        env->SetByteArrayRegion(buffer2, 0, (jsize) data_size, (jbyte *) buffer);
+        env->CallVoidMethod(instance, renderAudio, buffer2, length);
+        env->DeleteLocalRef(buffer2);
     }
     total_frames++;
 }

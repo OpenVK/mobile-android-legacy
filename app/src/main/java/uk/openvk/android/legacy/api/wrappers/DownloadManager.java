@@ -364,6 +364,9 @@ public class DownloadManager {
                             case "conversations_avatars":
                                 sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
                                 break;
+                            case "video_thumbnails":
+                                sendMessage(HandlerMessages.VIDEO_THUMBNAILS, where);
+                                break;
                         }
                     }
                 }

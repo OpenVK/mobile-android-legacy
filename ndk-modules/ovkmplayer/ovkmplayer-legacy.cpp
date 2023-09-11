@@ -263,113 +263,6 @@ JNIEXPORT void JNICALL
     }
 
     JNIEXPORT void JNICALL
-        Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeVideo
-                (JNIEnv *env, jobject instance, jbyteArray buffer, jint length) {
-        if(debug_mode) {
-            LOGD(10, "[DEBUG] Decoding video stream #%d...", gVideoStreamIndex)
-        }
-        AVPacket avpkt;
-        AVDictionaryEntry *e;
-        AVFrame *pFrame, *pFrameRGB;
-        jclass mplayer_class = env->GetObjectClass(instance);
-        jmethodID renderVideoFrames = env->GetMethodID(mplayer_class, "renderVideoFrames", "([BI)V");
-        void *bitmap_buffer = malloc(
-                (size_t)gVideoCodecCtx->width * gVideoCodecCtx->height * 24);
-        int frameDecoded;
-        int received_frame = 0;
-        int total_frames = 0;
-        e = NULL;
-        int decoded_data_size = (gVideoCodecCtx->width * gVideoCodecCtx->height * 3) / 2;
-        pFrame = avcodec_alloc_frame();
-        // Allocate an AVFrame structure
-        pFrameRGB = avcodec_alloc_frame();
-        if(pFrameRGB == NULL)
-            return;
-        avcodec_get_frame_defaults(pFrame);
-        if(debug_mode) {
-            LOGD(10, "[DEBUG] AVPacket initializing...")
-        }
-        av_init_packet(&avpkt);
-
-        int data_size = (int)length;
-        int read_frame_status = -1;
-
-
-        while (av_read_frame(gFormatCtx, &avpkt) >= 0) {
-            data_size = (int)length;
-            if (avpkt.stream_index == gVideoStreamIndex) {
-                int size = avpkt.size;
-                if (debug_mode) {
-                    LOGD(10, "[DEBUG] Decoding video frame #%d... | Length: %d", total_frames,
-                         avpkt.size);
-                }
-                total_frames++;
-                avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avpkt);
-                if (!frameDecoded) {
-                    if (debug_mode) {
-                        LOGE(10, "[ERROR] Frame #%d not decoded.", total_frames - 1);
-                    }
-                    break;
-                } else {
-                    if (debug_mode) {
-                        LOGD(10, "[DEBUG] Converting video frame to RGB...");
-                    }
-                }
-
-                SwsContext* conversion = sws_getContext(gVideoCodecCtx->width,
-                                                        gVideoCodecCtx->height,
-                                                        (PixelFormat)pFrame->format,
-                                                        gVideoCodecCtx->width,
-                                                        gVideoCodecCtx->height,
-                                                        PIX_FMT_RGBA,
-                                                        SWS_FAST_BILINEAR,
-                                                        NULL,
-                                                        NULL,
-                                                        NULL);
-                sws_scale(conversion, reinterpret_cast<const uint8_t *const *>(pFrameRGB->data),
-                          pFrame->linesize, 0,
-                          gVideoCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
-                sws_freeContext(conversion);
-
-                if (debug_mode) {
-                    LOGD(10, "[DEBUG] Setting pFrameRGB...");
-                }
-
-                pFrameRGB->format = PIX_FMT_RGBA;
-                pFrameRGB->width = pFrame->width;
-                pFrameRGB->height = pFrame->height;
-
-                try {
-                    if(pFrameRGB->data[0] == NULL) {
-                        LOGE(10, "[ERROR] pFrameRGB is null");
-                        break;
-                    }
-                    if (debug_mode) {
-                        LOGD(10, "[DEBUG] pFrameRGB is not null | Size: %d", sizeof(pFrameRGB->data[0]));
-                    }
-                    if (debug_mode) {
-                        LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
-                    }
-                    buffer = env->NewByteArray((jsize) sizeof(pFrameRGB->data[0]));
-                    env->SetByteArrayRegion(buffer, 0, (jsize) sizeof(pFrameRGB->data[0]),
-                                             (jbyte*) pFrameRGB->data[0]);
-                    env->CallVoidMethod(instance, renderVideoFrames, buffer, length);
-                    env->DeleteLocalRef(buffer);
-                } catch (...) {
-                    if (debug_mode) {
-                        LOGE(10, "[ERROR] Render video frames failed");
-                    }
-                }
-                received_frame++;
-            }
-        }
-        if(debug_mode) {
-            LOGD(10, "[DEBUG] Video decoding result:\r\nReceived frames: %d | Total frames: %d",
-                 received_frame, total_frames);
-        }
-    }
-
-    JNIEXPORT void JNICALL
         Java_uk_openvk_android_legacy_utils_media_OvkMediaPlayer_decodeMedia
                 (JNIEnv *env, jobject instance, jint audio_length, jint video_length) {
         if(debug_mode) {
@@ -388,7 +281,7 @@ JNIEXPORT void JNICALL
             LOGD(10, "[DEBUG] AVPacket initializing...")
         }
         av_init_packet(&avpkt);
-        if(!gAudioCodec) {
+        if(!gVideoCodec && !gAudioCodec) {
             return;
         }
         if(debug_mode) {

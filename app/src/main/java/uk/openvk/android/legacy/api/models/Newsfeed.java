@@ -50,6 +50,7 @@ public class Newsfeed implements Parcelable {
     private ArrayList<PhotoAttachment> photos_msize;
     private ArrayList<PhotoAttachment> photos_hsize;
     private ArrayList<PhotoAttachment> photos_osize;
+    private ArrayList<PhotoAttachment> video_thumbnails;
 
     public long next_from;
     private DownloadManager dlm;
@@ -89,6 +90,7 @@ public class Newsfeed implements Parcelable {
             photos_hsize = new ArrayList<>();
             photos_msize = new ArrayList<>();
             photos_lsize = new ArrayList<>();
+            video_thumbnails = new ArrayList<>();
         }
         ArrayList<PhotoAttachment> avatars = new ArrayList<PhotoAttachment>();
         try {
@@ -252,6 +254,7 @@ public class Newsfeed implements Parcelable {
                         downloadManager.downloadPhotosToCache(photos_osize, "newsfeed_photo_attachments");
                         break;
                 }
+                downloadManager.downloadPhotosToCache(video_thumbnails, "video_thumbnails");
                 downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatars");
             }
         } catch (JSONException e) {
@@ -417,8 +420,11 @@ public class Newsfeed implements Parcelable {
                     if(video.has("image")) {
                         JSONArray thumb_array = video.getJSONArray("image");
                         videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
-                        dlm.downloadOnePhotoToCache(videoAttachment.url_thumb, String.format("thumbnail_%so%s",
-                                video.getLong("id"), owner_id), "video_thumbnails");
+                        PhotoAttachment thumbnail = new PhotoAttachment();
+                        thumbnail.url = videoAttachment.url_thumb;
+                        thumbnail.filename = String.format("thumbnail_%so%s",
+                                video.getLong("id"), owner_id);
+                        video_thumbnails.add(thumbnail);
                     }
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";

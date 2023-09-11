@@ -53,6 +53,7 @@ public class Wall implements Parcelable {
     private ArrayList<PhotoAttachment> photos_msize;
     private ArrayList<PhotoAttachment> photos_hsize;
     private ArrayList<PhotoAttachment> photos_osize;
+    private ArrayList<PhotoAttachment> video_thumbnails;
     private DownloadManager dlm;
     public long next_from;
 
@@ -95,6 +96,7 @@ public class Wall implements Parcelable {
         photos_msize = new ArrayList<PhotoAttachment>();
         photos_hsize = new ArrayList<PhotoAttachment>();
         photos_osize = new ArrayList<PhotoAttachment>();
+        video_thumbnails = new ArrayList<>();
         ArrayList<PhotoAttachment> avatars = new ArrayList<PhotoAttachment>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
@@ -269,6 +271,7 @@ public class Wall implements Parcelable {
                         downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
                         break;
                 }
+                downloadManager.downloadPhotosToCache(video_thumbnails, "video_thumbnails");
                 downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
             }
         } catch (JSONException e) {
@@ -513,8 +516,11 @@ public class Wall implements Parcelable {
                     if(video.has("image")) {
                         JSONArray thumb_array = video.getJSONArray("image");
                         videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
-                        dlm.downloadOnePhotoToCache(videoAttachment.url_thumb, String.format("thumbnail_%so%s",
-                                video.getLong("id"), owner_id), "video_thumbnails");
+                        PhotoAttachment thumbnail = new PhotoAttachment();
+                        thumbnail.url = videoAttachment.url_thumb;
+                        thumbnail.filename = String.format("thumbnail_%so%s",
+                                video.getLong("id"), owner_id);
+                        video_thumbnails.add(thumbnail);
                     }
                     videoAttachment.duration = video.getInt("duration");
                     attachment_status = "done";
