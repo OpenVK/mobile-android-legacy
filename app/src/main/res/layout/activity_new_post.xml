@@ -181,7 +181,7 @@
             android:layout_weight="1"
             android:scaleType="center"
             android:src="@drawable/ic_newpost_settings"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>

@@ -258,6 +258,12 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                         showAttachMenuDialog();
                     }
         });
+        findViewById(R.id.newpost_btn_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openPostSettingsDialog();
+            }
+        });
         (findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,6 +305,10 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                 }
             }
         });
+    }
+
+    private void openPostSettingsDialog() {
+
     }
 
     private void showAttachMenuDialog() {

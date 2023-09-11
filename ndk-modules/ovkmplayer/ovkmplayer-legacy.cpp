@@ -107,8 +107,6 @@ void decodeAudioFromPacket(
 
 unsigned char* convertYuv2Rgb(PixelFormat pxf, AVFrame* frame, int length);
 
-void YCrCb_to_RGB8(int Y, int Cr, int Cb, int& R, int& G, int& B);
-
 bool debug_mode;
 
 AVDictionary *avFormatOptions = NULL;
@@ -527,8 +525,6 @@ JNIEXPORT void JNICALL
             LOGI(10, "[INFO] Duration: %d", gTempFormatCtx->streams[audioStreamIndex]->duration);
             audioCodecCtx = gFormatCtx->streams[audioStreamIndex]->codec;
             LOGI(10, "[INFO] Codec initialized. Reading...");
-            LOGI(10, "[INFO] Audio codec: %s | Sample rate: %d Hz", audioCodecCtx->codec_name,
-                 audioCodecCtx->sample_rate);
             #ifdef SELECTIVE_DECODING
                     gAudioCodecCtx->allow_selective_decoding = 1;
             #endif
@@ -601,7 +597,6 @@ JNIEXPORT void JNICALL
                         gVideoCodec, gVideoCodecCtx, AVMEDIA_TYPE_VIDEO
                 );
             } else {
-
                 if (debug_mode) {
                     LOGD(10, "[DEBUG] Getting audio track info...");
                 }
@@ -612,7 +607,7 @@ JNIEXPORT void JNICALL
                     if(gFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
                         gAudioStreamIndex = i;
                         gAudioCodecCtx = gFormatCtx->streams[i]->codec;
-                        if (debug_mode) {
+                        if(debug_mode) {
                             LOGD(10, "[DEBUG] Total streams: %d | Audio stream #%d detected. Opening...",
                                  gFormatCtx->nb_streams, gAudioStreamIndex);
                         }
@@ -681,36 +676,6 @@ JNIEXPORT void JNICALL
         return env->NewStringUTF(error_str);
     }
 
-}
-
-void decodeAudioFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class, AVPacket avpkt,
-                           short* buffer, int total_frames, int length) {
-    jbyteArray buffer2;
-    int AUDIO_INBUF_SIZE = 4096;
-    int output_size;
-    int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
-    int decoded_data_size = 0;
-    jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
-    int size = avpkt.size;
-    int received_frame = 0;
-    while(size > 0) {
-        int len = avcodec_decode_audio3(gAudioCodecCtx, buffer, &data_size, &avpkt);
-        if(len < 0) {
-            break;
-        } else {
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Decoding audio frame #%d | Length: %d of %d",
-                     total_frames + 1, len, size);
-            }
-            received_frame++;
-        }
-        buffer2 = env->NewByteArray((jsize)data_size);
-        env->SetByteArrayRegion(buffer2, 0, (jsize)data_size, (jbyte*)buffer);
-        env->CallVoidMethod(instance, renderAudio, buffer2, length);
-        env->DeleteLocalRef(buffer2);
-        size -= len;
-    }
-    total_frames++;
 }
 
 jobject generateTrackInfo(
@@ -813,6 +778,36 @@ jobject generateTrackInfo(
     return NULL;
 }
 #pragma clang diagnostic pop
+
+void decodeAudioFromPacket(JNIEnv *env, jobject instance, jclass mplayer_class, AVPacket avpkt,
+                           short* buffer, int total_frames, int length) {
+    jbyteArray buffer2;
+    int AUDIO_INBUF_SIZE = 4096;
+    int output_size;
+    int data_size = AVCODEC_MAX_AUDIO_FRAME_SIZE * 4;
+    int decoded_data_size = 0;
+    jmethodID renderAudio = env->GetMethodID(mplayer_class, "renderAudio", "([BI)V");
+    int size = avpkt.size;
+    int received_frame = 0;
+    while(size > 0) {
+        int len = avcodec_decode_audio3(gAudioCodecCtx, buffer, &data_size, &avpkt);
+        if(len < 0) {
+            break;
+        } else {
+            if(debug_mode) {
+                LOGD(10, "[DEBUG] Decoding audio frame #%d | Length: %d of %d",
+                     total_frames + 1, len, size);
+            }
+            received_frame++;
+        }
+        buffer2 = env->NewByteArray((jsize)data_size);
+        env->SetByteArrayRegion(buffer2, 0, (jsize)data_size, (jbyte*)buffer);
+        env->CallVoidMethod(instance, renderAudio, buffer2, length);
+        env->DeleteLocalRef(buffer2);
+        size -= len;
+    }
+    total_frames++;
+}
 
 void decodeVideoFromPacket(JNIEnv *env, jobject instance,
                            jclass mplayer_class, AVPacket avpkt, int total_frames, int length) {
