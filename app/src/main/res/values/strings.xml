@@ -446,6 +446,7 @@
     <string name="closed_event">Private event</string>
     <string name="public_page">Public page</string>
     <string name="post_from_group">On behalf of the group</string>
+	<string name="post_from_group_signed">Sign</string>
 
     <string name="post_not_found">Post not found</string>
     <string name="groups">Communities</string>
@@ -653,7 +654,7 @@
     <string name="no_groups">No communities</string>
     <string name="no_events">No events</string>
 
-	<string name="post_from_group_signed">Sign</string>
+
 	<string name="chat_typing">%s is typing…</string>
 	<string name="chat_typing_multiple">%s are typing…</string>
 	<string name="wall_owners_posts">%s\'s posts</string>

@@ -413,6 +413,7 @@
     <string name="closed_event">Закрытая встреча</string>
     <string name="public_page">Публичная страница</string>
     <string name="post_from_group">От имени сообщества</string>
+    <string name="post_from_group_signed">Подпись</string>
 
     <string name="post_not_found">Запись не найдена</string>
     <string name="groups">Сообщества</string>
@@ -596,7 +597,7 @@
     <string name="no_groups">Нет сообществ</string>
     <string name="no_events">Нет встреч</string>
 
-	<string name="post_from_group_signed">Подпись</string>
+
 	<string name="chat_typing">%s набирает сообщение..</string>
 	<string name="chat_typing_multiple">%s набирают сообщение..</string>
 	<string name="wall_owners_posts">Записи %s</string>

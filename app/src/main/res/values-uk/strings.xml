@@ -466,6 +466,8 @@
     <string name="closed_event">Закрита зустріч</string>
     <string name="public_page">Публічна сторінка</string>
     <string name="post_from_group">Від імені спільноти</string>
+    <string name="post_from_group_signed">Підпис</string>
+
     <string-array name="num_attach_photo">
         <item>Фотографія</item>
         <item>%d фотографії</item>
@@ -706,7 +708,6 @@
     <string name="no_groups">Немає спільнот</string>
     <string name="no_events">Немає зустріч</string>
 
-	<string name="post_from_group_signed">Підпис</string>
 	<string name="chat_typing">%s набирає повідомлення..</string>
 	<string name="chat_typing_multiple">%s набирають повідомлення..</string>
 	<string name="wall_owners_posts">Записи %s</string>
