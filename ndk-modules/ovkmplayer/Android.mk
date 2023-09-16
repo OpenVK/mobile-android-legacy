@@ -19,7 +19,7 @@ PROJECT_PATH := $(call my-dir)/../..
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
    FFMPEG_VERSION = 3.1.4
 else
-   FFMPEG_VERSION = 0.8.12
+   FFMPEG_VERSION = 0.11.5
 endif
 FFMPEG_PATH = $(call my-dir)/builder/ffmpeg-$(FFMPEG_VERSION)
 #declare the prebuilt library

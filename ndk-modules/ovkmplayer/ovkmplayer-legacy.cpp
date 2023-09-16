@@ -233,7 +233,7 @@ JNIEXPORT void JNICALL
         if(debug_mode) {
             LOGD(10, "[DEBUG] Opening temporary file %s...", filename);
         }
-        if ((gErrorCode = av_open_input_file(&gTempFormatCtx, filename, NULL, 0, NULL)) != 0) {
+        if ((gErrorCode = avformat_open_input(&gTempFormatCtx, filename, NULL, 0)) != 0) {
             char error_string[192];
             if(gErrorCode == -2) {
                 sprintf(error_string, "File not found");
