@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -116,6 +117,7 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
     public static int RESULT_ATTACH_NOTE           =   6;
     private int minKbHeight;
     private int keyboard_height;
+    private boolean[] post_settings = new boolean[]{false};
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -308,7 +310,24 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
     }
 
     private void openPostSettingsDialog() {
-
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final ArrayList<String> options = new ArrayList<>();
+        builder.setTitle(R.string.attach);
+        options.add(getResources().getString(R.string.post_from_group));
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_checked, options);
+        builder.setMultiChoiceItems(
+                options.toArray(new String[options.size()]),
+                post_settings,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                        post_settings[i] = b;
+                    }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showAttachMenuDialog() {
