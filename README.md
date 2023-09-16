@@ -25,18 +25,18 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/archive) and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
 
 To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used:
-* **FFmpeg 0.8.12** for 32-bit CPU architectures - ARMv5/v6, ARMv7a, x86
+* **FFmpeg 0.11.5** for 32-bit CPU architectures - ARMv5/v6, ARMv7a, x86
 * **FFmpeg 3.1.4** for 64-bit CPU architectures - ARMv8a
 
 To compile them you need:
 + **GNU/Linux distro or WSL2** \
   Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
 
-  Tested on Ubuntu 12.04 LTS and Debian 8.7.1 (FFmpeg 0.8.12 with NDK r6 only), can be built in the latest distributions. _FFmpeg old version build on Ubuntu 22.04 LTS? 🤔_
+  Tested on Ubuntu 12.04 LTS and Debian 8.7.1 (FFmpeg 0.11.5 with NDK r6 only), can be built in the latest distributions. _FFmpeg old version build on Ubuntu 22.04 LTS? 🤔_
 + **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
   If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
 
-  Android NDK `r8e` is highly recommended for providing FFmpeg 0.8.12 support in older versions of Android.
+  Android NDK `r8e` is highly recommended for providing FFmpeg 0.11.5 support in older versions of Android.
 
   Also, in the project settings, specify the path to Android NDK r11c.
 + **Installed dependencies** \
@@ -47,8 +47,8 @@ To compile them you need:
   Run the command inside the OpenVK Legacy repository in terminal:
   ```sh
    chmod +x ./build-ffmpeg.sh
-   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.8.12
-   # or: ANDROID_NDK_HOME=[path/to/ndk-r6] ./build-ffmpeg.sh 0.8.12-r6
+   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.11.5
+   # or: ANDROID_NDK_HOME=[path/to/ndk-r6] ./build-ffmpeg.sh 0.11.5-r6
    ANDROID_NDK_HOME=[path/to/ndk-r11c] ./build-ffmpeg.sh 3.1.4
   ```
 
