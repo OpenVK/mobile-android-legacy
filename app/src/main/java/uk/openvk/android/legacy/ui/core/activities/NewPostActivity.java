@@ -26,12 +26,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -41,6 +43,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
@@ -117,7 +121,7 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
     public static int RESULT_ATTACH_NOTE           =   6;
     private int minKbHeight;
     private int keyboard_height;
-    private boolean[] post_settings = new boolean[]{false};
+    private boolean[] post_settings = new boolean[]{false, false};
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -312,8 +316,9 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
     private void openPostSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final ArrayList<String> options = new ArrayList<>();
-        builder.setTitle(R.string.attach);
+        builder.setTitle(R.string.post_options);
         options.add(getResources().getString(R.string.post_from_group));
+        options.add(getResources().getString(R.string.post_from_group_signed));
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this,
                         android.R.layout.simple_list_item_checked, options);
@@ -326,7 +331,25 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                         post_settings[i] = b;
                     }
         });
+        builder.setNeutralButton(android.R.string.ok, null);
         final AlertDialog dialog = builder.create();
+        dialog.getListView().setOnHierarchyChangeListener(
+                new ViewGroup.OnHierarchyChangeListener() {
+                    @SuppressWarnings({"SuspiciousMethodCalls", "ConstantConditions"})
+                    @Override
+                    public void onChildViewAdded(View parent, View child) {
+                        CharSequence text = ((CheckedTextView)child).getText();
+                        int itemIndex = Collections.singletonList(options).indexOf(text);
+                        if(itemIndex < 2 && owner_id > 0) {
+                            child.setEnabled(false);
+                            child.setOnClickListener(null);
+                        }
+                    }
+
+                    @Override
+                    public void onChildViewRemoved(View view, View view1) {
+                    }
+                });
         dialog.show();
     }
 
@@ -407,7 +430,8 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                     if (statusEditText.getText().toString().length() == 0 &&
                             (attachments == null || attachments.size() == 0)) {
                         Toast.makeText(getApplicationContext(),
-                                getResources().getString(R.string.post_fail_empty), Toast.LENGTH_LONG).show();
+                                getResources().getString(R.string.post_fail_empty),
+                                Toast.LENGTH_LONG).show();
                     } else {
                         try {
                             connectionDialog = new ProgressDialog(NewPostActivity.this);
@@ -415,10 +439,13 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
                             if(attachments.size() > 0) {
-                                ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString(),
-                                        createAttachmentsList());
+                                ovk_api.wall.post(ovk_api.wrapper, owner_id,
+                                        statusEditText.getText().toString(),
+                                        post_settings[0], post_settings[1], createAttachmentsList());
                             } else {
-                                ovk_api.wall.post(ovk_api.wrapper, owner_id, statusEditText.getText().toString());
+                                ovk_api.wall.post(ovk_api.wrapper, owner_id,
+                                        statusEditText.getText().toString(),
+                                        post_settings[0], post_settings[1]);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -571,9 +598,11 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
                     if(attachments == null || attachments.size() == 0) {
-                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content);
+                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content,
+                                post_settings[0], post_settings[1]);
                     } else {
-                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content, createAttachmentsList());
+                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content,
+                                post_settings[0], post_settings[1], createAttachmentsList());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

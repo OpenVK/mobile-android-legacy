@@ -606,14 +606,37 @@ public class Wall implements Parcelable {
         return items;
     }
 
-    public void post(OvkAPIWrapper wrapper, long owner_id, String post) {
-        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s",
-                owner_id, URLEncoder.encode(post)));
+    public void post(OvkAPIWrapper wrapper, long owner_id, String post,
+                     boolean from_group,
+                     boolean signed) {
+        int from_group_int = 0;
+        int signed_int = 0;
+        if(from_group) {
+            from_group_int = 1;
+        }
+        if(signed) {
+            signed_int = 1;
+        }
+        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s" +
+                        "&from_group=%s&signed=%s",
+                owner_id, URLEncoder.encode(post), from_group_int, signed_int));
     }
 
-    public void post(OvkAPIWrapper wrapper, long owner_id, String post, String attachments) {
-        wrapper.sendAPIMethod("Wall.post", String.format("owner_id=%s&message=%s&attachments=%s",
-                owner_id, URLEncoder.encode(post), URLEncoder.encode(attachments)));
+    public void post(OvkAPIWrapper wrapper, long owner_id, String post,
+                     boolean from_group, boolean signed, String attachments) {
+        int from_group_int = 0;
+        int signed_int = 0;
+        if(from_group) {
+            from_group_int = 1;
+        }
+        if(signed) {
+            signed_int = 1;
+        }
+        wrapper.sendAPIMethod("Wall.post",
+                String.format("owner_id=%s&message=%s&attachments=%s" +
+                        "&from_group=%s&signed=%s",
+                owner_id, URLEncoder.encode(post), URLEncoder.encode(attachments),
+                        from_group_int, signed_int));
     }
 
     public void getComments(OvkAPIWrapper wrapper, long owner_id, long post_id) {
