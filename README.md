@@ -63,7 +63,7 @@ To compile them you need:
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Twemojicon (Emojicon with Twemoji pack)](https://github.com/tinelix/twemojicon) (Apache License 2.0)
-7. [FFmpeg 3.1.4](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-3.1.4) and [FFmpeg 0.8.12](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-0.8.12) with [builder](https://github.com/tinelix/ffmpeg-android-builder/tree/42c67d80bc924c9709a7648e2d12f04ddf43b32b) (LGPLv3.0)
+7. [FFmpeg 3.1.4](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-3.1.4) and [FFmpeg 0.11.5](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-0.11.5) with [builder](https://github.com/tinelix/ffmpeg-android-builder) (LGPLv3.0)
 8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
 9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
