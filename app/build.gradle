@@ -76,14 +76,14 @@ android {
     buildTypes {
         release {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
-            buildConfigField "String", "SOURCE_CODE", "https://github.com/openvk/mobile-android-legacy"
+            buildConfigField "String", "SOURCE_CODE", "\"https://github.com/openvk/mobile-android-legacy\""
             ndk {
                 abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             }
         }
         debug {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
-            buildConfigField "String", "SOURCE_CODE", "https://github.com/openvk/mobile-android-legacy"
+            buildConfigField "String", "SOURCE_CODE", "\"https://github.com/openvk/mobile-android-legacy\""
             ndk {
                 abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             }
