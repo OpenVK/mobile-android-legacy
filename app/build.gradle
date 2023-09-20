@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-import org.apache.tools.ant.taskdefs.condition.Os
 
 def getGitHubCommit = {
     try {
@@ -126,32 +125,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
-    }
-    task ndkBuild(type: Exec, description: 'Compile JNI source via NDK') {
-        def ndkDir = android.ndkDirectory
-        def projDir = project.projectDir.toString();
-        println  "Project Directory:   ${projDir}";
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine "$ndkDir\\ndk-build.cmd",
-                    "NDK_PROJECT_PATH=$projDir/app/src/main",
-                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
-                    "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
-                    "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
-        } else {
-            commandLine "$ndkDir/ndk-build.sh",
-                    "NDK_PROJECT_PATH=$projDir/app/src/main",
-                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
-                    "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
-                    "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
-        }
-    }
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild
-    }
-    externalNativeBuild {
-        ndkBuild {
-            path '../ndk-modules/ovkmplayer/Android.mk'
-        }
     }
 }
 

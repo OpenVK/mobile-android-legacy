@@ -393,7 +393,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                     }
                 });
                 selector.setToGroup();
-            } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
+            } else if (message == HandlerMessages.GROUPS_GET_BY_ID
+                    || message == HandlerMessages.GROUPS_SEARCH) {
                 group = ovk_api.groups.getList().get(0);
                 updateLayout(group);
                 progressLayout.setVisibility(View.GONE);
@@ -417,8 +418,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                         activity_menu.getItem(i).setVisible(true);
                     }
                 }
-            } else if (message == HandlerMessages.GROUPS_SEARCH) {
-                ovk_api.groups.getGroupByID(ovk_api.wrapper, ovk_api.groups.getList().get(0).id);
             } else if (message == HandlerMessages.GROUPS_JOIN) {
                 Button join_btn = findViewById(R.id.join_to_comm);
                 join_btn.setText(R.string.leave_group);
@@ -885,7 +884,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     }
 
     public void loadMoreWallPosts() {
-        if(ovk_api.wall != null) {
+        if(ovk_api.wall != null && ovk_api.wall.next_from > 0 && ovk_api.wall.getWallItems() != null) {
             ovk_api.wall.get(ovk_api.wrapper, -group.id, 25, ovk_api.wall.next_from);
         }
     }
