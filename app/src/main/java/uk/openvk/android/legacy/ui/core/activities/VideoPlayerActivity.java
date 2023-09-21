@@ -138,9 +138,8 @@ public class VideoPlayerActivity extends Activity {
                     url = "";
                 }
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                intent.setType("video/*");
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setDataAndType(Uri.parse(url), "video/*");
                 startActivityForResult(intent, 1);
             }
         } else {
