@@ -345,7 +345,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         @Override
                         public void onClick(View view) {
                             if (ctx instanceof AppActivity) {
-                                ((AppActivity) ctx).openWallRepostComments(position, view);
+                                Global.openWallRepostComments(ctx, position, view);
                             } else if (ctx instanceof ProfileIntentActivity) {
                                 ((ProfileIntentActivity) ctx).openWallRepostComments(position, view);
                             } else if (ctx instanceof GroupIntentActivity) {
@@ -656,11 +656,17 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     if(functions.get(position)
                             .equals(ctx.getResources().getString(R.string.repost_own_wall))) {
                         if(ctx instanceof AppActivity) {
-                            ((AppActivity) ctx).openRepostDialog("own_wall", finalPost);
+                            Global.openRepostDialog(ctx,
+                                    ((AppActivity) ctx).ovk_api,
+                                    "own_wall", finalPost);
                         } else if(ctx instanceof ProfileIntentActivity) {
-                            ((ProfileIntentActivity) ctx).openRepostDialog("own_wall", finalPost);
+                            Global.openRepostDialog(ctx,
+                                    ((ProfileIntentActivity) ctx).ovk_api,
+                                    "own_wall", finalPost);
                         } else if(ctx instanceof GroupIntentActivity) {
-                            ((GroupIntentActivity) ctx).openRepostDialog("own_wall", finalPost);
+                            Global.openRepostDialog(ctx,
+                                    ((GroupIntentActivity) ctx).ovk_api,
+                                    "own_wall", finalPost);
                         }
                         dialog.dismiss();
                     }

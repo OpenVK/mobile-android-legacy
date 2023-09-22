@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
@@ -113,9 +114,9 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
             reg_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         ((FriendsFragment) parent).requests_cursor_index = position;
-                        ((AppActivity) ctx).addToFriends(item.id);
+                        Global.addToFriends(((AppActivity) ctx).ovk_api, item.id);
                     }
                 }
             });

@@ -1573,43 +1573,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void addToFriends(long user_id) {
-        if(user_id != ovk_api.account.id) {
-            ovk_api.friends.add(ovk_api.wrapper, user_id);
-        }
-    }
-    public void deleteFromFriends(long user_id) {
-        if(user_id != ovk_api.account.id) {
-            ovk_api.friends.delete(ovk_api.wrapper, user_id);
-        }
-    }
-
-    public void openWallRepostComments(int position, View view) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = ovk_api.wall.getWallItems().get(position);
-            intent.putExtra("where", "wall");
-        } else {
-            item = ovk_api.newsfeed.getWallPosts().get(position);
-            intent.putExtra("where", "newsfeed");
-        }
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
-            intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
-            intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                    ovk_api.account.last_name));
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
-            intent.putExtra("post_author_name", item.repost.newsfeed_item.name);
-            intent.putExtra("post_json", item.repost.newsfeed_item.getJSONString());
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void selectNewsSpinnerItem(int position) {
         Spinner spinner = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -1658,44 +1621,5 @@ public class AppActivity extends TranslucentFragmentActivity {
 
         }
         super.onDestroy();
-    }
-
-    public void openRepostDialog(String where, final WallPost post) {
-        if(where.equals("own_wall")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg,
-                    null, false);
-            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
-            builder.setView(repost_view);
-            builder.setPositiveButton(R.string.ok, null);
-            builder.setNegativeButton(R.string.cancel, null);
-            final OvkAlertDialog dialog = new OvkAlertDialog(this);
-            dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialogInterface) {
-                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        if(ok_btn != null) {
-                            ok_btn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        String msg_text = ((EditText)
-                                                repost_view.findViewById(R.id.text_edit)).getText()
-                                                .toString();
-                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
-                                        dialog.close();
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-            dialog.show();
-        }
     }
 }

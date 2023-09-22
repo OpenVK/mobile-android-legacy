@@ -26,6 +26,7 @@ import android.widget.TextView;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
@@ -222,18 +223,18 @@ public class ProfileFragment extends Fragment {
         add_to_friends_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (user.friends_status == 0 || user.friends_status == 2) {
-                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).addToFriends(user_id);
-                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                        ((ProfileIntentActivity) ctx).addToFriends(user_id);
-                    }
+                OpenVKAPI ovk_api = null;
+                if (ctx instanceof AppActivity) {
+                    ovk_api = ((AppActivity) ctx).ovk_api;
+                } else if (ctx instanceof ProfileIntentActivity) {
+                    ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 } else {
-                    if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).deleteFromFriends(user_id);
-                    } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                        ((ProfileIntentActivity) ctx).deleteFromFriends(user_id);
-                    }
+                    return;
+                }
+                if (user.friends_status == 0 || user.friends_status == 2) {
+                    Global.addToFriends(ovk_api, user_id);
+                } else {
+                    Global.deleteFromFriends(ovk_api, user_id);
                 }
             }
         });
