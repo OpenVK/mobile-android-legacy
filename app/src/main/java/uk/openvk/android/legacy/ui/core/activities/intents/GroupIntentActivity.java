@@ -661,28 +661,6 @@ public class GroupIntentActivity extends TranslucentActivity {
         startActivity(i);
     }
 
-    public void openWallComments(int position, View view) {
-        if(ovk_api.account != null) {
-            WallPost item;
-            Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-            item = ovk_api.wall.getWallItems().get(position);
-            intent.putExtra("where", "wall");
-            try {
-                intent.putExtra("post_id", item.post_id);
-                intent.putExtra("owner_id", item.owner_id);
-                intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                        ovk_api.account.last_name));
-                intent.putExtra("account_id", ovk_api.account.id);
-                intent.putExtra("post_author_id", item.author_id);
-                intent.putExtra("post_author_name", item.name);
-                intent.putExtra("post_json", item.getJSONString());
-                startActivity(intent);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
     private void openNewPostActivity() {
         try {
             Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
