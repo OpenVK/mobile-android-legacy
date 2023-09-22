@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
@@ -36,6 +37,7 @@ import dev.tinelix.retro_pm.MenuItem;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
@@ -43,15 +45,18 @@ import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.CommonAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
+import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
  *
@@ -233,7 +238,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             expand_text_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Global.openWallComments(ctx, position, null);
+                    openWallComments(ctx, position, null);
                 }
             });
             if(!item.is_explicit || !safeViewing) {
@@ -503,9 +508,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         } else {
                             where = "profile";
                         }
-                        Global.showAuthorPage(ctx, where, position);
+                        showAuthorPage(ctx, where, position);
                     } else {
-                        Global.showAuthorPage(ctx, "profile", position);
+                        showAuthorPage(ctx, "profile", position);
                     }
                 }
             });
@@ -517,12 +522,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if(!likeAdded) {
                             likeDeleted = true;
                         }
-                        Global.deleteLike(ctx, position, "post", view);
+                        deleteLike(ctx, position, "post", view);
                     } else {
                         if(!likeDeleted) {
                             likeAdded = true;
                         }
-                        Global.addLike(ctx, position, "post", view);
+                        addLike(ctx, position, "post", view);
                     }
                 }
             });
@@ -537,7 +542,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             comments_counter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Global.openWallComments(ctx, position, view);
+                    openWallComments(ctx, position, view);
                 }
             });
         }
@@ -689,6 +694,164 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 ctx.startActivity(intent);
             } catch (Exception ex) {
                 ex.printStackTrace();
+            }
+        }
+
+        public void openWallComments(Context ctx, int position, View view) {
+            OpenVKAPI ovk_api = null;
+            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            if(ctx instanceof AppActivity) {
+                ovk_api = ((AppActivity) ctx).ovk_api;
+            } else if(ctx instanceof ProfileIntentActivity) {
+                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
+            } else if(ctx instanceof GroupIntentActivity) {
+                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+            } else {
+                return;
+            }
+            if(ovk_api.account != null) {
+                WallPost item;
+                Intent intent = new Intent(ctx.getApplicationContext(), WallPostActivity.class);
+                if (global_prefs.getString("current_screen", "").equals("profile")) {
+                    item = ovk_api.wall.getWallItems().get(position);
+                    intent.putExtra("where", "wall");
+                } else {
+                    item = ovk_api.newsfeed.getWallPosts().get(position);
+                    intent.putExtra("where", "newsfeed");
+                }
+                try {
+                    intent.putExtra("post_id", item.post_id);
+                    intent.putExtra("owner_id", item.owner_id);
+                    intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
+                            ovk_api.account.last_name));
+                    intent.putExtra("account_id", ovk_api.account.id);
+                    intent.putExtra("post_author_id", item.author_id);
+                    intent.putExtra("post_author_name", item.name);
+                    intent.putExtra("post_json", item.getJSONString());
+                    ctx.startActivity(intent);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+        public void addLike(Context ctx, int position, String post, View view) {
+            WallPost item;
+            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            OpenVKAPI ovk_api = null;
+            NewsfeedFragment newsfeedFragment = null;
+            WallLayout wallLayout = null;
+            if(ctx instanceof AppActivity) {
+                ovk_api = ((AppActivity) ctx).ovk_api;
+                newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+            } else if(ctx instanceof ProfileIntentActivity) {
+                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
+                ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
+                if(profileFragment.getView() != null) {
+                    wallLayout = (profileFragment.getView().findViewById(R.id.wall_layout));
+                } else {
+                    return;
+                }
+            } else if(ctx instanceof GroupIntentActivity) {
+                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+                wallLayout = ((GroupIntentActivity) ctx).findViewById(R.id.wall_layout);
+            } else {
+                return;
+            }
+            if (global_prefs.getString("current_screen", "").equals("profile")) {
+                item = ovk_api.wall.getWallItems().get(position);
+                if(wallLayout != null) {
+                    wallLayout.select(position, "likes", "add");
+                } else {
+                    return;
+                }
+            } else {
+                item = ovk_api.newsfeed.getWallPosts().get(position);
+                if(newsfeedFragment != null) {
+                    newsfeedFragment.select(position, "likes", "add");
+                } else {
+                    return;
+                }
+            }
+            ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
+        }
+
+        public void deleteLike(Context ctx, int position, String post, View view) {
+            WallPost item;
+            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            OpenVKAPI ovk_api = null;
+            NewsfeedFragment newsfeedFragment = null;
+            WallLayout wallLayout = null;
+            if(ctx instanceof AppActivity) {
+                ovk_api = ((AppActivity) ctx).ovk_api;
+                newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+            } else if(ctx instanceof ProfileIntentActivity) {
+                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
+                ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
+                if(profileFragment.getView() != null) {
+                    wallLayout = (profileFragment.getView().findViewById(R.id.wall_layout));
+                } else {
+                    return;
+                }
+            } else if(ctx instanceof GroupIntentActivity) {
+                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+                wallLayout = ((GroupIntentActivity) ctx).findViewById(R.id.wall_layout);
+            } else {
+                return;
+            }
+            if (global_prefs.getString("current_screen", "").equals("profile")) {
+                item = ovk_api.wall.getWallItems().get(position);
+                if(wallLayout != null) {
+                    wallLayout.select(0, "likes", "delete");
+                } else {
+                    return;
+                }
+            } else {
+                item = ovk_api.newsfeed.getWallPosts().get(position);
+                if(newsfeedFragment != null) {
+                    newsfeedFragment.select(0, "likes", "delete");
+                } else {
+                    return;
+                }
+            }
+            ovk_api.likes.delete(ovk_api.wrapper, item.owner_id, item.post_id, position);
+        }
+
+        public void showAuthorPage(Context ctx, String where, int position) {
+            WallPost item;
+            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            OpenVKAPI ovk_api = null;
+            if(ctx instanceof AppActivity) {
+                ovk_api = ((AppActivity) ctx).ovk_api;
+            } else if(ctx instanceof ProfileIntentActivity) {
+                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
+            } else if(ctx instanceof GroupIntentActivity) {
+                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+            } else {
+                return;
+            }
+
+            if (where.equals("profile")) {
+                item = ovk_api.wall.getWallItems().get(position);
+            } else {
+                item = ovk_api.newsfeed.getWallPosts().get(position);
+            }
+
+            if(item.author_id != ovk_api.account.id) {
+                String url = "";
+                if (item.author_id < 0) {
+                    url = "openvk://group/" + "club" + -item.author_id;
+                } else {
+                    url = "openvk://profile/" + "id" + item.author_id;
+                }
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setPackage("uk.openvk.android.legacy");
+                i.setData(Uri.parse(url));
+                ctx.startActivity(i);
+            } else {
+                if(ctx instanceof AppActivity) {
+                    ((AppActivity) ctx).openAccountProfile();
+                }
             }
         }
     }
