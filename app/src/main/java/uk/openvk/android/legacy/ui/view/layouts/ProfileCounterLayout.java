@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
@@ -63,11 +64,7 @@ public class ProfileCounterLayout extends LinearLayout {
         ((LinearLayout) findViewById(R.id.counter)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(getContext().getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) getContext()).openIntentfromCounters(action);
-                } else if(getContext().getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                    ((ProfileIntentActivity) getContext()).openIntentfromCounters(action);
-                }
+                Global.openIntentFromCounters(getContext(), action);
             }
         });
     }

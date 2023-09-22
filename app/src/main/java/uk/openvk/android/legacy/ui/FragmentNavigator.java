@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
@@ -136,7 +137,7 @@ public class FragmentNavigator {
 
                             @Override
                             public void performAction(View view) {
-                                appActivity.openNewPostActivity();
+                                Global.openNewPostActivity(appActivity, appActivity.ovk_api);
                             }
                         });
                     } else {

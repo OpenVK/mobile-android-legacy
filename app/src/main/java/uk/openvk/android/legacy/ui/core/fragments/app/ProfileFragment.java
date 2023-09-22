@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
@@ -71,9 +72,13 @@ public class ProfileFragment extends Fragment {
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity().getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) getActivity()).openNewPostActivity();
+                OpenVKAPI ovk_api = null;
+                if(getActivity() instanceof AppActivity) {
+                    ovk_api = ((AppActivity) getActivity()).ovk_api;
+                } else {
+                    return;
                 }
+                Global.openNewPostActivity(getActivity(), ovk_api);
             }
         });
         ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources()
@@ -337,16 +342,20 @@ public class ProfileFragment extends Fragment {
                 public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
                     View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                    OpenVKAPI ovk_api = null;
                     if (!loading_more_posts) {
                         if (diff == 0) {
                             if (ctx instanceof AppActivity) {
                                 loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreWallPosts();
+                                ovk_api = ((AppActivity) ctx).ovk_api;
                             } else if (ctx instanceof ProfileIntentActivity) {
-                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
+                                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                             } else if (ctx instanceof GroupIntentActivity) {
-                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
+                                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+                            } else {
+                                return;
                             }
+                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }
@@ -358,16 +367,20 @@ public class ProfileFragment extends Fragment {
                 public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
                     View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                    OpenVKAPI ovk_api = null;
                     if (!loading_more_posts) {
                         if (diff == 0) {
                             if (ctx instanceof AppActivity) {
                                 loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof ProfileIntentActivity) {
-                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof GroupIntentActivity) {
-                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
+                                ovk_api = ((AppActivity) ctx).ovk_api;
+                            } else if (ctx instanceof ProfileIntentActivity) {
+                                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
+                            } else if (ctx instanceof GroupIntentActivity) {
+                                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+                            } else {
+                                return;
                             }
+                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }

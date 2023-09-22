@@ -19,8 +19,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
@@ -210,11 +212,15 @@ public class FriendsFragment extends Fragment {
         friendsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
             @Override
             public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
+                OpenVKAPI ovk_api = null;
                 if(ctx instanceof AppActivity) {
-                    ((AppActivity) ctx).loadMoreFriends();
+                    ovk_api = ((AppActivity) ctx).ovk_api;
                 } else if(ctx instanceof FriendsIntentActivity) {
-                    ((FriendsIntentActivity) ctx).loadMoreFriends();
+                    ovk_api = ((FriendsIntentActivity) ctx).ovk_api;
+                } else {
+                    return;
                 }
+                Global.loadMoreFriends(ovk_api);
             }
         });
     }

@@ -19,8 +19,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
@@ -177,15 +179,18 @@ public class UsersFragment extends Fragment {
                                  int totalItemCount) {
                 if(infinity_scroll) {
                     if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
+                        OpenVKAPI ovk_api = null;
                         if(!loading_more_friends) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                            if (ctx instanceof AppActivity) {
                                 loading_more_friends = true;
-                                ((AppActivity) ctx).loadMoreFriends();
-                            } else if(ctx.getClass().getSimpleName()
-                                    .equals("FriendsIntentActivity")) {
+                                ovk_api = ((AppActivity) ctx).ovk_api;
+                            } else if(ctx instanceof FriendsIntentActivity) {
                                 loading_more_friends = true;
-                                ((FriendsIntentActivity) ctx).loadMoreFriends();
+                                ovk_api = ((FriendsIntentActivity) ctx).ovk_api;
+                            } else {
+                                return;
                             }
+                            Global.loadMoreFriends(ovk_api);
                         }
                     }
                 }

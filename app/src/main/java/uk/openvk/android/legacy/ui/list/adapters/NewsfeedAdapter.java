@@ -48,6 +48,7 @@ import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.view.layouts.CommonAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
 import uk.openvk.android.legacy.ui.view.layouts.VideoAttachView;
@@ -232,13 +233,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             expand_text_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx instanceof AppActivity) {
-                        ((AppActivity) ctx).openWallComments(position, null);
-                    } else if(ctx instanceof ProfileIntentActivity) {
-                        ((ProfileIntentActivity) ctx).openWallComments(position, null);
-                    } else if(ctx instanceof GroupIntentActivity) {
-                        ((GroupIntentActivity) ctx).openWallComments(position, null);
-                    }
+                    Global.openWallComments(ctx, position, null);
                 }
             });
             if(!item.is_explicit || !safeViewing) {
@@ -501,12 +496,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             ((LinearLayout) convertView.findViewById(R.id.poster_ll)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (ctx instanceof ProfileIntentActivity) {
-                        ((ProfileIntentActivity) ctx).showAuthorPage(position);
-                    } else if (ctx instanceof GroupIntentActivity) {
-                        ((GroupIntentActivity) ctx).showAuthorPage(position);
-                    } else if (ctx instanceof AppActivity) {
-                        ((AppActivity) ctx).showAuthorPage(position);
+                    if (ctx instanceof AppActivity) {
+                        String where = "";
+                        if(((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment) {
+                            where = "newsfeed";
+                        } else {
+                            where = "profile";
+                        }
+                        Global.showAuthorPage(ctx, where, position);
+                    } else {
+                        Global.showAuthorPage(ctx, "profile", position);
                     }
                 }
             });
@@ -518,24 +517,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if(!likeAdded) {
                             likeDeleted = true;
                         }
-                        if (ctx instanceof ProfileIntentActivity) {
-                            ((ProfileIntentActivity) ctx).deleteLike(position, "post", view);
-                        } else if (ctx instanceof GroupIntentActivity) {
-                            ((GroupIntentActivity) ctx).deleteLike(position, "post", view);
-                        } else if (ctx instanceof AppActivity) {
-                            ((AppActivity) ctx).deleteLike(position, "post", view);
-                        }
+                        Global.deleteLike(ctx, position, "post", view);
                     } else {
                         if(!likeDeleted) {
                             likeAdded = true;
                         }
-                        if (ctx instanceof ProfileIntentActivity) {
-                            ((ProfileIntentActivity) ctx).addLike(position, "post", view);
-                        } else if (ctx instanceof GroupIntentActivity) {
-                            ((GroupIntentActivity) ctx).addLike(position, "post", view);
-                        } else if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).addLike(position, "post", view);
-                        }
+                        Global.addLike(ctx, position, "post", view);
                     }
                 }
             });
@@ -550,13 +537,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             comments_counter.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx instanceof AppActivity) {
-                        ((AppActivity) ctx).openWallComments(position, view);
-                    } else if(ctx instanceof ProfileIntentActivity) {
-                        ((ProfileIntentActivity) ctx).openWallComments(position, view);
-                    } else if(ctx instanceof GroupIntentActivity) {
-                        ((GroupIntentActivity) ctx).openWallComments(position, view);
-                    }
+                    Global.openWallComments(ctx, position, view);
                 }
             });
         }

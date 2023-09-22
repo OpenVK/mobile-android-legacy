@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
@@ -89,7 +90,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
     private SharedPreferences.Editor global_prefs_editor;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private ProfileFragment profileFragment;
+    public ProfileFragment profileFragment;
     private String access_token;
     public User user;
     private String args;
@@ -126,7 +127,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
 
         final Uri uri = intent.getData();
 
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
@@ -535,18 +536,25 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     errorLayout.setVisibility(View.VISIBLE);
                 }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                if(global_prefs.getString("photos_quality", "").equals("medium")) {
-                    if (user.avatar_msize_url.length() > 0) {
-                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
-                    }
-                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
-                    if (user.avatar_hsize_url.length() > 0) {
-                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
-                    }
-                } else {
-                    if (user.avatar_osize_url.length() > 0) {
-                        profileFragment.loadAvatar(user, global_prefs.getString("photos_quality", ""));
-                    }
+                switch (global_prefs.getString("photos_quality", "")) {
+                    case "medium":
+                        if (user.avatar_msize_url.length() > 0) {
+                            profileFragment.loadAvatar(
+                                    user, global_prefs.getString("photos_quality", ""));
+                        }
+                        break;
+                    case "high":
+                        if (user.avatar_hsize_url.length() > 0) {
+                            profileFragment.loadAvatar(
+                                    user, global_prefs.getString("photos_quality", ""));
+                        }
+                        break;
+                    default:
+                        if (user.avatar_osize_url.length() > 0) {
+                            profileFragment.loadAvatar(
+                                    user, global_prefs.getString("photos_quality", ""));
+                        }
+                        break;
                 }
             }
         } catch (Exception ex) {
@@ -557,33 +565,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
-    }
-
-    public void openIntentfromCounters(String action) {
-        String url = action;
-        if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
-        if(action.length() > 0) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        }
-    }
-
-    public void addLike(int position, String post, View view) {
-        WallPost item;
-        WallLayout wallLayout = ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout));
-        item = ovk_api.wall.getWallItems().get(position);
-        wallLayout.select(position, "likes", "add");
-        ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
-    public void deleteLike(int position, String post, View view) {
-        WallPost item;
-        WallLayout wallLayout = ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout));
-        item = ovk_api.wall.getWallItems().get(position);
-        wallLayout.select(0, "likes", "delete");
-        ovk_api.likes.delete(ovk_api.wrapper, item.owner_id, item.post_id, position);
     }
 
     public void getConversationById(long peer_id) {
@@ -633,24 +614,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 startActivity(intent);
             } catch (Exception ex) {
                 ex.printStackTrace();
-            }
-        }
-    }
-
-    public void showAuthorPage(int position) {
-        WallPost item;
-        item = ovk_api.wall.getWallItems().get(position);
-        if(item.author_id != user.id) {
-            if (item.author_id < 0) {
-                String url = "openvk://group/" + "id" + -item.author_id;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            } else {
-                String url = "openvk://profile/" + "id" + item.author_id;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
             }
         }
     }
@@ -736,32 +699,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void viewPhotoAttachment(int position) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
-        item = ovk_api.wall.getWallItems().get(position);
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("local_photo_addr",
-                    String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(),
-                    item.owner_id, item.post_id));
-            if(item.attachments != null) {
-                for(int i = 0; i < item.attachments.size(); i++) {
-                    if(item.attachments.get(i).type.equals("photo")) {
-                        PhotoAttachment photo = ((PhotoAttachment)
-                                item.attachments.get(i).getContent());
-                        intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", item.author_id);
-                        intent.putExtra("photo_id", photo.id);
-                    }
-                }
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     private void createActionPopupMenu(final Menu menu, String where, boolean enable) {
         if(popup_menu == null) {
             popup_menu = new android.support.v7.widget.PopupMenu(this, null);
@@ -808,52 +745,11 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                    openRepostDialog("own_wall", post);
+                    Global.openRepostDialog(ProfileIntentActivity.this, ovk_api,
+                            "own_wall", post);
                     dialog.dismiss();
                 }
             }
         });
-    }
-
-    public void openRepostDialog(String where, final WallPost post) {
-        if(where.equals("own_wall")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(
-                    R.layout.dialog_repost_msg, null, false);
-            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
-            builder.setView(repost_view);
-            builder.setPositiveButton(R.string.ok, null);
-            builder.setNegativeButton(R.string.cancel, null);
-            final OvkAlertDialog dialog = new OvkAlertDialog(this);
-            dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                    if(ok_btn != null) {
-                        ok_btn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                try {
-                                    String msg_text = ((EditText)repost_view.
-                                            findViewById(R.id.text_edit)).getText().toString();
-                                    ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
-                                    dialog.close();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-            dialog.show();
-        }
-    }
-
-    public void loadMoreWallPosts() {
-        if(ovk_api.wall != null) {
-            ovk_api.wall.get(ovk_api.wrapper, user.id, 25, ovk_api.wall.next_from);
-        }
     }
 }

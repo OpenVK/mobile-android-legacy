@@ -695,42 +695,6 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
-    public void addLike(int position, String post, View view) {
-        WallPost item;
-        WallLayout wallLayout = ((WallLayout) findViewById(R.id.wall_layout));
-        item = ovk_api.wall.getWallItems().get(position);
-        wallLayout.select(position, "likes", "add");
-        ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
-    public void deleteLike(int position, String post, View view) {
-        WallPost item;
-        WallLayout wallLayout = ((WallLayout) findViewById(R.id.wall_layout));
-        item = ovk_api.wall.getWallItems().get(position);
-        wallLayout.select(0, "likes", "delete");
-        ovk_api.likes.delete(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
-    public void showAuthorPage(int position) {
-        WallPost item;
-        item = ovk_api.wall.getWallItems().get(position);
-        if(item.author_id != -group.id) {
-            if (item.author_id < 0) {
-                String url = "openvk://group/" + "id" + -item.author_id;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setPackage(getPackageName());
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            } else {
-                String url = "openvk://profile/" + "id" + item.author_id;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setPackage(getPackageName());
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            }
-        }
-    }
-
     public void voteInPoll(int item_pos, int answer) {
         try {
             this.item_pos = item_pos;
@@ -798,30 +762,6 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
-    public void viewPhotoAttachment(int position) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
-        item = ovk_api.wall.getWallItems().get(position);
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("local_photo_addr",
-                    String.format("%s/%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(), instance, item.owner_id, item.post_id));
-            if(item.attachments != null) {
-                for(int i = 0; i < item.attachments.size(); i++) {
-                    if(item.attachments.get(i).type.equals("photo")) {
-                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
-                        intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", item.author_id);
-                        intent.putExtra("photo_id", photo.id);
-                    }
-                }
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void repost(int position) {
         final WallPost post = ovk_api.wall.getWallItems().get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -836,57 +776,12 @@ public class GroupIntentActivity extends TranslucentActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                    openRepostDialog("own_wall", post);
+                    Global.openRepostDialog(GroupIntentActivity.this, ovk_api,
+                            "own_wall", post);
                     dialog.dismiss();
                 }
             }
         });
-    }
-
-    public void openRepostDialog(String where, final WallPost post) {
-        if(where.equals("own_wall")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg,
-                    null, false);
-            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
-            builder.setView(repost_view);
-            builder.setPositiveButton(R.string.ok, null);
-            builder.setNegativeButton(R.string.cancel, null);
-            final OvkAlertDialog dialog = new OvkAlertDialog(this);
-            dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialogInterface) {
-                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        if(ok_btn != null) {
-                            ok_btn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        String msg_text =
-                                                ((EditText)repost_view.findViewById(R.id.text_edit))
-                                                        .getText().toString();
-                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id,
-                                                post.post_id, msg_text);
-                                        dialog.close();
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-            dialog.show();
-        }
-    }
-
-    public void loadMoreWallPosts() {
-        if(ovk_api.wall != null && ovk_api.wall.next_from > 0 && ovk_api.wall.getWallItems() != null) {
-            ovk_api.wall.get(ovk_api.wrapper, -group.id, 25, ovk_api.wall.next_from);
-        }
     }
 
     public void setScrollingPositions(final Context ctx, final boolean load_photos,
@@ -904,14 +799,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof ProfileIntentActivity) {
-                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof GroupIntentActivity) {
-                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
-                            }
+                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }
@@ -925,14 +813,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof ProfileIntentActivity) {
-                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof GroupIntentActivity) {
-                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
-                            }
+                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }
