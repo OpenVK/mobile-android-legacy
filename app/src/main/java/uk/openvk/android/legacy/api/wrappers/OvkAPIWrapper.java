@@ -41,6 +41,10 @@ import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
@@ -87,11 +91,15 @@ public class OvkAPIWrapper {
     OvkAPIListeners apiListeners;
 
 
-    public OvkAPIWrapper(Context ctx, boolean use_https, boolean legacy_mode) {
+    public OvkAPIWrapper(Context ctx, boolean use_https, boolean legacy_mode, Handler handler) {
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             logging_enabled = false;
         }
-        this.handler = new Handler(Looper.myLooper());
+        apiListeners = new OvkAPIListeners();
+        this.handler = handler;
+        if(handler == null) {
+            searchHandler();
+        }
         this.ctx = ctx;
         this.use_https = use_https;
         this.legacy_mode = legacy_mode;
@@ -120,6 +128,16 @@ public class OvkAPIWrapper {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void searchHandler() {
+        if(ctx instanceof NetworkFragmentActivity) {
+            this.handler = ((NetworkFragmentActivity) ctx).handler;
+        } else if(ctx instanceof NetworkAuthActivity) {
+            this.handler = ((NetworkAuthActivity) ctx).handler;
+        } else if(ctx instanceof NetworkActivity) {
+            this.handler = ((NetworkActivity) ctx).handler;
         }
     }
 
@@ -934,10 +952,15 @@ public class OvkAPIWrapper {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(message < 0) {
-                        apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                    if(apiListeners != null) {
+                        if (message < 0) {
+                            apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                        } else {
+                            apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                        }
                     } else {
-                        apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                        Log.e(OvkApplication.API_TAG,
+                                "API Listener not found! Handling is not possible.");
                     }
                 }
             });

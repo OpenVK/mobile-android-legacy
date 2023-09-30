@@ -59,29 +59,16 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 public class QuickSearchActivity extends NetworkActivity {
-    public OpenVKAPI ovk_api;
-    public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
-    private SharedPreferences.Editor instance_prefs_editor;
     public DownloadManager dlm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         dlm.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
-        global_prefs_editor = global_prefs.edit();
-        instance_prefs_editor = instance_prefs.edit();
         setTextEditListener();
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
-        OvkAPIListeners apiListeners = new OvkAPIListeners();
-        setAPIListeners(apiListeners);
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             setTranslucentStatusBar(1, Color.parseColor("#8f8f8f"));
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {

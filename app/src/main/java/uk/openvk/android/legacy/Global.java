@@ -17,6 +17,7 @@ import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.provider.Settings;
@@ -888,7 +889,7 @@ public class Global {
         }
     }
 
-    public static Message parseJSONData(OvkAPIWrapper wrapper, Bundle data, Activity activity) {
+    public static Message parseJSONData(OvkAPIWrapper wrapper, Handler handler, Bundle data, Activity activity) {
         Message msg = new Message();
         String method = data.getString("method");
         String args = data.getString("args");
@@ -897,20 +898,23 @@ public class Global {
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         DownloadManager downloadManager = new DownloadManager(activity,
                 global_prefs.getBoolean("useHTTPS", false),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
+
         downloadManager.setInstance(((OvkApplication) activity
                 .getApplicationContext()).getCurrentInstance());
-        assert method != null;
         if (activity instanceof AuthActivity) {
             AuthActivity auth_a = (AuthActivity) activity;
+            downloadManager = auth_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
             }
-            auth_a.handler.sendMessage(msg);
         } else if (activity instanceof AppActivity) {
             AppActivity app_a = (AppActivity) activity;
+            downloadManager = app_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
                     app_a.ovk_api.account.parse(data.getString("response"), wrapper);
@@ -1034,9 +1038,10 @@ public class Global {
                     app_a.ovk_api.notes.parse(data.getString("response"));
                     break;
             }
-            app_a.handler.sendMessage(msg);
         } else if (activity instanceof ConversationActivity) {
             ConversationActivity conv_a = ((ConversationActivity) activity);
+            downloadManager = conv_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Messages.getHistory":
                     conv_a.history = conv_a.conversation.parseHistory(activity, data.getString("response"));
@@ -1051,6 +1056,8 @@ public class Global {
             }
         } else if (activity instanceof FriendsIntentActivity) {
             FriendsIntentActivity friends_a = ((FriendsIntentActivity) activity);
+            downloadManager = friends_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
                     friends_a.ovk_api.account.parse(data.getString("response"), wrapper);
@@ -1070,9 +1077,15 @@ public class Global {
             }
         } else if (activity instanceof ProfileIntentActivity) {
             ProfileIntentActivity profile_a = ((ProfileIntentActivity) activity);
+            downloadManager = profile_a.ovk_api.dlman;
+            if(method == null) {
+                method = "";
+            }
             switch (method) {
                 default:
-                    Log.e(OvkApplication.API_TAG, String.format("[%s] Method not found", method));
+                    Log.e(OvkApplication.API_TAG, String.format("[%s / %s] Method not found", method,
+                            msg.what));
+                    break;
                 case "Account.getProfileInfo":
                     try {
                         profile_a.ovk_api.account.parse(data.getString("response"), wrapper);
@@ -1127,6 +1140,8 @@ public class Global {
             }
         } else if(activity instanceof GroupIntentActivity) {
             GroupIntentActivity group_a = ((GroupIntentActivity) activity);
+            downloadManager = group_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
                     group_a.ovk_api.account.parse(data.getString("response"), wrapper);
@@ -1169,12 +1184,14 @@ public class Global {
             }
         } else if(activity instanceof NotesIntentActivity) {
             NotesIntentActivity notes_a = ((NotesIntentActivity) activity);
+            assert method != null;
             if(method.equals("Notes.get")) {
                 msg.what = HandlerMessages.NOTES_GET;
                 notes_a.ovk_api.notes.parse(data.getString("response"));
             }
         } else if(activity instanceof NewPostActivity) {
             NewPostActivity newpost_a = ((NewPostActivity) activity);
+            assert method != null;
             if(method.equals("Wall.post")) {
                 msg.what = HandlerMessages.WALL_POST;
             } else if(method.startsWith("Photos.get") && method.endsWith("Server")) {
@@ -1186,6 +1203,8 @@ public class Global {
             }
         } else if(activity instanceof QuickSearchActivity) {
             QuickSearchActivity quick_search_a = ((QuickSearchActivity) activity);
+            downloadManager = quick_search_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Groups.search":
                     quick_search_a.ovk_api.groups.parseSearch(data.getString("response"),
@@ -1200,6 +1219,8 @@ public class Global {
             }
         } else if(activity instanceof GroupMembersActivity) {
             GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
+            downloadManager = group_members_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Groups.getMembers":
                     group_members_a.group.members = new ArrayList<>();
@@ -1210,6 +1231,8 @@ public class Global {
             }
         } else if(activity instanceof WallPostActivity) {
             WallPostActivity wall_post_a = ((WallPostActivity) activity);
+            downloadManager = wall_post_a.ovk_api.dlman;
+            assert method != null;
             switch (method) {
                 case "Wall.getComments":
                     wall_post_a.comments = wall_post_a.wall.parseComments(activity, downloadManager,

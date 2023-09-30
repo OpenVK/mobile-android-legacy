@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.services;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -29,6 +30,7 @@ public class LongPollService extends Service {
     private String lp_server;
     private String key;
     private int ts;
+    private Handler handler;
     private OvkAPIWrapper ovk_api;
     private LongPollWrapper lpW;
     private Context ctx;
@@ -38,7 +40,9 @@ public class LongPollService extends Service {
     public LongPollService() {
     }
 
-    public LongPollService(Context ctx, String access_token, boolean use_https, boolean legacy_client) {
+    public LongPollService(Context ctx, Handler handler,
+                           String access_token, boolean use_https, boolean legacy_client) {
+        this.handler = handler;
         this.ctx = ctx;
         this.access_token = access_token;
         lpW = new LongPollWrapper(ctx, use_https, legacy_client);
@@ -62,7 +66,7 @@ public class LongPollService extends Service {
         if(lpW == null) {
             lpW = new LongPollWrapper(ctx, use_https, use_https);
         }
-        ovk_api = new OvkAPIWrapper(ctx, use_https, legacy_client);
+        ovk_api = new OvkAPIWrapper(ctx, use_https, legacy_client, handler);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);
         if(BuildConfig.BUILD_TYPE.equals("release")) ovk_api.log(false);

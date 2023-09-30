@@ -91,7 +91,6 @@ import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
 public class AppActivity extends NetworkFragmentActivity {
     private ArrayList<SlidingMenuItem> slidingMenuArray;
     private ArrayList<SlidingMenuItem> accountSlidingMenuArray;
-    public Handler handler;
     private SlidingMenu menu;
     public ProgressLayout progressLayout;
     public ErrorLayout errorLayout;
@@ -145,9 +144,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             Global.fixWindowPadding(getWindow(), getTheme());
         }
-
-        OvkAPIListeners apiListeners = new OvkAPIListeners();
-        setAPIListeners(apiListeners);
         conversations = new ArrayList<>();
         registerBroadcastReceiver();
         if(((OvkApplication) getApplicationContext()).isTablet) {
@@ -367,7 +363,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ab_layout.adjustLayout();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Global.fixWindowPadding(getWindow(), getTheme());
         }
         ((OvkApplication) getApplicationContext()).config = newConfig;
@@ -851,7 +847,8 @@ public class AppActivity extends NetworkFragmentActivity {
                 );
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 ovk_api.messages.getConversations(ovk_api.wrapper);
-                ((OvkApplication) getApplicationContext()).longPollService = new LongPollService(this,
+                ((OvkApplication) getApplicationContext()).longPollService =
+                        new LongPollService(this, handler,
                         instance_prefs.getString("access_token", ""),
                         global_prefs.getBoolean("use_https", true),
                         global_prefs.getBoolean("debugUseLegacyHttpClient", false));

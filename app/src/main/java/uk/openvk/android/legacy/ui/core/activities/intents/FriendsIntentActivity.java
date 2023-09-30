@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
@@ -90,22 +91,12 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
 
         final Uri uri = intent.getData();
 
-        handler = new Handler() {
+        handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
                 if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
                         String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Global.parseJSONData(ovk_api.wrapper, data, FriendsIntentActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
             }
         };
 
@@ -118,7 +109,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
                     ovk_api.users = new Users();
                     ovk_api.friends = new Friends();
                     if(args.startsWith("id")) {

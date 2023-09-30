@@ -104,12 +104,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     public boolean connection_status;
     public String send_request;
     public Boolean inputStream_isClosed;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
-    private SharedPreferences.Editor instance_prefs_editor;
     public long owner_id;
-    public OpenVKAPI ovk_api;
     private Wall wall;
     public Handler handler;
     private long account_id;

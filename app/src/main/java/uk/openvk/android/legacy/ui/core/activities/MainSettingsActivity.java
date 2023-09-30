@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
@@ -76,8 +77,17 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
             account_name = (String) savedInstanceState.getSerializable("account_name");
         }
         app = ((OvkApplication) getApplicationContext());
+        handler = new Handler(Looper.myLooper()) {
+            @Override
+            public void handleMessage(Message message) {
+                Bundle data = message.getData();
+                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
+                        String.format("Handling API message: %s", message.what));
+                receiveState(message.what, data);
+            }
+        };
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
         ovk_api.setServer(instance_prefs.getString("server", ""));
@@ -121,15 +131,6 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
             });
             actionBar.setTitle(getResources().getString(R.string.menu_settings));
         }
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
-            }
-        };
         installFragments();
     }
 

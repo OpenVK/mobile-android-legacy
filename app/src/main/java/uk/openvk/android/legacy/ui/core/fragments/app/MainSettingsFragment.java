@@ -9,6 +9,8 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
@@ -415,7 +417,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
                     }
                 }
                 DownloadManager dlm = new DownloadManager(getActivity(), false,
-                        global_prefs.getBoolean("legacyHttpClient", false));
+                        global_prefs.getBoolean("legacyHttpClient", false),
+                        new Handler(Looper.myLooper()));
                 dlm.clearCache(getContext().getCacheDir());
                 Intent activity = new Intent(getContext().getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

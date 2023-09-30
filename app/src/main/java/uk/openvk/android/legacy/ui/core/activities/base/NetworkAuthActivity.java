@@ -52,7 +52,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
     }
@@ -64,24 +64,31 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                 if(!BuildConfig.BUILD_TYPE.equals("release"))
                     Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
                             msg_code));
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Message msg =
-                                Global.parseJSONData(ovk_api.wrapper, data, ((Activity) ctx));
-                        ovk_api.wrapper.handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                receiveState(msg.what, data);
-                            }
-                        });
-                    }
-                }).start();
+                if(msg_code == 2016) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Message msg =
+                                    Global.parseJSONData(ovk_api.wrapper, handler, data, ((Activity) ctx));
+                            ovk_api.wrapper.handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    receiveState(msg.what, data);
+                                }
+                            });
+                        }
+                    }).start();
+                } else {
+                    receiveState(msg_code, data);
+                }
             }
         };
         listeners.failListener = new OvkAPIListeners.OnAPIFailListener() {
             @Override
             public void onAPIFailed(Context ctx, int msg_code, final Bundle data) {
+                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
+                            msg_code));
                 receiveState(msg_code, data);
             }
         };

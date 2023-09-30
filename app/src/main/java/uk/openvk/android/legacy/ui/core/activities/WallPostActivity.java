@@ -125,7 +125,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Global.parseJSONData(ovk_api.wrapper, data, WallPostActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, handler, data,WallPostActivity.this);
                         }
                     }).start();
                 } else {
@@ -194,7 +194,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                     }
                 }
                 wall = new Wall();
-                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
                 ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
             }
         } else {

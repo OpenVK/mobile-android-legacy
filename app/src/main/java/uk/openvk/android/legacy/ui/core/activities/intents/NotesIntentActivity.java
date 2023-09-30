@@ -109,7 +109,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Global.parseJSONData(ovk_api.wrapper, data, NotesIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, handler, data, NotesIntentActivity.this);
                         }
                     }).start();
                 } else {
@@ -127,7 +127,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
                     ovk_api.users = new Users();
                     ovk_api.notes = new Notes();
                     if(args.startsWith("id")) {
