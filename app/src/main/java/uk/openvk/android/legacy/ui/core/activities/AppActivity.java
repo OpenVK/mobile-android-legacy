@@ -760,9 +760,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 SlidingMenuItem messages_item = slidingMenuArray.get(1);
                 messages_item.counter = ovk_api.account.counters.new_messages;
                 slidingMenuArray.set(1, messages_item);
-                //SlidingMenuItem notifications_item = slidingMenuArray.get(6);
-                //notifications_item.counter = account.counters.notifications;
-                //slidingMenuArray.set(6, notifications_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
                         slidingMenuArray);
                 if(!((OvkApplication) getApplicationContext()).isTablet) {
