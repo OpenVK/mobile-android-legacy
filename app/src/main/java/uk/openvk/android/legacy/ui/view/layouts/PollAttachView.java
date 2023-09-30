@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.list.adapters.PollAdapter;
 
 /** OPENVK LEGACY LICENSE NOTIFICATION
@@ -48,9 +49,12 @@ public class PollAttachView extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void createAdapter(Context ctx, int item_pos, ArrayList<PollAnswer> answers,
+    public void createAdapter(Context ctx, int item_pos, ArrayList<WallPost> wallPosts,
+                              WallPost post,
+                              ArrayList<PollAnswer> answers,
                               boolean multiple, int user_votes, long total_votes) {
-        pollAdapter = new PollAdapter(ctx, item_pos, answers, multiple, user_votes, total_votes);
+        pollAdapter = new PollAdapter(ctx, item_pos,
+                wallPosts, post, answers, multiple, user_votes, total_votes);
         llm = new LinearLayoutManager(ctx);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         ((RecyclerView) findViewById(R.id.answer_list)).setLayoutManager(llm);

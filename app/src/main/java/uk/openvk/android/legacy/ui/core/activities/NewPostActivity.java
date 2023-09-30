@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.ui.core.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -59,9 +60,11 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.api.models.PhotoUploadParams;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
@@ -88,7 +91,7 @@ import uk.openvk.android.legacy.utils.RealPathUtil;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class NewPostActivity extends TranslucentFragmentActivity implements
+public class NewPostActivity extends NetworkFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
     public String server;
@@ -163,7 +166,6 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                 installLayouts();
                 global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                 global_prefs_editor = global_prefs.edit();
                 instance_prefs_editor = instance_prefs.edit();
                 inputStream_isClosed = false;
@@ -174,26 +176,6 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
                 if (owner_id == 0) {
                     finish();
                 }
-
-                handler = new Handler(Looper.myLooper()) {
-                    @Override
-                    public void handleMessage(Message message) {
-                        final Bundle data = message.getData();
-                        if(!BuildConfig.BUILD_TYPE.equals("release"))
-                            Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
-                                    message.what));
-                        if(message.what == HandlerMessages.PARSE_JSON){
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ovk_api.wrapper.parseJSONData(data, NewPostActivity.this);
-                                }
-                            }).start();
-                        } else {
-                            receiveState(message.what, data);
-                        }
-                    }
-                };
                 response_sb = new StringBuilder();
                 ovk_api.photos.getOwnerUploadServer(ovk_api.wrapper, owner_id);
             }
@@ -489,7 +471,7 @@ public class NewPostActivity extends TranslucentFragmentActivity implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void receiveState(int message, Bundle data) {
+    protected void receiveState(int message, Bundle data) {
         try {
             if(message == HandlerMessages.WALL_POST) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();

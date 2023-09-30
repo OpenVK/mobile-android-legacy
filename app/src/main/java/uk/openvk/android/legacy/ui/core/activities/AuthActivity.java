@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentAuthActivity;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.view.layouts.EditTextAction;
@@ -68,18 +69,15 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 @SuppressWarnings("ALL")
-public class AuthActivity extends TranslucentAuthActivity {
+public class AuthActivity extends NetworkAuthActivity {
 
     private OvkApplication app;
     private Global global = new Global();
     private OvkAlertDialog alertDialog;
     private OvkAlertDialog connectionDialog;
-    private OvkAPIWrapper ovk_api;
     private Error error;
     public Handler handler;
     private Account account;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
     private JSONParser jsonParser = new JSONParser();
     private int twofactor_fail = -1;
     private Authorization auth;
@@ -91,8 +89,6 @@ public class AuthActivity extends TranslucentAuthActivity {
         setContentView(R.layout.activity_auth);
         app = ((OvkApplication) getApplicationContext());
         XLinearLayout auth_layout = ((XLinearLayout) findViewById(R.id.auth_layout));
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         loadInstances();
         if(!app.isTablet) {
             auth_layout.setOnKeyboardStateListener(new OnKeyboardStateListener() {
@@ -163,26 +159,6 @@ public class AuthActivity extends TranslucentAuthActivity {
                 authorize();
             }
         });
-        ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ovk_api.parseJSONData(data, AuthActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data.getString("response"));
-                }
-            }
-        };
         (findViewById(R.id.reg_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -282,9 +258,9 @@ public class AuthActivity extends TranslucentAuthActivity {
                     }
                 }
             }
-            ovk_api.requireHTTPS(global_prefs.getBoolean("useHTTPS", true));
-            ovk_api.setServer(instance);
-            ovk_api.authorize(username, password);
+            ovk_api.wrapper.requireHTTPS(global_prefs.getBoolean("useHTTPS", true));
+            ovk_api.wrapper.setServer(instance);
+            ovk_api.wrapper.authorize(username, password);
             connectionDialog = new OvkAlertDialog(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             connectionDialog.build(builder, "", getString(R.string.loading), null, "progressDlg");
@@ -329,7 +305,7 @@ public class AuthActivity extends TranslucentAuthActivity {
         String instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
         String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
-        ovk_api.authorize(username, password, code);
+        ovk_api.wrapper.authorize(username, password, code);
         connectionDialog = new OvkAlertDialog(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
@@ -434,13 +410,13 @@ public class AuthActivity extends TranslucentAuthActivity {
                     connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
                 }
                 account = new Account(this);
-                ovk_api.setAccessToken(auth.getAccessToken());
-                account.getProfileInfo(ovk_api);
+                ovk_api.wrapper.setAccessToken(auth.getAccessToken());
+                account.getProfileInfo(ovk_api.wrapper);
             } else if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
                 String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
-                account = new Account(response, this, ovk_api);
+                account = new Account(response, this, ovk_api.wrapper);
                 if(instance_prefs != null && instance_prefs.contains("access_token") &&
                         instance_prefs.getString("access_token", "").length() > 0) {
                     instance_prefs = getSharedPreferences(

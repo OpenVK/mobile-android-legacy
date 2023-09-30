@@ -137,7 +137,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, ProfileIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, data, ProfileIntentActivity.this);
                         }
                     }).start();
                 } else {

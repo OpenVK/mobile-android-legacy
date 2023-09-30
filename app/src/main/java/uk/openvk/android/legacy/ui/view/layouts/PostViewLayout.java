@@ -512,9 +512,11 @@ public class PostViewLayout extends LinearLayout {
         }
     }
 
-    public void loadPollAttachment(Context ctx, PollAttachment poll) {
+    public void loadPollAttachment(Context ctx, PollAttachment poll,
+                                   ArrayList<WallPost> wallPosts, WallPost post) {
         PollAttachView pollAttachView = findViewById(R.id.poll_layout);
-        pollAttachView.createAdapter(ctx, 0, poll.answers, poll.multiple, poll.user_votes,
+        pollAttachView.createAdapter(ctx, 0, wallPosts, post,
+                poll.answers, poll.multiple, poll.user_votes,
                 poll.votes);
         pollAttachView.setPollInfo(poll.question, poll.anonymous, poll.end_date);
         pollAttachView.setVisibility(View.VISIBLE);

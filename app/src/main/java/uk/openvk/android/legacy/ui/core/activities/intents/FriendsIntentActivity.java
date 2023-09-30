@@ -100,7 +100,7 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, FriendsIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, data, FriendsIntentActivity.this);
                         }
                     }).start();
                 } else {

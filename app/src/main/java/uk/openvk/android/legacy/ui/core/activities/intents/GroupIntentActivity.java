@@ -140,7 +140,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, GroupIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, data, GroupIntentActivity.this);
                         }
                     }).start();
                 } else {

@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
@@ -333,7 +334,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
                                 PollAttachment pollAttachment = ((PollAttachment) item.repost.
                                         newsfeed_item.attachments.get(i).getContent());
-                                original_post_poll.createAdapter(ctx, position, pollAttachment.answers,
+                                original_post_poll.createAdapter(ctx, position, items,
+                                        item.repost.newsfeed_item,
+                                        pollAttachment.answers,
                                         pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
                                 original_post_poll.setPollInfo(pollAttachment.question,
                                         pollAttachment.anonymous, pollAttachment.end_date);
@@ -427,8 +430,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if (item.attachments.get(i).getContent() != null) {
                             PollAttachment pollAttachment = ((PollAttachment)
                                     item.attachments.get(i).getContent());
-                            pollAttachView.createAdapter(ctx, position, pollAttachment.answers,
-                                    pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                            pollAttachView.createAdapter(ctx, position,  items, item,
+                                    pollAttachment.answers, pollAttachment.multiple,
+                                    pollAttachment.user_votes, pollAttachment.votes);
                             pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
                                     pollAttachment.end_date);
                             pollAttachView.setVisibility(View.VISIBLE);

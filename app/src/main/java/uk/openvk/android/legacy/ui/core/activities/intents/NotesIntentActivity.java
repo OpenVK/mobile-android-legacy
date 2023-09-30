@@ -109,7 +109,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, NotesIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, data, NotesIntentActivity.this);
                         }
                     }).start();
                 } else {

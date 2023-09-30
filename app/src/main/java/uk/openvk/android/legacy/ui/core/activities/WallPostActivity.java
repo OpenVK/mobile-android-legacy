@@ -38,6 +38,7 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
@@ -53,6 +54,7 @@ import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.RepostInfo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.ui.view.layouts.CommentPanel;
@@ -77,16 +79,11 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class WallPostActivity extends TranslucentFragmentActivity
+public class WallPostActivity extends NetworkFragmentActivity
         implements EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
-    private OpenVKAPI ovk_api;
     public Wall wall;
     public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
-    private SharedPreferences.Editor instance_prefs_editor;
     public ArrayList<Comment> comments;
     private PostViewLayout postViewLayout;
     private CommentPanel commentPanel;
@@ -107,10 +104,6 @@ public class WallPostActivity extends TranslucentFragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wall_post);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
-        instance_prefs_editor = instance_prefs.edit();
         instance = instance_prefs.getString("server", "");
         ((XLinearLayout) findViewById(R.id.comments_view)).setOnKeyboardStateListener(this);
         setEmojiconFragment(false);
@@ -132,7 +125,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, WallPostActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, data, WallPostActivity.this);
                         }
                     }).start();
                 } else {
@@ -250,7 +243,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
                 postViewLayout.loadVideoAttachment(this, video, post.owner_id);
             } else if(post.attachments.get(i).type.equals("poll")) {
                 PollAttachment poll = (PollAttachment) post.attachments.get(i).getContent();
-                postViewLayout.loadPollAttachment(this, poll);
+                postViewLayout.loadPollAttachment(this, poll, wall.getWallItems(), post);
             }
         }
         this.post = post;
@@ -417,7 +410,7 @@ public class WallPostActivity extends TranslucentFragmentActivity
         super.onConfigurationChanged(newConfig);
     }
 
-    private void receiveState(int message, Bundle data) {
+    protected void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
             postViewLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_PHOTOS) {
