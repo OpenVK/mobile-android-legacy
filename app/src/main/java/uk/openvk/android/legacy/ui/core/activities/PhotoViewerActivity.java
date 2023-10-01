@@ -80,7 +80,6 @@ public class PhotoViewerActivity extends NetworkActivity {
     private Bitmap bitmap;
     private Menu activity_menu;
     private BitmapFactory.Options bfOptions;
-    private DownloadManager downloadManager;
     private ActionBar actionBar;
     private PopupWindow popupMenu;
     private String instance;
@@ -167,14 +166,8 @@ public class PhotoViewerActivity extends NetworkActivity {
                 access_token = instance_prefs.getString("access_token", "");
                 try {
                     if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
-                        downloadManager = new DownloadManager(this, true,
-                                global_prefs.getBoolean("legacyHttpClient", false), handler);
-                        downloadManager.setInstance(
-                                PreferenceManager
-                                        .getDefaultSharedPreferences(this)
-                                        .getString("current_instance", ""));
-                        downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
-                        downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
+                        ovk_api.dlman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
+                        ovk_api.dlman.downloadOnePhotoToCache(extras.getString("original_link"),
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),
                                         extras.getLong("photo_id")), "original_photos");
                     } else {

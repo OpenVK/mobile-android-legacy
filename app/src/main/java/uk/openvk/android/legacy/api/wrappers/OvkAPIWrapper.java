@@ -95,7 +95,7 @@ public class OvkAPIWrapper {
         if(BuildConfig.BUILD_TYPE.equals("release")) {
             logging_enabled = false;
         }
-        apiListeners = new OvkAPIListeners();
+        setAPIListeners();
         this.handler = handler;
         if(handler == null) {
             searchHandler();
@@ -129,6 +129,32 @@ public class OvkAPIWrapper {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void setAPIListeners() {
+        apiListeners = new OvkAPIListeners();
+        apiListeners.failListener = new OvkAPIListeners.OnAPIFailListener() {
+            @Override
+            public void onAPIFailed(Context ctx, int msg_code, Bundle data) {
+                Log.e(OvkApplication.API_TAG,
+                        String.format("This is dummy API listener. " +
+                                        "\r\nStatus: Failed" +
+                                        "\r\nMessage code: %s" +
+                                        "\r\nContext class: %s",
+                                msg_code, ctx.getClass().getSimpleName()));
+            }
+        };
+        apiListeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
+            @Override
+            public void onAPISuccess(Context ctx, int msg_code, Bundle data) {
+                Log.d(OvkApplication.API_TAG,
+                        String.format("This is dummy API listener. " +
+                                        "\r\nStatus: Success" +
+                                        "\r\nMessage code: %s" +
+                                        "\r\nContext class: %s",
+                                msg_code, ctx.getClass().getSimpleName()));
+            }
+        };
     }
 
     private void searchHandler() {
