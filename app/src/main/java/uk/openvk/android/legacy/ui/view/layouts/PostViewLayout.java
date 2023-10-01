@@ -501,7 +501,8 @@ public class PostViewLayout extends LinearLayout {
                             }
                         }
                     } else {
-                        item.attachments.get(0).status = "not_supported";
+                        Log.e(OvkApplication.APP_TAG,
+                                "No photo attachments");
                     }
                     comments.set(i, item);
                 } catch (Exception ex) {
