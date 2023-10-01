@@ -709,13 +709,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
             if(ovk_api.account != null) {
                 WallPost item;
+                item = getItem(position);
                 Intent intent = new Intent(ctx.getApplicationContext(), WallPostActivity.class);
-                if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    item = ovk_api.wall.getWallItems().get(position);
-                    intent.putExtra("where", "wall");
-                } else {
-                    item = ovk_api.newsfeed.getWallPosts().get(position);
+                if (ctx instanceof AppActivity &&
+                        ((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment) {
                     intent.putExtra("where", "newsfeed");
+                } else {
+                    intent.putExtra("where", "wall");
                 }
                 try {
                     intent.putExtra("post_id", item.post_id);
