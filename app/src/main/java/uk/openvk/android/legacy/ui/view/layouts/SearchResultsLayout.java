@@ -15,7 +15,8 @@ import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsSearchResultAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.UsersSearchResultAdapter;
 
-/** OPENVK LEGACY LICENSE NOTIFICATION
+/** Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
  *  the GNU Affero General Public License as published by the Free Software Foundation, either
