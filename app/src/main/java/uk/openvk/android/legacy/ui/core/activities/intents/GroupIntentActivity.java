@@ -64,7 +64,8 @@ import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-/** OPENVK LEGACY LICENSE NOTIFICATION
+/** Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
  *  the GNU Affero General Public License as published by the Free Software Foundation, either
