@@ -54,7 +54,6 @@ To compile them you need:
 
   The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the `builder` submodule of the [`./ndk-modules/ovkmplayer` directory](https://github.com/openvk/mobile-android-legacy/tree/main/ndk-modules/ovkmplayer).
 
-
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
 ## Used Libraries
@@ -64,14 +63,15 @@ To compile them you need:
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Twemojicon (Emojicon with Twemoji pack)](https://github.com/tinelix/twemojicon) (Apache License 2.0)
-7. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
-8. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
-9. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
-10. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
-11. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
-12. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
-13. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
-14. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
+7. [FFmpeg 3.1.4](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-3.1.4) and [FFmpeg 0.11.5](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-0.11.5) with [builder](https://github.com/tinelix/ffmpeg-android-builder) (LGPLv3.0)
+8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
+9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
+10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
+11. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
+12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
+13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
+14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
+15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU Affero GPL v3.0](COPYING) or later version.
