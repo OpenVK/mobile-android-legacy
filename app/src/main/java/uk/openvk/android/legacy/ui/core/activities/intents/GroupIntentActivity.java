@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -28,7 +27,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -44,18 +42,13 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
@@ -64,7 +57,6 @@ import uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.GroupHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
@@ -110,6 +102,7 @@ public class GroupIntentActivity extends TranslucentActivity {
     private boolean loading_more_posts;
     private String instance;
 
+    @SuppressWarnings("ConstantConditions")
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +150,8 @@ public class GroupIntentActivity extends TranslucentActivity {
         };
 
         if(activity_menu == null) {
-            android.support.v7.widget.PopupMenu p  = new android.support.v7.widget.PopupMenu(this, null);
+            android.support.v7.widget.PopupMenu p  =
+                    new android.support.v7.widget.PopupMenu(this, null);
             activity_menu = p.getMenu();
             getMenuInflater().inflate(R.menu.group, activity_menu);
             onCreateOptionsMenu(activity_menu);
@@ -268,35 +262,33 @@ public class GroupIntentActivity extends TranslucentActivity {
         super.onConfigurationChanged(newConfig);
     }
 
-    private void createActionPopupMenu(final Menu menu, String where, boolean enable) {
+    @SuppressWarnings("ConstantConditions")
+    private void createActionPopupMenu(final Menu menu) {
         if(popup_menu == null) {
             popup_menu = new android.support.v7.widget.PopupMenu(this, null);
         }
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             actionBar = findViewById(R.id.actionbar);
             if(menu.size() == 0) {
-                if(where.equals("group")) {
-                    getMenuInflater().inflate(R.menu.group, menu);
-                }
+                getMenuInflater().inflate(R.menu.group, menu);
             }
-            if (enable) {
-                dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
-                        new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
-                                R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                                onMenuItemSelected(0, menu.getItem(item.getItemId()));
-                            }
-                        });
-                actionBar.addAction(action);
-            }
+            ActionBar.PopupMenuAction action =
+                    new ActionBar.PopupMenuAction(this, "", menu,
+                            R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                            onMenuItemSelected(0, menu.getItem(item.getItemId()));
+                        }
+                    });
+            actionBar.addAction(action);
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void installLayouts() {
-        progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
-        errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
-        groupScrollView = (InfinityScrollView) findViewById(R.id.group_scrollview);
+        progressLayout = findViewById(R.id.progress_layout);
+        errorLayout = findViewById(R.id.error_layout);
+        groupScrollView = findViewById(R.id.group_scrollview);
         groupScrollView.setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -368,7 +360,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             if(popup_menu == null) {
                 popup_menu = new android.support.v7.widget.PopupMenu(this, null);
             }
-            createActionPopupMenu(popup_menu.getMenu(), "group", true);
+            createActionPopupMenu(popup_menu.getMenu());
             actionBar.setTitle(getResources().getString(R.string.group));
         }
     }
@@ -393,7 +385,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                     }
                 });
                 selector.setToGroup();
-            } else if (message == HandlerMessages.GROUPS_GET_BY_ID) {
+            } else if (message == HandlerMessages.GROUPS_GET_BY_ID
+                    || message == HandlerMessages.GROUPS_SEARCH) {
                 group = ovk_api.groups.getList().get(0);
                 updateLayout(group);
                 progressLayout.setVisibility(View.GONE);
@@ -417,8 +410,6 @@ public class GroupIntentActivity extends TranslucentActivity {
                         activity_menu.getItem(i).setVisible(true);
                     }
                 }
-            } else if (message == HandlerMessages.GROUPS_SEARCH) {
-                ovk_api.groups.getGroupByID(ovk_api.wrapper, ovk_api.groups.getList().get(0).id);
             } else if (message == HandlerMessages.GROUPS_JOIN) {
                 Button join_btn = findViewById(R.id.join_to_comm);
                 join_btn.setText(R.string.leave_group);
@@ -446,7 +437,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                 });
                 selector.showNewPostIcon();
                 loading_more_posts = true;
-                setScrollingPositions(this, false, true);
+                setScrollingPositions(this, false);
             } else if (message == HandlerMessages.WALL_GET_MORE) {
                 ((WallLayout) findViewById(R.id.wall_layout))
                         .createAdapter(this, ovk_api.wall.getWallItems());
@@ -497,11 +488,13 @@ public class GroupIntentActivity extends TranslucentActivity {
                     || message == HandlerMessages.INVALID_JSON_RESPONSE
                     || message == HandlerMessages.CONNECTION_TIMEOUT ||
                     message == HandlerMessages.INTERNAL_ERROR) {
-                if (data.getString("method").equals("Wall.get")) {
-                    ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(this, getResources().getString(R.string.err_text),
-                            Toast.LENGTH_LONG).show();
+                if (data.containsKey("method")) {
+                    if ("Wall.get".equals(data.getString("method"))) {
+                        ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                    } else {
+                        Toast.makeText(this, getResources().getString(R.string.err_text),
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -550,7 +543,7 @@ public class GroupIntentActivity extends TranslucentActivity {
             }
             join_btn.setVisibility(View.VISIBLE);
         } else {
-            final Button join_btn = ((Button) findViewById(R.id.join_to_comm));
+            final Button join_btn = (findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -589,7 +582,7 @@ public class GroupIntentActivity extends TranslucentActivity {
 
 
     private void updateLayout(final Group group) {
-        GroupHeader header = (GroupHeader) findViewById(R.id.group_header);
+        GroupHeader header = findViewById(R.id.group_header);
         header.setProfileName(String.format("%s  ", group.name));
         header.setVerified(group.verified, this);
         ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count,
@@ -662,28 +655,6 @@ public class GroupIntentActivity extends TranslucentActivity {
         startActivity(i);
     }
 
-    public void openWallComments(int position, View view) {
-        if(ovk_api.account != null) {
-            WallPost item;
-            Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-            item = ovk_api.wall.getWallItems().get(position);
-            intent.putExtra("where", "wall");
-            try {
-                intent.putExtra("post_id", item.post_id);
-                intent.putExtra("owner_id", item.owner_id);
-                intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                        ovk_api.account.last_name));
-                intent.putExtra("account_id", ovk_api.account.id);
-                intent.putExtra("post_author_id", item.author_id);
-                intent.putExtra("post_author_name", item.name);
-                intent.putExtra("post_json", item.getJSONString());
-                startActivity(intent);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
     private void openNewPostActivity() {
         try {
             Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
@@ -693,42 +664,6 @@ public class GroupIntentActivity extends TranslucentActivity {
             startActivity(intent);
         } catch (Exception ignored) {
 
-        }
-    }
-
-    public void addLike(int position, String post, View view) {
-        WallPost item;
-        WallLayout wallLayout = ((WallLayout) findViewById(R.id.wall_layout));
-        item = ovk_api.wall.getWallItems().get(position);
-        wallLayout.select(position, "likes", "add");
-        ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
-    public void deleteLike(int position, String post, View view) {
-        WallPost item;
-        WallLayout wallLayout = ((WallLayout) findViewById(R.id.wall_layout));
-        item = ovk_api.wall.getWallItems().get(position);
-        wallLayout.select(0, "likes", "delete");
-        ovk_api.likes.delete(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
-    public void showAuthorPage(int position) {
-        WallPost item;
-        item = ovk_api.wall.getWallItems().get(position);
-        if(item.author_id != -group.id) {
-            if (item.author_id < 0) {
-                String url = "openvk://group/" + "id" + -item.author_id;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setPackage(getPackageName());
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            } else {
-                String url = "openvk://profile/" + "id" + item.author_id;
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setPackage(getPackageName());
-                i.setData(Uri.parse(url));
-                startActivity(i);
-            }
         }
     }
 
@@ -779,57 +714,14 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
-    public void openWallRepostComments(int position, View view) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-        item = ovk_api.wall.getWallItems().get(position);
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("post_id", item.post_id);
-            intent.putExtra("owner_id", item.owner_id);
-            intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                    ovk_api.account.last_name));
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("post_author_id", item.author_id);
-            intent.putExtra("post_author_name", item.name);
-            intent.putExtra("post_json", item.getJSONString());
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void viewPhotoAttachment(int position) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
-        item = ovk_api.wall.getWallItems().get(position);
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("local_photo_addr",
-                    String.format("%s/%s/wall_photo_attachments/wall_attachment_o%sp%s", getCacheDir(), instance, item.owner_id, item.post_id));
-            if(item.attachments != null) {
-                for(int i = 0; i < item.attachments.size(); i++) {
-                    if(item.attachments.get(i).type.equals("photo")) {
-                        PhotoAttachment photo = ((PhotoAttachment) item.attachments.get(i).getContent());
-                        intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", item.author_id);
-                        intent.putExtra("photo_id", photo.id);
-                    }
-                }
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void repost(int position) {
         final WallPost post = ovk_api.wall.getWallItems().get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.repost_dlg_title);
         functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, functions);
+        ArrayAdapter<String> adapter = new
+                ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
         builder.setSingleChoiceItems(adapter, -1, null);
         final AlertDialog dialog = builder.create();
         dialog.show();
@@ -837,61 +729,15 @@ public class GroupIntentActivity extends TranslucentActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                    openRepostDialog("own_wall", post);
+                    Global.openRepostDialog(GroupIntentActivity.this, ovk_api,
+                            "own_wall", post);
                     dialog.dismiss();
                 }
             }
         });
     }
 
-    public void openRepostDialog(String where, final WallPost post) {
-        if(where.equals("own_wall")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg,
-                    null, false);
-            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
-            builder.setView(repost_view);
-            builder.setPositiveButton(R.string.ok, null);
-            builder.setNegativeButton(R.string.cancel, null);
-            final OvkAlertDialog dialog = new OvkAlertDialog(this);
-            dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialogInterface) {
-                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        if(ok_btn != null) {
-                            ok_btn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        String msg_text =
-                                                ((EditText)repost_view.findViewById(R.id.text_edit))
-                                                        .getText().toString();
-                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id,
-                                                post.post_id, msg_text);
-                                        dialog.close();
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-            dialog.show();
-        }
-    }
-
-    public void loadMoreWallPosts() {
-        if(ovk_api.wall != null) {
-            ovk_api.wall.get(ovk_api.wrapper, -group.id, 25, ovk_api.wall.next_from);
-        }
-    }
-
-    public void setScrollingPositions(final Context ctx, final boolean load_photos,
-                                      final boolean infinity_scroll) {
+    public void setScrollingPositions(final Context ctx, final boolean load_photos) {
         loading_more_posts = false;
         if(load_photos) {
             ((WallLayout) findViewById(R.id.wall_layout)).loadPhotos();
@@ -905,14 +751,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof ProfileIntentActivity) {
-                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof GroupIntentActivity) {
-                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
-                            }
+                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }
@@ -926,14 +765,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_posts = true;
-                                ((AppActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof ProfileIntentActivity) {
-                                ((ProfileIntentActivity) ctx).loadMoreWallPosts();
-                            } else if(ctx instanceof GroupIntentActivity) {
-                                ((GroupIntentActivity) ctx).loadMoreWallPosts();
-                            }
+                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }

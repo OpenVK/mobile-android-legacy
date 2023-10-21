@@ -33,6 +33,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -49,18 +51,31 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.ui.core.activities.MainActivity;
+import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
-/** OPENVK LEGACY LICENSE NOTIFICATION
+/** Global.java - global methods for application
+ *
+ *  OPENVK LEGACY LICENSE NOTIFICATION
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
  *  the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -766,5 +781,102 @@ public class Global {
         });
         dialog = builder.create();
         dialog.show();
+    }
+
+    public static void openRepostDialog(Context ctx, final OpenVKAPI ovk_api, String where, final WallPost post) {
+        if(where.equals("own_wall")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            final View repost_view = ((Activity)ctx).getLayoutInflater().inflate(R.layout.dialog_repost_msg,
+                    null, false);
+            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
+            builder.setView(repost_view);
+            builder.setPositiveButton(R.string.ok, null);
+            builder.setNegativeButton(R.string.cancel, null);
+            final OvkAlertDialog dialog = new OvkAlertDialog(ctx);
+            dialog.build(builder, ctx.getResources().getString(R.string.repost_dlg_title), "", repost_view);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        if(ok_btn != null) {
+                            ok_btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        String msg_text = ((EditText)
+                                                repost_view.findViewById(R.id.text_edit)).getText()
+                                                .toString();
+                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
+                                        dialog.close();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            dialog.show();
+        }
+    }
+
+    public static void addToFriends(OpenVKAPI ovk_api, long user_id) {
+        if(user_id != ovk_api.account.id) {
+            ovk_api.friends.add(ovk_api.wrapper, user_id);
+        }
+    }
+
+    public static void deleteFromFriends(OpenVKAPI ovk_api, long user_id) {
+        if(user_id != ovk_api.account.id) {
+            ovk_api.friends.delete(ovk_api.wrapper, user_id);
+        }
+    }
+
+    public static void loadMoreWallPosts(OpenVKAPI ovk_api) {
+        if(ovk_api.wall != null) {
+            ovk_api.wall.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.wall.next_from);
+        }
+    }
+
+    public static void loadMoreFriends(OpenVKAPI ovk_api) {
+        if(ovk_api.friends != null) {
+            ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.friends.offset);
+        }
+    }
+
+    public static void loadMoreGroups(OpenVKAPI ovk_api) {
+        if(ovk_api.groups != null) {
+            ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.groups.getList().size());
+        }
+    }
+
+    public static void openIntentFromCounters(Context ctx, String action) {
+        if(!BuildConfig.BUILD_TYPE.equals("release"))
+            Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
+        if(action.length() > 0) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
+            i.setData(Uri.parse(action));
+            ctx.startActivity(i);
+        }
+    }
+
+    public static void openNewPostActivity(Context ctx, OpenVKAPI ovk_api) {
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        try {
+            Intent intent = new Intent(ctx.getApplicationContext(), NewPostActivity.class);
+            if (global_prefs.getString("current_screen", "").equals("profile")) {
+                intent.putExtra("owner_id", ovk_api.user.id);
+            } else {
+                intent.putExtra("owner_id", ovk_api.account.id);
+            }
+            intent.putExtra("account_id", ovk_api.account.id);
+            intent.putExtra("account_first_name", ovk_api.account.user.first_name);
+            ctx.startActivity(intent);
+        } catch (Exception ignored) {
+
+        }
     }
 }

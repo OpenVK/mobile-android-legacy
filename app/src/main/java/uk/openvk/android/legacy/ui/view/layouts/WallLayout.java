@@ -108,11 +108,14 @@ public class WallLayout extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         try {
+            Log.d(OvkApplication.APP_TAG, "Measuring specification for WallLayout...");
             int heightMeasureSpec_custom = MeasureSpec.makeMeasureSpec(
                     Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec_custom);
+            Log.d(OvkApplication.APP_TAG, "Preparing WallLayout...");
             ViewGroup.LayoutParams params = getLayoutParams();
             params.height = getMeasuredHeight();
+            setMeasuredDimension(params.width, params.height);
         } catch (Exception ignored) {
 
         }

@@ -24,36 +24,6 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 ## Building
 We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/archive) and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
 
-To ensure non-native codecs support (Theora, VP8, Opus, MP3onMP4), two versions of FFmpeg are used:
-* **FFmpeg 0.11.5** for 32-bit CPU architectures - ARMv5/v6, ARMv7a, x86
-* **FFmpeg 3.1.4** for 64-bit CPU architectures - ARMv8a
-
-To compile them you need:
-+ **GNU/Linux distro or WSL2** \
-  Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
-
-  Tested on Ubuntu 12.04 LTS and Debian 8.7.1 (FFmpeg 0.11.5 with NDK r6 only), can be built in the latest distributions. _FFmpeg old version build on Ubuntu 22.04 LTS? 🤔_
-+ **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) and [Android NDK r11c](https://github.com/android/ndk/wiki/Unsupported-Downloads#r11c)** \
-  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_HOME` variable.
-
-  Android NDK `r8e` is highly recommended for providing FFmpeg 0.11.5 support in older versions of Android.
-
-  Also, in the project settings, specify the path to Android NDK r11c.
-+ **Installed dependencies** \
-  See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos).
-
-  **OPTIONAL:** To run 32-bit binaries, including NDK r6, you need to install the following packages: `libstdc++6:i386`, `libgcc1:i386`, `zlib1g:i386`, `libncurses5:i386` or `ia32-libs` for Ubuntu/Debian/Linux Mint.
-+ **Scripts that build FFmpeg from source** \
-  Run the command inside the OpenVK Legacy repository in terminal:
-  ```sh
-   chmod +x ./build-ffmpeg.sh
-   ANDROID_NDK_HOME=[path/to/ndk-r8e] ./build-ffmpeg.sh 0.11.5
-   # or: ANDROID_NDK_HOME=[path/to/ndk-r6] ./build-ffmpeg.sh 0.11.5-r6
-   ANDROID_NDK_HOME=[path/to/ndk-r11c] ./build-ffmpeg.sh 3.1.4
-  ```
-
-  The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the `builder` submodule of the [`./ndk-modules/ovkmplayer` directory](https://github.com/openvk/mobile-android-legacy/tree/main/ndk-modules/ovkmplayer).
-
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
 ## Used Libraries
@@ -63,15 +33,14 @@ To compile them you need:
 4. [SlidingMenu with Android 10+ patch](https://github.com/tinelix/SlidingMenu) (Apache License 2.0)
 5. [OkHttp 3.8.0](https://square.github.io/okhttp/) (Apache License 2.0)
 6. [Twemojicon (Emojicon with Twemoji pack)](https://github.com/tinelix/twemojicon) (Apache License 2.0)
-7. [FFmpeg 3.1.4](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-3.1.4) and [FFmpeg 0.11.5](https://github.com/tinelix/ffmpeg-android-builder/tree/main/ffmpeg-0.11.5) with [builder](https://github.com/tinelix/ffmpeg-android-builder) (LGPLv3.0)
-8. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
-9. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
-10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
-11. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
-12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
-13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
-14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
-15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
+7. [Retro-ActionBar](https://github.com/tinelix/retro-actionbar) (Apache License 2.0)
+8. [Retro-PopupMenu](https://github.com/tinelix/retro-popupmenu) (Apache License 2.0)
+9. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
+10. [SwipeRefreshLayout Mod with classic PTR header](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
+11. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
+12. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
+13. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
+14. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU Affero GPL v3.0](COPYING) or later version.

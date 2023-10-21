@@ -336,7 +336,7 @@ public class AppActivity extends TranslucentFragmentActivity {
             }
         }
         if(item.getItemId() == R.id.newpost) {
-            openNewPostActivity();
+            Global.openNewPostActivity(this, ovk_api);
         } else if(item.getItemId() == R.id.copy_link) {
             if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
@@ -611,22 +611,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void openNewPostActivity() {
-        try {
-            Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
-            if (global_prefs.getString("current_screen", "").equals("profile")) {
-                intent.putExtra("owner_id", ovk_api.user.id);
-            } else {
-                intent.putExtra("owner_id", ovk_api.account.id);
-            }
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("account_first_name", ovk_api.account.user.first_name);
-            startActivity(intent);
-        } catch (Exception ignored) {
-
-        }
-    }
-
     public void refreshPage(String screen) {
         errorLayout.setVisibility(View.GONE);
         if(screen.equals("subscriptions_newsfeed")) {
@@ -769,7 +753,7 @@ public class AppActivity extends TranslucentFragmentActivity {
 
                                 @Override
                                 public void performAction(View view) {
-                                    openNewPostActivity();
+                                    Global.openNewPostActivity(AppActivity.this, ovk_api);
                                 }
                             };
                     actionBar.addAction(newpost);
@@ -956,7 +940,7 @@ public class AppActivity extends TranslucentFragmentActivity {
                 selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        openNewPostActivity();
+                        Global.openNewPostActivity(AppActivity.this, ovk_api);
                     }
                 });
                 selector.showNewPostIcon();
@@ -1301,19 +1285,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void openFriendsList() {
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.hide(selectedFragment);
-        ft.show(getSupportFragmentManager().findFragmentByTag("friends"));
-        ft.commit();
-        selectedFragment = friendsFragment;
-        progressLayout.setVisibility(View.VISIBLE);
-        errorLayout.setVisibility(View.GONE);
-        global_prefs_editor.putString("current_screen", "friends");
-        global_prefs_editor.commit();
-        ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, "friends_list");
-    }
-
     public void retryConnection(String method, String args) {
         findViewById(R.id.app_fragment).setVisibility(View.GONE);
         progressLayout.setVisibility(View.VISIBLE);
@@ -1370,18 +1341,6 @@ public class AppActivity extends TranslucentFragmentActivity {
                 .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
-    @SuppressLint("CommitTransaction")
-    public void openIntentfromCounters(String action) {
-        if(action.length() > 0 && !action.startsWith("openvk://friends")) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse(action));
-            startActivity(i);
-        } else {
-            onSlidingMenuItemClicked(0, false);
-        }
-    }
-
     public void getConversation(int position) {
         Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
         try {
@@ -1394,37 +1353,12 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void addLike(int position, String post, View view) {
-        WallPost item;
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = ovk_api.wall.getWallItems().get(position);
-            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                    .select(position, "likes", "add");
-        } else {
-            item = ovk_api.newsfeed.getWallPosts().get(position);
-            newsfeedFragment.select(position, "likes", "add");
-        }
-        ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
-    public void deleteLike(int position, String post, View view) {
-        WallPost item;
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = ovk_api.wall.getWallItems().get(position);
-            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                    .select(0, "likes", "delete");
-        } else {
-            item = ovk_api.newsfeed.getWallPosts().get(position);
-            newsfeedFragment.select(0, "likes", "delete");
-        }
-        ovk_api.likes.delete(ovk_api.wrapper, item.owner_id, item.post_id, position);
-    }
-
     public void getConversationById(long peer_id) {
         Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
         try {
             intent.putExtra("peer_id", peer_id);
-            intent.putExtra("conv_title", String.format("%s %s", ovk_api.user.first_name, ovk_api.user.last_name));
+            intent.putExtra("conv_title",
+                    String.format("%s %s", ovk_api.user.first_name, ovk_api.user.last_name));
             if(ovk_api.user.online) {
                 intent.putExtra("online", 1);
             } else {
@@ -1436,77 +1370,9 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void openWallComments(int position, View view) {
-        if(ovk_api.account != null) {
-            WallPost item;
-            Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-            if (global_prefs.getString("current_screen", "").equals("profile")) {
-                item = ovk_api.wall.getWallItems().get(position);
-                intent.putExtra("where", "wall");
-            } else {
-                item = ovk_api.newsfeed.getWallPosts().get(position);
-                intent.putExtra("where", "newsfeed");
-            }
-            try {
-                intent.putExtra("post_id", item.post_id);
-                intent.putExtra("owner_id", item.owner_id);
-                intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                        ovk_api.account.last_name));
-                intent.putExtra("account_id", ovk_api.account.id);
-                intent.putExtra("post_author_id", item.author_id);
-                intent.putExtra("post_author_name", item.name);
-                intent.putExtra("post_json", item.getJSONString());
-                startActivity(intent);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    public void showAuthorPage(int position) {
-        WallPost item;
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = ovk_api.wall.getWallItems().get(position);
-        } else {
-            item = ovk_api.newsfeed.getWallPosts().get(position);
-        }
-        if(item.author_id != ovk_api.account.id) {
-            String url = "";
-            if (item.author_id < 0) {
-                url = "openvk://group/" + "club" + -item.author_id;
-            } else {
-                url = "openvk://profile/" + "id" + item.author_id;
-            }
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        } else {
-            openAccountProfile();
-        }
-    }
-
     public void loadMoreNews() {
         if(ovk_api.newsfeed != null) {
             ovk_api.newsfeed.get(ovk_api.wrapper, 25, ovk_api.newsfeed.next_from);
-        }
-    }
-
-    public void loadMoreWallPosts() {
-        if(ovk_api.wall != null) {
-            ovk_api.wall.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.wall.next_from);
-        }
-    }
-
-    public void loadMoreFriends() {
-        if(ovk_api.friends != null) {
-            ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.friends.offset);
-        }
-    }
-
-    public void loadMoreGroups() {
-        if(ovk_api.groups != null) {
-            ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.groups.getList().size());
         }
     }
 
@@ -1573,43 +1439,6 @@ public class AppActivity extends TranslucentFragmentActivity {
         }
     }
 
-    public void addToFriends(long user_id) {
-        if(user_id != ovk_api.account.id) {
-            ovk_api.friends.add(ovk_api.wrapper, user_id);
-        }
-    }
-    public void deleteFromFriends(long user_id) {
-        if(user_id != ovk_api.account.id) {
-            ovk_api.friends.delete(ovk_api.wrapper, user_id);
-        }
-    }
-
-    public void openWallRepostComments(int position, View view) {
-        WallPost item;
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-        if (global_prefs.getString("current_screen", "").equals("profile")) {
-            item = ovk_api.wall.getWallItems().get(position);
-            intent.putExtra("where", "wall");
-        } else {
-            item = ovk_api.newsfeed.getWallPosts().get(position);
-            intent.putExtra("where", "newsfeed");
-        }
-        intent.putExtra("where", "wall");
-        try {
-            intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
-            intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
-            intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                    ovk_api.account.last_name));
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
-            intent.putExtra("post_author_name", item.repost.newsfeed_item.name);
-            intent.putExtra("post_json", item.repost.newsfeed_item.getJSONString());
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void selectNewsSpinnerItem(int position) {
         Spinner spinner = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -1658,44 +1487,5 @@ public class AppActivity extends TranslucentFragmentActivity {
 
         }
         super.onDestroy();
-    }
-
-    public void openRepostDialog(String where, final WallPost post) {
-        if(where.equals("own_wall")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            final View repost_view = getLayoutInflater().inflate(R.layout.dialog_repost_msg,
-                    null, false);
-            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
-            builder.setView(repost_view);
-            builder.setPositiveButton(R.string.ok, null);
-            builder.setNegativeButton(R.string.cancel, null);
-            final OvkAlertDialog dialog = new OvkAlertDialog(this);
-            dialog.build(builder, getResources().getString(R.string.repost_dlg_title), "", repost_view);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialogInterface) {
-                        final Button ok_btn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        if(ok_btn != null) {
-                            ok_btn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    try {
-                                        String msg_text = ((EditText)
-                                                repost_view.findViewById(R.id.text_edit)).getText()
-                                                .toString();
-                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
-                                        dialog.close();
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-            dialog.show();
-        }
     }
 }
