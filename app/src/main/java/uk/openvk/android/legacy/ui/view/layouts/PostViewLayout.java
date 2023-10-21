@@ -57,6 +57,7 @@ import uk.openvk.android.legacy.api.entities.WallPost;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
+@SuppressWarnings("ConstantConditions")
 public class PostViewLayout extends LinearLayout {
     private final String instance;
     private View headerView;
