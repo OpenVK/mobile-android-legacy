@@ -21,6 +21,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
+
 public class Error {
     public String description;
     public int code;
