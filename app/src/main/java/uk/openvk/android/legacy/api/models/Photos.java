@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -89,6 +90,16 @@ public class Photos {
         }
     }
 
+    public void parseAlbums(String response, DownloadManager dl_man, boolean clear) {
+        try {
+            if(albumsList == null) {
+                albumsList = new ArrayList<PhotoAlbum>();
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void getOwnerUploadServer(OvkAPIWrapper wrapper, long owner_id) {
         wrapper.sendAPIMethod("Photos.getOwnerPhotoUploadServer", String.format("owner_id=%s", owner_id));
     }
@@ -100,4 +111,6 @@ public class Photos {
     public void saveWallPhoto(OvkAPIWrapper wrapper, String photo, String hash) {
         wrapper.sendAPIMethod("Photos.saveWallPhoto", String.format("photo=%s&hash=%s", photo, hash));
     }
+
+
 }

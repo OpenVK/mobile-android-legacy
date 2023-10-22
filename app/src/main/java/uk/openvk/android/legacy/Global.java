@@ -990,6 +990,17 @@ public class Global {
                     app_a.ovk_api.friends.parseRequests(data.getString("response"),
                             downloadManager, true);
                     break;
+                case "Photos.getAlbums":
+                    msg.what = HandlerMessages.PHOTOS_GETALBUMS;
+                    if (args != null && args.contains("offset")) {
+                        app_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                downloadManager, false);
+                    } else {
+                        assert where != null;
+                        app_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                downloadManager, true);
+                    }
+                    break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {
                         app_a.ovk_api.wall.parse(activity, downloadManager,

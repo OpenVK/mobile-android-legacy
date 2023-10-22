@@ -96,6 +96,7 @@ public class HandlerMessages {
     public static int PHOTOS_GET                        = 1000;
     public static int PHOTOS_UPLOAD_SERVER              = 1001;
     public static int PHOTOS_SAVE                       = 1002;
+    public static int PHOTOS_GETALBUMS                  = 1003;
 
     // OpenVK specific (/method/Ovk)
     public static int OVK_VERSION                       = 1100;
