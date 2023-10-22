@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -31,16 +38,34 @@ import uk.openvk.android.legacy.api.entities.PhotoAlbum;
  **/
 
 public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsListAdapter.Holder> {
+    private final DisplayImageOptions displayimageOptions;
+    private final ImageLoaderConfiguration imageLoaderConfig;
+    private final ImageLoader imageLoader;
+    private final String instance;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<PhotoAlbum> objects;
-    public boolean opened_sliding_menu;
+    private int photo_fail_count;
 
     public PhotoAlbumsListAdapter(Context context, ArrayList<PhotoAlbum> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        this.imageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
+                        defaultDisplayImageOptions(displayimageOptions)
+                        .memoryCacheSize(16777216) // 16 MB memory cache
+                        .writeDebugLogs()
+                        .build();
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+        this.imageLoader = ImageLoader.getInstance();
+        imageLoader.init(PhotoAlbumsListAdapter.this.imageLoaderConfig);
     }
 
     public PhotoAlbum getItem(int position) {
@@ -72,7 +97,7 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
         }
     }
 
-    PhotoAlbum getNote(int position) {
+    PhotoAlbum getAlbum(int position) {
         return (getItem(position));
     }
 
@@ -85,24 +110,23 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
         public Holder(View convertView) {
             super(convertView);
             view = convertView;
-            item_name = (view.findViewById(R.id.album_title));
+            item_name = (view.findViewById(R.id.attach_title));
             item_count = (view.findViewById(R.id.attach_count));
-            item_thumbnail = (view.findViewById(R.id.nlist_item_photo));
+            item_thumbnail = (view.findViewById(R.id.album_preview));
         }
 
         void bind(final int position) {
             PhotoAlbum item = getItem(position);
             item_name.setText(item.title);
             item_count.setText(
-                    String.format("%s %s",
-                            item.size,
+                    String.format("%s",
                             Global.getPluralQuantityString(
                                     ctx, R.plurals.photos,
                                     Global.getEndNumberFromLong(item.size)
                             )
                     )
             );
-
+            loadAlbumThumbnail(item.ids[0], item.ids[1], item_thumbnail);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -117,6 +141,24 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        private void loadAlbumThumbnail(long owner_id, long album_id, ImageView view) {
+            try {
+                String full_filename = "file://" + ctx.getCacheDir()
+                        + "/" + instance + "/photos_cache/photo_albums/" +
+                        "photo_album_" + owner_id + "_" + album_id;
+                Bitmap bitmap = imageLoader.loadImageSync(full_filename);
+                view.setImageBitmap(bitmap);
+            } catch (OutOfMemoryError oom) {
+                imageLoader.clearMemoryCache();
+                imageLoader.clearDiskCache();
+                // Retrying again
+                if(photo_fail_count < 5) {
+                    photo_fail_count++;
+                    loadAlbumThumbnail(owner_id, album_id, view);
+                }
+            }
         }
     }
 

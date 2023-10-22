@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
@@ -32,7 +34,7 @@ public class Photos {
     public String wallUploadServer;
     public String ownerPhotoUploadServer;
     public ArrayList<Photo> list;
-    private ArrayList<PhotoAlbum> albumsList;
+    public ArrayList<PhotoAlbum> albumsList;
 
     public Photos() {
         jsonParser = new JSONParser();
@@ -94,23 +96,26 @@ public class Photos {
 
     public void parseAlbums(String response, DownloadManager dl_man, boolean clear) {
         try {
-            if(albumsList == null) {
-                albumsList = new ArrayList<PhotoAlbum>();
+            if(albumsList == null || clear) {
+                albumsList = new ArrayList<>();
             }
+            ArrayList<PhotoAttachment> thumbnails = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
-            JSONArray photos = json.getJSONObject("response").getJSONArray("photos");
-            for(int i = 0; i < photos.length(); i++) {
-                JSONObject item = photos.getJSONObject(i);
-                Photo photo = new Photo();
-                photo.id = item.getLong("id");
-                if(item.isNull("album_id")) {
-                    photo.album_id = 0;
-                } else {
-                    photo.album_id = item.getLong("album_id");
-                }
-                photo.owner_id = item.getLong("owner_id");
-                list.add(photo);
+            JSONArray albums = json.getJSONObject("response").getJSONArray("items");
+            for(int i = 0; i < albums.length(); i++) {
+                JSONObject item = albums.getJSONObject(i);
+                PhotoAlbum album = new PhotoAlbum(item.getString("id"));
+                album.title = item.getString("title");
+                album.size = item.getLong("size");
+                album.thumbnail_url = item.getString("thumb_src");
+                albumsList.add(album);
+                PhotoAttachment attachment = new PhotoAttachment();
+                attachment.url = album.thumbnail_url;
+                attachment.filename = String.format("photo_album_%s_%s",
+                        album.ids[0], album.ids[1]);
+                thumbnails.add(attachment);
             }
+            dl_man.downloadPhotosToCache(thumbnails, "photo_albums");
         } catch(Exception ex) {
             ex.printStackTrace();
         }
@@ -129,4 +134,32 @@ public class Photos {
     }
 
 
+    public void getAlbums(OvkAPIWrapper wrapper, long owner_id, int count,
+                          boolean need_system, boolean need_covers, boolean photo_sizes) {
+        String bl_need_system;
+        if(need_system) {
+            bl_need_system = "1";
+        } else {
+            bl_need_system = "0";
+        }
+        String bl_need_covers;
+        if(need_covers) {
+            bl_need_covers = "1";
+        } else {
+            bl_need_covers = "0";
+        }
+        String bl_photo_sizes;
+        if(photo_sizes) {
+            bl_photo_sizes = "1";
+        } else {
+            bl_photo_sizes = "0";
+        }
+
+        wrapper.sendAPIMethod("Photos.getAlbums",
+                String.format("owner_id=%s" +
+                        "&count=%s" +
+                        "&need_system=%s" +
+                        "&need_covers=%s" +
+                        "&photo_sizes=%s", owner_id, count, need_system, need_covers, photo_sizes));
+    }
 }

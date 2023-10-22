@@ -79,6 +79,19 @@ public class FragmentNavigator {
                         }
                     }
                     break;
+                case "photos":
+                    ft.show(appActivity.photosFragment);
+                    showFragment(activity, appActivity.photosFragment.getCount() != 0);
+                    appActivity.selectedFragment = appActivity.friendsFragment;
+                    appActivity.global_prefs_editor.putString("current_screen", "photos");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
+                    break;
                 case "messages":
                     ft.show(appActivity.conversationsFragment);
                     showFragment(activity, appActivity.conversationsFragment.getCount() != 0);

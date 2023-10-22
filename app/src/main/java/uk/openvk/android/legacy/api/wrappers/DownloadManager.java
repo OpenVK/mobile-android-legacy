@@ -244,9 +244,10 @@ public class DownloadManager {
                                 + " ms | Filesize: " + downloadedFile.length() + " bytes");
                     } else if (photoAttachment.url.length() == 0) {
                         filename = photoAttachment.filename;
-                        if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Invalid address. Skipping...");
+                        if(logging_enabled) Log.e(OvkApplication.DL_TAG,
+                                "Invalid or empty URL. Skipping...");
                         try {
-                            if(downloadedFile.exists() || !downloadedFile.isDirectory()) {
+                            if(downloadedFile.exists() && !downloadedFile.isDirectory()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
                                 byte[] bytes = new byte[1];
                                 bytes[0] = 0;
@@ -353,6 +354,9 @@ public class DownloadManager {
                                 break;
                             case "newsfeed_avatars":
                                 sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
+                                break;
+                            case "photo_albums":
+                                sendMessage(HandlerMessages.PHOTO_ALBUM_THUMBNAILS, where);
                                 break;
                             case "group_avatars":
                                 sendMessage(HandlerMessages.GROUP_AVATARS, where);
