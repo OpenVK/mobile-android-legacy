@@ -82,7 +82,7 @@ public class FragmentNavigator {
                 case "photos":
                     ft.show(appActivity.photosFragment);
                     showFragment(activity, appActivity.photosFragment.getCount() != 0);
-                    appActivity.selectedFragment = appActivity.friendsFragment;
+                    appActivity.selectedFragment = appActivity.photosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "photos");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
