@@ -49,6 +49,7 @@ import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
@@ -80,9 +81,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class GroupIntentActivity extends TranslucentActivity {
-    public OpenVKAPI ovk_api;
-    private DownloadManager downloadManager;
+public class GroupIntentActivity extends NetworkFragmentActivity {
     public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -131,25 +130,6 @@ public class GroupIntentActivity extends TranslucentActivity {
 
         final Uri uri = getIntent().getData();
 
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Global.parseJSONData(ovk_api.wrapper, handler, data, GroupIntentActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
-
         if(activity_menu == null) {
             android.support.v7.widget.PopupMenu p  =
                     new android.support.v7.widget.PopupMenu(this, null);
@@ -165,19 +145,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                 return;
             }
             try {
-                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
-                ovk_api.account.getProfileInfo(ovk_api.wrapper);
                 args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    downloadManager = new DownloadManager(this,
-                            global_prefs.getBoolean("useHTTPS", true),
-                            global_prefs.getBoolean("legacyHttpClient", false), handler);
-                    downloadManager.setInstance(
-                            PreferenceManager.
-                                    getDefaultSharedPreferences(this)
-                                    .getString("current_instance", ""));
-                    downloadManager.setForceCaching(
-                            global_prefs.getBoolean("forcedCaching", true));
                     installLayouts();
                 }
             } catch (Exception ex) {
@@ -366,7 +335,7 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
-    private void receiveState(int message, Bundle data) {
+    protected void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if (args.startsWith("club")) {
@@ -393,7 +362,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                 progressLayout.setVisibility(View.GONE);
                 groupScrollView.setVisibility(View.VISIBLE);
                 setJoinButtonListener(group.id);
-                group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
+                group.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
                 ovk_api.wall.get(ovk_api.wrapper, -group.id, 25);
                 if(group.is_member > 0) {
                     findViewById(R.id.join_to_comm).setVisibility(View.GONE);

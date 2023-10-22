@@ -92,9 +92,7 @@ public class Photos {
 
     public void parseAlbums(String response, DownloadManager dl_man, boolean clear) {
         try {
-            if(albumsList == null) {
-                albumsList = new ArrayList<PhotoAlbum>();
-            }
+
         } catch(Exception ex) {
             ex.printStackTrace();
         }
