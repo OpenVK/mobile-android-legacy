@@ -6,31 +6,33 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
-/**
- * OPENVK LEGACY LICENSE NOTIFICATION
+/** Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of
- * the GNU Affero General Public License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see https://www.gnu.org/licenses/.
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy
- */
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ **/
 
 public class Photos {
     private JSONParser jsonParser;
     public String wallUploadServer;
     public String ownerPhotoUploadServer;
     public ArrayList<Photo> list;
+    private ArrayList<PhotoAlbum> albumsList;
 
     public Photos() {
         jsonParser = new JSONParser();
@@ -94,6 +96,20 @@ public class Photos {
         try {
             if(albumsList == null) {
                 albumsList = new ArrayList<PhotoAlbum>();
+            }
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONArray photos = json.getJSONObject("response").getJSONArray("photos");
+            for(int i = 0; i < photos.length(); i++) {
+                JSONObject item = photos.getJSONObject(i);
+                Photo photo = new Photo();
+                photo.id = item.getLong("id");
+                if(item.isNull("album_id")) {
+                    photo.album_id = 0;
+                } else {
+                    photo.album_id = item.getLong("album_id");
+                }
+                photo.owner_id = item.getLong("owner_id");
+                list.add(photo);
             }
         } catch(Exception ex) {
             ex.printStackTrace();
