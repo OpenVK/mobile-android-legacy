@@ -502,7 +502,8 @@ public class PostViewLayout extends LinearLayout {
                             }
                         }
                     } else {
-                        item.attachments.get(0).status = "not_supported";
+                        Log.e(OvkApplication.APP_TAG,
+                                "No photo attachments");
                     }
                     comments.set(i, item);
                 } catch (Exception ex) {
@@ -513,9 +514,11 @@ public class PostViewLayout extends LinearLayout {
         }
     }
 
-    public void loadPollAttachment(Context ctx, PollAttachment poll) {
+    public void loadPollAttachment(Context ctx, PollAttachment poll,
+                                   ArrayList<WallPost> wallPosts, WallPost post) {
         PollAttachView pollAttachView = findViewById(R.id.poll_layout);
-        pollAttachView.createAdapter(ctx, 0, poll.answers, poll.multiple, poll.user_votes,
+        pollAttachView.createAdapter(ctx, 0, wallPosts, post,
+                poll.answers, poll.multiple, poll.user_votes,
                 poll.votes);
         pollAttachView.setPollInfo(poll.question, poll.anonymous, poll.end_date);
         pollAttachView.setVisibility(View.VISIBLE);

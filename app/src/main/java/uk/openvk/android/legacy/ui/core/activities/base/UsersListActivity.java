@@ -34,7 +34,7 @@ import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class UsersListActivity extends TranslucentFragmentActivity {
+public class UsersListActivity extends NetworkFragmentActivity {
 
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -33,8 +35,12 @@ import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
@@ -73,8 +79,15 @@ public class DownloadManager {
     private HttpClient httpClientLegacy = null;
     private boolean forceCaching;
     private String instance;
+    OvkAPIListeners apiListeners;
+    Handler handler;
 
-    public DownloadManager(Context ctx, boolean use_https, boolean legacy_mode) {
+    public DownloadManager(Context ctx, boolean use_https, boolean legacy_mode, Handler handler) {
+        this.handler = handler;
+        apiListeners = new OvkAPIListeners();
+        if(handler == null) {
+            searchHandler();
+        }
         this.ctx = ctx;
         this.use_https = use_https;
         this.legacy_mode = legacy_mode;
@@ -554,50 +567,50 @@ public class DownloadManager {
         thread.start();
     }
 
-    private void sendMessage(int message, String response) {
+    private void sendMessage(final int message, String response) {
         Message msg = new Message();
         msg.what = message;
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString("response", response);
         msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("PhotoViewerActivity")) {
-            ((PhotoViewerActivity) ctx).handler.sendMessage(msg);
-        }
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(message < 0) {
+                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                } else {
+                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                }
+            }
+        });
     }
 
-    private void sendMessage(int message, String response, int id) {
+    private void sendMessage(final int message, String response, int id) {
         Message msg = new Message();
         msg.what = message;
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString("response", response);
         bundle.putInt("id", id);
         msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("CommentsIntentActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(message < 0) {
+                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                } else {
+                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                }
+            }
+        });
+    }
+
+    private void searchHandler() {
+        if(ctx instanceof NetworkFragmentActivity) {
+            this.handler = ((NetworkFragmentActivity) ctx).handler;
+        } else if(ctx instanceof NetworkAuthActivity) {
+            this.handler = ((NetworkAuthActivity) ctx).handler;
+        } else if(ctx instanceof NetworkActivity) {
+            this.handler = ((NetworkActivity) ctx).handler;
         }
     }
 
@@ -650,5 +663,9 @@ public class DownloadManager {
         };
         new Thread(runnable).run();
         return size[0];
+    }
+
+    public void setAPIListeners(OvkAPIListeners apiListeners) {
+        this.apiListeners = apiListeners;
     }
 }

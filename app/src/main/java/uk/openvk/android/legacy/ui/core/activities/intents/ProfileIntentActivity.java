@@ -53,6 +53,7 @@ import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
@@ -81,14 +82,9 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  **/
 
 @SuppressWarnings("ConstantConditions")
-public class ProfileIntentActivity extends TranslucentFragmentActivity {
+public class ProfileIntentActivity extends NetworkFragmentActivity {
 
-    public OpenVKAPI ovk_api;
-    private DownloadManager downloadManager;
     public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     public ProfileFragment profileFragment;
@@ -105,9 +101,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
@@ -138,7 +131,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, ProfileIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, handler, data, ProfileIntentActivity.this);
                         }
                     }).start();
                 } else {
@@ -154,7 +147,6 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 return;
             }
             try {
-                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                 ovk_api.account.getProfileInfo(ovk_api.wrapper);
                 args = Global.getUrlArguments(path);
             } catch (Exception ex) {
@@ -227,12 +219,16 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.profile));
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
         }
     }
@@ -290,7 +286,7 @@ public class ProfileIntentActivity extends TranslucentFragmentActivity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    private void receiveState(int message, Bundle data) {
+    protected void receiveState(int message, Bundle data) {
         try {
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(args.startsWith("id")) {

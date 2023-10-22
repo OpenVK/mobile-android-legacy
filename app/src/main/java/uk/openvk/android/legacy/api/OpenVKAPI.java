@@ -3,6 +3,8 @@ package uk.openvk.android.legacy.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.logging.Handler;
+
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.entities.User;
@@ -51,15 +53,16 @@ public class OpenVKAPI {
     public OvkAPIWrapper wrapper;
     public DownloadManager dlman;
     public UploadManager ulman;
-    public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs) {
+    public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs,
+                     android.os.Handler handler) {
         wrapper = new OvkAPIWrapper(ctx, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         wrapper.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
         wrapper.setServer(instance_prefs.getString("server", ""));
         wrapper.setAccessToken(instance_prefs.getString("access_token", ""));
         dlman = new DownloadManager(ctx, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         dlman.setInstance(instance_prefs.getString("server", ""));
         dlman.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));

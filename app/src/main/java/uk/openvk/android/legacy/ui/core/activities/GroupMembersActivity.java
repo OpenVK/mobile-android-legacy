@@ -19,6 +19,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Group;
@@ -45,35 +46,12 @@ import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
 public class GroupMembersActivity extends UsersListActivity {
     private ArrayList<User> users;
     public Group group;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private OpenVKAPI ovk_api;
     private String access_token;
     private PopupMenu popup_menu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ovk_api.wrapper.parseJSONData(data, GroupMembersActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -86,13 +64,12 @@ public class GroupMembersActivity extends UsersListActivity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
-        if(group != null) {
-            setOvkAPIWrapper();
-        } else {
+        if(group == null) {
             Log.e("OpenVK", "Cannot load Group object");
             finish();
         }
         setActionBar();
+        group.getMembers(ovk_api.wrapper, 25, "");
     }
 
     private void setActionBar() {
@@ -135,22 +112,21 @@ public class GroupMembersActivity extends UsersListActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.group_members));
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
         }
     }
 
-    private void setOvkAPIWrapper() {
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
-        group.getMembers(ovk_api.wrapper, 25, "");
-    }
-
-    private void receiveState(int message, Bundle data) {
+    protected void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.GROUP_MEMBERS) {
             if(group != null) {
                 createAdapter(group.members);

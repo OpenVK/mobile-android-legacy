@@ -11,11 +11,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
@@ -38,6 +42,8 @@ import uk.openvk.android.legacy.api.entities.PollAnswer;
 
 public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
 
+    private final ArrayList<WallPost> wallPosts;
+    private WallPost post;
     private int item_pos;
     private long total_votes;
     private ArrayList<PollAnswer> items = new ArrayList<>();
@@ -47,11 +53,14 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
     private int user_votes;
     private long total_votes_2;
 
-    public PollAdapter(Context context, int item_pos, ArrayList<PollAnswer> answers, boolean multiple,
+    public PollAdapter(Context context, int item_pos, ArrayList<WallPost> wallPosts, WallPost post,
+                       ArrayList<PollAnswer> answers, boolean multiple,
                        int user_votes, long total_votes) {
         ctx = context;
         this.item_pos = item_pos;
+        this.post = post;
         items = answers;
+        this.wallPosts = wallPosts;
         this.multiple = multiple;
         this.user_votes = user_votes;
         this.total_votes = total_votes;
@@ -130,13 +139,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                 answer_progress.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).removeVoteInPoll(item_pos);
-                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).removeVoteInPoll(item_pos);
-                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                            ((GroupIntentActivity) ctx).removeVoteInPoll(item_pos);
-                        }
+                        removeVoteInPoll(item_pos, post);
                         return true;
                     }
                 });
@@ -152,15 +155,49 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                 answer_progress.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                            ((AppActivity) ctx).voteInPoll(item_pos, position);
-                        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                            ((ProfileIntentActivity) ctx).voteInPoll(item_pos, position);
-                        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-                            ((GroupIntentActivity) ctx).voteInPoll(item_pos, position);
-                        }
+                        voteInPoll(item_pos, post, position);
                     }
                 });
+            }
+        }
+
+        public void voteInPoll(int position, WallPost item, int answer) {
+            try {
+                for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                    if (item.attachments.get(attachment_index).type.equals("poll")) {
+                        PollAttachment pollAttachment = ((PollAttachment) item.attachments
+                                .get(attachment_index).getContent());
+                        pollAttachment.user_votes = 1;
+                        if (!pollAttachment.answers.get(answer).is_voted) {
+                            pollAttachment.answers.get(answer).is_voted = true;
+                        }
+                        wallPosts.set(position, item);
+                        pollAttachment.vote(((NetworkActivity) ctx).ovk_api.wrapper, pollAttachment.answers.get(answer).id);
+                    }
+                }
+            } catch (Exception ex) {
+                Toast.makeText(ctx, R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        public void removeVoteInPoll(int position, WallPost item) {
+            try {
+                for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
+                    if(item.attachments.get(attachment_index).type.equals("poll")) {
+                        PollAttachment pollAttachment = ((PollAttachment) item.attachments
+                                .get(attachment_index).getContent());
+                        pollAttachment.user_votes = 0;
+                        for (int i = 0; i < pollAttachment.answers.size(); i++) {
+                            if (pollAttachment.answers.get(i).is_voted) {
+                                pollAttachment.answers.get(i).is_voted = false;
+                            }
+                        }
+                        wallPosts.set(position, item);
+                        pollAttachment.unvote(((NetworkActivity) ctx).ovk_api.wrapper);
+                    }
+                }
+            } catch (Exception ex) {
+                Toast.makeText(ctx, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
     }
