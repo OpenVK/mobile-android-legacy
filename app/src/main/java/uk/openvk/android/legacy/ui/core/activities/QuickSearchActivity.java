@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,14 +26,17 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.api.models.Groups;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.FullListView;
 import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
@@ -55,46 +59,17 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class QuickSearchActivity extends TranslucentActivity {
-    public OpenVKAPI ovk_api;
-    public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
-    private SharedPreferences.Editor instance_prefs_editor;
+public class QuickSearchActivity extends NetworkActivity {
     public DownloadManager dlm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         dlm = new DownloadManager(this, global_prefs.getBoolean("useHTTPS", false),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         dlm.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
-        global_prefs_editor = global_prefs.edit();
-        instance_prefs_editor = instance_prefs.edit();
         setTextEditListener();
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ovk_api.wrapper.parseJSONData(data, QuickSearchActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             setTranslucentStatusBar(1, Color.parseColor("#8f8f8f"));
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
@@ -129,7 +104,7 @@ public class QuickSearchActivity extends TranslucentActivity {
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
-    private void receiveState(int message, Bundle data) {
+    protected void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.USERS_SEARCH) {
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
             searchResultsLayout.createUsersAdapter(this, ovk_api.users.getList());

@@ -141,7 +141,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            ovk_api.wrapper.parseJSONData(data, GroupIntentActivity.this);
+                            Global.parseJSONData(ovk_api.wrapper, handler, data, GroupIntentActivity.this);
                         }
                     }).start();
                 } else {
@@ -165,13 +165,13 @@ public class GroupIntentActivity extends TranslucentActivity {
                 return;
             }
             try {
-                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
+                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
                 ovk_api.account.getProfileInfo(ovk_api.wrapper);
                 args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
                     downloadManager = new DownloadManager(this,
                             global_prefs.getBoolean("useHTTPS", true),
-                            global_prefs.getBoolean("legacyHttpClient", false));
+                            global_prefs.getBoolean("legacyHttpClient", false), handler);
                     downloadManager.setInstance(
                             PreferenceManager.
                                     getDefaultSharedPreferences(this)
