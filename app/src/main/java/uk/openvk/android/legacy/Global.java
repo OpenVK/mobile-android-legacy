@@ -120,11 +120,7 @@ public class Global {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 DisplayMetrics dismetrics = ctx.getResources().getDisplayMetrics();
                 float dpWidth = dismetrics.widthPixels / dismetrics.density;
-                if (dpWidth >= 600) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return dpWidth >= 600;
             } else {
                 return false;
             }
@@ -452,9 +448,9 @@ public class Global {
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_friends)));
             } else if (slider_menu_item_index == 1) {
-                //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
-                // R.array.leftmenu)[slider_menu_item_index], 0,
-                // getResources().getDrawable(R.drawable.ic_left_photos)));
+                slidingMenuArray.add(new SlidingMenuItem(ctx.getResources().getStringArray(
+                R.array.leftmenu)[slider_menu_item_index], 0,
+                ctx.getResources().getDrawable(R.drawable.ic_left_photos)));
             } else if (slider_menu_item_index == 2) {
                 //slidingMenuArray.add(new SlidingMenuItem(
                 // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
@@ -726,6 +722,8 @@ public class Global {
             args = path.substring("openvk://group/".length());
         } else if (path.startsWith("openvk://friends/")) {
             args = path.substring("openvk://friends/".length());
+        } else if (path.startsWith("openvk://photos/")) {
+            args = path.substring("openvk://photos/".length());
         } else if (path.startsWith("openvk://notes/")) {
             args = path.substring("openvk://notes/".length());
         } else if(path.startsWith("https://openvk.su/")) {

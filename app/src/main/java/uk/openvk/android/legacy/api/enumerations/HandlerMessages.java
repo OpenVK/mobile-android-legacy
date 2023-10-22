@@ -123,13 +123,14 @@ public class HandlerMessages {
     public static int COMMENT_AVATARS                   = 2009;
     public static int COMMENT_PHOTOS                    = 2010;
     public static int COMMENT_VIDEO_THUMBNAILS          = 2011;
-    public static int CONVERSATIONS_AVATARS             = 2012;
-    public static int LONGPOLL                          = 2013;
-    public static int ORIGINAL_PHOTO                    = 2014;
-    public static int VIDEO_THUMBNAILS                  = 2015;
-    public static int PARSE_JSON                        = 2016;
-    public static int UPLOAD_PROGRESS                   = 2017;
-    public static int UPLOADED_SUCCESSFULLY             = 2018;
+    public static int PHOTO_ALBUM_THUMBNAILS            = 2012;
+    public static int CONVERSATIONS_AVATARS             = 2013;
+    public static int LONGPOLL                          = 2014;
+    public static int ORIGINAL_PHOTO                    = 2015;
+    public static int VIDEO_THUMBNAILS                  = 2016;
+    public static int PARSE_JSON                        = 2017;
+    public static int UPLOAD_PROGRESS                   = 2018;
+    public static int UPLOADED_SUCCESSFULLY             = 2019;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =   -1;

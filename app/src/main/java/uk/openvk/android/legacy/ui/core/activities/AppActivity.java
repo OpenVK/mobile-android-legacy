@@ -1,35 +1,25 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
-import android.accounts.*;
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -44,33 +34,27 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_pm.PopupMenu;
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.counters.*;
-import uk.openvk.android.legacy.api.attachments.*;
 import uk.openvk.android.legacy.api.entities.*;
-import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.*;
-import uk.openvk.android.legacy.api.wrappers.*;
+import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.*;
 import uk.openvk.android.legacy.ui.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
-import uk.openvk.android.legacy.ui.list.items.*;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.view.layouts.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -98,6 +82,7 @@ public class AppActivity extends NetworkFragmentActivity {
     public NewsfeedFragment newsfeedFragment;
     public ProfileFragment profileFragment;
     public FriendsFragment friendsFragment;
+    public PhotosFragment photosFragment;
     public ConversationsFragment conversationsFragment;
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
@@ -468,10 +453,11 @@ public class AppActivity extends NetworkFragmentActivity {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
         profileFragment = new ProfileFragment();
-        notesFragment = new NotesFragment();
         newsfeedFragment = new NewsfeedFragment();
         friendsFragment = new FriendsFragment();
+        photosFragment = new PhotosFragment();
         groupsFragment = new GroupsFragment();
+        notesFragment = new NotesFragment();
         mainSettingsFragment = new MainSettingsFragment();
         friendsFragment.setActivityContext(this);
         fn = new FragmentNavigator(this);
@@ -487,6 +473,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ft = fm.beginTransaction();
         ft.add(R.id.app_fragment, newsfeedFragment, "newsfeed");
         ft.add(R.id.app_fragment, friendsFragment, "friends");
+        ft.add(R.id.app_fragment, photosFragment, "photos");
         ft.add(R.id.app_fragment, groupsFragment, "groups");
         ft.add(R.id.app_fragment, conversationsFragment, "messages");
         ft.add(R.id.app_fragment, profileFragment, "profile");
@@ -495,6 +482,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
         ft.hide(friendsFragment);
+        ft.hide(photosFragment);
         ft.hide(groupsFragment);
         ft.hide(conversationsFragment);
         ft.hide(profileFragment);
@@ -666,13 +654,22 @@ public class AppActivity extends NetworkFragmentActivity {
             ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, "friends_list");
         } else if(position == 1) {
             setActionBar("");
+            setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[1]);
+            fn.navigateTo("photos", ft);
+            if(ovk_api.photos == null) {
+                ovk_api.photos = new Photos();
+            }
+            ovk_api.photos.getAlbums(ovk_api.wrapper, ovk_api.account.id, 25,
+                    false, true, true);
+        } else if(position == 2) {
+            setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));
             fn.navigateTo("messages", ft);
             if(ovk_api.messages == null) {
                 ovk_api.messages = new Messages();
             }
             ovk_api.messages.getConversations(ovk_api.wrapper);
-        } else if(position == 2) {
+        } else if(position == 3) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.groups));
             fn.navigateTo("groups", ft);
@@ -680,7 +677,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.groups = new Groups();
             }
             ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 25);
-        } else if(position == 3) {
+        } else if(position == 4) {
             Context context = getApplicationContext();
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.notes));
@@ -689,7 +686,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.notes = new Notes();
             }
             ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 25, 1);
-        } else if(position == 4) {
+        } else if(position == 5) {
             menu_id = R.menu.newsfeed;
             onCreateOptionsMenu(activity_menu);
             setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -700,7 +697,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
             }
 
-        } else if(position == 5) {
+        } else if(position == 6) {
             Context context = getApplicationContext();
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.menu_settings));
@@ -972,6 +969,14 @@ public class AppActivity extends NetworkFragmentActivity {
                 ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(1,
                         String.format("%s (%s)", getResources().getString(R.string.friend_requests), ovk_api.account.counters.friends_requests));
                 friendsFragment.createAdapter(this, requestsList, "requests");
+            } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
+                ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
+                if (global_prefs.getString("current_screen", "").equals("photos")) {
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                }
+                photosFragment.createAdapter(this, albumsList, "photos");
+                photosFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
                 if (global_prefs.getString("current_screen", "").equals("groups")) {
@@ -1123,6 +1128,8 @@ public class AppActivity extends NetworkFragmentActivity {
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 profileFragment.loadAvatar(ovk_api.user, global_prefs.getString("photos_quality", ""));
                 slidingmenuLayout.loadAccountAvatar(ovk_api.account, global_prefs.getString("photos_quality", ""));
+            } else if(message == HandlerMessages.PHOTOS_GETALBUMS) {
+                photosFragment.refresh();
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
                 conversationsFragment.loadAvatars(conversations);
             } else if(message == HandlerMessages.LONGPOLL) {

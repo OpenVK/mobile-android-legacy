@@ -16,12 +16,22 @@ package uk.openvk.android.legacy.api.entities;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Photo {
-    public long id;
-    public long album_id;
-    public long owner_id;
-    public String url;
-    public Photo() {
-
+public class PhotoAlbum {
+    public long[] ids = new long[2];
+    public String title;
+    public long size;
+    public String thumbnail_url;
+    public PhotoAlbum(String str_ids) {
+        String[] ids = str_ids.split("_");
+        try {
+            if (ids.length >= 2) {
+                long owner_id = Long.parseLong(ids[0]);
+                long album_id = Long.parseLong(ids[1]);
+                this.ids[0] = owner_id;
+                this.ids[1] = album_id;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

@@ -15,6 +15,7 @@ package uk.openvk.android.legacy.api.entities;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
+
 public class LongPollServer {
     public String address;
     public String key;

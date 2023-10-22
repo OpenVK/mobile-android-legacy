@@ -16,6 +16,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 
 /**
@@ -60,7 +61,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
                 if(!BuildConfig.BUILD_TYPE.equals("release"))
                     Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
                             msg_code));
-                if(msg_code == 2016) {
+                if(msg_code == HandlerMessages.PARSE_JSON) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
