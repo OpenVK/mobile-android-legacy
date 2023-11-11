@@ -105,6 +105,18 @@ public class QuickSearchActivity extends NetworkActivity {
     }
 
     public void receiveState(int message, Bundle data) {
+        if(data.containsKey("address")) {
+            String activityName = data.getString("address");
+            if(activityName == null) {
+                return;
+            }
+            boolean isCurrentActivity = activityName.equals(getLocalClassName());
+            if(!isCurrentActivity) {
+                return;
+            }
+            Log.d("OpenVK", String.format("isCurrentActivity: true, activityName: %s",
+                    data.getString("address")));
+        }
         if(message == HandlerMessages.USERS_SEARCH) {
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
             searchResultsLayout.createUsersAdapter(this, ovk_api.users.getList());

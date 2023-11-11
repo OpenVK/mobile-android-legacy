@@ -21,6 +21,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
+import uk.openvk.android.legacy.ui.core.enumerations.UiMessages;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -88,6 +89,7 @@ public class NetworkActivity extends TranslucentActivity {
                         public void run() {
                             Intent intent = new Intent();
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            data.putString("address", getClass().getSimpleName());
                             intent.putExtras(data);
                             sendBroadcast(intent);
                         }

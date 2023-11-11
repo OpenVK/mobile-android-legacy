@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -709,6 +710,16 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void receiveState(int message, Bundle data) {
         try {
+            if(data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if(activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                if(!isCurrentActivity) {
+                    return;
+                }
+            }
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String profile_name =
                         String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name);
@@ -718,30 +729,35 @@ public class AppActivity extends NetworkFragmentActivity {
                 slidingmenuLayout.setProfileName(profile_name);
                 ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
                 ovk_api.messages.getLongPollServer(ovk_api.wrapper);
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    dev.tinelix.retro_ab.ActionBar actionBar = findViewById(R.id.actionbar);
-                    dev.tinelix.retro_ab.ActionBar.Action newpost =
-                            new dev.tinelix.retro_ab.ActionBar.Action() {
-                                @Override
-                                public int getDrawable() {
-                                    return R.drawable.ic_ab_write;
-                                }
+                if(selectedFragment == newsfeedFragment) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        dev.tinelix.retro_ab.ActionBar actionBar = findViewById(R.id.actionbar);
+                        if(actionBar.getActionCount() > 0) {
+                            actionBar.removeAllActions();
+                        }
+                        dev.tinelix.retro_ab.ActionBar.Action newpost =
+                                new dev.tinelix.retro_ab.ActionBar.Action() {
+                                    @Override
+                                    public int getDrawable() {
+                                        return R.drawable.ic_ab_write;
+                                    }
 
-                                @Override
-                                public void performAction(View view) {
-                                    Global.openNewPostActivity(AppActivity.this, ovk_api);
-                                }
-                            };
-                    actionBar.addAction(newpost);
-                } else {
-                    if(activity_menu == null) {
-                        onPrepareOptionsMenu(activity_menu);
-                    }
-                    try {
-                        MenuItem newpost = activity_menu.findItem(R.id.newpost);
-                        newpost.setVisible(true);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                                    @Override
+                                    public void performAction(View view) {
+                                        Global.openNewPostActivity(AppActivity.this, ovk_api);
+                                    }
+                                };
+                        actionBar.addAction(newpost);
+                    } else {
+                        if (activity_menu == null) {
+                            onPrepareOptionsMenu(activity_menu);
+                        }
+                        try {
+                            MenuItem newpost = activity_menu.findItem(R.id.newpost);
+                            newpost.setVisible(true);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
                 ovk_api.account.getCounters(ovk_api.wrapper);

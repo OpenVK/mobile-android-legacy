@@ -401,6 +401,16 @@ public class WallPostActivity extends NetworkFragmentActivity
     }
 
     public void receiveState(int message, Bundle data) {
+        if(data.containsKey("address")) {
+            String activityName = data.getString("address");
+            if(activityName == null) {
+                return;
+            }
+            boolean isCurrentActivity = activityName.equals(getLocalClassName());
+            if(!isCurrentActivity) {
+                return;
+            }
+        }
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
             postViewLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_PHOTOS) {

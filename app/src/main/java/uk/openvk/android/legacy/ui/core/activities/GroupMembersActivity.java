@@ -127,6 +127,16 @@ public class GroupMembersActivity extends UsersListActivity {
     }
 
     public void receiveState(int message, Bundle data) {
+        if(data.containsKey("address")) {
+            String activityName = data.getString("address");
+            if(activityName == null) {
+                return;
+            }
+            boolean isCurrentActivity = activityName.equals(getLocalClassName());
+            if(!isCurrentActivity) {
+                return;
+            }
+        }
         if(message == HandlerMessages.GROUP_MEMBERS) {
             if(group != null) {
                 createAdapter(group.members);

@@ -44,6 +44,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
 
     }
 
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if(activity instanceof NetworkAuthActivity) {

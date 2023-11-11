@@ -469,6 +469,16 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     @SuppressWarnings("ConstantConditions")
     public void receiveState(int message, Bundle data) {
         try {
+            if(data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if(activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                if(!isCurrentActivity) {
+                    return;
+                }
+            }
             if(message == HandlerMessages.WALL_POST) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
                 connectionDialog.cancel();

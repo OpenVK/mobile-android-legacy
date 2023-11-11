@@ -341,6 +341,16 @@ public class AuthActivity extends NetworkAuthActivity {
     }
 
     public void receiveState(int message, Bundle data) {
+        if(data.containsKey("address")) {
+            String activityName = data.getString("address");
+            if(activityName == null) {
+                return;
+            }
+            boolean isCurrentActivity = activityName.equals(getLocalClassName());
+            if(!isCurrentActivity) {
+                return;
+            }
+        }
         alertDialog = new OvkAlertDialog(this);
         try {
             String response = data.getString("response");
