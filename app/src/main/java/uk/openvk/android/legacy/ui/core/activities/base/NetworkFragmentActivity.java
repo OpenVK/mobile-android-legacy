@@ -118,4 +118,22 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
     public void receiveState(int message, Bundle data) {
 
     }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(receiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        registerAPIDataReceiver();
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
 }

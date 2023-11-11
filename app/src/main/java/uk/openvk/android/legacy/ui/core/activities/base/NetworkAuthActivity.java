@@ -119,6 +119,18 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
     }
 
     @Override
+    protected void onPause() {
+        unregisterReceiver(receiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        registerAPIDataReceiver();
+        super.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
         unregisterReceiver(receiver);
         super.onDestroy();
