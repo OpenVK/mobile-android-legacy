@@ -69,6 +69,13 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                 if(args.length() > 0) {
                     installLayouts();
                 }
+                String[] ids = args.split("_");
+                ovk_api.photos.getByAlbumId(
+                        ovk_api.wrapper,
+                        Long.parseLong(ids[0]),
+                        Long.parseLong(ids[1]),
+                        25,
+                        true);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();

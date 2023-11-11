@@ -51,7 +51,7 @@ public class Photos {
         }
     }
 
-    public void parse(String response) {
+    public void parseUploadedPhotos(String response) {
         try {
             list = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
@@ -73,7 +73,7 @@ public class Photos {
         }
     }
 
-    public void parse(String response, PhotoAlbum album) {
+    public void parseUploadedPhotos(String response, PhotoAlbum album) {
         try {
             album.photos = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
@@ -88,6 +88,53 @@ public class Photos {
                     photo.album_id = item.getLong("album_id");
                 }
                 photo.owner_id = item.getLong("owner_id");
+                album.photos.add(photo);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void parse(String response, PhotoAlbum album, DownloadManager dlman) {
+        try {
+            album.photos = new ArrayList<>();
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONArray photos = json.getJSONObject("response").getJSONArray("items");
+            for(int i = 0; i < photos.length(); i++) {
+                JSONObject item = photos.getJSONObject(i);
+                Photo photo = new Photo();
+                photo.id = item.getLong("id");
+                if(item.isNull("album_id")) {
+                    photo.album_id = 0;
+                } else {
+                    photo.album_id = item.getLong("album_id");
+                }
+                photo.owner_id = item.getLong("owner_id");
+                if(dlman != null && item.has("sizes")) {
+                    if(item.getJSONObject("sizes").has("q")) {
+                        photo.url = item.getJSONObject("sizes").getString("q");
+                        dlman.downloadOnePhotoToCache(
+                                photo.url,
+                                String.format(
+                                        "photo%s_a%s_o%s",
+                                        photo.id,
+                                        photo.album_id,
+                                        photo.owner_id),
+                                "album_photos");
+                    }
+                    if(item.getJSONObject("sizes").has("UPLOADED_MAXRES")) {
+                        photo.original_url =
+                                item.getJSONObject("sizes").getString("UPLOADED_MAXRES");
+                        dlman.downloadOnePhotoToCache(
+                                photo.url,
+                                String.format(
+                                        "photo%s_a%s_o%s",
+                                        photo.id,
+                                        photo.album_id,
+                                        photo.owner_id),
+                                "original_photos");
+                    }
+                }
                 album.photos.add(photo);
             }
         } catch (Exception ex) {
@@ -187,5 +234,19 @@ public class Photos {
 
     public void getByAlbumId(OvkAPIWrapper wrapper, long owner_id, long album_id, int count) {
         wrapper.sendAPIMethod("Photos.get", "owner_id=%s&album_id=%s");
+    }
+
+    public void getByAlbumId(OvkAPIWrapper wrapper, long owner_id, long album_id, int count, boolean photo_sizes) {
+        String bl_photo_sizes;
+        if(photo_sizes) {
+            bl_photo_sizes = "1";
+        } else {
+            bl_photo_sizes = "0";
+        }
+        wrapper.sendAPIMethod(
+                "Photos.get",
+                "owner_id=%s&album_id=%s&photo_sizes=%s",
+                bl_photo_sizes
+        );
     }
 }
