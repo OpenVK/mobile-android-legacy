@@ -3,6 +3,8 @@ package uk.openvk.android.legacy.ui.core.activities.base;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +20,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
+import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -43,6 +46,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
     public SharedPreferences.Editor global_prefs_editor;
     public SharedPreferences.Editor instance_prefs_editor;
     public Handler handler;
+    public OvkAPIReceiver receiver;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -56,6 +60,13 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
         ovk_api = new OpenVKAPI(this, global_prefs, null, handler);
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
+        registerAPIDataReceiver();
+    }
+
+    public void registerAPIDataReceiver() {
+        receiver = new OvkAPIReceiver(this);
+        this.registerReceiver(receiver, new IntentFilter(
+                "uk.openvk.android.legacy.API_DATA_RECEIVE"));
     }
 
     public void setAPIListeners(final OvkAPIListeners listeners) {
@@ -75,14 +86,10 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            final Message msg =
-                                    Global.parseJSONData(ovk_api.wrapper, handler, data, ((Activity) ctx));
-                            ovk_api.wrapper.handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    receiveState(msg.what, data);
-                                }
-                            });
+                            Intent intent = new Intent();
+                            intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            intent.putExtras(data);
+                            sendBroadcast(intent);
                         }
                     }).start();
                 } else {
@@ -107,7 +114,13 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
         ovk_api.wrapper.setAPIListeners(listeners);
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
     }
 }

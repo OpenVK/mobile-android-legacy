@@ -110,7 +110,10 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Global.parseJSONData(ovk_api.wrapper, handler, data, NotesIntentActivity.this);
+                            Intent intent = new Intent();
+                            intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            intent.putExtras(data);
+                            sendBroadcast(intent);
                         }
                     }).start();
                 } else {

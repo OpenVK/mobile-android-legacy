@@ -205,7 +205,7 @@ public class PhotoViewerActivity extends NetworkActivity {
         return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.ACCESS_DENIED_MARSHMALLOW) {
             Global.allowPermissionDialog(this, false);
         } else if(message == HandlerMessages.ORIGINAL_PHOTO) {

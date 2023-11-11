@@ -400,7 +400,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         super.onConfigurationChanged(newConfig);
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
             postViewLayout.createAdapter(this, comments);
         } else if (message == HandlerMessages.COMMENT_PHOTOS) {

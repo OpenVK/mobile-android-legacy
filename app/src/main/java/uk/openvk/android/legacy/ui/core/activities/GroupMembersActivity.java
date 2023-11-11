@@ -126,7 +126,7 @@ public class GroupMembersActivity extends UsersListActivity {
         }
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.GROUP_MEMBERS) {
             if(group != null) {
                 createAdapter(group.members);
