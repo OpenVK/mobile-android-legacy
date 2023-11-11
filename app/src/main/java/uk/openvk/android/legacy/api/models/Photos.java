@@ -35,6 +35,7 @@ public class Photos {
     public String ownerPhotoUploadServer;
     public ArrayList<Photo> list;
     public ArrayList<PhotoAlbum> albumsList;
+    public PhotoAlbum album;
 
     public Photos() {
         jsonParser = new JSONParser();
@@ -51,7 +52,7 @@ public class Photos {
         }
     }
 
-    public void parse(String response) {
+    public void parseUploadedPhotos(String response) {
         try {
             list = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
@@ -71,6 +72,82 @@ public class Photos {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void parseUploadedPhotos(String response, PhotoAlbum album) {
+        try {
+            album.photos = new ArrayList<>();
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONArray photos = json.getJSONObject("response").getJSONArray("photos");
+            for(int i = 0; i < photos.length(); i++) {
+                JSONObject item = photos.getJSONObject(i);
+                Photo photo = new Photo();
+                photo.id = item.getLong("id");
+                if(item.isNull("album_id")) {
+                    photo.album_id = 0;
+                } else {
+                    photo.album_id = item.getLong("album_id");
+                }
+                photo.owner_id = item.getLong("owner_id");
+                album.photos.add(photo);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void parse(String response, PhotoAlbum album, DownloadManager dlman) {
+        try {
+            album.photos = new ArrayList<>();
+            JSONObject json = jsonParser.parseJSON(response);
+            album.size = json.getJSONObject("response").getInt("count");
+            JSONArray photos = json.getJSONObject("response").getJSONArray("items");
+            for(int i = 0; i < photos.length(); i++) {
+                JSONObject item = photos.getJSONObject(i);
+                Photo photo = new Photo();
+                photo.id = item.getLong("id");
+                if(album.ids[0] == 0) {
+                    if (item.isNull("album_id")) {
+                        photo.album_id = album.ids[0];
+                    } else {
+                        photo.album_id = item.getLong("album_id");
+                    }
+                } else {
+                    photo.album_id = album.ids[0];
+                }
+                photo.owner_id = item.getLong("owner_id");
+                if(dlman != null && item.has("sizes")) {
+                    if(item.getJSONObject("sizes").has("q")) {
+                        photo.url = item.getJSONObject("sizes").getJSONObject("q").getString("url");
+                        dlman.downloadOnePhotoToCache(
+                                photo.url,
+                                String.format(
+                                        "photo%s_a%s_o%s",
+                                        photo.id,
+                                        photo.album_id,
+                                        photo.owner_id),
+                                "album_photos");
+                    }
+                    if(item.getJSONObject("sizes").has("UPLOADED_MAXRES")) {
+                        photo.original_url =
+                                item.getJSONObject("sizes")
+                                        .getJSONObject("UPLOADED_MAXRES").getString("url");
+                        dlman.downloadOnePhotoToCache(
+                                photo.url,
+                                String.format(
+                                        "photo%s_a%s_o%s",
+                                        photo.id,
+                                        photo.album_id,
+                                        photo.owner_id),
+                                "original_photos");
+                    }
+                }
+                album.photos.add(photo);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        this.album = album;
     }
 
     public void parseOnePhoto(String response) {
@@ -106,14 +183,22 @@ public class Photos {
                 JSONObject item = albums.getJSONObject(i);
                 PhotoAlbum album = new PhotoAlbum(item.getString("id"));
                 album.title = item.getString("title");
-                album.size = item.getLong("size");
-                album.thumbnail_url = item.getString("thumb_src");
+                if(item.has("size")) {
+                    album.size = item.getLong("size");
+                }
+                if(item.has("thumb_src")) {
+                    album.thumbnail_url = item.getString("thumb_src");
+                } else {
+                    album.thumbnail_url = "";
+                }
                 albumsList.add(album);
-                PhotoAttachment attachment = new PhotoAttachment();
-                attachment.url = album.thumbnail_url;
-                attachment.filename = String.format("photo_album_%s_%s",
-                        album.ids[0], album.ids[1]);
-                thumbnails.add(attachment);
+                if(item.has("thumb_src")) {
+                    PhotoAttachment attachment = new PhotoAttachment();
+                    attachment.url = album.thumbnail_url;
+                    attachment.filename = String.format("photo_album_%s_%s",
+                            album.ids[0], album.ids[1]);
+                    thumbnails.add(attachment);
+                }
             }
             dl_man.downloadPhotosToCache(thumbnails, "photo_albums");
         } catch(Exception ex) {
@@ -160,6 +245,26 @@ public class Photos {
                         "&count=%s" +
                         "&need_system=%s" +
                         "&need_covers=%s" +
-                        "&photo_sizes=%s", owner_id, count, need_system, need_covers, photo_sizes));
+                        "&photo_sizes=%s", owner_id, count,
+                        bl_need_system, bl_need_covers, bl_photo_sizes));
+    }
+
+    public void getByAlbumId(OvkAPIWrapper wrapper, long owner_id, long album_id, int count) {
+        wrapper.sendAPIMethod("Photos.get", "owner_id=%s&album_id=%s");
+    }
+
+    public void getByAlbumId(OvkAPIWrapper wrapper, long owner_id, long album_id, int count, boolean photo_sizes) {
+        String bl_photo_sizes;
+        if(photo_sizes) {
+            bl_photo_sizes = "1";
+        } else {
+            bl_photo_sizes = "0";
+        }
+        wrapper.sendAPIMethod(
+                "Photos.get",
+                String.format("owner_id=%s&album_id=%s&photo_sizes=%s",
+                    owner_id, album_id, bl_photo_sizes
+                )
+        );
     }
 }

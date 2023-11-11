@@ -495,7 +495,7 @@ public class Wall implements Parcelable {
                     videoAttachment.id = video.getLong("id");
                     videoAttachment.title = video.getString("title");
                     VideoFiles files = new VideoFiles();
-                    if(video.has("files")) {
+                    if(video.has("files") && !video.isNull("files")) {
                         JSONObject videoFiles = video.getJSONObject("files");
                         if(videoFiles.has("mp4_144")) {
                             files.mp4_144 = videoFiles.getString("mp4_144");

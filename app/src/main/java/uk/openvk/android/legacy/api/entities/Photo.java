@@ -21,6 +21,8 @@ public class Photo {
     public long album_id;
     public long owner_id;
     public String url;
+    public String original_url;
+
     public Photo() {
 
     }

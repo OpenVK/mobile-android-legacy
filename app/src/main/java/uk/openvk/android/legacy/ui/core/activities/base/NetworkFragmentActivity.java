@@ -88,6 +88,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
                         public void run() {
                             Intent intent = new Intent();
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            data.putString("address", getLocalClassName());
                             intent.putExtras(data);
                             sendBroadcast(intent);
                         }
@@ -117,5 +118,11 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
 
     public void receiveState(int message, Bundle data) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
     }
 }

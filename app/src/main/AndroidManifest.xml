@@ -312,6 +312,36 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.core.activities.intents.PhotoAlbumIntentActivity"
+            android:label="@string/album_unnamed"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle.Dark"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk" android:host="photos" android:pathPrefix="/album" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/album"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/album"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/album" />
+            </intent-filter>
+        </activity>
+
         <!--suppress AndroidDomInspection -->
         <service android:name=".services.LongPollService" android:enabled="true" android:exported="true"/>
 

@@ -1,5 +1,7 @@
 package uk.openvk.android.legacy.api.entities;
 
+import java.util.ArrayList;
+
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
@@ -21,6 +23,7 @@ public class PhotoAlbum {
     public String title;
     public long size;
     public String thumbnail_url;
+    public ArrayList<Photo> photos;
     public PhotoAlbum(String str_ids) {
         String[] ids = str_ids.split("_");
         try {
@@ -33,5 +36,11 @@ public class PhotoAlbum {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public PhotoAlbum(long owner_id, long album_id) {
+        ids = new long[2];
+        this.ids[0] = owner_id;
+        this.ids[1] = album_id;
     }
 }

@@ -14,6 +14,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -21,6 +25,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
+import uk.openvk.android.legacy.ui.core.enumerations.UiMessages;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -69,7 +74,7 @@ public class NetworkActivity extends TranslucentActivity {
                 "uk.openvk.android.legacy.API_DATA_RECEIVE"));
     }
 
-    private void setAPIListeners(OvkAPIListeners listeners) {
+    private void setAPIListeners(final OvkAPIListeners listeners) {
         listeners.from = getLocalClassName();
         listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
             @Override
@@ -79,7 +84,7 @@ public class NetworkActivity extends TranslucentActivity {
                             String.format(
                                     "Handling API message %s in %s",
                                     msg_code,
-                                    getClass().getCanonicalName()
+                                    getLocalClassName()
                             )
                     );
                 if(msg_code == HandlerMessages.PARSE_JSON) {
@@ -88,6 +93,7 @@ public class NetworkActivity extends TranslucentActivity {
                         public void run() {
                             Intent intent = new Intent();
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            data.putString("address", listeners.from);
                             intent.putExtras(data);
                             sendBroadcast(intent);
                         }
@@ -105,7 +111,7 @@ public class NetworkActivity extends TranslucentActivity {
                             String.format(
                                     "Handling API message %s in %s",
                                     msg_code,
-                                    getClass().getCanonicalName()
+                                    getLocalClassName()
                             )
                     );
                 receiveState(msg_code, data);
@@ -116,7 +122,6 @@ public class NetworkActivity extends TranslucentActivity {
     }
 
     public void receiveState(int message, Bundle data) {
-        Log.w(OvkApplication.API_TAG, "It is dummy data receiver!");
     }
 
     @Override

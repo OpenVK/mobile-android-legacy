@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,9 +21,10 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.PhotoAlbumIntentActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -42,17 +42,17 @@ import uk.openvk.android.legacy.ui.core.activities.intents.PhotoAlbumIntentActiv
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsListAdapter.Holder> {
+public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Holder> {
     private final DisplayImageOptions displayimageOptions;
     private final ImageLoaderConfiguration imageLoaderConfig;
     private final ImageLoader imageLoader;
     private final String instance;
     Context ctx;
     LayoutInflater inflater;
-    ArrayList<PhotoAlbum> objects;
+    ArrayList<Photo> objects;
     private int photo_fail_count;
 
-    public PhotoAlbumsListAdapter(Context context, ArrayList<PhotoAlbum> items) {
+    public PhotosListAdapter(Context context, ArrayList<Photo> items) {
         ctx = context;
         objects = items;
         inflater = (LayoutInflater) ctx
@@ -70,17 +70,20 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
             ImageLoader.getInstance().destroy();
         }
         this.imageLoader = ImageLoader.getInstance();
-        imageLoader.init(PhotoAlbumsListAdapter.this.imageLoaderConfig);
+        imageLoader.init(PhotosListAdapter.this.imageLoaderConfig);
     }
 
-    public PhotoAlbum getItem(int position) {
+    public Photo getItem(int position) {
         return objects.get(position);
     }
 
     @Override
-    public PhotoAlbumsListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PhotoAlbumsListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.attach_album_2,
-                parent, false));
+    public PhotosListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new PhotosListAdapter.Holder(
+                LayoutInflater.from(ctx).inflate(
+                        R.layout.list_item_photo_flexible,
+                        parent, false
+                ));
     }
 
     @Override
@@ -102,41 +105,28 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
         }
     }
 
-    PhotoAlbum getAlbum(int position) {
+    Photo getPhoto(int position) {
         return (getItem(position));
     }
 
     public class Holder extends RecyclerView.ViewHolder {
-        public TextView item_id;
         public TextView item_name;
-        public TextView item_count;
-        public ImageView item_thumbnail;
+        public ImageView item_photo;
         public View view;
         public Holder(View convertView) {
             super(convertView);
             view = convertView;
-            item_name = (view.findViewById(R.id.attach_title));
-            item_count = (view.findViewById(R.id.attach_count));
-            item_thumbnail = (view.findViewById(R.id.album_preview));
+            item_photo = (view.findViewById(R.id.photo_view));
         }
 
         void bind(final int position) {
-            final PhotoAlbum item = getItem(position);
-            item_name.setText(item.title);
-            item_count.setText(
-                    String.format("%s",
-                            Global.getPluralQuantityString(
-                                    ctx, R.plurals.photos,
-                                    Global.getEndNumberFromLong(item.size)
-                            )
-                    )
-            );
-            loadAlbumThumbnail(item.ids[0], item.ids[1], item_thumbnail);
+            final Photo item = getItem(position);
+            loadSmallPicture(item.id, item.album_id, item.owner_id, item_photo);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openAlbum(item);
+                    openPhoto(item);
                 }
             });
 
@@ -149,11 +139,11 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
         }); */
         }
 
-        private void loadAlbumThumbnail(long owner_id, long album_id, ImageView view) {
+        private void loadSmallPicture(long photo_id, long album_id, long owner_id, ImageView view) {
             try {
                 String full_filename = "file://" + ctx.getCacheDir()
-                        + "/" + instance + "/photos_cache/photo_albums/" +
-                        "photo_album_" + owner_id + "_" + album_id;
+                        + "/" + instance + "/photos_cache/album_photos/" +
+                        "photo" + photo_id + "_a" + album_id + "_o" + owner_id;
                 Bitmap bitmap = imageLoader.loadImageSync(full_filename);
                 view.setImageBitmap(bitmap);
             } catch (OutOfMemoryError oom) {
@@ -162,17 +152,24 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
                 // Retrying again
                 if(photo_fail_count < 5) {
                     photo_fail_count++;
-                    loadAlbumThumbnail(owner_id, album_id, view);
+                    loadSmallPicture(owner_id, album_id, owner_id, view);
                 }
             }
         }
 
-        public void openAlbum(PhotoAlbum album) {
-            String url = "openvk://photos/" + "album" + album.ids[0] + "_" + album.ids[1];
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            i.setPackage("uk.openvk.android.legacy");
-            ctx.startActivity(i);
+        public void openPhoto(Photo photo) {
+            Intent intent = new Intent(ctx.getApplicationContext(), PhotoViewerActivity.class);
+            try {
+                String full_filename = "file://" + ctx.getCacheDir()
+                        + "/" + instance + "/photos_cache/album_photos/" +
+                        "photo" + photo.id + "_a" + photo.album_id + "_o" + photo.owner_id;
+                intent.putExtra("local_photo_addr", full_filename);
+                intent.putExtra("original_link", photo.original_url);
+                intent.putExtra("photo_id", photo.id);
+                ctx.startActivity(intent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Network;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Friend;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
@@ -53,11 +55,9 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class FriendsIntentActivity extends TranslucentFragmentActivity {
+public class FriendsIntentActivity extends NetworkFragmentActivity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
-    public OpenVKAPI ovk_api;
-    public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
@@ -92,15 +92,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
 
         final Uri uri = intent.getData();
 
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-            }
-        };
-
         if (uri != null) {
             String path = uri.toString();
             if (instance_prefs.getString("access_token", "").length() == 0) {
@@ -110,7 +101,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
                     ovk_api.users = new Users();
                     ovk_api.friends = new Friends();
                     if(args.startsWith("id")) {
@@ -208,8 +198,18 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    private void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
+            if(data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if(activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                if(!isCurrentActivity) {
+                    return;
+                }
+            }
             if (message == HandlerMessages.FRIENDS_GET) {
                 ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
