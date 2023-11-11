@@ -37,4 +37,10 @@ public class PhotoAlbum {
             ex.printStackTrace();
         }
     }
+
+    public PhotoAlbum(long owner_id, long album_id) {
+        ids = new long[2];
+        this.ids[0] = owner_id;
+        this.ids[1] = album_id;
+    }
 }

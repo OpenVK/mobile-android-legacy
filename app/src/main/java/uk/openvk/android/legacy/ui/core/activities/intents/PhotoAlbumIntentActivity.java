@@ -1,15 +1,29 @@
 package uk.openvk.android.legacy.ui.core.activities.intents;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.ui.list.adapters.PhotosListAdapter;
+import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
+import uk.openvk.android.legacy.ui.utils.FlexibleGridLayoutManager;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -33,11 +47,20 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
     private String instance;
     private String args;
     private PhotoAlbum album;
+    private RecyclerView photosList;
+    public String[] ids;
+    private DisplayImageOptions displayimageOptions;
+    private ImageLoaderConfiguration imageLoaderConfig;
+    private ImageLoader imageLoader;
+    private int photo_fail_count;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_album);
+        ProgressLayout progressLayout = ((ProgressLayout) findViewById(R.id.progress_layout));
+        progressLayout.setVisibility(View.VISIBLE);
+        progressLayout.enableDarkTheme();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -69,21 +92,110 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                 if(args.length() > 0) {
                     installLayouts();
                 }
-                String[] ids = args.split("_");
-                ovk_api.photos.getByAlbumId(
-                        ovk_api.wrapper,
-                        Long.parseLong(ids[0]),
-                        Long.parseLong(ids[1]),
-                        25,
-                        true);
+                ids = args.split("_");
+                ovk_api.photos.getAlbums(ovk_api.wrapper, Long.parseLong(ids[1]), 100,
+                        true, false, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();
             }
         }
+        initalizeImageLoader();
+    }
+
+    private void initalizeImageLoader() {
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        this.imageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(getApplicationContext()).
+                        defaultDisplayImageOptions(displayimageOptions)
+                        .memoryCacheSize(16777216) // 16 MB memory cache
+                        .writeDebugLogs()
+                        .build();
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+        this.imageLoader = ImageLoader.getInstance();
+        imageLoader.init(this.imageLoaderConfig);
     }
 
     private void installLayouts() {
         
+    }
+
+    @Override
+    public void receiveState(int message, Bundle data) {
+        try {
+            if(data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if(activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                if(!isCurrentActivity) {
+                    return;
+                }
+            }
+            if(message == HandlerMessages.PHOTOS_GETALBUMS) {
+                ovk_api.photos.getByAlbumId(
+                        ovk_api.wrapper,
+                        Long.parseLong(ids[0]),
+                        Long.parseLong(ids[1]),
+                        50,
+                        true);
+            } else if(message == HandlerMessages.PHOTOS_GET) {
+                createPhotoAlbumAdapter();
+                for(int i = 0; i < ovk_api.photos.albumsList.size(); i++) {
+                    if(ovk_api.photos.albumsList.get(i).ids[0] == Long.parseLong(ids[1])) {
+                        ovk_api.photos.album.title = ovk_api.photos.albumsList.get(i).title;
+                    }
+                }
+                ((TextView) findViewById(R.id.album_title)).setText(ovk_api.photos.album.title);
+                ((TextView) findViewById(R.id.album_count)).setText(
+                        Global.getPluralQuantityString(this, R.plurals.photos,
+                                Global.getEndNumberFromLong(ovk_api.photos.album.size))
+                );
+                loadAlbumThumbnail(
+                        Long.parseLong(ids[0]),
+                        Long.parseLong(ids[1]),
+                        (ImageView) findViewById(R.id.album_thumb));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+}
+
+    private void createPhotoAlbumAdapter() {
+        final PhotosListAdapter adapter = new PhotosListAdapter(this, ovk_api.photos.album.photos);
+        photosList = findViewById(R.id.photos_listview);
+        FlexibleGridLayoutManager flex_lm =
+                new FlexibleGridLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        flex_lm.setColumnCountProvider(new FlexibleGridLayoutManager.ColumnCountProvider() {
+            @Override
+            public int getColumnCount(int recyclerViewWidth) {
+                return recyclerViewWidth / (int)(43 * getResources().getDisplayMetrics().scaledDensity);
+            }
+        });
+        photosList.setLayoutManager(flex_lm);
+        photosList.setAdapter(adapter);
+        findViewById(R.id.progress_layout).setVisibility(View.GONE);
+    }
+
+    private void loadAlbumThumbnail(long owner_id, long album_id, ImageView view) {
+        try {
+            String full_filename = "file://" + getCacheDir()
+                    + "/" + instance + "/photos_cache/photo_albums/" +
+                    "photo_album_" + owner_id + "_" + album_id;
+            Bitmap bitmap = imageLoader.loadImageSync(full_filename);
+            view.setImageBitmap(bitmap);
+        } catch (OutOfMemoryError oom) {
+            imageLoader.clearMemoryCache();
+            imageLoader.clearDiskCache();
+            // Retrying again
+            if(photo_fail_count < 5) {
+                photo_fail_count++;
+                loadAlbumThumbnail(owner_id, album_id, view);
+            }
+        }
     }
 }

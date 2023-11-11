@@ -661,7 +661,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.photos = new Photos();
             }
             ovk_api.photos.getAlbums(ovk_api.wrapper, ovk_api.account.id, 25,
-                    false, true, true);
+                    true, true, true);
         } else if(position == 2) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.messages));

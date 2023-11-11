@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -58,6 +59,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             ovk_api.wrapper.handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(OvkApplication.API_TAG,
+                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                    );
                     netAuthActivity.receiveState(msg.what, data);
                 }
             });
@@ -69,6 +73,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             ovk_api.wrapper.handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(OvkApplication.API_TAG,
+                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                    );
                     netFragmActivity.receiveState(msg.what, data);
                 }
             });
@@ -80,6 +87,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             ovk_api.wrapper.handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(OvkApplication.API_TAG,
+                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                    );
                     netActivity.receiveState(msg.what, data);
                 }
             });
@@ -452,6 +462,28 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         } else if(activity instanceof PhotoAlbumIntentActivity) {
             PhotoAlbumIntentActivity album_a = ((PhotoAlbumIntentActivity) activity);
             downloadManager = album_a.ovk_api.dlman;
+            assert method != null;
+            switch (method) {
+                case "Photos.getAlbums":
+                    msg.what = HandlerMessages.PHOTOS_GETALBUMS;
+                    if (args != null && args.contains("offset")) {
+                        album_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                downloadManager, false);
+                    } else {
+                        assert where != null;
+                        album_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                downloadManager, true);
+                    }
+                    break;
+                case "Photos.get":
+                    msg.what = HandlerMessages.PHOTOS_GET;
+                    album_a.ovk_api.photos.parse(
+                            data.getString("response"),
+                            new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
+                            downloadManager
+                    );
+                    break;
+            }
         }
         return msg;
     }

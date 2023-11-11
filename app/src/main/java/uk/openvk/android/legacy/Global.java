@@ -723,8 +723,8 @@ public class Global {
             args = path.substring("openvk://group/".length());
         } else if (path.startsWith("openvk://friends/")) {
             args = path.substring("openvk://friends/".length());
-        } else if (path.startsWith("openvk://photos/albums")) {
-            args = path.substring("openvk://photos/albums".length());
+        } else if (path.startsWith("openvk://photos/album")) {
+            args = path.substring("openvk://photos/album".length());
         } else if (path.startsWith("openvk://photos/")) {
             args = path.substring("openvk://photos/".length());
         } else if (path.startsWith("openvk://notes/")) {

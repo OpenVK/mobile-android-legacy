@@ -270,7 +270,8 @@ public class DownloadManager {
                             // short_address, i + 1, photoAttachments.size()));
                             url = photoAttachments.get(i).url;
                             if(!url.startsWith("http://") && !url.startsWith("https://")) {
-                                Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
+                                Log.e(OvkApplication.DL_TAG,
+                                        String.format("Invalid URL: %s. Download canceled.", url));
                                 return;
                             }
 
@@ -402,7 +403,7 @@ public class DownloadManager {
             return;
         }
         if(!url.startsWith("http://") && !url.startsWith("https://")) {
-            Log.e(OvkApplication.DL_TAG, "Invalid URL. Download canceled.");
+            Log.e(OvkApplication.DL_TAG, String.format("Invalid URL: %s. Download canceled.", url));
             return;
         }
         Runnable httpRunnable = new Runnable() {
@@ -463,7 +464,8 @@ public class DownloadManager {
                         short_address = url;
                     }
 
-                    if(logging_enabled) Log.v("DownloadManager", String.format("Downloading %s...", short_address));
+                    if(logging_enabled) Log.v("DownloadManager",
+                            String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
                         request_legacy = httpClientLegacy.get(url);
                     } else {
