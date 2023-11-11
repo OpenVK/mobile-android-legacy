@@ -83,9 +83,6 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class GroupIntentActivity extends NetworkFragmentActivity {
     public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
     private String access_token;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
@@ -107,9 +104,6 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.layout_group_page);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();

@@ -180,7 +180,7 @@
 
 
     <color name="window_bg">#fff</color>
-    <color name="window_bg_black">#000</color>
+    <color name="window_bg_black">#000000</color>
     <color name="window_bg_transparent">#00000000</color>
 
     <!--style name="CustomTheme" parent="BaseStyle">
