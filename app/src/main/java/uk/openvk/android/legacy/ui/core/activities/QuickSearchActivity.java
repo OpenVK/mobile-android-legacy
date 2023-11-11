@@ -104,7 +104,7 @@ public class QuickSearchActivity extends NetworkActivity {
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.USERS_SEARCH) {
             final SearchResultsLayout searchResultsLayout = findViewById(R.id.sr_ll);
             searchResultsLayout.createUsersAdapter(this, ovk_api.users.getList());

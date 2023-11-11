@@ -84,7 +84,6 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 @SuppressWarnings("ConstantConditions")
 public class ProfileIntentActivity extends NetworkFragmentActivity {
 
-    public Handler handler;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     public ProfileFragment profileFragment;
@@ -120,25 +119,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         FriendsFragment friendsFragment = new FriendsFragment();
 
         final Uri uri = intent.getData();
-
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Global.parseJSONData(ovk_api.wrapper, handler, data, ProfileIntentActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
 
         if (uri != null) {
             String path = uri.toString();
@@ -286,7 +266,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(args.startsWith("id")) {

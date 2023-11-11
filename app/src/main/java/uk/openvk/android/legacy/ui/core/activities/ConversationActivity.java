@@ -469,7 +469,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             conversation_adapter = new MessagesListAdapter(this, history, peer_id);
             messagesList.setAdapter(conversation_adapter);

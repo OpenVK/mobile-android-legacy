@@ -467,7 +467,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
             if(message == HandlerMessages.WALL_POST) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
