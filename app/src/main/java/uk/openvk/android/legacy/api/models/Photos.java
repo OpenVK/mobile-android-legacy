@@ -73,6 +73,28 @@ public class Photos {
         }
     }
 
+    public void parse(String response, PhotoAlbum album) {
+        try {
+            album.photos = new ArrayList<>();
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONArray photos = json.getJSONObject("response").getJSONArray("photos");
+            for(int i = 0; i < photos.length(); i++) {
+                JSONObject item = photos.getJSONObject(i);
+                Photo photo = new Photo();
+                photo.id = item.getLong("id");
+                if(item.isNull("album_id")) {
+                    photo.album_id = 0;
+                } else {
+                    photo.album_id = item.getLong("album_id");
+                }
+                photo.owner_id = item.getLong("owner_id");
+                album.photos.add(photo);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void parseOnePhoto(String response) {
         try {
             if(list == null) {
@@ -161,5 +183,9 @@ public class Photos {
                         "&need_system=%s" +
                         "&need_covers=%s" +
                         "&photo_sizes=%s", owner_id, count, need_system, need_covers, photo_sizes));
+    }
+
+    public void getByAlbumId(OvkAPIWrapper wrapper, long owner_id, long album_id, int count) {
+        wrapper.sendAPIMethod("Photos.get", "owner_id=%s&album_id=%s");
     }
 }
