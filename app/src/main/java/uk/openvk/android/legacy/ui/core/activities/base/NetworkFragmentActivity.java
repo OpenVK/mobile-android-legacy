@@ -55,12 +55,22 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
         handler = new Handler(Looper.myLooper());
         ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
         OvkAPIListeners apiListeners = new OvkAPIListeners();
-        apiListeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
+        setAPIListeners(apiListeners);
+    }
+
+    private void setAPIListeners(final OvkAPIListeners listeners) {
+        listeners.from = getLocalClassName();
+        listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
             @Override
             public void onAPISuccess(final Context ctx, int msg_code, final Bundle data) {
                 if(!BuildConfig.BUILD_TYPE.equals("release"))
-                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
-                            msg_code));
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    msg_code,
+                                    listeners.from
+                            )
+                    );
                 if(msg_code == HandlerMessages.PARSE_JSON) {
                     new Thread(new Runnable() {
                         @Override
@@ -80,17 +90,22 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
                 }
             }
         };
-        apiListeners.failListener = new OvkAPIListeners.OnAPIFailListener() {
+        listeners.failListener = new OvkAPIListeners.OnAPIFailListener() {
             @Override
             public void onAPIFailed(Context ctx, int msg_code, final Bundle data) {
                 if(!BuildConfig.BUILD_TYPE.equals("release"))
-                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
-                            msg_code));
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    msg_code,
+                                    listeners.from
+                            )
+                    );
                 receiveState(msg_code, data);
             }
         };
-        ovk_api.wrapper.setAPIListeners(apiListeners);
-        ovk_api.dlman.setAPIListeners(apiListeners);
+        ovk_api.wrapper.setAPIListeners(listeners);
+        ovk_api.dlman.setAPIListeners(listeners);
     }
 
     protected void receiveState(int message, Bundle data) {

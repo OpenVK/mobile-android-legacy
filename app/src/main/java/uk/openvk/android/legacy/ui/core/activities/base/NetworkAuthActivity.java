@@ -53,18 +53,24 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
+        ovk_api = new OpenVKAPI(this, global_prefs, null, handler);
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
     }
 
-    public void setAPIListeners(OvkAPIListeners listeners) {
+    public void setAPIListeners(final OvkAPIListeners listeners) {
+        listeners.from = getLocalClassName();
         listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
             @Override
             public void onAPISuccess(final Context ctx, int msg_code, final Bundle data) {
                 if(!BuildConfig.BUILD_TYPE.equals("release"))
-                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
-                            msg_code));
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    msg_code,
+                                    listeners.from
+                            )
+                    );
                 if(msg_code == HandlerMessages.PARSE_JSON) {
                     new Thread(new Runnable() {
                         @Override
@@ -88,8 +94,13 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
             @Override
             public void onAPIFailed(Context ctx, int msg_code, final Bundle data) {
                 if(!BuildConfig.BUILD_TYPE.equals("release"))
-                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s",
-                            msg_code));
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    msg_code,
+                                    getClass().getCanonicalName()
+                            )
+                    );
                 receiveState(msg_code, data);
             }
         };

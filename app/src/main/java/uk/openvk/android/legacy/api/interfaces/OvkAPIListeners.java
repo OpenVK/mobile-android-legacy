@@ -20,6 +20,8 @@ import android.os.Bundle;
  **/
 
 public class OvkAPIListeners {
+    public String from;
+
     public static interface OnAPIProcessListener {
         public void onAPIProcess(Context ctx, Bundle data, long value, long length);
     }

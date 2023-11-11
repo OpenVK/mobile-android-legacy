@@ -77,7 +77,6 @@ public class AuthActivity extends NetworkAuthActivity {
     private OvkAlertDialog alertDialog;
     private OvkAlertDialog connectionDialog;
     private Error error;
-    public Handler handler;
     private Account account;
     private JSONParser jsonParser = new JSONParser();
     private int twofactor_fail = -1;
@@ -341,11 +340,10 @@ public class AuthActivity extends NetworkAuthActivity {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
-    @SuppressLint("StringFormatInvalid")
-    public void receiveState(int message, String response) {
+    public void receiveState(int message, Bundle data) {
         alertDialog = new OvkAlertDialog(this);
         try {
+            String response = data.getString("response");
             if (message == HandlerMessages.INVALID_USERNAME_OR_PASSWORD) {
                 connectionDialog.close();
                 OvkAlertDialog wrong_userdata_dlg;
@@ -507,11 +505,13 @@ public class AuthActivity extends NetworkAuthActivity {
                 alertDialog.show();
             }
         } catch (Exception e) {
-            connectionDialog.close();
-            alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
-                    getResources().getString(R.string.auth_error_title),
-                    getResources().getString(R.string.auth_error, getReason(message)), null);
-            alertDialog.show();
+            if(connectionDialog != null) {
+                connectionDialog.close();
+                alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                        getResources().getString(R.string.auth_error_title),
+                        getResources().getString(R.string.auth_error, getReason(message)), null);
+                alertDialog.show();
+            }
             e.printStackTrace();
         }
     }
