@@ -707,7 +707,7 @@ public class AppActivity extends NetworkFragmentActivity {
         }
     }
 
-    protected void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String profile_name =
