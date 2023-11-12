@@ -111,7 +111,6 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 .getApplicationContext()).getCurrentInstance());
         if (activity instanceof AuthActivity) {
             AuthActivity auth_a = (AuthActivity) activity;
-            downloadManager = auth_a.ovk_api.dlman;
             assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":

@@ -289,6 +289,9 @@ public class Newsfeed implements Parcelable {
                 String photo_original_size;
                 String attachment_status;
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
+                if(attachment.isNull("type")) {
+                    continue;
+                }
                 if (attachment.getString("type").equals("photo")) {
                     JSONObject photo = attachment.getJSONObject("photo");
                     PhotoAttachment photoAttachment = new PhotoAttachment();

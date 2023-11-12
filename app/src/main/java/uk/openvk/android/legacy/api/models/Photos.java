@@ -102,6 +102,7 @@ public class Photos {
             JSONObject json = jsonParser.parseJSON(response);
             album.size = json.getJSONObject("response").getInt("count");
             JSONArray photos = json.getJSONObject("response").getJSONArray("items");
+            ArrayList<PhotoAttachment> photoAttachs = new ArrayList<>();
             for(int i = 0; i < photos.length(); i++) {
                 JSONObject item = photos.getJSONObject(i);
                 Photo photo = new Photo();
@@ -117,32 +118,29 @@ public class Photos {
                 }
                 photo.owner_id = item.getLong("owner_id");
                 if(dlman != null && item.has("sizes")) {
+                    PhotoAttachment attach = new PhotoAttachment();
                     if(item.getJSONObject("sizes").has("q")) {
                         photo.url = item.getJSONObject("sizes").getJSONObject("q").getString("url");
-                        dlman.downloadOnePhotoToCache(
-                                photo.url,
-                                String.format(
-                                        "photo%s_a%s_o%s",
-                                        photo.id,
-                                        photo.album_id,
-                                        photo.owner_id),
-                                "album_photos");
+                        attach.url = photo.url;
+                        attach.filename = String.format(
+                                "photo%s_a%s_o%s",
+                                photo.id,
+                                photo.album_id,
+                                photo.owner_id);
+
                     }
                     if(item.getJSONObject("sizes").has("UPLOADED_MAXRES")) {
                         photo.original_url =
                                 item.getJSONObject("sizes")
                                         .getJSONObject("UPLOADED_MAXRES").getString("url");
-                        dlman.downloadOnePhotoToCache(
-                                photo.url,
-                                String.format(
-                                        "photo%s_a%s_o%s",
-                                        photo.id,
-                                        photo.album_id,
-                                        photo.owner_id),
-                                "original_photos");
+                        attach.original_url = photo.original_url;
                     }
+                    photoAttachs.add(attach);
                 }
                 album.photos.add(photo);
+            }
+            if(dlman != null) {
+                dlman.downloadPhotosToCache(photoAttachs, "album_photos");
             }
         } catch (Exception ex) {
             ex.printStackTrace();

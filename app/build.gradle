@@ -96,7 +96,7 @@ android {
             //noinspection OldTargetApi
             targetSdkVersion 29
             versionCode 208
-            versionName "1.1.207-beta"
+            versionName "1.1.208-beta"
             signingConfig signingConfigs.debug
         }
         releaseConfig {

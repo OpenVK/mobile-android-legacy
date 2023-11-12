@@ -88,7 +88,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                         public void run() {
                             Intent intent = new Intent();
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
-                            data.putString("address", getClass().getSimpleName());
+                            data.putString("address", getLocalClassName());
                             intent.putExtras(data);
                             sendBroadcast(intent);
                         }

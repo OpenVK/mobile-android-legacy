@@ -53,6 +53,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
     private ImageLoaderConfiguration imageLoaderConfig;
     private ImageLoader imageLoader;
     private int photo_fail_count;
+    private PhotosListAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
         setContentView(R.layout.activity_photo_album);
         ProgressLayout progressLayout = ((ProgressLayout) findViewById(R.id.progress_layout));
         progressLayout.setVisibility(View.VISIBLE);
-        progressLayout.enableDarkTheme();
+        progressLayout.enableDarkTheme(true);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -101,6 +102,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
             }
         }
         initalizeImageLoader();
+        setTranslucentStatusBar(0, R.color.transparent_statusbar_color_black);
     }
 
     private void initalizeImageLoader() {
@@ -159,6 +161,8 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                         Long.parseLong(ids[0]),
                         Long.parseLong(ids[1]),
                         (ImageView) findViewById(R.id.album_thumb));
+            } else if(message == HandlerMessages.ALBUM_PHOTOS) {
+                adapter.notifyDataSetChanged();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -166,7 +170,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
 }
 
     private void createPhotoAlbumAdapter() {
-        final PhotosListAdapter adapter = new PhotosListAdapter(this, ovk_api.photos.album.photos);
+        adapter = new PhotosListAdapter(this, ovk_api.photos.album.photos);
         photosList = findViewById(R.id.photos_listview);
         FlexibleGridLayoutManager flex_lm =
                 new FlexibleGridLayoutManager(this, LinearLayoutManager.VERTICAL, false);

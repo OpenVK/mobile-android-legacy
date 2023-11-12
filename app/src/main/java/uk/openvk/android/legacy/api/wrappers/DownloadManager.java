@@ -380,6 +380,9 @@ public class DownloadManager {
                             case "comment_photos":
                                 sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
                                 break;
+                            case "album_photos":
+                                sendMessage(HandlerMessages.ALBUM_PHOTOS, where);
+                                break;
                             case "conversations_avatars":
                                 sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
                                 break;
@@ -558,6 +561,9 @@ public class DownloadManager {
                         break;
                     case "comment_photos":
                         sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
+                        break;
+                    case "album_photos":
+                        sendMessage(HandlerMessages.ALBUM_PHOTOS, where);
                         break;
                     case "video_thumbnails":
                         sendMessage(HandlerMessages.VIDEO_THUMBNAILS, where);

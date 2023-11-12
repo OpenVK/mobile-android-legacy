@@ -340,6 +340,7 @@ public class AuthActivity extends NetworkAuthActivity {
         }
     }
 
+    @Override
     public void receiveState(int message, Bundle data) {
         if(data.containsKey("address")) {
             String activityName = data.getString("address");
@@ -425,6 +426,7 @@ public class AuthActivity extends NetworkAuthActivity {
                 String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
                 String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
+                Log.d(OvkApplication.APP_TAG, "Creating OpenVK Account...");
                 account = new Account(response, this, ovk_api.wrapper);
                 if(instance_prefs != null && instance_prefs.contains("access_token") &&
                         instance_prefs.getString("access_token", "").length() > 0) {
@@ -451,7 +453,7 @@ public class AuthActivity extends NetworkAuthActivity {
                         account.id, server, auth
                 );
                 connectionDialog.close();
-                if (connectionDialog != null) connectionDialog.cancel();
+                connectionDialog.cancel();
                 if(!getIntent().hasExtra("accountAuthenticatorResponse") &&
                         !getIntent().hasExtra("authFromAppActivity")) {
                     Context context = getApplicationContext();

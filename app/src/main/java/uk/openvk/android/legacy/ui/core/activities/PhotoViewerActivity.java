@@ -157,7 +157,7 @@ public class PhotoViewerActivity extends NetworkActivity {
 
         ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.GONE);
         ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.VISIBLE);
-        ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme();
+        ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme(true, 1);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
