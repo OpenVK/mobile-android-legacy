@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import uk.openvk.android.legacy.BuildConfig;
@@ -65,7 +66,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
 
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
-        this.registerReceiver(receiver, new IntentFilter(
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
                 "uk.openvk.android.legacy.API_DATA_RECEIVE"));
     }
 
@@ -121,7 +122,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onDestroy();
     }
 }
