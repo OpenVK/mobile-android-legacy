@@ -820,7 +820,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         public void showAuthorPage(Context ctx, String where, int position) {
             WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
