@@ -127,7 +127,7 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
                     String.format("%s",
                             Global.getPluralQuantityString(
                                     ctx, R.plurals.photos,
-                                    Global.getEndNumberFromLong(item.size)
+                                    Integer.parseInt(String.valueOf(item.size))
                             )
                     )
             );

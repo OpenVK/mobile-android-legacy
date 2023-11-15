@@ -1,13 +1,16 @@
 package uk.openvk.android.legacy.ui.core.activities.intents;
 
+import android.app.ActionBar;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -103,6 +106,35 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
         }
         initalizeImageLoader();
         setTranslucentStatusBar(0, R.color.transparent_statusbar_color_black);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            try {
+                try {
+                    getActionBar().setDisplayShowHomeEnabled(true);
+                    getActionBar().setDisplayHomeAsUpEnabled(true);
+                    getActionBar().setTitle(getResources().getString(R.string.photo));
+                    getActionBar().setBackgroundDrawable(
+                          getResources().getDrawable(R.drawable.transparent_black_gradient_top_v2));
+                    getActionBar().setDisplayShowTitleEnabled(false);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    getActionBar().setIcon(R.drawable.ic_ab_app);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (item.getItemId() == android.R.id.home) {
+                onBackPressed();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initalizeImageLoader() {
@@ -143,7 +175,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                         ovk_api.wrapper,
                         Long.parseLong(ids[0]),
                         Long.parseLong(ids[1]),
-                        50,
+                        75,
                         true);
             } else if(message == HandlerMessages.PHOTOS_GET) {
                 createPhotoAlbumAdapter();
@@ -155,7 +187,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                 ((TextView) findViewById(R.id.album_title)).setText(ovk_api.photos.album.title);
                 ((TextView) findViewById(R.id.album_count)).setText(
                         Global.getPluralQuantityString(this, R.plurals.photos,
-                                Global.getEndNumberFromLong(ovk_api.photos.album.size))
+                                Integer.parseInt(String.valueOf(ovk_api.photos.album.size)))
                 );
                 loadAlbumThumbnail(
                         Long.parseLong(ids[0]),

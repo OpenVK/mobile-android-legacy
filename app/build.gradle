@@ -23,7 +23,7 @@ def getGitHubCommit = {
         }
         return gitVersionName
     } catch (ignored) {
-        return "UNKNOWN";
+        return "UNKNOWN"
     }
 }
 

@@ -314,9 +314,9 @@
 
         <activity
             android:name=".ui.core.activities.intents.PhotoAlbumIntentActivity"
-            android:label="@string/album_unnamed"
+            android:label="@string/albums"
             android:icon="@drawable/ic_ab_app"
-            android:theme="@style/BaseStyle.Dark"
+            android:theme="@style/BaseStyle.Dark.Transparent"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
             android:resizeableActivity="false">

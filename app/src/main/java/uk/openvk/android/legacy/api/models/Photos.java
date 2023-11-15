@@ -260,8 +260,8 @@ public class Photos {
         }
         wrapper.sendAPIMethod(
                 "Photos.get",
-                String.format("owner_id=%s&album_id=%s&photo_sizes=%s",
-                    owner_id, album_id, bl_photo_sizes
+                String.format("owner_id=%s&album_id=%s&count=%s&photo_sizes=%s",
+                    owner_id, album_id, count, bl_photo_sizes
                 )
         );
     }
