@@ -522,12 +522,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             likeDeleted = true;
                         }
                         deleteLike(ctx, position, item,"post", view);
+                        item.counters.isLiked = false;
                     } else {
                         if(!likeDeleted) {
                             likeAdded = true;
                         }
                         addLike(ctx, position, item,"post", view);
+                        item.counters.isLiked = true;
                     }
+                    items.set(position, item);
                 }
             });
 
