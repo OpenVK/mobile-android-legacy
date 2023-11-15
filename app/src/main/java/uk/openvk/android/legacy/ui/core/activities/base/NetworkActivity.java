@@ -12,7 +12,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -71,7 +70,7 @@ public class NetworkActivity extends TranslucentActivity {
 
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
+        this.registerReceiver(receiver, new IntentFilter(
                 "uk.openvk.android.legacy.API_DATA_RECEIVE"));
     }
 
@@ -127,7 +126,7 @@ public class NetworkActivity extends TranslucentActivity {
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        unregisterReceiver(receiver);
         super.onDestroy();
     }
 }

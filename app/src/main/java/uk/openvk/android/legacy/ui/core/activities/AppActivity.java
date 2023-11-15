@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -224,7 +223,7 @@ public class AppActivity extends NetworkFragmentActivity {
             }
         };
         // Register LongPoll Broadcast Receiver
-        LocalBroadcastManager.getInstance(this).registerReceiver(lpReceiver, new IntentFilter(
+        registerReceiver(lpReceiver, new IntentFilter(
                 "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
     }
 
@@ -1420,7 +1419,7 @@ public class AppActivity extends NetworkFragmentActivity {
     @Override
     protected void onDestroy() {
         try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(lpReceiver);
+            unregisterReceiver(lpReceiver);
         } catch (Exception ignored) {
 
         }

@@ -65,7 +65,6 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
         ProgressLayout progressLayout = ((ProgressLayout) findViewById(R.id.progress_layout));
         progressLayout.setVisibility(View.VISIBLE);
         progressLayout.enableDarkTheme(true);
-        setTranslucentStatusBar(0, R.color.transparent_statusbar_color_black);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -210,7 +209,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
         flex_lm.setColumnCountProvider(new FlexibleGridLayoutManager.ColumnCountProvider() {
             @Override
             public int getColumnCount(int recyclerViewWidth) {
-                return recyclerViewWidth / (int)(70.5 * getResources().getDisplayMetrics().scaledDensity);
+                return recyclerViewWidth / (int)(43 * getResources().getDisplayMetrics().scaledDensity);
             }
         });
         photosList.setLayoutManager(flex_lm);
