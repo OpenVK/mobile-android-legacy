@@ -99,7 +99,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                     installLayouts();
                 }
                 ids = args.split("_");
-                ovk_api.photos.getAlbums(ovk_api.wrapper, Long.parseLong(ids[1]), 100,
+                ovk_api.photos.getAlbums(ovk_api.wrapper, Long.parseLong(ids[0]), 100,
                         true, false, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -182,7 +182,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
             } else if(message == HandlerMessages.PHOTOS_GET) {
                 createPhotoAlbumAdapter();
                 for(int i = 0; i < ovk_api.photos.albumsList.size(); i++) {
-                    if(ovk_api.photos.albumsList.get(i).ids[0] == Long.parseLong(ids[1])) {
+                    if(ovk_api.photos.albumsList.get(i).ids[0] == Long.parseLong(ids[0])) {
                         ovk_api.photos.album.title = ovk_api.photos.albumsList.get(i).title;
                     }
                 }
