@@ -1192,6 +1192,11 @@ public class AppActivity extends NetworkFragmentActivity {
                                     !where.startsWith("more")) {
                                 slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                                 setErrorPage(data, "error", message, true);
+                            } else {
+                                if(!inBackground) {
+                                    Toast.makeText(this, getResources().getString(R.string.err_text),
+                                            Toast.LENGTH_LONG).show();
+                                }
                             }
                         } else if(method.equals("Account.getCounters")) {
                             ab_layout.setNotificationCount(new AccountCounters(0, 0, 0));
