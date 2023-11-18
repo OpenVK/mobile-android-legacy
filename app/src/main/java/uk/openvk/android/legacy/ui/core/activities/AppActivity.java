@@ -1179,6 +1179,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 if(data.containsKey("method")) {
                     try {
                         String method = data.getString("method");
+                        String where = data.getString("where");
                         if (method.equals("Account.getProfileInfo")
                                 || ((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
                                 && selectedFragment instanceof NewsfeedFragment)
@@ -1188,7 +1189,7 @@ public class AppActivity extends NetworkFragmentActivity {
                                 || (method.equals("Messages.getConversations")
                                 && selectedFragment instanceof ConversationsFragment)) {
                             if(!data.containsKey("where") ||
-                                    !data.getString("where").startsWith("more")) {
+                                    !where.startsWith("more")) {
                                 slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                                 setErrorPage(data, "error", message, true);
                             }
