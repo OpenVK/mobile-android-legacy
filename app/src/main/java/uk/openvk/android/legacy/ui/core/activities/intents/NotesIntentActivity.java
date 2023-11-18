@@ -15,21 +15,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.Note;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Notes;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
@@ -38,7 +34,6 @@ import uk.openvk.android.legacy.ui.core.fragments.app.NotesFragment;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
-import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -248,14 +243,14 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
                     message == HandlerMessages.INTERNAL_ERROR) {
                 errorLayout.setReason(message);
                 errorLayout.setData(data);
-                errorLayout.setRetryAction(this);
+                errorLayout.setRetryAction(ovk_api.wrapper);
                 progressLayout.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(this);
+            errorLayout.setRetryAction(ovk_api.wrapper);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
@@ -268,7 +263,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setIcon(icon);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(this);
+        errorLayout.setRetryAction(ovk_api.wrapper);
         errorLayout.setReason(reason);
         if (icon.equals("ovk")) {
             if(reason == HandlerMessages.NOTES_GET) {

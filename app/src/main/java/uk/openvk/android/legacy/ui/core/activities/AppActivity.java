@@ -1239,7 +1239,7 @@ public class AppActivity extends NetworkFragmentActivity {
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
             errorLayout.setIcon(icon);
             errorLayout.setData(data);
-            errorLayout.setRetryAction(this);
+            errorLayout.setRetryAction(ovk_api.wrapper);
             errorLayout.setReason(reason);
             if (icon.equals("ovk")) {
                 if(reason == HandlerMessages.NOTES_GET) {

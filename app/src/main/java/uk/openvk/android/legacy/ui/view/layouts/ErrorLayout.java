@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.Arrays;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
@@ -35,6 +36,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 public class ErrorLayout extends LinearLayout{
     private String api_method;
     private String api_args;
+    private String api_where;
 
     public ErrorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -82,12 +84,16 @@ public class ErrorLayout extends LinearLayout{
         }
     }
 
-    public void setRetryAction(final Context ctx) {
+    public void setRetryAction(final OvkAPIWrapper wrapper) {
         ((TextView) findViewById(R.id.retry_btn)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).retryConnection(api_method, api_args);
+                if(api_where == null) {
+                    wrapper.sendAPIMethod(api_method, api_args);
+                } else if(api_args == null){
+                    wrapper.sendAPIMethod(api_method);
+                } else {
+                    wrapper.sendAPIMethod(api_method, api_args, api_where);
                 }
             }
         });
@@ -116,6 +122,9 @@ public class ErrorLayout extends LinearLayout{
             }
             if(data.containsKey("args")) {
                 api_args = data.getString("args");
+            }
+            if(data.containsKey("args")) {
+                api_where = data.getString("where");
             }
         } catch (Exception ex) {
 
