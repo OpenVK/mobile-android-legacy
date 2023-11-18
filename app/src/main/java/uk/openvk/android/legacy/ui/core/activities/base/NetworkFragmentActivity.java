@@ -112,8 +112,23 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
                 receiveState(msg_code, data);
             }
         };
+        listeners.processListener = new OvkAPIListeners.OnAPIProcessListener() {
+            @Override
+            public void onAPIProcess(Context ctx, Bundle data, long value, long length) {
+                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    HandlerMessages.UPLOAD_PROGRESS,
+                                    getLocalClassName()
+                            )
+                    );
+                receiveState(HandlerMessages.UPLOAD_PROGRESS, data);
+            }
+        };
         ovk_api.wrapper.setAPIListeners(listeners);
         ovk_api.dlman.setAPIListeners(listeners);
+        ovk_api.ulman.setAPIListeners(listeners);
     }
 
     public void receiveState(int message, Bundle data) {

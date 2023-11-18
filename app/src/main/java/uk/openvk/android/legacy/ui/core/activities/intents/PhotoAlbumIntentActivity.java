@@ -1,6 +1,8 @@
 package uk.openvk.android.legacy.ui.core.activities.intents;
 
 import android.app.ActionBar;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -105,7 +107,6 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
             }
         }
         initalizeImageLoader();
-        setTranslucentStatusBar(0, R.color.transparent_statusbar_color_black);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
@@ -125,6 +126,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                 ex.printStackTrace();
             }
         }
+        setTranslucentStatusBar(1, android.R.color.black);
     }
 
     @Override
@@ -209,7 +211,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
         flex_lm.setColumnCountProvider(new FlexibleGridLayoutManager.ColumnCountProvider() {
             @Override
             public int getColumnCount(int recyclerViewWidth) {
-                return recyclerViewWidth / (int)(43 * getResources().getDisplayMetrics().scaledDensity);
+                return recyclerViewWidth / (int)(62 * getResources().getDisplayMetrics().scaledDensity);
             }
         });
         photosList.setLayoutManager(flex_lm);
@@ -232,6 +234,18 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                 photo_fail_count++;
                 loadAlbumThumbnail(owner_id, album_id, view);
             }
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            findViewById(R.id.album_header).getLayoutParams().height =
+                    (int)(180 * getResources().getDisplayMetrics().scaledDensity);
+        } else {
+            findViewById(R.id.album_header).getLayoutParams().height =
+                    (int)(240 * getResources().getDisplayMetrics().scaledDensity);
         }
     }
 }

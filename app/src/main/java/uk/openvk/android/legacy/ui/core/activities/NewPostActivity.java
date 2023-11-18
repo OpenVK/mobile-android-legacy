@@ -530,7 +530,8 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 if(data.containsKey("method")) {
                     if (data.getString("method").equals("Wall.post")) {
                         Toast.makeText(getApplicationContext(),
-                                getResources().getString(R.string.posting_error), Toast.LENGTH_LONG).show();
+                                getResources().getString(R.string.posting_error),
+                                Toast.LENGTH_LONG).show();
                         if (connectionDialog != null)
                             connectionDialog.cancel();
                     } else if(data.getString("method").startsWith("Photos.save")) {

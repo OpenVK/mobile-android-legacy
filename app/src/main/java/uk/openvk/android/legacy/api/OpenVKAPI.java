@@ -72,7 +72,7 @@ public class OpenVKAPI {
                 global_prefs.getString("proxy_address", ""));
         dlman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         ulman = new UploadManager(ctx, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         ulman.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
         if(instance_prefs != null && instance_prefs.contains("server")) {
