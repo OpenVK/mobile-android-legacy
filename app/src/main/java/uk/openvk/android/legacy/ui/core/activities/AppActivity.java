@@ -1187,8 +1187,11 @@ public class AppActivity extends NetworkFragmentActivity {
                                 || (method.equals("Users.get") && selectedFragment instanceof ProfileFragment)
                                 || (method.equals("Messages.getConversations")
                                 && selectedFragment instanceof ConversationsFragment)) {
-                            slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                            setErrorPage(data, "error", message, true);
+                            if(!data.containsKey("where") ||
+                                    !data.getString("where").startsWith("more")) {
+                                slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                                setErrorPage(data, "error", message, true);
+                            }
                         } else if(method.equals("Account.getCounters")) {
                             ab_layout.setNotificationCount(new AccountCounters(0, 0, 0));
                         } else {
