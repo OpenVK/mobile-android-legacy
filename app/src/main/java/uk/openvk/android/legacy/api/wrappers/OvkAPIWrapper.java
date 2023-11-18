@@ -594,7 +594,8 @@ public class OvkAPIWrapper {
                             if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                     String.format("Connection error: %s", e.getMessage()));
                             error.description = e.getMessage();
-                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method,
+                                    args, where, error.description);
                         }
                     } catch (SocketTimeoutException e) {
                         if (logging_enabled) {
@@ -608,12 +609,14 @@ public class OvkAPIWrapper {
                                 error.description = e.getClass().getSimpleName();
                             }
                         }
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method,
+                                args, where, error.description);
                     } catch (UnknownHostException e) {
                         if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method,
+                                args, where, error.description);
                     } catch(javax.net.ssl.SSLException e) {
                         if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                 String.format("Connection error: %s", e.getMessage()));
