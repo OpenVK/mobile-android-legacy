@@ -211,12 +211,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if(where != null && where.equals("more_wall_posts")) {
                         app_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), false);
+                                data.getString("response"), false, true);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
                         app_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), true);
+                                data.getString("response"), true, true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;
@@ -337,12 +337,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if(where != null && where.equals("more_wall_posts")) {
                         profile_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), false);
+                                data.getString("response"), false, true);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
                         profile_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), true);
+                                data.getString("response"), true, true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;
@@ -381,12 +381,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if(where != null && where.equals("more_wall_posts")) {
                         group_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), false);
+                                data.getString("response"), false, true);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
                         group_a.ovk_api.wall.parse(activity, downloadManager,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), true);
+                                data.getString("response"), true, true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;

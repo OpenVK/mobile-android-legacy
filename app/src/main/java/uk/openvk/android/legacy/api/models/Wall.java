@@ -139,11 +139,16 @@ public class Wall implements Parcelable {
                     PostCounters counters = new PostCounters(likes.getInt("count"),
                             comments.getInt("count"),
                             reposts.getInt("count"), isLiked, false);
-
-                    ArrayList<Attachment> attachments_list =
-                            createAttachmentsList(owner_id, post_id, quality,
-                            attachments, "wall_attachment");
-
+                    ArrayList<Attachment> attachments_list = null;
+                    if(isWall) {
+                        attachments_list =
+                                createAttachmentsList(owner_id, post_id, quality,
+                                        attachments, "wall_attachment");
+                    } else {
+                        attachments_list =
+                                createAttachmentsList(owner_id, post_id, quality,
+                                        attachments, "newsfeed_attachment");
+                    }
                     WallPost item = new WallPost(String.format("(Unknown author: %s)",
                             author_id), dt_sec, null,
                             content, counters, "", attachments_list, owner_id, post_id, ctx);
@@ -176,8 +181,13 @@ public class Wall implements Parcelable {
                         repostInfo.newsfeed_item = repost_item;
                         item.repost = repostInfo;
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
-                        attachments_list = createAttachmentsList(owner_id, post_id, quality,
-                                repost_attachments, "wall_attachment");
+                        if(isWall) {
+                            attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                                    repost_attachments, "wall_attachment");
+                        } else {
+                            attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                                    repost_attachments, "newsfeed_attachment");
+                        }
                         repost_item.attachments = attachments_list;
                     }
                     item.author_id = author_id;
@@ -415,210 +425,227 @@ public class Wall implements Parcelable {
                 String photo_original_size;
                 String attachment_status;
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
-                if (attachment.getString("type").equals("photo")) {
-                    JSONObject photo = attachment.getJSONObject("photo");
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
-                    photoAttachment.id = photo.getLong("id");
-                    JSONArray photo_sizes = photo.getJSONArray("sizes");
-                    photo_low_size = photo_sizes.getJSONObject(2).getString("url");
-                    photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
-                    photo_high_size = photo_sizes.getJSONObject(8).getString("url");
-                    photo_original_size = photo_sizes.getJSONObject(10).getString("url");
-                    photoAttachment.size = new int[2];
-                    switch (quality) {
-                        case "low":
-                            photoAttachment.url = photo_low_size;
-                            if(!photo_sizes.getJSONObject(2).isNull("width")) {
-                                photoAttachment.size[0] = photo_sizes.getJSONObject(2).getInt("width");
-                            } else {
-                                photoAttachment.size[0] = 384;
-                            }
-                            if(!photo_sizes.getJSONObject(2).isNull("height")) {
-                                photoAttachment.size[1] = photo_sizes.getJSONObject(2).getInt("height");
-                            } else {
-                                photoAttachment.size[1] = 288;
-                            }
-                            break;
-                        case "medium":
-                            photoAttachment.url = photo_medium_size;
-                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
-                                photoAttachment.size[0] = photo_sizes.getJSONObject(5).getInt("width");
-                            } else {
-                                photoAttachment.size[0] = 480;
-                            }
-                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
-                                photoAttachment.size[1] = photo_sizes.getJSONObject(5).getInt("height");
-                            } else {
-                                photoAttachment.size[1] = 360;
-                            }
-                            break;
-                        case "high":
-                            if(photo_high_size != null && photo_high_size.length() > 0) {
-                                photoAttachment.url = photo_high_size;
-                            } else {
-                                photoAttachment.url = photo_medium_size;
-                            }
-                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
-                                photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
-                            } else {
-                                photoAttachment.size[0] = 1024;
-                            }
-                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
-                                photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
-                            } else {
-                                photoAttachment.size[1] = 768;
-                            }
-                            break;
-                        case "original":
-                            if(photo_original_size != null && photo_original_size.length() > 0) {
-                                photoAttachment.url = photo_original_size;
-                            } else if(photo_high_size != null && photo_high_size.length() > 0) {
-                                photoAttachment.url = photo_high_size;
-                            } else {
-                                photoAttachment.url = photo_medium_size;
-                            }
-                            if(!photo_sizes.getJSONObject(5).isNull("width")) {
-                                photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
-                            } else {
-                                photoAttachment.size[0] = 2560;
-                            }
-                            if(!photo_sizes.getJSONObject(5).isNull("height")) {
-                                photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
-                            } else {
-                                photoAttachment.size[1] = 1920;
-                            }
-                            break;
-                    }
-                    photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
-                    photoAttachment.original_url = photo_original_size;
-                    if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
-                        attachment_status = "loading";
-                    } else {
-                        attachment_status = "none";
-                    }
-                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                    attachment_obj.status = attachment_status;
-                    attachment_obj.setContent(photoAttachment);
-                    try { // handle floating crash
-                        attachments_list.add(attachment_obj);
+                switch (attachment.getString("type")) {
+                    case "photo": {
+                        JSONObject photo = attachment.getJSONObject("photo");
+                        PhotoAttachment photoAttachment = new PhotoAttachment();
+                        photoAttachment.id = photo.getLong("id");
+                        JSONArray photo_sizes = photo.getJSONArray("sizes");
+                        photo_low_size = photo_sizes.getJSONObject(2).getString("url");
+                        photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
+                        photo_high_size = photo_sizes.getJSONObject(8).getString("url");
+                        photo_original_size = photo_sizes.getJSONObject(10).getString("url");
+                        photoAttachment.size = new int[2];
                         switch (quality) {
                             case "low":
-                                photos_lsize.add(photoAttachment);
+                                photoAttachment.url = photo_low_size;
+                                if (!photo_sizes.getJSONObject(2).isNull("width")) {
+                                    photoAttachment.size[0] = photo_sizes.getJSONObject(2).getInt("width");
+                                } else {
+                                    photoAttachment.size[0] = 384;
+                                }
+                                if (!photo_sizes.getJSONObject(2).isNull("height")) {
+                                    photoAttachment.size[1] = photo_sizes.getJSONObject(2).getInt("height");
+                                } else {
+                                    photoAttachment.size[1] = 288;
+                                }
                                 break;
                             case "medium":
-                                photos_msize.add(photoAttachment);
+                                photoAttachment.url = photo_medium_size;
+                                if (!photo_sizes.getJSONObject(5).isNull("width")) {
+                                    photoAttachment.size[0] = photo_sizes.getJSONObject(5).getInt("width");
+                                } else {
+                                    photoAttachment.size[0] = 480;
+                                }
+                                if (!photo_sizes.getJSONObject(5).isNull("height")) {
+                                    photoAttachment.size[1] = photo_sizes.getJSONObject(5).getInt("height");
+                                } else {
+                                    photoAttachment.size[1] = 360;
+                                }
                                 break;
                             case "high":
-                                photos_hsize.add(photoAttachment);
+                                if (photo_high_size != null && photo_high_size.length() > 0) {
+                                    photoAttachment.url = photo_high_size;
+                                } else {
+                                    photoAttachment.url = photo_medium_size;
+                                }
+                                if (!photo_sizes.getJSONObject(5).isNull("width")) {
+                                    photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
+                                } else {
+                                    photoAttachment.size[0] = 1024;
+                                }
+                                if (!photo_sizes.getJSONObject(5).isNull("height")) {
+                                    photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
+                                } else {
+                                    photoAttachment.size[1] = 768;
+                                }
                                 break;
                             case "original":
-                                photos_osize.add(photoAttachment);
+                                if (photo_original_size != null && photo_original_size.length() > 0) {
+                                    photoAttachment.url = photo_original_size;
+                                } else if (photo_high_size != null && photo_high_size.length() > 0) {
+                                    photoAttachment.url = photo_high_size;
+                                } else {
+                                    photoAttachment.url = photo_medium_size;
+                                }
+                                if (!photo_sizes.getJSONObject(5).isNull("width")) {
+                                    photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
+                                } else {
+                                    photoAttachment.size[0] = 2560;
+                                }
+                                if (!photo_sizes.getJSONObject(5).isNull("height")) {
+                                    photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
+                                } else {
+                                    photoAttachment.size[1] = 1920;
+                                }
                                 break;
                         }
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
-                                "be overestimated.");
-                    }
-                } else if (attachment.getString("type").equals("video")) {
-                    JSONObject video = attachment.getJSONObject("video");
-                    VideoAttachment videoAttachment = new VideoAttachment();
-                    videoAttachment.id = video.getLong("id");
-                    videoAttachment.title = video.getString("title");
-                    VideoFiles files = new VideoFiles();
-                    if(video.has("files") && !video.isNull("files")) {
-                        JSONObject videoFiles = video.getJSONObject("files");
-                        if(videoFiles.has("mp4_144")) {
-                            files.mp4_144 = videoFiles.getString("mp4_144");
-                        } if(videoFiles.has("mp4_240")) {
-                            files.mp4_240 = videoFiles.getString("mp4_240");
-                        } if(videoFiles.has("mp4_360")) {
-                            files.mp4_360 = videoFiles.getString("mp4_360");
-                        } if(videoFiles.has("mp4_480")) {
-                            files.mp4_480 = videoFiles.getString("mp4_480");
-                        } if(videoFiles.has("mp4_720")) {
-                            files.mp4_720 = videoFiles.getString("mp4_720");
-                        } if(videoFiles.has("mp4_1080")) {
-                            files.mp4_1080 = videoFiles.getString("mp4_1080");
-                        } if(videoFiles.has("ogv_480")) {
-                            files.ogv_480 = videoFiles.getString("ogv_480");
+                        photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
+                        photoAttachment.original_url = photo_original_size;
+                        if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
+                            attachment_status = "loading";
+                        } else {
+                            attachment_status = "none";
                         }
+                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                        attachment_obj.status = attachment_status;
+                        attachment_obj.setContent(photoAttachment);
+                        try { // handle floating crash
+                            attachments_list.add(attachment_obj);
+                            switch (quality) {
+                                case "low":
+                                    photos_lsize.add(photoAttachment);
+                                    break;
+                                case "medium":
+                                    photos_msize.add(photoAttachment);
+                                    break;
+                                case "high":
+                                    photos_hsize.add(photoAttachment);
+                                    break;
+                                case "original":
+                                    photos_osize.add(photoAttachment);
+                                    break;
+                            }
+                        } catch (ArrayIndexOutOfBoundsException ignored) {
+                            Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                        }
+                        break;
                     }
-                    videoAttachment.files = files;
-                    if(video.has("image")) {
-                        JSONArray thumb_array = video.getJSONArray("image");
-                        videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
-                        PhotoAttachment thumbnail = new PhotoAttachment();
-                        thumbnail.url = videoAttachment.url_thumb;
-                        thumbnail.filename = String.format("thumbnail_%so%s",
-                                video.getLong("id"), owner_id);
-                        video_thumbnails.add(thumbnail);
-                    }
-                    videoAttachment.duration = video.getInt("duration");
-                    attachment_status = "done";
-                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                    attachment_obj.status = attachment_status;
-                    attachment_obj.setContent(videoAttachment);
-                    try {
-                        attachments_list.add(attachment_obj);
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
-                                "be overestimated.");
-                    }
-                } else if (attachment.getString("type").equals("poll")) {
-                    JSONObject poll_attachment = attachment.getJSONObject("poll");
-                    PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"),
-                            poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
-                            poll_attachment.getBoolean("multiple"),
-                            poll_attachment.getBoolean("can_vote"),
-                            poll_attachment.getBoolean("anonymous"));
-                    JSONArray answers = poll_attachment.getJSONArray("answers");
-                    JSONArray votes = poll_attachment.getJSONArray("answer_ids");
-                    if (votes.length() > 0) {
-                        pollAttachment.user_votes = votes.length();
-                    }
-                    pollAttachment.votes = poll_attachment.getInt("votes");
-                    for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
-                        JSONObject answer = answers.getJSONObject(answers_index);
-                        PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"),
-                                answer.getInt("votes"), answer.getString("text"));
-                        for (int votes_index = 0; votes_index < votes.length(); votes_index++) {
-                            if (answer.getInt("id") == votes.getInt(votes_index)) {
-                                pollAnswer.is_voted = true;
+                    case "video": {
+                        JSONObject video = attachment.getJSONObject("video");
+                        VideoAttachment videoAttachment = new VideoAttachment();
+                        videoAttachment.id = video.getLong("id");
+                        videoAttachment.title = video.getString("title");
+                        VideoFiles files = new VideoFiles();
+                        if (video.has("files") && !video.isNull("files")) {
+                            JSONObject videoFiles = video.getJSONObject("files");
+                            if (videoFiles.has("mp4_144")) {
+                                files.mp4_144 = videoFiles.getString("mp4_144");
+                            }
+                            if (videoFiles.has("mp4_240")) {
+                                files.mp4_240 = videoFiles.getString("mp4_240");
+                            }
+                            if (videoFiles.has("mp4_360")) {
+                                files.mp4_360 = videoFiles.getString("mp4_360");
+                            }
+                            if (videoFiles.has("mp4_480")) {
+                                files.mp4_480 = videoFiles.getString("mp4_480");
+                            }
+                            if (videoFiles.has("mp4_720")) {
+                                files.mp4_720 = videoFiles.getString("mp4_720");
+                            }
+                            if (videoFiles.has("mp4_1080")) {
+                                files.mp4_1080 = videoFiles.getString("mp4_1080");
+                            }
+                            if (videoFiles.has("ogv_480")) {
+                                files.ogv_480 = videoFiles.getString("ogv_480");
                             }
                         }
-                        pollAttachment.answers.add(pollAnswer);
+                        videoAttachment.files = files;
+                        if (video.has("image")) {
+                            JSONArray thumb_array = video.getJSONArray("image");
+                            videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
+                            PhotoAttachment thumbnail = new PhotoAttachment();
+                            thumbnail.url = videoAttachment.url_thumb;
+                            thumbnail.filename = String.format("thumbnail_%so%s",
+                                    video.getLong("id"), owner_id);
+                            video_thumbnails.add(thumbnail);
+                        }
+                        videoAttachment.duration = video.getInt("duration");
+                        attachment_status = "done";
+                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                        attachment_obj.status = attachment_status;
+                        attachment_obj.setContent(videoAttachment);
+                        try {
+                            attachments_list.add(attachment_obj);
+                        } catch (ArrayIndexOutOfBoundsException ignored) {
+                            Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                        }
+                        break;
                     }
-                    attachment_status = "done";
-                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                    attachment_obj.status = attachment_status;
-                    attachment_obj.setContent(pollAttachment);
-                    try { // handle floating crash
-                        attachments_list.add(attachment_obj);
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
-                                "be overestimated.");
+                    case "poll": {
+                        JSONObject poll_attachment = attachment.getJSONObject("poll");
+                        PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"),
+                                poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
+                                poll_attachment.getBoolean("multiple"),
+                                poll_attachment.getBoolean("can_vote"),
+                                poll_attachment.getBoolean("anonymous"));
+                        JSONArray answers = poll_attachment.getJSONArray("answers");
+                        JSONArray votes = poll_attachment.getJSONArray("answer_ids");
+                        if (votes.length() > 0) {
+                            pollAttachment.user_votes = votes.length();
+                        }
+                        pollAttachment.votes = poll_attachment.getInt("votes");
+                        for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
+                            JSONObject answer = answers.getJSONObject(answers_index);
+                            PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"),
+                                    answer.getInt("votes"), answer.getString("text"));
+                            for (int votes_index = 0; votes_index < votes.length(); votes_index++) {
+                                if (answer.getInt("id") == votes.getInt(votes_index)) {
+                                    pollAnswer.is_voted = true;
+                                }
+                            }
+                            pollAttachment.answers.add(pollAnswer);
+                        }
+                        attachment_status = "done";
+                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                        attachment_obj.status = attachment_status;
+                        attachment_obj.setContent(pollAttachment);
+                        try { // handle floating crash
+                            attachments_list.add(attachment_obj);
+                        } catch (ArrayIndexOutOfBoundsException ignored) {
+                            Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                        }
+                        break;
                     }
-                } else if (attachment.getString("type").equals("note")) {
-                    CommonAttachment commonAttachment = new CommonAttachment(
-                            attachment.getString("title"), attachment.getString("text"));
-                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                    attachment_obj.status = "done";
-                    attachment_obj.setContent(commonAttachment);
-                    try { // handle floating crash
-                        attachments_list.add(attachment_obj);
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
-                                "be overestimated.");
+                    case "note": {
+                        CommonAttachment commonAttachment = new CommonAttachment(
+                                attachment.getString("title"), attachment.getString("text"));
+                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                        attachment_obj.status = "done";
+                        attachment_obj.setContent(commonAttachment);
+                        try { // handle floating crash
+                            attachments_list.add(attachment_obj);
+                        } catch (ArrayIndexOutOfBoundsException ignored) {
+                            Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                        }
+                        break;
                     }
-                } else {
-                    attachment_status = "not_supported";
-                    Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                    attachment_obj.status = attachment_status;
-                    try { // handle floating crash
-                        attachments_list.add(attachment_obj);
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-                        Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
-                                "be overestimated.");
+                    default: {
+                        attachment_status = "not_supported";
+                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
+                        attachment_obj.status = attachment_status;
+                        try { // handle floating crash
+                            attachments_list.add(attachment_obj);
+                        } catch (ArrayIndexOutOfBoundsException ignored) {
+                            Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
+                                    "be overestimated.");
+                        }
+                        break;
                     }
                 }
             }
