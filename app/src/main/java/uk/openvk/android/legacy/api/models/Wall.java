@@ -60,7 +60,7 @@ public class Wall implements Parcelable {
 
     public Wall(String response, DownloadManager downloadManager, String quality, Context ctx) {
         jsonParser = new JSONParser();
-        parse(ctx, downloadManager, quality, response, true);
+        parse(ctx, downloadManager, quality, response, true, true);
     }
 
     public Wall() {
@@ -83,7 +83,9 @@ public class Wall implements Parcelable {
         }
     };
 
-    public void parse(Context ctx, DownloadManager downloadManager, String quality, String response, boolean clear) {
+    public void parse(Context ctx, DownloadManager downloadManager, String quality,
+                      String response,
+                      boolean clear, boolean isWall) {
         this.dlm = downloadManager;
         if(items == null) {
             items = new ArrayList<>();
@@ -134,31 +136,41 @@ public class Wall implements Parcelable {
                     boolean isLiked = false;
                     boolean verified_author = false;
                     isLiked = likes.getInt("user_likes") > 0;
-                    PostCounters counters = new PostCounters(likes.getInt("count"), comments.getInt("count"),
+                    PostCounters counters = new PostCounters(likes.getInt("count"),
+                            comments.getInt("count"),
                             reposts.getInt("count"), isLiked, false);
 
-                    ArrayList<Attachment> attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                    ArrayList<Attachment> attachments_list =
+                            createAttachmentsList(owner_id, post_id, quality,
                             attachments, "wall_attachment");
 
-                    WallPost item = new WallPost(String.format("(Unknown author: %s)", author_id), dt_sec, null,
+                    WallPost item = new WallPost(String.format("(Unknown author: %s)",
+                            author_id), dt_sec, null,
                             content, counters, "", attachments_list, owner_id, post_id, ctx);
                     item.setJSONString(post.toString());
                     if(post.has("post_source") && !post.isNull("post_source")) {
                         if(post.getJSONObject("post_source").getString("type").equals("api")) {
-                            item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"),
-                                    post.getJSONObject("post_source").getString("platform"));
+                            item.post_source = new WallPostSource(
+                                    post.getJSONObject("post_source").getString("type"),
+                                    post.getJSONObject("post_source").getString("platform")
+                            );
                         } else {
-                            item.post_source = new WallPostSource(post.getJSONObject("post_source").getString("type"), null);
+                            item.post_source =
+                                    new WallPostSource(post.getJSONObject("post_source")
+                                            .getString("type"), null);
                         }
                     }
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
                         WallPost repost_item = new WallPost(String.format("(Unknown author: %s)",
                                 repost.getInt("from_id")),
-                                repost.getInt("date"), null, repost.getString("text"), null, "",
-                                null, repost.getInt("owner_id"), repost.getInt("id"), ctx);
+                                repost.getInt("date"), null,
+                                repost.getString("text"), null, "",
+                                null, repost.getInt("owner_id"),
+                                repost.getInt("id"), ctx);
                         repost_item.setJSONString(repost.toString());
-                        RepostInfo repostInfo = new RepostInfo(String.format("(Unknown author: %s)",
+                        RepostInfo repostInfo =
+                                new RepostInfo(String.format("(Unknown author: %s)",
                                 repost.getInt("from_id")),
                                 repost.getInt("date"), ctx);
                         repostInfo.newsfeed_item = repost_item;
@@ -258,22 +270,40 @@ public class Wall implements Parcelable {
                                 "be overestimated.");
                     }
                 }
-                switch (quality) {
-                    case "low":
-                        downloadManager.downloadPhotosToCache(photos_lsize, "wall_photo_attachments");
-                        break;
-                    case "medium":
-                        downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
-                        break;
-                    case "high":
-                        downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
-                        break;
-                    case "original":
-                        downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
-                        break;
+                if(isWall) {
+                    switch (quality) {
+                        case "low":
+                            downloadManager.downloadPhotosToCache(photos_lsize, "wall_photo_attachments");
+                            break;
+                        case "medium":
+                            downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
+                            break;
+                        case "high":
+                            downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
+                            break;
+                        case "original":
+                            downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
+                            break;
+                    }
+                    downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
+                } else {
+                    switch (quality) {
+                        case "low":
+                            downloadManager.downloadPhotosToCache(photos_lsize, "newsfeed_photo_attachments");
+                            break;
+                        case "medium":
+                            downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
+                            break;
+                        case "high":
+                            downloadManager.downloadPhotosToCache(photos_hsize, "newsfeed_photo_attachments");
+                            break;
+                        case "original":
+                            downloadManager.downloadPhotosToCache(photos_osize, "newsfeed_photo_attachments");
+                            break;
+                    }
+                downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatars");
                 }
                 downloadManager.downloadPhotosToCache(video_thumbnails, "video_thumbnails");
-                downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -605,6 +635,10 @@ public class Wall implements Parcelable {
 
     public ArrayList<WallPost> getWallItems() {
         return items;
+    }
+
+    public void setWallItems(ArrayList<WallPost> wallItems) {
+        this.items = wallItems;
     }
 
     public void post(OvkAPIWrapper wrapper, long owner_id, String post,
