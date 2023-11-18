@@ -20,3 +20,4 @@ app/.signing/openvk.jks
 *.o
 *.a
 *.o.d
+app/.signing/app-release.prop
