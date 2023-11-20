@@ -117,7 +117,9 @@ android {
             targetSdkVersion 29
             versionCode 212
             versionName "1.1.212-f"
-            signingConfig signingConfigs.debug
+            if (file('.signing/app-fdroid.prop').exists()) {
+                signingConfig signingConfigs.fdroid
+            }
         }
     }
     compileOptions {

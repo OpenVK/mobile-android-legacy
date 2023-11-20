@@ -1,0 +1,6 @@
+// APK signing config file example
+
+RELEASE_STORE_FILE=.signing/openvk-fdroid.jks
+RELEASE_STORE_PASSWORD=GaF@421#
+RELEASE_KEY_ALIAS=ovk_default_key
+RELEASE_KEY_PASSWORD=GaF@421#
