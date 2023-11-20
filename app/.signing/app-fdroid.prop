@@ -1,4 +1,4 @@
-// APK signing config file example
+// APK signing config file for F-Droid
 
 RELEASE_STORE_FILE=.signing/openvk-fdroid.jks
 RELEASE_STORE_PASSWORD=GaF@421#
