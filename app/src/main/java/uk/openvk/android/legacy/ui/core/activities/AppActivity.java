@@ -366,11 +366,11 @@ public class AppActivity extends NetworkFragmentActivity {
             }
             menu = new SlidingMenu(this);
             Global.setSlidingMenu(this, slidingmenuLayout, menu);
-            //if (Global.isXmas()) {
-            ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
-                    getResources().getDrawable(R.drawable.xmas_left_menu)
-            );
-            //}
+            if (Global.isXmas()) {
+                ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
+                        getResources().getDrawable(R.drawable.xmas_left_menu)
+                );
+            }
             menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
                 @Override
                 public void onClosed() {
@@ -384,11 +384,11 @@ public class AppActivity extends NetworkFragmentActivity {
                 slidingmenuLayout = findViewById(R.id.sliding_menu);
                 slidingmenuLayout.setAccountProfileListener(this);
                 slidingmenuLayout.setVisibility(View.VISIBLE);
-                //if (Global.isXmas()) {
-                ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
-                        getResources().getDrawable(R.drawable.xmas_left_menu)
-                );
-                //}
+                if (Global.isXmas()) {
+                    ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
+                            getResources().getDrawable(R.drawable.xmas_left_menu)
+                    );
+                }
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     slidingmenuLayout.setOnSystemUiVisibilityChangeListener(
                             new View.OnSystemUiVisibilityChangeListener() {
@@ -406,11 +406,11 @@ public class AppActivity extends NetworkFragmentActivity {
                 while(slidingmenuLayout == null) {
                     slidingmenuLayout = new SlidingMenuLayout(this);
                 }
-                //if (Global.isXmas()) {
-                ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
-                        getResources().getDrawable(R.drawable.xmas_left_menu)
-                );
-                //}
+                if (Global.isXmas()) {
+                    ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
+                            getResources().getDrawable(R.drawable.xmas_left_menu)
+                    );
+                }
                 ((OvkApplication) getApplicationContext()).isTablet = false;
                 menu = new SlidingMenu(this);
                 Global.setSlidingMenu(this, slidingmenuLayout, menu);
