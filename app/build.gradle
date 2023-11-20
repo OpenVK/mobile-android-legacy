@@ -49,6 +49,16 @@ android {
                 keyPassword props['RELEASE_KEY_PASSWORD']
             }
         }
+        fdroid {
+            if (file('.signing/app-fdroid.prop').exists()) {
+                Properties props = new Properties();
+                props.load(new FileInputStream(file(".signing/app-fdroid.prop")))
+                storeFile file(props['RELEASE_STORE_FILE'])
+                storePassword props['RELEASE_STORE_PASSWORD']
+                keyAlias props['RELEASE_KEY_ALIAS']
+                keyPassword props['RELEASE_KEY_PASSWORD']
+            }
+        }
     }
     splits {
         abi {
