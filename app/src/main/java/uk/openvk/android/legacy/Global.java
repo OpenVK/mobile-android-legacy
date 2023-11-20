@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.PluralsRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
@@ -38,6 +39,7 @@ import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +51,13 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.NotesFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.PhotosFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 
@@ -875,5 +884,32 @@ public class Global {
         } catch (Exception ignored) {
 
         }
+    }
+
+    public static boolean checkShowErrorLayout(String method, Fragment selectedFragment) {
+        return
+                method.equals("Account.getProfileInfo")
+                    || ((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
+                            && selectedFragment instanceof NewsfeedFragment)
+                    || (method.equals("Friends.get")
+                            && selectedFragment instanceof FriendsFragment)
+                    || (method.equals("Groups.get")
+                            && selectedFragment instanceof GroupsFragment)
+                    || (method.equals("Users.get")
+                            && selectedFragment instanceof ProfileFragment)
+                    || (method.equals("Messages.getConversations")
+                            && selectedFragment instanceof ConversationsFragment)
+                    || (method.equals("Photos.getAlbums")
+                            && selectedFragment instanceof PhotosFragment)
+                    || (method.equals("Notes.get")
+                        && selectedFragment instanceof NotesFragment);
+
+    }
+
+    public static boolean isXmas() {
+        int month = new Date().getMonth();
+        int day = new Date().getDate();
+        // 11 = December, 0 = January
+        return (month == 11 && day >= 1) || (month == 0 && day <= 15);
     }
 }

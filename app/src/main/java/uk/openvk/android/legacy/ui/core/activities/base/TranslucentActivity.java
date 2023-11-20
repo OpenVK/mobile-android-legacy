@@ -65,7 +65,7 @@ public class TranslucentActivity extends Activity {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(res));
+            window.setStatusBarColor(getResources().getColor(res)); // color resource ID
         } else {
             if (type == 0) { // Drawable (or color resource ID)
                 tintManager.setTintDrawable(
