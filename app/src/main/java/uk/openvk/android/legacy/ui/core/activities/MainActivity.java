@@ -76,7 +76,6 @@ public class MainActivity extends TranslucentActivity {
         getAndroidAccounts();
         if(global_prefs.getBoolean("startupSplash", true)) {
             if (Global.isXmas()) {
-                setTranslucentStatusBar(0, Color.parseColor("#7331C2"));
                 setContentView(R.layout.activity_splash_xmas);
             } else {
                 setContentView(R.layout.activity_splash);
