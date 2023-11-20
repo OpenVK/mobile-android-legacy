@@ -787,7 +787,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = ovk_api.account.counters.friends_requests;
                 slidingMenuArray.set(0, friends_item);
-                SlidingMenuItem messages_item = slidingMenuArray.get(1);
+                SlidingMenuItem messages_item = slidingMenuArray.get(2);
                 messages_item.counter = ovk_api.account.counters.new_messages;
                 slidingMenuArray.set(2, messages_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
