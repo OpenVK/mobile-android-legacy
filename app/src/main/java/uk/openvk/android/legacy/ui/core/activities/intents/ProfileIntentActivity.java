@@ -483,11 +483,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                                 (data.getString("method").equals("Users.search") && user.id == 0) ||
                                 (data.getString("method").equals("Friends.get")
                                         && ovk_api.friends.getFriends().size() == 0)) {
-                            errorLayout.setReason(message);
-                            errorLayout.setData(data);
-                            errorLayout.setRetryAction(ovk_api.wrapper);
-                            progressLayout.setVisibility(View.GONE);
-                            errorLayout.setVisibility(View.VISIBLE);
+                            setErrorPage(data, message);
                         } else {
                             if (data.getString("method").equals("Wall.get")) {
                                 ((WallErrorLayout) profileFragment.getView()
@@ -499,11 +495,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                         }
                     }
                 } catch (Exception ex) {
-                    errorLayout.setReason(message);
-                    errorLayout.setData(data);
-                    errorLayout.setRetryAction(ovk_api.wrapper);
-                    progressLayout.setVisibility(View.GONE);
-                    errorLayout.setVisibility(View.VISIBLE);
+                    setErrorPage(data, HandlerMessages.INVALID_JSON_RESPONSE);
                 }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 switch (global_prefs.getString("photos_quality", "")) {
@@ -529,12 +521,21 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setData(data);
-            errorLayout.setRetryAction(ovk_api.wrapper);
-            progressLayout.setVisibility(View.GONE);
-            errorLayout.setVisibility(View.VISIBLE);
+            setErrorPage(data, HandlerMessages.INVALID_JSON_RESPONSE);
         }
+    }
+
+    private void setErrorPage(Bundle data, int reason) {
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(ovk_api.wrapper);
+        errorLayout.setReason(reason);
+        errorLayout.setProgressLayout(progressLayout);
+        errorLayout.setTitle(getResources().getString(R.string.err_text));
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     public void getConversationById(long peer_id) {

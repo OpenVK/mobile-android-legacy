@@ -168,7 +168,7 @@ public class Wall implements Parcelable {
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
                         WallPost repost_item = new WallPost(String.format("(Unknown author: %s)",
-                                repost.getInt("from_id")),
+                                repost.getLong("from_id")),
                                 repost.getInt("date"), null,
                                 repost.getString("text"), null, "",
                                 null, repost.getInt("owner_id"),
@@ -178,8 +178,6 @@ public class Wall implements Parcelable {
                                 new RepostInfo(String.format("(Unknown author: %s)",
                                 repost.getInt("from_id")),
                                 repost.getInt("date"), ctx);
-                        repostInfo.newsfeed_item = repost_item;
-                        item.repost = repostInfo;
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
                         if(isWall) {
                             attachments_list = createAttachmentsList(owner_id, post_id, quality,
@@ -189,6 +187,41 @@ public class Wall implements Parcelable {
                                     repost_attachments, "newsfeed_attachment");
                         }
                         repost_item.attachments = attachments_list;
+                        if(repost.getLong("from_id") > 0) {
+                            if(newsfeed.has("profiles")) {
+                                JSONArray profiles = newsfeed.getJSONArray("profiles");
+                                for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
+                                    JSONObject profile = profiles.getJSONObject(profiles_index);
+                                    if (profile.getLong("id") == repost.getLong("from_id")) {
+                                        original_author_name = String.format("%s %s", profile.getString("first_name"),
+                                                profile.getString("last_name"));
+                                        original_author_avatar_url = profile.getString("photo_50");
+                                        if(profile.has("verified")) {
+                                            if(profile.get("verified") instanceof Integer) {
+                                                verified_author = profile.getInt("verified") == 1;
+                                            } else {
+                                                verified_author = profile.getBoolean("verified");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if(newsfeed.has("groups")) {
+                                JSONArray groups = newsfeed.getJSONArray("groups");
+                                for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
+                                    JSONObject group = groups.getJSONObject(groups_index);
+                                    if (-group.getLong("id") == repost.getLong("from_id")) {
+                                       original_author_name = group.getString("name");
+                                       original_author_avatar_url = group.getString("photo_50");
+                                    }
+                                }
+                            }
+                        }
+                        repost_item.name = original_author_name;
+                        repostInfo.name = original_author_name;
+                        repostInfo.newsfeed_item = repost_item;
+                        item.repost = repostInfo;
                     }
                     item.author_id = author_id;
                     if(author_id > 0) {
@@ -196,7 +229,7 @@ public class Wall implements Parcelable {
                             JSONArray profiles = newsfeed.getJSONArray("profiles");
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
-                                if (profile.getInt("id") == author_id) {
+                                if (profile.getLong("id") == author_id) {
                                     author_name = String.format("%s %s", profile.getString("first_name"),
                                             profile.getString("last_name"));
                                     author_avatar_url = profile.getString("photo_50");
@@ -207,10 +240,10 @@ public class Wall implements Parcelable {
                                             verified_author = profile.getBoolean("verified");
                                         }
                                     }
-                                } else if (profile.getInt("id") == owner_id) {
+                                } else if (profile.getLong("id") == owner_id) {
                                     owner_name = String.format("%s %s", profile.getString("first_name"),
                                             profile.getString("last_name"));
-                                    owner_avatar_url = profile.getString("photo_50");
+                                    original_author_avatar_url = profile.getString("photo_50");
                                     if(profile.has("verified")) {
                                         if(profile.get("verified") instanceof Integer) {
                                             verified_author = profile.getInt("verified") == 1;

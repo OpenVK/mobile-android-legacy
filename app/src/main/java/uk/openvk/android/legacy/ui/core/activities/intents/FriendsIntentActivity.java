@@ -227,15 +227,8 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 } else {
                     friendsFragment.setScrollingPositions(this, true);
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
-                    || message == HandlerMessages.INVALID_JSON_RESPONSE
-                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(ovk_api.wrapper);
-                progressLayout.setVisibility(View.GONE);
-                errorLayout.setVisibility(View.VISIBLE);
+            } else if (message < 0) {
+                setErrorPage(data, message);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -244,6 +237,20 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setErrorPage(Bundle data, int reason) {
+        progressLayout.setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(ovk_api.wrapper);
+        errorLayout.setReason(reason);
+        errorLayout.setProgressLayout(progressLayout);
+        errorLayout.setTitle(getResources().getString(R.string.err_text));
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     public void loadMoreFriends() {

@@ -1199,8 +1199,10 @@ public class AppActivity extends NetworkFragmentActivity {
                         if (Global.checkShowErrorLayout(method, selectedFragment)) {
                             if(!data.containsKey("where") ||
                                     !where.startsWith("more")) {
-                                slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                                setErrorPage(data, "error", message, true);
+                                if(ovk_api.account == null) {
+                                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                                }
+                                setErrorPage(data,"error", message, true);
                             } else {
                                 if(!inBackground) {
                                     Toast.makeText(this, getResources().getString(R.string.err_text),
@@ -1250,6 +1252,7 @@ public class AppActivity extends NetworkFragmentActivity {
             errorLayout.setData(data);
             errorLayout.setRetryAction(ovk_api.wrapper);
             errorLayout.setReason(reason);
+            errorLayout.setProgressLayout(progressLayout);
             if (icon.equals("ovk")) {
                 if(reason == HandlerMessages.NOTES_GET) {
                     errorLayout.setTitle(

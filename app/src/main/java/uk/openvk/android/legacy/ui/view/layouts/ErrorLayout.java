@@ -37,6 +37,7 @@ public class ErrorLayout extends LinearLayout{
     private String api_method;
     private String api_args;
     private String api_where;
+    private ProgressLayout progressLayout;
 
     public ErrorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -95,6 +96,10 @@ public class ErrorLayout extends LinearLayout{
                 } else {
                     wrapper.sendAPIMethod(api_method, api_args, api_where);
                 }
+                if(progressLayout != null) {
+                    setVisibility(GONE);
+                    progressLayout.setVisibility(VISIBLE);
+                }
             }
         });
     }
@@ -137,5 +142,9 @@ public class ErrorLayout extends LinearLayout{
 
     public void showRetryButton() {
         findViewById(R.id.retry_btn).setVisibility(VISIBLE);
+    }
+
+    public void setProgressLayout(ProgressLayout progressLayout) {
+        this.progressLayout = progressLayout;
     }
 }
