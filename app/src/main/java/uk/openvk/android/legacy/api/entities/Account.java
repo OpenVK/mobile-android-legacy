@@ -50,6 +50,7 @@ public class Account implements Parcelable {
         this.user = new User();
         this.users = new Users();
         this.ctx = ctx;
+        counters = new AccountCounters(0, 0, 0);
     }
 
     public Account(String response, Context ctx, OvkAPIWrapper wrapper) {
@@ -58,6 +59,7 @@ public class Account implements Parcelable {
         this.user = new User();
         this.users = new Users();
         this.ctx = ctx;
+        counters = new AccountCounters(0, 0, 0);
         parse(response, wrapper);
     }
 
@@ -71,6 +73,7 @@ public class Account implements Parcelable {
         this.user = new User();
         this.users = new Users();
         jsonParser = new JSONParser();
+        counters = new AccountCounters(0, 0, 0);
     }
 
     protected Account(Parcel in) {

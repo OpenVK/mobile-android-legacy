@@ -912,8 +912,8 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 ovk_api.friends.getRequests(ovk_api.wrapper);
-                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(0,
-                        String.format("%s (%s)", getResources().getString(R.string.friends), ovk_api.friends.count));
+                friendsFragment.updateTabsCounters(ovk_api.friends.count,
+                        ovk_api.account.counters.friends_requests);
                 friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 int old_friends_size = ovk_api.friends.getFriends().size();
