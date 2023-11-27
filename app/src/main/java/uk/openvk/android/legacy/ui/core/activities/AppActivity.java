@@ -113,8 +113,6 @@ public class AppActivity extends NetworkFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs_editor = global_prefs.edit();
-        instance_prefs_editor = instance_prefs.edit();
         if(getAndroidAccounts()) {
             setContentView(R.layout.activity_app);
         } else {
