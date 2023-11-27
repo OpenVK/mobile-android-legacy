@@ -196,15 +196,18 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (lpReceiver != null) {
                     unregisterReceiver(lpReceiver);
                 }
-                finish();
-                System.exit(0);
+                exitApplication();
             } else {
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             }
         } catch (Exception ex) {
-            finish();
-            System.exit(0);
+            exitApplication();
         }
+    }
+
+    private void exitApplication() {
+        finish();
+        System.exit(0);
     }
 
     @Override
@@ -536,8 +539,6 @@ public class AppActivity extends NetworkFragmentActivity {
         }
         setActionBar("custom_newsfeed");
         setActionBarTitle(getResources().getString(R.string.newsfeed));
-        //MenuItem newpost = activity_menu.findItem(R.id.newpost);
-        //newpost.setVisible(false);
     }
 
     public void createActionPopupMenu(final Menu menu, String where, boolean enable) {
@@ -634,7 +635,6 @@ public class AppActivity extends NetworkFragmentActivity {
                     activity_menu.clear();
                 }
             } catch (Exception ignored) {
-
             }
         }
         ft = getSupportFragmentManager().beginTransaction();
@@ -674,7 +674,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 newsfeed_count = 25;
                 ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
             }
-
         } else if(position == 6) {
             setActionBar("");
             setActionBarTitle(getResources().getString(R.string.menu_settings));
