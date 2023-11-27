@@ -112,10 +112,10 @@ public class Account implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(retryConnection) {
-            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                ((AppActivity) ctx).retryConnection(queue_method, queue_args);
-            }
+        if(queue_method != null || queue_args != null) {
+            wrapper.sendAPIMethod(queue_method, queue_args);
+            queue_method = "";
+            queue_args = "";
         }
     }
 

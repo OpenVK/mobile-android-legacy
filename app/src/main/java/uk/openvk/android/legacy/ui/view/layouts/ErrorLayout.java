@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -13,9 +14,9 @@ import android.widget.TextView;
 import java.util.Arrays;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -41,7 +42,7 @@ public class ErrorLayout extends LinearLayout{
 
     public ErrorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
+        @SuppressLint("InflateParams") View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_error, null);
 
         this.addView(view);
@@ -50,7 +51,7 @@ public class ErrorLayout extends LinearLayout{
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        ((TextView) findViewById(R.id.reason_text)).setVisibility(GONE);
+        findViewById(R.id.reason_text).setVisibility(GONE);
     }
     
     public void setReason(int message) {
@@ -78,23 +79,28 @@ public class ErrorLayout extends LinearLayout{
                     Arrays.asList(getResources().getStringArray(R.array.connection_error_reasons)).get(6));
         }
         if(description.length() > 0) {
-            ((TextView) findViewById(R.id.reason_text)).setVisibility(VISIBLE);
+            findViewById(R.id.reason_text).setVisibility(VISIBLE);
             ((TextView) findViewById(R.id.reason_text)).setText(description);
         } else {
-            ((TextView) findViewById(R.id.reason_text)).setVisibility(GONE);
+            findViewById(R.id.reason_text).setVisibility(GONE);
         }
     }
 
-    public void setRetryAction(final OvkAPIWrapper wrapper) {
-        ((TextView) findViewById(R.id.retry_btn)).setOnClickListener(new OnClickListener() {
+    public void setRetryAction(final OvkAPIWrapper wrapper, final Account account) {
+        findViewById(R.id.retry_btn).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(api_where == null) {
-                    wrapper.sendAPIMethod(api_method, api_args);
-                } else if(api_args == null){
-                    wrapper.sendAPIMethod(api_method);
+                if(account.user != null) {
+                    if (api_where == null) {
+                        wrapper.sendAPIMethod(api_method, api_args);
+                    } else if (api_args == null) {
+                        wrapper.sendAPIMethod(api_method);
+                    } else {
+                        wrapper.sendAPIMethod(api_method, api_args, api_where);
+                    }
                 } else {
-                    wrapper.sendAPIMethod(api_method, api_args, api_where);
+                    account.getProfileInfo(wrapper);
+                    account.addQueue(api_method, api_args);
                 }
                 if(progressLayout != null) {
                     setVisibility(GONE);
@@ -131,7 +137,7 @@ public class ErrorLayout extends LinearLayout{
             if(data.containsKey("args")) {
                 api_where = data.getString("where");
             }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }

@@ -237,22 +237,11 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     setErrorPage(data, "ovk", message, false);
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
-                    || message == HandlerMessages.INVALID_JSON_RESPONSE
-                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(ovk_api.wrapper);
-                progressLayout.setVisibility(View.GONE);
-                errorLayout.setVisibility(View.VISIBLE);
+            } else if (message < 0) {
+                setErrorPage(data, "ovk", message, true);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(ovk_api.wrapper);
-            progressLayout.setVisibility(View.GONE);
-            errorLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -263,7 +252,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setIcon(icon);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper);
+        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
         errorLayout.setReason(reason);
         if (icon.equals("ovk")) {
             if(reason == HandlerMessages.NOTES_GET) {

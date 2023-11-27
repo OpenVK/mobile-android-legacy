@@ -233,7 +233,7 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(ovk_api.wrapper);
+            errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
@@ -245,7 +245,7 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper);
+        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));
