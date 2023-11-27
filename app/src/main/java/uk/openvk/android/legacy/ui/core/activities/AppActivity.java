@@ -947,8 +947,8 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                ((TabSelector) friendsFragment.getView().findViewById(R.id.selector)).setTabTitle(1,
-                        String.format("%s (%s)", getResources().getString(R.string.friend_requests), ovk_api.account.counters.friends_requests));
+                friendsFragment.updateTabsCounters(ovk_api.friends.count,
+                        ovk_api.account.counters.friends_requests);
                 friendsFragment.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
                 ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
@@ -1108,7 +1108,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 instance_prefs_editor.commit();
                 ArrayList<InstanceAccount> accounts = new ArrayList<>();
                 AccountManager accountManager = AccountManager.get(this);
-                accountManager.addOnAccountsUpdatedListener(new AccountsUpdateListener(this), null, false);
+                accountManager.addOnAccountsUpdatedListener(
+                        new AccountsUpdateListener(this),
+                        null, false);
                 Global.loadAccounts(this, accounts, accountManager, instance_prefs);
             } else if (message < 0) {
                 if(data.containsKey("method")) {
@@ -1129,7 +1131,9 @@ public class AppActivity extends NetworkFragmentActivity {
                                 }
                             }
                         } else if(method.equals("Account.getCounters")) {
-                            ab_layout.setNotificationCount(new AccountCounters(0, 0, 0));
+                            ab_layout.setNotificationCount(
+                                    new AccountCounters(0, 0, 0)
+                            );
                         } else {
                             if(data.getString("method").equals("Wall.get") &&
                                     selectedFragment instanceof ProfileFragment) {
