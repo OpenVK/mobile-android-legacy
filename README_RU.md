@@ -13,7 +13,7 @@ _Работает на OpenVK API._
 
 ## Скачать APK
 * **через F-Droid**
-  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (намного быстрее, зеркало ~~[без TLS](http://repo.openvk.co/repo/)~~ не оплачено)
+  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (намного быстрее)
   * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
   * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
 * **через [Telegram-канал](https://t.me/+nPLHBZqAsFlhYmIy)**
