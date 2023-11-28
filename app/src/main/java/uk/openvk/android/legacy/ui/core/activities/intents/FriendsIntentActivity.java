@@ -4,16 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Network;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,17 +16,14 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
@@ -235,23 +227,30 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 } else {
                     friendsFragment.setScrollingPositions(this, true);
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
-                    || message == HandlerMessages.INVALID_JSON_RESPONSE
-                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(this);
-                progressLayout.setVisibility(View.GONE);
-                errorLayout.setVisibility(View.VISIBLE);
+            } else if (message < 0) {
+                setErrorPage(data, message);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(this);
+            errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setErrorPage(Bundle data, int reason) {
+        progressLayout.setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setReason(reason);
+        errorLayout.setProgressLayout(progressLayout);
+        errorLayout.setTitle(getResources().getString(R.string.err_text));
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     public void loadMoreFriends() {

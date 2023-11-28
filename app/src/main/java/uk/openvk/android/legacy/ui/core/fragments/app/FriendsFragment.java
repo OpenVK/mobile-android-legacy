@@ -253,4 +253,29 @@ public class FriendsFragment extends Fragment {
         (view.findViewById(R.id.friends_listview)).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
     }
+
+    public void updateTabsCounters(int count, int requests) {
+        TabSelector selector = view.findViewById(R.id.selector);
+        if(count >= 0) {
+            selector.setTabTitle(0,
+                    String.format(
+                            "%s (%s)",
+                            getResources().getString(R.string.friends), count
+                    )
+            );
+        } else {
+            selector.setTabTitle(0, getResources().getString(R.string.friends));
+        }
+        if(requests >= 0) {
+            selector.setTabTitle(1,
+                    String.format(
+                            "%s (%s)",
+                            getResources().getString(R.string.friend_requests), requests
+                    )
+            );
+        } else {
+            selector.setTabTitle(1, getResources().getString(R.string.friend_requests)
+            );
+        }
+    }
 }

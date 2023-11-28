@@ -130,12 +130,20 @@ public class DownloadManager {
                     sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
                     javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory)
                             sslContext.getSocketFactory();
-                    httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory())
-                            .connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
-                            .readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    httpClient = new OkHttpClient.Builder()
+                            .sslSocketFactory(sslContext.getSocketFactory())
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(false)
+                            .build();
                 } catch (Exception e) {
-                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout
-                            (30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    httpClient = new OkHttpClient.Builder()
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(false)
+                            .build();
                 }
                 legacy_mode = false;
             }
@@ -380,6 +388,9 @@ public class DownloadManager {
                             case "comment_photos":
                                 sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
                                 break;
+                            case "album_photos":
+                                sendMessage(HandlerMessages.ALBUM_PHOTOS, where);
+                                break;
                             case "conversations_avatars":
                                 sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
                                 break;
@@ -558,6 +569,9 @@ public class DownloadManager {
                         break;
                     case "comment_photos":
                         sendMessage(HandlerMessages.COMMENT_PHOTOS, where);
+                        break;
+                    case "album_photos":
+                        sendMessage(HandlerMessages.ALBUM_PHOTOS, where);
                         break;
                     case "video_thumbnails":
                         sendMessage(HandlerMessages.VIDEO_THUMBNAILS, where);

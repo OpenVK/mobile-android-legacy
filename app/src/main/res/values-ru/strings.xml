@@ -19,8 +19,10 @@
     <string name="ovk_warning_title">Предупреждение</string>
     <string name="ovk_warning"><![CDATA[Вы запустили свободный клиент OpenVK Legacy, работающий
     ТОЛЬКО с инстанциями <a href="https://github.com/openvk/openvk">OpenVK</a> - сети с
-    открытым исходным кодом, несовместимая с ВКонтакте.<br><br>Пожалуйста, авторизуйтесь ТОЛЬКО
-    в зарегистрированный аккаунт OpenVK в одной из существующих инстанций.]]></string>
+    открытым исходным кодом, несовместимая с ВКонтакте.
+    <br><br>Пожалуйста, авторизуйтесь ТОЛЬКО в зарегистрированный аккаунт OpenVK
+    в одной из существующих инстанций.
+    <br><br>OpenVK никак не связан с компанией ООО \"ВК\" или не одобрен ею.]]></string>
     <string name="dont_show_warn">Больше не показывать</string>
     <string name="full_app_name">OpenVK Legacy для Android</string>
     <string name="loading">Загрузка…</string>

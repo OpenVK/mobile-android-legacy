@@ -145,6 +145,12 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
                         + "/" + instance + "/photos_cache/album_photos/" +
                         "photo" + photo_id + "_a" + album_id + "_o" + owner_id;
                 Bitmap bitmap = imageLoader.loadImageSync(full_filename);
+                if(bitmap == null) {
+                    view.setImageDrawable(
+                            ctx.getResources().getDrawable(R.drawable.photo_loading_black)
+                    );
+                    return;
+                }
                 view.setImageBitmap(bitmap);
             } catch (OutOfMemoryError oom) {
                 imageLoader.clearMemoryCache();

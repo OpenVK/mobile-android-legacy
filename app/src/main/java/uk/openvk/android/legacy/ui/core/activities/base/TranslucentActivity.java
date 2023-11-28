@@ -61,11 +61,18 @@ public class TranslucentActivity extends Activity {
     public void setTranslucentStatusBar(int type, int res) {
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
-        if(type == 0) { // Drawable (or color resource ID)
-            tintManager.setTintDrawable(
-                    getResources().getDrawable(res));
-        } else {       // Color
-            tintManager.setTintColor(res);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(res)); // color resource ID
+        } else {
+            if (type == 0) { // Drawable (or color resource ID)
+                tintManager.setTintDrawable(
+                        getResources().getDrawable(res));
+            } else {       // Color
+                tintManager.setTintColor(res);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import uk.openvk.android.legacy.BuildConfig;
@@ -65,7 +66,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
 
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
-        this.registerReceiver(receiver, new IntentFilter(
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
                 "uk.openvk.android.legacy.API_DATA_RECEIVE"));
     }
 
@@ -88,9 +89,9 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                         public void run() {
                             Intent intent = new Intent();
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
-                            data.putString("address", getClass().getSimpleName());
+                            data.putString("address", getLocalClassName());
                             intent.putExtras(data);
-                            sendBroadcast(intent);
+                            LocalBroadcastManager.getInstance(ctx).sendBroadcast(intent);
                         }
                     }).start();
                 } else {
@@ -112,6 +113,20 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                 receiveState(msg_code, data);
             }
         };
+        listeners.processListener = new OvkAPIListeners.OnAPIProcessListener() {
+            @Override
+            public void onAPIProcess(Context ctx, Bundle data, long value, long length) {
+                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    HandlerMessages.UPLOAD_PROGRESS,
+                                    getLocalClassName()
+                            )
+                    );
+                receiveState(HandlerMessages.UPLOAD_PROGRESS, data);
+            }
+        };
         ovk_api.wrapper.setAPIListeners(listeners);
     }
 
@@ -121,7 +136,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onDestroy();
     }
 }

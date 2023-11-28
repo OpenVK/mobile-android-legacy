@@ -550,61 +550,76 @@ public class OvkAPIWrapper {
                                         String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
                                                 server, method, response_code, error.description, error.code));
                                 if (error.code == 3) {
-                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
+                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args,
+                                            where, error.description);
                                 } else if (error.code == 5) {
-                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
+                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, where,
+                                            error.description);
                                 } else if (error.code == 15) {
-                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
+                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, where,
+                                            error.description);
                                 } else if (error.code == 10 || error.code == 100) {
-                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
+                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, where,
+                                            error.description);
                                 }
                             } else if (response_code == 301 && !use_https) {
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                             } else if (response_code == 302 && !use_https) {
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                             } else if (response_code == 503) {
-                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
+                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method,
+                                        args, where, response_body);
                             } else if (response_code >= 500 && response_code <= 526) {
                                 if(logging_enabled) Log.e(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s)", server, method,
                                                 response_code));
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
+                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, where,"");
                             }
                         }
                     } catch (ConnectException | ProtocolException e) {
                         if (logging_enabled) {
                             if (e.getMessage() != null) {
-                                Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
+                                Log.e(OvkApplication.API_TAG,
+                                        String.format("Connection error: %s", e.getMessage()));
                                 error.description = e.getMessage();
                             } else {
-                                Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getClass().getSimpleName()));
+                                Log.e(OvkApplication.API_TAG,
+                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
                                 error.description = e.getClass().getSimpleName();
                             }
                         }
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                     } catch (SocketException e) {
                         if(e.getMessage().contains("ETIMEDOUT")) {
-                            if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
+                            if(logging_enabled) Log.e(OvkApplication.API_TAG,
+                                    String.format("Connection error: %s", e.getMessage()));
                             error.description = e.getMessage();
-                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method,
+                                    args, where, error.description);
                         }
                     } catch (SocketTimeoutException e) {
                         if (logging_enabled) {
                             if (e.getMessage() != null) {
-                                Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
+                                Log.e(OvkApplication.API_TAG,
+                                        String.format("Connection error: %s", e.getMessage()));
                                 error.description = e.getMessage();
                             } else {
-                                Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getClass().getSimpleName()));
+                                Log.e(OvkApplication.API_TAG,
+                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
                                 error.description = e.getClass().getSimpleName();
                             }
                         }
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
+                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method,
+                                args, where, error.description);
                     } catch (UnknownHostException e) {
-                        if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e(OvkApplication.API_TAG,
+                                String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
+                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method,
+                                args, where, error.description);
                     } catch(javax.net.ssl.SSLException e) {
-                        if(logging_enabled) Log.e(OvkApplication.API_TAG, String.format("Connection error: %s", e.getMessage()));
+                        if(logging_enabled) Log.e(OvkApplication.API_TAG,
+                                String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (IOException | HttpClientException ex) {

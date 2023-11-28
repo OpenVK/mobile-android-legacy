@@ -53,10 +53,12 @@ public class FragmentNavigator {
                     if(appActivity.profile_loaded) {
                         showFragment(activity, appActivity.ovk_api.user.first_name != null);
                     }
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "profile");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
-                        appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(), "account", true);
+                        appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(),
+                                "account", true);
                     } else {
                         if(appActivity.activity_menu != null) {
                             appActivity.activity_menu.clear();
@@ -69,6 +71,7 @@ public class FragmentNavigator {
                 case "friends":
                     ft.show(appActivity.friendsFragment);
                     showFragment(activity, appActivity.friendsFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.friendsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "friends");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -82,6 +85,7 @@ public class FragmentNavigator {
                 case "photos":
                     ft.show(appActivity.photosFragment);
                     showFragment(activity, appActivity.photosFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(true);
                     appActivity.selectedFragment = appActivity.photosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "photos");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -96,6 +100,7 @@ public class FragmentNavigator {
                     ft.show(appActivity.conversationsFragment);
                     showFragment(activity, appActivity.conversationsFragment.getCount() != 0);
                     appActivity.selectedFragment = appActivity.conversationsFragment;
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "messages");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
@@ -108,6 +113,7 @@ public class FragmentNavigator {
                 case "groups":
                     ft.show(appActivity.groupsFragment);
                     showFragment(activity, appActivity.groupsFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.groupsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "groups");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -121,6 +127,7 @@ public class FragmentNavigator {
                 case "notes":
                     ft.show(appActivity.notesFragment);
                     showFragment(activity, appActivity.notesFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.notesFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "notes");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -134,6 +141,7 @@ public class FragmentNavigator {
                 case "newsfeed":
                     ft.show(appActivity.newsfeedFragment);
                     showFragment(activity, appActivity.newsfeedFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.newsfeedFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "newsfeed");
                     appActivity.setActionBar("custom_newsfeed");
@@ -164,6 +172,7 @@ public class FragmentNavigator {
                 case "settings":
                     ft.show(appActivity.mainSettingsFragment);
                     showFragment(activity, true);
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.mainSettingsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "settings");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
