@@ -100,25 +100,27 @@ public class CrashReporterActivity extends BaseCrashReportDialog implements Dial
                 finish();
             }
         });
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(CrashReporterActivity.this.view.findViewById(R.id.crash_report)
-                                .getVisibility() == View.GONE) {
-                            ((Button) view).setText(getResources().getString(R.string.hide_crash_report));
-                            showReport();
-                        } else {
-                            ((Button) view).setText(getResources().getString(R.string.show_crash_report));
-                            hideReport();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialogInterface) {
+                    Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (CrashReporterActivity.this.view.findViewById(R.id.crash_report)
+                                    .getVisibility() == View.GONE) {
+                                ((Button) view).setText(getResources().getString(R.string.hide_crash_report));
+                                showReport();
+                            } else {
+                                ((Button) view).setText(getResources().getString(R.string.show_crash_report));
+                                hideReport();
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
         dialog.setCancelable(false);
         dialog.show();
     }
@@ -166,8 +168,11 @@ public class CrashReporterActivity extends BaseCrashReportDialog implements Dial
                         "==============================================\r\n",
                 ovk.version, BuildConfig.GITHUB_COMMIT, Build.BRAND, Build.MODEL, Build.DEVICE,
                 Build.VERSION.RELEASE, Build.VERSION.SDK_INT, server, usingHTTPS, isTablet);
+        int lines_count = 0;
         while ((line = bufferedReader.readLine()) != null) {
-            log.append(line + "\r\n");
+            if(line.contains("E ACRA") || line.contains("E AndroidRuntime")) {
+                log.append(line).append("\r\n");
+            }
         }
         if(log.length() == 0) {
             log.append("ERROR: Logcat not supported or not allowed. Please enable USB debugging.");
@@ -183,13 +188,17 @@ public class CrashReporterActivity extends BaseCrashReportDialog implements Dial
                 if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                     android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
                             getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboard.setText(crash_report);
+                    if(clipboard != null) {
+                        clipboard.setText(crash_report);
+                    }
                 } else {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
                             getSystemService(Context.CLIPBOARD_SERVICE);
                     android.content.ClipData clip =
                             android.content.ClipData.newPlainText("OpenVK Legacy crash report", crash_report);
-                    clipboard.setPrimaryClip(clip);
+                    if(clipboard != null) {
+                        clipboard.setPrimaryClip(clip);
+                    }
                 }
                 return true;
             }

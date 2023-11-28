@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
@@ -334,7 +335,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
                                 PollAttachment pollAttachment = ((PollAttachment) item.repost.
                                         newsfeed_item.attachments.get(i).getContent());
-                                original_post_poll.createAdapter(ctx, position, pollAttachment.answers,
+                                original_post_poll.createAdapter(ctx, position, items,
+                                        item.repost.newsfeed_item,
+                                        pollAttachment.answers,
                                         pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
                                 original_post_poll.setPollInfo(pollAttachment.question,
                                         pollAttachment.anonymous, pollAttachment.end_date);
@@ -428,8 +431,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if (item.attachments.get(i).getContent() != null) {
                             PollAttachment pollAttachment = ((PollAttachment)
                                     item.attachments.get(i).getContent());
-                            pollAttachView.createAdapter(ctx, position, pollAttachment.answers,
-                                    pollAttachment.multiple, pollAttachment.user_votes, pollAttachment.votes);
+                            pollAttachView.createAdapter(ctx, position,  items, item,
+                                    pollAttachment.answers, pollAttachment.multiple,
+                                    pollAttachment.user_votes, pollAttachment.votes);
                             pollAttachView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
                                     pollAttachment.end_date);
                             pollAttachView.setVisibility(View.VISIBLE);
@@ -517,13 +521,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if(!likeAdded) {
                             likeDeleted = true;
                         }
-                        deleteLike(ctx, position, "post", view);
+                        deleteLike(ctx, position, item,"post", view);
+                        item.counters.isLiked = false;
                     } else {
                         if(!likeDeleted) {
                             likeAdded = true;
                         }
-                        addLike(ctx, position, "post", view);
+                        addLike(ctx, position, item,"post", view);
+                        item.counters.isLiked = true;
                     }
+                    items.set(position, item);
                 }
             });
 
@@ -706,13 +713,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
             if(ovk_api.account != null) {
                 WallPost item;
+                item = getItem(position);
                 Intent intent = new Intent(ctx.getApplicationContext(), WallPostActivity.class);
-                if (global_prefs.getString("current_screen", "").equals("profile")) {
-                    item = ovk_api.wall.getWallItems().get(position);
-                    intent.putExtra("where", "wall");
-                } else {
-                    item = ovk_api.newsfeed.getWallPosts().get(position);
+                if (ctx instanceof AppActivity &&
+                        ((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment) {
                     intent.putExtra("where", "newsfeed");
+                } else {
+                    intent.putExtra("where", "wall");
                 }
                 try {
                     intent.putExtra("post_id", item.post_id);
@@ -730,15 +737,32 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
         }
 
-        public void addLike(Context ctx, int position, String post, View view) {
-            WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+        public void addLike(Context ctx, int position, WallPost item, String post, View view) {
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             NewsfeedFragment newsfeedFragment = null;
             WallLayout wallLayout = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
                 newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+                if (((AppActivity) ctx).selectedFragment instanceof ProfileFragment) {
+                    ProfileFragment profileFragment = ((AppActivity) ctx).profileFragment;
+                    if(profileFragment.getView() != null) {
+                        wallLayout = profileFragment.getView().findViewById(R.id.wall_layout);
+                        if (wallLayout != null) {
+                            wallLayout.select(position, "likes", "add");
+                        } else {
+                            return;
+                        }
+                    }
+                } else {
+                    if(newsfeedFragment != null) {
+                        newsfeedFragment.select(position, "likes", "add");
+                    } else {
+                        return;
+                    }
+                }
             } else if(ctx instanceof ProfileIntentActivity) {
                 ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
@@ -753,27 +777,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 return;
             }
-            if (global_prefs.getString("current_screen", "").equals("profile")) {
-                item = ovk_api.wall.getWallItems().get(position);
-                if(wallLayout != null) {
-                    wallLayout.select(position, "likes", "add");
-                } else {
-                    return;
-                }
-            } else {
-                item = ovk_api.newsfeed.getWallPosts().get(position);
-                if(newsfeedFragment != null) {
-                    newsfeedFragment.select(position, "likes", "add");
-                } else {
-                    return;
-                }
-            }
             ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
         }
 
-        public void deleteLike(Context ctx, int position, String post, View view) {
-            WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+        public void deleteLike(Context ctx, int position, WallPost item, String post, View view) {
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             NewsfeedFragment newsfeedFragment = null;
             WallLayout wallLayout = null;
@@ -814,7 +823,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         public void showAuthorPage(Context ctx, String where, int position) {
             WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;

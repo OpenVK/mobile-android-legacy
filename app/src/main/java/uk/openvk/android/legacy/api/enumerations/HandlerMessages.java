@@ -96,6 +96,7 @@ public class HandlerMessages {
     public static int PHOTOS_GET                        = 1000;
     public static int PHOTOS_UPLOAD_SERVER              = 1001;
     public static int PHOTOS_SAVE                       = 1002;
+    public static int PHOTOS_GETALBUMS                  = 1003;
 
     // OpenVK specific (/method/Ovk)
     public static int OVK_VERSION                       = 1100;
@@ -122,13 +123,15 @@ public class HandlerMessages {
     public static int COMMENT_AVATARS                   = 2009;
     public static int COMMENT_PHOTOS                    = 2010;
     public static int COMMENT_VIDEO_THUMBNAILS          = 2011;
-    public static int CONVERSATIONS_AVATARS             = 2012;
-    public static int LONGPOLL                          = 2013;
-    public static int ORIGINAL_PHOTO                    = 2014;
-    public static int VIDEO_THUMBNAILS                  = 2015;
-    public static int PARSE_JSON                        = 2016;
-    public static int UPLOAD_PROGRESS                   = 2017;
-    public static int UPLOADED_SUCCESSFULLY             = 2018;
+    public static int ALBUM_PHOTOS                      = 2012;
+    public static int PHOTO_ALBUM_THUMBNAILS            = 2013;
+    public static int CONVERSATIONS_AVATARS             = 2014;
+    public static int LONGPOLL                          = 2015;
+    public static int ORIGINAL_PHOTO                    = 2016;
+    public static int VIDEO_THUMBNAILS                  = 2017;
+    public static int PARSE_JSON                        = 2018;
+    public static int UPLOAD_PROGRESS                   = 2019;
+    public static int UPLOADED_SUCCESSFULLY             = 2020;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =   -1;

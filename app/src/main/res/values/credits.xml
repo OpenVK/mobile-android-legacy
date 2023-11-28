@@ -31,7 +31,7 @@
         <a href=\"%s/id2287\">Dmitry Tretyakov</a> (Tinelix)<br><a href=\"%s/id1\">Vladimir Barinov</a> (Veselcraft)
     ]]></string>
     <string name="about_app_design">Design</string>
-    <string name="app_design_value" formatted="false"><![CDATA[VKontakte 3.0.4 for Android<br>by <a href=\"https://grishka.me\">Gregory Klyushnikov</a>]]></string>
+    <string name="app_design_value" formatted="false"><![CDATA[VK 3.x for Android<br>by <a href=\"https://grishka.me\">Gregory Klyushnikov</a>]]></string>
     <string name="about_app_translations">Translations</string>
     <string name="app_eng_translators">Gregory Klyushnikov\nOpenVK Legacy Team</string>
     <string name="app_rus_translators">Gregory Klyushnikov\nOpenVK Legacy Team</string>

@@ -125,7 +125,7 @@ public class WallLayout extends LinearLayout {
     public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
         wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
-        wallView = (RecyclerView) findViewById(R.id.wall_listview);
+        wallView = findViewById(R.id.wall_listview);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         wallView.setLayoutManager(llm);
         wallView.setAdapter(wallAdapter);
@@ -255,11 +255,7 @@ public class WallLayout extends LinearLayout {
 
     public void select(int position, String item, int value) {
         if(item.equals("likes")) {
-            if(value == 1) {
-                wallItems.get(position).counters.isLiked = true;
-            } else {
-                wallItems.get(position).counters.isLiked = false;
-            }
+            wallItems.get(position).counters.isLiked = value == 1;
             wallAdapter.notifyDataSetChanged();
         }
     }

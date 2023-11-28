@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
@@ -37,8 +38,12 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.TrackingRequestBody;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
@@ -77,8 +82,15 @@ public class UploadManager {
     private HttpClient httpClientLegacy = null;
     private boolean forceCaching;
     private String instance;
+    private Handler handler;
+    private OvkAPIListeners apiListeners;
 
-    public UploadManager(Context ctx, boolean use_https, boolean legacy_mode) {
+    public UploadManager(Context ctx, boolean use_https, boolean legacy_mode, Handler handler) {
+        this.handler = handler;
+        apiListeners = new OvkAPIListeners();
+        if(handler == null) {
+            searchHandler();
+        }
         this.ctx = ctx;
         this.use_https = use_https;
         this.legacy_mode = legacy_mode;
@@ -121,12 +133,20 @@ public class UploadManager {
                     sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
                     javax.net.ssl.SSLSocketFactory ssf = (javax.net.ssl.SSLSocketFactory)
                             sslContext.getSocketFactory();
-                    httpClient = new OkHttpClient.Builder().sslSocketFactory(sslContext.getSocketFactory())
-                            .connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
-                            .readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    httpClient = new OkHttpClient.Builder()
+                            .sslSocketFactory(sslContext.getSocketFactory())
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(false)
+                            .build();
                 } catch (Exception e) {
-                    httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout
-                            (30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+                    httpClient = new OkHttpClient.Builder()
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .writeTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .retryOnConnectionFailure(false)
+                            .build();
                 }
                 legacy_mode = false;
             }
@@ -151,11 +171,15 @@ public class UploadManager {
                     if (legacy_mode) {
                         httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-                                .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
+                        httpClient = new OkHttpClient.Builder()
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(15, TimeUnit.SECONDS
+                                ).readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false)
+                                .proxy(new Proxy(Proxy.Type.HTTP,
                                         new InetSocketAddress(address_array[0],
-                                        Integer.valueOf(address_array[1])))).build();
+                                        Integer.valueOf(address_array[1]))))
+                                .build();
                     }
                 }
             }
@@ -168,7 +192,8 @@ public class UploadManager {
         String version_name = "";
         String user_agent = "";
         try {
-            PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getApplicationContext().getPackageName(), 0);
+            PackageInfo packageInfo = ctx.getPackageManager()
+                    .getPackageInfo(ctx.getApplicationContext().getPackageName(), 0);
             version_name = packageInfo.versionName;
         } catch (Exception e) {
             OvkApplication app = ((OvkApplication) ctx.getApplicationContext());
@@ -309,98 +334,54 @@ public class UploadManager {
         thread.start();
     }
 
-    private void sendMessage(int message, String filename, String response) {
+    private void sendMessage(final int message, String filename, String response) {
         Message msg = new Message();
         msg.what = message;
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString("filename", filename);
         bundle.putString("response", response);
         msg.setData(bundle);
-        if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
-            ((AuthActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-            ((AppActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("NewPostActivity")) {
-            ((NewPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
-            ((QuickSearchActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-            ((ProfileIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
-            ((FriendsIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("GroupIntentActivity")) {
-            ((GroupIntentActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-            ((WallPostActivity) ctx).handler.sendMessage(msg);
-        } else if(ctx.getClass().getSimpleName().equals("PhotoViewerActivity")) {
-            ((PhotoViewerActivity) ctx).handler.sendMessage(msg);
-        }
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(message < 0) {
+                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                } else {
+                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                }
+            }
+        });
     }
 
 
-    public void updateLoadProgress(String filename, String url, long position, long length) {
+    public void updateLoadProgress(String filename, String url, final long position, final long length) {
         Message msg = new Message();
         msg.what = HandlerMessages.UPLOAD_PROGRESS;
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString("filename", filename);
         bundle.putString("url", url);
         bundle.putLong("position", position);
         bundle.putLong("length", length);
         msg.setData(bundle);
-        if(ctx instanceof NewPostActivity) {
-            NewPostActivity newpost_a = ((NewPostActivity) ctx);
-            newpost_a.handler.sendMessage(msg);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                apiListeners.processListener.onAPIProcess(ctx, bundle, position, length);
+            }
+        });
+    }
+
+    private void searchHandler() {
+        if(ctx instanceof NetworkFragmentActivity) {
+            this.handler = ((NetworkFragmentActivity) ctx).handler;
+        } else if(ctx instanceof NetworkAuthActivity) {
+            this.handler = ((NetworkAuthActivity) ctx).handler;
+        } else if(ctx instanceof NetworkActivity) {
+            this.handler = ((NetworkActivity) ctx).handler;
         }
     }
 
-    public boolean clearCache(File dir) {
-        if (dir == null) {
-            dir = ctx.getCacheDir();
-            if (dir != null && dir.isDirectory()) {
-                String[] children = dir.list();
-                for (String aChildren : children) {
-                    boolean success = clearCache(new File(dir, aChildren));
-                    if (!success) {
-                        return false;
-                    }
-                }
-                return dir.delete();
-            } else
-                return dir != null && dir.isFile() && dir.delete();
-        } else if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                boolean success = clearCache(new File(dir, aChildren));
-                if (!success) {
-                    return false;
-                }
-            }
-            return dir.delete();
-        } else
-            return dir != null && dir.isFile() && dir.delete();
-    }
-
-    public long getCacheSize() {
-        final long[] size = {0};
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                long foldersize = 0;
-                File[] filelist = new File(ctx.getCacheDir().getAbsolutePath()).listFiles();
-                for (File aFilelist : filelist) {
-                    if (aFilelist.isDirectory()) {
-                        File[] filelist2 = new File(aFilelist.getAbsolutePath()).listFiles();
-                        for (File aFilelist2 : filelist2) {
-                            foldersize += filelist2.length;
-                        }
-                    } else {
-                        foldersize += aFilelist.length();
-                    }
-                }
-                size[0] = foldersize;
-            }
-        };
-        new Thread(runnable).run();
-        return size[0];
+    public void setAPIListeners(OvkAPIListeners apiListeners) {
+        this.apiListeners = apiListeners;
     }
 }

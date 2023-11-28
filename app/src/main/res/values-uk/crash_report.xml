@@ -2,9 +2,9 @@
 <resources>
     <string name="crash_title">Критичний збій програми</string>
     <string name="crash_description"><![CDATA[
-        <b>На жаль, додаток OpenVK Legacy вилетів через непередбачувану помилку.</b>
+        <b>На жаль, додаток OpenVK Legacy перестав працювати через непередбачувану помилку.</b>
         <br>
-        <br>Для виправлення <a href="https://github.com/openvk/mobile-android-legacy/issues">надайте звіт про помилку розробникам</a>.
+        <br>Для виправлення скопіюйте та <a href="https://github.com/openvk/mobile-android-legacy/issues">надайте звіт про помилку розробникам</a>.
     ]]></string>
     <string name="show_crash_report">Показати звіт</string>
     <string name="hide_crash_report">Сховати звіт</string>

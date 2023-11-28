@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.ui.core.fragments.app;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,9 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
@@ -190,13 +194,37 @@ public class ProfileFragment extends Fragment {
         (view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                    ((AppActivity) ctx).getConversationById(peer_id);
-                } else if (ctx.getClass().getSimpleName().equals("ProfileIntentActivity")) {
-                    ((ProfileIntentActivity) ctx).getConversationById(peer_id);
+                if (ctx instanceof NetworkFragmentActivity) {
+                    OpenVKAPI ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
+                    getConversationById(peer_id, ovk_api);
                 }
             }
         });
+    }
+
+    public void openNewPostActivity(User user, OpenVKAPI ovk_api) {
+        try {
+            Intent intent = new Intent(getContext().getApplicationContext(), NewPostActivity.class);
+            intent.putExtra("owner_id", user.id);
+            intent.putExtra("account_id", ovk_api.account.id);
+            intent.putExtra("account_first_name", user.first_name);
+            startActivity(intent);
+        } catch (Exception ignored) {
+
+        }
+    }
+
+    public void getConversationById(long peer_id, OpenVKAPI ovk_api) {
+        Intent intent = new Intent(getContext().getApplicationContext(), ConversationActivity.class);
+        try {
+            intent.putExtra("peer_id", peer_id);
+            intent.putExtra("conv_title",
+                    String.format("%s %s", ovk_api.user.first_name, ovk_api.user.last_name));
+            intent.putExtra("online", ovk_api.user.online ? 0 : 1);
+            startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {

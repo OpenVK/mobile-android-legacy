@@ -1,12 +1,9 @@
 package uk.openvk.android.legacy;
 
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,11 +13,9 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcel;
 import android.provider.Settings;
-import android.support.annotation.IdRes;
 import android.support.annotation.PluralsRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
@@ -32,46 +27,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.DebugMenuActivity;
-import uk.openvk.android.legacy.ui.core.activities.MainActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.NotesFragment;
+import uk.openvk.android.legacy.ui.core.fragments.app.PhotosFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
-import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
-import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
 /** Global.java - global methods for application
  *
@@ -111,11 +99,7 @@ public class Global {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 DisplayMetrics dismetrics = ctx.getResources().getDisplayMetrics();
                 float dpWidth = dismetrics.widthPixels / dismetrics.density;
-                if (dpWidth >= 600) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return dpWidth >= 600;
             } else {
                 return false;
             }
@@ -206,7 +190,8 @@ public class Global {
             if(block.startsWith("[") && block.endsWith("]")) {
                 OvkLink link = new OvkLink();
                 String[] markup = block.replace("[", "").replace("]", "")
-                        .replace("<", "").replace("\"", "").replace(">", "")
+                        .replace("<", "").replace("\"", "")
+                        .replace(">", "")
                         .split("\\|");
                 link.screen_name = markup[0];
                 if (markup.length == 2) {
@@ -243,7 +228,8 @@ public class Global {
                 "\\+~#?&//=]{1,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
         Matcher matcher = pattern.matcher(original_text);
         boolean regexp_search = matcher.find();
-        String text = original_text.replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+        String text = original_text.replaceAll("&lt;", "<")
+                .replaceAll("&gt;", ">")
                 .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
         text = text.replace("\r\n", "<br>").replace("\n", "<br>");
         int regexp_results = 0;
@@ -252,8 +238,10 @@ public class Global {
                 String block = matcher.group();
                 if (block.startsWith("[") && block.endsWith("]")) {
                     OvkLink link = new OvkLink();
-                    String[] markup = block.replace("[", "").replace("]", "")
-                            .replace("<", "").replace(">", "").replace("\"", "")
+                    String[] markup = block.replace("[", "")
+                            .replace("]", "")
+                            .replace("<", "").replace(">", "")
+                            .replace("\"", "")
                             .split("\\|");
                     link.screen_name = markup[0];
                     if (markup.length == 2) {
@@ -266,11 +254,13 @@ public class Global {
                         }
                         link.name = markup[1];
                         if (markup[0].startsWith("id") || markup[0].startsWith("club")) {
-                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>", link.url, link.name));
+                            text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                                    link.url, link.name));
                         }
                     }
                 } else if (block.startsWith("https://") || block.startsWith("http://")) {
-                    text = text.replace(block, String.format("<a href=\"%s\">%s</a>", block, block));
+                    text = text.replace(block, String.format("<a href=\"%s\">%s</a>",
+                            block, block));
                 }
             }
             regexp_results = regexp_results + 1;
@@ -280,7 +270,8 @@ public class Global {
         Spanned html;
         if(text.length() >= end_number) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                html = Html.fromHtml(text.substring(0, end_number - 1) + "...", Html.FROM_HTML_MODE_COMPACT);
+                html = Html.fromHtml(text.substring(0, end_number - 1) + "...",
+                        Html.FROM_HTML_MODE_COMPACT);
             } else {
                 html = Html.fromHtml(text.substring(0, end_number - 1) + "...");
             }
@@ -308,7 +299,9 @@ public class Global {
     public static void fixWindowPadding(Window window, Resources.Theme theme) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             View view = window.getDecorView();
-            int actionBarId = view.getContext().getResources().getIdentifier("action_bar", "id", "android");
+            int actionBarId =
+                    view.getContext().getResources()
+                            .getIdentifier("action_bar", "id", "android");
             ViewGroup actionBarView = (ViewGroup) view.findViewById(actionBarId);
             Resources res = view.getContext().getResources();
             try {
@@ -443,9 +436,9 @@ public class Global {
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_friends)));
             } else if (slider_menu_item_index == 1) {
-                //slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
-                // R.array.leftmenu)[slider_menu_item_index], 0,
-                // getResources().getDrawable(R.drawable.ic_left_photos)));
+                slidingMenuArray.add(new SlidingMenuItem(ctx.getResources().getStringArray(
+                R.array.leftmenu)[slider_menu_item_index], 0,
+                ctx.getResources().getDrawable(R.drawable.ic_left_photos)));
             } else if (slider_menu_item_index == 2) {
                 //slidingMenuArray.add(new SlidingMenuItem(
                 // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
@@ -562,9 +555,12 @@ public class Global {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = finalGlobal_prefs.edit();
-                        editor.putString("current_instance", accountArray.get(selectedPosition[0]).instance);
-                        editor.putLong("current_uid", accountArray.get(selectedPosition[0]).id);
+                        SharedPreferences.Editor editor =
+                                finalGlobal_prefs.edit();
+                        editor.putString("current_instance",
+                                accountArray.get(selectedPosition[0]).instance);
+                        editor.putLong("current_uid",
+                                accountArray.get(selectedPosition[0]).id);
                         editor.commit();
                         dialog.dismiss();
                         if(ctx instanceof Activity) {
@@ -658,13 +654,16 @@ public class Global {
             OvkAlertDialog dialog = new OvkAlertDialog(ctx);
             dialog.build(builder, ctx.getResources().getString(R.string.sett_account), "", null, "listDlg");
             final SharedPreferences finalGlobal_prefs = global_prefs;
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, ctx.getResources().getString(android.R.string.ok),
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                    ctx.getResources().getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             SharedPreferences.Editor editor = finalGlobal_prefs.edit();
-                            editor.putString("current_instance", accountArray.get(selectedPosition[0]).instance);
-                            editor.putLong("current_uid", accountArray.get(selectedPosition[0]).id);
+                            editor.putString("current_instance",
+                                    accountArray.get(selectedPosition[0]).instance);
+                            editor.putLong("current_uid",
+                                    accountArray.get(selectedPosition[0]).id);
                             editor.commit();
                             dialog.dismiss();
                             if (ctx instanceof Activity) {
@@ -717,6 +716,10 @@ public class Global {
             args = path.substring("openvk://group/".length());
         } else if (path.startsWith("openvk://friends/")) {
             args = path.substring("openvk://friends/".length());
+        } else if (path.startsWith("openvk://photos/album")) {
+            args = path.substring("openvk://photos/album".length());
+        } else if (path.startsWith("openvk://photos/")) {
+            args = path.substring("openvk://photos/".length());
         } else if (path.startsWith("openvk://notes/")) {
             args = path.substring("openvk://notes/".length());
         } else if(path.startsWith("https://openvk.su/")) {
@@ -783,10 +786,12 @@ public class Global {
         dialog.show();
     }
 
-    public static void openRepostDialog(Context ctx, final OpenVKAPI ovk_api, String where, final WallPost post) {
+    public static void openRepostDialog(Context ctx,
+                                        final OpenVKAPI ovk_api, String where, final WallPost post) {
         if(where.equals("own_wall")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-            final View repost_view = ((Activity)ctx).getLayoutInflater().inflate(R.layout.dialog_repost_msg,
+            final View repost_view =
+                    ((Activity)ctx).getLayoutInflater().inflate(R.layout.dialog_repost_msg,
                     null, false);
             final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
             builder.setView(repost_view);
@@ -807,7 +812,8 @@ public class Global {
                                         String msg_text = ((EditText)
                                                 repost_view.findViewById(R.id.text_edit)).getText()
                                                 .toString();
-                                        ovk_api.wall.repost(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
+                                        ovk_api.wall.repost
+                                                (ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
                                         dialog.close();
                                     } catch (Exception ex) {
                                         ex.printStackTrace();
@@ -878,5 +884,32 @@ public class Global {
         } catch (Exception ignored) {
 
         }
+    }
+
+    public static boolean checkShowErrorLayout(String method, Fragment selectedFragment) {
+        return
+                method.equals("Account.getProfileInfo")
+                    || ((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
+                            && selectedFragment instanceof NewsfeedFragment)
+                    || (method.equals("Friends.get")
+                            && selectedFragment instanceof FriendsFragment)
+                    || (method.equals("Groups.get")
+                            && selectedFragment instanceof GroupsFragment)
+                    || (method.equals("Users.get")
+                            && selectedFragment instanceof ProfileFragment)
+                    || (method.equals("Messages.getConversations")
+                            && selectedFragment instanceof ConversationsFragment)
+                    || (method.equals("Photos.getAlbums")
+                            && selectedFragment instanceof PhotosFragment)
+                    || (method.equals("Notes.get")
+                        && selectedFragment instanceof NotesFragment);
+
+    }
+
+    public static boolean isXmas() {
+        int month = new Date().getMonth();
+        int day = new Date().getDate();
+        // 11 = December, 0 = January
+        return (month == 11 && day >= 1) || (month == 0 && day <= 15);
     }
 }

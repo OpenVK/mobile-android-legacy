@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -93,7 +95,9 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                 actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             }
         }
-        dlManager = new DownloadManager(this, false, global_prefs.getBoolean("legacyHttpClient", false));
+        dlManager = new DownloadManager(this,
+                false, global_prefs.getBoolean("legacyHttpClient", false),
+                new Handler(Looper.myLooper()));
         dlManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
         setListeners();
     }

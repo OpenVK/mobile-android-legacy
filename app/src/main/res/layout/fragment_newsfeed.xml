@@ -46,8 +46,8 @@
                 android:layout_height="match_parent"
                 android:background="#e3e4e6"
                 android:descendantFocusability="blocksDescendants"
-                tools:ignore="UselessParent"
-                android:isScrollContainer="false">
+                android:isScrollContainer="false"
+                tools:ignore="UselessParent">
 
                 <LinearLayout
                     android:layout_width="match_parent"

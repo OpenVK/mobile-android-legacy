@@ -52,6 +52,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ZoomableImageView;
@@ -73,27 +74,21 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PhotoViewerActivity extends Activity {
+public class PhotoViewerActivity extends NetworkActivity {
     private String access_token;
-    private SharedPreferences instance_prefs;
     private int owner_id;
     private int post_id;
     private Bitmap bitmap;
     private Menu activity_menu;
-    public Handler handler;
     private BitmapFactory.Options bfOptions;
-    private DownloadManager downloadManager;
     private ActionBar actionBar;
     private PopupWindow popupMenu;
-    private SharedPreferences global_prefs;
     private String instance;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -162,7 +157,7 @@ public class PhotoViewerActivity extends Activity {
 
         ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.GONE);
         ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.VISIBLE);
-        ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme();
+        ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme(true, 1);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -172,14 +167,8 @@ public class PhotoViewerActivity extends Activity {
                 access_token = instance_prefs.getString("access_token", "");
                 try {
                     if (extras.containsKey("original_link") && extras.getString("original_link").length() > 0) {
-                        downloadManager = new DownloadManager(this, true,
-                                global_prefs.getBoolean("legacyHttpClient", false));
-                        downloadManager.setInstance(
-                                PreferenceManager
-                                        .getDefaultSharedPreferences(this)
-                                        .getString("current_instance", ""));
-                        downloadManager.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
-                        downloadManager.downloadOnePhotoToCache(extras.getString("original_link"),
+                        ovk_api.dlman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
+                        ovk_api.dlman.downloadOnePhotoToCache(extras.getString("original_link"),
                                 String.format("original_photo_a%s_%s", extras.getLong("author_id"),
                                         extras.getLong("photo_id")), "original_photos");
                     } else {
@@ -216,7 +205,7 @@ public class PhotoViewerActivity extends Activity {
         return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
     }
 
-    private void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         if(message == HandlerMessages.ACCESS_DENIED_MARSHMALLOW) {
             Global.allowPermissionDialog(this, false);
         } else if(message == HandlerMessages.ORIGINAL_PHOTO) {

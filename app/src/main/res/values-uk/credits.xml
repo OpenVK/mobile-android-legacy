@@ -33,7 +33,7 @@
     ]]></string>
     <string name="about_app_design">Дизайн</string>
     <string name="app_design_value" formatted="false"><![CDATA[
-        ВКонтакте 3.0.4 для Android<br>вiд <a href=\"https://grishka.me\">Григорія Клюшнікова</a>
+        ВКонтакте 3.x для Android<br>вiд <a href=\"https://grishka.me\">Григорія Клюшнікова</a>
     ]]></string>
     <string name="about_app_translations">Переклади</string>
     <string name="app_eng_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
@@ -49,8 +49,8 @@
     ]]></string>
     <string name="app_disclaimer_title">Дисклеймер</string>
     <string name="app_disclaimer"><![CDATA[
-        OpenVK ніяк не пов\'язаний з компанією ТОВ \"ВК\" або не
-        схвалений нею. Додаток призначений для роботи <b>тільки</b> з інстанціями OpenVK,
+        OpenVK ніяк не пов\'язаний з компанією ТОВ \"ВК\" або не схвалений нею.
+        Додаток призначений для роботи <b>тільки</b> з інстанціями OpenVK,
         <a href="%s/topic181_1">див. у FAQ</a>.
     ]]></string>
 </resources>

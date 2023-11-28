@@ -49,6 +49,7 @@ import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
@@ -80,13 +81,8 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class GroupIntentActivity extends TranslucentActivity {
-    public OpenVKAPI ovk_api;
-    private DownloadManager downloadManager;
+public class GroupIntentActivity extends NetworkFragmentActivity {
     public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
     private String access_token;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
@@ -108,9 +104,6 @@ public class GroupIntentActivity extends TranslucentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.layout_group_page);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -131,25 +124,6 @@ public class GroupIntentActivity extends TranslucentActivity {
 
         final Uri uri = getIntent().getData();
 
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ovk_api.wrapper.parseJSONData(data, GroupIntentActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
-
         if(activity_menu == null) {
             android.support.v7.widget.PopupMenu p  =
                     new android.support.v7.widget.PopupMenu(this, null);
@@ -165,19 +139,8 @@ public class GroupIntentActivity extends TranslucentActivity {
                 return;
             }
             try {
-                ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
-                ovk_api.account.getProfileInfo(ovk_api.wrapper);
                 args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    downloadManager = new DownloadManager(this,
-                            global_prefs.getBoolean("useHTTPS", true),
-                            global_prefs.getBoolean("legacyHttpClient", false));
-                    downloadManager.setInstance(
-                            PreferenceManager.
-                                    getDefaultSharedPreferences(this)
-                                    .getString("current_instance", ""));
-                    downloadManager.setForceCaching(
-                            global_prefs.getBoolean("forcedCaching", true));
                     installLayouts();
                 }
             } catch (Exception ex) {
@@ -366,8 +329,18 @@ public class GroupIntentActivity extends TranslucentActivity {
         }
     }
 
-    private void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
+            if(data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if(activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                if(!isCurrentActivity) {
+                    return;
+                }
+            }
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if (args.startsWith("club")) {
                     try {
@@ -393,7 +366,7 @@ public class GroupIntentActivity extends TranslucentActivity {
                 progressLayout.setVisibility(View.GONE);
                 groupScrollView.setVisibility(View.VISIBLE);
                 setJoinButtonListener(group.id);
-                group.downloadAvatar(downloadManager, global_prefs.getString("photos_quality", ""));
+                group.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
                 ovk_api.wall.get(ovk_api.wrapper, -group.id, 25);
                 if(group.is_member > 0) {
                     findViewById(R.id.join_to_comm).setVisibility(View.GONE);
@@ -492,15 +465,33 @@ public class GroupIntentActivity extends TranslucentActivity {
                 if (data.containsKey("method")) {
                     if ("Wall.get".equals(data.getString("method"))) {
                         ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                    } else if("Users.get".equals(data.getString("method"))) {
+                        setErrorPage(data, message);
                     } else {
                         Toast.makeText(this, getResources().getString(R.string.err_text),
                                 Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    setErrorPage(data, message);
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void setErrorPage(Bundle data, int reason) {
+        progressLayout.setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setReason(reason);
+        errorLayout.setProgressLayout(progressLayout);
+        errorLayout.setTitle(getResources().getString(R.string.err_text));
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     private void setJoinButtonListener(long id) {
@@ -665,53 +656,6 @@ public class GroupIntentActivity extends TranslucentActivity {
             startActivity(intent);
         } catch (Exception ignored) {
 
-        }
-    }
-
-    public void voteInPoll(int item_pos, int answer) {
-        try {
-            this.item_pos = item_pos;
-            this.poll_answer = answer;
-            WallPost item = ovk_api.wall.getWallItems().get(item_pos);
-            for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-                if (item.attachments.get(attachment_index).type.equals("poll")) {
-                    PollAttachment pollAttachment = ((PollAttachment)
-                            item.attachments.get(attachment_index).getContent());
-                    pollAttachment.user_votes = 1;
-                    if (!pollAttachment.answers.get(answer).is_voted) {
-                        pollAttachment.answers.get(answer).is_voted = true;
-                        pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
-                    }
-                    ovk_api.wall.getWallItems().set(item_pos, item);
-                    pollAttachment.vote(ovk_api.wrapper, pollAttachment.answers.get(answer).id);
-                }
-            }
-        } catch (Exception ex) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void removeVoteInPoll(int item_pos) {
-        try {
-            this.item_pos = item_pos;
-            WallPost item = ovk_api.wall.getWallItems().get(item_pos);
-            for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-                if (item.attachments.get(attachment_index).type.equals("poll")) {
-                    PollAttachment pollAttachment = ((PollAttachment)
-                            item.attachments.get(attachment_index).getContent());
-                    for (int i = 0; i < pollAttachment.answers.size(); i++) {
-                        if (pollAttachment.answers.get(i).is_voted) {
-                            pollAttachment.answers.get(i).is_voted = false;
-                            pollAttachment.answers.get(i).votes = pollAttachment.answers.get(i).votes - 1;
-                        }
-                    }
-                    pollAttachment.user_votes = 0;
-                    ovk_api.wall.getWallItems().set(item_pos, item);
-                    pollAttachment.unvote(ovk_api.wrapper);
-                }
-            }
-        } catch (Exception ex) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 

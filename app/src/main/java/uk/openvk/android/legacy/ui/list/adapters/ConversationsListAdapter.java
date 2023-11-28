@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -88,7 +90,7 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
         }
 
         void bind(final int position) {
-            Conversation item = getConversationItem(position);
+            final Conversation item = getConversationItem(position);
             ((TextView) view.findViewById(R.id.conversation_title)).setText(item.title);
             String lastMsgTimestamp;
             if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 86400000) {
@@ -129,11 +131,23 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
-                        ((AppActivity) ctx).getConversation(position);
+                    if(ctx instanceof AppActivity) {
+                        getConversation(item);
                     }
                 }
             });
+        }
+    }
+
+    public void getConversation(Conversation item) {
+        Intent intent = new Intent(ctx, ConversationActivity.class);
+        try {
+            intent.putExtra("peer_id", item.peer_id);
+            intent.putExtra("conv_title", item.title);
+            intent.putExtra("online", item.online);
+            ctx.startActivity(intent);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

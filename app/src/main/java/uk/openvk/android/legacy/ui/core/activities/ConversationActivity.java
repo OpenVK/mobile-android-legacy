@@ -52,12 +52,14 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.api.models.Messages;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.enumerations.UiMessages;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
@@ -82,12 +84,10 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ConversationActivity extends TranslucentFragmentActivity implements
+public class ConversationActivity extends NetworkFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 
-    private OpenVKAPI ovk_api;
-    public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
@@ -117,7 +117,6 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_conversation_msgs);
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
         conversation = new Conversation();
         messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
         installLayouts();
@@ -140,24 +139,7 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         } catch (OutOfMemoryError ignored) {
 
         }
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ovk_api.wrapper.parseJSONData(data, ConversationActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
+
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -228,12 +210,16 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
                     onBackPressed();
                 }
             });
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
@@ -483,7 +469,17 @@ public class ConversationActivity extends TranslucentFragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
+        if(data.containsKey("address")) {
+            String activityName = data.getString("address");
+            if(activityName == null) {
+                return;
+            }
+            boolean isCurrentActivity = activityName.equals(getLocalClassName());
+            if(!isCurrentActivity) {
+                return;
+            }
+        }
         if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             conversation_adapter = new MessagesListAdapter(this, history, peer_id);
             messagesList.setAdapter(conversation_adapter);

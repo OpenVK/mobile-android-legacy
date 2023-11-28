@@ -71,13 +71,11 @@ public class MainActivity extends TranslucentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int month = new Date().getMonth();
-        int day = new Date().getDate();
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         getAndroidAccounts();
         if(global_prefs.getBoolean("startupSplash", true)) {
-            if ((month == 11 && day >= 1) || (month == 0 && day <= 15)) {
+            if (Global.isXmas()) {
                 setContentView(R.layout.activity_splash_xmas);
             } else {
                 setContentView(R.layout.activity_splash);

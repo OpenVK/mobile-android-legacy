@@ -23,7 +23,7 @@ def getGitHubCommit = {
         }
         return gitVersionName
     } catch (ignored) {
-        return "UNKNOWN";
+        return "UNKNOWN"
     }
 }
 
@@ -43,6 +43,16 @@ android {
             if (file('.signing/app-debug.prop').exists()) {
                 Properties props = new Properties();
                 props.load(new FileInputStream(file(".signing/app-debug.prop")))
+                storeFile file(props['RELEASE_STORE_FILE'])
+                storePassword props['RELEASE_STORE_PASSWORD']
+                keyAlias props['RELEASE_KEY_ALIAS']
+                keyPassword props['RELEASE_KEY_PASSWORD']
+            }
+        }
+        fdroid {
+            if (file('.signing/app-fdroid.prop').exists()) {
+                Properties props = new Properties();
+                props.load(new FileInputStream(file(".signing/app-fdroid.prop")))
                 storeFile file(props['RELEASE_STORE_FILE'])
                 storePassword props['RELEASE_STORE_PASSWORD']
                 keyAlias props['RELEASE_KEY_ALIAS']
@@ -69,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 207
-        versionName "1.1.207-beta.u"
+        versionCode 210
+        versionName "1.1.210-beta.u"
     }
     buildTypes {
         release {
@@ -95,16 +105,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 207
-            versionName "1.1.207-beta"
+            versionCode 214
+            versionName "1.1.214-prerelease"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 207
-            versionName '1.1.207-beta.r'
+            versionCode 214
+            versionName '1.1.214'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -115,10 +125,10 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 207
-            versionName "1.1.207-beta.f"
-            if (file('.signing/app-release.prop').exists()) {
-                signingConfig signingConfigs.release
+            versionCode 214
+            versionName "1.1.214-f"
+            if (file('.signing/app-fdroid.prop').exists()) {
+                signingConfig signingConfigs.fdroid
             }
         }
     }

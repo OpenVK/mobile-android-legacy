@@ -3,6 +3,8 @@ package uk.openvk.android.legacy.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.logging.Handler;
+
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.entities.User;
@@ -51,27 +53,36 @@ public class OpenVKAPI {
     public OvkAPIWrapper wrapper;
     public DownloadManager dlman;
     public UploadManager ulman;
-    public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs) {
+    public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs,
+                     android.os.Handler handler) {
         wrapper = new OvkAPIWrapper(ctx, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         wrapper.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
-        wrapper.setServer(instance_prefs.getString("server", ""));
-        wrapper.setAccessToken(instance_prefs.getString("access_token", ""));
+        if(instance_prefs != null && instance_prefs.contains("server")) {
+            wrapper.setServer(instance_prefs.getString("server", ""));
+            wrapper.setAccessToken(instance_prefs.getString("access_token", ""));
+        }
         dlman = new DownloadManager(ctx, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
-        dlman.setInstance(instance_prefs.getString("server", ""));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
+        if(instance_prefs != null && instance_prefs.contains("server")) {
+            dlman.setInstance(instance_prefs.getString("server", ""));
+        }
         dlman.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
         dlman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         ulman = new UploadManager(ctx, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                global_prefs.getBoolean("legacyHttpClient", false), handler);
         ulman.setProxyConnection(global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
-        ulman.setInstance(instance_prefs.getString("server", ""));
+        if(instance_prefs != null && instance_prefs.contains("server")) {
+            ulman.setInstance(instance_prefs.getString("server", ""));
+        }
         ulman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         account = new Account(ctx);
-        account.getProfileInfo(wrapper);
+        if(instance_prefs != null && instance_prefs.contains("server")) {
+            account.getProfileInfo(wrapper);
+        }
         newsfeed = new Newsfeed();
         user = new User();
         likes = new Likes();

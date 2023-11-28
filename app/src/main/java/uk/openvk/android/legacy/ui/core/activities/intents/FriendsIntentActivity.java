@@ -7,11 +7,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -19,16 +16,14 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Friend;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
@@ -52,11 +47,9 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class FriendsIntentActivity extends TranslucentFragmentActivity {
+public class FriendsIntentActivity extends NetworkFragmentActivity {
 
     private ArrayList<SlidingMenuItem> slidingMenuArray;
-    public OpenVKAPI ovk_api;
-    public Handler handler;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
@@ -91,25 +84,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
 
         final Uri uri = intent.getData();
 
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ovk_api.wrapper.parseJSONData(data, FriendsIntentActivity.this);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
-
         if (uri != null) {
             String path = uri.toString();
             if (instance_prefs.getString("access_token", "").length() == 0) {
@@ -119,7 +93,6 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs);
                     ovk_api.users = new Users();
                     ovk_api.friends = new Friends();
                     if(args.startsWith("id")) {
@@ -217,8 +190,18 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    private void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
+            if(data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if(activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                if(!isCurrentActivity) {
+                    return;
+                }
+            }
             if (message == HandlerMessages.FRIENDS_GET) {
                 ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
@@ -244,23 +227,30 @@ public class FriendsIntentActivity extends TranslucentFragmentActivity {
                 } else {
                     friendsFragment.setScrollingPositions(this, true);
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
-                    || message == HandlerMessages.INVALID_JSON_RESPONSE
-                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
-                errorLayout.setReason(message);
-                errorLayout.setData(data);
-                errorLayout.setRetryAction(this);
-                progressLayout.setVisibility(View.GONE);
-                errorLayout.setVisibility(View.VISIBLE);
+            } else if (message < 0) {
+                setErrorPage(data, message);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(this);
+            errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setErrorPage(Bundle data, int reason) {
+        progressLayout.setVisibility(View.GONE);
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setReason(reason);
+        errorLayout.setProgressLayout(progressLayout);
+        errorLayout.setTitle(getResources().getString(R.string.err_text));
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     public void loadMoreFriends() {
