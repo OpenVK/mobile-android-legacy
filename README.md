@@ -38,7 +38,7 @@ We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/a
 9. **[SystemBarTint](https://github.com/jgilfelt/SystemBarTint)** (Apache License 2.0)
 10. **[SwipeRefreshLayout Mod with Pull-to-Refresh](https://github.com/xyxyLiu/SwipeRefreshLayout)** (Apache License 2.0)
 11. **[android-i18n-plurals](https://github.com/populov/android-i18n-plurals)** (X11 License)
-12. **[Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0)** (Apache License 2.0)
+12. **[Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0)** (Apache License 2.0) \
     _About our usage of ACRA in application see [issue #153](https://github.com/openvk/mobile-android-legacy/issues/153)._
 14. **[Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5)** (Apache License 2.0)
 15. **[NineOldAndroids](https://github.com/JakeWharton/NineOldAndroids)** (Apache License 2.0)
