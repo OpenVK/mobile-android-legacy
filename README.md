@@ -13,7 +13,7 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 
 ## Download APK
 * **via F-Droid**
-  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (much faster, mirror ~~[without TLS](http://repo.openvk.co/repo/)~~ not paid)
+  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (much faster)
   * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
   * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
 * **via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)**
