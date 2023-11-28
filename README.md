@@ -26,7 +26,12 @@ We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/a
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
-## Used Libraries
+## Used App Components
+**Most compatible app components, including libraries, are guaranteed to work with Android 2.1 and above.**
+
+You may also find them useful for developing applications that support very old Android versions, despite security and stability issues in current Android versions.
+
+#### Libraries
 1. **[Android Support Library v24 for 1.6+](https://developer.android.com/topic/libraries/support-library)** (Apache License 2.0)
 2. **[HttpUrlWrapper](https://github.com/tinelix/httpurlwrapper)** (Apache License 2.0)
 3. **[PhotoView 1.2.5](https://github.com/Baseflow/PhotoView/tree/v1.2.5)** (Apache License 2.0)
@@ -42,6 +47,12 @@ We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/a
     _About our usage of ACRA in application see [issue #153](https://github.com/openvk/mobile-android-legacy/issues/153)._
 14. **[Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5)** (Apache License 2.0)
 15. **[NineOldAndroids](https://github.com/JakeWharton/NineOldAndroids)** (Apache License 2.0)
+
+#### Design
+1. **VK 3.x original resources** \
+   Author: [Gregory Klyushnikov](https://grishka.me)
+2. **VK3-based themes:** Gray, Black
+3. [**Holo Design Language**](https://web.archive.org/web/20130217132335/http://developer.android.com/design/index.html)
 
 ## OpenVK Legacy License
 [GNU Affero GPL v3.0](COPYING) or later version.
