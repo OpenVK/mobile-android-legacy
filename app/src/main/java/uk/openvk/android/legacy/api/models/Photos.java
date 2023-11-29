@@ -5,8 +5,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;

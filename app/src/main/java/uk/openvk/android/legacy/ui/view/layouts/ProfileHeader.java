@@ -20,9 +20,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.entities.Comment;
-import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 

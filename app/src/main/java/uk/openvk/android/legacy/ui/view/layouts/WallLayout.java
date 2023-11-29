@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
@@ -187,7 +186,7 @@ public class WallLayout extends LinearLayout {
                         }
                         if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
                             if(item.attachments.get(0).type.equals("photo")) {
-                                ((PhotoAttachment) item.attachments.get(0).getContent()).photo = null;
+                                ((Photo) item.attachments.get(0).getContent()).bitmap = null;
                             }
                         } else {
                             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -203,8 +202,8 @@ public class WallLayout extends LinearLayout {
                                                         getContext().getCacheDir(), instance,
                                                         item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
-                                            ((PhotoAttachment) item.attachments.get(0).getContent())
-                                                    .photo = bitmap;
+                                            ((Photo) item.attachments.get(0).getContent())
+                                                    .bitmap = bitmap;
                                             item.attachments.get(0).status = "done";
                                         } else if(photoAttachment.url.length() > 0) {
                                             item.attachments.get(0).status = "error";

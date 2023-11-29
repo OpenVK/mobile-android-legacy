@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.LongPollServer;
 import uk.openvk.android.legacy.api.entities.Photo;
@@ -51,7 +50,7 @@ public class Messages {
             try {
                 JSONArray items = json.getJSONObject("response").getJSONArray("items");
                 conversations = new ArrayList<Conversation>();
-                ArrayList<PhotoAttachment> avatars = new ArrayList<>();
+                ArrayList<Photo> avatars = new ArrayList<>();
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject conv = items.getJSONObject(i).getJSONObject("conversation");
                     JSONObject last_msg = items.getJSONObject(i).getJSONObject("last_message");

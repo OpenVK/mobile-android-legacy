@@ -3,31 +3,14 @@ package uk.openvk.android.legacy.api.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.CommonAttachment;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Photo;
-import uk.openvk.android.legacy.api.entities.PollAnswer;
-import uk.openvk.android.legacy.api.entities.VideoFiles;
-import uk.openvk.android.legacy.api.entities.WallPostSource;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.api.entities.RepostInfo;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

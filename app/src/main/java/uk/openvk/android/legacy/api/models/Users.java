@@ -11,7 +11,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.User;

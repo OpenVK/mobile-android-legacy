@@ -5,10 +5,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,16 +29,13 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
-import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
-import uk.openvk.android.legacy.ui.view.InfinityScrollView;
 import uk.openvk.android.legacy.ui.view.layouts.OvkRefreshableHeaderLayout;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -174,7 +169,7 @@ public class NewsfeedFragment extends Fragment {
                     if(item.repost != null) {
                         if (item.repost.newsfeed_item.attachments.size() > 0) {
                             if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                Photo photo = ((PhotoAttachment) item.repost.
+                                Photo photo = ((Photo) item.repost.
                                         newsfeed_item.attachments.get(0).getContent());
                                 Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                 if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
@@ -186,7 +181,7 @@ public class NewsfeedFragment extends Fragment {
                                 } else {
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                    if (photoAttachment.url.length() > 0) {
+                                    if (photo.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(
                                                 String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
                                                                 "newsfeed_attachment_o%sp%s",
@@ -218,7 +213,7 @@ public class NewsfeedFragment extends Fragment {
                             } else {
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                if (photoAttachment.url.length() > 0) {
+                                if (photo.url.length() > 0) {
                                     Bitmap bitmap = BitmapFactory.decodeFile(
                                             String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
                                                             "newsfeed_attachment_o%sp%s", getContext().getCacheDir(),
@@ -228,7 +223,7 @@ public class NewsfeedFragment extends Fragment {
                                         bitmap.recycle();
                                         attachment.status = "done";
                                         item.attachments.set(0, attachment);
-                                    } else if(photoAttachment.url.length() > 0) {
+                                    } else if(photo.url.length() > 0) {
                                         attachment.status = "error";
                                     }
                                 }

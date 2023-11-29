@@ -13,7 +13,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
@@ -47,7 +45,6 @@ import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
@@ -324,10 +321,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             if (item.repost.newsfeed_item.attachments.get(i).getContent() != null) {
                                 WallPost repost = item.repost.newsfeed_item;
                                 if (repost.attachments.get(i).status.equals("done")) {
-                                    loadPhotoAttachment((PhotoAttachment) repost.attachments.get(i).getContent(),
+                                    loadPhotoAttachment((Photo) repost.attachments.get(i).getContent(),
                                             repost.owner_id, repost.post_id, original_post_photo);
                                 } else {
-                                    loadPhotoPlaceholder(repost, (PhotoAttachment) repost.attachments.get(i).getContent(),
+                                    loadPhotoPlaceholder(repost, (Photo) repost.attachments.get(i).getContent(),
                                             original_post_photo);
                                 }
                                 original_post_photo.setVisibility(View.VISIBLE);
