@@ -207,6 +207,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 downloadManager, true);
                     }
                     break;
+                case "Video.get":
+                    msg.what = HandlerMessages.VIDEOS_GET;
+                    app_a.ovk_api.videos.parse(downloadManager, data.getString("response"));
+                    break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {
                         app_a.ovk_api.wall.parse(activity, downloadManager,

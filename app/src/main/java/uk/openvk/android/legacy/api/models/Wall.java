@@ -567,7 +567,7 @@ public class Wall implements Parcelable {
                     }
                     case "video": {
                         JSONObject video = attachment.getJSONObject("video");
-                        Video videoAttachment = new Video(videos.getJSONObject(i));
+                        Video videoAttachment = new Video(video);
                         videoAttachment.id = video.getLong("id");
                         videoAttachment.title = video.getString("title");
                         VideoFiles files = new VideoFiles();

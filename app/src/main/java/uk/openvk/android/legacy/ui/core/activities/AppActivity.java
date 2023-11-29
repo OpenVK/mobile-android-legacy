@@ -464,6 +464,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ft.add(R.id.app_fragment, newsfeedFragment, "newsfeed");
         ft.add(R.id.app_fragment, friendsFragment, "friends");
         ft.add(R.id.app_fragment, photosFragment, "photos");
+        ft.add(R.id.app_fragment, videosFragment, "videos");
         ft.add(R.id.app_fragment, groupsFragment, "groups");
         ft.add(R.id.app_fragment, conversationsFragment, "messages");
         ft.add(R.id.app_fragment, profileFragment, "profile");
@@ -473,6 +474,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ft = getSupportFragmentManager().beginTransaction();
         ft.hide(friendsFragment);
         ft.hide(photosFragment);
+        ft.hide(videosFragment);
         ft.hide(groupsFragment);
         ft.hide(conversationsFragment);
         ft.hide(profileFragment);
@@ -641,6 +643,11 @@ public class AppActivity extends NetworkFragmentActivity {
                 fn.navigateTo("photos", ft);
                 ovk_api.photos.getAlbums(ovk_api.wrapper, ovk_api.account.id, 25,
                         true, true, true);
+                break;
+            case 2:
+                setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[2]);
+                fn.navigateTo("videos", ft);
+                ovk_api.videos.getVideos(ovk_api.wrapper, ovk_api.account.id, 25);
                 break;
             case 3:
                 setActionBarTitle(getResources().getString(R.string.messages));
@@ -840,10 +847,12 @@ public class AppActivity extends NetworkFragmentActivity {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .setScrollingPositions();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
-                if(selectedFragment != newsfeedFragment) {
+                if(selectedFragment instanceof NewsfeedFragment) {
                     newsfeedFragment.refreshAdapter();
-                } else {
+                } else if(selectedFragment instanceof ProfileFragment) {
                     profileFragment.refreshWallAdapter();
+                } else if(selectedFragment instanceof VideosFragment) {
+                    videosFragment.createAdapter(this, ovk_api.videos.getList());
                 }
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
@@ -953,13 +962,12 @@ public class AppActivity extends NetworkFragmentActivity {
                 photosFragment.createAdapter(this, albumsList, "photos");
                 photosFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.VIDEOS_GET) {
-                ArrayList<Video> videos = ovk_api.videos.getList();
                 if (selectedFragment instanceof VideosFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    videosFragment.createAdapter(this, ovk_api.videos.getList());
+                    videosFragment.setScrollingPositions(this, true);
                 }
-                videosFragment.createAdapter(this, videos, "videos");
-                videosFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
                 if (selectedFragment instanceof GroupsFragment) {

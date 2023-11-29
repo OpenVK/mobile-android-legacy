@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,11 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
+import uk.openvk.android.legacy.api.entities.Video;
+import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -69,13 +73,13 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
         imageLoader.init(VideosListAdapter.this.imageLoaderConfig);
     }
 
-    public PhotoAlbum getItem(int position) {
+    public Video getItem(int position) {
         return objects.get(position);
     }
 
     @Override
     public VideosListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VideosListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.attach_album_2,
+        return new VideosListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_video,
                 parent, false));
     }
 
@@ -98,7 +102,7 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
         }
     }
 
-    PhotoAlbum getAlbum(int position) {
+    Video getVideo(int position) {
         return (getItem(position));
     }
 
@@ -111,30 +115,24 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
         public Holder(View convertView) {
             super(convertView);
             view = convertView;
-            item_name = (view.findViewById(R.id.attach_title));
-            item_count = (view.findViewById(R.id.attach_count));
-            item_thumbnail = (view.findViewById(R.id.album_preview));
+            item_name = (view.findViewById(R.id.video_title));
+            item_count = (view.findViewById(R.id.video_qty));
+            item_thumbnail = (view.findViewById(R.id.video_thumbnail));
         }
 
         void bind(final int position) {
-            final PhotoAlbum item = getItem(position);
+            final Video item = getItem(position);
             item_name.setText(item.title);
-            item_count.setText(
-                    String.format("%s",
-                            Global.getPluralQuantityString(
-                                    ctx, R.plurals.photos,
-                                    Integer.parseInt(String.valueOf(item.size))
-                            )
-                    )
-            );
-            loadAlbumThumbnail(item.ids[0], item.ids[1], item_thumbnail);
-
+            item_count.setVisibility(View.GONE);
+            loadVideoThumbnail(item.owner_id, item.id, item_thumbnail);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openAlbum(item);
+                    openVideo(item);
                 }
             });
+            Log.d(OvkApplication.APP_TAG,
+                    String.format("Video #%s / Item ID: %s / Owner ID: %s", position, item.id, item.owner_id));
 
         /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
             @Override
@@ -145,11 +143,11 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
         }); */
         }
 
-        private void loadAlbumThumbnail(long owner_id, long album_id, ImageView view) {
+        private void loadVideoThumbnail(long owner_id, long video_id, ImageView view) {
             try {
                 String full_filename = "file://" + ctx.getCacheDir()
-                        + "/" + instance + "/photos_cache/photo_albums/" +
-                        "photo_album_" + owner_id + "_" + album_id;
+                        + "/" + instance + "/photos_cache/video_thumbnails/" +
+                        "thumbnail_" + video_id + "o" + owner_id;
                 Bitmap bitmap = imageLoader.loadImageSync(full_filename);
                 view.setImageBitmap(bitmap);
             } catch (OutOfMemoryError oom) {
@@ -158,17 +156,20 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
                 // Retrying again
                 if(photo_fail_count < 5) {
                     photo_fail_count++;
-                    loadAlbumThumbnail(owner_id, album_id, view);
+                    loadVideoThumbnail(owner_id, video_id, view);
                 }
+            } catch (Exception ignored) {
+
             }
         }
 
-        public void openAlbum(PhotoAlbum album) {
-            String url = "openvk://photos/" + "album" + album.ids[0] + "_" + album.ids[1];
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            i.setPackage("uk.openvk.android.legacy");
-            ctx.startActivity(i);
+        public void openVideo(Video video) {
+            Intent intent = new Intent(ctx, VideoPlayerActivity.class);
+            intent.putExtra("title", video.title);
+            intent.putExtra("attachment", video);
+            intent.putExtra("files", video.files);
+            intent.putExtra("owner_id", video.owner_id);
+            ctx.startActivity(intent);
         }
     }
 

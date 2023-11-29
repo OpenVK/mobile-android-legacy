@@ -18,6 +18,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.entities.Video;
+import uk.openvk.android.legacy.api.models.Videos;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.PhotoAlbumsListAdapter;
@@ -34,13 +35,13 @@ public class VideosFragment extends Fragment {
     private String instance;
     private VideosListAdapter videosAdapter;
     public boolean infinity_scroll;
-    private ArrayList<PhotoAlbum> albums;
+    private ArrayList<Video> videos;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_photos, container, false);
+        view = inflater.inflate(R.layout.fragment_videos, container, false);
         videosListView = view.findViewById(R.id.videos_listview);
         VerticalSpace dividerItemDecoration = new VerticalSpace(
                 (int)(8 * getResources().getDisplayMetrics().scaledDensity));
@@ -57,30 +58,30 @@ public class VideosFragment extends Fragment {
         }
     }
 
-    public void createAdapter(final Context ctx, ArrayList<Video> albumsList, String type) {
-        this.albums = albumsList;
+    public void createAdapter(final Context ctx, ArrayList<Video> videos) {
+        this.videos = videos;
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if (videosAdapter == null) {
-            videosAdapter = new VideosListAdapter(ctx, albumsList);
+            videosAdapter = new VideosListAdapter(ctx, videos);
             if(app.isTablet && app.swdp >= 760) {
                 LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(glm);
+                ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(glm);
             } else if(app.isTablet && app.swdp >= 600) {
                 LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(glm);
+                ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(glm);
             } else {
                 LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
                 llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(llm);
+                ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(llm);
             }
             videosListView.setAdapter(videosAdapter);
         } else {
             videosAdapter.notifyDataSetChanged();
         }
         Log.d(OvkApplication.APP_TAG, String.format("Videos count: %s | Real count: %s",
-                albums.size(), videosListView.getChildCount()));
+                videos.size(), videosListView.getChildCount()));
     }
 
     public void refresh() {
@@ -99,5 +100,9 @@ public class VideosFragment extends Fragment {
                 }
             }
         });
+    }
+
+    public void refreshListAdapter() {
+        videosAdapter.notifyDataSetChanged();
     }
 }

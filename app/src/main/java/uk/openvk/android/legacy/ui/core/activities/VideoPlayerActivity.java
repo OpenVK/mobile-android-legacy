@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -18,6 +19,7 @@ import android.widget.VideoView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
@@ -99,8 +101,13 @@ public class VideoPlayerActivity extends Activity {
                 owner_id = data.getLong("owner_id");
                 setThumbnail();
             } if(data.containsKey("files")) {
-                video.files = data.getParcelable("files");
-                assert video.files != null;
+                try {
+                    video.files = data.getParcelable("files");
+                    assert video.files != null;
+                } catch (Exception | AssertionError err) {
+                    Log.e(OvkApplication.APP_TAG, "Video files not found");
+                    finish();
+                }
                 if(video.files.ogv_480 != null && video.files.ogv_480.length() > 0) {
                     url = video.files.ogv_480;
                 } if(video.files.mp4_144 != null && video.files.mp4_144.length() > 0) {
@@ -123,17 +130,10 @@ public class VideoPlayerActivity extends Activity {
 
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 intent.setDataAndType(Uri.parse(url), "video/*");
-                startActivityForResult(intent, 1);
+                startActivity(intent);
+                finish();
             }
         } else {
-            finish();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1) {
             finish();
         }
     }

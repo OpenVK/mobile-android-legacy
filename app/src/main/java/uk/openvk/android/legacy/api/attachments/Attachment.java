@@ -30,7 +30,7 @@ public class Attachment {
                 content = new Photo();
                 break;
             case "video":
-                content = new Video(videos.getJSONObject(i));
+                content = new Video();
                 break;
             case "poll":
                 content = new PollAttachment();
