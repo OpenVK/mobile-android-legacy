@@ -268,7 +268,7 @@ public class DownloadManager {
                         }
                     } else {
                         try {
-                            filename = photoAttachment.filename;
+                            filename = photo.filename;
                             String short_address = "";
                             if(photoAttachments.get(i).url.length() > 40) {
                                 short_address = photoAttachments.get(i).url.substring(0, 39);
@@ -348,7 +348,7 @@ public class DownloadManager {
                                 }
                             }
                         } catch (Exception e) {
-                            photoAttachment.error = e.getClass().getSimpleName();
+                            photo.error = e.getClass().getSimpleName();
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
                                             photoAttachments.size()));
