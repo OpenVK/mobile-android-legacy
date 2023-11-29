@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -70,7 +71,7 @@ public class NetworkActivity extends TranslucentActivity {
 
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
-        this.registerReceiver(receiver, new IntentFilter(
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
                 "uk.openvk.android.legacy.API_DATA_RECEIVE"));
     }
 
@@ -95,7 +96,7 @@ public class NetworkActivity extends TranslucentActivity {
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
                             data.putString("address", listeners.from);
                             intent.putExtras(data);
-                            sendBroadcast(intent);
+                            LocalBroadcastManager.getInstance(ctx).sendBroadcast(intent);
                         }
                     }).start();
                 } else {
@@ -117,8 +118,23 @@ public class NetworkActivity extends TranslucentActivity {
                 receiveState(msg_code, data);
             }
         };
+        listeners.processListener = new OvkAPIListeners.OnAPIProcessListener() {
+            @Override
+            public void onAPIProcess(Context ctx, Bundle data, long value, long length) {
+                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                    Log.d(OvkApplication.APP_TAG,
+                            String.format(
+                                    "Handling API message %s in %s",
+                                    HandlerMessages.UPLOAD_PROGRESS,
+                                    getLocalClassName()
+                            )
+                    );
+                receiveState(HandlerMessages.UPLOAD_PROGRESS, data);
+            }
+        };
         ovk_api.wrapper.setAPIListeners(listeners);
         ovk_api.dlman.setAPIListeners(listeners);
+        ovk_api.ulman.setAPIListeners(listeners);
     }
 
     public void receiveState(int message, Bundle data) {
@@ -126,7 +142,7 @@ public class NetworkActivity extends TranslucentActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onDestroy();
     }
 }

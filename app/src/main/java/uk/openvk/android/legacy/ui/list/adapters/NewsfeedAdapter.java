@@ -521,13 +521,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         if(!likeAdded) {
                             likeDeleted = true;
                         }
-                        deleteLike(ctx, position, "post", view);
+                        deleteLike(ctx, position, item,"post", view);
+                        item.counters.isLiked = false;
                     } else {
                         if(!likeDeleted) {
                             likeAdded = true;
                         }
-                        addLike(ctx, position, "post", view);
+                        addLike(ctx, position, item,"post", view);
+                        item.counters.isLiked = true;
                     }
+                    items.set(position, item);
                 }
             });
 
@@ -734,15 +737,32 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
         }
 
-        public void addLike(Context ctx, int position, String post, View view) {
-            WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+        public void addLike(Context ctx, int position, WallPost item, String post, View view) {
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             NewsfeedFragment newsfeedFragment = null;
             WallLayout wallLayout = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
                 newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+                if (((AppActivity) ctx).selectedFragment instanceof ProfileFragment) {
+                    ProfileFragment profileFragment = ((AppActivity) ctx).profileFragment;
+                    if(profileFragment.getView() != null) {
+                        wallLayout = profileFragment.getView().findViewById(R.id.wall_layout);
+                        if (wallLayout != null) {
+                            wallLayout.select(position, "likes", "add");
+                        } else {
+                            return;
+                        }
+                    }
+                } else {
+                    if(newsfeedFragment != null) {
+                        newsfeedFragment.select(position, "likes", "add");
+                    } else {
+                        return;
+                    }
+                }
             } else if(ctx instanceof ProfileIntentActivity) {
                 ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
@@ -757,27 +777,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 return;
             }
-            if (global_prefs.getString("current_screen", "").equals("profile")) {
-                item = ovk_api.wall.getWallItems().get(position);
-                if(wallLayout != null) {
-                    wallLayout.select(position, "likes", "add");
-                } else {
-                    return;
-                }
-            } else {
-                item = ovk_api.newsfeed.getWallPosts().get(position);
-                if(newsfeedFragment != null) {
-                    newsfeedFragment.select(position, "likes", "add");
-                } else {
-                    return;
-                }
-            }
             ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
         }
 
-        public void deleteLike(Context ctx, int position, String post, View view) {
-            WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+        public void deleteLike(Context ctx, int position, WallPost item, String post, View view) {
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             NewsfeedFragment newsfeedFragment = null;
             WallLayout wallLayout = null;
@@ -818,7 +823,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         public void showAuthorPage(Context ctx, String where, int position) {
             WallPost item;
-            SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+            SharedPreferences global_prefs =
+                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
             OpenVKAPI ovk_api = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;

@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +39,35 @@ public class ProgressLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void enableDarkTheme() {
-        ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
-                getDrawable(R.drawable.progress_light));
+    public void enableDarkTheme(boolean value) {
+        if(value) {
+            setBackgroundColor(getResources().getColor(R.color.color_black_v2));
+            ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
+                    getDrawable(R.drawable.progress_light));
+        } else {
+            setBackgroundColor(Color.parseColor("#e3e4e6"));
+            ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
+                    getDrawable(R.drawable.progress_dark));
+
+        }
+    }
+
+    public void enableDarkTheme(boolean value, int variant) {
+        if(value) {
+            if(variant == 0) {
+                setBackgroundColor(getResources().getColor(R.color.color_black_v2));
+                ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
+                        getDrawable(R.drawable.progress_light));
+            } else {
+                setBackgroundColor(getResources().getColor(R.color.window_bg_black));
+                ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
+                        getDrawable(R.drawable.progress_light));
+            }
+        } else {
+            setBackgroundColor(Color.parseColor("#e3e4e6"));
+            ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
+                    getDrawable(R.drawable.progress_dark));
+
+        }
     }
 }

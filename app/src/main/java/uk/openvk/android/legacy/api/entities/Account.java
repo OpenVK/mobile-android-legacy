@@ -50,6 +50,7 @@ public class Account implements Parcelable {
         this.user = new User();
         this.users = new Users();
         this.ctx = ctx;
+        counters = new AccountCounters(0, 0, 0);
     }
 
     public Account(String response, Context ctx, OvkAPIWrapper wrapper) {
@@ -58,6 +59,7 @@ public class Account implements Parcelable {
         this.user = new User();
         this.users = new Users();
         this.ctx = ctx;
+        counters = new AccountCounters(0, 0, 0);
         parse(response, wrapper);
     }
 
@@ -71,6 +73,7 @@ public class Account implements Parcelable {
         this.user = new User();
         this.users = new Users();
         jsonParser = new JSONParser();
+        counters = new AccountCounters(0, 0, 0);
     }
 
     protected Account(Parcel in) {
@@ -112,10 +115,10 @@ public class Account implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(retryConnection) {
-            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                ((AppActivity) ctx).retryConnection(queue_method, queue_args);
-            }
+        if(queue_method != null || queue_args != null) {
+            wrapper.sendAPIMethod(queue_method, queue_args);
+            queue_method = "";
+            queue_args = "";
         }
     }
 

@@ -15,6 +15,7 @@
     </uk.openvk.android.legacy.ui.view.layouts.ProgressLayout>
 
     <FrameLayout
+        android:id="@+id/album_header"
         android:layout_width="match_parent"
         android:layout_height="240dp">
 

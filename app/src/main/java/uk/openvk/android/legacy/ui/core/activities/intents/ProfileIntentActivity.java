@@ -3,27 +3,18 @@ package uk.openvk.android.legacy.ui.core.activities.intents;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,27 +25,19 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import dev.tinelix.retro_pm.PopupMenu;
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
@@ -412,8 +395,8 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     profileFragment.loading_more_posts = true;
                     profileFragment.setScrollingPositions(this, false, true);
                 } else {
-                    WallErrorLayout wall_error = ((WallErrorLayout) profileFragment.getView()
-                            .findViewById(R.id.wall_error_layout));
+                    WallErrorLayout wall_error = profileFragment.getView()
+                            .findViewById(R.id.wall_error_layout);
                     wall_error.setErrorText(getResources().getString(R.string.no_news));
                     wall_error.setVisibility(View.VISIBLE);
                 }
@@ -421,7 +404,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        openNewPostActivity();
+                        profileFragment.openNewPostActivity(user, ovk_api);
                     }
                 });
                 selector.showNewPostIcon();
@@ -432,7 +415,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        openNewPostActivity();
+                        profileFragment.openNewPostActivity(user, ovk_api);
                     }
                 });
                 selector.showNewPostIcon();
@@ -488,27 +471,16 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                                 .updateItem(item, item_pos);
                     }
                 }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
-                    || message == HandlerMessages.INSTANCE_UNAVAILABLE ||
-                    message == HandlerMessages.INVALID_JSON_RESPONSE
-                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
+            } else if (message < 0) {
                 try {
                     if (data.containsKey("method")) {
-                        if (data.getString("method").equals("Account.getProfileInfo") ||
-                                (data.getString("method").equals("Users.get") && user.id == 0) ||
-                                (data.getString("method").equals("Users.search") && user.id == 0) ||
-                                (data.getString("method").equals("Friends.get")
-                                        && ovk_api.friends.getFriends().size() == 0)) {
-                            errorLayout.setReason(message);
-                            errorLayout.setData(data);
-                            errorLayout.setRetryAction(this);
-                            progressLayout.setVisibility(View.GONE);
-                            errorLayout.setVisibility(View.VISIBLE);
+                        String method = data.getString("method");
+                        if (Global.checkShowErrorLayout(method, profileFragment)) {
+                            setErrorPage(data, message);
                         } else {
                             if (data.getString("method").equals("Wall.get")) {
-                                ((WallErrorLayout) profileFragment.getView()
-                                        .findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                                profileFragment.getView()
+                                        .findViewById(R.id.wall_error_layout).setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(this, getResources().getString(R.string.err_text),
                                         Toast.LENGTH_LONG).show();
@@ -516,11 +488,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                         }
                     }
                 } catch (Exception ex) {
-                    errorLayout.setReason(message);
-                    errorLayout.setData(data);
-                    errorLayout.setRetryAction(this);
-                    progressLayout.setVisibility(View.GONE);
-                    errorLayout.setVisibility(View.VISIBLE);
+                    setErrorPage(data, HandlerMessages.INVALID_JSON_RESPONSE);
                 }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 switch (global_prefs.getString("photos_quality", "")) {
@@ -546,90 +514,21 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setData(data);
-            errorLayout.setRetryAction(this);
-            progressLayout.setVisibility(View.GONE);
-            errorLayout.setVisibility(View.VISIBLE);
+            setErrorPage(data, HandlerMessages.INVALID_JSON_RESPONSE);
         }
     }
 
-    public void getConversationById(long peer_id) {
-        Intent intent = new Intent(getApplicationContext(), ConversationActivity.class);
-        try {
-            intent.putExtra("peer_id", peer_id);
-            intent.putExtra("conv_title", String.format("%s %s", ovk_api.users.getList().get(0).first_name,
-                    ovk_api.users.getList().get(0).last_name));
-            if(ovk_api.users.getList().get(0).online) {
-                intent.putExtra("online", 1);
-            } else {
-                intent.putExtra("online", 0);
-            }
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void openNewPostActivity() {
-        try {
-            Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
-            intent.putExtra("owner_id", user.id);
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("account_first_name", user.first_name);
-            startActivity(intent);
-        } catch (Exception ignored) {
-
-        }
-    }
-
-    public void voteInPoll(int item_pos, int answer) {
-        try {
-            this.item_pos = item_pos;
-            this.poll_answer = answer;
-            WallPost item = ovk_api.wall.getWallItems().get(item_pos);
-            for (int attachment_index = 0; attachment_index <
-                    item.attachments.size(); attachment_index++) {
-                if (item.attachments.get(attachment_index).type.equals("poll")) {
-                    PollAttachment pollAttachment = ((PollAttachment)
-                            item.attachments.get(attachment_index).getContent());
-                    pollAttachment.user_votes = 1;
-                    if (!pollAttachment.answers.get(answer).is_voted) {
-                        pollAttachment.answers.get(answer).is_voted = true;
-                        pollAttachment.answers.get(answer).votes = pollAttachment.answers.get(answer).votes + 1;
-                    }
-                    ovk_api.wall.getWallItems().set(item_pos, item);
-                    pollAttachment.vote(ovk_api.wrapper, pollAttachment.answers.get(answer).id);
-                }
-            }
-        } catch (Exception ex) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void removeVoteInPoll(int item_pos) {
-        try {
-            this.item_pos = item_pos;
-            WallPost item = ovk_api.wall.getWallItems().get(item_pos);
-            for (int attachment_index = 0; attachment_index <
-                    item.attachments.size(); attachment_index++) {
-                if (item.attachments.get(attachment_index).type.equals("poll")) {
-                    PollAttachment pollAttachment = ((PollAttachment)
-                            item.attachments.get(attachment_index).getContent());
-                    for (int i = 0; i < pollAttachment.answers.size(); i++) {
-                        if (pollAttachment.answers.get(i).is_voted) {
-                            pollAttachment.answers.get(i).is_voted = false;
-                            pollAttachment.answers.get(i).votes = pollAttachment.answers.get(i).votes - 1;
-                        }
-                    }
-                    pollAttachment.user_votes = 0;
-                    ovk_api.wall.getWallItems().set(item_pos, item);
-                    pollAttachment.unvote(ovk_api.wrapper);
-                }
-            }
-        } catch (Exception ex) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-        }
+    private void setErrorPage(Bundle data, int reason) {
+        findViewById(R.id.app_fragment).setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
+        errorLayout.setData(data);
+        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setReason(reason);
+        errorLayout.setProgressLayout(progressLayout);
+        errorLayout.setTitle(getResources().getString(R.string.err_text));
+        progressLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
     }
 
     public void addToFriends(long user_id) {

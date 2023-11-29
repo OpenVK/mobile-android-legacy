@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
@@ -127,7 +129,7 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
                     String.format("%s",
                             Global.getPluralQuantityString(
                                     ctx, R.plurals.photos,
-                                    Global.getEndNumberFromLong(item.size)
+                                    Integer.parseInt(String.valueOf(item.size))
                             )
                     )
             );

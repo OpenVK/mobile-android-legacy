@@ -39,7 +39,7 @@ _Работает на OpenVK API._
 10. [SystemBarTint](https://github.com/jgilfelt/SystemBarTint) (Apache License 2.0)
 11. [Модификация SwipeRefreshLayout с классическим PTR](https://github.com/xyxyLiu/SwipeRefreshLayout) (Apache License 2.0)
 12. [android-i18n-plurals](https://github.com/populov/android-i18n-plurals) (X11 License)
-13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0)
+13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0) (по поводу нашего применения ACRA смотрите [issue #153](https://github.com/openvk/mobile-android-legacy/issues/153))
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
 15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
 

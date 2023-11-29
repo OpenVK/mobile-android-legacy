@@ -223,6 +223,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     }
 
     private void setUiListeners() {
+
         findViewById(R.id.newpost_btn_photo).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
