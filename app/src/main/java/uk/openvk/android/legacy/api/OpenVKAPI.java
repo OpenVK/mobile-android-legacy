@@ -3,11 +3,13 @@ package uk.openvk.android.legacy.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
 import java.util.logging.Handler;
 
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Groups;
 import uk.openvk.android.legacy.api.models.Likes;
@@ -16,6 +18,7 @@ import uk.openvk.android.legacy.api.models.Newsfeed;
 import uk.openvk.android.legacy.api.models.Notes;
 import uk.openvk.android.legacy.api.models.Photos;
 import uk.openvk.android.legacy.api.models.Users;
+import uk.openvk.android.legacy.api.models.Videos;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -49,10 +52,12 @@ public class OpenVKAPI {
     public Likes likes;
     public Notes notes;
     public Photos photos;
+    public Videos videos;
     public Ovk ovk;
     public OvkAPIWrapper wrapper;
     public DownloadManager dlman;
     public UploadManager ulman;
+
     public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs,
                      android.os.Handler handler) {
         wrapper = new OvkAPIWrapper(ctx, global_prefs.getBoolean("useHTTPS", true),
@@ -93,6 +98,7 @@ public class OpenVKAPI {
         wall = new Wall();
         notes = new Notes();
         photos = new Photos();
+        videos = new Videos();
         ovk = new Ovk();
     }
 }

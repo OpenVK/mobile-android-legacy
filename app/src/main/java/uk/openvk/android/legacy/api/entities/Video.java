@@ -1,10 +1,9 @@
-package uk.openvk.android.legacy.api.attachments;
+package uk.openvk.android.legacy.api.entities;
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import uk.openvk.android.legacy.api.entities.VideoFiles;
+import org.json.JSONObject;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -22,7 +21,7 @@ import uk.openvk.android.legacy.api.entities.VideoFiles;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class VideoAttachment implements Parcelable {
+public class Video implements Parcelable {
     public VideoFiles files;
     public long id;
     public String title;
@@ -31,11 +30,11 @@ public class VideoAttachment implements Parcelable {
     public int duration;
     public String filename;
 
-    public VideoAttachment() {
+    public Video(JSONObject video) {
 
     }
 
-    public VideoAttachment(long id, String title, VideoFiles files, String url_thumb, int duration, String filename) {
+    public Video(long id, String title, VideoFiles files, String url_thumb, int duration, String filename) {
         this.id = id;
         this.title = title;
         this.files = files;
@@ -44,7 +43,7 @@ public class VideoAttachment implements Parcelable {
         this.filename = filename;
     }
 
-    protected VideoAttachment(Parcel in) {
+    public Video(Parcel in) {
         id = in.readLong();
         title = in.readString();
         files = in.readParcelable(VideoFiles.class.getClassLoader());
@@ -68,15 +67,15 @@ public class VideoAttachment implements Parcelable {
         return 0;
     }
 
-    public static final Creator<VideoAttachment> CREATOR = new Creator<VideoAttachment>() {
+    public static final Creator<Video> CREATOR = new Creator<Video>() {
         @Override
-        public VideoAttachment createFromParcel(Parcel in) {
-            return new VideoAttachment(in);
+        public Video createFromParcel(Parcel in) {
+            return new Video(in);
         }
 
         @Override
-        public VideoAttachment[] newArray(int size) {
-            return new VideoAttachment[size];
+        public Video[] newArray(int size) {
+            return new Video[size];
         }
     };
 }

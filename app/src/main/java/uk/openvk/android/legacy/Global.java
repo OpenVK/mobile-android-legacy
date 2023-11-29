@@ -440,9 +440,9 @@ public class Global {
                 R.array.leftmenu)[slider_menu_item_index], 0,
                 ctx.getResources().getDrawable(R.drawable.ic_left_photos)));
             } else if (slider_menu_item_index == 2) {
-                //slidingMenuArray.add(new SlidingMenuItem(
-                // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                // 0, getResources().getDrawable(R.drawable.ic_left_video)));
+                slidingMenuArray.add(new SlidingMenuItem(
+                 ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                 0, ctx.getResources().getDrawable(R.drawable.ic_left_video)));
             } else if (slider_menu_item_index == 3) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],

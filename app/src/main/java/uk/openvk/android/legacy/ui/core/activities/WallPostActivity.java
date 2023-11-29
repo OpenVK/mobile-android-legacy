@@ -39,7 +39,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
@@ -219,7 +219,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         postViewLayout.loadWallPhoto(post, where);
         for(int i = 0; i < post.attachments.size(); i++) {
             if (post.attachments.get(i).type.equals("video")) {
-                VideoAttachment video = (VideoAttachment) post.attachments.get(i).getContent();
+                Video video = (Video) post.attachments.get(i).getContent();
                 postViewLayout.loadVideoAttachment(this, video, post.owner_id);
             } else if(post.attachments.get(i).type.equals("poll")) {
                 PollAttachment poll = (PollAttachment) post.attachments.get(i).getContent();

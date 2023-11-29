@@ -2,10 +2,8 @@ package uk.openvk.android.legacy.ui.view.layouts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,11 +13,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
-import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.api.entities.Video;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -39,7 +35,7 @@ import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 
 public class VideoAttachView extends FrameLayout {
     private final String instance;
-    private VideoAttachment attachment;
+    private Video attachment;
     private Bitmap thumbnail;
 
     public VideoAttachView(@NonNull Context context) {
@@ -59,7 +55,7 @@ public class VideoAttachView extends FrameLayout {
     }
 
     @SuppressLint("DefaultLocale")
-    public void setAttachment(VideoAttachment attachment) {
+    public void setAttachment(Video attachment) {
         this.attachment = attachment;
         if(attachment != null) {
             ((TextView) findViewById(R.id.attach_title)).setText(attachment.title);

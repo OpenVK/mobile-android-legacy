@@ -39,7 +39,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
@@ -385,7 +385,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     } else if (item.attachments.get(i).status.equals("done") &&
                             item.attachments.get(i).type.equals("video")) {
                         if (item.attachments.get(i).getContent() != null) {
-                            final VideoAttachment videoAttachment = (VideoAttachment)
+                            final Video videoAttachment = (Video)
                                     item.attachments.get(i).getContent();
                             post_video.setAttachment(videoAttachment);
                             post_video.setVisibility(View.VISIBLE);

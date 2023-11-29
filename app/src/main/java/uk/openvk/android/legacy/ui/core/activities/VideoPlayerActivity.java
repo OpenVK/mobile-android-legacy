@@ -1,43 +1,25 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.ValueAnimator;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -58,7 +40,7 @@ import uk.openvk.android.legacy.utils.media.OvkMediaPlayer;
 
 @SuppressWarnings("deprecation")
 public class VideoPlayerActivity extends Activity {
-    private VideoAttachment video;
+    private Video video;
     private String url;
     private MediaController mediaCtrl;
     private VideoView video_view;

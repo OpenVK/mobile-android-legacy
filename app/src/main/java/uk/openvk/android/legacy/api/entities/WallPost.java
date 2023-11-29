@@ -20,7 +20,6 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.counters.PostCounters;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 
@@ -217,7 +216,7 @@ public class WallPost implements Parcelable {
                     this.attachments.add(attachment_obj);
                 } else if (attachment.getString("type").equals("video")) {
                     JSONObject video = attachment.getJSONObject("video");
-                    VideoAttachment videoAttachment = new VideoAttachment();
+                    Video videoAttachment = new Video(videos.getJSONObject(i));
                     videoAttachment.id = video.getLong("id");
                     videoAttachment.title = video.getString("title");
                     VideoFiles files = new VideoFiles();

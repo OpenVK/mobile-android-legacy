@@ -17,7 +17,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
@@ -567,7 +567,7 @@ public class Wall implements Parcelable {
                     }
                     case "video": {
                         JSONObject video = attachment.getJSONObject("video");
-                        VideoAttachment videoAttachment = new VideoAttachment();
+                        Video videoAttachment = new Video(videos.getJSONObject(i));
                         videoAttachment.id = video.getLong("id");
                         videoAttachment.title = video.getString("title");
                         VideoFiles files = new VideoFiles();

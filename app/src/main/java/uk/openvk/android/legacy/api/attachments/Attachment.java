@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.api.attachments;
 
 import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.api.entities.Video;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -29,7 +30,7 @@ public class Attachment {
                 content = new Photo();
                 break;
             case "video":
-                content = new VideoAttachment();
+                content = new Video(videos.getJSONObject(i));
                 break;
             case "poll":
                 content = new PollAttachment();

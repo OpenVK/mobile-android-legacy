@@ -33,7 +33,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.api.entities.Photo;
@@ -389,7 +389,7 @@ public class PostViewLayout extends LinearLayout {
         }
     }
 
-    public void loadVideoAttachment(final Context ctx, final VideoAttachment video, final long owner_id) {
+    public void loadVideoAttachment(final Context ctx, final Video video, final long owner_id) {
         final VideoAttachView post_video = findViewById(R.id.post_video);
         post_video.setAttachment(video);
         post_video.setVisibility(View.VISIBLE);

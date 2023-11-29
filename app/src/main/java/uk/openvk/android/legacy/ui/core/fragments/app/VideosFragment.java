@@ -17,6 +17,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.PhotoAlbumsListAdapter;
@@ -56,7 +57,7 @@ public class VideosFragment extends Fragment {
         }
     }
 
-    public void createAdapter(final Context ctx, ArrayList<PhotoAlbum> albumsList, String type) {
+    public void createAdapter(final Context ctx, ArrayList<Video> albumsList, String type) {
         this.albums = albumsList;
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if (videosAdapter == null) {

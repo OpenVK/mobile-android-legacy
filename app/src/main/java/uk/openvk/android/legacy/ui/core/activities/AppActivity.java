@@ -75,6 +75,7 @@ public class AppActivity extends NetworkFragmentActivity {
     public ProfileFragment profileFragment;
     public FriendsFragment friendsFragment;
     public PhotosFragment photosFragment;
+    public VideosFragment videosFragment;
     public ConversationsFragment conversationsFragment;
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
@@ -161,7 +162,8 @@ public class AppActivity extends NetworkFragmentActivity {
             instance_prefs_editor.commit();
             global_prefs_editor.putString("current_instance", "");
             global_prefs_editor.commit();
-            if(accountArray.size() >= 1 && global_prefs.getString("current_instance", "").length() == 0) {
+            if(accountArray.size() >= 1
+                    && global_prefs.getString("current_instance", "").length() == 0) {
                 Global global = new Global();
                 global.openChangeAccountDialog(this, global_prefs, false);
                 return false;
@@ -443,6 +445,7 @@ public class AppActivity extends NetworkFragmentActivity {
         newsfeedFragment = new NewsfeedFragment();
         friendsFragment = new FriendsFragment();
         photosFragment = new PhotosFragment();
+        videosFragment = new VideosFragment();
         groupsFragment = new GroupsFragment();
         notesFragment = new NotesFragment();
         mainSettingsFragment = new MainSettingsFragment();
@@ -550,8 +553,6 @@ public class AppActivity extends NetworkFragmentActivity {
                         }
                     });
             actionBar.addAction(action);
-        } else {
-
         }
     }
 
@@ -628,48 +629,52 @@ public class AppActivity extends NetworkFragmentActivity {
             }
         }
         ft = getSupportFragmentManager().beginTransaction();
-        if(position == 0) {
-            setActionBar("");
-            setActionBarTitle(getResources().getString(R.string.friends));
-            fn.navigateTo("friends", ft);
-            ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, "friends_list");
-        } else if(position == 1) {
-            setActionBar("");
-            setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[1]);
-            fn.navigateTo("photos", ft);
-            ovk_api.photos.getAlbums(ovk_api.wrapper, ovk_api.account.id, 25,
-                    true, true, true);
-        } else if(position == 2) {
-            setActionBar("");
-            setActionBarTitle(getResources().getString(R.string.messages));
-            fn.navigateTo("messages", ft);
-            ovk_api.messages.getConversations(ovk_api.wrapper);
-        } else if(position == 3) {
-            setActionBar("");
-            setActionBarTitle(getResources().getString(R.string.groups));
-            fn.navigateTo("groups", ft);
-            ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 25);
-        } else if(position == 4) {
-            setActionBar("");
-            setActionBarTitle(getResources().getString(R.string.notes));
-            fn.navigateTo("notes", ft);
-            ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 25, 1);
-        } else if(position == 5) {
-            menu_id = R.menu.newsfeed;
-            onCreateOptionsMenu(activity_menu);
-            setActionBarTitle(getResources().getString(R.string.newsfeed));
-            fn.navigateTo("newsfeed", ft);
-            if(ovk_api.newsfeed == null) {
-                ovk_api.newsfeed = new Newsfeed();
-                newsfeed_count = 25;
-                ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
-            }
-        } else if(position == 6) {
-            setActionBar("");
-            setActionBarTitle(getResources().getString(R.string.menu_settings));
-            fn.navigateTo("settings", ft);
-        } else {
-            Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
+        if(position < 6 || position == 7) setActionBar("");
+        switch (position) {
+            case 0:
+                setActionBarTitle(getResources().getString(R.string.friends));
+                fn.navigateTo("friends", ft);
+                ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, "friends_list");
+                break;
+            case 1:
+                setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[1]);
+                fn.navigateTo("photos", ft);
+                ovk_api.photos.getAlbums(ovk_api.wrapper, ovk_api.account.id, 25,
+                        true, true, true);
+                break;
+            case 3:
+                setActionBarTitle(getResources().getString(R.string.messages));
+                fn.navigateTo("messages", ft);
+                ovk_api.messages.getConversations(ovk_api.wrapper);
+                break;
+            case 4:
+                setActionBarTitle(getResources().getString(R.string.groups));
+                fn.navigateTo("groups", ft);
+                ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 25);
+                break;
+            case 5:
+                setActionBarTitle(getResources().getString(R.string.notes));
+                fn.navigateTo("notes", ft);
+                ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 25, 1);
+                break;
+            case 6:
+                menu_id = R.menu.newsfeed;
+                onCreateOptionsMenu(activity_menu);
+                setActionBarTitle(getResources().getString(R.string.newsfeed));
+                fn.navigateTo("newsfeed", ft);
+                if (ovk_api.newsfeed == null) {
+                    ovk_api.newsfeed = new Newsfeed();
+                    newsfeed_count = 25;
+                    ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
+                }
+                break;
+            case 7:
+                setActionBarTitle(getResources().getString(R.string.menu_settings));
+                fn.navigateTo("settings", ft);
+                break;
+            default:
+                Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
+                break;
         }
     }
 
@@ -736,9 +741,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = ovk_api.account.counters.friends_requests;
                 slidingMenuArray.set(0, friends_item);
-                SlidingMenuItem messages_item = slidingMenuArray.get(2);
+                SlidingMenuItem messages_item = slidingMenuArray.get(3);
                 messages_item.counter = ovk_api.account.counters.new_messages;
-                slidingMenuArray.set(2, messages_item);
+                slidingMenuArray.set(3, messages_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
                         slidingMenuArray);
                 if(!((OvkApplication) getApplicationContext()).isTablet) {
@@ -947,6 +952,14 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 photosFragment.createAdapter(this, albumsList, "photos");
                 photosFragment.setScrollingPositions(this, true);
+            } else if (message == HandlerMessages.VIDEOS_GET) {
+                ArrayList<Video> videos = ovk_api.videos.getList();
+                if (selectedFragment instanceof VideosFragment) {
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                }
+                videosFragment.createAdapter(this, videos, "videos");
+                videosFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
                 if (selectedFragment instanceof GroupsFragment) {
@@ -1046,7 +1059,8 @@ public class AppActivity extends NetworkFragmentActivity {
                     }
                 }
             } else if(message == HandlerMessages.WALL_REPOST) {
-                Toast.makeText(this, getResources().getString(R.string.repost_ok_wall), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getResources().getString(R.string.repost_ok_wall),
+                        Toast.LENGTH_LONG).show();
             } else if(message == HandlerMessages.NOTES_GET) {
                 if(ovk_api.notes.list.size() > 0) {
                     notesFragment.createAdapter(this, ovk_api.notes.list);
@@ -1109,9 +1123,8 @@ public class AppActivity extends NetworkFragmentActivity {
                         if (Global.checkShowErrorLayout(method, selectedFragment)) {
                             if(!data.containsKey("where") ||
                                     !where.startsWith("more")) {
-                                if(ovk_api.account == null) {
+                                if(ovk_api.account == null)
                                     slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                                }
                                 setErrorPage(data,"error", message, true);
                             } else {
                                 if(!inBackground) {
@@ -1130,10 +1143,9 @@ public class AppActivity extends NetworkFragmentActivity {
                                         findViewById(R.id.wall_error_layout)
                                         .setVisibility(View.VISIBLE);
                             } else {
-                                if(!inBackground) {
+                                if(!inBackground)
                                     Toast.makeText(this, getResources().getString(R.string.err_text),
                                             Toast.LENGTH_LONG).show();
-                                }
                             }
                         }
                     } catch (Exception ex) {
