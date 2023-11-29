@@ -20,6 +20,7 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.entities.VideoFiles;
 import uk.openvk.android.legacy.api.entities.WallPostSource;
@@ -50,11 +51,11 @@ public class Wall implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<WallPost> items;
     private ArrayList<Comment> comments;
-    private ArrayList<PhotoAttachment> photos_lsize;
-    private ArrayList<PhotoAttachment> photos_msize;
-    private ArrayList<PhotoAttachment> photos_hsize;
-    private ArrayList<PhotoAttachment> photos_osize;
-    private ArrayList<PhotoAttachment> video_thumbnails;
+    private ArrayList<Photo> photos_lsize;
+    private ArrayList<Photo> photos_msize;
+    private ArrayList<Photo> photos_hsize;
+    private ArrayList<Photo> photos_osize;
+    private ArrayList<Photo> video_thumbnails;
     private DownloadManager dlm;
     public long next_from;
 
@@ -95,12 +96,12 @@ public class Wall implements Parcelable {
                 items.clear();
             }
         }
-        photos_lsize = new ArrayList<PhotoAttachment>();
-        photos_msize = new ArrayList<PhotoAttachment>();
-        photos_hsize = new ArrayList<PhotoAttachment>();
-        photos_osize = new ArrayList<PhotoAttachment>();
+        photos_lsize = new ArrayList<Photo>();
+        photos_msize = new ArrayList<Photo>();
+        photos_hsize = new ArrayList<Photo>();
+        photos_osize = new ArrayList<Photo>();
         video_thumbnails = new ArrayList<>();
-        ArrayList<PhotoAttachment> avatars = new ArrayList<PhotoAttachment>();
+        ArrayList<Photo> avatars = new ArrayList<Photo>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
@@ -298,7 +299,7 @@ public class Wall implements Parcelable {
                             }
                         }
                     }
-                    PhotoAttachment avatar = new PhotoAttachment();
+                    Photo avatar = new Photo();
                     avatar.url = avatar_url;
                     avatar.filename = String.format("avatar_%s", author_id);
                     try { // handle floating crash
@@ -357,15 +358,15 @@ public class Wall implements Parcelable {
                                             String response) {
         comments = new ArrayList<Comment>();
         photos_lsize = new ArrayList<>();
-        photos_msize = new ArrayList<PhotoAttachment>();
-        photos_hsize = new ArrayList<PhotoAttachment>();
-        photos_osize = new ArrayList<PhotoAttachment>();
+        photos_msize = new ArrayList<Photo>();
+        photos_hsize = new ArrayList<Photo>();
+        photos_osize = new ArrayList<Photo>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if (json != null) {
                 JSONObject comments = json.getJSONObject("response");
                 JSONArray items = comments.getJSONArray("items");
-                ArrayList<PhotoAttachment> avatars = new ArrayList<>();
+                ArrayList<Photo> avatars = new ArrayList<>();
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject item = items.getJSONObject(i);
                     String text = item.getString("text");
@@ -381,7 +382,7 @@ public class Wall implements Parcelable {
                     comment.text = text;
                     comment.author = String.format("(Unknown author: %s)", author_id);
                     comment.date = date;
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photoAttachment = new Photo();
                     photoAttachment.url = "";
                     photoAttachment.filename = "";
                     if(author_id > 0) {
@@ -461,7 +462,7 @@ public class Wall implements Parcelable {
                 switch (attachment.getString("type")) {
                     case "photo": {
                         JSONObject photo = attachment.getJSONObject("photo");
-                        PhotoAttachment photoAttachment = new PhotoAttachment();
+                        Photo photoAttachment = new Photo();
                         photoAttachment.id = photo.getLong("id");
                         JSONArray photo_sizes = photo.getJSONArray("sizes");
                         photo_low_size = photo_sizes.getJSONObject(2).getString("url");
@@ -599,7 +600,7 @@ public class Wall implements Parcelable {
                         if (video.has("image")) {
                             JSONArray thumb_array = video.getJSONArray("image");
                             videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
-                            PhotoAttachment thumbnail = new PhotoAttachment();
+                            Photo thumbnail = new Photo();
                             thumbnail.url = videoAttachment.url_thumb;
                             thumbnail.filename = String.format("thumbnail_%so%s",
                                     video.getLong("id"), owner_id);

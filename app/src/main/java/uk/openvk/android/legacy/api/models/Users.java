@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
@@ -92,14 +93,14 @@ public class Users implements Parcelable {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONObject("response").getJSONArray("items");
-            ArrayList<PhotoAttachment> avatars;
-            avatars = new ArrayList<PhotoAttachment>();
+            ArrayList<Photo> avatars;
+            avatars = new ArrayList<Photo>();
             if(this.users.size() > 0) {
                 this.users.clear();
             }
             for (int i = 0; i < users.length(); i++) {
                 User user = new User(users.getJSONObject(i));
-                PhotoAttachment photoAttachment = new PhotoAttachment();
+                Photo photoAttachment = new Photo();
                 photoAttachment.url = user.avatar_msize_url;
                 photoAttachment.filename = String.format("avatar_%s", user.id);
                 avatars.add(photoAttachment);

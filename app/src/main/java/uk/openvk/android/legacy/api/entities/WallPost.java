@@ -199,7 +199,7 @@ public class WallPost implements Parcelable {
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
                 if (attachment.getString("type").equals("photo")) {
                     JSONObject photo = attachment.getJSONObject("photo");
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photoAttachment = new Photo();
                     photoAttachment.id = photo.getLong("id");
                     JSONArray photo_sizes = photo.getJSONArray("sizes");
                     photo_medium_size = photo_sizes.getJSONObject(5).getString("url");

@@ -37,6 +37,7 @@ import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
@@ -479,22 +480,22 @@ public class PostViewLayout extends LinearLayout {
                         for (int attachment_index = 0; attachment_index <
                                 item.attachments.size(); attachment_index++) {
                             if (item.attachments.get(attachment_index).type.equals("photo")) {
-                                PhotoAttachment photoAttachment = ((PhotoAttachment)
+                                Photo photo = ((Photo)
                                         item.attachments.get(0).getContent());
                                 Attachment attachment = item.attachments.get(0);
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                if (photoAttachment.url.length() > 0) {
+                                if (photo.url.length() > 0) {
                                     Bitmap bitmap = BitmapFactory.decodeFile(
                                             String.format(
                                                     "%s/%s/photos_cache/comment_photos/comment_photo_o%sp%s",
                                                     getContext().getCacheDir(), instance,
                                                     item.author_id, item.id), options);
                                     if (bitmap != null) {
-                                        photoAttachment.photo = bitmap;
+                                        photo.bitmap = bitmap;
                                         attachment.status = "done";
                                         item.attachments.set(i, attachment);
-                                    } else if (photoAttachment.url.length() > 0) {
+                                    } else if (photo.url.length() > 0) {
                                         Log.e(OvkApplication.APP_TAG,
                                                 "Loading photo error in comments");
                                         attachment.status = "error";

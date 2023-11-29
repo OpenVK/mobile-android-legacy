@@ -37,6 +37,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.TrackingRequestBody;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
@@ -75,7 +76,7 @@ public class UploadManager {
     public boolean use_https;
     public boolean legacy_mode;
     private Context ctx;
-    public ArrayList<PhotoAttachment> photoAttachments;
+    public ArrayList<Photo> photoAttachments;
     private boolean logging_enabled = true; // default for beta releases
 
     private OkHttpClient httpClient = null;

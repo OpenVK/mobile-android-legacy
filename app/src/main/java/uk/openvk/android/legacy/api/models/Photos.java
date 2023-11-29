@@ -102,7 +102,7 @@ public class Photos {
             JSONObject json = jsonParser.parseJSON(response);
             album.size = json.getJSONObject("response").getInt("count");
             JSONArray photos = json.getJSONObject("response").getJSONArray("items");
-            ArrayList<PhotoAttachment> photoAttachs = new ArrayList<>();
+            ArrayList<Photo> photoAttachs = new ArrayList<>();
             for(int i = 0; i < photos.length(); i++) {
                 JSONObject item = photos.getJSONObject(i);
                 Photo photo = new Photo();
@@ -118,7 +118,7 @@ public class Photos {
                 }
                 photo.owner_id = item.getLong("owner_id");
                 if(dlman != null && item.has("sizes")) {
-                    PhotoAttachment attach = new PhotoAttachment();
+                    Photo attach = new Photo();
                     if(item.getJSONObject("sizes").has("q")) {
                         photo.url = item.getJSONObject("sizes").getJSONObject("q").getString("url");
                         attach.url = photo.url;
@@ -174,7 +174,7 @@ public class Photos {
             if(albumsList == null || clear) {
                 albumsList = new ArrayList<>();
             }
-            ArrayList<PhotoAttachment> thumbnails = new ArrayList<>();
+            ArrayList<Photo> thumbnails = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray albums = json.getJSONObject("response").getJSONArray("items");
             for(int i = 0; i < albums.length(); i++) {
@@ -191,7 +191,7 @@ public class Photos {
                 }
                 albumsList.add(album);
                 if(item.has("thumb_src")) {
-                    PhotoAttachment attachment = new PhotoAttachment();
+                    Photo attachment = new Photo();
                     attachment.url = album.thumbnail_url;
                     attachment.filename = String.format("photo_album_%s_%s",
                             album.ids[0], album.ids[1]);

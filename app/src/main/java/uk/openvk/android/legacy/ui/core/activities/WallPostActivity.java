@@ -45,6 +45,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.Ovk;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.models.Wall;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
@@ -425,7 +426,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         intent.putExtra("where", "wall");
         try {
             if(attachments.get(0).type.equals("photo")) {
-                PhotoAttachment photo = (PhotoAttachment) attachments.get(0).getContent();
+                Photo photo = (Photo) attachments.get(0).getContent();
                 intent.putExtra("original_link", photo.original_url);
                 intent.putExtra("author_id", post.author_id);
                 intent.putExtra("photo_id", photo.id);

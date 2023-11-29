@@ -35,6 +35,7 @@ import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
@@ -199,7 +200,7 @@ public class DownloadManager {
     }
 
 
-    public void downloadPhotosToCache(final ArrayList<PhotoAttachment> photoAttachments, final String where) {
+    public void downloadPhotosToCache(final ArrayList<Photo> photos, final String where) {
         if(photoAttachments == null) {
             Log.e(OvkApplication.DL_TAG, "Attachments array is empty. Download canceled.");
             return;
@@ -231,9 +232,9 @@ public class DownloadManager {
                     filename = photoAttachments.get(i).filename;
                     File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
                             ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
-                    PhotoAttachment photoAttachment = photoAttachments.get(i);
-                    if(photoAttachment.url == null) {
-                        photoAttachment.url = "";
+                    Photo photo = photos.get(i);
+                    if(photo.url == null) {
+                        photo.url = "";
                     }
                     Date lastModDate;
                     if(downloadedFile.exists()) {

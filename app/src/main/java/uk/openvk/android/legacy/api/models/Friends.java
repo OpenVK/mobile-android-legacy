@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Friend;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -77,11 +78,11 @@ public class Friends implements Parcelable {
             if(json != null) {
                 count = json.getInt("count");
                 JSONArray users = json.getJSONArray("items");
-                ArrayList<PhotoAttachment> avatars;
-                avatars = new ArrayList<PhotoAttachment>();
+                ArrayList<Photo> avatars;
+                avatars = new ArrayList<Photo>();
                 for (int i = 0; i < users.length(); i++) {
                     Friend friend = new Friend(users.getJSONObject(i));
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photoAttachment = new Photo();
                     photoAttachment.url = friend.avatar_url;
                     photoAttachment.filename = String.format("avatar_%s", friend.id);
                     avatars.add(photoAttachment);
@@ -108,15 +109,15 @@ public class Friends implements Parcelable {
             if(json != null) {
                 count = json.getInt("count");
                 JSONArray users = json.getJSONArray("items");
-                ArrayList<PhotoAttachment> avatars;
-                avatars = new ArrayList<PhotoAttachment>();
+                ArrayList<Photo> avatars;
+                avatars = new ArrayList<Photo>();
                 for (int i = 0; i < users.length(); i++) {
                     Friend friend = new Friend(users.getJSONObject(i));
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photo = new Photo();
                     if(friend.avatar_url != null && friend.avatar_url.length() > 0) {
-                        photoAttachment.url = friend.avatar_url;
-                        photoAttachment.filename = String.format("avatar_%s", friend.id);
-                        avatars.add(photoAttachment);
+                        photo.url = friend.avatar_url;
+                        photo.filename = String.format("avatar_%s", friend.id);
+                        avatars.add(photo);
                     }
                     this.requests.add(friend);
                 }

@@ -11,6 +11,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.entities.LongPollServer;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -57,7 +58,7 @@ public class Messages {
                     int peer_id = conv.getJSONObject("peer").getInt("id");
                     Conversation conversation = new Conversation();
                     conversation.peer_id = peer_id;
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photoAttachment = new Photo();
                     photoAttachment.url = "";
                     photoAttachment.filename = "";
                     if(peer_id > 0 && conv.getJSONObject("peer").getString("type").equals("user")) {

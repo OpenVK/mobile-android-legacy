@@ -28,6 +28,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
@@ -153,19 +154,19 @@ public class WallLayout extends LinearLayout {
                         if(item.repost != null) {
                             if (item.repost.newsfeed_item.attachments.size() > 0) {
                                 if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                    PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost
+                                    Photo photo = ((Photo) item.repost
                                             .newsfeed_item.attachments.get(0).getContent());
                                     Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                     if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                                        if(photoAttachment.photo != null) {
-                                            photoAttachment.photo.recycle();
-                                            photoAttachment.photo = null;
+                                        if(photo.bitmap != null) {
+                                            photo.bitmap.recycle();
+                                            photo.bitmap = null;
                                             System.gc();
                                         }
                                     } else {
                                         BitmapFactory.Options options = new BitmapFactory.Options();
                                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                        if (photoAttachment.url.length() > 0) {
+                                        if (photo.url.length() > 0) {
                                             Bitmap bitmap = BitmapFactory.decodeFile(
                                                     String.format("%s/%s/photos_cache" +
                                                                     "/wall_photo_attachments/" +
@@ -174,7 +175,7 @@ public class WallLayout extends LinearLayout {
                                                             item.repost.newsfeed_item.owner_id,
                                                             item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
-                                                photoAttachment.photo = bitmap;
+                                                photo.bitmap = bitmap;
                                                 attachment.status = "done";
                                                 item.repost.newsfeed_item.attachments.set(0, attachment);
                                             }
@@ -193,7 +194,7 @@ public class WallLayout extends LinearLayout {
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             if(item.attachments.size() > 0) {
                                 if(item.attachments.get(0).type.equals("photo")) {
-                                    PhotoAttachment photoAttachment = ((PhotoAttachment)
+                                    Photo photoAttachment = ((Photo)
                                             item.attachments.get(0).getContent());
                                     if (photoAttachment.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(

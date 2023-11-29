@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Group;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -87,14 +88,14 @@ public class Groups implements Parcelable {
             groups = new ArrayList<Group>();
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray groups = json.getJSONObject("response").getJSONArray("items");
-            ArrayList<PhotoAttachment> avatars;
-            avatars = new ArrayList<PhotoAttachment>();
+            ArrayList<Photo> avatars;
+            avatars = new ArrayList<Photo>();
             if(this.groups.size() > 0) {
                 this.groups.clear();
             }
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
-                PhotoAttachment photoAttachment = new PhotoAttachment();
+                Photo photoAttachment = new Photo();
                 photoAttachment.url = group.avatar_msize_url;
                 photoAttachment.filename = String.format("avatar_%s", group.id);
                 avatars.add(photoAttachment);
@@ -160,11 +161,11 @@ public class Groups implements Parcelable {
             }
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             JSONArray groups = json.getJSONArray("items");
-            ArrayList<PhotoAttachment> avatars;
-            avatars = new ArrayList<PhotoAttachment>();
+            ArrayList<Photo> avatars;
+            avatars = new ArrayList<Photo>();
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
-                PhotoAttachment photoAttachment = new PhotoAttachment();
+                Photo photoAttachment = new Photo();
                 if(quality.equals("medium")) {
                     photoAttachment.url = group.avatar_msize_url;
                 } else if(quality.equals("high")) {

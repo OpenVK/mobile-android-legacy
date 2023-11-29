@@ -24,6 +24,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
@@ -273,7 +274,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 if(comment.attachments != null) {
                     for(int i = 0; i < comment.attachments.size(); i++) {
                         if(comment.attachments.get(i).type.equals("photo")) {
-                            PhotoAttachment photo = ((PhotoAttachment) comment.attachments.get(i).
+                            Photo photo = ((Photo) comment.attachments.get(i).
                                     getContent());
                             intent.putExtra("original_link", photo.original_url);
                             intent.putExtra("author_id", comment.author_id);

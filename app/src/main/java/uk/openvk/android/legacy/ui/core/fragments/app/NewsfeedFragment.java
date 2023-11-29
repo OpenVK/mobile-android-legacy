@@ -32,6 +32,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
@@ -173,13 +174,13 @@ public class NewsfeedFragment extends Fragment {
                     if(item.repost != null) {
                         if (item.repost.newsfeed_item.attachments.size() > 0) {
                             if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                PhotoAttachment photoAttachment = ((PhotoAttachment) item.repost.
+                                Photo photo = ((PhotoAttachment) item.repost.
                                         newsfeed_item.attachments.get(0).getContent());
                                 Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                 if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                                    if(photoAttachment.photo != null) {
-                                        photoAttachment.photo.recycle();
-                                        photoAttachment.photo = null;
+                                    if(photo.bitmap != null) {
+                                        photo.bitmap.recycle();
+                                        photo.bitmap = null;
                                         System.gc();
                                     }
                                 } else {
@@ -205,13 +206,13 @@ public class NewsfeedFragment extends Fragment {
                     }
                     if(item.attachments.size() > 0) {
                         if(item.attachments.get(0).type.equals("photo")) {
-                            PhotoAttachment photoAttachment = ((PhotoAttachment)
+                            Photo photo = ((Photo)
                                     item.attachments.get(0).getContent());
                             Attachment attachment = item.attachments.get(0);
                             if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                                if(photoAttachment.photo != null) {
-                                    photoAttachment.photo.recycle();
-                                    photoAttachment.photo = null;
+                                if(photo.bitmap != null) {
+                                    photo.bitmap.recycle();
+                                    photo.bitmap = null;
                                     System.gc();
                                 }
                             } else {

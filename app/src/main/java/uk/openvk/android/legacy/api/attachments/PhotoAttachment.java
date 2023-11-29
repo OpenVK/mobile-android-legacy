@@ -22,12 +22,15 @@ import android.os.Parcelable;
 
 public class PhotoAttachment implements Parcelable {
     public long id;
+    public long album_id;
+    public long owner_id;
     public String url;
     public String original_url;
     public String filename;
     public int[] size;
     public Bitmap photo;
     public String error;
+
 
     public PhotoAttachment() {
     }

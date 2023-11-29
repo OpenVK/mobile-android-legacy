@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.attachments.PollAttachment;
 import uk.openvk.android.legacy.api.attachments.VideoAttachment;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
@@ -371,11 +372,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 for (int i = 0; i < item.attachments.size(); i++) {
                     if (item.attachments.get(i).type.equals("photo")) {
                         post_photo.setVisibility(View.VISIBLE);
-                        PhotoAttachment photoAttachment = (PhotoAttachment) item.attachments.get(i).getContent();
+                        Photo photo = (Photo) item.attachments.get(i).getContent();
                         if (item.attachments.get(i).status.equals("done")) {
-                            loadPhotoAttachment(photoAttachment, item.owner_id, item.post_id, post_photo);
+                            loadPhotoAttachment(photo, item.owner_id, item.post_id, post_photo);
                         } else {
-                            loadPhotoPlaceholder(item, photoAttachment, post_photo);
+                            loadPhotoPlaceholder(item, photo, post_photo);
                         }
                     } else if (item.attachments.get(i).status.equals("not_supported") &&
                             !item.attachments.get(i).type.equals("note")) {
@@ -572,7 +573,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
         }
 
-        private void loadPhotoPlaceholder(final WallPost post, PhotoAttachment photoAttachment, ImageView view) {
+        private void loadPhotoPlaceholder(final WallPost post, Photo photoAttachment, ImageView view) {
             Drawable drawable = ctx.getResources().getDrawable(R.drawable.photo_placeholder);
             Canvas canvas = new Canvas();
             try {
@@ -600,16 +601,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             });
         }
 
-        private void loadPhotoAttachment(PhotoAttachment photoAttachment,
+        private void loadPhotoAttachment(Photo photo,
                                          long owner_id, long post_id, ImageView view) {
             try {
                 String full_filename = "file://" + ctx.getCacheDir()
                         + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
-                        photoAttachment.filename;
+                        photo.filename;
                 if (isWall) {
                     full_filename = "file://" + ctx.getCacheDir()
                             + "/" + instance + "/photos_cache/wall_photo_attachments/" +
-                            photoAttachment.filename;
+                            photo.filename;
                 }
 
                 Bitmap bitmap = imageLoader.loadImageSync(full_filename);
@@ -620,7 +621,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 // Retrying again
                 if(photo_fail_count < 5) {
                     photo_fail_count++;
-                    loadPhotoAttachment(photoAttachment, owner_id, post_id, view);
+                    loadPhotoAttachment(photo, owner_id, post_id, view);
                 }
             }
         }
@@ -685,7 +686,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 if(post.attachments != null) {
                     for(int i = 0; i < post.attachments.size(); i++) {
                         if(post.attachments.get(i).type.equals("photo")) {
-                            PhotoAttachment photo = ((PhotoAttachment) post.attachments.get(i).
+                            Photo photo = ((Photo) post.attachments.get(i).
                                     getContent());
                             intent.putExtra("original_link", photo.original_url);
                             intent.putExtra("author_id", post.author_id);
