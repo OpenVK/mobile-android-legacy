@@ -480,7 +480,11 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                         } else {
                             if (data.getString("method").equals("Wall.get")) {
                                 profileFragment.getView()
-                                        .findViewById(R.id.wall_error_layout).setVisibility(View.VISIBLE);
+                                        .findViewById(R.id.wall_error_layout)
+                                        .setVisibility(View.VISIBLE);
+                                profileFragment.getWallSelector()
+                                        .findViewById(R.id.profile_wall_progress)
+                                        .setVisibility(View.GONE);
                             } else {
                                 Toast.makeText(this, getResources().getString(R.string.err_text),
                                         Toast.LENGTH_LONG).show();

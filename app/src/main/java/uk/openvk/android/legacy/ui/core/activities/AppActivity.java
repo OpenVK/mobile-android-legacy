@@ -1150,9 +1150,13 @@ public class AppActivity extends NetworkFragmentActivity {
                                 profileFragment.getView().
                                         findViewById(R.id.wall_error_layout)
                                         .setVisibility(View.VISIBLE);
+                                profileFragment.getWallSelector()
+                                        .findViewById(R.id.profile_wall_progress)
+                                        .setVisibility(View.GONE);
                             } else {
                                 if(!inBackground)
-                                    Toast.makeText(this, getResources().getString(R.string.err_text),
+                                    Toast.makeText(this,
+                                            getResources().getString(R.string.err_text),
                                             Toast.LENGTH_LONG).show();
                             }
                         }

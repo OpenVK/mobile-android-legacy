@@ -416,4 +416,8 @@ public class ProfileFragment extends Fragment {
             });
         }
     }
+
+    public ProfileWallSelector getWallSelector() {
+        return view.findViewById(R.id.wall_selector);
+    }
 }
