@@ -251,8 +251,8 @@ public class DownloadManager {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
                                 "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
                                 + " ms | Filesize: " + downloadedFile.length() + " bytes");
-                    } else if (photoAttachment.url.length() == 0) {
-                        filename = photoAttachment.filename;
+                    } else if (photo.url.length() == 0) {
+                        filename = photo.filename;
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                 "Invalid or empty URL. Skipping...");
                         try {
