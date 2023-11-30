@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <uk.openvk.android.legacy.ui.view.FlowLayout
+        android:id="@+id/post_flow_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/error_label"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawableLeft="@drawable/ic_msg_error"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:text="TextView"
+        android:textColor="@color/timestamp_color"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:visibility="gone"
+        tools:ignore="HardcodedText,RtlHardcoded" />
+
+    <ImageView
+        android:id="@+id/post_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:visibility="visible" />
+
+    <uk.openvk.android.legacy.ui.view.layouts.CommonAttachView
+        android:id="@+id/post_attachment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
+        android:id="@+id/post_poll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
+        android:id="@+id/post_video"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:visibility="gone" />
+</LinearLayout>
