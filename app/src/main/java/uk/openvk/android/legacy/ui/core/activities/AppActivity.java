@@ -919,8 +919,8 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 ovk_api.friends.getRequests(ovk_api.wrapper);
-                friendsFragment.updateTabsCounters(ovk_api.friends.count,
-                        ovk_api.account.counters.friends_requests);
+                friendsFragment.updateTabsCounters(0, ovk_api.friends.count);
+                friendsFragment.updateTabsCounters(1, ovk_api.account.counters.friends_requests);
                 friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 int old_friends_size = ovk_api.friends.getFriends().size();
@@ -954,8 +954,6 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                friendsFragment.updateTabsCounters(ovk_api.friends.count,
-                        ovk_api.account.counters.friends_requests);
                 friendsFragment.createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
                 ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
@@ -993,7 +991,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.friends.parse(data.getString("response"), ovk_api.dlman,
                         false, true);
                 if (selectedFragment instanceof ProfileFragment) {
-                    profileFragment.setCounter(ovk_api.user, "friends",  ovk_api.friends.count);
+                    profileFragment.setCounter(ovk_api.user, "friends", ovk_api.friends.count);
                 }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if(conversations.size() > 0) {
