@@ -48,9 +48,6 @@ public class PostAttachmentsView extends LinearLayout {
     private CommonAttachView commonView;
     private int resize_videoattachviews;
     private Context parent;
-    private ImageLoaderConfiguration imageLoaderConfig;
-    private DisplayImageOptions displayimageOptions;
-    private ImageLoader imageLoader;
     public boolean isWall;
     private int photo_fail_count;
 
@@ -74,7 +71,6 @@ public class PostAttachmentsView extends LinearLayout {
         pollView = findViewById(R.id.post_poll);
         commonView = findViewById(R.id.post_attachment);
         parent = ctx;
-        initializeImageLoader();
         error_label.setVisibility(GONE);
         photoView.setVisibility(View.GONE);
         videoView.setVisibility(View.GONE);
@@ -102,7 +98,6 @@ public class PostAttachmentsView extends LinearLayout {
         pollView = findViewById(R.id.post_poll);
         commonView = findViewById(R.id.post_attachment);
         parent = ctx;
-        initializeImageLoader();
         error_label.setVisibility(GONE);
         photoView.setVisibility(View.GONE);
         videoView.setVisibility(View.GONE);
@@ -110,24 +105,9 @@ public class PostAttachmentsView extends LinearLayout {
         commonView.setVisibility(View.GONE);
     }
 
-    private void initializeImageLoader() {
-        this.displayimageOptions =
-                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
-        this.imageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(parent.getApplicationContext()).
-                        defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(16777216) // 16 MB memory cache
-                        .writeDebugLogs()
-                        .build();
-        if (ImageLoader.getInstance().isInited()) {
-            ImageLoader.getInstance().destroy();
-        }
-        this.imageLoader = ImageLoader.getInstance();
-        imageLoader.init(imageLoaderConfig);
-    }
-
     public void loadAttachments(ArrayList<WallPost> posts,
                                 final WallPost post,
+                                ImageLoader imageLoader,
                                 ArrayList<Attachment> attachments,
                                 int position, boolean isWall) {
         this.attachments = attachments;
@@ -138,8 +118,9 @@ public class PostAttachmentsView extends LinearLayout {
                     case "photo":
                         photoView.setVisibility(View.VISIBLE);
                         Photo photo = (Photo) post.attachments.get(i).getContent();
-                        loadPhotoPlaceholder(post, photo, photoView);
-                        loadPhotoAttachment(photo, post.owner_id, post.post_id, photoView, isWall);
+                        loadPhotoPlaceholder(post, photo, imageLoader, photoView);
+                        loadPhotoAttachment(photo, post.owner_id, post.post_id, photoView,
+                                imageLoader, isWall);
                         break;
                     case "video":
                         if (post.attachments.get(i).getContent() != null) {
@@ -223,7 +204,7 @@ public class PostAttachmentsView extends LinearLayout {
         setVisibility(VISIBLE);
     }
 
-    private void loadPhotoPlaceholder(final WallPost post, Photo photo, ImageView view) {
+    private void loadPhotoPlaceholder(final WallPost post, Photo photo, ImageLoader imageLoader, ImageView view) {
         Drawable drawable = parent.getResources().getDrawable(R.drawable.photo_placeholder);
         Canvas canvas = new Canvas();
         try {
@@ -240,7 +221,7 @@ public class PostAttachmentsView extends LinearLayout {
             // Retrying again
             if(photo_fail_count < 5) {
                 photo_fail_count++;
-                loadPhotoPlaceholder(post, photo, view);
+                loadPhotoPlaceholder(post, photo, imageLoader, view);
             }
         }
         view.setOnClickListener(new View.OnClickListener() {
@@ -252,7 +233,8 @@ public class PostAttachmentsView extends LinearLayout {
     }
 
     private void loadPhotoAttachment(Photo photo,
-                                     long owner_id, long post_id, ImageView view, boolean isWall) {
+                                     long owner_id, long post_id, ImageView view,
+                                     ImageLoader imageLoader, boolean isWall) {
         try {
             String full_filename = "file://" + parent.getCacheDir()
                     + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
@@ -273,7 +255,7 @@ public class PostAttachmentsView extends LinearLayout {
             // Retrying again
             if(photo_fail_count < 5) {
                 photo_fail_count++;
-                loadPhotoAttachment(photo, owner_id, post_id, view, isWall);
+                loadPhotoAttachment(photo, owner_id, post_id, view, imageLoader, isWall);
             }
         }
     }

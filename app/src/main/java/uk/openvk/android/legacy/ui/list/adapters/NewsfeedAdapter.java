@@ -86,6 +86,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     private int resize_videoattachviews;
     private int resize_photoattachments;
     private int photo_fail_count;
+    private ImageLoaderConfiguration imageLoaderConfig;
+    private DisplayImageOptions displayimageOptions;
+    private ImageLoader imageLoader;
 
     public NewsfeedAdapter(Context context, ArrayList<WallPost> posts, boolean isWall) {
         ctx = context;
@@ -93,6 +96,19 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
         safeViewing = PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean("safeViewing", true);
         this.isWall = isWall;
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        this.imageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
+                        defaultDisplayImageOptions(displayimageOptions)
+                        .memoryCacheSize(16777216) // 16 MB memory cache
+                        .writeDebugLogs()
+                        .build();
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+        this.imageLoader = ImageLoader.getInstance();
+        imageLoader.init(imageLoaderConfig);
     }
 
     @Override
@@ -259,6 +275,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     post_attach_container.loadAttachments(
                             items,
                             item,
+                            imageLoader,
                             item.attachments,
                             position,
                             isWall
@@ -299,7 +316,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                     if (item.repost.newsfeed_item.attachments.size() > 0) {
                         repost_attach_container.loadAttachments(items,
-                                item.repost.newsfeed_item, item.repost.newsfeed_item.attachments,
+                                item.repost.newsfeed_item, imageLoader, item.repost.newsfeed_item.attachments,
                                 position, isWall);
                     } else {
                         post_attach_container.setVisibility(View.GONE);
