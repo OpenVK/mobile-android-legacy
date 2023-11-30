@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ public class SlidingMenuLayout extends LinearLayout {
 
     private int accountMenuTargetHeight;
     private String instance;
-    public boolean showAccountMenu;
+    public boolean showAccountMenu = true;
 
     public SlidingMenuLayout(final Context context) {
         super(context);
@@ -67,7 +68,7 @@ public class SlidingMenuLayout extends LinearLayout {
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                toogleAccountMenu();
+                toogleAccountMenu(!isVisibleAccountMenu());
             }
         });
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
@@ -118,7 +119,7 @@ public class SlidingMenuLayout extends LinearLayout {
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                toogleAccountMenu();
+                toogleAccountMenu(!isVisibleAccountMenu());
             }
         });
         TextView profile_name = findViewById(R.id.profile_name);
@@ -173,99 +174,101 @@ public class SlidingMenuLayout extends LinearLayout {
         }
     }
 
-    public void toogleAccountMenu() {
-        if(showAccountMenu) {
-            final ListView account_menu_view = findViewById(R.id.account_menu_view);
+    public void toogleAccountMenu(boolean open) {
+        final ListView account_menu_view = findViewById(R.id.account_menu_view);
             accountMenuTargetHeight = (int) (account_menu_view.getAdapter().getCount() *
                     ((47 * (getResources().getDisplayMetrics().scaledDensity)) +
                             account_menu_view.getDividerHeight()));
             account_menu_view.setCacheColorHint(Color.TRANSPARENT);
-            this.showAccountMenu = !this.showAccountMenu;
             final View arrow = findViewById(R.id.arrow);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 float[] fArr = new float[2];
-                fArr[0] = this.showAccountMenu ? 0 : -180;
-                fArr[1] = this.showAccountMenu ? -180 : 0;
+                fArr[0] = open ? 0 : -180;
+                fArr[1] = open ? -180 : 0;
                 ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
             } else {
-                RotateAnimation anim = new RotateAnimation(this.showAccountMenu ? 0 : -180,
+                RotateAnimation anim = new RotateAnimation(open ? 0 : -180,
                         this.showAccountMenu ? -180 : 0, 1, 0.5f, 1, 0.5f);
                 anim.setFillAfter(true);
                 anim.setDuration(300L);
                 arrow.startAnimation(anim);
             }
-            if (account_menu_view.getVisibility() == VISIBLE) {
-                ValueAnimator animator = ValueAnimator.ofInt(accountMenuTargetHeight, 1);
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        int value = (Integer) valueAnimator.getAnimatedValue();
-                        ViewGroup.LayoutParams layoutParams = account_menu_view.getLayoutParams();
-                        layoutParams.height = value;
-                        account_menu_view.setLayoutParams(layoutParams);
-                    }
-                });
-                animator.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        arrow.setEnabled(false);
-                    }
+        if(!open) {
+            Log.d(OvkApplication.APP_TAG, "Account menu state: Close");
+            ValueAnimator animator = ValueAnimator.ofInt(accountMenuTargetHeight, 1);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int value = (Integer) valueAnimator.getAnimatedValue();
+                    ViewGroup.LayoutParams layoutParams = account_menu_view.getLayoutParams();
+                    layoutParams.height = value;
+                    account_menu_view.setLayoutParams(layoutParams);
+                }
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    arrow.setEnabled(false);
+                }
 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        arrow.setEnabled(true);
-                        account_menu_view.setVisibility(GONE);
-                    }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    arrow.setEnabled(true);
+                    account_menu_view.setVisibility(GONE);
+                }
 
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
+                @Override
+                public void onAnimationCancel(Animator animation) {
 
-                    }
+                }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
+                @Override
+                public void onAnimationRepeat(Animator animation) {
 
-                    }
-                });
-                animator.setDuration(300);
-                animator.start();
-            } else {
-                ValueAnimator animator = ValueAnimator.ofInt(1, accountMenuTargetHeight);
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        int value = (Integer) valueAnimator.getAnimatedValue();
-                        ViewGroup.LayoutParams layoutParams = account_menu_view.getLayoutParams();
-                        layoutParams.height = value;
-                        account_menu_view.setLayoutParams(layoutParams);
-                    }
-                });
-                animator.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        arrow.setEnabled(false);
-                        account_menu_view.setVisibility(VISIBLE);
-                    }
+                }
+            });
+            animator.setDuration(300);
+            animator.start();
+        } else {
+            Log.d(OvkApplication.APP_TAG, "Account menu state: Open");
+            ValueAnimator animator = ValueAnimator.ofInt(1, accountMenuTargetHeight);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int value = (Integer) valueAnimator.getAnimatedValue();
+                    ViewGroup.LayoutParams layoutParams = account_menu_view.getLayoutParams();
+                    layoutParams.height = value;
+                    account_menu_view.setLayoutParams(layoutParams);
+                }
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    arrow.setEnabled(false);
+                    account_menu_view.setVisibility(VISIBLE);
+                }
 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        arrow.setEnabled(true);
-                    }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    arrow.setEnabled(true);
+                }
 
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
+                @Override
+                public void onAnimationCancel(Animator animation) {
 
-                    }
+                }
 
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
+                @Override
+                public void onAnimationRepeat(Animator animation) {
 
-                    }
-                });
-                animator.setDuration(300);
-                animator.start();
-            }
+                }
+            });
+            animator.setDuration(300);
+            animator.start();
         }
     }
-    
+
+    public boolean isVisibleAccountMenu() {
+        return findViewById(R.id.account_menu_view).getVisibility() == VISIBLE;
+    }
 }

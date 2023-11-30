@@ -368,7 +368,9 @@ public class AppActivity extends NetworkFragmentActivity {
             menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
                 @Override
                 public void onClosed() {
-                    slidingmenuLayout.toogleAccountMenu();
+                    if(slidingmenuLayout.isVisibleAccountMenu()) {
+                        slidingmenuLayout.toogleAccountMenu(false);
+                    }
                 }
             });
         } else {
@@ -387,8 +389,10 @@ public class AppActivity extends NetworkFragmentActivity {
                                 @Override
                                 public void onSystemUiVisibilityChange(int visibility) {
                                     if (visibility == View.GONE) {
-                                        slidingmenuLayout.toogleAccountMenu();
+                                        slidingmenuLayout.toogleAccountMenu(!slidingmenuLayout.
+                                                isVisibleAccountMenu());
                                     }
+                                    slidingmenuLayout.showAccountMenu = visibility == View.VISIBLE;
                                 }
                             });
                 }
