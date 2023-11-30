@@ -418,10 +418,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             });
         }
 
-        private void loadPostAttachments(final WallPost item, final int position, boolean repost) {
-
-        }
-
         private void showPostOptions(View view) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 android.widget.PopupMenu popupMenu =

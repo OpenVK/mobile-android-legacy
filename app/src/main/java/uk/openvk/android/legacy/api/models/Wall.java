@@ -535,7 +535,8 @@ public class Wall implements Parcelable {
                         }
                         photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
                         photoAttachment.original_url = photo_original_size;
-                        if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
+                        if (photo_medium_size.length() > 0 ||
+                                (photo_high_size != null ? photo_high_size.length() : 0) > 0) {
                             attachment_status = "loading";
                         } else {
                             attachment_status = "none";

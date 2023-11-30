@@ -63,7 +63,7 @@ public class DownloadManager {
     public boolean use_https;
     public boolean legacy_mode;
     private Context ctx;
-    public ArrayList<Photo> photoAttachments;
+    public ArrayList<Photo> photos;
     private boolean logging_enabled = true; // default for beta releases
 
     private OkHttpClient httpClient = null;
@@ -191,11 +191,12 @@ public class DownloadManager {
 
 
     public void downloadPhotosToCache(final ArrayList<Photo> photos, final String where) {
-        if(photoAttachments == null) {
-            Log.e(OvkApplication.DL_TAG, "Attachments array is empty. Download canceled.");
+        if(photos == null) {
+            Log.e(OvkApplication.DL_TAG, String.format("Attachments array is empty. Download canceled." +
+                    "\r\nPrefix: %s", where));
             return;
         }
-        Log.v("DownloadManager", String.format("Downloading %d photos...", photoAttachments.size()));
+        Log.v("DownloadManager", String.format("Downloading %d photos...", photos.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -217,9 +218,9 @@ public class DownloadManager {
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
-                for (int i = 0; i < photoAttachments.size(); i++) {
+                for (int i = 0; i < photos.size(); i++) {
                     filesize = 0;
-                    filename = photoAttachments.get(i).filename;
+                    filename = photos.get(i).filename;
                     File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
                             ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
                     Photo photo = photos.get(i);
@@ -260,14 +261,14 @@ public class DownloadManager {
                         try {
                             filename = photo.filename;
                             String short_address = "";
-                            if(photoAttachments.get(i).url.length() > 40) {
-                                short_address = photoAttachments.get(i).url.substring(0, 39);
+                            if(photos.get(i).url.length() > 40) {
+                                short_address = photos.get(i).url.substring(0, 39);
                             } else {
-                                short_address = photoAttachments.get(i).url;
+                                short_address = photos.get(i).url;
                             }
                             //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...",
                             // short_address, i + 1, photoAttachments.size()));
-                            url = photoAttachments.get(i).url;
+                            url = photos.get(i).url;
                             if(!url.startsWith("http://") && !url.startsWith("https://")) {
                                 Log.e(OvkApplication.DL_TAG,
                                         String.format("Invalid URL: %s. Download canceled.", url));
@@ -323,11 +324,11 @@ public class DownloadManager {
                             if(logging_enabled) Log.d(OvkApplication.DL_TAG,
                                     String.format("Downloaded from %s (%s): %d kB (%d/%d)",
                                             short_address, response_code, (int) (filesize / 1024), i + 1,
-                                            photoAttachments.size()));
+                                            photos.size()));
                         } catch (IOException | HttpClientException | OutOfMemoryError ex) {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", ex.getMessage(), i + 1,
-                                            photoAttachments.size()));
+                                            photos.size()));
                             if(ex.getMessage() != null) {
                                 if (ex.getMessage().startsWith("Authorization required")) {
                                     response_code = 401;
@@ -341,10 +342,10 @@ public class DownloadManager {
                             photo.error = e.getClass().getSimpleName();
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
-                                            photoAttachments.size()));
+                                            photos.size()));
                         }
                     }
-                    if(i % 15 == 0 || i == photoAttachments.size() - 1) {
+                    if(i % 15 == 0 || i == photos.size() - 1) {
                         switch (where) {
                             case "account_avatar":
                                 sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
