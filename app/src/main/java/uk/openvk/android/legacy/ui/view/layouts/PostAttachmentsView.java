@@ -140,8 +140,6 @@ public class PostAttachmentsView extends LinearLayout {
                         Photo photo = (Photo) post.attachments.get(i).getContent();
                         loadPhotoPlaceholder(post, photo, photoView);
                         loadPhotoAttachment(photo, post.owner_id, post.post_id, photoView, isWall);
-                        Log.d(OvkApplication.APP_TAG, String.format("Loading photo status: '%s'",
-                                post.attachments.get(i).status));
                         break;
                     case "video":
                         if (post.attachments.get(i).getContent() != null) {
