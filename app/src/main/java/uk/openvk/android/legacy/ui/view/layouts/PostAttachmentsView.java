@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -16,13 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
@@ -33,7 +31,7 @@ import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
 import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
-import uk.openvk.android.legacy.ui.view.FlowLayout;
+import org.apmem.tools.layouts.FlowLayout;
 
 public class PostAttachmentsView extends LinearLayout {
 
@@ -50,6 +48,7 @@ public class PostAttachmentsView extends LinearLayout {
     private Context parent;
     public boolean isWall;
     private int photo_fail_count;
+    private ArrayList<Photo> photoAttachments;
 
     public PostAttachmentsView(Context ctx) {
         super(ctx);
@@ -59,7 +58,7 @@ public class PostAttachmentsView extends LinearLayout {
         this.addView(view);
 
         LinearLayout.LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-        layoutParams.width = FlowLayout.LayoutParams.MATCH_PARENT;
+        layoutParams.width = LayoutParams.MATCH_PARENT;
         layoutParams.height = LayoutParams.WRAP_CONTENT;
         view.setLayoutParams(layoutParams);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -86,7 +85,7 @@ public class PostAttachmentsView extends LinearLayout {
         this.addView(view);
 
         LinearLayout.LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-        layoutParams.width = FlowLayout.LayoutParams.MATCH_PARENT;
+        layoutParams.width = LayoutParams.MATCH_PARENT;
         layoutParams.height = LayoutParams.WRAP_CONTENT;
         view.setLayoutParams(layoutParams);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -110,17 +109,15 @@ public class PostAttachmentsView extends LinearLayout {
                                 ImageLoader imageLoader,
                                 ArrayList<Attachment> attachments,
                                 int position, boolean isWall) {
+        this.photoAttachments = new ArrayList<>();
         this.attachments = attachments;
         if(!post.is_explicit || !safeViewing) {
             for (int i = 0; i < post.attachments.size(); i++) {
                 String type = post.attachments.get(i).type;
                 switch (type) {
                     case "photo":
-                        photoView.setVisibility(View.VISIBLE);
                         Photo photo = (Photo) post.attachments.get(i).getContent();
-                        loadPhotoPlaceholder(post, photo, imageLoader, photoView);
-                        loadPhotoAttachment(photo, post.owner_id, post.post_id, photoView,
-                                imageLoader, isWall);
+                        photoAttachments.add(photo);
                         break;
                     case "video":
                         if (post.attachments.get(i).getContent() != null) {
@@ -200,8 +197,57 @@ public class PostAttachmentsView extends LinearLayout {
                     }
                 }
             }
+            if(photoAttachments.size() > 1) {
+                FlowLayout flowLayout = findViewById(R.id.post_flow_layout);
+                flowLayout.removeAllViews();
+                int max_height = getMaxPhotoHeight(photoAttachments);
+                for(int i = 0; i < photoAttachments.size(); i++) {
+                    Photo photo = photoAttachments.get(i);
+                    ImageView photoView = new ImageView(getContext());
+                    photoView.setLayoutParams(
+                            new FlowLayout.LayoutParams(photo.size[0], max_height)
+                    );
+                    if(i < photoAttachments.size() - 1) {
+                        ((FlowLayout.LayoutParams) photoView.getLayoutParams())
+                                .setMargins(
+                                        0,
+                                        0,
+                                        (int) (2 * getResources().getDisplayMetrics().scaledDensity),
+                                        0
+                                );
+                    }
+                    photoView.setAdjustViewBounds(true);
+                    photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    flowLayout.addView(photoView);
+                    loadPhotoPlaceholder(post, photo, imageLoader, photoView);
+                    loadPhotoAttachment(photo, photoView, imageLoader, isWall);
+                }
+                flowLayout.setVisibility(VISIBLE);
+            } else if(photoAttachments.size() == 1) {
+                loadPhotoPlaceholder(post, photoAttachments.get(0), imageLoader, photoView);
+                loadPhotoAttachment(photoAttachments.get(0), photoView, imageLoader, isWall);
+                photoView.setVisibility(VISIBLE);
+            }
         }
         setVisibility(VISIBLE);
+    }
+
+    private int getMinPhotoHeight(ArrayList<Photo> photos) {
+        List<Integer> heights = new ArrayList<>();
+        for(int i = 0; i < photos.size(); i++) {
+            Photo photo = photos.get(i);
+            heights.add(photo.size[1]);
+        }
+        return Collections.min(heights);
+    }
+
+    private int getMaxPhotoHeight(ArrayList<Photo> photos) {
+        List<Integer> heights = new ArrayList<>();
+        for(int i = 0; i < photos.size(); i++) {
+            Photo photo = photos.get(i);
+            heights.add(photo.size[1]);
+        }
+        return Collections.max(heights);
     }
 
     private void loadPhotoPlaceholder(final WallPost post, Photo photo, ImageLoader imageLoader, ImageView view) {
@@ -232,8 +278,7 @@ public class PostAttachmentsView extends LinearLayout {
         });
     }
 
-    private void loadPhotoAttachment(Photo photo,
-                                     long owner_id, long post_id, ImageView view,
+    private void loadPhotoAttachment(Photo photo, ImageView view,
                                      ImageLoader imageLoader, boolean isWall) {
         try {
             String full_filename = "file://" + parent.getCacheDir()
@@ -255,7 +300,7 @@ public class PostAttachmentsView extends LinearLayout {
             // Retrying again
             if(photo_fail_count < 5) {
                 photo_fail_count++;
-                loadPhotoAttachment(photo, owner_id, post_id, view, imageLoader, isWall);
+                loadPhotoAttachment(photo, view, imageLoader, isWall);
             }
         }
     }

@@ -41,6 +41,7 @@ We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/a
 12. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0) (about our usage of ACRA see [issue #153](https://github.com/openvk/mobile-android-legacy/issues/153))
 13. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
 14. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
+15. [ApmeM FlowLayout](https://github.com/ApmeM/android-flowlayout/tree/java-flowlayout-1.8) (Apache License 2.0)
 
 ## OpenVK Legacy License
 [GNU Affero GPL v3.0](COPYING) or later version.

@@ -208,9 +208,7 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 friendsFragment.createAdapter(this, friendsList, "friends");
                 try {
-                    ((TabSelector) friendsFragment.getView().findViewById(R.id.selector))
-                            .setTabTitle(0, String.format("%s (%s)",
-                                    getResources().getString(R.string.friends), ovk_api.friends.count));
+                    friendsFragment.updateTabsCounters(0, ovk_api.friends.count);
                 } catch (Exception ignored) {
 
                 }

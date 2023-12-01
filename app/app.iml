@@ -142,6 +142,7 @@
     <orderEntry type="library" exported="" name="Gradle: com.squareup.okio:okio:1.14.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:preference-v14-24.0.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apmem.tools:layouts-1.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:animated-vector-drawable-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.readystatesoftware.systembartint:systembartint:1.0.3@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: ch.acra:acra:4.6.0@jar" level="project" />

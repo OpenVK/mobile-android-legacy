@@ -3,18 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:flow="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.ui.view.FlowLayout
+    <org.apmem.tools.layouts.FlowLayout
         android:id="@+id/post_flow_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="gone"
+        flow:weightDefault="1.0"
+        android:gravity="fill"/>
 
     <TextView
         android:id="@+id/error_label"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="4dp"
         android:layout_weight="1"
         android:drawableLeft="@drawable/ic_msg_error"
         android:drawablePadding="4dp"
@@ -30,6 +34,7 @@
         android:id="@+id/post_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:adjustViewBounds="true"
         android:visibility="visible" />
 
@@ -37,17 +42,20 @@
         android:id="@+id/post_attachment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:visibility="gone" />
 
     <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
         android:id="@+id/post_poll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:visibility="gone" />
 
     <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
         android:id="@+id/post_video"
         android:layout_width="match_parent"
         android:layout_height="240dp"
+        android:layout_marginBottom="4dp"
         android:visibility="gone" />
 </LinearLayout>

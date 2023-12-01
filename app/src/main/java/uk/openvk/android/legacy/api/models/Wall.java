@@ -451,6 +451,7 @@ public class Wall implements Parcelable {
                                                        JSONArray attachments, String prefix) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
+            int photo_index = 0;
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
                 String photo_low_size;
                 String photo_medium_size;
@@ -533,7 +534,15 @@ public class Wall implements Parcelable {
                                 }
                                 break;
                         }
-                        photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
+                        if(photo_index > 0) {
+                            photoAttachment.filename =
+                                    String.format(
+                                            "%s_o%sp%si%s", prefix, owner_id,
+                                            post_id, photo_index);
+                        } else {
+                            photoAttachment.filename =
+                                    String.format("%s_o%sp%s", prefix, owner_id, post_id);
+                        }
                         photoAttachment.original_url = photo_original_size;
                         if (photo_medium_size.length() > 0 ||
                                 (photo_high_size != null ? photo_high_size.length() : 0) > 0) {
@@ -564,6 +573,7 @@ public class Wall implements Parcelable {
                             Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
                                     "be overestimated.");
                         }
+                        photo_index++;
                         break;
                     }
                     case "video": {

@@ -42,6 +42,7 @@ _Работает на OpenVK API._
 13. [Application Crash Reports 4.6.0](https://github.com/ACRA/acra/tree/acra-4.6.0) (Apache License 2.0) (по поводу нашего применения ACRA смотрите [issue #153](https://github.com/openvk/mobile-android-legacy/issues/153))
 14. [Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5) (Apache License 2.0)
 15. [NineOldAndroids animation API](https://github.com/JakeWharton/NineOldAndroids) (Apache License 2.0)
+15. [ApmeM FlowLayout](https://github.com/ApmeM/android-flowlayout/tree/java-flowlayout-1.8) (Apache License 2.0)
 
 ## Лицензия OpenVK Legacy
 [GNU Affero GPL v3.0](COPYING) или более поздней версии.
