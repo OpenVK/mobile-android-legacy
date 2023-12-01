@@ -201,21 +201,20 @@ public class PostAttachmentsView extends LinearLayout {
                 FlowLayout flowLayout = findViewById(R.id.post_flow_layout);
                 flowLayout.removeAllViews();
                 int max_height = getMaxPhotoHeight(photoAttachments);
+                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
                 for(int i = 0; i < photoAttachments.size(); i++) {
                     Photo photo = photoAttachments.get(i);
                     ImageView photoView = new ImageView(getContext());
                     photoView.setLayoutParams(
                             new FlowLayout.LayoutParams(photo.size[0], max_height)
                     );
-                    if(i < photoAttachments.size() - 1) {
-                        ((FlowLayout.LayoutParams) photoView.getLayoutParams())
-                                .setMargins(
-                                        0,
-                                        0,
-                                        (int) (2 * getResources().getDisplayMetrics().scaledDensity),
-                                        0
-                                );
-                    }
+                    ((FlowLayout.LayoutParams) photoView.getLayoutParams())
+                            .setMargins(
+                                    0,
+                                    0,
+                                    i < photoAttachments.size() - 1 ? 2*dp : 0,
+                                    2*dp
+                            );
                     photoView.setAdjustViewBounds(true);
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     flowLayout.addView(photoView);
