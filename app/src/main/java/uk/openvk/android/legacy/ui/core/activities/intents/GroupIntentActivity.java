@@ -411,7 +411,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 });
                 selector.showNewPostIcon();
                 loading_more_posts = true;
-                setScrollingPositions(this, false);
+                setScrollingPositions(this, false, -group.id);
             } else if (message == HandlerMessages.WALL_GET_MORE) {
                 ((WallLayout) findViewById(R.id.wall_layout))
                         .createAdapter(this, ovk_api.wall.getWallItems());
@@ -682,7 +682,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         });
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean load_photos) {
+    public void setScrollingPositions(final Context ctx, final boolean load_photos, final long owner_id) {
         loading_more_posts = false;
         if(load_photos) {
             ((WallLayout) findViewById(R.id.wall_layout)).loadPhotos();
@@ -696,7 +696,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            Global.loadMoreWallPosts(ovk_api);
+                            Global.loadMoreWallPosts(ovk_api, owner_id);
                         }
                     }
                 }
@@ -710,7 +710,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                     int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            Global.loadMoreWallPosts(ovk_api);
+                            Global.loadMoreWallPosts(ovk_api, owner_id);
                         }
                     }
                 }

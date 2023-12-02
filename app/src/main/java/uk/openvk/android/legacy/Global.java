@@ -840,9 +840,9 @@ public class Global {
         }
     }
 
-    public static void loadMoreWallPosts(OpenVKAPI ovk_api) {
+    public static void loadMoreWallPosts(OpenVKAPI ovk_api, long owner_id) {
         if(ovk_api.wall != null) {
-            ovk_api.wall.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.wall.next_from);
+            ovk_api.wall.get(ovk_api.wrapper, owner_id, 25, ovk_api.wall.next_from);
         }
     }
 

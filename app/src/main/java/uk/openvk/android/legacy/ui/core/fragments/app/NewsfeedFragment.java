@@ -85,7 +85,8 @@ public class NewsfeedFragment extends Fragment {
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts) {
         this.wallPosts = wallPosts;
-        newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
+        newsfeedView = view.findViewById(R.id.news_listview);
+        newsfeedView.setHasFixedSize(true);
         if(newsfeedAdapter == null) {
             newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts, false);
             llm = new WrappedLinearLayoutManager(ctx);
@@ -102,7 +103,7 @@ public class NewsfeedFragment extends Fragment {
         p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(getActivity().getClass().getSimpleName().equals("AppActivity")) {
+                if(getActivity() instanceof AppActivity) {
                     if (((AppActivity) getActivity()).ab_layout.getNewsfeedSelection() == 0) {
                         ((AppActivity) getActivity()).refreshPage("subscriptions_newsfeed");
                     } else {
@@ -116,7 +117,7 @@ public class NewsfeedFragment extends Fragment {
 
     public void updateItem(WallPost item, int position) {
         if(newsfeedAdapter != null) {
-            newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
+            newsfeedView = view.findViewById(R.id.news_listview);
             wallPosts.set(position, item);
             newsfeedAdapter.notifyItemChanged(position);
         }

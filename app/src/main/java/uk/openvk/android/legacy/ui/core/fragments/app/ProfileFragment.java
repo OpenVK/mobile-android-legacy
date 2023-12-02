@@ -32,6 +32,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
@@ -359,13 +360,13 @@ public class ProfileFragment extends Fragment {
     }
 
     public void setScrollingPositions(final Context ctx, final boolean load_photos,
-                                      final boolean infinity_scroll) {
+                                      final boolean infinity_scroll, final long owner_id) {
         loading_more_posts = false;
         if(load_photos) {
             ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
         }
+        final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
             scrollView.setOnScrollListener(new OnScrollListener() {
                 @Override
                 public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
@@ -374,23 +375,18 @@ public class ProfileFragment extends Fragment {
                     OpenVKAPI ovk_api = null;
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_posts = true;
-                                ovk_api = ((AppActivity) ctx).ovk_api;
-                            } else if (ctx instanceof ProfileIntentActivity) {
-                                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-                            } else if (ctx instanceof GroupIntentActivity) {
-                                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
-                            } else {
-                                return;
+                            if(ctx instanceof NetworkFragmentActivity){
+                                ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
+                                Global.loadMoreWallPosts(ovk_api, owner_id);
+                            } else if(ctx instanceof NetworkActivity) {
+                                ovk_api = ((NetworkActivity) ctx).ovk_api;
+                                Global.loadMoreWallPosts(ovk_api, owner_id);
                             }
-                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }
             });
         } else {
-            final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
             scrollView.setOnScrollListener(new OnScrollListener() {
                 @Override
                 public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
@@ -399,17 +395,10 @@ public class ProfileFragment extends Fragment {
                     OpenVKAPI ovk_api = null;
                     if (!loading_more_posts) {
                         if (diff == 0) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_posts = true;
-                                ovk_api = ((AppActivity) ctx).ovk_api;
-                            } else if (ctx instanceof ProfileIntentActivity) {
-                                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-                            } else if (ctx instanceof GroupIntentActivity) {
-                                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
-                            } else {
-                                return;
+                            if(ctx instanceof NetworkFragmentActivity){
+                                ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
+                                Global.loadMoreWallPosts(ovk_api, owner_id);
                             }
-                            Global.loadMoreWallPosts(ovk_api);
                         }
                     }
                 }

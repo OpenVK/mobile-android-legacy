@@ -393,7 +393,9 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                             .createAdapter(this, ovk_api.wall.getWallItems());
                     profileFragment.loading_more_posts = true;
-                    profileFragment.setScrollingPositions(this, false, true);
+                    profileFragment.setScrollingPositions(
+                            this, false, true, user.id
+                    );
                 } else {
                     WallErrorLayout wall_error = profileFragment.getView()
                             .findViewById(R.id.wall_error_layout);
