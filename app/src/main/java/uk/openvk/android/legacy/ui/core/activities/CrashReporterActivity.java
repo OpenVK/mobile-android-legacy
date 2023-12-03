@@ -52,7 +52,8 @@ import static org.acra.ReportField.USER_EMAIL;
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class CrashReporterActivity extends BaseCrashReportDialog implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
+public class CrashReporterActivity extends BaseCrashReportDialog
+        implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
 
     private OvkAlertDialog dialog;
     private View view;
