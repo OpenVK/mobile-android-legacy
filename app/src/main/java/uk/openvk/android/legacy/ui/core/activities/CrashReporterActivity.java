@@ -1,6 +1,5 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,9 +18,6 @@ import android.widget.Toast;
 
 import org.acra.ACRA;
 import org.acra.BaseCrashReportDialog;
-import org.acra.CrashReportDialog;
-import org.acra.ReportField;
-import org.acra.collector.CrashReportData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,10 +27,6 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
-
-import static org.acra.ACRA.LOG_TAG;
-import static org.acra.ReportField.USER_COMMENT;
-import static org.acra.ReportField.USER_EMAIL;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -72,7 +64,6 @@ public class CrashReporterActivity extends BaseCrashReportDialog
         ((TextView) view.findViewById(R.id.crash_description))
                 .setMovementMethod(LinkMovementMethod.getInstance());
 
-        Process process = null;
         try {
             writeLog();
         } catch (IOException e) {
@@ -135,7 +126,7 @@ public class CrashReporterActivity extends BaseCrashReportDialog
                 new InputStreamReader(process.getInputStream()));
 
         final StringBuilder log = new StringBuilder();
-        String line = "";
+        String line;
         OvkApplication ovk = ((OvkApplication) getApplicationContext());
         SharedPreferences instance_prefs = getSharedPreferences("instance", 0);
         SharedPreferences global_prefs =
@@ -183,7 +174,7 @@ public class CrashReporterActivity extends BaseCrashReportDialog
         }
         final String crash_report = String.format("%s%s", header, log.toString());
         ((EditText) view.findViewById(R.id.crash_report)).setText(crash_report);
-        ((EditText) view.findViewById(R.id.crash_report)).setOnLongClickListener(new View.OnLongClickListener() {
+        view.findViewById(R.id.crash_report).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Toast.makeText(
