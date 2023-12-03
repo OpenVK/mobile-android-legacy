@@ -9,15 +9,16 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
@@ -28,8 +29,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
@@ -61,7 +61,7 @@ public class NewsfeedFragment extends Fragment {
     public String state;
     public JSONArray newsfeed;
     public String send_request;
-    public SharedPreferences global_sharedPreferences;
+    public SharedPreferences global_prefs;
     private NewsfeedAdapter newsfeedAdapter;
     private RecyclerView newsfeedView;
     private ListView newsfeedListView;
@@ -79,6 +79,7 @@ public class NewsfeedFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
         adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
@@ -250,6 +251,23 @@ public class NewsfeedFragment extends Fragment {
     public void refreshAdapter() {
         if(newsfeedAdapter != null) {
             newsfeedAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void loadAPIData(Context ctx, OpenVKAPI ovk_api, Spinner ab_spinner,
+                            int isGlobalFeed, boolean notScroll) {
+        ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
+        if(ab_spinner.getSelectedItemPosition() == isGlobalFeed) {
+            createAdapter(ctx, ovk_api.newsfeed.getWallPosts());
+            if(ovk_api.newsfeed.getWallPosts().size() > 0) {
+                return;
+            }
+            loading_more_posts = true;
+            setScrollingPositions(ctx, false, true);
+            if(!notScroll) {
+                newsfeedView.scrollToPosition(0);
+            }
+            adjustLayoutSize(getResources().getConfiguration().orientation);
         }
     }
 }

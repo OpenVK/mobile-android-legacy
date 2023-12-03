@@ -280,4 +280,12 @@ public class FriendsFragment extends Fragment {
             }
         }
     }
+
+    public void loadAPIData(Context ctx, OpenVKAPI ovk_api, boolean infinity_scroll) {
+        createAdapter(ctx, ovk_api.friends.getFriends(), "friends");
+        ovk_api.friends.getRequests(ovk_api.wrapper);
+        updateTabsCounters(0, ovk_api.friends.count);
+        updateTabsCounters(1, ovk_api.account.counters.friends_requests);
+        setScrollingPositions(ctx, infinity_scroll);
+    }
 }

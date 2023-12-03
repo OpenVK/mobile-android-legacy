@@ -31,6 +31,7 @@ import uk.openvk.android.legacy.R;
  * Source code: https://github.com/openvk/mobile-android-legacy
  **/
 public class TranslucentActivity extends Activity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +39,6 @@ public class TranslucentActivity extends Activity {
     }
 
     private void setTranslucentStatusBar() {
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        tintManager.setStatusBarTintEnabled(true);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int statusbar_color = R.color.transparent_statusbar_color;
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
@@ -53,6 +52,9 @@ public class TranslucentActivity extends Activity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(statusbar_color));
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager = new SystemBarTintManager(this);
             tintManager.setTintDrawable(
                     getResources().getDrawable(statusbar_color));
         }

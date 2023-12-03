@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
 import uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector;
+import uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout;
 import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
 import static android.view.View.GONE;
@@ -68,6 +69,8 @@ public class ProfileFragment extends Fragment {
     private boolean showExtended;
     public boolean loading_more_posts;
     private String instance;
+    private SharedPreferences global_prefs;
+    private WallLayout wallLayout;
 
     @Nullable
     @Override
@@ -75,6 +78,7 @@ public class ProfileFragment extends Fragment {
             Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +114,7 @@ public class ProfileFragment extends Fragment {
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
         }
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
+        wallLayout = (view.findViewById(R.id.wall_layout));
         return view;
     }
 
@@ -408,5 +413,63 @@ public class ProfileFragment extends Fragment {
 
     public ProfileWallSelector getWallSelector() {
         return view.findViewById(R.id.wall_selector);
+    }
+
+    public void loadAPIData(Context ctx, OpenVKAPI ovk_api, WindowManager wm) {
+        getWallSelector().setUserName(ovk_api.account.first_name);
+        updateLayout(ovk_api.user, wm);
+        setDMButtonListener(ctx, ovk_api.user.id, wm);
+        setAddToFriendsButtonListener(ctx, ovk_api.user.id, ovk_api.user);
+        if(ovk_api.user.id == ovk_api.account.id) {
+            hideHeaderButtons(ctx, wm);
+        }
+        if(ovk_api.user.deactivated == null) {
+            ovk_api.user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
+            ovk_api.wall.get(ovk_api.wrapper, ovk_api.user.id, 25);
+            ovk_api.friends.get(ovk_api.wrapper, ovk_api.user.id, 10, "profile_counter");
+
+        } else {
+            hideTabSelector();
+            getHeader().hideExpandArrow();
+            if(ovk_api.user.deactivated.equals("banned")) {
+                if(ovk_api.user.ban_reason.length() > 0) {
+                    ((TextView) view.findViewById(R.id.deactivated_info)).setText(
+                            String.format("%s\r\n%s: %s",
+                                    getResources().getString(R.string.profile_inactive_banned),
+                                    getResources().getString(R.string.reason), ovk_api.user.ban_reason
+                            )
+                    );
+                } else {
+                    ((TextView) view.findViewById(R.id.deactivated_info)).setText(
+                            getResources().getString(R.string.profile_inactive_banned)
+                    );
+                }
+            }
+        }
+        ovk_api.user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
+        ovk_api.wall.get(ovk_api.wrapper, ovk_api.user.id, 25);
+        ovk_api.friends.get(ovk_api.wrapper, ovk_api.user.id, 25, "profile_counter");
+    }
+
+    public void loadWall(final Context ctx, final OpenVKAPI ovk_api) {
+        if(ovk_api.wall.getWallItems().size() > 0) {
+            wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
+            loading_more_posts = true;
+            setScrollingPositions(
+                    ctx, false, true, ovk_api.account.id
+            );
+        } else {
+            WallErrorLayout wall_error = view.findViewById(R.id.wall_error_layout);
+            wall_error.setErrorText(getResources().getString(R.string.no_news));
+            wall_error.setVisibility(View.VISIBLE);
+        }
+        ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
+        selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Global.openNewPostActivity(ctx, ovk_api);
+            }
+        });
+        selector.showNewPostIcon();
     }
 }

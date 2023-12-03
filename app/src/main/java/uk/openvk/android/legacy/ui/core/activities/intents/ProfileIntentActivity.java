@@ -90,16 +90,10 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         user = new User();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                access_token = instance_prefs.getString("access_token", "");
-            } else {
-                access_token = instance_prefs.getString("access_token", "");
-            }
+            access_token = instance_prefs.getString("access_token", "");
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
-
-        FriendsFragment friendsFragment = new FriendsFragment();
 
         final Uri uri = intent.getData();
 
@@ -272,26 +266,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     ovk_api.users.search(ovk_api.wrapper, args);
                 }
             } else if (message == HandlerMessages.USERS_GET) {
-                profileFragment.updateLayout(user, getWindowManager());
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                profileFragment.setDMButtonListener(this, user.id, getWindowManager());
-                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
-                if(user.id == ovk_api.account.id) {
-                    profileFragment.hideHeaderButtons(this, getWindowManager());
-                    try {
-                        if(activity_menu != null) {
-                            for (int i = 0; i < activity_menu.size(); i++) {
-                                if (i > 0) {
-                                    activity_menu.getItem(i).setVisible(true);
-                                }
-                            }
-                            activity_menu.removeItem(0);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                } else {
+                if(user.id != ovk_api.account.id) {
                     ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
                     popup_menu = new android.support.v7.widget.PopupMenu(this, null);
                     getMenuInflater().inflate(R.menu.profile, popup_menu.getMenu());
@@ -330,9 +305,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     }
                 }
                 if(user.deactivated == null) {
-                    user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
-                    ovk_api.wall.get(ovk_api.wrapper, user.id, 25);
-                    ovk_api.friends.get(ovk_api.wrapper, user.id, 10, "profile_counter");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         createActionPopupMenu(popup_menu.getMenu(), "account", true);
                     }
@@ -349,22 +321,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                             createActionPopupMenu(popup_menu.getMenu(), "account", true);
                         } else {
                             createActionPopupMenu(popup_menu.getMenu(), "profile", true);
-                        }
-                    }
-                    profileFragment.hideTabSelector();
-                    profileFragment.getHeader().hideExpandArrow();
-                    if(user.deactivated.equals("banned")) {
-                        if(user.ban_reason.length() > 0) {
-                            ((TextView) findViewById(R.id.deactivated_info)).setText(
-                                    String.format("%s\r\n%s: %s",
-                                            getResources().getString(R.string.profile_inactive_banned),
-                                            getResources().getString(R.string.reason), user.ban_reason
-                                    )
-                            );
-                        } else {
-                            ((TextView) findViewById(R.id.deactivated_info)).setText(
-                                    getResources().getString(R.string.profile_inactive_banned)
-                            );
                         }
                     }
                 }
@@ -388,39 +344,9 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 profileFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 ovk_api.users.getUser(ovk_api.wrapper, ovk_api.users.getList().get(0).id);
-            } else if (message == HandlerMessages.WALL_GET) {
-                if(ovk_api.wall.getWallItems().size() > 0) {
-                    ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                            .createAdapter(this, ovk_api.wall.getWallItems());
-                    profileFragment.loading_more_posts = true;
-                    profileFragment.setScrollingPositions(
-                            this, false, true, user.id
-                    );
-                } else {
-                    WallErrorLayout wall_error = profileFragment.getView()
-                            .findViewById(R.id.wall_error_layout);
-                    wall_error.setErrorText(getResources().getString(R.string.no_news));
-                    wall_error.setVisibility(View.VISIBLE);
-                }
-                ProfileWallSelector selector = findViewById(R.id.wall_selector);
-                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        profileFragment.openNewPostActivity(user, ovk_api);
-                    }
-                });
-                selector.showNewPostIcon();
-            } else if (message == HandlerMessages.WALL_GET_MORE) {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                        .createAdapter(this, ovk_api.wall.getWallItems());
-                ProfileWallSelector selector = findViewById(R.id.wall_selector);
-                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        profileFragment.openNewPostActivity(user, ovk_api);
-                    }
-                });
-                selector.showNewPostIcon();
+            } else if (message == HandlerMessages.WALL_GET ||
+                    message == HandlerMessages.WALL_GET_MORE) {
+                profileFragment.loadWall(this, ovk_api);
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .setScrollingPositions();
@@ -440,37 +366,26 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 ovk_api.likes.parse(data.getString("response"));
                 ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                         .select(ovk_api.likes.position, "likes", 0);
-            } else if(message == HandlerMessages.POLL_ADD_VOTE) {
+            } else if(message == HandlerMessages.POLL_ADD_VOTE ||
+                    message == HandlerMessages.POLL_DELETE_VOTE) {
+                boolean addVote = message == HandlerMessages.POLL_ADD_VOTE
+                        || message == HandlerMessages.POLL_DELETE_VOTE;
                 WallPost item = ovk_api.wall.getWallItems().get(item_pos);
-                for(int attachment_index = 0; attachment_index < item.attachments.size();
-                    attachment_index++) {
-                    if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment poll = ((PollAttachment)
-                                item.attachments.get(attachment_index).getContent());
-                        poll.user_votes = 0;
-                        PollAnswer answer = poll.answers.get(poll_answer);
-                        answer.is_voted = false;
-                        poll.answers.set(poll_answer, answer);
-                        item.attachments.get(attachment_index).setContent(poll);
-                        ovk_api.wall.getWallItems().set(item_pos, item);
-                        ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
-                    }
-                }
-            } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
-                WallPost item = ovk_api.wall.getWallItems().get(item_pos);
-                for(int attachment_index = 0; attachment_index < item.attachments.size();
-                    attachment_index++) {
-                    if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment poll = ((PollAttachment) item.attachments
-                                .get(attachment_index).getContent());
-                        poll.user_votes = 0;
-                        PollAnswer answer = poll.answers.get(poll_answer);
-                        answer.is_voted = false;
-                        poll.answers.set(poll_answer, answer);
-                        item.attachments.get(attachment_index).setContent(poll);
-                        ovk_api.wall.getWallItems().set(item_pos, item);
-                        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                                .updateItem(item, item_pos);
+                if(item != null) {
+                    for (int attachment_index = 0; attachment_index < item.attachments.size();
+                         attachment_index++) {
+                        if (item.attachments.get(attachment_index).type.equals("poll")) {
+                            PollAttachment poll = ((PollAttachment) item.attachments.
+                                    get(attachment_index).getContent());
+                            PollAnswer answer = poll.answers.get(poll_answer);
+                            poll.user_votes = addVote ? 0 : 1;
+                            answer.is_voted = addVote;
+                            poll.answers.set(poll_answer, answer);
+                            item.attachments.get(attachment_index).setContent(poll);
+                            ovk_api.wall.getWallItems().set(item_pos, item);
+                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                                    .updateItem(item, item_pos);
+                        }
                     }
                 }
             } else if (message < 0) {
@@ -578,28 +493,5 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 actionBar.addAction(action);
             }
         }
-    }
-
-    public void repost(int position) {
-        final WallPost post = ovk_api.wall.getWallItems().get(position);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final ArrayList<String> functions = new ArrayList<>();
-        builder.setTitle(R.string.repost_dlg_title);
-        functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, functions);
-        builder.setSingleChoiceItems(adapter, -1, null);
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                    Global.openRepostDialog(ProfileIntentActivity.this, ovk_api,
-                            "own_wall", post);
-                    dialog.dismiss();
-                }
-            }
-        });
     }
 }
