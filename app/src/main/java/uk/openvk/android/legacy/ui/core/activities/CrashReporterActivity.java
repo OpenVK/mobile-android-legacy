@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,6 +68,8 @@ public class CrashReporterActivity extends BaseCrashReportDialog implements Dial
         view = getLayoutInflater().inflate(R.layout.activity_crash_report, null);
         ((TextView) view.findViewById(R.id.crash_description)).setText(
                 Html.fromHtml(getResources().getString(R.string.crash_description)));
+        ((TextView) view.findViewById(R.id.crash_description))
+                .setMovementMethod(LinkMovementMethod.getInstance());
 
         Process process = null;
         try {
