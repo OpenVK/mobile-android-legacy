@@ -307,6 +307,8 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                         }
                     }
                 }
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.fragment).setVisibility(View.VISIBLE);
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                 int status = response.getInt("response");
