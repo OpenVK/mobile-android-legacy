@@ -331,6 +331,7 @@ public class UploadManager {
         final Bundle bundle = new Bundle();
         bundle.putString("filename", filename);
         bundle.putString("response", response);
+        bundle.putString("address", apiListeners.from);
         msg.setData(bundle);
         handler.post(new Runnable() {
             @Override
@@ -353,6 +354,7 @@ public class UploadManager {
         bundle.putString("url", url);
         bundle.putLong("position", position);
         bundle.putLong("length", length);
+        bundle.putString("address", apiListeners.from);
         msg.setData(bundle);
         handler.post(new Runnable() {
             @Override

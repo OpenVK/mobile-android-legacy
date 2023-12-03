@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,11 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,20 +33,16 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import dev.tinelix.retro_pm.PopupMenu;
-import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
-import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.view.InfinityScrollView;
@@ -422,7 +414,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 WallPost item = ovk_api.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment poll = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                        Poll poll = ((Poll) item.attachments.get(attachment_index).getContent());
                         poll.user_votes = 0;
                         PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
@@ -436,7 +428,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 WallPost item = ovk_api.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment poll = ((PollAttachment) item.attachments.get(attachment_index).getContent());
+                        Poll poll = ((Poll) item.attachments.get(attachment_index).getContent());
                         poll.user_votes = 0;
                         PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;

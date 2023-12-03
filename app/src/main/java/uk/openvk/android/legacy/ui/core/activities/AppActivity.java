@@ -29,7 +29,7 @@ import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.counters.*;
 import uk.openvk.android.legacy.api.entities.*;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -914,7 +914,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     for (int attachment_index = 0; attachment_index < item.attachments.size();
                          attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
-                            PollAttachment poll = ((PollAttachment) item.attachments.
+                            Poll poll = ((Poll) item.attachments.
                                     get(attachment_index).getContent());
                             PollAnswer answer = poll.answers.get(poll_answer);
                             poll.user_votes = addVote ? 0 : 1;

@@ -80,7 +80,7 @@ public class NetworkActivity extends TranslucentActivity {
         listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
             @Override
             public void onAPISuccess(final Context ctx, int msg_code, final Bundle data) {
-                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                if(BuildConfig.DEBUG)
                     Log.d(OvkApplication.APP_TAG,
                             String.format(
                                     "Handling API message %s in %s",
@@ -107,7 +107,7 @@ public class NetworkActivity extends TranslucentActivity {
         listeners.failListener = new OvkAPIListeners.OnAPIFailListener() {
             @Override
             public void onAPIFailed(Context ctx, int msg_code, final Bundle data) {
-                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                if(BuildConfig.DEBUG)
                     Log.d(OvkApplication.APP_TAG,
                             String.format(
                                     "Handling API message %s in %s",
@@ -121,7 +121,7 @@ public class NetworkActivity extends TranslucentActivity {
         listeners.processListener = new OvkAPIListeners.OnAPIProcessListener() {
             @Override
             public void onAPIProcess(Context ctx, Bundle data, long value, long length) {
-                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                if(BuildConfig.DEBUG)
                     Log.d(OvkApplication.APP_TAG,
                             String.format(
                                     "Handling API message %s in %s",

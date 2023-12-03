@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.api.attachments;
+package uk.openvk.android.legacy.api.entities;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PollAttachment {
+public class Poll {
     public long id;
     public long end_date;
     public String question;
@@ -31,7 +31,7 @@ public class PollAttachment {
     public ArrayList<PollAnswer> answers;
     public int user_votes;
     public long votes;
-    public PollAttachment(String question, long id, long end_date, boolean multiple, boolean can_vote, boolean anonymous) {
+    public Poll(String question, long id, long end_date, boolean multiple, boolean can_vote, boolean anonymous) {
         this.question = question;
         this.id = id;
         this.end_date = end_date;
@@ -41,7 +41,7 @@ public class PollAttachment {
         this.anonymous = anonymous;
     }
 
-    public PollAttachment() {
+    public Poll() {
 
     }
 

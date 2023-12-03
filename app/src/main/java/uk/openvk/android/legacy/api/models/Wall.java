@@ -16,7 +16,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.Photo;
@@ -631,7 +631,7 @@ public class Wall implements Parcelable {
                     }
                     case "poll": {
                         JSONObject poll_attachment = attachment.getJSONObject("poll");
-                        PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"),
+                        Poll poll = new Poll(poll_attachment.getString("question"),
                                 poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
                                 poll_attachment.getBoolean("multiple"),
                                 poll_attachment.getBoolean("can_vote"),
@@ -639,9 +639,9 @@ public class Wall implements Parcelable {
                         JSONArray answers = poll_attachment.getJSONArray("answers");
                         JSONArray votes = poll_attachment.getJSONArray("answer_ids");
                         if (votes.length() > 0) {
-                            pollAttachment.user_votes = votes.length();
+                            poll.user_votes = votes.length();
                         }
-                        pollAttachment.votes = poll_attachment.getInt("votes");
+                        poll.votes = poll_attachment.getInt("votes");
                         for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
                             JSONObject answer = answers.getJSONObject(answers_index);
                             PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"),
@@ -651,12 +651,12 @@ public class Wall implements Parcelable {
                                     pollAnswer.is_voted = true;
                                 }
                             }
-                            pollAttachment.answers.add(pollAnswer);
+                            poll.answers.add(pollAnswer);
                         }
                         attachment_status = "done";
                         Attachment attachment_obj = new Attachment(attachment.getString("type"));
                         attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(pollAttachment);
+                        attachment_obj.setContent(poll);
                         try { // handle floating crash
                             attachments_list.add(attachment_obj);
                         } catch (ArrayIndexOutOfBoundsException ignored) {

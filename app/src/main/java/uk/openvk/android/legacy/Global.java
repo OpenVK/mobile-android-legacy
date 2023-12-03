@@ -859,7 +859,7 @@ public class Global {
     }
 
     public static void openIntentFromCounters(Context ctx, String action) {
-        if(!BuildConfig.BUILD_TYPE.equals("release"))
+        if(BuildConfig.DEBUG)
             Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
         if(action.length() > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);

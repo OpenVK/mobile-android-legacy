@@ -966,6 +966,7 @@ public class OvkAPIWrapper {
             msg.what = message;
             final Bundle bundle = new Bundle();
             bundle.putString("response", response);
+            bundle.putString("address", apiListeners.from);
             msg.setData(bundle);
 
             handler.post(new Runnable() {
@@ -990,6 +991,7 @@ public class OvkAPIWrapper {
             final Bundle bundle = new Bundle();
             bundle.putString("response", response);
             bundle.putString("method", method);
+            bundle.putString("address", apiListeners.from);
             msg.setData(bundle);
             handler.post(new Runnable() {
                 @Override
@@ -1019,6 +1021,7 @@ public class OvkAPIWrapper {
             bundle.putString("response", response);
             bundle.putString("method", method);
             bundle.putString("args", args);
+            bundle.putString("address", apiListeners.from);
             msg.setData(bundle);
             handler.post(new Runnable() {
                 @Override
@@ -1044,6 +1047,7 @@ public class OvkAPIWrapper {
             bundle.putString("method", method);
             bundle.putString("args", args);
             bundle.putString("where", where);
+            bundle.putString("address", apiListeners.from);
             msg.setData(bundle);
             handler.post(new Runnable() {
                 @Override

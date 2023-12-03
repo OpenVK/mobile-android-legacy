@@ -42,7 +42,7 @@ import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.models.Wall;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
@@ -110,7 +110,7 @@ public class WallPostActivity extends NetworkFragmentActivity
             @Override
             public void handleMessage(Message message) {
                 final Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d(
+                if(BuildConfig.DEBUG) Log.d(
                         OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
             }
         };
@@ -222,7 +222,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                 Video video = (Video) post.attachments.get(i).getContent();
                 postViewLayout.loadVideoAttachment(this, video, post.owner_id);
             } else if(post.attachments.get(i).type.equals("poll")) {
-                PollAttachment poll = (PollAttachment) post.attachments.get(i).getContent();
+                Poll poll = (Poll) post.attachments.get(i).getContent();
                 postViewLayout.loadPollAttachment(this, poll, wall.getWallItems(), post);
             }
         }

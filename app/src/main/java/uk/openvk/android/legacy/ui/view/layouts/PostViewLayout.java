@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
@@ -515,7 +515,7 @@ public class PostViewLayout extends LinearLayout {
         }
     }
 
-    public void loadPollAttachment(Context ctx, PollAttachment poll,
+    public void loadPollAttachment(Context ctx, Poll poll,
                                    ArrayList<WallPost> wallPosts, WallPost post) {
         PollAttachView pollAttachView = findViewById(R.id.poll_layout);
         pollAttachView.createAdapter(ctx, 0, wallPosts, post,

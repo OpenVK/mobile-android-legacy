@@ -113,7 +113,7 @@ public class PhotoViewerActivity extends NetworkActivity {
             @Override
             public void handleMessage(Message message) {
                 Bundle data = message.getData();
-                if(!BuildConfig.BUILD_TYPE.equals("release"))
+                if(BuildConfig.DEBUG)
                     Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
                 receiveState(message.what, data);
             }

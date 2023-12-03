@@ -321,7 +321,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                         file.createNewFile();
                     }
                 }
-                if(!BuildConfig.BUILD_TYPE.equals("release")) Log.d("OpenVK Legacy", "Log file created!");
+                if(BuildConfig.DEBUG) Log.d("OpenVK Legacy", "Log file created!");
                 FileWriter writer = null;
                 writer = new FileWriter(file);
                 OvkApplication ovk = ((OvkApplication) getApplicationContext());

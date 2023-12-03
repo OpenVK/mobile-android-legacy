@@ -24,7 +24,7 @@ import java.util.List;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.WallPost;
@@ -160,13 +160,13 @@ public class PostAttachmentsView extends LinearLayout {
                         break;
                     case "poll":
                         if (post.attachments.get(i).getContent() != null) {
-                            PollAttachment pollAttachment = ((PollAttachment)
+                            Poll poll = ((Poll)
                                     post.attachments.get(i).getContent());
                             pollView.createAdapter(parent, position, posts, post,
-                                    pollAttachment.answers, pollAttachment.multiple,
-                                    pollAttachment.user_votes, pollAttachment.votes);
-                            pollView.setPollInfo(pollAttachment.question, pollAttachment.anonymous,
-                                    pollAttachment.end_date);
+                                    poll.answers, poll.multiple,
+                                    poll.user_votes, poll.votes);
+                            pollView.setPollInfo(poll.question, poll.anonymous,
+                                    poll.end_date);
                             pollView.setVisibility(View.VISIBLE);
                         }
                         break;
