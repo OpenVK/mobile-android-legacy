@@ -249,6 +249,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     ovk_api.users.search(ovk_api.wrapper, args);
                 }
             } else if (message == HandlerMessages.USERS_GET) {
+                profileFragment.loadAPIData(this, ovk_api, getWindowManager());
                 if(user.id != ovk_api.account.id) {
                     ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
                     popup_menu = new android.support.v7.widget.PopupMenu(this, null);
