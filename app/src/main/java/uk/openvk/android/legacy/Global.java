@@ -912,4 +912,22 @@ public class Global {
         // 11 = December, 0 = January
         return (month == 11 && day >= 1) || (month == 0 && day <= 15);
     }
+
+    public static void copyToClipboard(Context ctx, String text) {
+        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                    ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                clipboard.setText(text);
+            }
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                    ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip =
+                    android.content.ClipData.newPlainText(OvkApplication.APP_TAG, text);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +28,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -63,7 +65,7 @@ public class SlidingMenuLayout extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
+        findViewById(R.id.menu_view).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
@@ -73,7 +75,7 @@ public class SlidingMenuLayout extends LinearLayout {
         });
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
                 getResources().getColor(R.color.transparent));
-        ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.profile_menu_ll).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(context.getClass().getSimpleName().equals("AppActivity")) {
@@ -81,7 +83,7 @@ public class SlidingMenuLayout extends LinearLayout {
                 }
             }
         });
-        TextView profile_name = (TextView) findViewById(R.id.profile_name);
+        TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
         TextView version_name = findViewById(R.id.version_label);
         version_name.setText(getResources().getString(R.string.app_version_s,
@@ -96,6 +98,13 @@ public class SlidingMenuLayout extends LinearLayout {
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
             view.setBackgroundColor(getResources().getColor(R.color.color_black_v2));
         }
+        setSearchListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext().getApplicationContext(), QuickSearchActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
     }
 
     public SlidingMenuLayout(final Context context, AttributeSet attrs) {
@@ -104,11 +113,11 @@ public class SlidingMenuLayout extends LinearLayout {
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        ((ListView) findViewById(R.id.menu_view)).setBackgroundColor(
+        findViewById(R.id.menu_view).setBackgroundColor(
                 getResources().getColor(R.color.transparent));
         ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
                 getResources().getColor(R.color.transparent));
-        ((LinearLayout) findViewById(R.id.profile_menu_ll)).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.profile_menu_ll).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(context.getClass().getSimpleName().equals("AppActivity")) {
@@ -137,6 +146,13 @@ public class SlidingMenuLayout extends LinearLayout {
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
             view.setBackgroundColor(getResources().getColor(R.color.color_black_v2));
         }
+        setSearchListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext().getApplicationContext(), QuickSearchActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
     }
 
     public void setSearchListener(OnClickListener onClickListener) {
@@ -145,7 +161,7 @@ public class SlidingMenuLayout extends LinearLayout {
     }
 
     public void setProfileName(String name) {
-        TextView profile_name = (TextView) findViewById(R.id.profile_name);
+        TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(name);
     }
 
@@ -161,7 +177,7 @@ public class SlidingMenuLayout extends LinearLayout {
     }
 
     public void loadAccountAvatar(Account account, String quality) {
-        ImageView avatar = (ImageView) findViewById(R.id.avatar);
+        ImageView avatar = findViewById(R.id.avatar);
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;

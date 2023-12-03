@@ -288,24 +288,16 @@ public class AppActivity extends NetworkFragmentActivity {
         if(item.getItemId() == R.id.newpost) {
             Global.openNewPostActivity(this, ovk_api);
         } else if(item.getItemId() == R.id.copy_link) {
-            if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                        getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.setText(String.format("http://%s/id%s",
-                        instance_prefs.getString("server", ""), ovk_api.user.id));
-            } else {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
-                        getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip =
-                        android.content.ClipData.newPlainText("OpenVK User URL",
-                                String.format("http://%s/id%s",
-                                        instance_prefs.getString("server", ""),
-                                        ovk_api.user.id));
-                clipboard.setPrimaryClip(clip);
-            }
+            Global.copyToClipboard(
+                    this,
+                    String.format("http://%s/id%s",
+                    instance_prefs.getString("server", ""),
+                    ovk_api.user.id)
+            );
         } else if(item.getItemId() == R.id.open_in_browser) {
             String user_url = String.format("http://%s/id%s",
-                    instance_prefs.getString("server", ""), ovk_api.user.id);
+                    instance_prefs.getString("server", ""),
+                    ovk_api.user.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(user_url));
             startActivity(i);
@@ -399,17 +391,6 @@ public class AppActivity extends NetworkFragmentActivity {
         slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
         slidingMenuArray = Global.createSlidingMenuItems(this);
         accountSlidingMenuArray = Global.createAccountSlidingMenuItems(this);
-        slidingmenuLayout.setSearchListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), QuickSearchActivity.class);
-                try {
-                    startActivity(intent);
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
         SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
         AccountSlidingMenuAdapter accountMenuAdapter = new AccountSlidingMenuAdapter(this,
                 accountSlidingMenuArray);
@@ -486,20 +467,14 @@ public class AppActivity extends NetworkFragmentActivity {
             global_prefs_editor.putString("current_screen", "newsfeed");
             global_prefs_editor.commit();
         } else {
-            try {
-                if (selectedFragment instanceof ProfileFragment) {
-                    openAccountProfile();
-                } else if (selectedFragment instanceof FriendsFragment) {
-                    onSlidingMenuItemClicked(0, false);
-                }
-                if (selectedFragment instanceof ConversationsFragment) {
-                    onSlidingMenuItemClicked(1, false);
-                }
-                if (selectedFragment instanceof GroupsFragment) {
-                    onSlidingMenuItemClicked(2, false);
-                }
-            } catch (Exception ignored) {
-
+            if (selectedFragment instanceof ProfileFragment) {
+                openAccountProfile();
+            } else if (selectedFragment instanceof FriendsFragment) {
+                onSlidingMenuItemClicked(0, false);
+            } else if (selectedFragment instanceof ConversationsFragment) {
+                onSlidingMenuItemClicked(1, false);
+            } else if (selectedFragment instanceof GroupsFragment) {
+                onSlidingMenuItemClicked(2, false);
             }
         }
         progressLayout.setVisibility(View.VISIBLE);
@@ -566,6 +541,9 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void refreshPage(String screen) {
         errorLayout.setVisibility(View.GONE);
+        if(screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed")) {
+            if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
+        }
         if(screen.equals("subscriptions_newsfeed")) {
             menu_id = R.menu.newsfeed;
             setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -575,9 +553,6 @@ public class AppActivity extends NetworkFragmentActivity {
             } else {
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
-            }
-            if (ovk_api.newsfeed == null) {
-                ovk_api.newsfeed = new Newsfeed();
             }
             newsfeed_count = 25;
             ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
@@ -591,9 +566,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
             }
-            if (ovk_api.newsfeed == null) {
-                ovk_api.newsfeed = new Newsfeed();
-            }
+            if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
             newsfeed_count = 25;
             ovk_api.newsfeed.getGlobal(ovk_api.wrapper, newsfeed_count);
         }
@@ -828,7 +801,6 @@ public class AppActivity extends NetworkFragmentActivity {
                     message == HandlerMessages.WALL_GET_MORE) {
                 profileFragment.loadWall(this, ovk_api);
             } else if (message == HandlerMessages.FRIENDS_GET) {
-                ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 if (selectedFragment instanceof FriendsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
