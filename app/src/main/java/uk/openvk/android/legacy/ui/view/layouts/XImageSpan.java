@@ -4,7 +4,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.style.ImageSpan;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

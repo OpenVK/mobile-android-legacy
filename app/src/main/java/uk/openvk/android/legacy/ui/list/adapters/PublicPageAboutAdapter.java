@@ -15,8 +15,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.list.items.PublicPageAboutItem;
 
-/**
- * OPENVK LEGACY LICENSE NOTIFICATION
+/* OPENVK LEGACY LICENSE NOTIFICATION
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either

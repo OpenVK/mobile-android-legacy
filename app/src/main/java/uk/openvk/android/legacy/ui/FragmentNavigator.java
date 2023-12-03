@@ -13,8 +13,7 @@ import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 
-/**
- * OPENVK LEGACY LICENSE NOTIFICATION
+/* OPENVK LEGACY LICENSE NOTIFICATION
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -26,8 +25,7 @@ import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity
  * You should have received a copy of the GNU Affero General Public License along with this
  * program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy
- */
+ * Source code: https://github.com/openvk/mobile-android-legacy */
 
 public class FragmentNavigator {
     private Activity activity;

@@ -17,8 +17,7 @@ import uk.openvk.android.legacy.api.entities.Photo;
  * You should have received a copy of the GNU Affero General Public License along with this
  * program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy
- */
+ * Source code: https://github.com/openvk/mobile-android-legacy */
 
 public class UploadableAttachment {
     public String filename;

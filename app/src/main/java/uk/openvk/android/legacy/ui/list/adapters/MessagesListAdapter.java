@@ -25,7 +25,7 @@ import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.api.entities.Message;
 import uk.openvk.android.legacy.ui.view.layouts.IncomingMessageLayout;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

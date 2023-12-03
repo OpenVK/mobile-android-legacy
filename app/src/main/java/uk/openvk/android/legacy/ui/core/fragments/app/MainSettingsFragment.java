@@ -51,7 +51,7 @@ import uk.openvk.android.legacy.ui.core.activities.NetworkSettingsActivity;
 import uk.openvk.android.legacy.ui.list.adapters.InstanceCountersAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

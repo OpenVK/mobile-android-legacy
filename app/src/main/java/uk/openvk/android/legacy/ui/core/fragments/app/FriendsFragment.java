@@ -34,7 +34,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

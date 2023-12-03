@@ -34,8 +34,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 
-/**
- * OPENVK LEGACY LICENSE NOTIFICATION
+/* OPENVK LEGACY LICENSE NOTIFICATION
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -47,8 +46,7 @@ import uk.openvk.android.legacy.R;
  * You should have received a copy of the GNU Affero General Public License along with this
  * program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy
- */
+ * Source code: https://github.com/openvk/mobile-android-legacy */
 
 public class OvkMediaPlayer extends MediaPlayer {
     private final Context ctx;

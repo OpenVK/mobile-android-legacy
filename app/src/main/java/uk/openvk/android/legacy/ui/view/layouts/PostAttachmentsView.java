@@ -212,7 +212,7 @@ public class PostAttachmentsView extends LinearLayout {
                             .setMargins(
                                     0,
                                     0,
-                                    i < photoAttachments.size() - 1 ? 2*dp : 0,
+                                    i < photoAttachments.size() - 1 ? 4*dp : 0,
                                     2*dp
                             );
                     photoView.setAdjustViewBounds(true);
