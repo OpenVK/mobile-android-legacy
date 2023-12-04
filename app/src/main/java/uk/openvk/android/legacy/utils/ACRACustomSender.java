@@ -9,7 +9,8 @@ import org.acra.sender.ReportSenderException;
 
 import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
 
-/* OPENVK LEGACY LICENSE NOTIFICATION
+/**
+ * OPENVK LEGACY LICENSE NOTIFICATION
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -21,17 +22,12 @@ import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
  * You should have received a copy of the GNU Affero General Public License along with this
  * program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy */
-
- /**
-    <p>About our usage of ACRA in application see
-            <a href="https://github.com/openvk/mobile-android-legacy/issues/153">issue #153</a>.
-    </p>
-
+ * Source code: https://github.com/openvk/mobile-android-legacy
  */
+
 public class ACRACustomSender implements ReportSender {
     @Override
-    public void send(Context context, CrashReportData errorContent) {
+    public void send(Context context, CrashReportData errorContent) throws ReportSenderException {
         Intent intent = new Intent(context.getApplicationContext(), CrashReporterActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.getApplicationContext().startActivity(intent);

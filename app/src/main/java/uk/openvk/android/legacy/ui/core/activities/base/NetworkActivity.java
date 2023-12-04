@@ -28,7 +28,8 @@ import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
 import uk.openvk.android.legacy.ui.core.enumerations.UiMessages;
 
-/* OPENVK LEGACY LICENSE NOTIFICATION
+/**
+ * OPENVK LEGACY LICENSE NOTIFICATION
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either

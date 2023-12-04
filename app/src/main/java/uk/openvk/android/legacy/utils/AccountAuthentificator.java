@@ -12,7 +12,8 @@ import android.widget.Toast;
 
 import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
 
-/* OPENVK LEGACY LICENSE NOTIFICATION
+/**
+ * OPENVK LEGACY LICENSE NOTIFICATION
  * <p>
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -24,7 +25,8 @@ import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
  * You should have received a copy of the GNU Affero General Public License along with this
  * program. If not, see https://www.gnu.org/licenses/.
  * <p>
- * Source code: https://github.com/openvk/mobile-android-legacy */
+ * Source code: https://github.com/openvk/mobile-android-legacy
+ */
 
 public class AccountAuthentificator extends AbstractAccountAuthenticator {
 

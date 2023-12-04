@@ -22,7 +22,7 @@ import uk.openvk.android.legacy.R;
 
 import static uk.openvk.android.legacy.BuildConfig.DEBUG;
 
-/*  Copyleft © 2022, 2023 OpenVK Team
+/** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

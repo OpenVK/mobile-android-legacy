@@ -19,7 +19,7 @@ import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
 import uk.openvk.android.legacy.ui.core.fragments.base.UsersFragment;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
-/*  Copyleft © 2022, 2023 OpenVK Team
+/** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

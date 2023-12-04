@@ -44,7 +44,7 @@ import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.view.layouts.PostAttachmentsView;
 import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
 
-/*  Copyleft © 2022, 2023 OpenVK Team
+/** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of

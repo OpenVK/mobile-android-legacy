@@ -25,7 +25,8 @@ import uk.openvk.android.legacy.ui.core.activities.AboutApplicationActivity;
  * You should have received a copy of the GNU Affero General Public License along with this
  * program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy */
+ * Source code: https://github.com/openvk/mobile-android-legacy
+ */
 
 public class CustomLinkMovementMethod extends LinkMovementMethod {
     private final String TAG = CustomLinkMovementMethod.class.getSimpleName();
