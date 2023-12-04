@@ -527,9 +527,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             WallLayout wallLayout = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
-                newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+                newsfeedFragment = ((AppActivity) ctx).fragmentHub.newsfeedFragment;
                 if (((AppActivity) ctx).selectedFragment instanceof ProfileFragment) {
-                    ProfileFragment profileFragment = ((AppActivity) ctx).profileFragment;
+                    ProfileFragment profileFragment = ((AppActivity) ctx).fragmentHub.profileFragment;
                     if(profileFragment.getView() != null) {
                         wallLayout = profileFragment.getView().findViewById(R.id.wall_layout);
                         if (wallLayout != null) {
@@ -570,7 +570,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             WallLayout wallLayout = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
-                newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+                newsfeedFragment = ((AppActivity) ctx).fragmentHub.newsfeedFragment;
             } else if(ctx instanceof ProfileIntentActivity) {
                 ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
