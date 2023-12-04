@@ -432,10 +432,10 @@ public class AppActivity extends NetworkFragmentActivity {
         ft.add(R.id.app_fragment, fragmentHub.friendsFragment, "friends");
         ft.add(R.id.app_fragment, fragmentHub.photosFragment, "photos");
         ft.add(R.id.app_fragment, fragmentHub.videosFragment, "videos");
-        ft.add(R.id.app_fragment, fragmentHub.groupsFragment, "groups");
+        ft.add(R.id.app_fragment, groupsFragment, "groups");
         ft.add(R.id.app_fragment, fragmentHub.conversationsFragment, "messages");
         ft.add(R.id.app_fragment, fragmentHub.profileFragment, "profile");
-        ft.add(R.id.app_fragment, fragmentHub.notesFragment, "notes");
+        ft.add(R.id.app_fragment, notesFragment, "notes");
         ft.add(R.id.app_fragment, fragmentHub.mainSettingsFragment, "settings");
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
