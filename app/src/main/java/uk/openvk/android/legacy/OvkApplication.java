@@ -17,12 +17,11 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import uk.openvk.android.legacy.api.wrappers.NotificationManager;
 import uk.openvk.android.legacy.services.LongPollService;
-import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
+import uk.openvk.android.legacy.core.activities.CrashReporterActivity;
 import uk.openvk.android.legacy.utils.ACRACustomSender;
 
 /** Copyleft © 2022, 2023 OpenVK Team

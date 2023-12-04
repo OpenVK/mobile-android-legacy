@@ -10,7 +10,7 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
+import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

@@ -28,9 +28,9 @@ import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.core.activities.NoteActivity;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.core.activities.NoteActivity;
+import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 import org.apmem.tools.layouts.FlowLayout;
 
 public class PostAttachmentsView extends LinearLayout {

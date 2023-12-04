@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 
 /** Copyleft © 2022, 2023 OpenVK Team

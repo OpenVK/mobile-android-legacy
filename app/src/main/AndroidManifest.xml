@@ -45,7 +45,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.core.activities.MainActivity"
+        <activity android:name=".core.activities.MainActivity"
             android:label="@string/app_name"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
@@ -58,7 +58,7 @@
         </activity>
 
         <activity
-            android:name=".ui.core.activities.AuthActivity"
+            android:name=".core.activities.AuthActivity"
             android:label="@string/app_name"
             android:theme="@style/BaseStyle.NoActionBar"
             android:exported="true"
@@ -67,7 +67,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.AppActivity"
+            android:name=".core.activities.AppActivity"
             android:label="@string/app_name"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -76,7 +76,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.NewPostActivity"
+            android:name=".core.activities.NewPostActivity"
             android:label="@string/new_status"
             android:theme="@style/BaseStyle.PopupIfTablet"
             android:exported="true"
@@ -85,7 +85,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.intents.ProfileIntentActivity"
+            android:name=".core.activities.intents.ProfileIntentActivity"
             android:label="@string/profile"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -114,7 +114,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.core.activities.intents.FriendsIntentActivity"
+        <activity android:name=".core.activities.intents.FriendsIntentActivity"
             android:label="@string/friends"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -144,7 +144,7 @@
         </activity>
 
         <activity
-            android:name=".ui.core.activities.intents.GroupIntentActivity"
+            android:name=".core.activities.intents.GroupIntentActivity"
             android:label="@string/group"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -174,7 +174,7 @@
         </activity>
 
         <activity
-            android:name=".ui.core.activities.intents.NotesIntentActivity"
+            android:name=".core.activities.intents.NotesIntentActivity"
             android:label="@string/notes"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -204,7 +204,7 @@
         </activity>
 
         <activity
-            android:name=".ui.core.activities.ConversationActivity"
+            android:name=".core.activities.ConversationActivity"
             android:label="@string/messages"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -214,7 +214,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.MainSettingsActivity"
+            android:name=".core.activities.MainSettingsActivity"
             android:label="@string/menu_settings"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -223,7 +223,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.DebugMenuActivity"
+            android:name=".core.activities.DebugMenuActivity"
             android:label="@string/debug_menu"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -232,7 +232,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.NetworkSettingsActivity"
+            android:name=".core.activities.NetworkSettingsActivity"
             android:label="@string/sett_network"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -241,7 +241,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.AdvancedSettingsActivity"
+            android:name=".core.activities.AdvancedSettingsActivity"
             android:label="@string/sett_advanced"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -249,7 +249,7 @@
             android:resizeableActivity="false"
         />
 
-        <activity android:name=".ui.core.activities.QuickSearchActivity"
+        <activity android:name=".core.activities.QuickSearchActivity"
             android:label="@string/search_global"
             android:theme="@style/BaseStyle.NoActionBar.NoShadow"
             android:exported="true"
@@ -258,7 +258,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.WallPostActivity"
+            android:name=".core.activities.WallPostActivity"
             android:label="@string/new_status"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -266,7 +266,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.AboutApplicationActivity"
+            android:name=".core.activities.AboutApplicationActivity"
             android:label="@string/menu_about"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -274,7 +274,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.PhotoViewerActivity"
+            android:name=".core.activities.PhotoViewerActivity"
             android:label="@string/photo"
             android:theme="@style/BaseStyle.Dark.Transparent"
             android:exported="true"
@@ -282,7 +282,7 @@
         />
 
         <activity
-            android:name=".ui.core.activities.VideoPlayerActivity"
+            android:name=".core.activities.VideoPlayerActivity"
             android:label="@string/video"
             android:theme="@style/BaseStyle.Dark.Transparent"
             android:exported="true"
@@ -291,14 +291,14 @@
             />
 
         <activity
-            android:name=".ui.core.activities.NoteActivity"
+            android:name=".core.activities.NoteActivity"
             android:label="@string/attach_note"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
             />
 
-        <activity android:name=".ui.core.activities.GroupMembersActivity"
+        <activity android:name=".core.activities.GroupMembersActivity"
             android:label="@string/group_members"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
@@ -313,7 +313,7 @@
         </activity>
 
         <activity
-            android:name=".ui.core.activities.intents.PhotoAlbumIntentActivity"
+            android:name=".core.activities.intents.PhotoAlbumIntentActivity"
             android:label="@string/albums"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle.Dark.Transparent"
@@ -355,7 +355,7 @@
                 android:resource="@xml/authenticator"/>
         </service>
 
-        <activity android:name=".ui.core.activities.CrashReporterActivity"
+        <activity android:name=".core.activities.CrashReporterActivity"
             android:theme="@style/BaseStyle.NoActionBar.NoShadow"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>

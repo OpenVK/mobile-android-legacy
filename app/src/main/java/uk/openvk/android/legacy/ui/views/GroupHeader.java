@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 /** Copyleft © 2022, 2023 OpenVK Team

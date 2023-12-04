@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ScrollView;
 
-import uk.openvk.android.legacy.ui.core.listeners.OnScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

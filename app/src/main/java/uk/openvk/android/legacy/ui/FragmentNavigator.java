@@ -8,10 +8,8 @@ import android.view.View;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION

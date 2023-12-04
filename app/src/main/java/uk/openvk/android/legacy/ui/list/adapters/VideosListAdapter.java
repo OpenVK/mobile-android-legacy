@@ -3,7 +3,6 @@ package uk.openvk.android.legacy.ui.list.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,12 +18,10 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.entities.Video;
-import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

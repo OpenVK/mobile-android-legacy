@@ -25,8 +25,8 @@ import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

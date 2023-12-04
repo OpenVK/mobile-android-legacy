@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION

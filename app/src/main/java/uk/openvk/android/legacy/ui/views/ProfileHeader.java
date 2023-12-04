@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 /** Copyleft © 2022, 2023 OpenVK Team

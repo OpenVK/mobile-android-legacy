@@ -7,7 +7,7 @@ import org.acra.collector.CrashReportData;
 import org.acra.sender.ReportSender;
 import org.acra.sender.ReportSenderException;
 
-import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
+import uk.openvk.android.legacy.core.activities.CrashReporterActivity;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION

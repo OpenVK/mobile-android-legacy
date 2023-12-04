@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.User;
-import uk.openvk.android.legacy.ui.core.activities.base.UsersListActivity;
-import uk.openvk.android.legacy.ui.core.fragments.base.UsersFragment;
+import uk.openvk.android.legacy.core.activities.base.UsersListActivity;
+import uk.openvk.android.legacy.core.fragments.base.UsersFragment;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 /** Copyleft © 2022, 2023 OpenVK Team

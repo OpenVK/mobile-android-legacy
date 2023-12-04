@@ -35,9 +35,9 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
 /** Copyleft © 2022, 2023 OpenVK Team

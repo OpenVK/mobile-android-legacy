@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 
-import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

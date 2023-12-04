@@ -37,8 +37,8 @@ import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.api.entities.Photo;
-import uk.openvk.android.legacy.ui.core.activities.VideoPlayerActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
 

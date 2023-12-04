@@ -35,12 +35,12 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
-import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.fragments.app.NewsfeedFragment;
+import uk.openvk.android.legacy.core.fragments.app.ProfileFragment;
 import uk.openvk.android.legacy.ui.views.PostAttachmentsView;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 

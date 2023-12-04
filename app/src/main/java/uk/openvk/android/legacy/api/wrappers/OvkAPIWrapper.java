@@ -1,15 +1,11 @@
 package uk.openvk.android.legacy.api.wrappers;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import org.pixmob.httpclient.HttpClient;
@@ -27,7 +23,6 @@ import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -38,22 +33,9 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Error;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
-import uk.openvk.android.legacy.ui.core.activities.MainSettingsActivity;
-import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.NotesIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

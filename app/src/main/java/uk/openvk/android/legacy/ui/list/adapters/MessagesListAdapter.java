@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.OvkLink;
-import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.api.entities.Message;
 import uk.openvk.android.legacy.ui.views.IncomingMessageLayout;
 

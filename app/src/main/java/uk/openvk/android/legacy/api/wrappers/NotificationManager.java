@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Conversation;
-import uk.openvk.android.legacy.longpoll_api.MessageEvent;
-import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.longpoll.MessageEvent;
+import uk.openvk.android.legacy.core.activities.ConversationActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
