@@ -44,8 +44,8 @@ public class FragmentNavigator {
             ft.hide(appActivity.selectedFragment);
             switch (where) {
                 case "profile":
-                    ft.show(appActivity.profileFragment);
-                    appActivity.selectedFragment = appActivity.profileFragment;
+                    ft.show(appActivity.fragmentHub.profileFragment);
+                    appActivity.selectedFragment = appActivity.fragmentHub.profileFragment;
                     if(appActivity.profile_loaded) {
                         showFragment(activity, appActivity.ovk_api.user.first_name != null);
                     }
@@ -65,10 +65,10 @@ public class FragmentNavigator {
                     }
                     break;
                 case "friends":
-                    ft.show(appActivity.friendsFragment);
-                    showFragment(activity, appActivity.friendsFragment.getCount() != 0);
+                    ft.show(appActivity.fragmentHub.friendsFragment);
+                    showFragment(activity, appActivity.fragmentHub.friendsFragment.getCount() != 0);
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.friendsFragment;
+                    appActivity.selectedFragment = appActivity.fragmentHub.friendsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "friends");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
@@ -79,10 +79,10 @@ public class FragmentNavigator {
                     }
                     break;
                 case "photos":
-                    ft.show(appActivity.photosFragment);
-                    showFragment(activity, appActivity.photosFragment.getCount() != 0);
+                    ft.show(appActivity.fragmentHub.photosFragment);
+                    showFragment(activity, appActivity.fragmentHub.photosFragment.getCount() != 0);
                     appActivity.progressLayout.enableDarkTheme(true);
-                    appActivity.selectedFragment = appActivity.photosFragment;
+                    appActivity.selectedFragment = appActivity.fragmentHub.photosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "photos");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
@@ -93,10 +93,10 @@ public class FragmentNavigator {
                     }
                     break;
                 case "videos":
-                    ft.show(appActivity.videosFragment);
-                    showFragment(activity, appActivity.videosFragment.getCount() != 0);
+                    ft.show(appActivity.fragmentHub.videosFragment);
+                    showFragment(activity, appActivity.fragmentHub.videosFragment.getCount() != 0);
                     appActivity.progressLayout.enableDarkTheme(true);
-                    appActivity.selectedFragment = appActivity.videosFragment;
+                    appActivity.selectedFragment = appActivity.fragmentHub.videosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "videos");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
@@ -107,9 +107,9 @@ public class FragmentNavigator {
                     }
                     break;
                 case "messages":
-                    ft.show(appActivity.conversationsFragment);
-                    showFragment(activity, appActivity.conversationsFragment.getCount() != 0);
-                    appActivity.selectedFragment = appActivity.conversationsFragment;
+                    ft.show(appActivity.fragmentHub.conversationsFragment);
+                    showFragment(activity, appActivity.fragmentHub.conversationsFragment.getCount() != 0);
+                    appActivity.selectedFragment = appActivity.fragmentHub.conversationsFragment;
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "messages");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -149,10 +149,10 @@ public class FragmentNavigator {
                     }
                     break;
                 case "newsfeed":
-                    ft.show(appActivity.newsfeedFragment);
-                    showFragment(activity, appActivity.newsfeedFragment.getCount() != 0);
+                    ft.show(appActivity.fragmentHub.newsfeedFragment);
+                    showFragment(activity, appActivity.fragmentHub.newsfeedFragment.getCount() != 0);
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.newsfeedFragment;
+                    appActivity.selectedFragment = appActivity.fragmentHub.newsfeedFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "newsfeed");
                     appActivity.setActionBar("custom_newsfeed");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -180,10 +180,10 @@ public class FragmentNavigator {
                     }
                     break;
                 case "settings":
-                    ft.show(appActivity.mainSettingsFragment);
+                    ft.show(appActivity.fragmentHub.mainSettingsFragment);
                     showFragment(activity, true);
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.mainSettingsFragment;
+                    appActivity.selectedFragment = appActivity.fragmentHub.mainSettingsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "settings");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
