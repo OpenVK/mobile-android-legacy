@@ -24,7 +24,7 @@ import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.fragments.app.FriendsFragment;
+import uk.openvk.android.legacy.core.fragments.FriendsFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;

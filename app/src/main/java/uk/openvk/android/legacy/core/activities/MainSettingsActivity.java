@@ -23,7 +23,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.core.fragments.app.MainSettingsFragment;
+import uk.openvk.android.legacy.core.fragments.MainSettingsFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;

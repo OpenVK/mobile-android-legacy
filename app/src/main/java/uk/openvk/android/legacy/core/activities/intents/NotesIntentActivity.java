@@ -30,7 +30,7 @@ import uk.openvk.android.legacy.api.models.Notes;
 import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
-import uk.openvk.android.legacy.core.fragments.app.NotesFragment;
+import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;

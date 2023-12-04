@@ -35,7 +35,16 @@ import uk.openvk.android.legacy.api.entities.*;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.models.*;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
-import uk.openvk.android.legacy.core.fragments.app.*;
+import uk.openvk.android.legacy.core.fragments.AudiosFragment;
+import uk.openvk.android.legacy.core.fragments.ConversationsFragment;
+import uk.openvk.android.legacy.core.fragments.FriendsFragment;
+import uk.openvk.android.legacy.core.fragments.GroupsFragment;
+import uk.openvk.android.legacy.core.fragments.MainSettingsFragment;
+import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
+import uk.openvk.android.legacy.core.fragments.NotesFragment;
+import uk.openvk.android.legacy.core.fragments.PhotosFragment;
+import uk.openvk.android.legacy.core.fragments.ProfileFragment;
+import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
@@ -75,6 +84,7 @@ public class AppActivity extends NetworkFragmentActivity {
     public FriendsFragment friendsFragment;
     public PhotosFragment photosFragment;
     public VideosFragment videosFragment;
+    private AudiosFragment audiosFragment;
     public ConversationsFragment conversationsFragment;
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
@@ -100,6 +110,7 @@ public class AppActivity extends NetworkFragmentActivity {
     public int old_friends_size;
     public boolean profile_loaded = false;
     public android.accounts.Account androidAccount;
+
 
     @SuppressLint({"CommitPrefEdits", "HandlerLeak"})
     @Override
@@ -428,6 +439,7 @@ public class AppActivity extends NetworkFragmentActivity {
         videosFragment = new VideosFragment();
         groupsFragment = new GroupsFragment();
         notesFragment = new NotesFragment();
+        audiosFragment = new AudiosFragment();
         mainSettingsFragment = new MainSettingsFragment();
         friendsFragment.setActivityContext(this);
         fn = new FragmentNavigator(this);

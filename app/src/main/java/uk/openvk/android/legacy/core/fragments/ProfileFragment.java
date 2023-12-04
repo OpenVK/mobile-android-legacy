@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.core.fragments.app;
+package uk.openvk.android.legacy.core.fragments;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
