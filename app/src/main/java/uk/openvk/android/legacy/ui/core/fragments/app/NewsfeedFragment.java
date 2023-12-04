@@ -35,8 +35,8 @@ import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.view.InfinityNestedScrollView;
-import uk.openvk.android.legacy.ui.view.layouts.OvkRefreshableHeaderLayout;
+import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
+import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

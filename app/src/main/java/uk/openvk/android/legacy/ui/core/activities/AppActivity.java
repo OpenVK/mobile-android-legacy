@@ -44,7 +44,11 @@ import uk.openvk.android.legacy.ui.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
-import uk.openvk.android.legacy.ui.view.layouts.*;
+import uk.openvk.android.legacy.ui.views.ActionBarLayout;
+import uk.openvk.android.legacy.ui.views.ErrorLayout;
+import uk.openvk.android.legacy.ui.views.ProgressLayout;
+import uk.openvk.android.legacy.ui.views.SlidingMenuLayout;
+import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team

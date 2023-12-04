@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.ui.core.fragments.base.UsersFragment;
-import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
+import uk.openvk.android.legacy.ui.views.ErrorLayout;
+import uk.openvk.android.legacy.ui.views.ProgressLayout;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION

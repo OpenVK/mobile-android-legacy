@@ -16,17 +16,14 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.entities.Video;
-import uk.openvk.android.legacy.api.models.Videos;
 import uk.openvk.android.legacy.ui.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
-import uk.openvk.android.legacy.ui.list.adapters.PhotoAlbumsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.VideosListAdapter;
 import uk.openvk.android.legacy.ui.list.decorations.VerticalSpace;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
+import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class VideosFragment extends Fragment {
 

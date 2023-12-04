@@ -20,19 +20,19 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+    <uk.openvk.android.legacy.ui.views.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.InfinityScrollView
+    <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
         android:id="@+id/group_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -52,21 +52,21 @@
                 android:background="#313743"
                 android:orientation="vertical">
 
-                <uk.openvk.android.legacy.ui.view.layouts.GroupHeader
+                <uk.openvk.android.legacy.ui.views.GroupHeader
                     android:id="@+id/group_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                </uk.openvk.android.legacy.ui.view.layouts.GroupHeader>
+                </uk.openvk.android.legacy.ui.views.GroupHeader>
 
-                <uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout
+                <uk.openvk.android.legacy.ui.views.AboutGroupLayout
                     android:id="@+id/about_group_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:visibility="gone">
 
-                </uk.openvk.android.legacy.ui.view.layouts.AboutGroupLayout>
+                </uk.openvk.android.legacy.ui.views.AboutGroupLayout>
 
 
                 <Button
@@ -94,24 +94,24 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp">
 
-                    <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
+                    <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
                         android:id="@+id/members_counter"
                         android:layout_width="110dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1">
 
-                    </uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout>
+                    </uk.openvk.android.legacy.ui.views.ProfileCounterLayout>
                 </TableRow>
 
             </LinearLayout>
 
-            <uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector
+            <uk.openvk.android.legacy.ui.views.ProfileWallSelector
                 android:id="@+id/wall_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout
+            <uk.openvk.android.legacy.ui.views.WallErrorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#ffffff"
@@ -119,7 +119,7 @@
                 android:id="@+id/wall_error_layout"
                 />
 
-            <uk.openvk.android.legacy.ui.view.layouts.WallLayout
+            <uk.openvk.android.legacy.ui.views.WallLayout
                 android:id="@+id/wall_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -127,6 +127,6 @@
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-    </uk.openvk.android.legacy.ui.view.InfinityScrollView>
+    </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
 
 </LinearLayout>

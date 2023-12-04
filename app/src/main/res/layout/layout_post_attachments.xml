@@ -38,21 +38,21 @@
         android:adjustViewBounds="true"
         android:visibility="visible" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.CommonAttachView
+    <uk.openvk.android.legacy.ui.views.CommonAttachView
         android:id="@+id/post_attachment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
+    <uk.openvk.android.legacy.ui.views.PollAttachView
         android:id="@+id/post_poll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
+    <uk.openvk.android.legacy.ui.views.VideoAttachView
         android:id="@+id/post_video"
         android:layout_width="match_parent"
         android:layout_height="240dp"

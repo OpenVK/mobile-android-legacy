@@ -1,8 +1,6 @@
 package uk.openvk.android.legacy.ui.core.activities.intents;
 
-import android.app.ActionBar;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -27,7 +25,7 @@ import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.ui.list.adapters.PhotosListAdapter;
-import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
+import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.utils.FlexibleGridLayoutManager;
 
 /** Copyleft © 2022, 2023 OpenVK Team

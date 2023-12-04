@@ -15,7 +15,7 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 
-<uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.ui.views.base.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/auth"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -33,4 +33,4 @@
         android:paddingBottom="20dip"
         android:src="@drawable/login_logo" />
 
-</uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>
+</uk.openvk.android.legacy.ui.views.base.XLinearLayout>

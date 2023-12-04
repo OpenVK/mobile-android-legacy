@@ -47,11 +47,11 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.listeners.OnKeyboardStateListener;
-import uk.openvk.android.legacy.ui.view.layouts.CommentPanel;
-import uk.openvk.android.legacy.ui.view.layouts.PostViewLayout;
+import uk.openvk.android.legacy.ui.views.CommentPanel;
+import uk.openvk.android.legacy.ui.views.PostViewLayout;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.view.layouts.XLinearLayout;
+import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team

@@ -31,8 +31,8 @@ import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
-import uk.openvk.android.legacy.ui.view.layouts.TabSelector;
+import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
+import uk.openvk.android.legacy.ui.views.TabSelector;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

@@ -41,8 +41,8 @@ import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
-import uk.openvk.android.legacy.ui.view.layouts.PostAttachmentsView;
-import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
+import uk.openvk.android.legacy.ui.views.PostAttachmentsView;
+import uk.openvk.android.legacy.ui.views.WallLayout;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

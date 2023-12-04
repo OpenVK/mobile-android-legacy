@@ -25,7 +25,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <uk.openvk.android.legacy.ui.view.InfinityRecyclerView
+        <uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView
             android:id="@+id/videos_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

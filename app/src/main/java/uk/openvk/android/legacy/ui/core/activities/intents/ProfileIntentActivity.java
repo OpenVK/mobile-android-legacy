@@ -33,10 +33,10 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
-import uk.openvk.android.legacy.ui.view.layouts.ErrorLayout;
-import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
-import uk.openvk.android.legacy.ui.view.layouts.ProgressLayout;
-import uk.openvk.android.legacy.ui.view.layouts.WallLayout;
+import uk.openvk.android.legacy.ui.views.ErrorLayout;
+import uk.openvk.android.legacy.ui.views.ProfileHeader;
+import uk.openvk.android.legacy.ui.views.ProgressLayout;
+import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team

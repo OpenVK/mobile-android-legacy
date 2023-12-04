@@ -1,15 +1,11 @@
 package uk.openvk.android.legacy.ui.core.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,23 +20,13 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
-import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
-import uk.openvk.android.legacy.api.models.Groups;
-import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.TranslucentActivity;
-import uk.openvk.android.legacy.ui.view.layouts.FullListView;
-import uk.openvk.android.legacy.ui.view.layouts.PollAttachView;
-import uk.openvk.android.legacy.ui.view.layouts.SearchResultsLayout;
+import uk.openvk.android.legacy.ui.views.base.FullListView;
+import uk.openvk.android.legacy.ui.views.SearchResultsLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team

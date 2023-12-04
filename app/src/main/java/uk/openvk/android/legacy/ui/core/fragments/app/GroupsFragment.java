@@ -5,17 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -30,9 +26,7 @@ import uk.openvk.android.legacy.ui.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.view.InfinityRecyclerView;
-import uk.openvk.android.legacy.ui.view.layouts.GroupHeader;
-import uk.openvk.android.legacy.ui.view.layouts.ProfileHeader;
+import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
