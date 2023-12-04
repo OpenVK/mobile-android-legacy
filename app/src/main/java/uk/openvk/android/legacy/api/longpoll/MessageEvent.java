@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.longpoll;
+package uk.openvk.android.legacy.api.longpoll;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.longpoll.wrappers;
+package uk.openvk.android.legacy.api.longpoll;
 
 import android.content.Context;
 import android.content.Intent;

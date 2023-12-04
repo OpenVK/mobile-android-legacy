@@ -8,7 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.longpoll.wrappers.LongPollWrapper;
+import uk.openvk.android.legacy.api.longpoll.LongPollWrapper;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
 /** Copyleft © 2022, 2023 OpenVK Team
