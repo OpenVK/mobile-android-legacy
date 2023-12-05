@@ -155,11 +155,11 @@ dependencies {
     compile project(':modules:actionbar')
     compile project(':modules:popupmenu')
     compile 'com.reginald.swiperefresh:library:1.1.2'
-    // Android 2.x plurals patch
-    compile 'com.seppius.plurals:android-i18n-plurals:1.1'
+    compile 'com.seppius.plurals:android-i18n-plurals:1.1' // Android 2.x plurals patch
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'ch.acra:acra:4.6.0'
     compile 'com.nineoldandroids:library:2.4.0'
+    compile 'org.apmem.tools:layouts:1.8'
     compile project(':modules:twemojicon')
     compile project(':modules:wrhttp')
 }

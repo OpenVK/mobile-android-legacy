@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/audios_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="visible" />
+
+    <include
+        layout="@layout/audio_bottom_panel"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:visibility="gone"
+        android:id="@+id/audio_player_bar"/>
+</LinearLayout>

@@ -22,19 +22,19 @@
     android:orientation="horizontal"
     tools:ignore="DisableBaselineAlignment">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+    <uk.openvk.android.legacy.ui.views.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.InfinityScrollView
+    <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -67,7 +67,7 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-                        <uk.openvk.android.legacy.ui.view.layouts.ProfileHeader
+                        <uk.openvk.android.legacy.ui.views.ProfileHeader
                             android:id="@+id/profile_header"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -127,7 +127,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="8dp">
 
-                        <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
+                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
                             android:id="@+id/photos_counter"
                             android:layout_width="110dp"
                             android:layout_height="match_parent"
@@ -136,7 +136,7 @@
                             android:visibility="gone"
                             tools:ignore="RtlHardcoded"/>
 
-                        <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
+                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
                             android:id="@+id/friends_counter"
                             android:layout_width="110dp"
                             android:layout_height="wrap_content"
@@ -145,7 +145,7 @@
                             android:layout_weight="1"
                             tools:ignore="RtlHardcoded"/>
 
-                        <uk.openvk.android.legacy.ui.view.layouts.ProfileCounterLayout
+                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
                             android:id="@+id/mutual_counter"
                             android:layout_width="110dp"
                             android:layout_height="match_parent"
@@ -157,19 +157,19 @@
 
                 </LinearLayout>
 
-                <uk.openvk.android.legacy.ui.view.layouts.ProfileWallSelector
+                <uk.openvk.android.legacy.ui.views.ProfileWallSelector
                     android:id="@+id/wall_selector"
                     android:layout_width="match_parent"
                     android:layout_height="42dp" />
 
-                <uk.openvk.android.legacy.ui.view.layouts.WallLayout
+                <uk.openvk.android.legacy.ui.views.WallLayout
                     android:id="@+id/wall_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#e3e4e6"
                     android:descendantFocusability="blocksDescendants" />
 
-                <uk.openvk.android.legacy.ui.view.layouts.WallErrorLayout
+                <uk.openvk.android.legacy.ui.views.WallErrorLayout
                     android:id="@+id/wall_error_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -191,7 +191,7 @@
 
         </LinearLayout>
 
-    </uk.openvk.android.legacy.ui.view.InfinityScrollView>
+    </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
 
     <LinearLayout
         android:layout_width="240dp"
@@ -201,7 +201,7 @@
         android:background="#313743"
         android:visibility="gone">
 
-        <uk.openvk.android.legacy.ui.view.layouts.AboutProfileLayout
+        <uk.openvk.android.legacy.ui.views.AboutProfileLayout
             android:layout_width="240dp"
             android:id="@+id/about_profile_layout"
             android:layout_height="match_parent"

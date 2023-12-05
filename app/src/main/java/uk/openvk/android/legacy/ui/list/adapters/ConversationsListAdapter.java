@@ -1,13 +1,11 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.entities.Conversation;
-import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.core.activities.ConversationActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

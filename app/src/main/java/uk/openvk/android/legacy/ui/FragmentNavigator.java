@@ -8,9 +8,8 @@ import android.view.View;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -32,14 +31,11 @@ public class FragmentNavigator {
     private Activity activity;
 
     public FragmentNavigator(Context ctx) {
-        if(ctx instanceof AppActivity) {
-            activity = ((AppActivity) ctx);
-        } else if(ctx instanceof ProfileIntentActivity) {
-            activity = ((ProfileIntentActivity) ctx);
-        } else if(ctx instanceof GroupIntentActivity) {
-            activity = ((GroupIntentActivity) ctx);
+        if(ctx instanceof NetworkFragmentActivity) {
+            activity = ((NetworkFragmentActivity) ctx);
         }
     }
+
     public void navigateTo(String where, FragmentTransaction ft) {
         if(activity instanceof AppActivity) {
             final AppActivity appActivity = ((AppActivity) activity);
@@ -88,6 +84,34 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(true);
                     appActivity.selectedFragment = appActivity.photosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "photos");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
+                    break;
+                case "videos":
+                    ft.show(appActivity.videosFragment);
+                    showFragment(activity, appActivity.videosFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(true);
+                    appActivity.selectedFragment = appActivity.videosFragment;
+                    appActivity.global_prefs_editor.putString("current_screen", "videos");
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                        appActivity.actionBar.removeAllActions();
+                    } else {
+                        if(appActivity.activity_menu != null) {
+                            appActivity.activity_menu.clear();
+                        }
+                    }
+                    break;
+                case "audios":
+                    ft.show(appActivity.audiosFragment);
+                    showFragment(activity, appActivity.videosFragment.getCount() != 0);
+                    appActivity.progressLayout.enableDarkTheme(true);
+                    appActivity.selectedFragment = appActivity.audiosFragment;
+                    appActivity.global_prefs_editor.putString("current_screen", "audios");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                         appActivity.actionBar.removeAllActions();
                     } else {

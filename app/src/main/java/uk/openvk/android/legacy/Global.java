@@ -48,22 +48,23 @@ import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.fragments.app.ConversationsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.FriendsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.GroupsFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.NewsfeedFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.NotesFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.PhotosFragment;
-import uk.openvk.android.legacy.ui.core.fragments.app.ProfileFragment;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AuthActivity;
+import uk.openvk.android.legacy.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.core.fragments.ConversationsFragment;
+import uk.openvk.android.legacy.core.fragments.FriendsFragment;
+import uk.openvk.android.legacy.core.fragments.GroupsFragment;
+import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
+import uk.openvk.android.legacy.core.fragments.NotesFragment;
+import uk.openvk.android.legacy.core.fragments.PhotosFragment;
+import uk.openvk.android.legacy.core.fragments.ProfileFragment;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 
-/** Global.java - global methods for application
- *
- *  OPENVK LEGACY LICENSE NOTIFICATION
+/** Global class - global methods for application **/
+
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
  *  the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -76,7 +77,7 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
  *  program. If not, see https://www.gnu.org/licenses/.
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+ */
 
 public class Global {
 
@@ -440,40 +441,44 @@ public class Global {
                 R.array.leftmenu)[slider_menu_item_index], 0,
                 ctx.getResources().getDrawable(R.drawable.ic_left_photos)));
             } else if (slider_menu_item_index == 2) {
-                //slidingMenuArray.add(new SlidingMenuItem(
-                // getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                // 0, getResources().getDrawable(R.drawable.ic_left_video)));
-            } else if (slider_menu_item_index == 3) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                 ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                 0, ctx.getResources().getDrawable(R.drawable.ic_left_video)));
+            }  else if (slider_menu_item_index == 3) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_messages)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_music)));
             } else if (slider_menu_item_index == 4) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_groups)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_messages)));
             } else if (slider_menu_item_index == 5) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_notes)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_groups)));
             } else if (slider_menu_item_index == 6) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_news)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_notes)));
             } else if (slider_menu_item_index == 7) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_news)));
+            } else if (slider_menu_item_index == 8) {
                     /* Not implemented!
                     /
                     /  slidingMenuArray.add(new SlidingMenuItem(
                     /  getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                     /  0, getResources().getDrawable(R.drawable.ic_left_feedback)));
                     */
-            } else if (slider_menu_item_index == 8) {
+            } else if (slider_menu_item_index == 9) {
                     /* Not implemented!
                     /
                     /  slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
                     /  R.array.leftmenu)[slider_menu_item_index],
                     /  0, getResources().getDrawable(R.drawable.ic_left_fave)));
                     */
-            } else if (slider_menu_item_index == 9) {
+            } else if (slider_menu_item_index == 10) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_settings)));
@@ -840,9 +845,9 @@ public class Global {
         }
     }
 
-    public static void loadMoreWallPosts(OpenVKAPI ovk_api) {
+    public static void loadMoreWallPosts(OpenVKAPI ovk_api, long owner_id) {
         if(ovk_api.wall != null) {
-            ovk_api.wall.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.wall.next_from);
+            ovk_api.wall.get(ovk_api.wrapper, owner_id, 25, ovk_api.wall.next_from);
         }
     }
 
@@ -859,7 +864,7 @@ public class Global {
     }
 
     public static void openIntentFromCounters(Context ctx, String action) {
-        if(!BuildConfig.BUILD_TYPE.equals("release"))
+        if(BuildConfig.DEBUG)
             Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
         if(action.length() > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);
@@ -911,5 +916,23 @@ public class Global {
         int day = new Date().getDate();
         // 11 = December, 0 = January
         return (month == 11 && day >= 1) || (month == 0 && day <= 15);
+    }
+
+    public static void copyToClipboard(Context ctx, String text) {
+        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                    ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                clipboard.setText(text);
+            }
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                    ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip =
+                    android.content.ClipData.newPlainText(OvkApplication.APP_TAG, text);
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+            }
+        }
     }
 }

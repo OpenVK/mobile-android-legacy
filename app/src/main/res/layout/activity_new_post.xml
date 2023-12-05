@@ -15,7 +15,7 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.ui.views.base.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/newpost_root"
@@ -193,4 +193,4 @@
         android:layout_height="240dp"
         android:visibility="gone" />
 
-</uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>
+</uk.openvk.android.legacy.ui.views.base.XLinearLayout>

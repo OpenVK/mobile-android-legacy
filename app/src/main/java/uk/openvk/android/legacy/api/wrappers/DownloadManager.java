@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -34,19 +33,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -72,7 +63,7 @@ public class DownloadManager {
     public boolean use_https;
     public boolean legacy_mode;
     private Context ctx;
-    public ArrayList<PhotoAttachment> photoAttachments;
+    public ArrayList<Photo> photos;
     private boolean logging_enabled = true; // default for beta releases
 
     private OkHttpClient httpClient = null;
@@ -199,12 +190,13 @@ public class DownloadManager {
     }
 
 
-    public void downloadPhotosToCache(final ArrayList<PhotoAttachment> photoAttachments, final String where) {
-        if(photoAttachments == null) {
-            Log.e(OvkApplication.DL_TAG, "Attachments array is empty. Download canceled.");
+    public void downloadPhotosToCache(final ArrayList<Photo> photos, final String where) {
+        if(photos == null) {
+            Log.e(OvkApplication.DL_TAG, String.format("Attachments array is empty. Download canceled." +
+                    "\r\nPrefix: %s", where));
             return;
         }
-        Log.v("DownloadManager", String.format("Downloading %d photos...", photoAttachments.size()));
+        Log.v("DownloadManager", String.format("Downloading %d photos...", photos.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -226,14 +218,14 @@ public class DownloadManager {
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
-                for (int i = 0; i < photoAttachments.size(); i++) {
+                for (int i = 0; i < photos.size(); i++) {
                     filesize = 0;
-                    filename = photoAttachments.get(i).filename;
+                    filename = photos.get(i).filename;
                     File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
                             ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
-                    PhotoAttachment photoAttachment = photoAttachments.get(i);
-                    if(photoAttachment.url == null) {
-                        photoAttachment.url = "";
+                    Photo photo = photos.get(i);
+                    if(photo.url == null) {
+                        photo.url = "";
                     }
                     Date lastModDate;
                     if(downloadedFile.exists()) {
@@ -250,8 +242,8 @@ public class DownloadManager {
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG, "Duplicated filename. Skipping..." +
                                 "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
                                 + " ms | Filesize: " + downloadedFile.length() + " bytes");
-                    } else if (photoAttachment.url.length() == 0) {
-                        filename = photoAttachment.filename;
+                    } else if (photo.url.length() == 0) {
+                        filename = photo.filename;
                         if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                 "Invalid or empty URL. Skipping...");
                         try {
@@ -267,16 +259,16 @@ public class DownloadManager {
                         }
                     } else {
                         try {
-                            filename = photoAttachment.filename;
+                            filename = photo.filename;
                             String short_address = "";
-                            if(photoAttachments.get(i).url.length() > 40) {
-                                short_address = photoAttachments.get(i).url.substring(0, 39);
+                            if(photos.get(i).url.length() > 40) {
+                                short_address = photos.get(i).url.substring(0, 39);
                             } else {
-                                short_address = photoAttachments.get(i).url;
+                                short_address = photos.get(i).url;
                             }
                             //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...",
                             // short_address, i + 1, photoAttachments.size()));
-                            url = photoAttachments.get(i).url;
+                            url = photos.get(i).url;
                             if(!url.startsWith("http://") && !url.startsWith("https://")) {
                                 Log.e(OvkApplication.DL_TAG,
                                         String.format("Invalid URL: %s. Download canceled.", url));
@@ -332,11 +324,11 @@ public class DownloadManager {
                             if(logging_enabled) Log.d(OvkApplication.DL_TAG,
                                     String.format("Downloaded from %s (%s): %d kB (%d/%d)",
                                             short_address, response_code, (int) (filesize / 1024), i + 1,
-                                            photoAttachments.size()));
+                                            photos.size()));
                         } catch (IOException | HttpClientException | OutOfMemoryError ex) {
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", ex.getMessage(), i + 1,
-                                            photoAttachments.size()));
+                                            photos.size()));
                             if(ex.getMessage() != null) {
                                 if (ex.getMessage().startsWith("Authorization required")) {
                                     response_code = 401;
@@ -347,13 +339,13 @@ public class DownloadManager {
                                 }
                             }
                         } catch (Exception e) {
-                            photoAttachment.error = e.getClass().getSimpleName();
+                            photo.error = e.getClass().getSimpleName();
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
-                                            photoAttachments.size()));
+                                            photos.size()));
                         }
                     }
-                    if(i % 15 == 0 || i == photoAttachments.size() - 1) {
+                    if(i == photos.size() - 1) {
                         switch (where) {
                             case "account_avatar":
                                 sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
@@ -592,6 +584,7 @@ public class DownloadManager {
         msg.what = message;
         final Bundle bundle = new Bundle();
         bundle.putString("response", response);
+        bundle.putString("address", apiListeners.from);
         msg.setData(bundle);
         handler.post(new Runnable() {
             @Override
@@ -610,6 +603,7 @@ public class DownloadManager {
         msg.what = message;
         final Bundle bundle = new Bundle();
         bundle.putString("response", response);
+        bundle.putString("address", apiListeners.from);
         bundle.putInt("id", id);
         msg.setData(bundle);
         handler.post(new Runnable() {

@@ -98,17 +98,23 @@ public class HandlerMessages {
     public static int PHOTOS_SAVE                       = 1002;
     public static int PHOTOS_GETALBUMS                  = 1003;
 
+    // Videos (/method/Video)
+    public static int VIDEOS_GET                        = 1100;
+
+    // Audios (/method/Audio)
+    public static int AUDIOS_GET                         = 1200;
+
     // OpenVK specific (/method/Ovk)
-    public static int OVK_VERSION                       = 1100;
-    public static int OVK_TEST                          = 1101;
-    public static int OVK_CHICKEN_WINGS                 = 1102;
-    public static int OVK_ABOUTINSTANCE                 = 1103;
-    public static int OVK_CHECK_HTTP                    = 1104;
-    public static int OVK_CHECK_HTTPS                   = 1105;
+    public static int OVK_VERSION                       = 1300;
+    public static int OVK_TEST                          = 1301;
+    public static int OVK_CHICKEN_WINGS                 = 1302;
+    public static int OVK_ABOUTINSTANCE                 = 1303;
+    public static int OVK_CHECK_HTTP                    = 1304;
+    public static int OVK_CHECK_HTTPS                   = 1305;
 
     // Poll (/method/Poll)
-    public static int POLL_ADD_VOTE                     = 1200;
-    public static int POLL_DELETE_VOTE                  = 1201;
+    public static int POLL_ADD_VOTE                     = 1400;
+    public static int POLL_DELETE_VOTE                  = 1401;
 
     // Misc (LongPoll API, avatars, attachments and etc.)
     public static int ACCOUNT_AVATAR                    = 2000;

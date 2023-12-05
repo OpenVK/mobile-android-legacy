@@ -16,12 +16,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -165,14 +162,14 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
             try {
                 for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment pollAttachment = ((PollAttachment) item.attachments
+                        Poll poll = ((Poll) item.attachments
                                 .get(attachment_index).getContent());
-                        pollAttachment.user_votes = 1;
-                        if (!pollAttachment.answers.get(answer).is_voted) {
-                            pollAttachment.answers.get(answer).is_voted = true;
+                        poll.user_votes = 1;
+                        if (!poll.answers.get(answer).is_voted) {
+                            poll.answers.get(answer).is_voted = true;
                         }
                         wallPosts.set(position, item);
-                        pollAttachment.vote(((NetworkActivity) ctx).ovk_api.wrapper, pollAttachment.answers.get(answer).id);
+                        poll.vote(((NetworkActivity) ctx).ovk_api.wrapper, poll.answers.get(answer).id);
                     }
                 }
             } catch (Exception ex) {
@@ -184,16 +181,16 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
             try {
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if(item.attachments.get(attachment_index).type.equals("poll")) {
-                        PollAttachment pollAttachment = ((PollAttachment) item.attachments
+                        Poll poll = ((Poll) item.attachments
                                 .get(attachment_index).getContent());
-                        pollAttachment.user_votes = 0;
-                        for (int i = 0; i < pollAttachment.answers.size(); i++) {
-                            if (pollAttachment.answers.get(i).is_voted) {
-                                pollAttachment.answers.get(i).is_voted = false;
+                        poll.user_votes = 0;
+                        for (int i = 0; i < poll.answers.size(); i++) {
+                            if (poll.answers.get(i).is_voted) {
+                                poll.answers.get(i).is_voted = false;
                             }
                         }
                         wallPosts.set(position, item);
-                        pollAttachment.unvote(((NetworkActivity) ctx).ovk_api.wrapper);
+                        poll.unvote(((NetworkActivity) ctx).ovk_api.wrapper);
                     }
                 }
             } catch (Exception ex) {

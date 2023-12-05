@@ -17,12 +17,12 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
-import uk.openvk.android.legacy.api.wrappers.NotificationManager;
+import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.utils.NotificationManager;
 import uk.openvk.android.legacy.services.LongPollService;
-import uk.openvk.android.legacy.ui.core.activities.CrashReporterActivity;
+import uk.openvk.android.legacy.core.activities.CrashReporterActivity;
 import uk.openvk.android.legacy.utils.ACRACustomSender;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -52,6 +52,7 @@ public class OvkApplication extends Application {
     public String version;
     public boolean isTablet;
     public LongPollService longPollService;
+    public AudioPlayerService audioPlayerService;
     public NotificationManager notifMan;
     public static String APP_TAG = "OpenVK";
     public static String API_TAG = "OVK-API";

@@ -22,7 +22,7 @@
     android:orientation="horizontal"
     android:fitsSystemWindows="true">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,7 +30,7 @@
         android:fitsSystemWindows="true"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+    <uk.openvk.android.legacy.ui.views.ErrorLayout
         android:id="@+id/error_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

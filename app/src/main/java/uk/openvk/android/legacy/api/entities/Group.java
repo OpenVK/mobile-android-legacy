@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -197,8 +196,8 @@ public class Group implements Parcelable {
             if(json != null) {
                 members_count = json.getInt("count");
                 JSONArray members = json.getJSONArray("items");
-                ArrayList<PhotoAttachment> avatars;
-                avatars = new ArrayList<PhotoAttachment>();
+                ArrayList<Photo> avatars;
+                avatars = new ArrayList<Photo>();
                 for (int i = 0; i < members.length(); i++) {
                     User member = new User();
                     JSONObject user = members.getJSONObject(i);
@@ -221,11 +220,11 @@ public class Group implements Parcelable {
                     }
                     member.id = user.getLong("id");
                     member.avatar_url = user.getString("photo_100");
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photo = new Photo();
                     if(member.avatar_url != null && member.avatar_url.length() > 0) {
-                        photoAttachment.url = member.avatar_url;
-                        photoAttachment.filename = String.format("avatar_%s", member.id);
-                        avatars.add(photoAttachment);
+                        photo.url = member.avatar_url;
+                        photo.filename = String.format("avatar_%s", member.id);
+                        avatars.add(photo);
                     }
                     this.members.add(member);
                 }
