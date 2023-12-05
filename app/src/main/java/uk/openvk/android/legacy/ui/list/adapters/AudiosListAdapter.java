@@ -247,6 +247,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                                     playAudioTrack(position);
                                     currentTrackPos = position;
                                     showBottomPlayer();
+                                    notifyItemChanged(position);
                                 }
                             }
                         }
