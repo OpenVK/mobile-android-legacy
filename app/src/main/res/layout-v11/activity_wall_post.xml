@@ -15,7 +15,7 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<uk.openvk.android.legacy.ui.view.layouts.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.ui.views.base.XLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -29,20 +29,20 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
-        <uk.openvk.android.legacy.ui.view.layouts.PostViewLayout
+        <uk.openvk.android.legacy.ui.views.PostViewLayout
             android:id="@+id/comments_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             tools:ignore="InefficientWeight" />
 
-        <uk.openvk.android.legacy.ui.view.layouts.CommentPanel
+        <uk.openvk.android.legacy.ui.views.CommentPanel
             android:id="@+id/comment_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/background_light">
 
-        </uk.openvk.android.legacy.ui.view.layouts.CommentPanel>
+        </uk.openvk.android.legacy.ui.views.CommentPanel>
 
     </LinearLayout>
 
@@ -53,16 +53,16 @@
         android:layout_weight="1"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/progress_layout"
         android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+    <uk.openvk.android.legacy.ui.views.ErrorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/error_layout"
         android:visibility="gone" />
 
-</uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>
+</uk.openvk.android.legacy.ui.views.base.XLinearLayout>

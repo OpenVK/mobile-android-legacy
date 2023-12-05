@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 

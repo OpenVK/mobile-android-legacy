@@ -6,13 +6,13 @@
     android:background="@color/color_black_v2"
     android:orientation="vertical">
 
-    <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+    <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
-    </uk.openvk.android.legacy.ui.view.layouts.ProgressLayout>
+    </uk.openvk.android.legacy.ui.views.ProgressLayout>
 
     <FrameLayout
         android:id="@+id/album_header"

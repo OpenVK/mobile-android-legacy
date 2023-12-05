@@ -13,27 +13,44 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.AuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.ConversationActivity;
-import uk.openvk.android.legacy.ui.core.activities.GroupMembersActivity;
-import uk.openvk.android.legacy.ui.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkAuthActivity;
-import uk.openvk.android.legacy.ui.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.FriendsIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.NotesIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.PhotoAlbumIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AuthActivity;
+import uk.openvk.android.legacy.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
+import uk.openvk.android.legacy.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
+import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
+import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
+import uk.openvk.android.legacy.core.activities.intents.PhotoAlbumIntentActivity;
+import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
+
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
 
 public class OvkAPIReceiver extends BroadcastReceiver {
     private Activity activity;
@@ -51,48 +68,56 @@ public class OvkAPIReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(activity instanceof NetworkAuthActivity) {
-            final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
-            OpenVKAPI ovk_api = netAuthActivity.ovk_api;
-            final Bundle data = intent.getExtras();
-            final Message msg = parseJSONData(ovk_api.wrapper, netAuthActivity.handler, data);
-            ovk_api.wrapper.handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(OvkApplication.API_TAG,
-                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
-                    );
-                    netAuthActivity.receiveState(msg.what, data);
-                }
-            });
-        } else if(activity instanceof NetworkFragmentActivity) {
-            final NetworkFragmentActivity netFragmActivity = (NetworkFragmentActivity) activity;
-            OpenVKAPI ovk_api = netFragmActivity.ovk_api;
-            final Bundle data = intent.getExtras();
-            final Message msg = parseJSONData(ovk_api.wrapper, netFragmActivity.handler, data);
-            ovk_api.wrapper.handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(OvkApplication.API_TAG,
-                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
-                    );
-                    netFragmActivity.receiveState(msg.what, data);
-                }
-            });
-        } else if(activity instanceof NetworkActivity) {
-            final NetworkActivity netActivity = (NetworkActivity) activity;
-            OpenVKAPI ovk_api = netActivity.ovk_api;
-            final Bundle data = intent.getExtras();
-            final Message msg = parseJSONData(ovk_api.wrapper, netActivity.handler, data);
-            ovk_api.wrapper.handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(OvkApplication.API_TAG,
-                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
-                    );
-                    netActivity.receiveState(msg.what, data);
-                }
-            });
+
+        final Bundle data = intent.getExtras();
+        if(data != null && data.containsKey("address")
+                && data.getString("address").equals(activity.getLocalClassName())) {
+            if (activity instanceof NetworkAuthActivity) {
+                final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
+                OpenVKAPI ovk_api = netAuthActivity.ovk_api;
+                final Message msg = parseJSONData(ovk_api.wrapper, netAuthActivity.handler, data);
+                ovk_api.wrapper.handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(BuildConfig.DEBUG) {
+                            Log.d(OvkApplication.API_TAG,
+                                    String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                            );
+                        }
+                        netAuthActivity.receiveState(msg.what, data);
+                    }
+                });
+            } else if (activity instanceof NetworkFragmentActivity) {
+                final NetworkFragmentActivity netFragmActivity = (NetworkFragmentActivity) activity;
+                OpenVKAPI ovk_api = netFragmActivity.ovk_api;
+                final Message msg = parseJSONData(ovk_api.wrapper, netFragmActivity.handler, data);
+                ovk_api.wrapper.handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(BuildConfig.DEBUG) {
+                            Log.d(OvkApplication.API_TAG,
+                                    String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                            );
+                        }
+                        netFragmActivity.receiveState(msg.what, data);
+                    }
+                });
+            } else if (activity instanceof NetworkActivity) {
+                final NetworkActivity netActivity = (NetworkActivity) activity;
+                OpenVKAPI ovk_api = netActivity.ovk_api;
+                final Message msg = parseJSONData(ovk_api.wrapper, netActivity.handler, data);
+                ovk_api.wrapper.handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(BuildConfig.DEBUG) {
+                            Log.d(OvkApplication.API_TAG,
+                                    String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                            );
+                        }
+                        netActivity.receiveState(msg.what, data);
+                    }
+                });
+            }
         }
     }
 
@@ -206,6 +231,14 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         app_a.ovk_api.photos.parseAlbums(data.getString("response"),
                                 downloadManager, true);
                     }
+                    break;
+                case "Video.get":
+                    msg.what = HandlerMessages.VIDEOS_GET;
+                    app_a.ovk_api.videos.parse(downloadManager, data.getString("response"));
+                    break;
+                case "Audio.get":
+                    msg.what = HandlerMessages.AUDIOS_GET;
+                    app_a.ovk_api.audios.parseAudioTracks(data.getString("response"), true);
                     break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {

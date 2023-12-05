@@ -188,7 +188,7 @@
             tools:ignore="HardcodedText,RtlHardcoded" />
 
         <LinearLayout
-            android:id="@+id/post_attach_container"
+            android:id="@+id/post_retweet_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
@@ -214,7 +214,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="visible">
 
                 <dev.tinelix.twemojicon.EmojiconTextView
                     android:id="@+id/post_retweet_name"
@@ -243,6 +244,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/post_retweet_photo"
                     android:layout_below="@+id/post_retweet_name"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="9dip"
                     android:layout_toRightOf="@+id/post_retweet_photo"
                     android:gravity="left"
@@ -257,10 +259,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/author_avatar"
-                    android:layout_marginBottom="8dip"
+                    android:layout_marginBottom="6dip"
                     android:layout_marginLeft="10dip"
                     android:layout_marginRight="10dip"
-                    android:layout_marginTop="4dip"
                     android:autoLink="web|email"
                     android:linksClickable="false"
                     android:text="repost text"
@@ -275,36 +276,24 @@
                     android:id="@+id/repost_expand_text_btn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dip"
+                    android:layout_marginBottom="4dip"
                     android:layout_marginEnd="10dip"
                     android:layout_marginLeft="10dip"
                     android:layout_marginRight="10dip"
+                    android:layout_marginTop="4dip"
                     android:text="@string/post_show_full"
                     android:textColor="@color/ovk_color"
                     android:textStyle="bold"
                     android:visibility="gone"
                     tools:ignore="RtlHardcoded" />
 
-                <ImageView
-                    android:id="@+id/repost_photo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dip"
-                    android:layout_marginLeft="10dip"
-                    android:layout_marginRight="10dip"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:src="@null"
-                    android:visibility="gone"
-                    tools:ignore="ContentDescription" />
-
-                <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
-                    android:id="@+id/repost_poll_layout"
+                <uk.openvk.android.legacy.ui.views.PostAttachmentsView
+                    android:id="@+id/repost_attach_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="10dip"
-                    android:layout_marginLeft="10dip"
-                    android:layout_marginRight="10dip"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="4dp"
                     android:visibility="gone" />
 
             </LinearLayout>
@@ -313,44 +302,13 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/post_photo"
+    <uk.openvk.android.legacy.ui.views.PostAttachmentsView
+        android:id="@+id/post_attach_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@null"
-        android:visibility="gone"
-        tools:ignore="ContentDescription" />
-
-    <uk.openvk.android.legacy.ui.view.layouts.CommonAttachView
-        android:id="@+id/post_attahcment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="6dip"
-        android:layout_marginRight="6dip"
-        android:visibility="gone" />
-
-    <uk.openvk.android.legacy.ui.view.layouts.PollAttachView
-        android:id="@+id/poll_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
-        android:visibility="gone" />
-
-    <uk.openvk.android.legacy.ui.view.layouts.VideoAttachView
-        android:id="@+id/post_video"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:visibility="gone" />
 
     <View

@@ -31,13 +31,13 @@
             android:orientation="horizontal"
             android:layout_weight="1">
 
-                <uk.openvk.android.legacy.ui.view.layouts.ProgressLayout
+                <uk.openvk.android.legacy.ui.views.ProgressLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/progress_layout"
                     android:visibility="gone" />
 
-                <uk.openvk.android.legacy.ui.view.layouts.ErrorLayout
+                <uk.openvk.android.legacy.ui.views.ErrorLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/error_layout"

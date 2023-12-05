@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.api.entities.Group;
 
 /** Copyleft © 2022, 2023 OpenVK Team

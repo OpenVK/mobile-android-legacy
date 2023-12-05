@@ -19,25 +19,25 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.openvk.android.legacy.ui.view.layouts.MessagesDateSeparator
+    <uk.openvk.android.legacy.ui.views.MessagesDateSeparator
         android:id="@+id/date_separator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <uk.openvk.android.legacy.ui.view.layouts.IncomingMessageLayout
+    <uk.openvk.android.legacy.ui.views.IncomingMessageLayout
         android:id="@+id/incoming_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="visible">
 
-    </uk.openvk.android.legacy.ui.view.layouts.IncomingMessageLayout>
+    </uk.openvk.android.legacy.ui.views.IncomingMessageLayout>
 
-    <uk.openvk.android.legacy.ui.view.layouts.OutcomingMessageLayout
+    <uk.openvk.android.legacy.ui.views.OutcomingMessageLayout
         android:id="@+id/outcoming_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:visibility="visible">
 
-    </uk.openvk.android.legacy.ui.view.layouts.OutcomingMessageLayout>
+    </uk.openvk.android.legacy.ui.views.OutcomingMessageLayout>
 </LinearLayout>

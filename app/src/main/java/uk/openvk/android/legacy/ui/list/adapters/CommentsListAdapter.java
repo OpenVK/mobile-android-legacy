@@ -21,15 +21,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.api.entities.OvkLink;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.core.activities.PhotoViewerActivity;
-import uk.openvk.android.legacy.ui.core.activities.WallPostActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.ui.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -245,8 +242,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     if (item.attachments.get(i).type.equals("photo")
                             && item.attachments.get(i).status.equals("done")) {
                         if (item.attachments.get(i).getContent() != null) {
-                            comment_photo.setImageBitmap(((PhotoAttachment)
-                                    item.attachments.get(i).getContent()).photo);
+                            comment_photo.setImageBitmap(((Photo)
+                                    item.attachments.get(i).getContent()).bitmap);
                             comment_photo.setVisibility(View.VISIBLE);
                             comment_photo.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -273,7 +270,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 if(comment.attachments != null) {
                     for(int i = 0; i < comment.attachments.size(); i++) {
                         if(comment.attachments.get(i).type.equals("photo")) {
-                            PhotoAttachment photo = ((PhotoAttachment) comment.attachments.get(i).
+                            Photo photo = ((Photo) comment.attachments.get(i).
                                     getContent());
                             intent.putExtra("original_link", photo.original_url);
                             intent.putExtra("author_id", comment.author_id);

@@ -19,7 +19,7 @@
     xmlns:ctrl="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent" android:layout_height="fill_parent">
-    <uk.openvk.android.legacy.ui.view.layouts.XLinearLayout
+    <uk.openvk.android.legacy.ui.views.base.XLinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/auth_layout"
@@ -61,7 +61,7 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-                        <uk.openvk.android.legacy.ui.view.layouts.EditTextAction
+                        <uk.openvk.android.legacy.ui.views.EditTextAction
                             android:id="@+id/instance_name"
                             android:layout_width="match_parent"
                             android:layout_height="50dip"
@@ -75,7 +75,7 @@
                             ctrl:textHint="@string/instance"
                             tools:ignore="InefficientWeight,SpUsage">
 
-                        </uk.openvk.android.legacy.ui.view.layouts.EditTextAction>
+                        </uk.openvk.android.legacy.ui.views.EditTextAction>
 
                     </LinearLayout>
 
@@ -212,5 +212,5 @@
             android:textSize="17dip"
             tools:ignore="SpUsage" />
 
-        </uk.openvk.android.legacy.ui.view.layouts.XLinearLayout>
+        </uk.openvk.android.legacy.ui.views.base.XLinearLayout>
  </LinearLayout>

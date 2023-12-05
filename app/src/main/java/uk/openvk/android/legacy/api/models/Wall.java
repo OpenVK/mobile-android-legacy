@@ -16,10 +16,10 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
-import uk.openvk.android.legacy.api.attachments.PhotoAttachment;
-import uk.openvk.android.legacy.api.attachments.PollAttachment;
-import uk.openvk.android.legacy.api.attachments.VideoAttachment;
+import uk.openvk.android.legacy.api.entities.Poll;
+import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.entities.VideoFiles;
 import uk.openvk.android.legacy.api.entities.WallPostSource;
@@ -50,11 +50,11 @@ public class Wall implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<WallPost> items;
     private ArrayList<Comment> comments;
-    private ArrayList<PhotoAttachment> photos_lsize;
-    private ArrayList<PhotoAttachment> photos_msize;
-    private ArrayList<PhotoAttachment> photos_hsize;
-    private ArrayList<PhotoAttachment> photos_osize;
-    private ArrayList<PhotoAttachment> video_thumbnails;
+    private ArrayList<Photo> photos_lsize;
+    private ArrayList<Photo> photos_msize;
+    private ArrayList<Photo> photos_hsize;
+    private ArrayList<Photo> photos_osize;
+    private ArrayList<Photo> video_thumbnails;
     private DownloadManager dlm;
     public long next_from;
 
@@ -95,12 +95,12 @@ public class Wall implements Parcelable {
                 items.clear();
             }
         }
-        photos_lsize = new ArrayList<PhotoAttachment>();
-        photos_msize = new ArrayList<PhotoAttachment>();
-        photos_hsize = new ArrayList<PhotoAttachment>();
-        photos_osize = new ArrayList<PhotoAttachment>();
+        photos_lsize = new ArrayList<Photo>();
+        photos_msize = new ArrayList<Photo>();
+        photos_hsize = new ArrayList<Photo>();
+        photos_osize = new ArrayList<Photo>();
         video_thumbnails = new ArrayList<>();
-        ArrayList<PhotoAttachment> avatars = new ArrayList<PhotoAttachment>();
+        ArrayList<Photo> avatars = new ArrayList<Photo>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if(json != null) {
@@ -298,7 +298,7 @@ public class Wall implements Parcelable {
                             }
                         }
                     }
-                    PhotoAttachment avatar = new PhotoAttachment();
+                    Photo avatar = new Photo();
                     avatar.url = avatar_url;
                     avatar.filename = String.format("avatar_%s", author_id);
                     try { // handle floating crash
@@ -357,15 +357,15 @@ public class Wall implements Parcelable {
                                             String response) {
         comments = new ArrayList<Comment>();
         photos_lsize = new ArrayList<>();
-        photos_msize = new ArrayList<PhotoAttachment>();
-        photos_hsize = new ArrayList<PhotoAttachment>();
-        photos_osize = new ArrayList<PhotoAttachment>();
+        photos_msize = new ArrayList<Photo>();
+        photos_hsize = new ArrayList<Photo>();
+        photos_osize = new ArrayList<Photo>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if (json != null) {
                 JSONObject comments = json.getJSONObject("response");
                 JSONArray items = comments.getJSONArray("items");
-                ArrayList<PhotoAttachment> avatars = new ArrayList<>();
+                ArrayList<Photo> avatars = new ArrayList<>();
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject item = items.getJSONObject(i);
                     String text = item.getString("text");
@@ -381,7 +381,7 @@ public class Wall implements Parcelable {
                     comment.text = text;
                     comment.author = String.format("(Unknown author: %s)", author_id);
                     comment.date = date;
-                    PhotoAttachment photoAttachment = new PhotoAttachment();
+                    Photo photoAttachment = new Photo();
                     photoAttachment.url = "";
                     photoAttachment.filename = "";
                     if(author_id > 0) {
@@ -451,6 +451,7 @@ public class Wall implements Parcelable {
                                                        JSONArray attachments, String prefix) {
         ArrayList<Attachment> attachments_list = new ArrayList<>();
         try {
+            int photo_index = 0;
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
                 String photo_low_size;
                 String photo_medium_size;
@@ -461,7 +462,7 @@ public class Wall implements Parcelable {
                 switch (attachment.getString("type")) {
                     case "photo": {
                         JSONObject photo = attachment.getJSONObject("photo");
-                        PhotoAttachment photoAttachment = new PhotoAttachment();
+                        Photo photoAttachment = new Photo();
                         photoAttachment.id = photo.getLong("id");
                         JSONArray photo_sizes = photo.getJSONArray("sizes");
                         photo_low_size = photo_sizes.getJSONObject(2).getString("url");
@@ -533,9 +534,18 @@ public class Wall implements Parcelable {
                                 }
                                 break;
                         }
-                        photoAttachment.filename = String.format("%s_o%sp%s", prefix, owner_id, post_id);
+                        if(photo_index > 0) {
+                            photoAttachment.filename =
+                                    String.format(
+                                            "%s_o%sp%si%s", prefix, owner_id,
+                                            post_id, photo_index);
+                        } else {
+                            photoAttachment.filename =
+                                    String.format("%s_o%sp%s", prefix, owner_id, post_id);
+                        }
                         photoAttachment.original_url = photo_original_size;
-                        if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
+                        if (photo_medium_size.length() > 0 ||
+                                (photo_high_size != null ? photo_high_size.length() : 0) > 0) {
                             attachment_status = "loading";
                         } else {
                             attachment_status = "none";
@@ -563,11 +573,12 @@ public class Wall implements Parcelable {
                             Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
                                     "be overestimated.");
                         }
+                        photo_index++;
                         break;
                     }
                     case "video": {
                         JSONObject video = attachment.getJSONObject("video");
-                        VideoAttachment videoAttachment = new VideoAttachment();
+                        Video videoAttachment = new Video(video);
                         videoAttachment.id = video.getLong("id");
                         videoAttachment.title = video.getString("title");
                         VideoFiles files = new VideoFiles();
@@ -599,7 +610,7 @@ public class Wall implements Parcelable {
                         if (video.has("image")) {
                             JSONArray thumb_array = video.getJSONArray("image");
                             videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
-                            PhotoAttachment thumbnail = new PhotoAttachment();
+                            Photo thumbnail = new Photo();
                             thumbnail.url = videoAttachment.url_thumb;
                             thumbnail.filename = String.format("thumbnail_%so%s",
                                     video.getLong("id"), owner_id);
@@ -620,7 +631,7 @@ public class Wall implements Parcelable {
                     }
                     case "poll": {
                         JSONObject poll_attachment = attachment.getJSONObject("poll");
-                        PollAttachment pollAttachment = new PollAttachment(poll_attachment.getString("question"),
+                        Poll poll = new Poll(poll_attachment.getString("question"),
                                 poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
                                 poll_attachment.getBoolean("multiple"),
                                 poll_attachment.getBoolean("can_vote"),
@@ -628,9 +639,9 @@ public class Wall implements Parcelable {
                         JSONArray answers = poll_attachment.getJSONArray("answers");
                         JSONArray votes = poll_attachment.getJSONArray("answer_ids");
                         if (votes.length() > 0) {
-                            pollAttachment.user_votes = votes.length();
+                            poll.user_votes = votes.length();
                         }
-                        pollAttachment.votes = poll_attachment.getInt("votes");
+                        poll.votes = poll_attachment.getInt("votes");
                         for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
                             JSONObject answer = answers.getJSONObject(answers_index);
                             PollAnswer pollAnswer = new PollAnswer(answer.getInt("id"), answer.getInt("rate"),
@@ -640,12 +651,12 @@ public class Wall implements Parcelable {
                                     pollAnswer.is_voted = true;
                                 }
                             }
-                            pollAttachment.answers.add(pollAnswer);
+                            poll.answers.add(pollAnswer);
                         }
                         attachment_status = "done";
                         Attachment attachment_obj = new Attachment(attachment.getString("type"));
                         attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(pollAttachment);
+                        attachment_obj.setContent(poll);
                         try { // handle floating crash
                             attachments_list.add(attachment_obj);
                         } catch (ArrayIndexOutOfBoundsException ignored) {

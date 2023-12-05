@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <uk.openvk.android.legacy.ui.view.layouts.SlidingMenuSearch
+            <uk.openvk.android.legacy.ui.views.SlidingMenuSearch
                 android:id="@+id/sliding_menu_search"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

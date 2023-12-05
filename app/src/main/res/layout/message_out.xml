@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <uk.openvk.android.legacy.ui.view.TightTextView
+                <uk.openvk.android.legacy.ui.views.base.TightTextView
                     android:id="@+id/msg_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

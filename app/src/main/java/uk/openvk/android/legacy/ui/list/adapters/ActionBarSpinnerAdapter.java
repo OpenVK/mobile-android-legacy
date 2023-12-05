@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.list.items.SimpleListItem;
 
 /** Copyleft © 2022, 2023 OpenVK Team
