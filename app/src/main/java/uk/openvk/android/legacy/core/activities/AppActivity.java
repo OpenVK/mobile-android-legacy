@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.core.fragments.ProfileFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
@@ -55,6 +56,7 @@ import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.*;
 import uk.openvk.android.legacy.ui.views.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
+import uk.openvk.android.legacy.utils.NotificationManager;
 
 /*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -96,7 +98,7 @@ public class AppActivity extends NetworkFragmentActivity {
     private String last_longpoll_response;
     private int item_pos;
     private int poll_answer;
-    private uk.openvk.android.legacy.api.wrappers.NotificationManager notifMan;
+    public NotificationManager notifMan;
     private boolean inBackground;
     public ActionBarLayout ab_layout;
     public int menu_id;
@@ -145,11 +147,13 @@ public class AppActivity extends NetworkFragmentActivity {
         createSlidingMenu(isTablet);
         // Creating notification manager
         ((OvkApplication) getApplicationContext()).notifMan =
-                new uk.openvk.android.legacy.api.wrappers.NotificationManager(AppActivity.this,
+                new NotificationManager(AppActivity.this,
                         global_prefs.getBoolean("notifyLED", true), global_prefs
                         .getBoolean("notifyVibrate", true), global_prefs.getBoolean("notifySound", true),
                         global_prefs.getString("notifyRingtone", ""));
         notifMan = ((OvkApplication) getApplicationContext()).notifMan;
+        notifMan.createLongPollChannel();
+        notifMan.createAudioPlayerChannel();
         if(activity_menu == null) {
             popup_menu  = new android.support.v7.widget.PopupMenu(this, null);
             activity_menu = popup_menu.getMenu();
@@ -194,6 +198,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (lpReceiver != null) {
                     unregisterReceiver(lpReceiver);
                 }
+                if(notifMan != null) notifMan.clearAudioPlayerNotification();
                 exitApplication();
             } else {
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
@@ -1097,6 +1102,13 @@ public class AppActivity extends NetworkFragmentActivity {
                 global_prefs.getBoolean("legacyHttpClient", false));
     }
 
+    public void activateAudioPlayerService(int current_track_pos) {
+        OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
+        ovk_app.audioPlayerService =
+                new AudioPlayerService(this, ovk_api.audios.getList(), notifMan);
+        ovk_app.audioPlayerService.setCurrentTrackPosition(current_track_pos);
+    }
+
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
         if(selectedFragment != mainSettingsFragment) {
             progressLayout.setVisibility(View.GONE);
@@ -1221,5 +1233,10 @@ public class AppActivity extends NetworkFragmentActivity {
 
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+
     }
 }

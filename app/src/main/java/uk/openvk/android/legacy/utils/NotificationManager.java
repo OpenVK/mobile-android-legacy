@@ -1,6 +1,7 @@
-package uk.openvk.android.legacy.api.wrappers;
+package uk.openvk.android.legacy.utils;
 
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.PendingIntent;
@@ -12,12 +13,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.api.longpoll.MessageEvent;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -40,35 +46,56 @@ public class NotificationManager {
 
     public String ringtone_url;
     private android.app.NotificationManager notifMan;
-    private NotificationChannel notifChannel;
+    private NotificationChannel longPollCh;
+    private NotificationChannel audioPlayerCh;
     private Context ctx;
     public boolean ledIndicate;
     public boolean vibrate;
     public boolean playSound;
+    private PendingIntent audioPlayerIntent;
 
     public NotificationManager(Context ctx, boolean ledIndicate, boolean vibrate, boolean playSound, String ringtone_url) {
         this.ctx = ctx;
+        this.ledIndicate = ledIndicate;
+        this.vibrate = vibrate;
+        this.playSound = playSound;
+        this.ringtone_url = ringtone_url;
+    }
+
+    public void createLongPollChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifMan = ctx.getSystemService(android.app.NotificationManager.class);
             int importance = android.app.NotificationManager.IMPORTANCE_DEFAULT;
-            notifChannel = new NotificationChannel("lp_updates", "LongPoll Updates", importance);
-            notifChannel.enableLights(ledIndicate);
-            notifChannel.enableVibration(vibrate);
+            longPollCh = new NotificationChannel("lp_updates", "LongPoll Updates", importance);
+            longPollCh.enableLights(ledIndicate);
+            longPollCh.enableVibration(vibrate);
             if(playSound) {
                 AudioAttributes audioAttributes = new AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .build();
                 if(!ringtone_url.equals("content://settings/system/notification_sound")) {
-                    notifChannel.setSound(Uri.parse(ringtone_url), audioAttributes);
+                    longPollCh.setSound(Uri.parse(ringtone_url), audioAttributes);
                 } else {
-                    notifChannel.setSound(null, null);
+                    longPollCh.setSound(null, null);
                 }
             }
-            notifMan.createNotificationChannel(notifChannel);
+            notifMan.createNotificationChannel(longPollCh);
         } else {
             notifMan = (android.app.NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         }
+    }
+
+    public void createAudioPlayerChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notifMan = ctx.getSystemService(android.app.NotificationManager.class);
+            int importance = android.app.NotificationManager.IMPORTANCE_DEFAULT;
+            audioPlayerCh = new NotificationChannel("audio_player", "Audio Player", importance);
+            notifMan.createNotificationChannel(audioPlayerCh);
+        } else {
+            notifMan = (android.app.NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        audioPlayerIntent = createAudioPlayerIntent(0, new ArrayList<Audio>());
     }
 
     public void buildDirectMsgNotification(Context ctx, ArrayList<Conversation> conversations,
@@ -87,8 +114,8 @@ public class NotificationManager {
                 }
                 notification_id = notification_id + 1;
                 String last_longpoll_response = data.getString("response");
-                Notification notification = createNotification(notifMan, R.drawable.ic_stat_notify,
-                        msg_author, msg_event.msg_text);
+                Notification notification = createLongPollNotification(notifMan, R.drawable.ic_stat_notify,
+                        "lp_updates", msg_author, msg_event.msg_text);
                 notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
                 notifMan.notify(notification_id, notification);
             }
@@ -103,8 +130,32 @@ public class NotificationManager {
         }
     }
 
-    public Notification createNotification(android.app.NotificationManager notifMan, int icon,
-                                           String title, String description) {
+    public void buildAudioPlayerNotification(Context ctx, ArrayList<Audio> audios,
+                                           Bundle data, boolean notify, boolean is_repeat) {
+        int notification_id = 2500;
+        String track_title = "Unknown track";
+        String track_artist = "Unknown artist";
+        int currentTrackPosition = 0;
+        if(audios != null) {
+            for (int i = 0; i < audios.size(); i++) {
+                if (audios.get(i).status == 2) {
+                    track_title = audios.get(i).title;
+                    track_artist = audios.get(i).artist;
+                    currentTrackPosition = i;
+                }
+            }
+        }
+        notification_id = notification_id + 1;
+        Notification notification = createAudioPlayerNotification(notifMan, R.drawable.ic_stat_notify_play,
+                "audio_player", track_title, track_artist);
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+        audioPlayerIntent = createAudioPlayerIntent(currentTrackPosition, audios);
+        notification.contentIntent = audioPlayerIntent;
+        notifMan.notify(notification_id, notification);
+    }
+
+    public Notification createLongPollNotification(android.app.NotificationManager notifMan, int icon,
+                                           String channel_id, String title, String description) {
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
@@ -112,7 +163,7 @@ public class NotificationManager {
                             .setSmallIcon(icon)
                             .setContentTitle(title)
                             .setContentText(description)
-                            .setChannelId("lp_updates");
+                            .setChannelId(channel_id);
             notification = builder.build();
             Intent notificationIntent = new Intent(ctx, ConversationActivity.class);
             notification.contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
@@ -145,11 +196,52 @@ public class NotificationManager {
         return notification;
     }
 
+    public Notification createAudioPlayerNotification(android.app.NotificationManager notifMan, int icon,
+                                                   String channel_id, String title, String description) {
+        Notification notification;
+        RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.audio_notification);
+        remoteViews.setTextViewText(R.id.anotify_artist, title);
+        remoteViews.setTextViewText(R.id.anotify_title, description);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder builder =
+                    new Notification.Builder(ctx)
+                            .setContent(remoteViews)
+                            .setChannelId(channel_id);
+            notification = builder.build();
+            Intent notificationIntent = new Intent(ctx, AppActivity.class);
+            notificationIntent.setAction(Intent.ACTION_MAIN);
+            notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            notification.contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
+        } else {
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(ctx)
+                            .setSmallIcon(icon)
+                            .setContent(remoteViews);
+
+            notification = builder.build();
+        }
+        return notification;
+    }
+
     public PendingIntent createConversationIntent(int peer_id, String title) {
         Intent notificationIntent = new Intent(ctx, ConversationActivity.class);
         notificationIntent.putExtra("peer_id", peer_id);
         notificationIntent.putExtra("conv_title", title);
         notificationIntent.putExtra("online", 1);
         return PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
+    }
+
+    public PendingIntent createAudioPlayerIntent(int track_position, ArrayList<Audio> audios) {
+        Intent notificationIntent = new Intent(ctx, AppActivity.class);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        return PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
+    }
+
+    public void clearAudioPlayerNotification() {
+        notifMan = (android.app.NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notifMan != null) {
+            notifMan.cancel(2501);
+        }
     }
 }

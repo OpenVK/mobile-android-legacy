@@ -8,10 +8,11 @@ import android.os.IBinder;
 import android.util.Log;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.longpoll.LongPollWrapper;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
@@ -25,7 +26,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
  *  program. If not, see https://www.gnu.org/licenses/.
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+ */
 
 public class LongPollService extends Service {
     private String lp_server;
@@ -52,12 +53,12 @@ public class LongPollService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("OpenVK Legacy", "Starting LongPoll Service...");
+        Log.i(OvkApplication.LP_TAG, "Starting LongPoll Service...");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("OpenVK Legacy", String.format("Getting LPS start ID: %d", startId));
+        Log.i(OvkApplication.LP_TAG, String.format("Getting LPS start ID: %s", startId));
         return super.onStartCommand(intent, flags, startId);
     }
 

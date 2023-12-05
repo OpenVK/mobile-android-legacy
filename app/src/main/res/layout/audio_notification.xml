@@ -1,8 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:gravity="center_vertical" android:orientation="horizontal" android:padding="7dp" android:duplicateParentState="true" android:addStatesFromChildren="false" android:layout_width="match_parent" android:layout_height="match_parent">
-    <ImageView android:id="@+id/imageView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="7dp" android:src="@drawable/ic_stat_notify_play"/>
-    <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout1" android:duplicateParentState="true" android:layout_width="match_parent" android:layout_height="wrap_content">
-        <TextView android:ellipsize="marquee" android:id="@+id/anotify_artist" android:duplicateParentState="true" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TextView" android:singleLine="true" style="@style/NotificationTitle"/>
-        <TextView android:ellipsize="marquee" android:id="@+id/anotify_title" android:duplicateParentState="true" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TextView" android:singleLine="true" style="@style/NotificationText"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:addStatesFromChildren="false"
+    android:duplicateParentState="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="7dp">
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="7dp"
+        android:src="@drawable/ic_stat_notify_play" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:duplicateParentState="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/anotify_artist"
+            style="@style/NotificationTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/anotify_title"
+            style="@style/NotificationText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="TextView" />
     </LinearLayout>
 </LinearLayout>

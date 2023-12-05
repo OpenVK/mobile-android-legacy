@@ -140,6 +140,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                     }
                     objects.set(position, item);
                     showBottomPlayer();
+                    sendPlayerNotification(item.status);
                 }
             });
 
@@ -150,6 +151,21 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        private void sendPlayerNotification(int state) {
+            if(ctx instanceof AppActivity) {
+                AppActivity activity = ((AppActivity) ctx);
+//                OvkApplication ovk_app = ((OvkApplication) ctx.getApplicationContext());
+//                activity.activateAudioPlayerService(currentTrackPos);
+//                ovk_app.audioPlayerService.;
+                if(state == 2) {
+                    activity.notifMan.buildAudioPlayerNotification(ctx, objects,
+                            null, true, false);
+                } else {
+                    activity.notifMan.clearAudioPlayerNotification();
+                }
+            }
         }
 
         private void showBottomPlayer() {
@@ -190,7 +206,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                     objects.set(position, item);
                     showBottomPlayer();
                     notifyItemChanged(currentTrackPos);
-
+                    sendPlayerNotification(item.status);
                 }
             });
         }
@@ -204,7 +220,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
 
         private void playAudioTrack(final int position) {
             try {
-                Audio track = getItem(position);
+                final Audio track = getItem(position);
                 final Audio track2 = track;
                 if(mp != null && track.status == 0) {
                     mp.release();
@@ -250,6 +266,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                                     currentTrackPos = position;
                                     showBottomPlayer();
                                     notifyItemChanged(position);
+                                    sendPlayerNotification(objects.get(position).status);
                                 } else {
                                     notifyItemChanged(currentTrackPos);
                                     bottom_player_view.setVisibility(View.GONE);
@@ -263,6 +280,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                             track2.status = 0;
                             (view.findViewById(R.id.audio_play_icon)).setVisibility(View.GONE);
                             objects.set(position, track2);
+                            sendPlayerNotification(track2.status);
                             return false;
                         }
                     });

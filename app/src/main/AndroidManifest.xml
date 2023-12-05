@@ -72,8 +72,12 @@
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
-            android:resizeableActivity="false"
-        />
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name=".showAudioPlaylist" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".core.activities.NewPostActivity"
@@ -345,6 +349,9 @@
         <!--suppress AndroidDomInspection -->
         <service android:name=".services.LongPollService" android:enabled="true" android:exported="true"/>
 
+        <!--suppress AndroidDomInspection -->
+        <service android:name=".services.AudioPlayerService" android:enabled="true" android:exported="true"/>
+
         <service android:name="uk.openvk.android.legacy.services.AuthenticatorService"
             android:exported="false">
             <intent-filter>
@@ -354,6 +361,11 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator"/>
         </service>
+
+        <activity android:name=".core.activities.AudioPlayerActivity"
+            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
 
         <activity android:name=".core.activities.CrashReporterActivity"
             android:theme="@style/BaseStyle.NoActionBar.NoShadow"
