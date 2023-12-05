@@ -190,6 +190,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                     objects.set(position, item);
                     showBottomPlayer();
                     notifyItemChanged(currentTrackPos);
+
                 }
             });
         }
@@ -241,6 +242,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                                 ((ImageView) view.findViewById(R.id.audio_play_icon))
                                         .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_pause));
                                 objects.set(position, track2);
+                                notifyItemChanged(currentTrackPos);
                                 if(currentTrackPos < objects.size() - 1) {
                                     int position = currentTrackPos + 1;
                                     clearCurrentTrackPos();
@@ -248,6 +250,9 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                                     currentTrackPos = position;
                                     showBottomPlayer();
                                     notifyItemChanged(position);
+                                } else {
+                                    notifyItemChanged(currentTrackPos);
+                                    bottom_player_view.setVisibility(View.GONE);
                                 }
                             }
                         }
