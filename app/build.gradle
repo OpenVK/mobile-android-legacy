@@ -79,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 210
-        versionName "1.1.210-beta.u"
+        versionCode 215
+        versionName "1.1.215-prerelease.u"
     }
     buildTypes {
         release {
@@ -105,16 +105,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 214
-            versionName "1.1.214-prerelease"
+            versionCode 215
+            versionName "1.1.215-prerelease"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 214
-            versionName '1.1.214'
+            versionCode 215
+            versionName '1.1.215-prerelease'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -125,8 +125,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 214
-            versionName "1.1.214-f"
+            versionCode 215
+            versionName "1.1.215-prerelease.f"
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }
