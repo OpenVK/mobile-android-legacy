@@ -14,6 +14,8 @@ public class Audio {
     public String lyrics;
     public String url;
     public User sender;
+    public int status;
+
     public Audio() {
     }
 

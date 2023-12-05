@@ -36,6 +36,22 @@ import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.PhotoAlbumIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 public class OvkAPIReceiver extends BroadcastReceiver {
     private Activity activity;
     public OvkAPIReceiver(Activity _activity) {
@@ -219,6 +235,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 case "Video.get":
                     msg.what = HandlerMessages.VIDEOS_GET;
                     app_a.ovk_api.videos.parse(downloadManager, data.getString("response"));
+                    break;
+                case "Audio.get":
+                    msg.what = HandlerMessages.AUDIOS_GET;
+                    app_a.ovk_api.audios.parseAudioTracks(data.getString("response"), true);
                     break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {

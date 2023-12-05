@@ -61,9 +61,10 @@ import uk.openvk.android.legacy.core.fragments.ProfileFragment;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 
-/** Global.java - global methods for application
- *
- *  OPENVK LEGACY LICENSE NOTIFICATION
+/** Global class - global methods for application **/
+
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
  *  the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -76,7 +77,7 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
  *  program. If not, see https://www.gnu.org/licenses/.
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+ */
 
 public class Global {
 
@@ -443,37 +444,41 @@ public class Global {
                 slidingMenuArray.add(new SlidingMenuItem(
                  ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                  0, ctx.getResources().getDrawable(R.drawable.ic_left_video)));
-            } else if (slider_menu_item_index == 3) {
+            }  else if (slider_menu_item_index == 3) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_messages)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_music)));
             } else if (slider_menu_item_index == 4) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_groups)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_messages)));
             } else if (slider_menu_item_index == 5) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_notes)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_groups)));
             } else if (slider_menu_item_index == 6) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
-                        0, ctx.getResources().getDrawable(R.drawable.ic_left_news)));
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_notes)));
             } else if (slider_menu_item_index == 7) {
+                slidingMenuArray.add(new SlidingMenuItem(
+                        ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
+                        0, ctx.getResources().getDrawable(R.drawable.ic_left_news)));
+            } else if (slider_menu_item_index == 8) {
                     /* Not implemented!
                     /
                     /  slidingMenuArray.add(new SlidingMenuItem(
                     /  getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                     /  0, getResources().getDrawable(R.drawable.ic_left_feedback)));
                     */
-            } else if (slider_menu_item_index == 8) {
+            } else if (slider_menu_item_index == 9) {
                     /* Not implemented!
                     /
                     /  slidingMenuArray.add(new SlidingMenuItem(getResources().getStringArray(
                     /  R.array.leftmenu)[slider_menu_item_index],
                     /  0, getResources().getDrawable(R.drawable.ic_left_fave)));
                     */
-            } else if (slider_menu_item_index == 9) {
+            } else if (slider_menu_item_index == 10) {
                 slidingMenuArray.add(new SlidingMenuItem(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_settings)));

@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Copyleft © 2022, 2023 OpenVK Team
-    Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
-
-    This program is free software: you can redistribute it and/or modify it under the terms of
-    the GNU Affero General Public License as published by the Free Software Foundation, either
-    version 3 of the License, or (at your option) any later version.
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License along with this
-    program. If not, see https://www.gnu.org/licenses/.
-
-    Source code: https://github.com/openvk/mobile-android-legacy
-!-->
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent" android:gravity="center_vertical" android:layout_height="fill_parent" android:padding="7dip" android:addStatesFromChildren="false" android:duplicateParentState="true" android:orientation="horizontal">
-    <ImageView android:id="@+id/imageView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_stat_notify_play" android:layout_marginRight="7dip"></ImageView>
-
-    <LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical" android:duplicateParentState="true">
-        <TextView android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="marquee" android:duplicateParentState="true" android:layout_width="fill_parent" android:text="TextView" android:id="@+id/anotify_artist" style="@style/NotificationTitle"></TextView>
-        <TextView android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="marquee" android:duplicateParentState="true" android:layout_width="fill_parent" android:text="TextView" android:id="@+id/anotify_title" style="@style/NotificationText"></TextView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:gravity="center_vertical" android:orientation="horizontal" android:padding="7dp" android:duplicateParentState="true" android:addStatesFromChildren="false" android:layout_width="match_parent" android:layout_height="match_parent">
+    <ImageView android:id="@+id/imageView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="7dp" android:src="@drawable/ic_stat_notify_play"/>
+    <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout1" android:duplicateParentState="true" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <TextView android:ellipsize="marquee" android:id="@+id/anotify_artist" android:duplicateParentState="true" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TextView" android:singleLine="true" style="@style/NotificationTitle"/>
+        <TextView android:ellipsize="marquee" android:id="@+id/anotify_title" android:duplicateParentState="true" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TextView" android:singleLine="true" style="@style/NotificationText"/>
     </LinearLayout>
 </LinearLayout>

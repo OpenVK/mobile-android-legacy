@@ -30,7 +30,7 @@ import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
@@ -44,7 +44,7 @@ import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
  *  program. If not, see https://www.gnu.org/licenses/.
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+ */
 
 public class SlidingMenuLayout extends LinearLayout {
 

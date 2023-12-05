@@ -10,6 +10,7 @@ import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Ovk;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.api.entities.Video;
+import uk.openvk.android.legacy.api.models.Audios;
 import uk.openvk.android.legacy.api.models.Friends;
 import uk.openvk.android.legacy.api.models.Groups;
 import uk.openvk.android.legacy.api.models.Likes;
@@ -24,20 +25,20 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.api.wrappers.UploadManager;
 
-/**
- * OPENVK LEGACY LICENSE NOTIFICATION
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of
- * the GNU Affero General Public License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see https://www.gnu.org/licenses/.
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
  *
- * Source code: https://github.com/openvk/mobile-android-legacy
+ *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
 public class OpenVKAPI {
@@ -57,6 +58,7 @@ public class OpenVKAPI {
     public OvkAPIWrapper wrapper;
     public DownloadManager dlman;
     public UploadManager ulman;
+    public Audios audios;
 
     public OpenVKAPI(Context ctx, SharedPreferences global_prefs, SharedPreferences instance_prefs,
                      android.os.Handler handler) {
@@ -99,6 +101,7 @@ public class OpenVKAPI {
         notes = new Notes();
         photos = new Photos();
         videos = new Videos();
+        audios = new Audios();
         ovk = new Ovk();
     }
 }

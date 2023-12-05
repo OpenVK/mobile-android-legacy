@@ -56,7 +56,7 @@ import uk.openvk.android.legacy.ui.list.items.*;
 import uk.openvk.android.legacy.ui.views.*;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-/** Copyleft © 2022, 2023 OpenVK Team
+/*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
  *  This program is free software: you can redistribute it and/or modify it under the terms of
@@ -70,7 +70,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  program. If not, see https://www.gnu.org/licenses/.
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+ */
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends NetworkFragmentActivity {
@@ -84,7 +84,7 @@ public class AppActivity extends NetworkFragmentActivity {
     public FriendsFragment friendsFragment;
     public PhotosFragment photosFragment;
     public VideosFragment videosFragment;
-    private AudiosFragment audiosFragment;
+    public AudiosFragment audiosFragment;
     public ConversationsFragment conversationsFragment;
     public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
@@ -457,6 +457,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ft.add(R.id.app_fragment, friendsFragment, "friends");
         ft.add(R.id.app_fragment, photosFragment, "photos");
         ft.add(R.id.app_fragment, videosFragment, "videos");
+        ft.add(R.id.app_fragment, audiosFragment, "audios");
         ft.add(R.id.app_fragment, groupsFragment, "groups");
         ft.add(R.id.app_fragment, conversationsFragment, "messages");
         ft.add(R.id.app_fragment, profileFragment, "profile");
@@ -467,6 +468,7 @@ public class AppActivity extends NetworkFragmentActivity {
         ft.hide(friendsFragment);
         ft.hide(photosFragment);
         ft.hide(videosFragment);
+        ft.hide(audiosFragment);
         ft.hide(groupsFragment);
         ft.hide(conversationsFragment);
         ft.hide(profileFragment);
@@ -633,21 +635,26 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.videos.getVideos(ovk_api.wrapper, ovk_api.account.id, 25);
                 break;
             case 3:
+                setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[3]);
+                fn.navigateTo("audios", ft);
+                ovk_api.audios.get(ovk_api.wrapper, ovk_api.account.id, 25, true);
+                break;
+            case 4:
                 setActionBarTitle(getResources().getString(R.string.messages));
                 fn.navigateTo("messages", ft);
                 ovk_api.messages.getConversations(ovk_api.wrapper);
                 break;
-            case 4:
+            case 5:
                 setActionBarTitle(getResources().getString(R.string.groups));
                 fn.navigateTo("groups", ft);
                 ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 25);
                 break;
-            case 5:
+            case 6:
                 setActionBarTitle(getResources().getString(R.string.notes));
                 fn.navigateTo("notes", ft);
                 ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 25, 1);
                 break;
-            case 6:
+            case 7:
                 menu_id = R.menu.newsfeed;
                 onCreateOptionsMenu(activity_menu);
                 setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -658,7 +665,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
                 }
                 break;
-            case 7:
+            case 8:
                 setActionBarTitle(getResources().getString(R.string.menu_settings));
                 fn.navigateTo("settings", ft);
                 break;
@@ -731,9 +738,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = ovk_api.account.counters.friends_requests;
                 slidingMenuArray.set(0, friends_item);
-                SlidingMenuItem messages_item = slidingMenuArray.get(3);
+                SlidingMenuItem messages_item = slidingMenuArray.get(4);
                 messages_item.counter = ovk_api.account.counters.new_messages;
-                slidingMenuArray.set(3, messages_item);
+                slidingMenuArray.set(4, messages_item);
                 SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
                         slidingMenuArray);
                 if(!((OvkApplication) getApplicationContext()).isTablet) {
@@ -862,6 +869,13 @@ public class AppActivity extends NetworkFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     videosFragment.createAdapter(this, ovk_api.videos.getList());
                     videosFragment.setScrollingPositions(this, true);
+                }
+            } else if (message == HandlerMessages.AUDIOS_GET) {
+                if (selectedFragment instanceof AudiosFragment) {
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    audiosFragment.createAdapter(this, ovk_api.audios.getList());
+                    audiosFragment.setScrollingPositions(this, true);
                 }
             } else if (message == HandlerMessages.GROUPS_GET) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
