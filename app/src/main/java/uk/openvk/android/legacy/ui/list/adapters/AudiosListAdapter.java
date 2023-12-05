@@ -241,7 +241,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                                 track2.status = 0;
                                 ((ImageView) view.findViewById(R.id.audio_play_icon))
                                         .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_pause));
-                                objects.set(position, track2);
+                                objects.set(currentTrackPos, track2);
                                 notifyItemChanged(currentTrackPos);
                                 if(currentTrackPos < objects.size() - 1) {
                                     int position = currentTrackPos + 1;
