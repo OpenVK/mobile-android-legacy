@@ -60,11 +60,15 @@ public class Audios {
                     audio.genre = audio_track.getString("genre_str");
                     audio.setDuration(audio_track.getInt("duration"));
                     audio.url = audio_track.getString("url");
-                    JSONObject sender = audio_track.getJSONObject("user");
-                    audio.sender = new User();
-                    audio.sender.id = sender.getLong("id");
-                    audio.sender.first_name = sender.getString("name").split(" ")[0];
-                    audio.sender.last_name = sender.getString("name").split(" ")[1];
+                    if(audio_track.has("user")) {
+                        JSONObject sender = audio_track.getJSONObject("user");
+                        audio.sender = new User();
+                        audio.sender.id = sender.getLong("id");
+                        audio.sender.first_name = sender.getString("name").split(" ")[0];
+                        if(sender.getString("name").split(" ").length == 2) {
+                            audio.sender.last_name = sender.getString("name").split(" ")[1];
+                        }
+                    }
                     audios.add(audio);
                 }
             } catch (JSONException e) {

@@ -205,6 +205,7 @@ public class NotificationManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
                     new Notification.Builder(ctx)
+                            .setSmallIcon(icon)
                             .setContent(remoteViews)
                             .setChannelId(channel_id);
             notification = builder.build();
