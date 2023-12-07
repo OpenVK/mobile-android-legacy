@@ -188,7 +188,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
             if (parent instanceof AppActivity) {
                 AppActivity activity = ((AppActivity) parent);
                 activity.notifMan.createAudioPlayerChannel();
-                activity.notifMan.buildAudioPlayerNotification(getContext(), audios, new Bundle(), true, false);
+                activity.notifMan.buildAudioPlayerNotification(getContext(), audios, track_position, true, false);
             }
         }
     }
