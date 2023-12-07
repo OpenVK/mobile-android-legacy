@@ -4,14 +4,17 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.*;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
@@ -112,7 +115,6 @@ public class AppActivity extends NetworkFragmentActivity {
     public int old_friends_size;
     public boolean profile_loaded = false;
     public android.accounts.Account androidAccount;
-
 
     @SuppressLint({"CommitPrefEdits", "HandlerLeak"})
     @Override
@@ -1100,13 +1102,6 @@ public class AppActivity extends NetworkFragmentActivity {
                         getString("server", ""), longPollServer.address, longPollServer.key,
                 longPollServer.ts, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false));
-    }
-
-    public void activateAudioPlayerService(int current_track_pos) {
-        OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
-        ovk_app.audioPlayerService =
-                new AudioPlayerService(this, ovk_api.audios.getList(), notifMan);
-        ovk_app.audioPlayerService.setCurrentTrackPosition(current_track_pos);
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {

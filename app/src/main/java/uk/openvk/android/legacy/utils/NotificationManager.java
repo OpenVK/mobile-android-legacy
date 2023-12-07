@@ -60,6 +60,11 @@ public class NotificationManager {
         this.vibrate = vibrate;
         this.playSound = playSound;
         this.ringtone_url = ringtone_url;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notifMan = ctx.getSystemService(android.app.NotificationManager.class);
+        } else {
+            notifMan = (android.app.NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
     }
 
     public void createLongPollChannel() {
@@ -132,6 +137,11 @@ public class NotificationManager {
 
     public void buildAudioPlayerNotification(Context ctx, ArrayList<Audio> audios,
                                            Bundle data, boolean notify, boolean is_repeat) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notifMan = ctx.getSystemService(android.app.NotificationManager.class);
+        } else {
+            notifMan = (android.app.NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
         int notification_id = 2500;
         String track_title = "Unknown track";
         String track_artist = "Unknown artist";

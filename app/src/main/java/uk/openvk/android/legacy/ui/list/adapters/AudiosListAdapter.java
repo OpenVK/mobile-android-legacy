@@ -1,8 +1,10 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 
 /*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -38,17 +41,15 @@ import uk.openvk.android.legacy.core.activities.AppActivity;
 
 public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Holder> {
     private LinearLayout bottom_player_view;
-    private MediaPlayer mp;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Audio> objects;
     public boolean opened_sliding_menu;
     private int currentTrackPos;
 
-    public AudiosListAdapter(Context context, LinearLayout bottom_player_view, MediaPlayer mp, ArrayList<Audio> items) {
+    public AudiosListAdapter(Context context, LinearLayout bottom_player_view, ArrayList<Audio> items) {
         ctx = context;
         objects = items;
-        this.mp = mp;
         this.bottom_player_view = bottom_player_view;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -88,6 +89,36 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         return (getItem(position));
     }
 
+    public void setTrackState(int current_track_position, int status) {
+        Audio audio = objects.get(currentTrackPos);
+        audio.status = 0;
+        objects.set(currentTrackPos, audio);
+        audio = objects.get(current_track_position);
+        int track_status;
+        switch (status) {
+            case AudioPlayerService.STATUS_STARTING:
+                track_status = 1;
+                break;
+            case AudioPlayerService.STATUS_PLAYING:
+                track_status = 2;
+                break;
+            case AudioPlayerService.STATUS_PAUSED:
+                track_status = 3;
+                break;
+            default:
+                track_status = 0;
+        }
+        audio.status = track_status;
+        objects.set(current_track_position, audio);
+
+        notifyItemChanged(currentTrackPos, false);
+        currentTrackPos = current_track_position;
+    }
+
+    public int getCurrentTrackPosition() {
+        return currentTrackPos;
+    }
+
     public class Holder extends RecyclerView.ViewHolder {
         public TextView item_id;
         public TextView item_name;
@@ -118,29 +149,26 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.findViewById(R.id.audio_saved_icon).setVisibility(View.GONE);
             if(item.status == 1 || item.status == 2) {
                 view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
+                showBottomPlayer();
             } else if(item.status == 3) {
                 ((ImageView) view.findViewById(R.id.audio_play_icon))
                         .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_pause));
                 view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
+                showBottomPlayer();
             } else {
                 view.findViewById(R.id.audio_play_icon).setVisibility(View.GONE);
             }
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    setTrackState(currentTrackPos, AudioPlayerService.STATUS_STOPPED);
                     Audio item = getItem(position);
                     Log.d(OvkApplication.APP_TAG, String.format("Audio track status: %s", item.status));
                     if(item.status == 0 || item.status == 3) {
-                        playAudioTrack(position);
                         currentTrackPos = position;
-                        item.status = 2;
-                    } else if(item.status == 2) {
-                        pauseAudioTrack();
-                        item.status = 3;
                     }
-                    objects.set(position, item);
+                    playAudioTrack(position);
                     showBottomPlayer();
-                    sendPlayerNotification(item.status);
                 }
             });
 
@@ -151,21 +179,6 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                 return super.onTouch(v, event);
             }
         }); */
-        }
-
-        private void sendPlayerNotification(int state) {
-            if(ctx instanceof AppActivity) {
-                AppActivity activity = ((AppActivity) ctx);
-//                OvkApplication ovk_app = ((OvkApplication) ctx.getApplicationContext());
-//                activity.activateAudioPlayerService(currentTrackPos);
-//                ovk_app.audioPlayerService.;
-                if(state == 2) {
-                    activity.notifMan.buildAudioPlayerNotification(ctx, objects,
-                            null, true, false);
-                } else {
-                    activity.notifMan.clearAudioPlayerNotification();
-                }
-            }
         }
 
         private void showBottomPlayer() {
@@ -194,110 +207,39 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             play_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int position = currentTrackPos;
-                    Audio item = getItem(position);
-                    if(item.status == 0 || item.status == 3) {
-                        playAudioTrack(position);
-                        item.status = 2;
-                    } else if(item.status == 2) {
-                        pauseAudioTrack();
-                        item.status = 3;
-                    }
-                    objects.set(position, item);
                     showBottomPlayer();
-                    notifyItemChanged(currentTrackPos);
-                    sendPlayerNotification(item.status);
+                    playAudioTrack(currentTrackPos);
                 }
             });
         }
 
         private void pauseAudioTrack() {
-            mp.pause();
             ((ImageView) view.findViewById(R.id.audio_play_icon))
                     .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_pause));
             view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
         }
 
         private void playAudioTrack(final int position) {
-            try {
-                final Audio track = getItem(position);
-                final Audio track2 = track;
-                if(mp != null && track.status == 0) {
-                    mp.release();
-                    mp = new MediaPlayer();
-                    clearCurrentTrackPos();
+            Audio track = getItem(position);
+            final Audio track2 = track;
+            ((ImageView) view.findViewById(R.id.audio_play_icon))
+                    .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_play));
+            view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
+            if(ctx instanceof AppActivity) {
+                AppActivity activity = ((AppActivity) ctx);
+                switch (track.status) {
+                    case 0:
+                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING);
+                        break;
+                    case 2:
+                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED);
+                        break;
+                    case 3:
+                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING);
+                        break;
                 }
-                ((ImageView) view.findViewById(R.id.audio_play_icon))
-                        .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_play));
-                view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
-                if(track.status == 0) {
-                    track.status = 1;
-                    mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
-                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
-                            view.findViewById(R.id.audio_progress).setVisibility(View.GONE);
-                            track2.status = 2;
-                            objects.set(position, track2);
-                        }
-                    });
-                    mp.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-                        @Override
-                        public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-                            if (percent == 100) {
-                                view.findViewById(R.id.audio_saved_icon).setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            if(mediaPlayer.getDuration() > 0) {
-                                track2.status = 0;
-                                ((ImageView) view.findViewById(R.id.audio_play_icon))
-                                        .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_pause));
-                                objects.set(currentTrackPos, track2);
-                                notifyItemChanged(currentTrackPos);
-                                if(currentTrackPos < objects.size() - 1) {
-                                    int position = currentTrackPos + 1;
-                                    clearCurrentTrackPos();
-                                    playAudioTrack(position);
-                                    currentTrackPos = position;
-                                    showBottomPlayer();
-                                    notifyItemChanged(position);
-                                    sendPlayerNotification(objects.get(position).status);
-                                } else {
-                                    notifyItemChanged(currentTrackPos);
-                                    bottom_player_view.setVisibility(View.GONE);
-                                }
-                            }
-                        }
-                    });
-                    mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                        @Override
-                        public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                            track2.status = 0;
-                            (view.findViewById(R.id.audio_play_icon)).setVisibility(View.GONE);
-                            objects.set(position, track2);
-                            sendPlayerNotification(track2.status);
-                            return false;
-                        }
-                    });
-                    mp.setDataSource(track.url);
-                    mp.prepare();
-                }
-                mp.start();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }
-
-        private void clearCurrentTrackPos() {
-            Audio currentTrack = getItem(currentTrackPos);
-            currentTrack.status = 0;
-            objects.set(currentTrackPos, currentTrack);
-            notifyItemChanged(currentTrackPos);
         }
     }
 
@@ -305,10 +247,6 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
     public int getItemViewType(int position)
     {
         return position;
-    }
-
-    public int getCurrentTrackPosition() {
-        return currentTrackPos;
     }
 
 }
