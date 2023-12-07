@@ -140,7 +140,7 @@ public class AudioPlayerService extends Service implements
 
     private void createMediaPlayer() {
         if(mp != null) {
-            mp.release();
+            mp.stop();
         }
         mp = new MediaPlayer();
         if(Build.VERSION.SDK_INT >= 26)
@@ -165,14 +165,21 @@ public class AudioPlayerService extends Service implements
             if (mediaPlayer.getDuration() > 0) {
                 if (currentTrackPos < playlist.length - 1) {
                     int position = currentTrackPos + 1;
-                    if(mp.isPlaying()) {
-                        mp.release();
-                        mp = new MediaPlayer();
-                    }
+                    createMediaPlayer();
                     currentTrackPos = position;
+                    notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
+                    mp.setOnCompletionListener(this);
+                    mp.setOnErrorListener(this);
+                    mp.setOnBufferingUpdateListener(this);
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer) {
+                            mp.start();
+                            notifyPlayerStatus(STATUS_PLAYING);
+                        }
+                    });
                     mp.setDataSource(playlist[position].url);
                     mp.prepareAsync();
-                    mp.start();
                 } else {
                     mp.stop();
                 }
@@ -204,10 +211,8 @@ public class AudioPlayerService extends Service implements
 
     private void startPlaylistFromPosition(int track_position) {
         try {
-            if(mp.isPlaying()) {
-                mp.release();
-                mp = new MediaPlayer();
-            }
+            mp.release();
+            mp = new MediaPlayer();
             currentTrackPos = track_position;
             if(playlist[track_position].url != null) {
                 mp.setDataSource(playlist[track_position].url);
