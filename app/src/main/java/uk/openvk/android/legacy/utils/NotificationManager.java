@@ -136,7 +136,7 @@ public class NotificationManager {
     }
 
     public void buildAudioPlayerNotification(Context ctx, ArrayList<Audio> audios,
-                                           Bundle data, boolean notify, boolean is_repeat) {
+                                           int current_pos, boolean notify, boolean is_repeat) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifMan = ctx.getSystemService(android.app.NotificationManager.class);
         } else {
@@ -147,12 +147,10 @@ public class NotificationManager {
         String track_artist = "Unknown artist";
         int currentTrackPosition = 0;
         if(audios != null) {
-            for (int i = 0; i < audios.size(); i++) {
-                if (audios.get(i).status == 2) {
-                    track_title = audios.get(i).title;
-                    track_artist = audios.get(i).artist;
-                    currentTrackPosition = i;
-                }
+            if (audios.get(current_pos).status == 2) {
+                track_title = audios.get(current_pos).title;
+                track_artist = audios.get(current_pos).artist;
+                currentTrackPosition = current_pos;
             }
         }
         notification_id = notification_id + 1;

@@ -165,8 +165,9 @@ public class AudioPlayerService extends Service implements
             if (mediaPlayer.getDuration() > 0) {
                 if (currentTrackPos < playlist.length - 1) {
                     int position = currentTrackPos + 1;
-                    if (mp.isPlaying()) {
-                        mp.stop();
+                    if(mp.isPlaying()) {
+                        mp.release();
+                        mp = new MediaPlayer();
                     }
                     currentTrackPos = position;
                     mp.setDataSource(playlist[position].url);
@@ -193,7 +194,7 @@ public class AudioPlayerService extends Service implements
         );
         notifMan.createAudioPlayerChannel();
         notifMan.buildAudioPlayerNotification(
-                ctx, new ArrayList<Audio>(), new Bundle(), true, false
+                ctx, new ArrayList<Audio>(), currentTrackPos, true, false
         );
     }
 

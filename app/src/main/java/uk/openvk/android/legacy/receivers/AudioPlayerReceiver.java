@@ -12,7 +12,11 @@ import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
 public class AudioPlayerReceiver extends BroadcastReceiver {
-    private final Context ctx;
+    private Context ctx;
+
+    public AudioPlayerReceiver() {
+
+    }
 
     public AudioPlayerReceiver(Context ctx) {
         this.ctx = ctx;
