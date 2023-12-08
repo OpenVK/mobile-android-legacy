@@ -109,7 +109,7 @@ public class FragmentNavigator {
                 case "audios":
                     ft.show(appActivity.audiosFragment);
                     showFragment(activity, appActivity.videosFragment.getCount() != 0);
-                    appActivity.progressLayout.enableDarkTheme(true);
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.audiosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "audios");
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {

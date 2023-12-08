@@ -219,20 +219,29 @@ public class NotificationManager {
         PendingIntent pausePendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_PAUSED);
         PendingIntent prevPendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_GOTO_PREVIOUS);
         PendingIntent nextPendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_GOTO_NEXT);
-        switch (track.status) {
-            case 3:
-                remoteViews.setOnClickPendingIntent(R.id.playpause, playPendingIntent);
-                remoteViews.setImageViewResource(R.id.playpause, R.drawable.ic_audio_panel_play);
-                break;
-            default:
-                remoteViews.setOnClickPendingIntent(R.id.playpause, pausePendingIntent);
-                remoteViews.setImageViewResource(R.id.playpause, R.drawable.ic_audio_panel_pause);
-                break;
+        // Clickable notifications working with Android Honeycomb and above
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            switch (track.status) {
+                case 3:
+                    remoteViews.setOnClickPendingIntent(R.id.playpause, playPendingIntent);
+                    remoteViews.setImageViewResource(R.id.playpause, R.drawable.ic_audio_panel_play);
+                    break;
+                default:
+                    remoteViews.setOnClickPendingIntent(R.id.playpause, pausePendingIntent);
+                    remoteViews.setImageViewResource(R.id.playpause, R.drawable.ic_audio_panel_pause);
+                    break;
+            }
+
+            remoteViews.setOnClickPendingIntent(R.id.prev, prevPendingIntent);
+            remoteViews.setOnClickPendingIntent(R.id.next, nextPendingIntent);
+        } else {
+            switch (track.status) {
+                case 3:
+                    remoteViews.setImageViewResource(R.id.player_status, R.drawable.ic_audio_panel_pause);
+                default:
+                    remoteViews.setImageViewResource(R.id.player_status, R.drawable.ic_audio_panel_play);
+            }
         }
-
-        remoteViews.setOnClickPendingIntent(R.id.prev, prevPendingIntent);
-
-        remoteViews.setOnClickPendingIntent(R.id.next, nextPendingIntent);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
@@ -250,8 +259,10 @@ public class NotificationManager {
                     new NotificationCompat.Builder(ctx)
                             .setSmallIcon(icon)
                             .setContent(remoteViews);
-
             notification = builder.build();
+            // Applying custom notification layout workaround for Android 2.3 and lower
+            if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB)
+                notification.contentView = remoteViews;
         }
         return notification;
     }
