@@ -7,17 +7,20 @@ import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.Conversation;
@@ -25,6 +28,10 @@ import uk.openvk.android.legacy.api.longpoll.MessageEvent;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.services.connections.AudioPlayerConnection;
+
+import static android.content.Context.BIND_AUTO_CREATE;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -135,8 +142,8 @@ public class NotificationManager {
         }
     }
 
-    public void buildAudioPlayerNotification(Context ctx, ArrayList<Audio> audios,
-                                           int current_pos, boolean notify, boolean is_repeat) {
+    public void buildAudioPlayerNotification(Context ctx,
+                                             ArrayList<Audio> audios, int current_pos) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifMan = ctx.getSystemService(android.app.NotificationManager.class);
         } else {
@@ -146,16 +153,15 @@ public class NotificationManager {
         String track_title = "Unknown track";
         String track_artist = "Unknown artist";
         int currentTrackPosition = 0;
+        Audio track = null;
         if(audios != null) {
-            if (audios.get(current_pos).status == 2) {
-                track_title = audios.get(current_pos).title;
-                track_artist = audios.get(current_pos).artist;
-                currentTrackPosition = current_pos;
-            }
+            track = audios.get(current_pos);
+            currentTrackPosition = current_pos;
         }
         notification_id = notification_id + 1;
-        Notification notification = createAudioPlayerNotification(notifMan, R.drawable.ic_stat_notify_play,
-                "audio_player", track_title, track_artist);
+        Notification notification = createAudioPlayerNotification(
+                ctx, R.drawable.ic_stat_notify_play, "audio_player", track
+        );
         notification.flags |= Notification.FLAG_NO_CLEAR;
         audioPlayerIntent = createAudioPlayerIntent(currentTrackPosition, audios);
         notification.contentIntent = audioPlayerIntent;
@@ -204,12 +210,30 @@ public class NotificationManager {
         return notification;
     }
 
-    public Notification createAudioPlayerNotification(android.app.NotificationManager notifMan, int icon,
-                                                   String channel_id, String title, String description) {
+    public Notification createAudioPlayerNotification(Context ctx, int icon, String channel_id, Audio track) {
         Notification notification;
         RemoteViews remoteViews = new RemoteViews(ctx.getPackageName(), R.layout.audio_notification);
-        remoteViews.setTextViewText(R.id.anotify_artist, title);
-        remoteViews.setTextViewText(R.id.anotify_title, description);
+        remoteViews.setTextViewText(R.id.title, track.title);
+        remoteViews.setTextViewText(R.id.content, track.artist);
+        PendingIntent playPendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_PLAYING);
+        PendingIntent pausePendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_PAUSED);
+        PendingIntent prevPendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_GOTO_PREVIOUS);
+        PendingIntent nextPendingIntent = setAudioPlayerControls(ctx, AudioPlayerService.STATUS_GOTO_NEXT);
+        switch (track.status) {
+            case 3:
+                remoteViews.setOnClickPendingIntent(R.id.playpause, playPendingIntent);
+                remoteViews.setImageViewResource(R.id.playpause, R.drawable.ic_audio_panel_play);
+                break;
+            default:
+                remoteViews.setOnClickPendingIntent(R.id.playpause, pausePendingIntent);
+                remoteViews.setImageViewResource(R.id.playpause, R.drawable.ic_audio_panel_pause);
+                break;
+        }
+
+        remoteViews.setOnClickPendingIntent(R.id.prev, prevPendingIntent);
+
+        remoteViews.setOnClickPendingIntent(R.id.next, nextPendingIntent);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
                     new Notification.Builder(ctx)
@@ -230,6 +254,42 @@ public class NotificationManager {
             notification = builder.build();
         }
         return notification;
+    }
+
+    private PendingIntent setAudioPlayerControls(Context ctx, int status) {
+        String action = "";
+        int request_code = 0;
+        switch (status) {
+            case AudioPlayerService.STATUS_STARTING:
+                action = "PLAYER_START";
+                request_code = 0;
+                break;
+            case AudioPlayerService.STATUS_PLAYING:
+                action = "PLAYER_PLAY";
+                request_code = 1;
+                break;
+            case AudioPlayerService.STATUS_PAUSED:
+                action = "PLAYER_PAUSE";
+                request_code = 2;
+                break;
+            case AudioPlayerService.STATUS_GOTO_PREVIOUS:
+                action = "PLAYER_PREVIOUS";
+                request_code = 3;
+                break;
+            case AudioPlayerService.STATUS_GOTO_NEXT:
+                action = "PLAYER_NEXT";
+                request_code = 4;
+                break;
+            default:
+                action = "PLAYER_STOP";
+                request_code = 5;
+                break;
+        }
+        Intent serviceIntent = new Intent(ctx.getApplicationContext(), AudioPlayerService.class);
+        serviceIntent.putExtra("action", action);
+        return PendingIntent.getService(
+                ctx.getApplicationContext(), request_code, serviceIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
     }
 
     public PendingIntent createConversationIntent(int peer_id, String title) {

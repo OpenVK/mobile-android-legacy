@@ -1,11 +1,9 @@
 package uk.openvk.android.legacy.services;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -13,9 +11,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -24,8 +20,23 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
-import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.utils.NotificationManager;
+
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
 
 public class AudioPlayerService extends Service implements
         MediaPlayer.OnBufferingUpdateListener,
@@ -50,6 +61,11 @@ public class AudioPlayerService extends Service implements
     public static final int STATUS_PLAYING = 1001;
     public static final int STATUS_PAUSED = 1002;
     public static final int STATUS_STOPPED = 1003;
+    public static final int STATUS_GOTO_PREVIOUS = 1004;
+    public static final int STATUS_GOTO_NEXT = 1005;
+    public static final int STATUS_REPEATING = 1006;
+    public static final int STATUS_SHUFFLE = 1007;
+
     private Audio[] playlist;
     private int playerStatus;
 
@@ -95,7 +111,7 @@ public class AudioPlayerService extends Service implements
             Bundle data = intent.getExtras();
             if (data != null) {
                 String action = data.getString("action");
-                Log.d(OvkApplication.APP_TAG, String.format("Starting AudioPlayerService by ID: %s", startId));
+                Log.d(OvkApplication.APP_TAG, String.format("Starting AudioPlayerService by ID: %s | Action: %s", startId, action));
                 isRunnung = true;
                 if(action != null) {
                     switch (action) {
@@ -128,6 +144,26 @@ public class AudioPlayerService extends Service implements
                         case "PLAYER_STOP":
                             mp.stop();
                             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
+                            break;
+                        case "PLAYER_PREVIOUS":
+                            if(currentTrackPos > 0) {
+                                currentTrackPos--;
+                                startPlaylistFromPosition(currentTrackPos);
+                            } else {
+                                currentTrackPos = playlist.length - 1;
+                                startPlaylistFromPosition(currentTrackPos);
+                            }
+                            notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
+                            break;
+                        case "PLAYER_NEXT":
+                            if(currentTrackPos < playlist.length - 1) {
+                                currentTrackPos++;
+                                startPlaylistFromPosition(currentTrackPos);
+                            } else {
+                                currentTrackPos = 0;
+                                startPlaylistFromPosition(currentTrackPos);
+                            }
+                            notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             break;
                     }
                 }
@@ -182,6 +218,7 @@ public class AudioPlayerService extends Service implements
                     mp.prepareAsync();
                 } else {
                     mp.stop();
+                    notifyPlayerStatus(STATUS_STOPPED);
                 }
             }
         } catch (Exception ex) {
@@ -195,23 +232,14 @@ public class AudioPlayerService extends Service implements
         return false;
     }
 
-    public void createPlayerNotification(Context ctx) {
-        notifMan = new NotificationManager(
-                ctx, false, false, false, ""
-        );
-        notifMan.createAudioPlayerChannel();
-        notifMan.buildAudioPlayerNotification(
-                ctx, new ArrayList<Audio>(), currentTrackPos, true, false
-        );
-    }
-
     public int getCurrentTrackPosision() {
         return currentTrackPos;
     }
 
     private void startPlaylistFromPosition(int track_position) {
         try {
-            mp.release();
+            if(mp.isPlaying())
+                mp.release();
             mp = new MediaPlayer();
             currentTrackPos = track_position;
             if(playlist[track_position].url != null) {

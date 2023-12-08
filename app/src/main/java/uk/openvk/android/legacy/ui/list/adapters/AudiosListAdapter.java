@@ -149,12 +149,12 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.findViewById(R.id.audio_saved_icon).setVisibility(View.GONE);
             if(item.status == 1 || item.status == 2) {
                 view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
-                showBottomPlayer();
+                showBottomPlayer(item);
             } else if(item.status == 3) {
                 ((ImageView) view.findViewById(R.id.audio_play_icon))
                         .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_pause));
                 view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
-                showBottomPlayer();
+                showBottomPlayer(item);
             } else {
                 view.findViewById(R.id.audio_play_icon).setVisibility(View.GONE);
             }
@@ -168,7 +168,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                         currentTrackPos = position;
                     }
                     playAudioTrack(position);
-                    showBottomPlayer();
+                    showBottomPlayer(item);
                 }
             });
 
@@ -181,36 +181,11 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         }); */
         }
 
-        private void showBottomPlayer() {
-            bottom_player_view.setVisibility(View.VISIBLE);
-            TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
-            TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
-            final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
-            final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
-            Audio track = getItem(currentTrackPos);
-            title_tv.setText(track.title);
-            artist_tv.setText(track.artist);
-            bottom_player_view.findViewById(R.id.audio_panel_prev).setVisibility(View.GONE);
-            bottom_player_view.findViewById(R.id.audio_panel_next).setVisibility(View.GONE);
-            cover_view.setImageDrawable(
-                    ctx.getResources().getDrawable(R.drawable.aplayer_cover_placeholder)
-            );
-            if(track.status == 0 || track.status == 3) {
-                play_btn.setImageDrawable(
-                        ctx.getResources().getDrawable(R.drawable.ic_audio_panel_play)
-                );
-            } else if(track.status == 2) {
-                play_btn.setImageDrawable(
-                    ctx.getResources().getDrawable(R.drawable.ic_audio_panel_pause)
-                );
+        private void showBottomPlayer(Audio track) {
+            if(ctx instanceof AppActivity) {
+                AppActivity activity = ((AppActivity) ctx);
+                activity.audiosFragment.showBottomPlayer(this, track);
             }
-            play_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showBottomPlayer();
-                    playAudioTrack(currentTrackPos);
-                }
-            });
         }
 
         private void pauseAudioTrack() {
@@ -219,7 +194,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
         }
 
-        private void playAudioTrack(final int position) {
+        public void playAudioTrack(final int position) {
             Audio track = getItem(position);
             final Audio track2 = track;
             ((ImageView) view.findViewById(R.id.audio_play_icon))
