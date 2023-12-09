@@ -157,7 +157,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
                 db.delete("news",
-                        "`pid`=" + post_id + " AND `uid`=" + owner_id, null
+                        "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null
                 );
             } catch (Exception ex) {
                 ex.printStackTrace();
