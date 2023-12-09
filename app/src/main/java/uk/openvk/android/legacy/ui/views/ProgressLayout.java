@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.ui.views;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,34 +42,42 @@ public class ProgressLayout extends LinearLayout {
     }
 
     public void enableDarkTheme(boolean value) {
-        if(value) {
-            setBackgroundColor(getResources().getColor(R.color.color_black_v2));
-            ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
-                    getDrawable(R.drawable.progress_light));
-        } else {
-            setBackgroundColor(Color.parseColor("#e3e4e6"));
-            ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
-                    getDrawable(R.drawable.progress_dark));
-
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (value) {
+                setBackgroundColor(getResources().getColor(R.color.color_black_v2));
+                progressBar.setProgressDrawable(
+                        getResources().getDrawable(R.drawable.progress_light)
+                );
+            } else {
+                setBackgroundColor(Color.parseColor("#e3e4e6"));
+                progressBar.setProgressDrawable(
+                        getResources().getDrawable(R.drawable.progress_dark)
+                );
+            }
         }
     }
 
     public void enableDarkTheme(boolean value, int variant) {
-        if(value) {
-            if(variant == 0) {
-                setBackgroundColor(getResources().getColor(R.color.color_black_v2));
-                ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
-                        getDrawable(R.drawable.progress_light));
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (value) {
+                if (variant == 0) {
+                    setBackgroundColor(getResources().getColor(R.color.color_black_v2));
+                    progressBar.setProgressDrawable(
+                            getResources().getDrawable(R.drawable.progress_light)
+                    );
+                } else {
+                    setBackgroundColor(getResources().getColor(R.color.window_bg_black));
+                    progressBar.setProgressDrawable(
+                            getResources().getDrawable(R.drawable.progress_light)
+                    );
+                }
             } else {
-                setBackgroundColor(getResources().getColor(R.color.window_bg_black));
-                ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
-                        getDrawable(R.drawable.progress_light));
+                setBackgroundColor(Color.parseColor("#e3e4e6"));
+                progressBar.setProgressDrawable(
+                        getResources().getDrawable(R.drawable.progress_dark));
             }
-        } else {
-            setBackgroundColor(Color.parseColor("#e3e4e6"));
-            ((ProgressBar) findViewById(R.id.progressBar)).setIndeterminateDrawable(getResources().
-                    getDrawable(R.drawable.progress_dark));
-
         }
     }
 }

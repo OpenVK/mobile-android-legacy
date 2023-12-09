@@ -187,22 +187,24 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
     }
 
     public void receivePlayerStatus(String action, int status, int track_position, Bundle data) {
-        audiosAdapter.setTrackState(track_position, status);
-        if (parent instanceof AppActivity) {
-            AppActivity activity = ((AppActivity) parent);
-            if(status == AudioPlayerService.STATUS_STARTING) {
-                activity.notifMan.createAudioPlayerChannel();
-            }
-            if(status != AudioPlayerService.STATUS_STOPPED) {
-                activity.notifMan.buildAudioPlayerNotification(
-                        getContext(), audios, track_position
-                );
-                showBottomPlayer(audios.get(track_position));
-            } else {
-                audiosAdapter.setTrackState(track_position, 0);
-                activity.notifMan.clearAudioPlayerNotification();
-                if(view != null) {
-                    view.findViewById(R.id.audio_player_bar).setVisibility(View.GONE);
+        if(audios != null && audios.size() > 0) {
+            audiosAdapter.setTrackState(track_position, status);
+            if (parent instanceof AppActivity) {
+                AppActivity activity = ((AppActivity) parent);
+                if (status == AudioPlayerService.STATUS_STARTING) {
+                    activity.notifMan.createAudioPlayerChannel();
+                }
+                if (status != AudioPlayerService.STATUS_STOPPED) {
+                    activity.notifMan.buildAudioPlayerNotification(
+                            getContext(), audios, track_position
+                    );
+                    showBottomPlayer(audios.get(track_position));
+                } else {
+                    audiosAdapter.setTrackState(track_position, 0);
+                    activity.notifMan.clearAudioPlayerNotification();
+                    if (view != null) {
+                        view.findViewById(R.id.audio_player_bar).setVisibility(View.GONE);
+                    }
                 }
             }
         }
