@@ -157,15 +157,17 @@ public class NotificationManager {
         if(audios != null) {
             track = audios.get(current_pos);
             currentTrackPosition = current_pos;
+            notification_id = notification_id + 1;
+            Notification notification = createAudioPlayerNotification(
+                    ctx, R.drawable.ic_stat_notify_play, "audio_player", track
+            );
+            if(track.status != 3) {
+                notification.flags |= Notification.FLAG_NO_CLEAR;
+            }
+            audioPlayerIntent = createAudioPlayerIntent(currentTrackPosition, audios);
+            notification.contentIntent = audioPlayerIntent;
+            notifMan.notify(notification_id, notification);
         }
-        notification_id = notification_id + 1;
-        Notification notification = createAudioPlayerNotification(
-                ctx, R.drawable.ic_stat_notify_play, "audio_player", track
-        );
-        notification.flags |= Notification.FLAG_NO_CLEAR;
-        audioPlayerIntent = createAudioPlayerIntent(currentTrackPosition, audios);
-        notification.contentIntent = audioPlayerIntent;
-        notifMan.notify(notification_id, notification);
     }
 
     public Notification createLongPollNotification(android.app.NotificationManager notifMan, int icon,
