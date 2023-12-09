@@ -130,6 +130,7 @@ public class CacheDatabaseTables {
                         "lastplay int, " +
                         "user bool, " +
                         "lyrics text, " +
+                        "url varchar(700), " +
                         "status int" +
                 ")"
         );

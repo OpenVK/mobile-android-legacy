@@ -114,14 +114,14 @@ public class AudioCacheDB {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();
         String instance = app.getCurrentInstance();
         long user_id = app.getCurrentUserId();
-        return ctx.getDatabasePath(String.format("%s_a%s/audio.db", instance, user_id));
+        return ctx.getDatabasePath(String.format("audio_%s_a%s.db", instance, user_id));
     }
 
     public static String getCurrentDatabaseName(Context ctx) {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();
         String instance = app.getCurrentInstance();
         long user_id = app.getCurrentUserId();
-        return String.format("%s_a%s/audio.db", instance, user_id);
+        return String.format("audio_%s_a%s.db", instance, user_id);
     }
 
     public static void fillDatabase(Context ctx2, ArrayList<Audio> audios, boolean clear) {
@@ -141,8 +141,13 @@ public class AudioCacheDB {
             values.put("owner_id", track.owner_id);
             values.put("title", track.title);
             values.put("artist", track.artist);
-            values.put("lyrics", track.lyrics);
-            db.insert("track", null, values);
+            values.put("duration", track.getDurationInSeconds());
+            values.put("lastplay", 0);
+            values.put("user", true);
+            values.put("lyrics", track.lyrics != null ? track.lyrics : "");
+            values.put("url", track.url);
+            values.put("status", track.status);
+            db.insert("tracks", null, values);
             String track_name = String.format("%s_%s", track.id, track.owner_id);
             cachedIDs.add(track_name);
         }
