@@ -18,6 +18,7 @@ public class Audio implements Parcelable {
     public String url;
     public User sender;
     public int status;
+    public long owner_id;
 
     public Audio() {
     }
