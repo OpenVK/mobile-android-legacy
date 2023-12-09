@@ -2,6 +2,8 @@ package uk.openvk.android.legacy.api.entities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -314,6 +316,14 @@ public class WallPost implements Parcelable {
             Log.e(OvkApplication.API_TAG, "Oops!");
         }
         return this.attachments;
+    }
+
+    public void convertSQLiteToEntity(Cursor cursor, Context ctx) {
+
+    }
+
+    public void convertEntityToSQLite(SQLiteDatabase database, String from) {
+
     }
 
     public WallPost(Parcel in) {

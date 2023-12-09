@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.cache;
+package uk.openvk.android.legacy.databases;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,38 +14,32 @@ import java.util.Vector;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.databases.base.CacheDatabase;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
+/** AudioCacheDB class - Audio Cache database control (decompiled from VK 3.x) **/
+
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class AudioCacheDB {
+public class AudioCacheDB extends CacheDatabase {
     public static Vector<String> cachedIDs = new Vector<>();
     public static Vector<String> cacheReqs = new Vector<>();
     private static Context ctx;
-
-    public static class CacheOpenHelper extends SQLiteOpenHelper {
-
-        public CacheOpenHelper(Context ctx, String db_name) {
-            super(ctx, db_name, null, 1);
-        }
-
-        public CacheOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-            super(context, name, factory, version);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase database) {
-            CacheDatabaseTables.createAudioTracksTable(database);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase database, int oldVer, int newVer) {
-            if (oldVer == 1 && newVer >= oldVer) {
-                // TODO: Add database auto-upgrade to new versions
-                return;
-            }
-            onCreate(database);
-        }
-    }
 
     public void putTrack(Context ctx, Audio track, boolean forced) {
         CacheOpenHelper helper2 = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
@@ -110,51 +104,41 @@ public class AudioCacheDB {
         return result;
     }
 
-    public static File getCurrentDatabasePath(Context ctx) {
-        OvkApplication app = (OvkApplication) ctx.getApplicationContext();
-        String instance = app.getCurrentInstance();
-        long user_id = app.getCurrentUserId();
-        return ctx.getDatabasePath(String.format("audio_%s_a%s.db", instance, user_id));
-    }
-
-    public static String getCurrentDatabaseName(Context ctx) {
-        OvkApplication app = (OvkApplication) ctx.getApplicationContext();
-        String instance = app.getCurrentInstance();
-        long user_id = app.getCurrentUserId();
-        return String.format("audio_%s_a%s.db", instance, user_id);
-    }
-
     public static void fillDatabase(Context ctx2, ArrayList<Audio> audios, boolean clear) {
         CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2));
         Cursor cursor = null;
         SQLiteDatabase db = helper.getWritableDatabase();
-        if(clear) {
-            cursor = db.query("tracks", new String[]{"owner_id", "audio_id"},
-                    null, null, null, null, null);
-            cursor.moveToFirst();
-            cachedIDs.clear();
-        }
-        for(int i = 0; i < audios.size(); i++) {
-            Audio track = audios.get(i);
-            ContentValues values = new ContentValues();
-            values.put("audio_id", track.id);
-            values.put("owner_id", track.owner_id);
-            values.put("title", track.title);
-            values.put("artist", track.artist);
-            values.put("duration", track.getDurationInSeconds());
-            values.put("lastplay", 0);
-            values.put("user", true);
-            values.put("lyrics", track.lyrics != null ? track.lyrics : "");
-            values.put("url", track.url);
-            values.put("status", track.status);
-            db.insert("tracks", null, values);
-            String track_name = String.format("%s_%s", track.id, track.owner_id);
-            cachedIDs.add(track_name);
-        }
-        db.close();
-        helper.close();
-        if (cursor != null) {
-            cursor.close();
+        try {
+            if (clear) {
+                cursor = db.query("tracks", new String[]{"owner_id", "audio_id"},
+                        null, null, null, null, null);
+                cursor.moveToFirst();
+                cachedIDs.clear();
+            }
+            for (int i = 0; i < audios.size(); i++) {
+                Audio track = audios.get(i);
+                ContentValues values = new ContentValues();
+                values.put("audio_id", track.id);
+                values.put("owner_id", track.owner_id);
+                values.put("title", track.title);
+                values.put("artist", track.artist);
+                values.put("duration", track.getDurationInSeconds());
+                values.put("lastplay", 0);
+                values.put("user", true);
+                values.put("lyrics", track.lyrics != null ? track.lyrics : "");
+                values.put("url", track.url);
+                values.put("status", track.status);
+                db.insert("tracks", null, values);
+                String track_name = String.format("%s_%s", track.id, track.owner_id);
+                cachedIDs.add(track_name);
+            }
+            db.close();
+            helper.close();
+            if (cursor != null) {
+                cursor.close();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -180,8 +164,8 @@ public class AudioCacheDB {
                 i++;
             } while (cursor.moveToNext());
             cursor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         db.close();
         helper.close();
@@ -213,8 +197,8 @@ public class AudioCacheDB {
                 intent.putExtra("reload_cached_list", true);
                 ctx.getApplicationContext().sendBroadcast(intent);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         db.close();
         helper.close();
@@ -229,8 +213,8 @@ public class AudioCacheDB {
             Intent intent = new Intent(AudioPlayerService.ACTION_UPDATE_PLAYLIST);
             intent.putExtra("reload_cached_list", true);
             ctx.getApplicationContext().sendBroadcast(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         db.close();
         helper.close();
@@ -245,8 +229,8 @@ public class AudioCacheDB {
             db.update("files", values,
                     "audio_id=" + audio_id + " and owner_id=" + owner_id,
                     null);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         db.close();
         helper.close();

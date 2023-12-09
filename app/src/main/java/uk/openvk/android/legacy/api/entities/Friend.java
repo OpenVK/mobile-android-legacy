@@ -29,7 +29,7 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 public class Friend implements Parcelable {
     public String first_name;
     public String last_name;
-    public int id;
+    public Long id;
     public boolean verified;
     public boolean online;
     public Bitmap avatar;
@@ -45,7 +45,7 @@ public class Friend implements Parcelable {
         parse(response, position);
     }
 
-    public Friend(String first_name, String last_name, int id, String status, String city,
+    public Friend(String first_name, String last_name, long id, String status, String city,
                   String screen_name, String avatar_url, int friends_status, int ls_date, String birthdate,
                   String interests, String movies, String music, String tv, String books, boolean verified) {
         this.first_name = first_name;
@@ -58,7 +58,7 @@ public class Friend implements Parcelable {
     protected Friend(Parcel in) {
         first_name = in.readString();
         last_name = in.readString();
-        id = in.readInt();
+        id = in.readLong();
         verified = in.readByte() != 0;
         online = in.readByte() != 0;
         avatar = in.readParcelable(Bitmap.class.getClassLoader());
@@ -77,12 +77,16 @@ public class Friend implements Parcelable {
         }
     };
 
+    public Friend() {
+
+    }
+
     public void parse(JSONObject user) {
         try {
             if(user != null) {
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
-                id = user.getInt("id");
+                id = user.getLong("id");
                 avatar_url = "";
                 if (user.has("verified")) {
                     verified = user.getInt("verified") == 1;
@@ -129,7 +133,7 @@ public class Friend implements Parcelable {
                         JSONObject user = (JSONObject) users.get(i);
                         first_name = user.getString("first_name");
                         last_name = user.getString("last_name");
-                        id = user.getInt("id");
+                        id = user.getLong("id");
                         verified = user.getInt("verified") == 1;
                         online = user.getInt("online") == 1;
                         if (user.has("photo_50")) {
@@ -170,7 +174,7 @@ public class Friend implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(first_name);
         parcel.writeString(last_name);
-        parcel.writeInt(id);
+        parcel.writeLong(id);
         parcel.writeByte((byte) (verified ? 1 : 0));
         parcel.writeByte((byte) (online ? 1 : 0));
         parcel.writeParcelable(avatar, i);

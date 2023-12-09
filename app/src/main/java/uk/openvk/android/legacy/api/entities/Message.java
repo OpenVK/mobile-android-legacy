@@ -50,6 +50,10 @@ public class Message {
         timestamp = new SimpleDateFormat("HH:mm").format(dt);
     }
 
+    public Message() {
+
+    }
+
     public void getSendedId(String response) {
         parser = new JSONParser();
         try {
