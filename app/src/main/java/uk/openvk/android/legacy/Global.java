@@ -47,6 +47,8 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.OvkLink;
 import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.core.fragments.AudiosFragment;
+import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
@@ -898,6 +900,10 @@ public class Global {
                             && selectedFragment instanceof NewsfeedFragment)
                     || (method.equals("Friends.get")
                             && selectedFragment instanceof FriendsFragment)
+                    || (method.equals("Video.get")
+                        && selectedFragment instanceof VideosFragment)
+                    || (method.equals("Audio.get")
+                        && selectedFragment instanceof AudiosFragment)
                     || (method.equals("Groups.get")
                             && selectedFragment instanceof GroupsFragment)
                     || (method.equals("Users.get")
