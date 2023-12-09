@@ -106,7 +106,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
             req_wrap.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         showProfile(item.id);
                     }
                 }

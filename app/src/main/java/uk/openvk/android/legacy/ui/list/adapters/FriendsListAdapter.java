@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.api.entities.Friend;
+import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.fragments.FriendsFragment;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
@@ -137,10 +138,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         friendsFragment.hideSelectedItemBackground(position);
                         showProfile(item.id);
-                    } else if(ctx.getClass().getSimpleName().equals("FriendsIntentActivity")) {
+                    } else if(ctx instanceof FriendsIntentActivity) {
                         friendsFragment.hideSelectedItemBackground(position);
                         showProfile(item.id);
                     }
