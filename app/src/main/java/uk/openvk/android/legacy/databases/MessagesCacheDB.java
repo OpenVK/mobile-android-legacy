@@ -5,12 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Conversation;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
@@ -33,6 +30,8 @@ import uk.openvk.android.legacy.databases.base.CacheDatabase;
  */
 
 public class MessagesCacheDB extends CacheDatabase {
+
+    public static String prefix = "messages";
 
     public static ArrayList<Conversation> getConversationsList(Context ctx, int offset, int count) {
         Cursor cursor = null;

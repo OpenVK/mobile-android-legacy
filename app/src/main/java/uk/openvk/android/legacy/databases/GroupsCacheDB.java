@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.File;
 import java.util.List;
@@ -34,6 +33,8 @@ import uk.openvk.android.legacy.databases.base.CacheDatabase;
  */
 
 public class GroupsCacheDB extends CacheDatabase {
+
+    public static String prefix = "groups";
 
     public static File getCurrentDatabasePath(Context ctx) {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();

@@ -5,19 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.text.TextUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
 public class UsersCacheDB extends CacheDatabase {
+
+    public static String prefix = "users";
 
     public static ArrayList<Friend> getFriendsList(Context ctx) {
         try {

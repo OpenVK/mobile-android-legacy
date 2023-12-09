@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
@@ -40,6 +38,7 @@ public class AudioCacheDB extends CacheDatabase {
     public static Vector<String> cachedIDs = new Vector<>();
     public static Vector<String> cacheReqs = new Vector<>();
     private static Context ctx;
+    public static String prefix = "audio";
 
     public void putTrack(Context ctx, Audio track, boolean forced) {
         CacheOpenHelper helper2 = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));

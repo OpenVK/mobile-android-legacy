@@ -6,11 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
@@ -34,6 +32,8 @@ import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
 public class WallCacheDB extends CacheDatabase {
     private static Semaphore semaphore = new Semaphore(1);
+
+    public static String prefix = "wall";
 
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 

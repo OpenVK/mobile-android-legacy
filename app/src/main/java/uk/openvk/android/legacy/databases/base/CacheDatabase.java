@@ -10,6 +10,8 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.databases.CacheDatabaseTables;
 
 public class CacheDatabase {
+    public static String prefix = "";
+
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
         public CacheOpenHelper(Context ctx, String db_name) {
@@ -39,13 +41,13 @@ public class CacheDatabase {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();
         String instance = app.getCurrentInstance();
         long user_id = app.getCurrentUserId();
-        return ctx.getDatabasePath(String.format("audio_%s_a%s.db", instance, user_id));
+        return ctx.getDatabasePath(String.format("%s_%s_a%s.db", prefix, instance, user_id));
     }
 
     public static String getCurrentDatabaseName(Context ctx) {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();
         String instance = app.getCurrentInstance();
         long user_id = app.getCurrentUserId();
-        return String.format("audio_%s_a%s.db", instance, user_id);
+        return String.format("%s_%s_a%s.db", prefix, instance, user_id);
     }
 }

@@ -36,6 +36,8 @@ import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
 public class FriendsCacheDB extends CacheDatabase {
 
+    public static String prefix = "friends";
+
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
         public CacheOpenHelper(Context ctx, String db_name) {
