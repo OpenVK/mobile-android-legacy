@@ -30,7 +30,6 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Audio;
-import uk.openvk.android.legacy.cache.AudioCacheDB;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
@@ -73,9 +72,6 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
     private MediaPlayer mediaPlayer;
     private boolean isBoundAP;
     private AudioPlayerReceiver audioPlayerReceiver;
-    private AudioPlayerService audioPlayerService;
-    private int currentTrackPos;
-    private Intent serviceIntent;
     private ServiceConnection audioPlayerConnection = new ServiceConnection() {
 
         public void onServiceDisconnected(ComponentName name) {
@@ -92,6 +88,9 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
             app.audioPlayerService = mLocalBinder.getService();
         }
     };
+    private AudioPlayerService audioPlayerService;
+    private int currentTrackPos;
+    private Intent serviceIntent;
 
     @Nullable
     @Override
@@ -135,7 +134,6 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
         } else {
             audiosAdapter.notifyDataSetChanged();
         }
-        AudioCacheDB.fillDatabase(parent, audios, true);
     }
 
     public void startAudioPlayerService() {
@@ -171,6 +169,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
         serviceIntent.putExtra("action", action);
         if(status == AudioPlayerService.STATUS_STARTING) {
             serviceIntent.putExtra("position", position);
+            serviceIntent.putParcelableArrayListExtra("playlist", audios);
         }
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
         parent.getApplicationContext().startService(serviceIntent);
