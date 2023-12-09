@@ -156,7 +156,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         }); */
         }
 
-        private void showProfile(int user_id) {
+        private void showProfile(Long user_id) {
             if(ctx instanceof AppActivity) {
                 AppActivity app_a = ((AppActivity) ctx);
                 if (user_id != app_a.ovk_api.account.id) {
