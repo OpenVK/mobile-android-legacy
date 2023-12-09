@@ -187,6 +187,7 @@ public class NotificationManager {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(ctx)
                             .setSmallIcon(icon)
+                            .setSound(null)
                             .setContentTitle(title)
                             .setContentText(description);
 
