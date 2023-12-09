@@ -101,7 +101,7 @@ public class NotificationManager {
     public void createAudioPlayerChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notifMan = ctx.getSystemService(android.app.NotificationManager.class);
-            int importance = android.app.NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = android.app.NotificationManager.IMPORTANCE_LOW;
             audioPlayerCh = new NotificationChannel("audio_player", "Audio Player", importance);
             notifMan.createNotificationChannel(audioPlayerCh);
         } else {

@@ -90,29 +90,31 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
     }
 
     public void setTrackState(int current_track_position, int status) {
-        Audio audio = objects.get(currentTrackPos);
-        audio.status = 0;
-        objects.set(currentTrackPos, audio);
-        audio = objects.get(current_track_position);
-        int track_status;
-        switch (status) {
-            case AudioPlayerService.STATUS_STARTING:
-                track_status = 1;
-                break;
-            case AudioPlayerService.STATUS_PLAYING:
-                track_status = 2;
-                break;
-            case AudioPlayerService.STATUS_PAUSED:
-                track_status = 3;
-                break;
-            default:
-                track_status = 0;
-        }
-        audio.status = track_status;
-        objects.set(current_track_position, audio);
+        if(objects != null && objects.size() > 0) {
+            Audio audio = objects.get(currentTrackPos);
+            audio.status = 0;
+            objects.set(currentTrackPos, audio);
+            audio = objects.get(current_track_position);
+            int track_status;
+            switch (status) {
+                case AudioPlayerService.STATUS_STARTING:
+                    track_status = 1;
+                    break;
+                case AudioPlayerService.STATUS_PLAYING:
+                    track_status = 2;
+                    break;
+                case AudioPlayerService.STATUS_PAUSED:
+                    track_status = 3;
+                    break;
+                default:
+                    track_status = 0;
+            }
+            audio.status = track_status;
+            objects.set(current_track_position, audio);
 
-        notifyItemChanged(currentTrackPos, false);
-        currentTrackPos = current_track_position;
+            notifyItemChanged(currentTrackPos, false);
+            currentTrackPos = current_track_position;
+        }
     }
 
     public int getCurrentTrackPosition() {
