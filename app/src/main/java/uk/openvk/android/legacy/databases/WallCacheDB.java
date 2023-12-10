@@ -33,7 +33,7 @@ import uk.openvk.android.legacy.databases.base.CacheDatabase;
 public class WallCacheDB extends CacheDatabase {
     private static Semaphore semaphore = new Semaphore(1);
 
-    public static String prefix = "wall";
+    public static String prefix = "posts";
 
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
@@ -47,7 +47,7 @@ public class WallCacheDB extends CacheDatabase {
 
         @Override
         public void onCreate(SQLiteDatabase database) {
-            CacheDatabaseTables.createAudioTracksTable(database);
+            CacheDatabaseTables.createWallPostTables(database);
         }
 
         @Override
@@ -97,7 +97,7 @@ public class WallCacheDB extends CacheDatabase {
             semaphore.acquire();
             WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<WallPost> result = new ArrayList<>();
@@ -132,7 +132,7 @@ public class WallCacheDB extends CacheDatabase {
         try {
             WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
@@ -152,11 +152,11 @@ public class WallCacheDB extends CacheDatabase {
             semaphore.acquire();
             WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
-                db.delete("news",
+                db.delete("newsfeed",
                         "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null
                 );
             } catch (Exception ex) {
@@ -169,22 +169,19 @@ public class WallCacheDB extends CacheDatabase {
         semaphore.release();
     }
 
-    public static void update(Context ctx,
-                              int owner_id, int post_id, int likes,
-                              int comments, int retweets,
-                              boolean liked, boolean retweeted) {
+    public static void update(Context ctx, WallPost post) {
         Cursor cursor = null;
         try {
             WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             int flags = 0;
             try {
                 cursor = db.query(
                         "news", new String[]{"flags"},
-                        "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
+                        "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner_id,
                         null, null, null, null);
                 if (cursor != null && cursor.getCount() > 0) {
                     cursor.moveToFirst();
@@ -195,7 +192,7 @@ public class WallCacheDB extends CacheDatabase {
                         cursor.close();
                     }
                     cursor = db.query("news_comments", new String[]{"flags"},
-                            "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
+                            "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner_id,
                             null, null, null, null);
                 }
                 if (flags == 0 && cursor != null && cursor.getCount() > 0) {
@@ -207,7 +204,7 @@ public class WallCacheDB extends CacheDatabase {
                         cursor.close();
                     }
                     cursor = db.query("wall", new String[]{"flags"},
-                            "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
+                            "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner_id,
                             null, null, null, null);
                 }
             } catch (Exception ex) {
@@ -218,16 +215,16 @@ public class WallCacheDB extends CacheDatabase {
                 int flags2 = cursor.getInt(0);
                 cursor.close();
                 ContentValues values = new ContentValues();
-                values.put("likes", likes);
-                values.put("comments", comments);
-                int flags3 = liked ? flags2 | 8 : flags2 & (-9);
-                values.put("flags", retweeted ? flags3 | 4 : flags3 & (-5));
+                values.put("likes", post.counters.likes);
+                values.put("comments", post.counters.comments);
+                int flags3 = post.counters.isLiked ? flags2 | 8 : flags2 & (-9);
+                values.put("flags", post.repost != null ? flags3 | 4 : flags3 & (-5));
                 db.update("news", values, "`post_id`=" +
-                        post_id + " AND `user_id`=" + owner_id, null);
+                        post.post_id + " AND `user_id`=" + post.owner_id, null);
                 db.update("news_comments", values,
-                        "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null);
+                        "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner_id, null);
                 db.update("wall", values, "`post_id`=" +
-                        post_id + " AND `user_id`=" + owner_id, null);
+                        post.post_id + " AND `user_id`=" + post.owner_id, null);
                 db.close();
                 helper.close();
                 return;

@@ -22,34 +22,36 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class CacheDatabaseTables {
 
-    public static void createPostsTable(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS `news`");
-        db.execSQL("DROP TABLE IF EXISTS `news_comments`");
-        db.execSQL("DROP TABLE IF EXISTS `wall`");
-        db.execSQL("DROP TABLE IF EXISTS `feed_lists`");
+    public static void createWallPostTables(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS `newsfeed`");
+        db.execSQL("DROP TABLE IF EXISTS `newsfeed_comments`");
+
         db.execSQL(
-                "CREATE TABLE `news` (" +
+                "CREATE TABLE `newsfeed` (" +
                         "post_id bigint, " +
-                        "user_id bigint, " +
+                        "author_id bigint, " +
+                        "owner_id bigint, " +
+                        "author_name varchar(150) not null, " +
+                        "avatar_url varchar(400) not null, " +
                         "text text, " +
                         "time bigint, " +
                         "likes int, " +
                         "comments int, " +
-                        "username varchar(150) not null, " +
-                        "userphoto varchar(400) not null, " +
-                        "retweet_uid int, " +
-                        "retweet_username varchar(400), " +
+                        "reposts int, " +
                         "attachments blob, " +
-                        "flags int, " +
-                        "retweet_text text, " +
-                        "retweet_attachments blob, " +
-                        "retweet_orig_id bigint, " +
-                        "retweet_orig_time bigint, " +
-                        "retweets int" +
+                        "contains_repost bit, " +
+                        "repost_original_id bigint, " +
+                        "repost_owner_id bigint, " +
+                        "repost_author_id bigint, " +
+                        "repost_original_time bigint, " +
+                        "repost_author_name varchar(150), " +
+                        "repost_avatar_url varchar(400), " +
+                        "repost_text text, " +
+                        "repost_attachments blob" +
                 ")"
                 );
         db.execSQL(
-                "CREATE TABLE `news_comments` (" +
+                "CREATE TABLE `newsfeed_comments` (" +
                         "post_id bigint, " +
                         "user_id bigint, " +
                         "text text, " +
@@ -57,41 +59,42 @@ public class CacheDatabaseTables {
                         "likes int, " +
                         "comments int, " +
                         "username varchar(150) not null, " +
-                        "userphoto varchar(200) not null, " +
-                        "retweet_uid int, " +
-                        "retweet_username varchar(150), " +
+                        "avatar_url varchar(360), " +
+                        "repost_userid int, " +
+                        "repost_username varchar(150), " +
                         "attachments blob, " +
-                        "flags int, " +
-                        "retweet_text text, " +
-                        "retweet_user_photo varchar(150), " +
-                        "retweet_orig_id bigint, " +
-                        "retweet_orig_time bigint, " +
-                        "retweets int, " +
-                        "last_comment_name varchar(150), " +
-                        "last_comment_photo varchar(200), " +
-                        "last_comment_text text, " +
-                        "last_comment_time int not null" +
+                        "contains_repost bit, " +
+                        "repost_text text, " +
+                        "repost_avatar_url varchar(360), " +
+                        "repost_orig_id bigint, " +
+                        "repost_orig_time bigint, " +
+                        "reposts int " +
                  ")"
                 );
+        db.execSQL("DROP TABLE IF EXISTS `wall`");
+        db.execSQL("DROP TABLE IF EXISTS `feed_lists`");
         db.execSQL(
                 "CREATE TABLE `wall` (" +
                         "post_id bigint, " +
-                        "user_id bigint, " +
+                        "author_id bigint, " +
+                        "owner_id bigint, " +
+                        "author_name varchar(150) not null, " +
+                        "avatar_url varchar(400) not null, " +
                         "text text, " +
                         "time bigint, " +
                         "likes int, " +
                         "comments int, " +
-                        "username varchar(150) not null, " +
-                        "userphoto varchar(200) not null, " +
-                        "retweet_user_id bigint, " +
-                        "retweet_username varchar(150), " +
+                        "reposts int, " +
                         "attachments blob, " +
-                        "flags int, " +
-                        "retweet_text text, " +
-                        "retweet_user_photo varchar(150), " +
-                        "retweet_orig_id bigint, " +
-                        "retweet_orig_time bigint, " +
-                        "retweets int" +
+                        "contains_repost bit, " +
+                        "repost_original_id bigint, " +
+                        "repost_owner_id bigint, " +
+                        "repost_author_id bigint, " +
+                        "repost_original_time bigint, " +
+                        "repost_author_name varchar(150), " +
+                        "repost_avatar_url varchar(400), " +
+                        "repost_text text, " +
+                        "repost_attachments blob" +
                  ")"
                 );
         db.execSQL(
@@ -106,8 +109,8 @@ public class CacheDatabaseTables {
         db.execSQL(
                 "CREATE TABLE `friendlist` (" +
                         "user_id bigint unique, " +
-                        "firstname varchar(150), " +
-                        "lastname varchar(150), " +
+                        "first_name varchar(150), " +
+                        "last_name varchar(150), " +
                         "photo varchar(200), " +
                         "birthday int, " +
                         "birthmonth int, " +
@@ -117,7 +120,7 @@ public class CacheDatabaseTables {
         );
     }
 
-    public static void createDialogsTable(SQLiteDatabase db) {
+    public static void createConversationsTable(SQLiteDatabase db) {
         db.execSQL(
                 "DROP TABLE IF EXISTS `dialogslist`"
         );
@@ -152,5 +155,81 @@ public class CacheDatabaseTables {
                         "status int" +
                 ")"
         );
+    }
+
+    public static void createMainCacheTables(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS `users`");
+        db.execSQL("DROP TABLE IF EXISTS `birthdays`");
+        db.execSQL("DROP TABLE IF EXISTS `messages`");
+        db.execSQL("DROP TABLE IF EXISTS `conversations`");
+        db.execSQL("DROP TABLE IF EXISTS `conversations_users`");
+        db.execSQL("DROP VIEW IF EXISTS `dialogs`");
+        db.execSQL("DROP TABLE IF EXISTS `groups`");
+        db.execSQL("DROP TABLE IF EXISTS `newsfeed`");
+        db.execSQL("DROP TABLE IF EXISTS `newsfeed_comments`");
+        db.execSQL("DROP TABLE IF EXISTS `wall`");
+        db.execSQL("DROP TABLE IF EXISTS `wall_drafts`");
+        db.execSQL("DROP TABLE IF EXISTS `api_queues`");
+        db.execSQL("CREATE TABLE `users` (" +
+                "user_id int not null unique, " +
+                "first_name varchar(150), " +
+                "last_name varchar(150), " +
+                "photo_small varchar(200), " +
+                "photo_big varchar(200), " +
+                "is_friend bool, " +
+                "sex bool)");
+        db.execSQL("CREATE TABLE `birthdays` (" +
+                "user_id int unique, " +
+                "name_r varchar(150), " +
+                "bday int not null, " +
+                "bmonth int not null, " +
+                "byear int not null" +
+                ")");
+        db.execSQL("CREATE TABLE `messages` (" +
+                "msg_id int unique, " +
+                "peer int not null, " +
+                "sender int not null, " +
+                "text text, " +
+                "time int not null, " +
+                "attachments blob, " +
+                "fwd blob, " +
+                "flags int not null" +
+                ")");
+        db.execSQL("CREATE TABLE `conversations` (" +
+                "cid int unique, " +
+                "title varchar(500), " +
+                "admin int not null, " +
+                "photo varchar(500), " +
+                "need_update_users bool not null default 1" +
+                ")");
+        db.execSQL("CREATE TABLE `conversations_users` (" +
+                "cid int not null, " +
+                "uid int not null, " +
+                "inviter int not null, " +
+                "invited int not null" +
+                ")");
+        db.execSQL("CREATE VIEW `conversations2` " +
+                "AS SELECT messages.*, users.*, conversations.* FROM messages " +
+                "JOIN messages AS msg2 ON messages.msg_id=msg2.mid " +
+                "LEFT JOIN users ON messages.peer=user_id " +
+                "LEFT JOIN converstaions ON -messages.peer=cid " +
+                "GROUP BY messages.peer HAVING messages.time=max(msg2.time)");
+        db.execSQL("CREATE INDEX `messages_msgid` ON messages (peer)");
+        db.execSQL("CREATE INDEX `messages_time` ON messages (time)");
+        db.execSQL("CREATE INDEX `conversations_users_cid` ON conversation_users (cid)");
+        db.execSQL("CREATE TABLE `groups` (" +
+                "group_id int not null unique, " +
+                "name varchar(200), " +
+                "activity varchar(200), " +
+                "count int not null, " +
+                "type int not null, " +
+                "closed int not null" +
+                ")");
+        db.execSQL("CREATE TABLE `api_queues` (" +
+                "id INTEGER PRIMARY KEY, " +
+                "method varchar(200), " +
+                "args varchar(400), " +
+                "_where varchar(25)" +
+                ")");
     }
 }

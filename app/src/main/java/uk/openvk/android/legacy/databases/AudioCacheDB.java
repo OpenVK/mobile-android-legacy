@@ -41,7 +41,7 @@ public class AudioCacheDB extends CacheDatabase {
     public static String prefix = "audio";
 
     public void putTrack(Context ctx, Audio track, boolean forced) {
-        CacheOpenHelper helper2 = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
+        CacheOpenHelper helper2 = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db2 = helper2.getWritableDatabase();
         if (!isExist(ctx, track.id)) {
             if (!cachedIDs.contains(String.valueOf(track.owner_id) + "_" + track.id)) {
@@ -63,7 +63,7 @@ public class AudioCacheDB extends CacheDatabase {
                 e.printStackTrace();
             }
         } else if (forced) {
-            CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
+            CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
                 ContentValues values = new ContentValues();
@@ -81,13 +81,8 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     private boolean isExist(Context ctx, long track_id) {
-        getCurrentDatabasePath(ctx);
-        File dir = getCurrentDatabasePath(ctx);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
         boolean result = false;
-        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             Cursor cursor = db.query("tracks", new String[]{"count(*)"},
@@ -104,7 +99,7 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static void fillDatabase(Context ctx2, ArrayList<Audio> audios, boolean clear) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
         Cursor cursor = null;
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -142,7 +137,7 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static ArrayList<Audio> getCachedAudiosList(Context ctx2) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         ArrayList<Audio> list = new ArrayList<>();
         try {
@@ -174,7 +169,7 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     private static void deleteOldTrack(Context ctx) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             Cursor cursor = db.query("tracks",
@@ -204,7 +199,7 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static void clear(Context ctx) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             db.delete("tracks", null, null);
@@ -220,7 +215,7 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static void updatePlayTime(Context ctx, int owner_id, int audio_id) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             ContentValues values = new ContentValues();

@@ -16,7 +16,7 @@ package uk.openvk.android.legacy.api.attachments;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class CommonAttachment {
+public class CommonAttachment extends Attachment {
     public String title;
     public String text;
     public CommonAttachment(String title, String text) {

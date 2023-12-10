@@ -307,6 +307,7 @@ public class Wall implements Parcelable {
                         if(post.has("is_explicit")) {
                             item.is_explicit = post.getBoolean("is_explicit");
                         }
+                        item.contains_repost = item.repost != null && item.repost.newsfeed_item != null;
                         this.items.add(item);
                     } catch (ArrayIndexOutOfBoundsException ignored) {
                         Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
@@ -550,11 +551,8 @@ public class Wall implements Parcelable {
                         } else {
                             attachment_status = "none";
                         }
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(photoAttachment);
                         try { // handle floating crash
-                            attachments_list.add(attachment_obj);
+                            attachments_list.add(photoAttachment);
                             switch (quality) {
                                 case "low":
                                     photos_lsize.add(photoAttachment);
@@ -618,11 +616,8 @@ public class Wall implements Parcelable {
                         }
                         videoAttachment.duration = video.getInt("duration");
                         attachment_status = "done";
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(videoAttachment);
                         try {
-                            attachments_list.add(attachment_obj);
+                            attachments_list.add(videoAttachment);
                         } catch (ArrayIndexOutOfBoundsException ignored) {
                             Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
                                     "be overestimated.");
@@ -653,12 +648,9 @@ public class Wall implements Parcelable {
                             }
                             poll.answers.add(pollAnswer);
                         }
-                        attachment_status = "done";
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(poll);
+                        poll.status = "done";
                         try { // handle floating crash
-                            attachments_list.add(attachment_obj);
+                            attachments_list.add(poll);
                         } catch (ArrayIndexOutOfBoundsException ignored) {
                             Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
                                     "be overestimated.");
@@ -668,11 +660,8 @@ public class Wall implements Parcelable {
                     case "note": {
                         CommonAttachment commonAttachment = new CommonAttachment(
                                 attachment.getString("title"), attachment.getString("text"));
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = "done";
-                        attachment_obj.setContent(commonAttachment);
                         try { // handle floating crash
-                            attachments_list.add(attachment_obj);
+                            attachments_list.add(commonAttachment);
                         } catch (ArrayIndexOutOfBoundsException ignored) {
                             Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
                                     "be overestimated.");

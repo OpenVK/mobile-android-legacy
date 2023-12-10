@@ -241,9 +241,8 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 for (int i = 0; i < item.attachments.size(); i++) {
                     if (item.attachments.get(i).type.equals("photo")
                             && item.attachments.get(i).status.equals("done")) {
-                        if (item.attachments.get(i).getContent() != null) {
-                            comment_photo.setImageBitmap(((Photo)
-                                    item.attachments.get(i).getContent()).bitmap);
+                        if (item.attachments.get(i) != null) {
+                            comment_photo.setImageBitmap(((Photo) item.attachments.get(i)).bitmap);
                             comment_photo.setVisibility(View.VISIBLE);
                             comment_photo.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -270,8 +269,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                 if(comment.attachments != null) {
                     for(int i = 0; i < comment.attachments.size(); i++) {
                         if(comment.attachments.get(i).type.equals("photo")) {
-                            Photo photo = ((Photo) comment.attachments.get(i).
-                                    getContent());
+                            Photo photo = ((Photo) comment.attachments.get(i));
                             intent.putExtra("original_link", photo.original_url);
                             intent.putExtra("author_id", comment.author_id);
                             intent.putExtra("photo_id", photo.id);

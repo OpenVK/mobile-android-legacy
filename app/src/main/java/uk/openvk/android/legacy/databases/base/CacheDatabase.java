@@ -24,7 +24,18 @@ public class CacheDatabase {
 
         @Override
         public void onCreate(SQLiteDatabase database) {
-            CacheDatabaseTables.createAudioTracksTable(database);
+            switch (prefix) {
+                case "audio":
+                    CacheDatabaseTables.createAudioTracksTable(database);
+                    break;
+                case "wall":
+                case "newsfeed":
+                    CacheDatabaseTables.createWallPostTables(database);
+                    break;
+                default:
+                    CacheDatabaseTables.createMainCacheTables(database);
+                    break;
+            }
         }
 
         @Override
@@ -37,14 +48,14 @@ public class CacheDatabase {
         }
     }
 
-    public static File getCurrentDatabasePath(Context ctx) {
+    public static File getCurrentDatabasePath(Context ctx, String prefix) {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();
         String instance = app.getCurrentInstance();
         long user_id = app.getCurrentUserId();
         return ctx.getDatabasePath(String.format("%s_%s_a%s.db", prefix, instance, user_id));
     }
 
-    public static String getCurrentDatabaseName(Context ctx) {
+    public static String getCurrentDatabaseName(Context ctx, String prefix) {
         OvkApplication app = (OvkApplication) ctx.getApplicationContext();
         String instance = app.getCurrentInstance();
         long user_id = app.getCurrentUserId();

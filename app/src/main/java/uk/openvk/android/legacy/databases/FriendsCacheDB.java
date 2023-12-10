@@ -50,7 +50,7 @@ public class FriendsCacheDB extends CacheDatabase {
 
         @Override
         public void onCreate(SQLiteDatabase database) {
-            CacheDatabaseTables.createAudioTracksTable(database);
+            CacheDatabaseTables.createFriendsTable(database);
         }
 
         @Override

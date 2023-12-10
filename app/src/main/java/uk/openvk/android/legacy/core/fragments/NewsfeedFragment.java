@@ -33,6 +33,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
@@ -84,7 +85,13 @@ public class NewsfeedFragment extends Fragment {
         return view;
     }
 
-    public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts) {
+    public void loadFromCache(Context ctx) {
+        ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(ctx);
+        if(posts != null && posts.size() > 0)
+            createAdapter(ctx, posts, true);
+    }
+
+    public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache) {
         this.wallPosts = wallPosts;
         newsfeedView = view.findViewById(R.id.news_listview);
         newsfeedView.setHasFixedSize(true);
@@ -97,6 +104,9 @@ public class NewsfeedFragment extends Fragment {
         } else {
             newsfeedAdapter.setArray(wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
+        }
+        if(cache) {
+            NewsfeedCacheDB.putPosts(ctx, this.wallPosts);
         }
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
         p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
@@ -258,7 +268,7 @@ public class NewsfeedFragment extends Fragment {
                             int isGlobalFeed, boolean notScroll) {
         ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
         if(ab_spinner.getSelectedItemPosition() == isGlobalFeed) {
-            createAdapter(ctx, ovk_api.newsfeed.getWallPosts());
+            createAdapter(ctx, ovk_api.newsfeed.getWallPosts(), true);
             if(ovk_api.newsfeed.getWallPosts().size() > 0) {
                 return;
             }

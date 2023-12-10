@@ -153,8 +153,7 @@ public class WallLayout extends LinearLayout {
                         if(item.repost != null) {
                             if (item.repost.newsfeed_item.attachments.size() > 0) {
                                 if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                    Photo photo = ((Photo) item.repost
-                                            .newsfeed_item.attachments.get(0).getContent());
+                                    Photo photo = ((Photo) item.repost.newsfeed_item.attachments.get(0));
                                     Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
                                     if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
                                         if(photo.bitmap != null) {
@@ -186,15 +185,14 @@ public class WallLayout extends LinearLayout {
                         }
                         if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
                             if(item.attachments.get(0).type.equals("photo")) {
-                                ((Photo) item.attachments.get(0).getContent()).bitmap = null;
+                                ((Photo) item.attachments.get(0)).bitmap = null;
                             }
                         } else {
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                             if(item.attachments.size() > 0) {
                                 if(item.attachments.get(0).type.equals("photo")) {
-                                    Photo photoAttachment = ((Photo)
-                                            item.attachments.get(0).getContent());
+                                    Photo photoAttachment = ((Photo) item.attachments.get(0));
                                     if (photoAttachment.url.length() > 0) {
                                         Bitmap bitmap = BitmapFactory.decodeFile(
                                                 String.format("%s/%s/photos_cache/wall_photo_attachments/" +
@@ -202,8 +200,7 @@ public class WallLayout extends LinearLayout {
                                                         getContext().getCacheDir(), instance,
                                                         item.owner_id, item.post_id), options);
                                         if (bitmap != null) {
-                                            ((Photo) item.attachments.get(0).getContent())
-                                                    .bitmap = bitmap;
+                                            ((Photo) item.attachments.get(0)).bitmap = bitmap;
                                             item.attachments.get(0).status = "done";
                                         } else if(photoAttachment.url.length() > 0) {
                                             item.attachments.get(0).status = "error";

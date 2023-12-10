@@ -362,13 +362,11 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     for (int attachment_index = 0; attachment_index < item.attachments.size();
                          attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
-                            Poll poll = ((Poll) item.attachments.
-                                    get(attachment_index).getContent());
+                            Poll poll = ((Poll) item.attachments.get(attachment_index));
                             PollAnswer answer = poll.answers.get(poll_answer);
                             poll.user_votes = addVote ? 0 : 1;
                             answer.is_voted = addVote;
                             poll.answers.set(poll_answer, answer);
-                            item.attachments.get(attachment_index).setContent(poll);
                             ovk_api.wall.getWallItems().set(item_pos, item);
                             ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                                     .updateItem(item, item_pos);

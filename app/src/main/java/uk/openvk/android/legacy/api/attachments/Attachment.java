@@ -1,5 +1,22 @@
 package uk.openvk.android.legacy.api.attachments;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Video;
@@ -20,34 +37,61 @@ import uk.openvk.android.legacy.api.entities.Video;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Attachment {
+public class Attachment implements Parcelable, Serializable {
     public String type;
     public String status;
-    private Object content;
+
     public Attachment(String type) {
         this.type = type;
-        switch (type) {
-            case "photo":
-                content = new Photo();
-                break;
-            case "video":
-                content = new Video();
-                break;
-            case "poll":
-                content = new Poll();
-                break;
-            case "note":
-                content = new CommonAttachment();
-            default:
-                break;
+    }
+
+    protected Attachment(Parcel in) {
+        type = in.readString();
+        status = in.readString();
+    }
+
+    public static final Creator<Attachment> CREATOR = new Creator<Attachment>() {
+        @Override
+        public Attachment createFromParcel(Parcel in) {
+            return new Attachment(in);
+        }
+
+        @Override
+        public Attachment[] newArray(int size) {
+            return new Attachment[size];
+        }
+    };
+
+    public Attachment() {
+
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(type);
+        parcel.writeString(status);
+    }
+
+    public void serialize(JSONObject object) {
+        try {
+            object.put("type", type);
+            object.put("status", status);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    public Object getContent() {
-        return content;
+    public Attachment deserialize(InputStream is) {
+        return this;
     }
 
-    public void setContent(Object content) {
-        this.content = content;
+    private void clone(Attachment attachment) {
+        this.status = attachment.status;
+        this.type = attachment.type;
     }
 }

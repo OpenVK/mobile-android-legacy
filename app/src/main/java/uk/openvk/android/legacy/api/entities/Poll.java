@@ -1,7 +1,14 @@
 package uk.openvk.android.legacy.api.entities;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 
@@ -21,7 +28,7 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Poll {
+public class Poll extends Attachment implements Serializable {
     public long id;
     public long end_date;
     public String question;
@@ -32,6 +39,7 @@ public class Poll {
     public int user_votes;
     public long votes;
     public Poll(String question, long id, long end_date, boolean multiple, boolean can_vote, boolean anonymous) {
+        type = "poll";
         this.question = question;
         this.id = id;
         this.end_date = end_date;
@@ -51,5 +59,31 @@ public class Poll {
 
     public void unvote(OvkAPIWrapper wrapper) {
         wrapper.sendAPIMethod("Polls.deleteVote", String.format("poll_id=%s", id));
+    }
+
+    @Override
+    public void serialize(JSONObject object) {
+        super.serialize(object);
+        try {
+            JSONObject poll = new JSONObject();
+            poll.put("id", id);
+            poll.put("question", question);
+            JSONArray answers = new JSONArray();
+            for (int i = 0; i < this.answers.size(); i++) {
+                PollAnswer answer = this.answers.get(i);
+                JSONObject json_answer = new JSONObject();
+                json_answer.put("id", answer.id);
+                json_answer.put("is_voted", answer.is_voted);
+                json_answer.put("rate", answer.is_voted);
+                json_answer.put("votes", answer.votes);
+                json_answer.put("text", answer.text);
+                answers.put(json_answer);
+            }
+            poll.put("answers", answers);
+            poll.put("end_date", end_date);
+            object.put("poll", poll);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

@@ -6,6 +6,12 @@ import android.os.Parcelable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
@@ -22,7 +28,7 @@ import org.json.JSONObject;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Video implements Parcelable {
+public class Video extends Attachment implements Parcelable, Serializable {
     public VideoFiles files;
     public long id;
     public String title;
@@ -33,6 +39,7 @@ public class Video implements Parcelable {
     public long owner_id;
 
     public Video(JSONObject video) {
+        type = "video";
         try {
             title = video.getString("title");
             id = video.getLong("id");
@@ -73,6 +80,7 @@ public class Video implements Parcelable {
     }
 
     public Video(long id, String title, VideoFiles files, String url_thumb, int duration, String filename) {
+        type = "video";
         this.id = id;
         this.title = title;
         this.files = files;
@@ -120,4 +128,31 @@ public class Video implements Parcelable {
             return new Video[size];
         }
     };
+
+    @Override
+    public void serialize(JSONObject object) {
+        super.serialize(object);
+        try {
+            JSONObject video = new JSONObject();
+            video.put("id", id);
+            video.put("title", title);
+            video.put("duration", duration);
+            JSONArray files = new JSONArray();
+            if(this.files != null) {
+                files.put(this.files.mp4_144);
+                files.put(this.files.mp4_240);
+                files.put(this.files.mp4_360);
+                files.put(this.files.mp4_480);
+                files.put(this.files.mp4_720);
+                files.put(this.files.mp4_1080);
+                files.put(this.files.ogv_480);
+            }
+            video.put("files", files);
+            video.put("thumb_url", url_thumb);
+            video.put("filename", filename);
+            object.put("video", video);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

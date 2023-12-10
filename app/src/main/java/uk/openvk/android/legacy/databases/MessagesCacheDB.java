@@ -39,7 +39,7 @@ public class MessagesCacheDB extends CacheDatabase {
         ArrayList<Conversation> result = new ArrayList<>();
         CacheOpenHelper helper = new CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -74,7 +74,7 @@ public class MessagesCacheDB extends CacheDatabase {
         int result = 0;
         CacheOpenHelper helper = new CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -94,7 +94,7 @@ public class MessagesCacheDB extends CacheDatabase {
         boolean result = false;
         CacheOpenHelper helper = new CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -114,7 +114,7 @@ public class MessagesCacheDB extends CacheDatabase {
     public static void deleteDialog(Context ctx, int peer) {
         CacheOpenHelper helper = new CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
         try {

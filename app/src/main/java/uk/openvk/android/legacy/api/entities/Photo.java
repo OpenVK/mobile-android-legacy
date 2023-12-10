@@ -4,6 +4,15 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
@@ -20,7 +29,7 @@ import android.os.Parcelable;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Photo implements Parcelable {
+public class Photo extends Attachment implements Parcelable, Serializable {
     public long id;
     public long album_id;
     public long owner_id;
@@ -32,9 +41,11 @@ public class Photo implements Parcelable {
     public String error;
 
     public Photo() {
+        type = "photo";
     }
 
     protected Photo(Parcel in) {
+        type = "photo";
         url = in.readString();
         filename = in.readString();
     }
@@ -60,5 +71,23 @@ public class Photo implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(url);
         parcel.writeString(filename);
+    }
+
+    @Override
+    public void serialize(JSONObject object) {
+        super.serialize(object);
+        try {
+            JSONObject photo = new JSONObject();
+            photo.put("id", id);
+            photo.put("album_id", album_id);
+            photo.put("owner_id", owner_id);
+            photo.put("size", size[0] + "x" + size[1]);
+            photo.put("url", url);
+            photo.put("original_url", original_url);
+            photo.put("filename", filename);
+            object.put("photo", photo);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

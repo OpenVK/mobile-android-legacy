@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -408,7 +409,7 @@ public class PostViewLayout extends LinearLayout {
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, VideoPlayerActivity.class);
                 intent.putExtra("title", video.title);
-                intent.putExtra("attachment", video);
+                intent.putExtra("attachment", (Parcelable) video);
                 intent.putExtra("files", video.files);
                 intent.putExtra("owner_id", owner_id);
                 ctx.startActivity(intent);
@@ -479,8 +480,7 @@ public class PostViewLayout extends LinearLayout {
                         for (int attachment_index = 0; attachment_index <
                                 item.attachments.size(); attachment_index++) {
                             if (item.attachments.get(attachment_index).type.equals("photo")) {
-                                Photo photo = ((Photo)
-                                        item.attachments.get(0).getContent());
+                                Photo photo = ((Photo) item.attachments.get(0));
                                 Attachment attachment = item.attachments.get(0);
                                 BitmapFactory.Options options = new BitmapFactory.Options();
                                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;

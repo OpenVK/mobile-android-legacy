@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -116,13 +117,12 @@ public class PostAttachmentsView extends LinearLayout {
                 String type = post.attachments.get(i).type;
                 switch (type) {
                     case "photo":
-                        Photo photo = (Photo) post.attachments.get(i).getContent();
+                        Photo photo = (Photo) post.attachments.get(i);
                         photoAttachments.add(photo);
                         break;
                     case "video":
-                        if (post.attachments.get(i).getContent() != null) {
-                            final Video videoAttachment = (Video)
-                                    post.attachments.get(i).getContent();
+                        if (post.attachments.get(i) != null) {
+                            final Video videoAttachment = (Video) post.attachments.get(i);
                             videoView.setAttachment(videoAttachment);
                             videoView.setVisibility(View.VISIBLE);
                             videoView.setThumbnail(post.owner_id);
@@ -159,9 +159,8 @@ public class PostAttachmentsView extends LinearLayout {
                         }
                         break;
                     case "poll":
-                        if (post.attachments.get(i).getContent() != null) {
-                            Poll poll = ((Poll)
-                                    post.attachments.get(i).getContent());
+                        if (post.attachments.get(i) != null) {
+                            Poll poll = ((Poll) post.attachments.get(i));
                             pollView.createAdapter(parent, position, posts, post,
                                     poll.answers, poll.multiple,
                                     poll.user_votes, poll.votes);
@@ -171,9 +170,8 @@ public class PostAttachmentsView extends LinearLayout {
                         }
                         break;
                     case "note":
-                        if (post.attachments.get(i).getContent() != null) {
-                            CommonAttachment commonAttachment = ((CommonAttachment)
-                                    post.attachments.get(i).getContent());
+                        if (post.attachments.get(i)!= null) {
+                            CommonAttachment commonAttachment = ((CommonAttachment) post.attachments.get(i));
                             commonView.setAttachment(post.attachments.get(i));
                             viewNoteAttachment(commonAttachment, post);
                             commonView.setVisibility(VISIBLE);
@@ -316,7 +314,7 @@ public class PostAttachmentsView extends LinearLayout {
     private void playVideo(WallPost item, Video video) {
         Intent intent = new Intent(parent, VideoPlayerActivity.class);
         intent.putExtra("title", video.title);
-        intent.putExtra("attachment", video);
+        intent.putExtra("attachment", (Parcelable) video);
         intent.putExtra("files", video.files);
         intent.putExtra("owner_id", item.owner_id);
         parent.startActivity(intent);
@@ -345,8 +343,7 @@ public class PostAttachmentsView extends LinearLayout {
             if(post.attachments != null) {
                 for(int i = 0; i < post.attachments.size(); i++) {
                     if(post.attachments.get(i).type.equals("photo")) {
-                        Photo photo = ((Photo) post.attachments.get(i).
-                                getContent());
+                        Photo photo = ((Photo) post.attachments.get(i));
                         intent.putExtra("original_link", photo.original_url);
                         intent.putExtra("author_id", post.author_id);
                         intent.putExtra("photo_id", photo.id);

@@ -225,23 +225,23 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             .replaceAll("&amp;", "&")
                             .replaceAll("&quot;", "\"");
                     String[] lines = text.split("\r\n|\r|\n");
-                    String text_llines = "";
+                    StringBuilder text_llines = new StringBuilder();
                     if (lines.length > 8) {
                         for (int line_no = 0; line_no < 8; line_no++) {
                             if (line_no == 7) {
                                 if (lines[line_no].length() > 0)
-                                    text_llines += String.format("%s...", lines[line_no]);
+                                    text_llines.append(String.format("%s...", lines[line_no]));
                             } else if (line_no == 6) {
                                 if (lines[line_no + 1].length() == 0) {
-                                    text_llines += String.format("%s", lines[line_no]);
+                                    text_llines.append(String.format("%s", lines[line_no]));
                                 } else {
-                                    text_llines += String.format("%s\r\n", lines[line_no]);
+                                    text_llines.append(String.format("%s\r\n", lines[line_no]));
                                 }
                             } else {
-                                text_llines += String.format("%s\r\n", lines[line_no]);
+                                text_llines.append(String.format("%s\r\n", lines[line_no]));
                             }
                         }
-                        post_text.setText(Global.formatLinksAsHtml(text_llines));
+                        post_text.setText(Global.formatLinksAsHtml(text_llines.toString()));
                         expand_text_btn.setVisibility(View.VISIBLE);
                     } else {
                         OvkExpandableText expandableText = Global.formatLinksAsHtml(text, 500);
@@ -280,15 +280,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     if(repost_text.length() > 0) {
                         String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
                         if (repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
-                            String text_llines = "";
+                            StringBuilder text_llines = new StringBuilder();
                             for (int line_no = 0; line_no < 8; line_no++) {
                                 if (line_no == 7) {
-                                    text_llines += String.format("%s...", repost_lines[line_no]);
+                                    text_llines.append(String.format("%s...", repost_lines[line_no]));
                                 } else {
-                                    text_llines += String.format("%s\r\n", repost_lines[line_no]);
+                                    text_llines.append(String.format("%s\r\n", repost_lines[line_no]));
                                 }
                             }
-                            original_post_text.setText(text_llines);
+                            original_post_text.setText(text_llines.toString());
                             repost_expand_text_btn.setVisibility(View.VISIBLE);
                         } else if (repost_text.length() > 500) {
                             original_post_text.setText(String.format("%s...", repost_text.substring(0, 500)));

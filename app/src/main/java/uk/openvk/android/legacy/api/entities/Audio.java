@@ -4,7 +4,9 @@ package uk.openvk.android.legacy.api.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Audio implements Parcelable {
+import java.io.Serializable;
+
+public class Audio implements Parcelable, Serializable {
     public String unique_id;
     public long id;
     public String artist;

@@ -60,7 +60,7 @@ public class CommonAttachView extends FrameLayout {
         this.attachment = attachment;
         if(attachment != null) {
             if(attachment.type.equals("note")) {
-                CommonAttachment commonAttachment = ((CommonAttachment) attachment.getContent());
+                CommonAttachment commonAttachment = ((CommonAttachment) attachment);
                 ((TextView) findViewById(R.id.attach_title)).setText(commonAttachment.title);
                 ((TextView) findViewById(R.id.attach_subtitle)).setText(
                         getResources().getString(R.string.attach_note));

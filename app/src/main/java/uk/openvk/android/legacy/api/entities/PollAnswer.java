@@ -1,5 +1,7 @@
 package uk.openvk.android.legacy.api.entities;
 
+import java.io.Serializable;
+
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
@@ -16,7 +18,7 @@ package uk.openvk.android.legacy.api.entities;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PollAnswer {
+public class PollAnswer implements Serializable {
     public int id;
     public int rate;
     public int votes;

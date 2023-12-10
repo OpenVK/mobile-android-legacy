@@ -23,7 +23,7 @@ public class UsersCacheDB extends CacheDatabase {
             Cursor cursor = null;
             CacheOpenHelper helper = new CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<Friend> result = new ArrayList<>();
@@ -67,7 +67,7 @@ public class UsersCacheDB extends CacheDatabase {
         try {
             CacheOpenHelper helper = new CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
@@ -128,7 +128,7 @@ public class UsersCacheDB extends CacheDatabase {
         try {
             Cursor cursor = null;
             CacheOpenHelper helper = new CacheOpenHelper(
-                    ctx.getApplicationContext(), getCurrentDatabaseName(ctx)
+                    ctx.getApplicationContext(), getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<User> result = new ArrayList<>();

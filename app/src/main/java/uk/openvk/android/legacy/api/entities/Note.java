@@ -1,5 +1,13 @@
 package uk.openvk.android.legacy.api.entities;
 
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.api.attachments.Attachment;
+
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
  *
@@ -16,7 +24,7 @@ package uk.openvk.android.legacy.api.entities;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class Note {
+public class Note extends Attachment implements Serializable {
     public long id;
     public long owner_id;
     public long date;
@@ -33,5 +41,21 @@ public class Note {
 
     public Note() {
 
+    }
+
+    @Override
+    public void serialize(JSONObject object) {
+        super.serialize(object);
+        try {
+            JSONObject note = new JSONObject();
+            note.put("id", id);
+            note.put("owner_id", owner_id);
+            note.put("title", title);
+            note.put("content", content);
+            note.put("date", date);
+            object.put("note", note);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

@@ -219,10 +219,10 @@ public class WallPostActivity extends NetworkFragmentActivity
         postViewLayout.loadWallPhoto(post, where);
         for(int i = 0; i < post.attachments.size(); i++) {
             if (post.attachments.get(i).type.equals("video")) {
-                Video video = (Video) post.attachments.get(i).getContent();
+                Video video = (Video) post.attachments.get(i);
                 postViewLayout.loadVideoAttachment(this, video, post.owner_id);
             } else if(post.attachments.get(i).type.equals("poll")) {
-                Poll poll = (Poll) post.attachments.get(i).getContent();
+                Poll poll = (Poll) post.attachments.get(i);
                 postViewLayout.loadPollAttachment(this, poll, wall.getWallItems(), post);
             }
         }
@@ -415,7 +415,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         intent.putExtra("where", "wall");
         try {
             if(attachments.get(0).type.equals("photo")) {
-                Photo photo = (Photo) attachments.get(0).getContent();
+                Photo photo = (Photo) attachments.get(0);
                 intent.putExtra("original_link", photo.original_url);
                 intent.putExtra("author_id", post.author_id);
                 intent.putExtra("photo_id", photo.id);

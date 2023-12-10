@@ -6,11 +6,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
@@ -36,24 +34,10 @@ public class GroupsCacheDB extends CacheDatabase {
 
     public static String prefix = "groups";
 
-    public static File getCurrentDatabasePath(Context ctx) {
-        OvkApplication app = (OvkApplication) ctx.getApplicationContext();
-        String instance = app.getCurrentInstance();
-        long user_id = app.getCurrentUserId();
-        return ctx.getDatabasePath(String.format("groups_%s_a%s.db", instance, user_id));
-    }
-
-    public static String getCurrentDatabaseName(Context ctx) {
-        OvkApplication app = (OvkApplication) ctx.getApplicationContext();
-        String instance = app.getCurrentInstance();
-        long user_id = app.getCurrentUserId();
-        return String.format("groups_%s_a%s.db", instance, user_id);
-    }
-
     public static Vector<Group> getList(Context ctx) {
         NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getReadableDatabase();
         Vector<Group> result = new Vector<>();
@@ -82,7 +66,7 @@ public class GroupsCacheDB extends CacheDatabase {
     public static Vector<Group> get(Context ctx, int count) {
         NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getReadableDatabase();
         Vector<Group> result = new Vector<>();
@@ -114,7 +98,7 @@ public class GroupsCacheDB extends CacheDatabase {
     public static void replace(Context ctx, List<Group> groups) {
         NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = null;
         try {
@@ -149,7 +133,7 @@ public class GroupsCacheDB extends CacheDatabase {
     public static void add(Context ctx, Group group) {
         NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -168,7 +152,7 @@ public class GroupsCacheDB extends CacheDatabase {
     public static void remove(Context ctx, int group_id) {
         NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
-                getCurrentDatabaseName(ctx)
+                getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
@@ -184,7 +168,7 @@ public class GroupsCacheDB extends CacheDatabase {
         try {
             NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM `groups`", null);

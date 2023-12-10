@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.ui.list.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -163,7 +164,7 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
         public void openVideo(Video video) {
             Intent intent = new Intent(ctx, VideoPlayerActivity.class);
             intent.putExtra("title", video.title);
-            intent.putExtra("attachment", video);
+            intent.putExtra("attachment", (Parcelable) video);
             intent.putExtra("files", video.files);
             intent.putExtra("owner_id", video.owner_id);
             ctx.startActivity(intent);

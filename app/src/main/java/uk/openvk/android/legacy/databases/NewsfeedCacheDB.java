@@ -33,7 +33,7 @@ import uk.openvk.android.legacy.databases.base.CacheDatabase;
 public class NewsfeedCacheDB extends CacheDatabase {
     private static Semaphore semaphore = new Semaphore(1);
 
-    public static String prefix = "newsfeed";
+    public static String prefix = "posts";
 
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
@@ -47,7 +47,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
 
         @Override
         public void onCreate(SQLiteDatabase database) {
-            CacheDatabaseTables.createAudioTracksTable(database);
+            CacheDatabaseTables.createWallPostTables(database);
         }
 
         @Override
@@ -97,7 +97,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
             semaphore.acquire();
             NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<WallPost> result = new ArrayList<>();
@@ -132,11 +132,33 @@ public class NewsfeedCacheDB extends CacheDatabase {
         try {
             NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
                 post.convertEntityToSQLite(db, "news");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            db.close();
+            helper.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void putPosts(Context ctx, ArrayList<WallPost> wallPosts) {
+        try {
+            NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
+                    ctx.getApplicationContext(),
+                    getCurrentDatabaseName(ctx, prefix)
+            );
+            SQLiteDatabase db = helper.getWritableDatabase();
+            try {
+                for (int i = 0; i < wallPosts.size(); i++) {
+                    WallPost post = wallPosts.get(i);
+                    post.convertEntityToSQLite(db, "newsfeed");
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -152,11 +174,11 @@ public class NewsfeedCacheDB extends CacheDatabase {
             semaphore.acquire();
             NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
-                db.delete("news",
+                db.delete("newsfeed",
                         "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null
                 );
             } catch (Exception ex) {
@@ -177,13 +199,13 @@ public class NewsfeedCacheDB extends CacheDatabase {
         try {
             NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx)
+                    getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             int flags = 0;
             try {
                 cursor = db.query(
-                        "news", new String[]{"flags"},
+                        "newsfeed", new String[]{"flags"},
                         "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
                         null, null, null, null);
                 if (cursor != null && cursor.getCount() > 0) {
@@ -221,8 +243,8 @@ public class NewsfeedCacheDB extends CacheDatabase {
                 values.put("likes", likes);
                 values.put("comments", comments);
                 int flags3 = liked ? flags2 | 8 : flags2 & (-9);
-                values.put("flags", retweeted ? flags3 | 4 : flags3 & (-5));
-                db.update("news", values, "`post_id`=" +
+                //values.put("flags", retweeted ? flags3 | 4 : flags3 & (-5));
+                db.update("newsfeed", values, "`post_id`=" +
                         post_id + " AND `user_id`=" + owner_id, null);
                 db.update("news_comments", values,
                         "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null);

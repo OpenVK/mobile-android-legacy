@@ -414,12 +414,11 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 WallPost item = ovk_api.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments.get(attachment_index).getContent());
+                        Poll poll = ((Poll) item.attachments.get(attachment_index));
                         poll.user_votes = 0;
                         PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
-                        item.attachments.get(attachment_index).setContent(poll);
                         ovk_api.wall.getWallItems().set(item_pos, item);
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
@@ -428,12 +427,11 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 WallPost item = ovk_api.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments.get(attachment_index).getContent());
+                        Poll poll = ((Poll) item.attachments.get(attachment_index));
                         poll.user_votes = 0;
                         PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
-                        item.attachments.get(attachment_index).setContent(poll);
                         ovk_api.wall.getWallItems().set(item_pos, item);
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }

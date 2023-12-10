@@ -162,8 +162,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
             try {
                 for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments
-                                .get(attachment_index).getContent());
+                        Poll poll = ((Poll) item.attachments.get(attachment_index));
                         poll.user_votes = 1;
                         if (!poll.answers.get(answer).is_voted) {
                             poll.answers.get(answer).is_voted = true;
@@ -181,8 +180,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
             try {
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if(item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments
-                                .get(attachment_index).getContent());
+                        Poll poll = ((Poll) item.attachments.get(attachment_index));
                         poll.user_votes = 0;
                         for (int i = 0; i < poll.answers.size(); i++) {
                             if (poll.answers.get(i).is_voted) {

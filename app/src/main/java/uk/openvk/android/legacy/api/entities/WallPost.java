@@ -1,8 +1,10 @@
 package uk.openvk.android.legacy.api.entities;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -13,11 +15,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
@@ -42,29 +52,33 @@ import uk.openvk.android.legacy.api.wrappers.JSONParser;
 
 public class WallPost implements Parcelable {
 
-    private int type;
-    private String avatar_url;
-    public Bitmap avatar;
+    private long dt_sec;
+    public long post_id;
+    public long author_id;
+    public long owner_id;
     public String name;
-    public RepostInfo repost;
     public String info;
     public String text;
-    public long owner_id;
-    public long post_id;
+    public RepostInfo repost;
+    private int type;
+    public Bitmap avatar;
+    private String avatar_url;
     public PostCounters counters;
-    public long author_id;
     public boolean verified_author;
     public boolean is_explicit;
     public ArrayList<Attachment> attachments;
     public WallPostSource post_source;
     private String json_str;
+    public boolean contains_repost;
+    public Date dt;
 
     @SuppressLint("SimpleDateFormat")
     public WallPost(String author, long dt_sec, RepostInfo repostInfo, String post_text,
                     PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments,
                     long o_id, long p_id, Context ctx) {
+        this.dt_sec = dt_sec;
         name = author;
-        Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
+        dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
         Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
         dt_midnight.setHours(0);
         dt_midnight.setMinutes(0);
@@ -91,6 +105,7 @@ public class WallPost implements Parcelable {
         owner_id = o_id;
         post_id = p_id;
         this.attachments = attachments;
+        contains_repost = repost != null && repost.newsfeed_item != null;
     }
 
     public WallPost() {
@@ -124,8 +139,8 @@ public class WallPost implements Parcelable {
                 is_explicit = post.getBoolean("is_explicit");
             }
             createAttachmentsList(owner_id, post_id, attachments);
-            long dt_sec = post.getLong("date");
-            Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
+            dt_sec = post.getLong("date");
+            dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
             Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
             dt_midnight.setHours(0);
             dt_midnight.setMinutes(0);
@@ -185,6 +200,7 @@ public class WallPost implements Parcelable {
                 this.repost = repostInfo;
                 JSONArray repost_attachments = repost.getJSONArray("attachments");
             }
+            contains_repost = repost != null && repost.newsfeed_item != null;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -220,10 +236,7 @@ public class WallPost implements Parcelable {
                         } else {
                             attachment_status = "none";
                         }
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(photoAttachment);
-                        this.attachments.add(attachment_obj);
+                        this.attachments.add(photoAttachment);
                         break;
                     }
                     case "video": {
@@ -263,10 +276,7 @@ public class WallPost implements Parcelable {
                         }
                         videoAttachment.duration = video.getInt("duration");
                         attachment_status = "done";
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(videoAttachment);
-                        this.attachments.add(attachment_obj);
+                        this.attachments.add(videoAttachment);
                         break;
                     }
                     case "poll": {
@@ -293,11 +303,8 @@ public class WallPost implements Parcelable {
                             }
                             poll.answers.add(pollAnswer);
                         }
-                        attachment_status = "done";
-                        Attachment attachment_obj = new Attachment(attachment.getString("type"));
-                        attachment_obj.status = attachment_status;
-                        attachment_obj.setContent(poll);
-                        this.attachments.add(attachment_obj);
+                        poll.status = "done";
+                        this.attachments.add(poll);
                         break;
                     }
                     default: {
@@ -318,12 +325,116 @@ public class WallPost implements Parcelable {
         return this.attachments;
     }
 
+    @SuppressLint("SimpleDateFormat")
     public void convertSQLiteToEntity(Cursor cursor, Context ctx) {
-
+        ContentValues values = new ContentValues();
+        DatabaseUtils.cursorRowToContentValues(cursor, values);
+        post_id = values.getAsInteger("post_id");
+        owner_id = values.getAsInteger("owner_id");
+        author_id = values.getAsInteger("avatar_id");
+        text = values.getAsString("text");
+        dt = new Date(values.getAsLong("time"));
+        Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
+        dt_midnight.setHours(0);
+        dt_midnight.setMinutes(0);
+        dt_midnight.setSeconds(0);
+        if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 86400000) {
+            info = String.format("%s %s", ctx.getResources().getString(R.string.today_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < (86400000 * 2)) {
+            info = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 31536000000L) {
+            info = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt),
+                    ctx.getResources().getString(R.string.date_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        } else {
+            info = String.format("%s %s %s", new SimpleDateFormat("d MMMM yyyy").format(dt),
+                    ctx.getResources().getString(R.string.date_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        }
+        counters.likes = values.getAsInteger("likes");
+        counters.reposts = values.getAsInteger("reposts");
+        counters.comments = values.getAsInteger("comments");
+        name = values.getAsString("author_name");
+        avatar_url = values.getAsString("avatar_url");
+        deserializeAttachments(values.getAsByteArray("attachments"));
+        contains_repost = values.getAsBoolean("contains_repost");
+        if (contains_repost) {
+            repost = new RepostInfo( values.getAsString("repost_text"),
+                    values.getAsLong("repost_original_time"), ctx);
+            repost.newsfeed_item = new WallPost();
+            repost.newsfeed_item.post_id = values.getAsInteger("repost_original_id");
+            repost.newsfeed_item.author_id = values.getAsInteger("repost_author_id");
+            repost.newsfeed_item.name = values.getAsString("repost_author_name");
+            repost.newsfeed_item.text = values.getAsString("repost_text");
+            repost.newsfeed_item.avatar_url = values.getAsString("repost_avatar_url");
+        }
     }
 
     public void convertEntityToSQLite(SQLiteDatabase database, String from) {
+        ContentValues values = new ContentValues();
+        values.put("post_id", post_id);
+        values.put("author_id", author_id);
+        values.put("owner_id", owner_id);
+        values.put("author_name", name);
+        values.put("text", text);
+        values.put("time", dt.getTime());
+        values.put("avatar_url", avatar_url);
+        values.put("likes", counters.likes);
+        values.put("comments", counters.comments);
+        values.put("reposts", counters.reposts);
+        values.put("contains_repost", contains_repost);
+        if(attachments.size() > 0) {
+            String attachments_binary = serializeAttachments();
+            if(attachments_binary != null) {
+                values.put("attachments", attachments_binary);
+            }
+        }
+        if(contains_repost) {
+            values.put("repost_original_id", repost.newsfeed_item.post_id);
+            values.put("repost_author_id", repost.newsfeed_item.author_id);
+            values.put("repost_owner_id", repost.newsfeed_item.owner_id);
+            values.put("repost_author_name", repost.newsfeed_item.name);
+            values.put("repost_text", repost.newsfeed_item.text);
+            values.put("repost_avatar_url", repost.newsfeed_item.avatar_url);
+            values.put("repost_original_time", repost.newsfeed_item.dt.getTime());
+        }
+        database.insert(from, null, values);
+    }
 
+    private String serializeAttachments() {
+        if (this.attachments.size() == 0) {
+            return null;
+        }
+        try {
+            JSONArray attachments = new JSONArray();
+            for (Attachment att : this.attachments) {
+                JSONObject json_attach = new JSONObject();
+                att.serialize(json_attach);
+                attachments.put(json_attach);
+            }
+            return attachments.toString();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    private void deserializeAttachments(byte[] bytes) {
+        if (bytes != null) {
+            try {
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                ObjectInputStream ois = new ObjectInputStream(bais);
+                int count = ois.readInt();
+                for (int i = 0; i < count; i++) {
+                    Attachment attachment = new Attachment();
+                    this.attachments.add(attachment.deserialize(ois));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     public WallPost(Parcel in) {
