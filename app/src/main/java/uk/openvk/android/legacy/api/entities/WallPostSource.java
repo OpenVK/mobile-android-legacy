@@ -45,6 +45,11 @@ public class WallPostSource implements Parcelable {
         }
     };
 
+    public WallPostSource() {
+        type = "";
+        platform = "";
+    }
+
     @Override
     public int describeContents() {
         return 0;

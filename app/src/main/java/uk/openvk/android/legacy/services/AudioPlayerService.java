@@ -16,10 +16,12 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
+import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.utils.NotificationManager;
 
 /*  Copyleft © 2022, 2023 OpenVK Team
@@ -40,7 +42,9 @@ import uk.openvk.android.legacy.utils.NotificationManager;
 
 public class AudioPlayerService extends Service implements
         MediaPlayer.OnBufferingUpdateListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener{
+        MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnSeekCompleteListener,
+        MediaPlayer.OnErrorListener{
 
     private static AudioPlayerService instance;
     private NotificationManager notifMan;
@@ -56,6 +60,7 @@ public class AudioPlayerService extends Service implements
     private BroadcastReceiver receiver;
     public static final String ACTION_UPDATE_PLAYLIST = "uk.openvk.android.legacy.AP_UPDATE_PLAYLIST";
     public static final String ACTION_UPDATE_CURRENT_TRACKPOS = "uk.openvk.android.legacy.AP_UPDATE_CURRENT_TRACKPOS";
+    public static final String ACTION_UPDATE_SEEKPOS = "uk.openvk.android.legacy.AP_UPDATE_SEEKPOS";
     public static final String ACTION_PLAYER_CONTROL = "uk.openvk.android.legacy.AP_CONTROL";
     public static final int STATUS_STARTING = 1000;
     public static final int STATUS_PLAYING = 1001;
@@ -65,12 +70,23 @@ public class AudioPlayerService extends Service implements
     public static final int STATUS_GOTO_NEXT = 1005;
     public static final int STATUS_REPEATING = 1006;
     public static final int STATUS_SHUFFLE = 1007;
+    List<AudioPlayerListener> listeners = new ArrayList<>();
 
     private Audio[] playlist;
     private int playerStatus;
+    private double bufferLength;
 
     public AudioPlayerService() {
 
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mp;
+    }
+
+    @Override
+    public void onSeekComplete(MediaPlayer mediaPlayer) {
+        notifySeekbarStatus();
     }
 
     public class AudioPlayerBinder extends Binder {
@@ -82,6 +98,12 @@ public class AudioPlayerService extends Service implements
         public void setAudioPlayerListener(AudioPlayerListener listener) {
             this.listener = listener;
         }
+    }
+
+    public interface AudioPlayerListener {
+        public void onChangeAudioPlayerStatus(String action, int status, int track_pos, Bundle data);
+        public void onReceiveCurrentTrackPosition(int track_pos, int status);
+        public void onUpdateSeekbarPosition(int position, int duration, double buffer_length);
     }
 
     @Override
@@ -121,12 +143,15 @@ public class AudioPlayerService extends Service implements
                         case "PLAYER_GET_CURRENT_POSITION":
                             notifyPlayerStatus();
                             break;
+                        case "PLAYER_GET_SEEKBAR_POSITION":
+                            notifySeekbarStatus();
+                            break;
                         case "PLAYER_START":
                             int position = data.getInt("position");
                             currentTrackPos = position;
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             ArrayList<Audio> parcelablePlaylist =
-                                    data.getParcelableArrayList("playlist");
+                                    AudioCacheDB.getCachedAudiosList(this);
                             if(parcelablePlaylist != null) {
                                 playlist = new Audio[parcelablePlaylist.size()];
                                 parcelablePlaylist.toArray(playlist);
@@ -192,7 +217,8 @@ public class AudioPlayerService extends Service implements
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-
+        bufferLength = percent * (mediaPlayer.getDuration() / 100);
+        notifySeekbarStatus();
     }
 
     @Override
@@ -266,21 +292,57 @@ public class AudioPlayerService extends Service implements
     private void notifyPlayerStatus(int status) {
         this.playerStatus = status;
         Intent intent = new Intent();
-        intent.setAction(AudioPlayerService.ACTION_PLAYER_CONTROL);
+        String action = AudioPlayerService.ACTION_PLAYER_CONTROL;
+        intent.setAction(action);
         intent.putExtra("status", status);
         intent.putExtra("track_position", currentTrackPos);
         sendBroadcast(intent);
+        for(int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onChangeAudioPlayerStatus(
+                    action, playerStatus, currentTrackPos, intent.getExtras()
+            );
+        }
     }
 
-    private void notifyPlayerStatus() {
+    public void notifyPlayerStatus() {
         Intent intent = new Intent();
-        intent.setAction(AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS);
+        String action = AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
+        intent.setAction(action);
         intent.putExtra("status", this.playerStatus);
         intent.putExtra("track_position", currentTrackPos);
         sendBroadcast(intent);
+        for(int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onReceiveCurrentTrackPosition(currentTrackPos, playerStatus);
+        }
+    }
+
+    public void notifySeekbarStatus() {
+        Intent intent = new Intent();
+        String action = AudioPlayerService.ACTION_UPDATE_SEEKPOS;
+        intent.setAction(action);
+        intent.putExtra("progress", mp.getCurrentPosition());
+        intent.putExtra("duration", mp.getDuration());
+        intent.putExtra("buffer_length", bufferLength);
+        sendBroadcast(intent);
+        for(int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onUpdateSeekbarPosition(
+                    mp.getCurrentPosition(), mp.getDuration(), bufferLength
+            );
+        }
     }
 
     public static AudioPlayerService getInstance() {
         return instance;
+    }
+
+    public void addListener(AudioPlayerListener listener) {
+        if(listeners == null)
+             listeners = new ArrayList<>();
+        listeners.add(listener);
+    }
+
+    public void removeListener(AudioPlayerListener listener) {
+        if(listeners != null)
+            listeners.remove(listener);
     }
 }

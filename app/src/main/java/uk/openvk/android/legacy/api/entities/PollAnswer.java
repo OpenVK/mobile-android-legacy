@@ -19,7 +19,7 @@ import java.io.Serializable;
  **/
 
 public class PollAnswer implements Serializable {
-    public int id;
+    public long id;
     public int rate;
     public int votes;
     public String text;
@@ -29,5 +29,9 @@ public class PollAnswer implements Serializable {
         this.rate = rate;
         this.votes = votes;
         this.text = text;
+    }
+
+    public PollAnswer() {
+
     }
 }

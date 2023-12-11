@@ -36,11 +36,12 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-             android:paddingLeft="10dip"
+            android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
             android:paddingRight="10dip"
             android:scaleType="center"
-            android:background="@drawable/highlight"
-            android:src="@drawable/ic_audio_shuffle" />
+            android:src="@drawable/ic_audio_shuffle"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/aplayer_prev"
@@ -66,8 +67,7 @@
             android:paddingLeft="10dip"
             android:paddingRight="10dip"
             android:scaleType="center"
-            android:src="@drawable/ic_aplayer_play" >
-        </ImageView>
+            android:src="@drawable/ic_aplayer_play"></ImageView>
 
         <ImageView
             android:id="@+id/aplayer_next"
@@ -86,12 +86,13 @@
             android:id="@+id/aplayer_repeat"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip"
             android:layout_weight="1"
             android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
             android:scaleType="center"
-            android:src="@drawable/ic_audio_repeat" />
+            android:src="@drawable/ic_audio_repeat"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -110,8 +111,7 @@
             android:gravity="center"
             android:text="0:00"
             android:textColor="#B2FFFFFF"
-            android:textSize="12.5dip"
-            android:textStyle="italic" />
+            android:textSize="12.5dip" />
 
         <SeekBar
             android:id="@+id/aplayer_progress"
@@ -136,8 +136,7 @@
             android:gravity="center"
             android:text="3:21"
             android:textColor="#B2FFFFFF"
-            android:textSize="12.5dip"
-            android:textStyle="italic" />
+            android:textSize="12.5dip" />
     </LinearLayout>
 
     <TextView
@@ -187,7 +186,7 @@
         android:background="@drawable/highlight"
         android:src="@drawable/ic_audio_broadcast" />
 
-    <uk.openvk.android.legacy.ui.layouts.AlbumScrollView
+    <uk.openvk.android.legacy.ui.views.AlbumScrollView
         android:id="@+id/audio_player_cover_scroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -204,7 +203,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
-            <uk.openvk.android.legacy.layouts.SquareImageView
+            <ImageView
                 android:id="@+id/audio_player_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -216,10 +215,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dip"
+                android:text="TextView"
                 android:textColor="#BBFFFFFF"
                 android:textSize="17dip"
-                android:text="TextView" />
+                android:visibility="gone" />
         </LinearLayout>
-    </uk.openvk.android.legacy.ui.layouts.AlbumScrollView>
+    </uk.openvk.android.legacy.ui.views.AlbumScrollView>
 
 </RelativeLayout>

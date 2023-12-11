@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +27,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Audio;
+import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
@@ -56,7 +58,7 @@ import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class AudiosFragment extends Fragment implements AudioPlayerListener {
+public class AudiosFragment extends Fragment implements AudioPlayerService.AudioPlayerListener {
     private RecyclerView audiosView;
     private Account account;
     private View view;
@@ -73,6 +75,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
     private ServiceConnection audioPlayerConnection = new ServiceConnection() {
 
         public void onServiceDisconnected(ComponentName name) {
+            audioPlayerService.removeListener(AudiosFragment.this);
             isBoundAP = false;
             audioPlayerService = null;
         }
@@ -81,9 +84,9 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
             isBoundAP = true;
             AudioPlayerService.AudioPlayerBinder mLocalBinder =
                     (AudioPlayerService.AudioPlayerBinder) service;
-            OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
             ((AudioPlayerService.AudioPlayerBinder) service).setAudioPlayerListener(AudiosFragment.this);
-            app.audioPlayerService = mLocalBinder.getService();
+            audioPlayerService = mLocalBinder.getService();
+            audioPlayerService.addListener(AudiosFragment.this);
         }
     };
 
@@ -174,12 +177,6 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
     public void setScrollingPositions(Context ctx, boolean b) {
     }
 
-    @Override
-    public void onStartAudioPlayer(AudioPlayerService service) {
-        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
-        app.audioPlayerService = service;
-    }
-
     public void receivePlayerStatus(String action, int status, int track_position, Bundle data) {
         if(audios != null && audios.size() > 0) {
             audiosAdapter.setTrackState(track_position, status);
@@ -236,6 +233,13 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
                 holder.playAudioTrack(audiosAdapter.getCurrentTrackPosition());
             }
         });
+        bottom_player_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), AudioPlayerActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void showBottomPlayer(Audio track) {
@@ -256,7 +260,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
     @Override
     public void onDestroy() {
         if(audioPlayerReceiver != null) {
-            parent.getApplicationContext().unregisterReceiver(audioPlayerReceiver);
+            parent.unregisterReceiver(audioPlayerReceiver);
         }
         if(audioPlayerService != null) {
             parent.getApplicationContext().unbindService(audioPlayerConnection);
@@ -268,5 +272,20 @@ public class AudiosFragment extends Fragment implements AudioPlayerListener {
             }
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onChangeAudioPlayerStatus(String action, int status, int track_pos, Bundle data) {
+
+    }
+
+    @Override
+    public void onReceiveCurrentTrackPosition(int track_pos, int status) {
+
+    }
+
+    @Override
+    public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
+
     }
 }

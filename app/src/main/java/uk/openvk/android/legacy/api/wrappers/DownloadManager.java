@@ -339,7 +339,7 @@ public class DownloadManager {
                                 }
                             }
                         } catch (Exception e) {
-                            photo.error = e.getClass().getSimpleName();
+                            photo.exception_name = e.getClass().getSimpleName();
                             if(logging_enabled) Log.e(OvkApplication.DL_TAG,
                                     String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
                                             photos.size()));

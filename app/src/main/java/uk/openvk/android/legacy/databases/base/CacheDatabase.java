@@ -29,10 +29,12 @@ public class CacheDatabase {
                     CacheDatabaseTables.createAudioTracksTable(database);
                     break;
                 case "wall":
+                    CacheDatabaseTables.createWallPostTables(database);
+                    break;
                 case "newsfeed":
                     CacheDatabaseTables.createWallPostTables(database);
                     break;
-                default:
+                case "main":
                     CacheDatabaseTables.createMainCacheTables(database);
                     break;
             }

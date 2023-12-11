@@ -253,9 +253,7 @@ public class NotificationManager {
                             .setContent(remoteViews)
                             .setChannelId(channel_id);
             notification = builder.build();
-            Intent notificationIntent = new Intent(ctx, AppActivity.class);
-            notificationIntent.setAction(Intent.ACTION_MAIN);
-            notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            Intent notificationIntent = new Intent(ctx, AudioPlayerActivity.class);
             notification.contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
         } else {
             NotificationCompat.Builder builder =
@@ -315,9 +313,7 @@ public class NotificationManager {
     }
 
     public PendingIntent createAudioPlayerIntent(int track_position, ArrayList<Audio> audios) {
-        Intent notificationIntent = new Intent(ctx, AppActivity.class);
-        notificationIntent.setAction(Intent.ACTION_MAIN);
-        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        Intent notificationIntent = new Intent(ctx, AudioPlayerActivity.class);
         return PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
     }
 

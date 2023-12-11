@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,9 @@ import android.widget.TextView;
 
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
+import java.util.concurrent.TimeUnit;
+
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 
 import static uk.openvk.android.legacy.BuildConfig.DEBUG;
@@ -42,6 +46,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
     private TextView p2r_tv;
     private ImageView p2r_arrow;
     private ProgressBar p2r_progress;
+    private long update_time;
     private static final SparseArray<String> STATE_MAP = new SparseArray<>();
     {
         STATE_MAP.put(0, "STATE_NORMAL");
@@ -57,8 +62,12 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
     }
 
     private void setup() {
-        ViewGroup.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        assert inflater != null;
         View header = inflater.inflate(R.layout.pull_to_refresh, null);
         header.setBackgroundColor(Color.WHITE);
         p2r_tv = header.findViewById(R.id.p2r_text);
@@ -78,9 +87,12 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
         switch (stateCode) {
             case CustomSwipeRefreshLayout.State.STATE_NORMAL:
                 if (stateCode != lastStateCode) {
-                    p2r_arrow.setVisibility(View.VISIBLE);
-                    p2r_progress.setVisibility(View.GONE);
-                    p2r_tv.setText(R.string.pull_to_refresh);
+                    update_time = TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    p2r_tv.setText(
+                            String.format("%s %s",
+                                    getResources().getString(R.string.updated),
+                                    Global.formatDateTime(ctx, update_time)
+                            ));
                 }
             case CustomSwipeRefreshLayout.State.STATE_READY:
                 if(percent > 1.08) {
@@ -102,6 +114,14 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
                     p2r_progress.setVisibility(View.VISIBLE);
                     p2r_tv.setText(R.string.refreshing);
                 }
+                break;
+            case CustomSwipeRefreshLayout.State.STATE_COMPLETE:
+                update_time = TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                p2r_tv.setText(
+                        String.format("%s %s",
+                                getResources().getString(R.string.updated),
+                                Global.formatDateTime(ctx, update_time)
+                        ));
         }
     }
 

@@ -155,4 +155,31 @@ public class Video extends Attachment implements Parcelable, Serializable {
             ex.printStackTrace();
         }
     }
+
+    @Override
+    public void deserialize(String attach_blob) {
+        try {
+            super.deserialize(attach_blob);
+            JSONObject video = unserialized_data.getJSONObject("video");
+            id = video.getLong("id");
+            owner_id = video.getLong("owner_id");
+            title = video.getString("title");
+            duration = video.getInt("duration");
+            url_thumb = video.getString("thumb_url");
+            files = new VideoFiles();
+            JSONArray json_files = video.getJSONArray("files");
+            filename = video.getString("filename");
+            if(video.isNull("files")) {
+                files.mp4_144 = json_files.getString(0);
+                files.mp4_240 = json_files.getString(1);
+                files.mp4_360 = json_files.getString(2);
+                files.mp4_480 = json_files.getString(3);
+                files.mp4_720 = json_files.getString(4);
+                files.mp4_1080 = json_files.getString(5);
+                files.ogv_480 = json_files.getString(6);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

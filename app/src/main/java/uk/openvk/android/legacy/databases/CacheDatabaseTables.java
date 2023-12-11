@@ -149,7 +149,7 @@ public class CacheDatabaseTables {
                         "artist varchar(500), " +
                         "duration int, " +
                         "lastplay int, " +
-                        "user bool, " +
+                        "user bit, " +
                         "lyrics text, " +
                         "url varchar(700), " +
                         "status int" +
@@ -208,15 +208,6 @@ public class CacheDatabaseTables {
                 "inviter int not null, " +
                 "invited int not null" +
                 ")");
-        db.execSQL("CREATE VIEW `conversations2` " +
-                "AS SELECT messages.*, users.*, conversations.* FROM messages " +
-                "JOIN messages AS msg2 ON messages.msg_id=msg2.mid " +
-                "LEFT JOIN users ON messages.peer=user_id " +
-                "LEFT JOIN converstaions ON -messages.peer=cid " +
-                "GROUP BY messages.peer HAVING messages.time=max(msg2.time)");
-        db.execSQL("CREATE INDEX `messages_msgid` ON messages (peer)");
-        db.execSQL("CREATE INDEX `messages_time` ON messages (time)");
-        db.execSQL("CREATE INDEX `conversations_users_cid` ON conversation_users (cid)");
         db.execSQL("CREATE TABLE `groups` (" +
                 "group_id int not null unique, " +
                 "name varchar(200), " +

@@ -3,6 +3,7 @@ package uk.openvk.android.legacy.api.attachments;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +41,7 @@ import uk.openvk.android.legacy.api.entities.Video;
 public class Attachment implements Parcelable, Serializable {
     public String type;
     public String status;
+    public JSONObject unserialized_data;
 
     public Attachment(String type) {
         this.type = type;
@@ -63,7 +65,8 @@ public class Attachment implements Parcelable, Serializable {
     };
 
     public Attachment() {
-
+        type = "";
+        status = "";
     }
 
     @Override
@@ -86,8 +89,15 @@ public class Attachment implements Parcelable, Serializable {
         }
     }
 
-    public Attachment deserialize(InputStream is) {
-        return this;
+    public void deserialize(String attach_blob) {
+        try {
+            unserialized_data = new JSONObject(attach_blob);
+            type = unserialized_data.getString("type");
+            if(!unserialized_data.isNull("status"))
+                status = unserialized_data.getString("status");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void clone(Attachment attachment) {

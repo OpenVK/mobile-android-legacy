@@ -48,6 +48,7 @@ import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.core.fragments.ProfileFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
+import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
@@ -701,7 +702,14 @@ public class AppActivity extends NetworkFragmentActivity {
                 instance_prefs_editor.commit();
                 mainSettingsFragment.setAccount(ovk_api.account);
                 slidingmenuLayout.setProfileName(profile_name);
-                ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
+                ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList(this);
+                if(cached_posts != null && cached_posts.size() > 0) {
+                    newsfeedFragment.loadFromCache(this);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                } else {
+                    ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
+                }
                 ovk_api.messages.getLongPollServer(ovk_api.wrapper);
                 if(selectedFragment == newsfeedFragment) {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {

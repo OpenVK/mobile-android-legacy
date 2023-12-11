@@ -53,7 +53,7 @@ public class Poll extends Attachment implements Serializable {
 
     }
 
-    public void vote(OvkAPIWrapper wrapper, int answer_id) {
+    public void vote(OvkAPIWrapper wrapper, long answer_id) {
         wrapper.sendAPIMethod("Polls.addVote", String.format("poll_id=%s&answers_ids=%s", id, answer_id));
     }
 
@@ -82,6 +82,29 @@ public class Poll extends Attachment implements Serializable {
             poll.put("answers", answers);
             poll.put("end_date", end_date);
             object.put("poll", poll);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deserialize(String attach_blob) {
+        try {
+            super.deserialize(attach_blob);
+            JSONObject poll = unserialized_data.getJSONObject("poll");
+            id = poll.getLong("id");
+            question = poll.getString("question");
+            JSONArray answers = poll.getJSONArray("answers");
+            this.answers = new ArrayList<>();
+            for(int i = 0; i < answers.length(); i++) {
+                JSONObject json_answer = answers.getJSONObject(i);
+                PollAnswer answer = new PollAnswer();
+                answer.id = json_answer.getLong("id");
+                answer.is_voted = json_answer.getBoolean("is_voted");
+                answer.rate = json_answer.getInt("rate");
+                answer.votes = json_answer.getInt("votes");
+                this.answers.add(answer);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

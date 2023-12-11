@@ -38,7 +38,8 @@ public class Photo extends Attachment implements Parcelable, Serializable {
     public String filename;
     public int[] size;
     public Bitmap bitmap;
-    public String error;
+    public boolean is_error;
+    public String exception_name;
 
     public Photo() {
         type = "photo";
@@ -85,7 +86,27 @@ public class Photo extends Attachment implements Parcelable, Serializable {
             photo.put("url", url);
             photo.put("original_url", original_url);
             photo.put("filename", filename);
+            object.put("status", status);
             object.put("photo", photo);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deserialize(String attach_blob) {
+        try {
+            super.deserialize(attach_blob);
+            JSONObject photo = unserialized_data.getJSONObject("photo");
+            id = photo.getLong("id");
+            album_id = photo.getLong("album_id");
+            owner_id = photo.getLong("owner_id");
+            size = new int[2];
+            size[0] = Integer.parseInt(photo.getString("size").split("x")[0]);
+            size[1] = Integer.parseInt(photo.getString("size").split("x")[1]);
+            url = photo.getString("url");
+            original_url = photo.getString("original_url");
+            filename = photo.getString("filename");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

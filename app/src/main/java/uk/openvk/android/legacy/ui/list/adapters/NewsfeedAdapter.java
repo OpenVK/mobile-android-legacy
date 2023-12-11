@@ -181,7 +181,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
             });
 
-            if(item.post_source.type.equals("api")) {
+            if(item.post_source != null && item.post_source.type.equals("api")) {
                 api_app_indicator.setVisibility(View.VISIBLE);
                 switch (item.post_source.platform) {
                     case "android":

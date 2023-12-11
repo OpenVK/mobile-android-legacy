@@ -131,7 +131,11 @@ public class WallPostActivity extends NetworkFragmentActivity
                 account_name = extras.getString("account_name");
                 account_id = extras.getLong("account_id");
                 post = new WallPost();
-                getPost(post, extras);
+                try {
+                    getPost(post, extras);
+                } catch (Exception ex) {
+                    finish();
+                }
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         getActionBar().setHomeButtonEnabled(true);

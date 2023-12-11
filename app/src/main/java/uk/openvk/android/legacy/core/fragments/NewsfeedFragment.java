@@ -88,7 +88,7 @@ public class NewsfeedFragment extends Fragment {
     public void loadFromCache(Context ctx) {
         ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(ctx);
         if(posts != null && posts.size() > 0)
-            createAdapter(ctx, posts, true);
+            createAdapter(ctx, posts, false);
     }
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache) {
@@ -106,7 +106,7 @@ public class NewsfeedFragment extends Fragment {
             newsfeedAdapter.notifyDataSetChanged();
         }
         if(cache) {
-            NewsfeedCacheDB.putPosts(ctx, this.wallPosts);
+            NewsfeedCacheDB.putPosts(ctx, this.wallPosts, true);
         }
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
         p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));

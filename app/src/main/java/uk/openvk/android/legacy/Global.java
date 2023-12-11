@@ -38,8 +38,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -950,5 +952,31 @@ public class Global {
                 clipboard.setPrimaryClip(clip);
             }
         }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static String formatDateTime(Context ctx, long dt_sec) {
+        String strftime;
+        Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
+        Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
+        dt_midnight.setHours(0);
+        dt_midnight.setMinutes(0);
+        dt_midnight.setSeconds(0);
+        if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 86400000) {
+            strftime = String.format("%s %s", ctx.getResources().getString(R.string.today_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < (86400000 * 2)) {
+            strftime = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 31536000000L) {
+            strftime = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt),
+                    ctx.getResources().getString(R.string.date_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        } else {
+            strftime = String.format("%s %s %s", new SimpleDateFormat("d MMMM yyyy").format(dt),
+                    ctx.getResources().getString(R.string.date_at),
+                    new SimpleDateFormat("HH:mm").format(dt));
+        }
+        return strftime;
     }
 }

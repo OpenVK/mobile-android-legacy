@@ -8,6 +8,7 @@ import android.util.Log;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
@@ -36,13 +37,18 @@ public class AudioPlayerReceiver extends BroadcastReceiver {
                     int track_pos = data.getInt("track_position");
                     if(audiosFragment != null) {
                         audiosFragment.receivePlayerStatus(action, status, track_pos, data);
+                    } else if(ctx instanceof AudioPlayerActivity) {
+                        ((AudioPlayerActivity) ctx).receivePlayerStatus(action, status, track_pos, data);
                     }
                     break;
                 case AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS:
                     status = data.getInt("status");
                     track_pos = data.getInt("track_position");
+                    track_pos = data.getInt("track_position");
                     if(audiosFragment != null) {
                         audiosFragment.updateCurrentTrackPosition(track_pos, status);
+                    } else if(ctx instanceof AudioPlayerActivity) {
+                        ((AudioPlayerActivity) ctx).updateCurrentTrackPosition(track_pos, status);
                     }
                     break;
             }

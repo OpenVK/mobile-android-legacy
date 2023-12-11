@@ -102,7 +102,8 @@ public class NewsfeedCacheDB extends CacheDatabase {
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<WallPost> result = new ArrayList<>();
             try {
-                Cursor cursor = db.query("news",
+
+                Cursor cursor = db.query("newsfeed",
                         null, null, null,
                         null, null, "`time` desc");
                 if (cursor != null && cursor.getCount() > 0) {
@@ -147,13 +148,15 @@ public class NewsfeedCacheDB extends CacheDatabase {
         }
     }
 
-    public static void putPosts(Context ctx, ArrayList<WallPost> wallPosts) {
+    public static void putPosts(Context ctx, ArrayList<WallPost> wallPosts, boolean clear) {
         try {
             NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
                     getCurrentDatabaseName(ctx, prefix)
             );
             SQLiteDatabase db = helper.getWritableDatabase();
+            if(clear)
+                CacheDatabaseTables.createWallPostTables(db);
             try {
                 for (int i = 0; i < wallPosts.size(); i++) {
                     WallPost post = wallPosts.get(i);

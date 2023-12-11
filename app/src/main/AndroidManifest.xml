@@ -52,6 +52,7 @@
             <intent-filter>
                 <action android:name="uk.openvk.android.legacy.AP_UPDATE_PLAYLIST" />
                 <action android:name="uk.openvk.android.legacy.AP_UPDATE_CURRENT_TRACKPOS" />
+                <action android:name="uk.openvk.android.legacy.AP_UPDATE_SEEKPOS" />
                 <action android:name="uk.openvk.android.legacy.AP_CONTROL" />
             </intent-filter>
         </receiver>
@@ -374,7 +375,8 @@
         </service>
 
         <activity android:name=".core.activities.AudioPlayerActivity"
-            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
+            android:theme="@style/BaseStyle.Dark.Transparent"
+            android:label="@string/now_playing"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
 

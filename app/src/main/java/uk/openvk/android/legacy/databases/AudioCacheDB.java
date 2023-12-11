@@ -99,16 +99,18 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static void fillDatabase(Context ctx2, ArrayList<Audio> audios, boolean clear) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
+        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, "audio"));
         Cursor cursor = null;
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             if (clear) {
-                cursor = db.query("tracks", new String[]{"owner_id", "audio_id"},
-                        null, null, null, null, null);
-                cursor.moveToFirst();
                 cachedIDs.clear();
+                CacheDatabaseTables.createAudioTracksTable(db);
             }
+            cursor = db.query("tracks", new String[]{"owner_id", "audio_id"},
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+
             for (int i = 0; i < audios.size(); i++) {
                 Audio track = audios.get(i);
                 ContentValues values = new ContentValues();
@@ -154,6 +156,7 @@ public class AudioCacheDB extends CacheDatabase {
                 track.artist = cursor.getString(3);
                 track.setDuration(cursor.getInt(4));
                 track.lyrics = cursor.getString(7);
+                track.url = cursor.getString(8);
                 list.add(track);
                 i++;
             } while (cursor.moveToNext());
