@@ -60,11 +60,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
                         audioPlayerService.notifyPlayerStatus();
                         audioPlayerService.notifySeekbarStatus();
                     }
-                } else {
-                    new NotificationManager(
-                            AudioPlayerActivity.this, false, false, false, ""
-                    ).clearAudioPlayerNotification();
-                    finish();
                 }
             }
         }
@@ -91,7 +86,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if(audioPlayerService != null) {
+                    if(audioPlayerService != null && audioPlayerService.getMediaPlayer() != null) {
                         handler.sendEmptyMessage(0);
                     } else {
                         cancel();
@@ -153,12 +148,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setTranslucentStatusBar(0, android.R.color.black);
         }
-    }
-
-    private void getCurrentTrackPosition() {
-        Intent serviceIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
-        serviceIntent.putExtra("action", "PLAYER_GET_CURRENT_POSITION");
-        startService(serviceIntent);
     }
 
     public void receivePlayerStatus(String action, int status, int track_pos, Bundle data) {
@@ -238,9 +227,9 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unbindService(audioPlayerConnection);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onDestroy();
     }
 
     @Override
