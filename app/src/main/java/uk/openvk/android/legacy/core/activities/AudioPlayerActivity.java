@@ -37,6 +37,7 @@ import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.utils.NotificationManager;
 
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
@@ -54,9 +55,16 @@ public class AudioPlayerActivity extends NetworkActivity implements
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(audioPlayerService != null) {
-                if(audioPlayerService.getMediaPlayer().isPlaying()) {
-                    audioPlayerService.notifyPlayerStatus();
-                    audioPlayerService.notifySeekbarStatus();
+                if(audioPlayerService.getMediaPlayer() != null) {
+                    if (audioPlayerService.getMediaPlayer().isPlaying()) {
+                        audioPlayerService.notifyPlayerStatus();
+                        audioPlayerService.notifySeekbarStatus();
+                    }
+                } else {
+                    new NotificationManager(
+                            AudioPlayerActivity.this, false, false, false, ""
+                    ).clearAudioPlayerNotification();
+                    finish();
                 }
             }
         }
