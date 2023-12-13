@@ -114,85 +114,89 @@ public class PostAttachmentsView extends LinearLayout {
         this.attachments = attachments;
         if(!post.is_explicit || !safeViewing) {
             for (int i = 0; i < post.attachments.size(); i++) {
-                String type = post.attachments.get(i).type;
-                switch (type) {
-                    case "photo":
-                        Photo photo = (Photo) post.attachments.get(i);
-                        photoAttachments.add(photo);
-                        break;
-                    case "video":
-                        if (post.attachments.get(i) != null) {
-                            final Video videoAttachment = (Video) post.attachments.get(i);
-                            videoView.setAttachment(videoAttachment);
-                            videoView.setVisibility(View.VISIBLE);
-                            videoView.setThumbnail(post.owner_id);
-                            if (resize_videoattachviews < 1) {
-                                videoView.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        float widescreen_aspect_ratio = videoView.getMeasuredWidth() / 16;
-                                        float attachment_height = widescreen_aspect_ratio * 9;
-                                        LinearLayout.LayoutParams lp = (LayoutParams) videoView.getLayoutParams();
-                                        lp.height = (int) attachment_height;
-                                        videoView.setLayoutParams(lp);
-                                    }
-                                });
-                                resize_videoattachviews++;
-                            }
-                            videoView.getViewTreeObserver().addOnGlobalLayoutListener(
-                                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                try {
+                    String type = post.attachments.get(i).type;
+                    switch (type) {
+                        case "photo":
+                            Photo photo = (Photo) post.attachments.get(i);
+                            photoAttachments.add(photo);
+                            break;
+                        case "video":
+                            if (post.attachments.get(i) != null) {
+                                final Video videoAttachment = (Video) post.attachments.get(i);
+                                videoView.setAttachment(videoAttachment);
+                                videoView.setVisibility(View.VISIBLE);
+                                videoView.setThumbnail(post.owner_id);
+                                if (resize_videoattachviews < 1) {
+                                    videoView.post(new Runnable() {
                                         @Override
-                                        public void onGlobalLayout() {
+                                        public void run() {
                                             float widescreen_aspect_ratio = videoView.getMeasuredWidth() / 16;
                                             float attachment_height = widescreen_aspect_ratio * 9;
-                                            videoView.getLayoutParams().height = (int) attachment_height;
+                                            LinearLayout.LayoutParams lp = (LayoutParams) videoView.getLayoutParams();
+                                            lp.height = (int) attachment_height;
+                                            videoView.setLayoutParams(lp);
                                         }
                                     });
-                            videoView.findViewById(R.id.video_att_view).setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            playVideo(post, videoAttachment);
+                                    resize_videoattachviews++;
+                                }
+                                videoView.getViewTreeObserver().addOnGlobalLayoutListener(
+                                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                                            @Override
+                                            public void onGlobalLayout() {
+                                                float widescreen_aspect_ratio = videoView.getMeasuredWidth() / 16;
+                                                float attachment_height = widescreen_aspect_ratio * 9;
+                                                videoView.getLayoutParams().height = (int) attachment_height;
+                                            }
+                                        });
+                                videoView.findViewById(R.id.video_att_view).setOnClickListener(
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                playVideo(post, videoAttachment);
+                                            }
                                         }
-                                    }
-                            );
-                        }
-                        break;
-                    case "poll":
-                        if (post.attachments.get(i) != null) {
-                            Poll poll = ((Poll) post.attachments.get(i));
-                            pollView.createAdapter(parent, position, posts, post,
-                                    poll.answers, poll.multiple,
-                                    poll.user_votes, poll.votes);
-                            pollView.setPollInfo(poll.question, poll.anonymous,
-                                    poll.end_date);
-                            pollView.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                    case "note":
-                        if (post.attachments.get(i)!= null) {
-                            CommonAttachment commonAttachment = ((CommonAttachment) post.attachments.get(i));
-                            commonView.setAttachment(post.attachments.get(i));
-                            viewNoteAttachment(commonAttachment, post);
-                            commonView.setVisibility(VISIBLE);
-                        }
-                        break;
-                }
-                if(!type.equals("note")) {
-                    switch (post.attachments.get(i).status) {
-                        case "not_supported":
-                            error_label.setText(
-                                    parent.getResources().getString(R.string.not_supported)
-                            );
-                            error_label.setVisibility(View.VISIBLE);
+                                );
+                            }
                             break;
-                        case "error":
-                            error_label.setText(
-                                    parent.getResources().getString(R.string.attachment_load_err)
-                            );
-                            error_label.setVisibility(View.VISIBLE);
+                        case "poll":
+                            if (post.attachments.get(i) != null) {
+                                Poll poll = ((Poll) post.attachments.get(i));
+                                pollView.createAdapter(parent, position, posts, post,
+                                        poll.answers, poll.multiple,
+                                        poll.user_votes, poll.votes);
+                                pollView.setPollInfo(poll.question, poll.anonymous,
+                                        poll.end_date);
+                                pollView.setVisibility(View.VISIBLE);
+                            }
+                            break;
+                        case "note":
+                            if (post.attachments.get(i) != null) {
+                                CommonAttachment commonAttachment = ((CommonAttachment) post.attachments.get(i));
+                                commonView.setAttachment(post.attachments.get(i));
+                                viewNoteAttachment(commonAttachment, post);
+                                commonView.setVisibility(VISIBLE);
+                            }
                             break;
                     }
+                    if (!type.equals("note")) {
+                        switch (post.attachments.get(i).status) {
+                            case "not_supported":
+                                error_label.setText(
+                                        parent.getResources().getString(R.string.not_supported)
+                                );
+                                error_label.setVisibility(View.VISIBLE);
+                                break;
+                            case "error":
+                                error_label.setText(
+                                        parent.getResources().getString(R.string.attachment_load_err)
+                                );
+                                error_label.setVisibility(View.VISIBLE);
+                                break;
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
             if(photoAttachments.size() > 1) {

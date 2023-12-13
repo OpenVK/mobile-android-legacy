@@ -24,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
@@ -40,6 +42,7 @@ import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
+import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
 import uk.openvk.android.legacy.ui.views.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.views.ProfileCounterLayout;
@@ -73,6 +76,7 @@ public class ProfileFragment extends Fragment {
     private String instance;
     private SharedPreferences global_prefs;
     private WallLayout wallLayout;
+    public boolean loadedFromCache;
 
     @Nullable
     @Override
@@ -95,12 +99,13 @@ public class ProfileFragment extends Fragment {
         });
         ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources()
                 .getConfiguration().orientation);
-        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
             view.findViewById(R.id.profile_ext_header)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
             view.findViewById(R.id.about_profile_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+            p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
             view.findViewById(R.id.send_direct_msg)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
             view.findViewById(R.id.add_to_friends)
@@ -110,6 +115,8 @@ public class ProfileFragment extends Fragment {
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
             view.findViewById(R.id.about_profile_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+            p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
             view.findViewById(R.id.send_direct_msg)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
             view.findViewById(R.id.add_to_friends)
@@ -121,7 +128,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void updateLayout(User user, final WindowManager wm) {
-        ProfileHeader header = (ProfileHeader) view.findViewById(R.id.profile_header);
+        ProfileHeader header = view.findViewById(R.id.profile_header);
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
         header.setOnline(user.online);
         header.setStatus(user.status);
@@ -140,7 +147,7 @@ public class ProfileFragment extends Fragment {
                 Global.getPluralQuantityString(getContext().getApplicationContext(),
                         R.plurals.profile_mutual_friends, 0), "");
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
-        ((LinearLayout) view.findViewById(R.id.wall_error_layout)).setVisibility(GONE);
+        (view.findViewById(R.id.wall_error_layout)).setVisibility(GONE);
         if(user.deactivated == null) {
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setBirthdate("");
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setStatus(user.status);
@@ -417,7 +424,21 @@ public class ProfileFragment extends Fragment {
         return view.findViewById(R.id.wall_selector);
     }
 
-    public void loadAPIData(Context ctx, OpenVKAPI ovk_api, WindowManager wm) {
+    public void loadAPIData(Context ctx, final OpenVKAPI ovk_api, WindowManager wm) {
+        CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+        p2r_view.refreshComplete();
+        OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
+        rhl.enableDarkTheme();
+        p2r_view.setCustomHeadview(rhl);
+        p2r_view.setTriggerDistance(80);
+        p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ArrayList<Long> ids = new ArrayList<>();
+                ids.add(ovk_api.user.id);
+                ovk_api.users.get(ovk_api.wrapper, ids);
+            }
+        });
         getWallSelector().setUserName(ovk_api.account.first_name);
         updateLayout(ovk_api.user, wm);
         setDMButtonListener(ctx, ovk_api.user.id, wm);
@@ -474,8 +495,9 @@ public class ProfileFragment extends Fragment {
 
     public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, long owner_id) {
         ArrayList<WallPost> posts = WallCacheDB.getPostsList(ctx, owner_id);
-        if(posts != null) {
+        if(posts != null && !loadedFromCache) {
             if (posts.size() > 0) {
+                loadedFromCache = true;
                 wallLayout.createAdapter(ctx, posts);
                 loading_more_posts = true;
                 setScrollingPositions(

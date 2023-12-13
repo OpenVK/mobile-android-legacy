@@ -154,7 +154,7 @@ public class Users implements Parcelable {
                 ids_list), "peers");
     }
 
-    public void get(OvkAPIWrapper wrapper, ArrayList<Integer> user_ids) {
+    public void get(OvkAPIWrapper wrapper, ArrayList<Long> user_ids) {
         StringBuilder ids_list = new StringBuilder();
         for(int i = 0; i < user_ids.size(); i++) {
             if(i < user_ids.size() - 1) {

@@ -1,7 +1,9 @@
 package uk.openvk.android.legacy.ui.views;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TimeUtils;
@@ -42,12 +44,15 @@ import static uk.openvk.android.legacy.BuildConfig.DEBUG;
 
 public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSwipeRefreshLayout.CustomSwipeRefreshHeadLayout {
 
+    private final SharedPreferences global_prefs;
     private Context ctx;
     private TextView p2r_tv;
     private ImageView p2r_arrow;
     private ProgressBar p2r_progress;
     private long update_time;
     private static final SparseArray<String> STATE_MAP = new SparseArray<>();
+    private View header;
+
     {
         STATE_MAP.put(0, "STATE_NORMAL");
         STATE_MAP.put(1, "STATE_READY");
@@ -58,6 +63,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
     public OvkRefreshableHeaderLayout(Context ctx) {
         super(ctx);
         this.ctx = ctx;
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         setup();
     }
 
@@ -68,7 +74,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
         );
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert inflater != null;
-        View header = inflater.inflate(R.layout.pull_to_refresh, null);
+        header = inflater.inflate(R.layout.pull_to_refresh, null);
         header.setBackgroundColor(Color.WHITE);
         p2r_tv = header.findViewById(R.id.p2r_text);
         p2r_arrow = header.findViewById(R.id.p2r_arrow);
@@ -141,5 +147,19 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
             rotate.setFillAfter(true);
             p2r_arrow.startAnimation(rotate);
         }
+    }
+
+    public void enableDarkTheme() {
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            header.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            header.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        }
+        p2r_tv = findViewById(R.id.p2r_text);
+        p2r_arrow = findViewById(R.id.p2r_arrow);
+        p2r_arrow.setImageDrawable(getResources().getDrawable(R.drawable.ic_pull_arrow_white));
+        p2r_progress = findViewById(R.id.p2r_progressbar);
+        p2r_progress.setIndeterminateDrawable(getResources().getDrawable(R.drawable.p2r_progress_white_anim));
+        p2r_tv.setTextColor(Color.parseColor("#afffffff"));
     }
 }

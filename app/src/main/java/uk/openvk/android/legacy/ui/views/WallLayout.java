@@ -117,8 +117,8 @@ public class WallLayout extends LinearLayout {
             ViewGroup.LayoutParams params = getLayoutParams();
             params.height = getMeasuredHeight();
             setMeasuredDimension(params.width, params.height);
-        } catch (Exception ignored) {
-
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
