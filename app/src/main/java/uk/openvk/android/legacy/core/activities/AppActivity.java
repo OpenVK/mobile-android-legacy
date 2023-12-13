@@ -1076,11 +1076,14 @@ public class AppActivity extends NetworkFragmentActivity {
     }
 
     private void removeAccount() {
-        AccountManager am = AccountManager.get(this);
-        am.removeAccount(androidAccount, null, null);
-        instance_prefs_editor = instance_prefs.edit();
-        instance_prefs_editor.clear();
-        instance_prefs_editor.commit();
+        try {
+            AccountManager am = AccountManager.get(this);
+            am.removeAccount(androidAccount, null, null);
+        } finally {
+            instance_prefs_editor = instance_prefs.edit();
+            instance_prefs_editor.clear();
+            instance_prefs_editor.commit();
+        }
     }
 
     private int isFromGlobalNewsfeed(int message) {
