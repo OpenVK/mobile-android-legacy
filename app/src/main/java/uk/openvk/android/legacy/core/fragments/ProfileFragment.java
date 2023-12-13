@@ -130,7 +130,7 @@ public class ProfileFragment extends Fragment {
         ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(0,
                 Global.getPluralQuantityString(getContext().getApplicationContext(),
                         R.plurals.profile_friends, 0),
-                "openvk://friends/id" + user.id);
+                "openvk://ovk/friends" + user.id);
         ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setOnCounterClickListener();
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0,
                 Global.getPluralQuantityString(getContext().getApplicationContext(),
@@ -329,7 +329,7 @@ public class ProfileFragment extends Fragment {
             ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(count,
                     Global.getPluralQuantityString(getContext().getApplicationContext(),
                             R.plurals.profile_friends, count),
-                    "openvk://friends/id" + user.id);
+                    "openvk://ovk/friends" + user.id);
         }
     }
 

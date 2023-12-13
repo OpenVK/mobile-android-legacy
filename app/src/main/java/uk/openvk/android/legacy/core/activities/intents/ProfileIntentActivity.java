@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -240,11 +241,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(args.startsWith("id")) {
-                    try {
-                       ovk_api.users.getUser(ovk_api.wrapper, Integer.parseInt(args.substring(2)));
-                    } catch (Exception ex) {
-                        ovk_api.users.search(ovk_api.wrapper, args);
-                    }
+                    ovk_api.users.getUser(ovk_api.wrapper, Integer.parseInt(args.substring(2)));
                 } else {
                     ovk_api.users.search(ovk_api.wrapper, args);
                 }

@@ -164,7 +164,7 @@ public class PhotoAlbumsListAdapter extends RecyclerView.Adapter<PhotoAlbumsList
         }
 
         public void openAlbum(PhotoAlbum album) {
-            String url = "openvk://album" + album.ids[0] + "_" + album.ids[1];
+            String url = "openvk://ovk/album" + album.ids[0] + "_" + album.ids[1];
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             i.setPackage("uk.openvk.android.legacy");

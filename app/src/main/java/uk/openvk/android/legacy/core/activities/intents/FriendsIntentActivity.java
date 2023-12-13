@@ -94,11 +94,11 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 if(args.length() > 0) {
                     ovk_api.users = new Users();
                     ovk_api.friends = new Friends();
-                    if(args.startsWith("id")) {
+                    if(args.startsWith("friends")) {
                         try {
-                            user_id = Integer.parseInt(args.substring(2));
+                            user_id = Integer.parseInt(args.substring(7));
                             ovk_api.friends.get(ovk_api.wrapper,
-                                    Integer.parseInt(args.substring(2)), 25, "friends_list");
+                                    Integer.parseInt(args.substring(7)), 25, "friends_list");
                         } catch (Exception ex) {
                             ovk_api.users.search(ovk_api.wrapper, args);
                         }
@@ -109,7 +109,6 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();
-                return;
             }
         }
     }
@@ -171,12 +170,16 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.friends));
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
         }
     }

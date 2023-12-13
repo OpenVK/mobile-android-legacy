@@ -111,7 +111,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="openvk" android:host="profile" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/id" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -140,7 +142,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="openvk" android:host="friends" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/friends" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -170,7 +174,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="openvk" android:host="group" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/club" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -200,7 +206,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="openvk" android:host="notes" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/notes" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -275,11 +283,34 @@
 
         <activity
             android:name=".core.activities.WallPostActivity"
-            android:label="@string/new_status"
+            android:label="@string/wall_view"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
-        />
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/wall" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/wall"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/wall"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/wall" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".core.activities.AboutApplicationActivity"
@@ -339,7 +370,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="openvk" android:host="photos" android:pathPrefix="/album" />
+                <data android:scheme="openvk" android:host="ovk" android:pathPrefix="/album" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

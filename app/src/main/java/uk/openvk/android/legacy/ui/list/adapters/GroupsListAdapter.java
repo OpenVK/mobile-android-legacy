@@ -151,7 +151,7 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
         }
 
         public void showGroup(int position) {
-            String url = "openvk://club" + getItem(position).id;
+            String url = "openvk://ovk/club" + getItem(position).id;
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(url));
             i.setPackage("uk.openvk.android.legacy");

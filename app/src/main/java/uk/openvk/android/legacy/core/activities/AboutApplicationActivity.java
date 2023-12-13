@@ -142,13 +142,13 @@ public class AboutApplicationActivity extends TranslucentActivity {
                 instance_prefs.getString("server", "").equals("openvk.uk") ||
                 instance_prefs.getString("server", "").equals("openvk.co")) {
             app_author_label.setText(Html.fromHtml(
-                    getResources().getString(R.string.app_author_value, "openvk://profile")));
+                    getResources().getString(R.string.app_author_value, "openvk://ovk/id")));
             app_devteam_label.setText(Html.fromHtml(
                     getResources().getString(R.string.app_devteam,
-                            "openvk://profile", "openvk://profile")));
+                            "openvk://ovk/id", "openvk://ovk/id")));
             app_links.setText(Html.fromHtml(
                     getResources().getString(R.string.app_links_text,
-                    "openvk://group", String.format("http://%s", instance_prefs.getString("server", "")))));
+                    "openvk://ovkclub", String.format("http://%s", instance_prefs.getString("server", "")))));
             app_disclaimer_label.setText(Html.fromHtml(getResources().getString(
                     R.string.app_disclaimer,
                     String.format("http://%s", instance_prefs.getString("server", "")))));

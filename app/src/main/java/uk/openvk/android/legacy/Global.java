@@ -729,26 +729,8 @@ public class Global {
 
     public static String getUrlArguments(String path) {
         String args = "";
-        if (path.startsWith("openvk://id")) {
-            args = path.substring("openvk://id".length());
-        } else if (path.startsWith("openvk://club")) {
-            args = path.substring("openvk://club".length());
-        } else if (path.startsWith("openvk://friends")) {
-            args = path.substring("openvk://friends".length());
-        } else if (path.startsWith("openvk://album")) {
-            args = path.substring("openvk://album".length());
-        } else if (path.startsWith("openvk://albums")) {
-            args = path.substring("openvk://albums".length());
-        } else if (path.startsWith("openvk://notes")) {
-            args = path.substring("openvk://notes".length());
-        } else if (path.startsWith("openvk://wall")) {
-            args = path.substring("openvk://wall".length());
-        } else if(path.startsWith("https://openvk.su/")) {
-            args = path.substring("https://openvk.su/".length());
-        } else if(path.startsWith("https://openvk.uk/")) {
-            args = path.substring("https://openvk.uk/".length());
-        } else if(path.startsWith("http://openvk.xyz/")) {
-            args = path.substring("http://openvk.xyz/".length());
+        if (path.startsWith("openvk://ovk/")) {
+            args = path.substring("openvk://ovk/".length());
         }
         return args;
     }

@@ -496,22 +496,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(ovk_api.account != null) {
                 WallPost item;
                 item = getItem(position);
-                Intent intent = new Intent(ctx.getApplicationContext(), WallPostActivity.class);
-                if (ctx instanceof AppActivity &&
-                        ((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment) {
-                    intent.putExtra("where", "newsfeed");
-                } else {
-                    intent.putExtra("where", "wall");
-                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
                 try {
-                    intent.putExtra("post_id", item.post_id);
-                    intent.putExtra("owner_id", item.owner_id);
-                    intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                            ovk_api.account.last_name));
-                    intent.putExtra("account_id", ovk_api.account.id);
-                    intent.putExtra("post_author_id", item.author_id);
-                    intent.putExtra("post_author_name", item.name);
-                    intent.putExtra("post_json", item.getJSONString());
+                    intent.setData(
+                            Uri.parse(
+                                String.format(
+                                        "openvk://ovk/wall%s_%s",
+                                        item.owner_id, item.post_id
+                                )
+                            )
+                    );
                     ctx.startActivity(intent);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -618,18 +612,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 return;
             }
 
-            if (where.equals("profile")) {
-                item = ovk_api.wall.getWallItems().get(position);
-            } else {
-                item = ovk_api.newsfeed.getWallPosts().get(position);
-            }
+            item = getItem(position);
 
             if(item.author_id != ovk_api.account.id) {
                 String url = "";
                 if (item.author_id < 0) {
-                    url = "openvk://club" + -item.author_id;
+                    url = "openvk://ovk/club" + -item.author_id;
                 } else {
-                    url = "openvk://id" + item.author_id;
+                    url = "openvk://ovk/id" + item.author_id;
                 }
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setPackage("uk.openvk.android.legacy");
@@ -643,41 +633,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         }
 
         public void openWallRepostComments(Context ctx, int position, View view) {
-            WallPost item;
-            Intent intent = new Intent(ctx.getApplicationContext(), WallPostActivity.class);
-            SharedPreferences global_prefs = null;
-            OpenVKAPI ovk_api = null;
-            global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
-            if(ctx instanceof AppActivity) {
-                ovk_api = ((AppActivity) ctx).ovk_api;
-            } else if(ctx instanceof ProfileIntentActivity) {
-                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-            } else if(ctx instanceof GroupIntentActivity) {
-                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
-            } else {
-                return;
-            }
-            if (global_prefs.getString("current_screen", "").equals("profile")) {
-                item = ovk_api.wall.getWallItems().get(position);
-                intent.putExtra("where", "wall");
-            } else {
-                item = ovk_api.newsfeed.getWallPosts().get(position);
-                intent.putExtra("where", "newsfeed");
-            }
-            intent.putExtra("where", "wall");
-            try {
-                intent.putExtra("post_id", item.repost.newsfeed_item.post_id);
-                intent.putExtra("owner_id", item.repost.newsfeed_item.owner_id);
-                intent.putExtra("account_name", String.format("%s %s", ovk_api.account.first_name,
-                        ovk_api.account.last_name));
-                intent.putExtra("account_id", ovk_api.account.id);
-                intent.putExtra("post_author_id", item.repost.newsfeed_item.author_id);
-                intent.putExtra("post_author_name", item.repost.newsfeed_item.name);
-                intent.putExtra("post_json", item.repost.newsfeed_item.getJSONString());
-                ctx.startActivity(intent);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            return;
         }
     }
 

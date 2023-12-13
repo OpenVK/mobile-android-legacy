@@ -161,7 +161,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
             if(ctx instanceof AppActivity) {
                 AppActivity app_a = ((AppActivity) ctx);
                 if (user_id != app_a.ovk_api.account.id) {
-                    String url = "openvk://id" + user_id;
+                    String url = "openvk://ovk/id" + user_id;
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
                     i.setPackage("uk.openvk.android.legacy");
@@ -170,7 +170,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                     app_a.openAccountProfile();
                 }
             } else {
-                String url = "openvk://id" + user_id;
+                String url = "openvk://ovk/id" + user_id;
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 i.setPackage("uk.openvk.android.legacy");
