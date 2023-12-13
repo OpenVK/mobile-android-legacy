@@ -156,7 +156,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             if(clear)
-                CacheDatabaseTables.createWallPostTables(db);
+                db.delete("newsfeed", null, null);
             try {
                 for (int i = 0; i < wallPosts.size(); i++) {
                     WallPost post = wallPosts.get(i);

@@ -24,10 +24,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
@@ -36,6 +39,7 @@ import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
+import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
 import uk.openvk.android.legacy.ui.views.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.views.ProfileCounterLayout;
@@ -423,9 +427,8 @@ public class ProfileFragment extends Fragment {
         }
         if(ovk_api.user.deactivated == null) {
             ovk_api.user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
-            ovk_api.wall.get(ovk_api.wrapper, ovk_api.user.id, 25);
+            loadWallFromCache(ctx, ovk_api, ovk_api.user.id);
             ovk_api.friends.get(ovk_api.wrapper, ovk_api.user.id, 10, "profile_counter");
-
         } else {
             hideTabSelector();
             getHeader().hideExpandArrow();
@@ -444,9 +447,6 @@ public class ProfileFragment extends Fragment {
                 }
             }
         }
-        ovk_api.user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
-        ovk_api.wall.get(ovk_api.wrapper, ovk_api.user.id, 25);
-        ovk_api.friends.get(ovk_api.wrapper, ovk_api.user.id, 25, "profile_counter");
     }
 
     public void loadWall(final Context ctx, final OpenVKAPI ovk_api) {
@@ -456,6 +456,7 @@ public class ProfileFragment extends Fragment {
             setScrollingPositions(
                     ctx, false, true, ovk_api.account.id
             );
+            WallCacheDB.putPosts(ctx, ovk_api.wall.getWallItems(), ovk_api.user.id, true);
         } else {
             WallErrorLayout wall_error = view.findViewById(R.id.wall_error_layout);
             wall_error.setErrorText(getResources().getString(R.string.no_news));
@@ -469,5 +470,30 @@ public class ProfileFragment extends Fragment {
             }
         });
         selector.showNewPostIcon();
+    }
+
+    public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, long owner_id) {
+        ArrayList<WallPost> posts = WallCacheDB.getPostsList(ctx, owner_id);
+        if(posts != null) {
+            if (posts.size() > 0) {
+                wallLayout.createAdapter(ctx, posts);
+                loading_more_posts = true;
+                setScrollingPositions(
+                        ctx, false, true, ovk_api.account.id
+                );
+            } else {
+                ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+            }
+            ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
+            selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Global.openNewPostActivity(ctx, ovk_api);
+                }
+            });
+            selector.showNewPostIcon();
+        } else {
+            ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+        }
     }
 }

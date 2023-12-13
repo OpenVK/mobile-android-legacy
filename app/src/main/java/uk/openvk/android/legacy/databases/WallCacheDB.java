@@ -92,7 +92,7 @@ public class WallCacheDB extends CacheDatabase {
         }
     }
 
-    public static ArrayList<WallPost> getPostsList(Context ctx) {
+    public static ArrayList<WallPost> getPostsList(Context ctx, long owner_id) {
         try {
             semaphore.acquire();
             WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
@@ -102,8 +102,9 @@ public class WallCacheDB extends CacheDatabase {
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<WallPost> result = new ArrayList<>();
             try {
+                String selection = String.format("owner_id = %s", owner_id);
                 Cursor cursor = db.query("wall",
-                        null, null, null,
+                        null, selection, null,
                         null, null, "`time` desc");
                 if (cursor != null && cursor.getCount() > 0) {
                     int i = 0;
@@ -156,7 +157,7 @@ public class WallCacheDB extends CacheDatabase {
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
-                db.delete("newsfeed",
+                db.delete("wall",
                         "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null
                 );
             } catch (Exception ex) {
@@ -219,10 +220,11 @@ public class WallCacheDB extends CacheDatabase {
                 values.put("comments", post.counters.comments);
                 int flags3 = post.counters.isLiked ? flags2 | 8 : flags2 & (-9);
                 values.put("flags", post.repost != null ? flags3 | 4 : flags3 & (-5));
-                db.update("news", values, "`post_id`=" +
+                db.update("newsfeed", values, "`post_id`=" +
                         post.post_id + " AND `user_id`=" + post.owner_id, null);
-                db.update("news_comments", values,
-                        "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner_id, null);
+                db.update("newsfeed_comments", values,
+                        "`post_id`=" + post.post_id + " AND `user_id`=" +
+                                post.owner_id, null);
                 db.update("wall", values, "`post_id`=" +
                         post.post_id + " AND `user_id`=" + post.owner_id, null);
                 db.close();
@@ -231,6 +233,32 @@ public class WallCacheDB extends CacheDatabase {
             }
             if (cursor != null) {
                 cursor.close();
+            }
+            db.close();
+            helper.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void putPosts(Context ctx, ArrayList<WallPost> wallPosts,
+                                long owner_id, boolean clear) {
+        try {
+            NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
+                    ctx.getApplicationContext(),
+                    getCurrentDatabaseName(ctx, prefix)
+            );
+            SQLiteDatabase db = helper.getWritableDatabase();
+            String selection = String.format("owner_id = %s", owner_id);
+            if(clear)
+                db.delete("wall", selection, null);
+            try {
+                for (int i = 0; i < wallPosts.size(); i++) {
+                    WallPost post = wallPosts.get(i);
+                    post.convertEntityToSQLite(db, "wall");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             db.close();
             helper.close();
