@@ -627,9 +627,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(item.author_id != ovk_api.account.id) {
                 String url = "";
                 if (item.author_id < 0) {
-                    url = "openvk://group/" + "club" + -item.author_id;
+                    url = "openvk://club" + -item.author_id;
                 } else {
-                    url = "openvk://profile/" + "id" + item.author_id;
+                    url = "openvk://id" + item.author_id;
                 }
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setPackage("uk.openvk.android.legacy");

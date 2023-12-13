@@ -333,7 +333,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(functions.get(position)
                         .equals(getResources().getString(R.string.attach_note_to_post))) {
-                    String url = "openvk://notes/" + "id" + account_id;
+                    String url = "openvk://notes" + account_id;
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));
                     intent.putExtra("action", "notes_picker");

@@ -211,10 +211,10 @@ public class Global {
                 link.screen_name = markup[0];
                 if (markup.length == 2) {
                     if (markup[0].startsWith("id")) {
-                        link.url = String.format("openvk://profile/%s", markup[0]);
+                        link.url = String.format("openvk://club%s", markup[0]);
                         link.name = markup[1];
                     } else if (markup[0].startsWith("club")) {
-                        link.url = String.format("openvk://group/%s", markup[0]);
+                        link.url = String.format("openvk://id%s", markup[0]);
                         link.name = markup[1];
                     }
                     link.name = markup[1];
@@ -261,10 +261,10 @@ public class Global {
                     link.screen_name = markup[0];
                     if (markup.length == 2) {
                         if (markup[0].startsWith("id")) {
-                            link.url = String.format("openvk://profile/%s", markup[0]);
+                            link.url = String.format("openvk://club%s", markup[0]);
                             link.name = markup[1];
                         } else if (markup[0].startsWith("club")) {
-                            link.url = String.format("openvk://group/%s", markup[0]);
+                            link.url = String.format("openvk://id%s", markup[0]);
                             link.name = markup[1];
                         }
                         link.name = markup[1];
@@ -729,18 +729,20 @@ public class Global {
 
     public static String getUrlArguments(String path) {
         String args = "";
-        if (path.startsWith("openvk://profile/")) {
-            args = path.substring("openvk://profile/".length());
-        } else if (path.startsWith("openvk://group/")) {
-            args = path.substring("openvk://group/".length());
-        } else if (path.startsWith("openvk://friends/")) {
-            args = path.substring("openvk://friends/".length());
-        } else if (path.startsWith("openvk://photos/album")) {
-            args = path.substring("openvk://photos/album".length());
-        } else if (path.startsWith("openvk://photos/")) {
-            args = path.substring("openvk://photos/".length());
-        } else if (path.startsWith("openvk://notes/")) {
-            args = path.substring("openvk://notes/".length());
+        if (path.startsWith("openvk://id")) {
+            args = path.substring("openvk://id".length());
+        } else if (path.startsWith("openvk://club")) {
+            args = path.substring("openvk://club".length());
+        } else if (path.startsWith("openvk://friends")) {
+            args = path.substring("openvk://friends".length());
+        } else if (path.startsWith("openvk://album")) {
+            args = path.substring("openvk://album".length());
+        } else if (path.startsWith("openvk://albums")) {
+            args = path.substring("openvk://albums".length());
+        } else if (path.startsWith("openvk://notes")) {
+            args = path.substring("openvk://notes".length());
+        } else if (path.startsWith("openvk://wall")) {
+            args = path.substring("openvk://wall".length());
         } else if(path.startsWith("https://openvk.su/")) {
             args = path.substring("https://openvk.su/".length());
         } else if(path.startsWith("https://openvk.uk/")) {
@@ -812,7 +814,7 @@ public class Global {
             final View repost_view =
                     ((Activity)ctx).getLayoutInflater().inflate(R.layout.dialog_repost_msg,
                     null, false);
-            final EditText text_edit = ((EditText) repost_view.findViewById(R.id.text_edit));
+            final EditText text_edit = repost_view.findViewById(R.id.text_edit);
             builder.setView(repost_view);
             builder.setPositiveButton(R.string.ok, null);
             builder.setNegativeButton(R.string.cancel, null);

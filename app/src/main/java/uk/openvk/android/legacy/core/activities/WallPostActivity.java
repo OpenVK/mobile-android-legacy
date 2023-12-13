@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
@@ -47,6 +49,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
+import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.views.CommentPanel;
 import uk.openvk.android.legacy.ui.views.PostViewLayout;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
@@ -120,71 +123,52 @@ public class WallPostActivity extends NetworkFragmentActivity
             minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
 
-        setCommentsView();
+        loadPost();
 
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                finish();
-                return;
-            } else {
-                account_name = extras.getString("account_name");
-                account_id = extras.getLong("account_id");
-                post = new WallPost();
-                try {
-                    getPost(post, extras);
-                } catch (Exception ex) {
-                    finish();
-                }
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                        getActionBar().setHomeButtonEnabled(true);
-                    }
-                    getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.wall_view));
-                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                        getActionBar().setBackgroundDrawable(
-                                getResources().getDrawable(R.drawable.bg_actionbar_gray));
-                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                        getActionBar().setBackgroundDrawable(
-                                getResources().getDrawable(R.drawable.bg_actionbar_black));
-                    }
-                } else {
-                    final ActionBar actionBar = findViewById(R.id.actionbar);
-                    actionBar.setHomeLogo(R.drawable.ic_ab_app);
-                    actionBar.setDisplayHomeAsUpEnabled(true);
-                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                    actionBar.setHomeAction(new ActionBar.Action() {
-                        @Override
-                        public int getDrawable() {
-                            return 0;
-                        }
-
-                        @Override
-                        public void performAction(View view) {
-                            onBackPressed();
-                        }
-                    });
-                    actionBar.setTitle(getResources().getString(R.string.wall_view));
-                    switch (global_prefs.getString("uiTheme", "blue")) {
-                        case "Gray":
-                            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                            break;
-                        case "Black":
-                            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-                            break;
-                        default:
-                            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-                            break;
-                    }
-                }
-                wall = new Wall();
-                ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                getActionBar().setHomeButtonEnabled(true);
+            }
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setTitle(getResources().getString(R.string.wall_view));
+            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                getActionBar().setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
         } else {
-            finish();
-            return;
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setHomeAction(new ActionBar.Action() {
+                @Override
+                public int getDrawable() {
+                    return 0;
+                }
+
+                @Override
+                public void performAction(View view) {
+                    onBackPressed();
+                }
+            });
+            actionBar.setTitle(getResources().getString(R.string.wall_view));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+            }
         }
+        wall = new Wall();
+        ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -199,6 +183,41 @@ public class WallPostActivity extends NetworkFragmentActivity
                     }
                 }
         );
+    }
+
+    private void loadPost() {
+        String args;
+        final Uri uri = getIntent().getData();
+        if (uri != null) {
+            String path = uri.toString();
+            if (instance_prefs.getString("access_token", "").length() == 0) {
+                finish();
+                return;
+            }
+            try {
+                args = Global.getUrlArguments(path);
+                if(args.length() > 0) {
+                    setCommentsView();
+                    ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(this);
+                    if(posts != null) {
+                        for (int i = 0; i < posts.size(); i++) {
+
+                        }
+                    } else {
+                        ovk_api.wall.getPost(
+                                Long.parseLong(args.split("_")[0]),
+                                Long.parseLong(args.split("_")[1])
+                        );
+                    }
+                } else {
+                    finish();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                finish();
+                return;
+            }
+        }
     }
 
     @Override

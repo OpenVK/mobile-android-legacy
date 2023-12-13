@@ -79,7 +79,7 @@ public class UsersListActivity extends NetworkFragmentActivity {
     }
 
     public void showProfile(long user_id) {
-        String url = "openvk://profile/" + "id" + user_id;
+        String url = "openvk://id" + user_id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         i.setPackage(getPackageName());

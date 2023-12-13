@@ -619,7 +619,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://group/" + "id" + ovk_api.groups.getList().get(position).id;
+        String url = "openvk://club" + ovk_api.groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setPackage(getPackageName());
         i.setData(Uri.parse(url));

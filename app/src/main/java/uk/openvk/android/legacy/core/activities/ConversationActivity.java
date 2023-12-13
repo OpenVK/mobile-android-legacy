@@ -295,12 +295,12 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         if(peer_id > 0) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse("openvk://profile/id" + peer_id));
+            i.setData(Uri.parse("openvk://id" + peer_id));
             startActivity(i);
         } else {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse("openvk://group/club" + -peer_id));
+            i.setData(Uri.parse("openvk://club" + -peer_id));
             startActivity(i);
         }
     }

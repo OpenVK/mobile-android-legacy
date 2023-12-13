@@ -152,7 +152,7 @@ public class QuickSearchActivity extends NetworkActivity {
     }
 
     public void showProfile(int position) {
-        String url = "openvk://profile/" + "id" + ovk_api.users.getList().get(position).id;
+        String url = "openvk://id" + ovk_api.users.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         i.setPackage("uk.openvk.android.legacy");
@@ -160,7 +160,7 @@ public class QuickSearchActivity extends NetworkActivity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://group/" + "club" + ovk_api.groups.getList().get(position).id;
+        String url = "openvk://club" + ovk_api.groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setPackage("uk.openvk.android.legacy");
         i.setData(Uri.parse(url));

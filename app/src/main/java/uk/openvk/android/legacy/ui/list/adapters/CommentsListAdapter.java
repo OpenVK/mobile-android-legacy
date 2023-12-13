@@ -144,10 +144,10 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                         link.screen_name = markup[0];
                         if (markup.length == 2) {
                             if (markup[0].startsWith("id")) {
-                                link.url = String.format("openvk://profile/%s", markup[0]);
+                                link.url = String.format("openvk://id%s", markup[0]);
                                 link.name = markup[1];
                             } else if (markup[0].startsWith("club")) {
-                                link.url = String.format("openvk://group/%s", markup[0]);
+                                link.url = String.format("openvk://club%s", markup[0]);
                                 link.name = markup[1];
                             }
                             link.name = markup[1];

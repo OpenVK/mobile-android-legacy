@@ -764,4 +764,9 @@ public class Wall implements Parcelable {
                 String.format("owner_id=%s&count=%s&extended=1&offset=%s",
                         owner_id, count, offset), "more_wall_posts");
     }
+
+    public void getByID(OvkAPIWrapper wrapper, long owner_id, long post_id) {
+        wrapper.sendAPIMethod("Wall.getById", String.format("posts=%s_%s&extended=1",
+                owner_id, post_id));
+    }
 }
