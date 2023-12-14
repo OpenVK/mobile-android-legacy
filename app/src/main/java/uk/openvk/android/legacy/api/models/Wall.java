@@ -16,6 +16,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
+import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Video;
 import uk.openvk.android.legacy.api.entities.Comment;
@@ -666,6 +667,21 @@ public class Wall implements Parcelable {
                             Log.e(OvkApplication.API_TAG, "WTF? The length itself in an array must not " +
                                     "be overestimated.");
                         }
+                        break;
+                    }
+                    case "audio": {
+                        Audio audio = new Audio();
+                        JSONObject audio_attachment = attachment.getJSONObject("audio");
+                        audio.id = audio_attachment.getLong("aid");
+                        audio.unique_id = audio_attachment.getString("unique_id");
+                        audio.owner_id = audio_attachment.getLong("owner_id");
+                        audio.artist = audio_attachment.getString("artist");
+                        audio.title = audio_attachment.getString("title");
+                        audio.album = audio_attachment.getString("album");
+                        audio.lyrics = audio_attachment.getString("lyrics");
+                        audio.url = audio_attachment.getString("url");
+                        audio.setDuration(audio_attachment.getInt("duration"));
+                        attachments_list.add(audio);
                         break;
                     }
                     default: {

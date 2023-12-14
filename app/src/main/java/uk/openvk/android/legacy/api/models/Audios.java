@@ -54,8 +54,8 @@ public class Audios {
                     Audio audio = new Audio();
                     audio.unique_id = audio_track.getString("unique_id");
                     audio.id = audio_track.getLong("aid");
-                    if(audio_track.has("oid")) {
-                        audio.owner_id = audio_track.getLong("oid");
+                    if(audio_track.has("owner_id")) {
+                        audio.owner_id = audio_track.getLong("owner_id");
                     }
                     audio.title = audio_track.getString("title");
                     audio.artist = audio_track.getString("artist");

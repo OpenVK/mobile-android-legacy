@@ -10,9 +10,9 @@
         android:id="@+id/post_flow_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        flow:weightDefault="1.0"
-        android:gravity="fill"/>
+        android:gravity="fill"
+        android:visibility="visible"
+        flow:weightDefault="1.0" />
 
     <TextView
         android:id="@+id/error_label"
@@ -30,32 +30,4 @@
         android:visibility="gone"
         tools:ignore="HardcodedText,RtlHardcoded" />
 
-    <ImageView
-        android:id="@+id/post_photo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:adjustViewBounds="true"
-        android:visibility="visible" />
-
-    <uk.openvk.android.legacy.ui.views.CommonAttachView
-        android:id="@+id/post_attachment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:visibility="gone" />
-
-    <uk.openvk.android.legacy.ui.views.PollAttachView
-        android:id="@+id/post_poll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:visibility="gone" />
-
-    <uk.openvk.android.legacy.ui.views.VideoAttachView
-        android:id="@+id/post_video"
-        android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_marginBottom="4dp"
-        android:visibility="gone" />
 </LinearLayout>

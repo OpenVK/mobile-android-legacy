@@ -135,6 +135,7 @@ public class Video extends Attachment implements Parcelable, Serializable {
         try {
             JSONObject video = new JSONObject();
             video.put("id", id);
+            video.put("owner_id", owner_id);
             video.put("title", title);
             video.put("duration", duration);
             JSONArray files = new JSONArray();
@@ -162,13 +163,17 @@ public class Video extends Attachment implements Parcelable, Serializable {
             super.deserialize(attach_blob);
             JSONObject video = unserialized_data.getJSONObject("video");
             id = video.getLong("id");
-            owner_id = video.getLong("owner_id");
+            if(!video.isNull("owner_id")) {
+                owner_id = video.getLong("owner_id");
+            }
             title = video.getString("title");
             duration = video.getInt("duration");
             url_thumb = video.getString("thumb_url");
             files = new VideoFiles();
             JSONArray json_files = video.getJSONArray("files");
-            filename = video.getString("filename");
+            if(!video.isNull("filename")) {
+                filename = video.getString("filename");
+            }
             if(video.isNull("files")) {
                 files.mp4_144 = json_files.getString(0);
                 files.mp4_240 = json_files.getString(1);

@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.ui.views;
+package uk.openvk.android.legacy.ui.views.attach;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +45,8 @@ public class VideoAttachView extends FrameLayout {
                 R.layout.attach_video, null);
         instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         this.addView(view);
+        view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
     }
 
     public VideoAttachView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -52,6 +55,8 @@ public class VideoAttachView extends FrameLayout {
                 R.layout.attach_video, null);
         instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
         this.addView(view);
+        view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
     }
 
     @SuppressLint("DefaultLocale")

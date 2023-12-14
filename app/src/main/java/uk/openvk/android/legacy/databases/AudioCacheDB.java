@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -100,13 +99,14 @@ public class AudioCacheDB extends CacheDatabase {
 
     public static void fillDatabase(Context ctx2, ArrayList<Audio> audios, boolean clear) {
         CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, "audio"));
+
         Cursor cursor = null;
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             if (clear) {
                 cachedIDs.clear();
-                CacheDatabaseTables.createAudioTracksTable(db);
             }
+            CacheDatabaseTables.createAudioTracksTable(db, clear);
             cursor = db.query("tracks", new String[]{"owner_id", "audio_id"},
                     null, null, null, null, null);
             cursor.moveToFirst();
@@ -130,9 +130,48 @@ public class AudioCacheDB extends CacheDatabase {
             }
             db.close();
             helper.close();
-            if (cursor != null) {
-                cursor.close();
+            cursor.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void fillDatabaseFromWall(Context ctx2, ArrayList<Audio> audios,
+                                            long post_id, boolean clear) {
+        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, "audio"));
+
+        Cursor cursor = null;
+        SQLiteDatabase db = helper.getWritableDatabase();
+        try {
+            if (clear) {
+                cachedIDs.clear();
             }
+            CacheDatabaseTables.createAudioTracksTable(db, clear);
+            cursor = db.query("wall_tracks", new String[]{"owner_id", "audio_id", "post_id"},
+                    null, null, null, null, null);
+            cursor.moveToFirst();
+
+            for (int i = 0; i < audios.size(); i++) {
+                Audio track = audios.get(i);
+                ContentValues values = new ContentValues();
+                values.put("audio_id", track.id);
+                values.put("post_id", post_id);
+                values.put("owner_id", track.owner_id);
+                values.put("title", track.title);
+                values.put("artist", track.artist);
+                values.put("duration", track.getDurationInSeconds());
+                values.put("lastplay", 0);
+                values.put("user", true);
+                values.put("lyrics", track.lyrics != null ? track.lyrics : "");
+                values.put("url", track.url);
+                values.put("status", track.status);
+                db.insert("wall_tracks", null, values);
+                String track_name = String.format("%s_%s", track.id, track.owner_id);
+                cachedIDs.add(track_name);
+            }
+            db.close();
+            helper.close();
+            cursor.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -151,6 +190,42 @@ public class AudioCacheDB extends CacheDatabase {
                 Audio track = new Audio();
                 track.sender = new User();
                 track.sender.id = cursor.getInt(0);
+                track.owner_id = cursor.getInt(0);
+                track.id = cursor.getInt(1);
+                track.title = cursor.getString(2);
+                track.artist = cursor.getString(3);
+                track.setDuration(cursor.getInt(4));
+                track.lyrics = cursor.getString(7);
+                track.url = cursor.getString(8);
+                list.add(track);
+                i++;
+            } while (cursor.moveToNext());
+            cursor.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        db.close();
+        helper.close();
+        ctx = ctx2;
+        deleteOldTrack(ctx);
+        return list;
+    }
+
+    public static ArrayList<Audio> getPersonalAudiosList(Context ctx2, long owner_id) {
+        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ArrayList<Audio> list = new ArrayList<>();
+        try {
+            Cursor cursor = db.query("tracks", null,
+                    String.format("owner_id = %s", owner_id),
+                    null, null, null, "user desc");
+            cursor.moveToFirst();
+            int i = 0;
+            do {
+                Audio track = new Audio();
+                track.sender = new User();
+                track.sender.id = cursor.getInt(0);
+                track.owner_id = cursor.getInt(0);
                 track.id = cursor.getInt(1);
                 track.title = cursor.getString(2);
                 track.artist = cursor.getString(3);
@@ -231,5 +306,40 @@ public class AudioCacheDB extends CacheDatabase {
         }
         db.close();
         helper.close();
+    }
+
+    public static ArrayList<Audio> getAudiosListFromWall(Context ctx2, long post_id) {
+        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ArrayList<Audio> list = new ArrayList<>();
+        try {
+            Cursor cursor = db.query("wall_tracks", null,
+                    String.format("post_id = %s", post_id),
+                    null, null, null, "user desc");
+            cursor.moveToFirst();
+            int i = 0;
+            do {
+                Audio track = new Audio();
+                track.sender = new User();
+                track.sender.id = cursor.getInt(0);
+                track.owner_id = cursor.getInt(0);
+                track.id = cursor.getInt(1);
+                track.title = cursor.getString(2);
+                track.artist = cursor.getString(3);
+                track.setDuration(cursor.getInt(4));
+                track.lyrics = cursor.getString(8);
+                track.url = cursor.getString(9);
+                list.add(track);
+                i++;
+            } while (cursor.moveToNext());
+            cursor.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        db.close();
+        helper.close();
+        ctx = ctx2;
+        deleteOldTrack(ctx);
+        return list;
     }
 }

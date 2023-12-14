@@ -15,9 +15,9 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<uk.openvk.android.legacy.AudioAttachView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/attach_icon"
@@ -31,10 +31,10 @@
         android:id="@+id/attach_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_alignTop="@id/attach_icon"
         android:layout_marginLeft="12dip"
         android:layout_toRightOf="@+id/attach_icon"
-        android:layout_alignParentRight="true"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="TextView"
@@ -46,47 +46,46 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/attach_title"
+        android:layout_marginRight="5dip"
         android:layout_marginTop="-4dip"
-        android:textColor="@color/hint"
         android:singleLine="true"
         android:text="1:23"
-        android:layout_marginRight="5dip"
+        android:textColor="@color/hint"
         android:textSize="15dip" />
-    
+
     <TextView
         android:id="@+id/attach_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/attach_title"
+        android:layout_alignParentRight="true"
         android:layout_below="@+id/attach_title"
+        android:layout_marginTop="-4dip"
+        android:ellipsize="marquee"
         android:singleLine="true"
         android:text="TextView"
-        android:layout_marginTop="-4dip"
-        android:textSize="15dip"
-        android:ellipsize="marquee"
         android:textColor="@color/hint"
-        android:layout_alignParentRight="true"
-        />
+        android:textSize="15dip" />
 
     <SeekBar
-        android:focusable="false"
         android:id="@+id/attach_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/attach_subtitle"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/attach_subtitle"
+        android:layout_marginLeft="-11dip"
+        android:layout_marginRight="-11dip"
+        android:layout_marginTop="-9dip"
+        android:focusable="false"
         android:max="1000"
         android:maxHeight="3dip"
         android:minHeight="3dip"
-        android:thumbOffset="11dip"
         android:paddingLeft="11dip"
         android:paddingRight="11dip"
-        android:layout_marginTop="-9dip"
-        android:layout_marginLeft="-11dip"
-        android:layout_marginRight="-11dip"
-        android:layout_below="@+id/attach_subtitle"
-        android:visibility="invisible"
         android:progressDrawable="@drawable/progress_audio_attach"
-        android:thumb="@drawable/audio_slider" />
+        android:thumb="@drawable/audio_slider"
+        android:thumbOffset="11dip"
+        android:visibility="gone" />
 
-</uk.openvk.android.legacy.AudioAttachView>
+</RelativeLayout>

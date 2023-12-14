@@ -241,11 +241,14 @@ public class WallPost implements Parcelable {
                     }
                     case "poll": {
                         JSONObject poll_attachment = attachment.getJSONObject("poll");
-                        Poll poll = new Poll(poll_attachment.getString("question"),
-                                poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
+                        Poll poll = new Poll(
+                                poll_attachment.getString("question"),
+                                poll_attachment.getInt("id"),
+                                poll_attachment.getLong("end_date"),
                                 poll_attachment.getBoolean("multiple"),
                                 poll_attachment.getBoolean("can_vote"),
-                                poll_attachment.getBoolean("anonymous"));
+                                poll_attachment.getBoolean("anonymous")
+                        );
                         JSONArray answers = poll_attachment.getJSONArray("answers");
                         JSONArray votes = poll_attachment.getJSONArray("answer_ids");
                         if (votes.length() > 0) {
@@ -265,6 +268,21 @@ public class WallPost implements Parcelable {
                         }
                         poll.status = "done";
                         this.attachments.add(poll);
+                        break;
+                    }
+                    case "audio": {
+                        Audio audio = new Audio();
+                        JSONObject audio_attachment = attachment.getJSONObject("audio");
+                        audio.id = audio_attachment.getLong("aid");
+                        audio.unique_id = audio_attachment.getString("unique_id");
+                        audio.owner_id = audio_attachment.getLong("owner_id");
+                        audio.artist = audio_attachment.getString("artist");
+                        audio.title = audio_attachment.getString("title");
+                        audio.album = audio_attachment.getString("album");
+                        audio.lyrics = audio_attachment.getString("lyrics");
+                        audio.url = audio_attachment.getString("url");
+                        audio.setDuration(audio_attachment.getInt("duration"));
+                        this.attachments.add(audio);
                         break;
                     }
                     default: {
@@ -401,6 +419,10 @@ public class WallPost implements Parcelable {
                             break;
                         case "note":
                             attachment = new Note();
+                            attachment.deserialize(attachments.getJSONObject(i).toString());
+                            break;
+                        case "audio":
+                            attachment = new Audio();
                             attachment.deserialize(attachments.getJSONObject(i).toString());
                             break;
                     }

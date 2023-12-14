@@ -101,7 +101,7 @@ public class Poll extends Attachment implements Serializable {
                 PollAnswer answer = new PollAnswer();
                 answer.id = json_answer.getLong("id");
                 answer.is_voted = json_answer.getBoolean("is_voted");
-                answer.rate = json_answer.getInt("rate");
+                answer.rate = json_answer.getBoolean("rate") ? 1 : 0;
                 answer.votes = json_answer.getInt("votes");
                 this.answers.add(answer);
             }

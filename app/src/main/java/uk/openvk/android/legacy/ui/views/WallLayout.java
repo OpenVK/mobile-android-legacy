@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.ui.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.apmem.tools.layouts.FlowLayout;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -27,10 +29,13 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
+import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
+import uk.openvk.android.legacy.ui.views.attach.AudioAttachView;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -61,6 +66,7 @@ public class WallLayout extends LinearLayout {
     private RecyclerView wallView;
     private LinearLayoutManager llm;
     private ArrayList<WallPost> wallItems;
+    public boolean isActivatedAP;
 
     public WallLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -351,5 +357,46 @@ public class WallLayout extends LinearLayout {
         if(wallAdapter != null) {
             wallAdapter.notifyDataSetChanged();
         }
+    }
+
+    public NewsfeedAdapter getAdapter() {
+        return wallAdapter;
+    }
+
+    public void setAudioPlayerState(int status, int position, long post_id) {
+        String action = "";
+        switch (status) {
+            case AudioPlayerService.STATUS_STARTING_FROM_WALL:
+                action = "PLAYER_START_FROM_WALL";
+                isActivatedAP = true;
+                break;
+            case AudioPlayerService.STATUS_PLAYING:
+                action = "PLAYER_PLAY";
+                isActivatedAP = true;
+                break;
+            case AudioPlayerService.STATUS_PAUSED:
+                action = "PLAYER_PAUSE";
+                isActivatedAP = true;
+                break;
+            default:
+                action = "PLAYER_STOP";
+                isActivatedAP = false;
+                break;
+        }
+        Intent serviceIntent = new Intent(getContext().getApplicationContext(), AudioPlayerService.class);
+        serviceIntent.putExtra("action", action);
+        if(status == AudioPlayerService.STATUS_STARTING_FROM_WALL) {
+            serviceIntent.putExtra("position", position);
+            serviceIntent.putExtra("post_id", post_id);
+        }
+        Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
+        getContext().getApplicationContext().startService(serviceIntent);
+    }
+
+    public void closeAudioPlayer() {
+        Intent serviceIntent = new Intent(getContext().getApplicationContext(), AudioPlayerService.class);
+        serviceIntent.putExtra("action", "PLAYER_STOP");
+        Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
+        getContext().getApplicationContext().startService(serviceIntent);
     }
 }

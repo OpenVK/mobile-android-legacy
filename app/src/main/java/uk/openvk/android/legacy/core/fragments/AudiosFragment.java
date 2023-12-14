@@ -41,6 +41,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_PLAYLIST;
+import static uk.openvk.android.legacy.services.AudioPlayerService.STATUS_STARTING_FROM_WALL;
 
 /*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -67,7 +68,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
     private AudiosListAdapter audiosAdapter;
     private Context parent;
     private MediaPlayer mediaPlayer;
-    private boolean isBoundAP;
+    public boolean isBoundAP;
     private AudioPlayerReceiver audioPlayerReceiver;
     private AudioPlayerService audioPlayerService;
     private int currentTrackPos;

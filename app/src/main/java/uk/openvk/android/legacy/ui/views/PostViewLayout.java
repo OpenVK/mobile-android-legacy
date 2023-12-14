@@ -42,6 +42,8 @@ import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
 import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.ui.views.attach.PollAttachView;
+import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)

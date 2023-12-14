@@ -26,7 +26,7 @@ public class CacheDatabase {
         public void onCreate(SQLiteDatabase database) {
             switch (prefix) {
                 case "audio":
-                    CacheDatabaseTables.createAudioTracksTable(database);
+                    CacheDatabaseTables.createAudioTracksTable(database, false);
                     break;
                 case "wall":
                     CacheDatabaseTables.createWallPostTables(database);

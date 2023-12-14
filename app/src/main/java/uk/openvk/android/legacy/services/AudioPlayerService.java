@@ -62,14 +62,15 @@ public class AudioPlayerService extends Service implements
     public static final String ACTION_UPDATE_CURRENT_TRACKPOS = "uk.openvk.android.legacy.AP_UPDATE_CURRENT_TRACKPOS";
     public static final String ACTION_UPDATE_SEEKPOS = "uk.openvk.android.legacy.AP_UPDATE_SEEKPOS";
     public static final String ACTION_PLAYER_CONTROL = "uk.openvk.android.legacy.AP_CONTROL";
-    public static final int STATUS_STARTING = 1000;
-    public static final int STATUS_PLAYING = 1001;
-    public static final int STATUS_PAUSED = 1002;
-    public static final int STATUS_STOPPED = 1003;
-    public static final int STATUS_GOTO_PREVIOUS = 1004;
-    public static final int STATUS_GOTO_NEXT = 1005;
-    public static final int STATUS_REPEATING = 1006;
-    public static final int STATUS_SHUFFLE = 1007;
+    public static final int STATUS_STARTING_FROM_WALL = 1000;
+    public static final int STATUS_STARTING = 1001;
+    public static final int STATUS_PLAYING = 1002;
+    public static final int STATUS_PAUSED = 1003;
+    public static final int STATUS_STOPPED = 1004;
+    public static final int STATUS_GOTO_PREVIOUS = 1005;
+    public static final int STATUS_GOTO_NEXT = 1006;
+    public static final int STATUS_REPEATING = 1007;
+    public static final int STATUS_SHUFFLE = 1008;
     List<AudioPlayerListener> listeners = new ArrayList<>();
 
     private Audio[] playlist;
@@ -146,12 +147,25 @@ public class AudioPlayerService extends Service implements
                         case "PLAYER_GET_SEEKBAR_POSITION":
                             notifySeekbarStatus();
                             break;
-                        case "PLAYER_START":
+                        case "PLAYER_STARTING":
                             int position = data.getInt("position");
                             currentTrackPos = position;
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             ArrayList<Audio> parcelablePlaylist =
                                     AudioCacheDB.getCachedAudiosList(this);
+                            if(parcelablePlaylist != null) {
+                                playlist = new Audio[parcelablePlaylist.size()];
+                                parcelablePlaylist.toArray(playlist);
+                                startPlaylistFromPosition(position);
+                            }
+                            break;
+                        case "PLAYER_START_FROM_WALL":
+                            position = data.getInt("position");
+                            currentTrackPos = position;
+                            notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
+                            long post_id = data.getLong("post_id");
+                            parcelablePlaylist =
+                                    AudioCacheDB.getAudiosListFromWall(this, post_id);
                             if(parcelablePlaylist != null) {
                                 playlist = new Audio[parcelablePlaylist.size()];
                                 parcelablePlaylist.toArray(playlist);
@@ -285,6 +299,9 @@ public class AudioPlayerService extends Service implements
                 Log.e(OvkApplication.APP_TAG, "AudioPlayerService: Invalid Track URL");
             }
         } catch (IOException e) {
+            Log.e(OvkApplication.APP_TAG,
+                    String.format("AudioPlayerService: Can't play from %s", playlist[track_position].url)
+            );
             e.printStackTrace();
         }
     }

@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
 import uk.openvk.android.legacy.ui.views.AboutProfileLayout;
@@ -75,7 +77,7 @@ public class ProfileFragment extends Fragment {
     public boolean loading_more_posts;
     private String instance;
     private SharedPreferences global_prefs;
-    private WallLayout wallLayout;
+    public WallLayout wallLayout;
     public boolean loadedFromCache;
 
     @Nullable
@@ -517,5 +519,12 @@ public class ProfileFragment extends Fragment {
         } else {
             ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if(wallLayout.isActivatedAP)
+            wallLayout.closeAudioPlayer();
+        super.onDestroy();
     }
 }

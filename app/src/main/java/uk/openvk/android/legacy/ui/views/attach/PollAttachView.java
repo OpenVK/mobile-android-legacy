@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.ui.views;
+package uk.openvk.android.legacy.ui.views.attach;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,10 +45,18 @@ public class PollAttachView extends LinearLayout {
                 R.layout.attach_poll, null);
 
         this.addView(view);
+        view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+    }
 
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
-        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
+    public PollAttachView(Context ctx) {
+        super(ctx);
+        View view =  LayoutInflater.from(getContext()).inflate(
+                R.layout.attach_poll, null);
+
+        this.addView(view);
+        view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
     }
 
     public void createAdapter(Context ctx, int item_pos, ArrayList<WallPost> wallPosts,

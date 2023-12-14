@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -22,9 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import uk.co.senab.photoview.PhotoView;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
 import uk.openvk.android.legacy.api.attachments.CommonAttachment;
+import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.api.entities.Poll;
 import uk.openvk.android.legacy.api.entities.Photo;
 import uk.openvk.android.legacy.api.entities.Video;
@@ -32,24 +36,29 @@ import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.NoteActivity;
 import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.databases.AudioCacheDB;
+import uk.openvk.android.legacy.ui.views.attach.AudioAttachView;
+import uk.openvk.android.legacy.ui.views.attach.CommonAttachView;
+import uk.openvk.android.legacy.ui.views.attach.PollAttachView;
+import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
+
 import org.apmem.tools.layouts.FlowLayout;
+import org.json.JSONObject;
 
 public class PostAttachmentsView extends LinearLayout {
 
+    private FlowLayout flowLayout;
     private TextView error_label;
     private boolean safeViewing;
     private String instance;
     private SharedPreferences global_prefs;
     private ArrayList<Attachment> attachments;
-    private VideoAttachView videoView;
-    private ImageView photoView;
-    private PollAttachView pollView;
-    private CommonAttachView commonView;
     private int resize_videoattachviews;
     private Context parent;
     public boolean isWall;
     private int photo_fail_count;
     private ArrayList<Photo> photoAttachments;
+    private ArrayList<Audio> audioAttachments;
 
     public PostAttachmentsView(Context ctx) {
         super(ctx);
@@ -65,17 +74,8 @@ public class PostAttachmentsView extends LinearLayout {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         instance = global_prefs.getString("current_instance", "");
         safeViewing = global_prefs.getBoolean("safeViewing", true);
-        error_label = findViewById(R.id.error_label);
-        photoView = findViewById(R.id.post_photo);
-        videoView = findViewById(R.id.post_video);
-        pollView = findViewById(R.id.post_poll);
-        commonView = findViewById(R.id.post_attachment);
+        flowLayout = findViewById(R.id.post_flow_layout);
         parent = ctx;
-        error_label.setVisibility(GONE);
-        photoView.setVisibility(View.GONE);
-        videoView.setVisibility(View.GONE);
-        pollView.setVisibility(GONE);
-        commonView.setVisibility(View.GONE);
     }
 
     public PostAttachmentsView(Context ctx, AttributeSet attrs) {
@@ -92,25 +92,20 @@ public class PostAttachmentsView extends LinearLayout {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         instance = global_prefs.getString("current_instance", "");
         safeViewing = global_prefs.getBoolean("safeViewing", true);
-        error_label = findViewById(R.id.error_label);
-        photoView = findViewById(R.id.post_photo);
-        videoView = findViewById(R.id.post_video);
-        pollView = findViewById(R.id.post_poll);
-        commonView = findViewById(R.id.post_attachment);
+        flowLayout = findViewById(R.id.post_flow_layout);
         parent = ctx;
-        error_label.setVisibility(GONE);
-        photoView.setVisibility(View.GONE);
-        videoView.setVisibility(View.GONE);
-        pollView.setVisibility(GONE);
-        commonView.setVisibility(View.GONE);
     }
 
-    public void loadAttachments(ArrayList<WallPost> posts,
+    public void loadAttachments(Context ctx,
+                                ArrayList<WallPost> posts,
                                 final WallPost post,
                                 ImageLoader imageLoader,
                                 ArrayList<Attachment> attachments,
-                                int position, boolean isWall) {
+                                int position,
+                                boolean isWall) {
+        flowLayout.removeAllViews();
         this.photoAttachments = new ArrayList<>();
+        this.audioAttachments = new ArrayList<>();
         this.attachments = attachments;
         if(!post.is_explicit || !safeViewing) {
             for (int i = 0; i < post.attachments.size(); i++) {
@@ -124,16 +119,21 @@ public class PostAttachmentsView extends LinearLayout {
                         case "video":
                             if (post.attachments.get(i) != null) {
                                 final Video videoAttachment = (Video) post.attachments.get(i);
+                                final VideoAttachView videoView = new VideoAttachView(getContext());
                                 videoView.setAttachment(videoAttachment);
+                                flowLayout.addView(videoView);
                                 videoView.setVisibility(View.VISIBLE);
                                 videoView.setThumbnail(post.owner_id);
                                 if (resize_videoattachviews < 1) {
                                     videoView.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            float widescreen_aspect_ratio = videoView.getMeasuredWidth() / 16;
-                                            float attachment_height = widescreen_aspect_ratio * 9;
-                                            LinearLayout.LayoutParams lp = (LayoutParams) videoView.getLayoutParams();
+                                            float widescreen_aspect_ratio =
+                                                    videoView.getMeasuredWidth() / 16;
+                                            float attachment_height =
+                                                    widescreen_aspect_ratio * 9;
+                                            FlowLayout.LayoutParams lp =
+                                                    (FlowLayout.LayoutParams) videoView.getLayoutParams();
                                             lp.height = (int) attachment_height;
                                             videoView.setLayoutParams(lp);
                                         }
@@ -144,9 +144,11 @@ public class PostAttachmentsView extends LinearLayout {
                                         new ViewTreeObserver.OnGlobalLayoutListener() {
                                             @Override
                                             public void onGlobalLayout() {
-                                                float widescreen_aspect_ratio = videoView.getMeasuredWidth() / 16;
+                                                float widescreen_aspect_ratio =
+                                                        videoView.getMeasuredWidth() / 16;
                                                 float attachment_height = widescreen_aspect_ratio * 9;
-                                                videoView.getLayoutParams().height = (int) attachment_height;
+                                                videoView.getLayoutParams().height =
+                                                        (int) attachment_height;
                                             }
                                         });
                                 videoView.findViewById(R.id.video_att_view).setOnClickListener(
@@ -157,11 +159,21 @@ public class PostAttachmentsView extends LinearLayout {
                                             }
                                         }
                                 );
+                                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
+                                ((FlowLayout.LayoutParams) videoView.getLayoutParams())
+                                        .setMargins(
+                                                0,
+                                                0,
+                                                0,
+                                                i < post.attachments.size() -1 ? 8*dp : 0
+                                        );
                             }
                             break;
                         case "poll":
                             if (post.attachments.get(i) != null) {
                                 Poll poll = ((Poll) post.attachments.get(i));
+                                PollAttachView pollView = new PollAttachView(getContext());
+                                flowLayout.addView(pollView);
                                 pollView.createAdapter(parent, position, posts, post,
                                         poll.answers, poll.multiple,
                                         poll.user_votes, poll.votes);
@@ -172,14 +184,46 @@ public class PostAttachmentsView extends LinearLayout {
                             break;
                         case "note":
                             if (post.attachments.get(i) != null) {
-                                CommonAttachment commonAttachment = ((CommonAttachment) post.attachments.get(i));
+                                final CommonAttachment commonAttachment =
+                                        ((CommonAttachment) post.attachments.get(i));
+                                CommonAttachView commonView = new CommonAttachView(getContext());
+                                flowLayout.addView(commonView);
                                 commonView.setAttachment(post.attachments.get(i));
-                                viewNoteAttachment(commonAttachment, post);
+                                commonView.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        viewNoteAttachment(
+                                                (CommonAttachView) view,
+                                                commonAttachment,
+                                                post
+                                        );
+                                    }
+                                });
                                 commonView.setVisibility(VISIBLE);
                             }
                             break;
+                        case "audio":
+                            if (post.attachments.get(i) != null) {
+                                Audio audio = ((Audio) post.attachments.get(i));
+                                this.audioAttachments.add(audio);
+                                AudioAttachView audioView = new AudioAttachView(getContext());
+                                flowLayout.addView(audioView);
+                                audioView.setAttachment(
+                                        ctx, audioAttachments.indexOf(audio), post.post_id, audio
+                                );
+                                audioView.setVisibility(VISIBLE);
+                                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
+                                ((FlowLayout.LayoutParams) audioView.getLayoutParams())
+                                        .setMargins(
+                                                0,
+                                                0,
+                                                0,
+                                                i < post.attachments.size() ? 8*dp : 0
+                                        );
+                            }
+                            break;
                     }
-                    if (!type.equals("note")) {
+                    if (!type.equals("note") && !type.equals("audio")) {
                         switch (post.attachments.get(i).status) {
                             case "not_supported":
                                 error_label.setText(
@@ -199,9 +243,12 @@ public class PostAttachmentsView extends LinearLayout {
                     ex.printStackTrace();
                 }
             }
+
+            if(audioAttachments.size() > 0) {
+                AudioCacheDB.fillDatabaseFromWall(ctx, audioAttachments, post.post_id, false);
+            }
+
             if(photoAttachments.size() > 1) {
-                FlowLayout flowLayout = findViewById(R.id.post_flow_layout);
-                flowLayout.removeAllViews();
                 int max_height = getMaxPhotoHeight(photoAttachments);
                 int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
                 for(int i = 0; i < photoAttachments.size(); i++) {
@@ -215,7 +262,7 @@ public class PostAttachmentsView extends LinearLayout {
                                     0,
                                     0,
                                     i < photoAttachments.size() - 1 ? 2*dp : 0,
-                                    2*dp
+                                    4*dp
                             );
                     photoView.setAdjustViewBounds(true);
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -225,6 +272,15 @@ public class PostAttachmentsView extends LinearLayout {
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
+                PhotoView photoView = new PhotoView(getContext());
+                photoView.setAdjustViewBounds(true);
+                photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                flowLayout.addView(photoView);
+                FlowLayout.LayoutParams lp = ((FlowLayout.LayoutParams) photoView.getLayoutParams());
+                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
+                lp.weight = 0;
+                lp.width = FlowLayout.LayoutParams.MATCH_PARENT;
+                photoView.setLayoutParams(lp);
                 loadPhotoPlaceholder(post, photoAttachments.get(0), imageLoader, photoView);
                 loadPhotoAttachment(photoAttachments.get(0), photoView, imageLoader, isWall);
                 photoView.setVisibility(VISIBLE);
@@ -306,13 +362,15 @@ public class PostAttachmentsView extends LinearLayout {
         }
     }
 
-    private void viewNoteAttachment(CommonAttachment attachment, WallPost post) {
+    private void viewNoteAttachment(CommonAttachView attachView,
+                                    CommonAttachment attachment,
+                                    WallPost post) {
         Intent intent = new Intent(parent, NoteActivity.class);
         intent.putExtra("title", attachment.title);
         intent.putExtra("content", attachment.text);
         intent.putExtra("author", post.name);
-        commonView.setIntent(intent);
-        commonView.setVisibility(View.VISIBLE);
+        attachView.setIntent(intent);
+        attachView.setVisibility(View.VISIBLE);
     }
 
     private void playVideo(WallPost item, Video video) {

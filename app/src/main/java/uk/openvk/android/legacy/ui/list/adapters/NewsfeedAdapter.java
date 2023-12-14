@@ -11,6 +11,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import dev.tinelix.retro_pm.MenuItem;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
@@ -41,6 +43,7 @@ import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.ProfileFragment;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.views.PostAttachmentsView;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 
@@ -259,6 +262,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
                 if(item.attachments.size() > 0) {
                     post_attach_container.loadAttachments(
+                            ctx,
                             items,
                             item,
                             imageLoader,
@@ -301,8 +305,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         original_post_text.setVisibility(View.GONE);
                     }
                     if (item.repost.newsfeed_item.attachments.size() > 0) {
-                        repost_attach_container.loadAttachments(items,
-                                item.repost.newsfeed_item, imageLoader, item.repost.newsfeed_item.attachments,
+                        repost_attach_container.loadAttachments(
+                                ctx,
+                                items,
+                                item.repost.newsfeed_item,
+                                imageLoader,
+                                item.repost.newsfeed_item.attachments,
                                 position, isWall);
                     } else {
                         post_attach_container.setVisibility(View.GONE);

@@ -90,6 +90,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     private boolean showExtended;
     private boolean loading_more_posts;
     private String instance;
+    public WallLayout wallLayout;
 
     @SuppressWarnings("ConstantConditions")
     @SuppressLint("CommitPrefEdits")
@@ -107,6 +108,8 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
+
+        wallLayout = findViewById(R.id.wall_layout);
 
         instance = instance_prefs.getString("server", "");
 
@@ -701,5 +704,12 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
 
     public GroupHeader getHeader() {
         return findViewById(R.id.group_header);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(((WallLayout) findViewById(R.id.wall_layout)).isActivatedAP)
+            ((WallLayout) findViewById(R.id.wall_layout)).closeAudioPlayer();
+        super.onDestroy();
     }
 }

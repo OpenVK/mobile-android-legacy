@@ -23,6 +23,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION

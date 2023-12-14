@@ -236,7 +236,7 @@
                                 android:visibility="gone"
                                 tools:ignore="ContentDescription" />
 
-                            <uk.openvk.android.legacy.ui.views.PollAttachView
+                            <uk.openvk.android.legacy.ui.views.attach.PollAttachView
                                 android:id="@+id/repost_poll_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -287,7 +287,7 @@
                         android:visibility="gone"
                         tools:ignore="HardcodedText,RtlHardcoded" />
 
-                    <uk.openvk.android.legacy.ui.views.VideoAttachView
+                    <uk.openvk.android.legacy.ui.views.attach.VideoAttachView
                         android:id="@+id/post_video"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
@@ -296,9 +296,9 @@
                         android:layout_marginRight="10dip"
                         android:visibility="gone" >
 
-                    </uk.openvk.android.legacy.ui.views.VideoAttachView>
+                    </uk.openvk.android.legacy.ui.views.attach.VideoAttachView>
 
-                    <uk.openvk.android.legacy.ui.views.PollAttachView
+                    <uk.openvk.android.legacy.ui.views.attach.PollAttachView
                         android:id="@+id/poll_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -307,7 +307,7 @@
                         android:layout_marginRight="10dip"
                         android:visibility="gone" >
 
-                    </uk.openvk.android.legacy.ui.views.PollAttachView>
+                    </uk.openvk.android.legacy.ui.views.attach.PollAttachView>
 
                     <LinearLayout
                         android:id="@+id/wall_view_nlikesw"

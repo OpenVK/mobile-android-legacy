@@ -137,12 +137,17 @@ public class CacheDatabaseTables {
         );
     }
 
-    public static void createAudioTracksTable(SQLiteDatabase db) {
+    public static void createAudioTracksTable(SQLiteDatabase db, boolean clear) {
+        if(clear) {
+            db.execSQL(
+                    "DROP TABLE IF EXISTS `tracks`"
+            );
+            db.execSQL(
+                    "DROP TABLE IF EXISTS `wall_tracks`"
+            );
+        }
         db.execSQL(
-                "DROP TABLE IF EXISTS `tracks`"
-        );
-        db.execSQL(
-                "CREATE TABLE `tracks` (" +
+                "CREATE TABLE IF NOT EXISTS `tracks` (" +
                         "owner_id bigint, " +
                         "audio_id bigint, " +
                         "title varchar(500), " +
@@ -155,7 +160,24 @@ public class CacheDatabaseTables {
                         "status int" +
                 ")"
         );
+        db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `wall_tracks` (" +
+                        "owner_id bigint, " +
+                        "post_id bigint, " +
+                        "audio_id bigint, " +
+                        "title varchar(500), " +
+                        "artist varchar(500), " +
+                        "duration int, " +
+                        "lastplay int, " +
+                        "user bit, " +
+                        "lyrics text, " +
+                        "url varchar(700), " +
+                        "status int" +
+                        ")"
+        );
     }
+
+
 
     public static void createMainCacheTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `users`");
