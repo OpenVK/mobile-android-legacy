@@ -47,6 +47,7 @@ You may also find them useful for developing applications that support very old 
     _About our usage of ACRA in application see [issue #153](https://github.com/openvk/mobile-android-legacy/issues/153)._
 14. **[Universal Image Loader](https://github.com/nostra13/Android-Universal-Image-Loader/tree/v1.9.5)** (Apache License 2.0)
 15. **[NineOldAndroids](https://github.com/JakeWharton/NineOldAndroids)** (Apache License 2.0)
+16. **[Apmem FlowLayout 1.8](https://github.com/ApmeM/android-flowlayout/tree/java-flowlayout-1.8)** (Apache License 2.0
 
 #### Design
 1. **VK 3.x original resources** \
