@@ -17,6 +17,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
@@ -86,6 +89,7 @@ public class AudioAttachView extends FrameLayout {
                 final Audio audioAttachment = ((Audio) attachment);
                 ((TextView) findViewById(R.id.attach_title)).setText(audioAttachment.title);
                 ((TextView) findViewById(R.id.attach_subtitle)).setText(audioAttachment.artist);
+                ((TextView) findViewById(R.id.attach_duration)).setText(audioAttachment.getDuration());
                 status = 0;
                 findViewById(R.id.attach_icon).setOnClickListener(new OnClickListener() {
                     @Override

@@ -399,4 +399,5 @@ public class WallLayout extends LinearLayout {
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
         getContext().getApplicationContext().startService(serviceIntent);
     }
+
 }
