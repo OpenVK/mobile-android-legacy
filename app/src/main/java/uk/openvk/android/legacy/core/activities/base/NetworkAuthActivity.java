@@ -13,7 +13,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.util.Random;
+
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
@@ -45,6 +49,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
     public SharedPreferences.Editor instance_prefs_editor;
     public Handler handler;
     public OvkAPIReceiver receiver;
+    private String sessionId;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -56,6 +61,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
         ovk_api = new OpenVKAPI(this, global_prefs, null, handler);
+        generateSessionId();
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
         registerAPIDataReceiver();
@@ -68,7 +74,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
     }
 
     public void setAPIListeners(final OvkAPIListeners listeners) {
-        listeners.from = getLocalClassName();
+        listeners.from = String.format("%s_%s", getLocalClassName(), getSessionId());
         listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
             @Override
             public void onAPISuccess(final Context ctx, int msg_code, final Bundle data) {
@@ -86,7 +92,9 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                         public void run() {
                             Intent intent = new Intent();
                             intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
-                            data.putString("address", getLocalClassName());
+                            data.putString("address",
+                                    String.format("%s_%s", getLocalClassName(), getSessionId())
+                            );
                             intent.putExtras(data);
                             LocalBroadcastManager.getInstance(ctx).sendBroadcast(intent);
                         }
@@ -125,6 +133,22 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
             }
         };
         ovk_api.wrapper.setAPIListeners(listeners);
+    }
+
+    private String generateSessionId() {
+        // Generating Activity Session ID for phantom receiving API data fix
+        Random rand = new Random();
+        int max_rand = 0xFFFF;
+        byte[] bytes = ByteBuffer.allocate(4).putInt(rand.nextInt(max_rand)).array();
+        while(Global.bytesToHex(bytes).equals(sessionId)) {
+            generateSessionId();
+        }
+        this.sessionId = Global.bytesToHex(bytes);
+        return sessionId;
+    }
+
+    public String getSessionId() {
+        return sessionId;
     }
 
     public void receiveState(int message, Bundle data) {

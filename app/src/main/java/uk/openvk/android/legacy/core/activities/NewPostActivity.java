@@ -460,7 +460,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 if(activityName == null) {
                     return;
                 }
-                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                boolean isCurrentActivity = activityName.equals(
+                        String.format("%s_%s", getLocalClassName(), getSessionId())
+                );
                 if(!isCurrentActivity) {
                     return;
                 }

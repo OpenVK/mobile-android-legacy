@@ -71,7 +71,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
 
         final Bundle data = intent.getExtras();
         if(data != null && data.containsKey("address")
-                && data.getString("address").equals(activity.getLocalClassName())) {
+                && data.getString("address").startsWith(activity.getLocalClassName())) {
             if (activity instanceof NetworkAuthActivity) {
                 final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
                 OpenVKAPI ovk_api = netAuthActivity.ovk_api;

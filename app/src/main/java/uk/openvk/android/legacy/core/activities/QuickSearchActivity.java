@@ -96,7 +96,9 @@ public class QuickSearchActivity extends NetworkActivity {
             if(activityName == null) {
                 return;
             }
-            boolean isCurrentActivity = activityName.equals(getLocalClassName());
+            boolean isCurrentActivity = activityName.equals(
+                    String.format("%s_%s", getLocalClassName(), getSessionId())
+            );
             if(!isCurrentActivity) {
                 return;
             }

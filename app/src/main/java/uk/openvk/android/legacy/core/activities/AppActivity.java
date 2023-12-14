@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.*;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -690,7 +691,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 if(activityName == null) {
                     return;
                 }
-                boolean isCurrentActivity = activityName.equals(getLocalClassName());
+                boolean isCurrentActivity = activityName.equals(
+                        String.format("%s_%s", getLocalClassName(), getSessionId())
+                );
                 if(!isCurrentActivity) {
                     return;
                 }
