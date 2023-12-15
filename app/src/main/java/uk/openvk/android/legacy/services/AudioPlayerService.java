@@ -105,6 +105,7 @@ public class AudioPlayerService extends Service implements
         public void onChangeAudioPlayerStatus(String action, int status, int track_pos, Bundle data);
         public void onReceiveCurrentTrackPosition(int track_pos, int status);
         public void onUpdateSeekbarPosition(int position, int duration, double buffer_length);
+        public void onAudioPlayerError(int what, int extra, int current_track_pos);
     }
 
     @Override
@@ -273,8 +274,11 @@ public class AudioPlayerService extends Service implements
     }
 
     @Override
-    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+    public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
         Log.e(OvkApplication.APS_TAG, "Invalid track stream");
+        for(int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
+        }
         return false;
     }
 
@@ -309,6 +313,12 @@ public class AudioPlayerService extends Service implements
             Log.e(OvkApplication.APS_TAG,
                     String.format("Can't play from URL: %s", playlist[track_position].url)
             );
+            for(int i = 0; i < listeners.size(); i++) {
+                listeners.get(i).onAudioPlayerError(
+                        MediaPlayer.MEDIA_ERROR_UNKNOWN,
+                        0,
+                        currentTrackPos);
+            }
             e.printStackTrace();
         }
     }

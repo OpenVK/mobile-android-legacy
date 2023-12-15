@@ -49,7 +49,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
     private AudioPlayerService audioPlayerService;
     private AudioPlayerReceiver audioPlayerReceiver;
     private MediaPlayer mediaPlayer;
-    private Timer timer;
+    private Timer timer = new Timer();
     private Handler handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -82,17 +82,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
             mediaPlayer = audioPlayerService.getMediaPlayer();
             audioPlayerService.addListener(AudioPlayerActivity.this);
             audioPlayerService.notifyPlayerStatus();
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(audioPlayerService != null && audioPlayerService.getMediaPlayer() != null) {
-                        handler.sendEmptyMessage(0);
-                    } else {
-                        cancel();
-                    }
-                }
-            }, 0, 200);
         }
     };
     private ArrayList<Audio> audio_tracks;
@@ -156,10 +145,33 @@ public class AudioPlayerActivity extends NetworkActivity implements
         if(action.equals(AudioPlayerService.ACTION_PLAYER_CONTROL)) {
             switch (status) {
                 case AudioPlayerService.STATUS_PLAYING:
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if(audioPlayerService != null && audioPlayerService.getMediaPlayer() != null) {
+                                handler.sendEmptyMessage(0);
+                            } else {
+                                cancel();
+                            }
+                        }
+                    }, 0, 200);
                     play_button.setImageDrawable(getResources().getDrawable(R.drawable.ic_audio_panel_pause));
                     break;
                 case AudioPlayerService.STATUS_PAUSED:
                     play_button.setImageDrawable(getResources().getDrawable(R.drawable.ic_audio_panel_play));
+                    try {
+                        timer.cancel();
+                    } catch (Exception ignored) {
+
+                    }
+                    break;
+                default:
+                    try {
+                        timer.cancel();
+                    } catch (Exception ignored) {
+
+                    }
                     break;
             }
         }
@@ -245,6 +257,15 @@ public class AudioPlayerActivity extends NetworkActivity implements
     @Override
     public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
         updateSeekbarPosition(position, duration, buffer_length);
+    }
+
+    @Override
+    public void onAudioPlayerError(int what, int extra, int currentTrackPos) {
+        Audio track = audio_tracks.get(currentTrackPos);
+        Toast.makeText(
+                this,
+                getResources().getString(R.string.audio_play_error),
+                Toast.LENGTH_LONG).show();
     }
 
     @SuppressLint("DefaultLocale")

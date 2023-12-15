@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -288,5 +289,14 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
     @Override
     public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
 
+    }
+
+    @Override
+    public void onAudioPlayerError(int what, int extra, int current_track_pos) {
+        Audio track = audios.get(currentTrackPos);
+        Toast.makeText(
+                getContext(),
+                getResources().getString(R.string.audio_play_error),
+                Toast.LENGTH_LONG).show();
     }
 }
