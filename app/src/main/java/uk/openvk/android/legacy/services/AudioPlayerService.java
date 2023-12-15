@@ -284,9 +284,10 @@ public class AudioPlayerService extends Service implements
 
     private void startPlaylistFromPosition(int track_position) {
         try {
+            if(mp == null)
+                mp = new MediaPlayer();
             if(mp.isPlaying())
-                mp.release();
-            mp = new MediaPlayer();
+                mp.reset();
             currentTrackPos = track_position;
             if(playlist[track_position].url != null) {
                 mp.setDataSource(playlist[track_position].url);
