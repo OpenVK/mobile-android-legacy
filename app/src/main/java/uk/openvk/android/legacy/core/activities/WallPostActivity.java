@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import dev.tinelix.twemojicon.EmojiconEditText;
 import dev.tinelix.twemojicon.EmojiconGridFragment;
@@ -50,6 +51,7 @@ import uk.openvk.android.legacy.api.entities.Comment;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
+import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.CommentPanel;
 import uk.openvk.android.legacy.ui.views.PostViewLayout;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
@@ -85,7 +87,7 @@ public class WallPostActivity extends NetworkFragmentActivity
     private String account_name;
     private long account_id;
     private long post_author_id;
-    private WallPost post;
+    public WallPost post;
     private String author_mention = "";
     private int keyboard_height;
     private String where;
@@ -104,6 +106,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         postViewLayout = findViewById(R.id.comments_layout);
         postViewLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         commentPanel = findViewById(R.id.comment_panel);
+        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if(((EmojiconEditText)commentPanel.findViewById(R.id.comment_edit))
                 .getText().toString().length() == 0) {
@@ -170,6 +173,7 @@ public class WallPostActivity extends NetworkFragmentActivity
     }
 
     private void loadPost() {
+        wall = new Wall();
         String args;
         final Uri uri = getIntent().getData();
         if (uri != null) {
@@ -184,7 +188,16 @@ public class WallPostActivity extends NetworkFragmentActivity
                     setCommentsView();
                     ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(this);
                     String[] ids = args.substring(4).split("_");
-                    if(posts != null) {
+                    if(ids.length < 2) {
+                        finish();
+                    }
+                    if(posts == null || posts.size() == 0) {
+                        posts = WallCacheDB.getPostsList(this, Long.parseLong(ids[0]));
+                        where = "wall";
+                    } else {
+                        where = "news";
+                    }
+                    if(posts != null && posts.size() > 0) {
                         for (int i = 0; i < posts.size(); i++) {
                             WallPost post = posts.get(i);
                             if(post.owner_id == Long.parseLong(ids[0])
@@ -194,7 +207,6 @@ public class WallPostActivity extends NetworkFragmentActivity
                                 postViewLayout.loadWallAvatar(post.author_id, where);
                                 postViewLayout.loadWallPhoto(post, where);
                                 this.post = post;
-                                wall = new Wall();
                                 ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
                                 getWindow().getDecorView().getViewTreeObserver()
                                         .addOnGlobalLayoutListener(
@@ -212,6 +224,13 @@ public class WallPostActivity extends NetworkFragmentActivity
                                         }
                                 );
                             }
+                        }
+                        if(post != null)
+                            findViewById(R.id.progress_layout).setVisibility(View.GONE);
+                        else {
+                            ovk_api.wall.getByID(
+                                    ovk_api.wrapper, Long.parseLong(ids[0]), Long.parseLong(ids[1])
+                            );
                         }
                     } else {
                         ovk_api.wall.getByID(
@@ -401,6 +420,14 @@ public class WallPostActivity extends NetworkFragmentActivity
         super.onConfigurationChanged(newConfig);
     }
 
+    private void loadPost(WallPost post) {
+        postViewLayout.setPost(post, this);
+        postViewLayout.setPhotoListener(this);
+        postViewLayout.loadWallAvatar(post.author_id, "wall");
+        postViewLayout.loadWallPhoto(post, where);
+        ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
+    }
+
     public void receiveState(int message, Bundle data) {
         if(data.containsKey("address")) {
             String activityName = data.getString("address");
@@ -416,6 +443,9 @@ public class WallPostActivity extends NetworkFragmentActivity
         }
         if (message == HandlerMessages.WALL_ALL_COMMENTS) {
             postViewLayout.createAdapter(this, comments);
+        } else if (message == HandlerMessages.WALL_GET_BY_ID) {
+            loadPost(post);
+            findViewById(R.id.progress_layout).setVisibility(View.GONE);
         } else if (message == HandlerMessages.COMMENT_PHOTOS) {
             postViewLayout.loadPhotos();
         } else if (message == HandlerMessages.COMMENT_AVATARS) {

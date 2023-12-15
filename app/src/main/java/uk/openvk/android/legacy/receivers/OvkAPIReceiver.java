@@ -11,12 +11,16 @@ import android.os.Message;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -485,10 +489,26 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             assert method != null;
             switch (method) {
                 case "Wall.getComments":
+                    if(wall_post_a.comments == null) {
+                        wall_post_a.comments = new ArrayList<>();
+                    }
                     wall_post_a.comments = wall_post_a.wall.parseComments(activity, downloadManager,
                             global_prefs.getString("photos_quality", ""),
                             data.getString("response"));
                     msg.what = HandlerMessages.WALL_ALL_COMMENTS;
+                    break;
+                case "Wall.getById":
+                    wall_post_a.wall.parse(
+                            activity,
+                            downloadManager,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response"),
+                            true,
+                            false);
+                    if(wall_post_a.wall.getWallItems().size() > 0) {
+                        wall_post_a.post = wall_post_a.wall.getWallItems().get(0);
+                        msg.what = HandlerMessages.WALL_GET_BY_ID;
+                    }
                     break;
             }
         } else if(activity instanceof PhotoAlbumIntentActivity) {

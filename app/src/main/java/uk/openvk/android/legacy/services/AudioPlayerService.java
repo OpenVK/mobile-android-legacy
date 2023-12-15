@@ -134,7 +134,7 @@ public class AudioPlayerService extends Service implements
             Bundle data = intent.getExtras();
             if (data != null) {
                 String action = data.getString("action");
-                Log.d(OvkApplication.APP_TAG, String.format("Starting AudioPlayerService by ID: %s | Action: %s", startId, action));
+                Log.d(OvkApplication.APS_TAG, String.format("Starting AudioPlayerService by ID: %s | Action: %s", startId, action));
                 isRunnung = true;
                 if(action != null) {
                     switch (action) {
@@ -147,16 +147,20 @@ public class AudioPlayerService extends Service implements
                         case "PLAYER_GET_SEEKBAR_POSITION":
                             notifySeekbarStatus();
                             break;
-                        case "PLAYER_STARTING":
+                        case "PLAYER_START":
                             int position = data.getInt("position");
                             currentTrackPos = position;
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             ArrayList<Audio> parcelablePlaylist =
                                     AudioCacheDB.getCachedAudiosList(this);
                             if(parcelablePlaylist != null) {
-                                playlist = new Audio[parcelablePlaylist.size()];
-                                parcelablePlaylist.toArray(playlist);
-                                startPlaylistFromPosition(position);
+                                if(parcelablePlaylist.size() > 0) {
+                                    playlist = new Audio[parcelablePlaylist.size()];
+                                    parcelablePlaylist.toArray(playlist);
+                                    startPlaylistFromPosition(position);
+                                } else {
+                                    Log.e(OvkApplication.APS_TAG, "Playlist is empty. Canceling...");
+                                }
                             }
                             break;
                         case "PLAYER_START_FROM_WALL":
@@ -170,6 +174,8 @@ public class AudioPlayerService extends Service implements
                                 playlist = new Audio[parcelablePlaylist.size()];
                                 parcelablePlaylist.toArray(playlist);
                                 startPlaylistFromPosition(position);
+                            } else {
+                                Log.e(OvkApplication.APS_TAG, "Playlist is empty. Canceling...");
                             }
                             break;
                         case "PLAYER_PLAY":
@@ -268,7 +274,7 @@ public class AudioPlayerService extends Service implements
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-        Log.e(OvkApplication.APP_TAG, "AudioPlayerService: Invalid stream");
+        Log.e(OvkApplication.APS_TAG, "Invalid track stream");
         return false;
     }
 
@@ -296,11 +302,11 @@ public class AudioPlayerService extends Service implements
                 mp.setOnErrorListener(this);
                 mp.setOnBufferingUpdateListener(this);
             } else {
-                Log.e(OvkApplication.APP_TAG, "AudioPlayerService: Invalid Track URL");
+                Log.e(OvkApplication.APS_TAG, "Invalid Track URL");
             }
         } catch (IOException e) {
-            Log.e(OvkApplication.APP_TAG,
-                    String.format("AudioPlayerService: Can't play from %s", playlist[track_position].url)
+            Log.e(OvkApplication.APS_TAG,
+                    String.format("Can't play from URL: %s", playlist[track_position].url)
             );
             e.printStackTrace();
         }
