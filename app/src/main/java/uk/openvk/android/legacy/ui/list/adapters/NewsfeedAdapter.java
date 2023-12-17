@@ -267,9 +267,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             item,
                             imageLoader,
                             item.attachments,
-                            position,
-                            isWall
-                    );
+                            position);
                 } else {
                     post_attach_container.setVisibility(View.GONE);
                 }
@@ -311,7 +309,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                                 item.repost.newsfeed_item,
                                 imageLoader,
                                 item.repost.newsfeed_item.attachments,
-                                position, isWall);
+                                position);
                     } else {
                         post_attach_container.setVisibility(View.GONE);
                     }

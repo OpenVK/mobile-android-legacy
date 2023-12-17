@@ -24,6 +24,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -64,6 +68,9 @@ import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 @SuppressWarnings("ConstantConditions")
 public class PostViewLayout extends LinearLayout {
     private final String instance;
+    private ImageLoader imageLoader;
+    private ImageLoaderConfiguration imageLoaderConfig;
+    private DisplayImageOptions displayimageOptions;
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -91,13 +98,26 @@ public class PostViewLayout extends LinearLayout {
                 getContext()).getString("current_instance", "");
         global_prefs = android.support.v7.preference
                 .PreferenceManager.getDefaultSharedPreferences(getContext());
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        this.imageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(context.getApplicationContext()).
+                        defaultDisplayImageOptions(displayimageOptions)
+                        .memoryCacheSize(16777216) // 16 MB memory cache
+                        .writeDebugLogs()
+                        .build();
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+        this.imageLoader = ImageLoader.getInstance();
+        imageLoader.init(imageLoaderConfig);
     }
 
     public void createAdapter(Context ctx, ArrayList<Comment> comments) {
         TextView no_comments_text = findViewById(R.id.no_comments_text);
         this.comments = comments;
         commentsAdapter = new CommentsListAdapter(ctx, comments);
-        commentsView = (RecyclerView) findViewById(R.id.comments_list);
+        commentsView = findViewById(R.id.comments_list);
         if(comments.size() > 0) {
             no_comments_text.setVisibility(GONE);
             commentsView.setVisibility(VISIBLE);
@@ -111,20 +131,6 @@ public class PostViewLayout extends LinearLayout {
         commentsView.setAdapter(commentsAdapter);
     }
 
-    public void updateItem(int position) {
-        if(commentsAdapter != null) {
-            commentsView = (RecyclerView) findViewById(R.id.comments_list);
-            commentsAdapter.notifyItemChanged(position);
-        }
-    }
-
-    public void updateAllItems() {
-        if(commentsAdapter != null) {
-            commentsView = (RecyclerView) findViewById(R.id.comments_list);
-            commentsAdapter.notifyDataSetChanged();
-        }
-    }
-
 
     public int getCount() {
         try {
@@ -136,7 +142,7 @@ public class PostViewLayout extends LinearLayout {
 
     public void loadAvatars() {
         if(commentsAdapter != null) {
-            commentsView = (RecyclerView) findViewById(R.id.comments_list);
+            commentsView = findViewById(R.id.comments_list);
             for (int i = 0; i < getCount(); i++) {
                 try {
                     Comment item = comments.get(i);
@@ -163,6 +169,11 @@ public class PostViewLayout extends LinearLayout {
 
     public void setPost(WallPost item, final Context ctx) {
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
+        ArrayList<WallPost> posts = new ArrayList<WallPost>();
+        posts.add(item);
+
+        ((PostAttachmentsView) findViewById(R.id.post_attach_container))
+                .loadAttachments(ctx, posts, item, imageLoader, item.attachments, 0);
         if(!item.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
             if (item.text.length() > 0) {
                 String text = item.text;
@@ -215,7 +226,7 @@ public class PostViewLayout extends LinearLayout {
                 }
                 ((TextView) findViewById(R.id.post_view)).setMovementMethod(LinkMovementMethod.getInstance());
             } else {
-                ((TextView) findViewById(R.id.post_view)).setVisibility(GONE);
+                findViewById(R.id.post_view).setVisibility(GONE);
             }
             ((TextView) findViewById(R.id.wall_view_time)).setText(item.info);
 
@@ -223,51 +234,6 @@ public class PostViewLayout extends LinearLayout {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);
             }
 
-            LinearLayout repost_info = ((LinearLayout) findViewById(R.id.post_attach_container));
-
-            if (item.repost != null) {
-                TextView original_poster_name = ((TextView) findViewById(R.id.post_retweet_name));
-                TextView original_post_info = ((TextView) findViewById(R.id.post_retweet_time));
-                TextView original_post_text = ((TextView) findViewById(R.id.post_retweet_text));
-                TextView repost_expand_text_btn = ((TextView) findViewById(R.id.repost_expand_text_btn));
-                ImageView original_post_photo = (ImageView) findViewById(R.id.repost_photo);
-                PollAttachView original_post_poll = (PollAttachView) findViewById(R.id.repost_poll_layout);
-                repost_info.setVisibility(View.VISIBLE);
-                original_poster_name.setText(item.repost.newsfeed_item.name);
-                original_post_info.setText(item.repost.newsfeed_item.info);
-                original_post_text.setText(item.repost.newsfeed_item.text);
-                original_post_text.setMovementMethod(LinkMovementMethod.getInstance());
-                String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
-                if (repost_lines.length > 8 && item.repost.newsfeed_item.text.length() <= 500) {
-                    String text_llines = "";
-                    for (int line_no = 0; line_no < 8; line_no++) {
-                        if (line_no == 7) {
-                            text_llines += String.format("%s...", repost_lines[line_no]);
-                        } else {
-                            text_llines += String.format("%s\r\n", repost_lines[line_no]);
-                        }
-                    }
-                    original_post_text.setText(text_llines);
-                    repost_expand_text_btn.setVisibility(View.VISIBLE);
-                } else if (item.repost.newsfeed_item.text.length() > 500) {
-                    original_post_text.setText(String.format("%s...",
-                            item.repost.newsfeed_item.text.substring(0, 500)));
-                    repost_expand_text_btn.setVisibility(View.VISIBLE);
-                } else {
-                    original_post_text.setText(item.repost.newsfeed_item.text);
-                    repost_expand_text_btn.setVisibility(View.GONE);
-                }
-                repost_info.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ((WallPostActivity) ctx).openWallRepostComments();
-                    }
-                });
-            } else {
-                repost_info.setVisibility(View.GONE);
-            }
-
-            PollAttachView pollAttachView = findViewById(R.id.poll_layout);
         } else {
             TextView error_label = findViewById(R.id.error_label);
             error_label.setText(ctx.getResources().getString(R.string.post_load_nsfw));
@@ -307,118 +273,6 @@ public class PostViewLayout extends LinearLayout {
         }
     }
 
-    public void loadWallPhoto(WallPost post, String where) {
-        if(!post.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
-            try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = null;
-                Bitmap repost_bitmap = null;
-                boolean post_attachment_not_loaded = false;
-                boolean repost_attachment_not_loaded = false;
-                if (post.repost != null) {
-                    if(post.repost.newsfeed_item.attachments != null) {
-                        for (int i = 0; i < post.repost.newsfeed_item.attachments.size(); i++) {
-                            Attachment attachment = post.repost.newsfeed_item.attachments.get(i);
-                            if (attachment.status.equals("loading") && attachment.type.equals("photo")) {
-                                repost_attachment_not_loaded = true;
-                            }
-                        }
-                    }
-                    if(!repost_attachment_not_loaded) {
-                        if (where.equals("newsfeed")) {
-                            repost_bitmap = BitmapFactory.decodeFile(
-                                    String.format("%s/%s/photos_cache/newsfeed_photo_attachments/" +
-                                                    "newsfeed_attachment_o%sp%s",
-                                            getContext().getCacheDir(), instance,
-                                            post.repost.newsfeed_item.owner_id,
-                                            post.repost.newsfeed_item.post_id), options);
-                        } else {
-                            repost_bitmap = BitmapFactory.decodeFile(
-                                    String.format("%s/%s/photos_cache/wall_photo_attachments/" +
-                                                    "wall_attachment_o%sp%s",
-                                            getContext().getCacheDir(), instance,
-                                            post.repost.newsfeed_item.owner_id,
-                                            post.repost.newsfeed_item.post_id), options);
-                        }
-                    }
-                }
-                if(post.attachments != null) {
-                    for (int i = 0; i < post.attachments.size(); i++) {
-                        Attachment attachment = post.attachments.get(i);
-                        if (attachment.status.equals("loading") && attachment.type.equals("photo")) {
-                            post_attachment_not_loaded = true;
-                        }
-                    }
-                }
-                if(post_attachment_not_loaded) {
-                    if (where.equals("newsfeed")) {
-                        bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/newsfeed_photo_" +
-                                                "attachments/newsfeed_attachment_o%sp%s",
-                                        getContext().getCacheDir(), instance,
-                                        post.owner_id, post.post_id), options);
-                    } else {
-                        bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/wall_photo_" +
-                                                "attachments/wall_attachment_o%sp%s",
-                                        getContext().getCacheDir(), instance,
-                                        post.owner_id, post.post_id), options);
-                    }
-                }
-                final ImageView post_photo = ((ImageView) findViewById(R.id.post_photo));
-                final ImageView repost_photo = ((ImageView) findViewById(R.id.repost_photo));
-                if (bitmap != null) {
-                    final float aspect_ratio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
-                    post_photo.setImageBitmap(bitmap);
-                    post_photo.setVisibility(View.VISIBLE);
-                } else {
-                    Log.e(OvkApplication.APP_TAG,
-                            String.format("'%s/%s/photos_cache/wall_photo_attachments/wall_" +
-                                            "attachment_o%sp%s' not found",
-                                    getContext().getCacheDir(), instance, post.owner_id, post.post_id));
-                    post_photo.setVisibility(GONE);
-                }
-                if (repost_bitmap != null) {
-                    repost_photo.setImageBitmap(repost_bitmap);
-                    repost_photo.setVisibility(View.VISIBLE);
-                    post_photo.setVisibility(GONE);
-                }
-            } catch (OutOfMemoryError error) {
-                Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
-            } catch (Exception ex) {
-                Log.e("OpenVK Legacy", String.format("Bitmap error: %s", ex.getMessage()));
-            }
-        }
-    }
-
-    public void loadVideoAttachment(final Context ctx, final Video video, final long owner_id) {
-        final VideoAttachView post_video = findViewById(R.id.post_video);
-        post_video.setAttachment(video);
-        post_video.setVisibility(View.VISIBLE);
-        post_video.setThumbnail(owner_id);
-        post_video.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        float widescreen_aspect_ratio = post_video.getMeasuredWidth() / 16;
-                        float attachment_height = widescreen_aspect_ratio * 9;
-                        post_video.getLayoutParams().height = (int) attachment_height;
-                    }
-                });
-        post_video.findViewById(R.id.video_att_view).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ctx, VideoPlayerActivity.class);
-                intent.putExtra("title", video.title);
-                intent.putExtra("attachment", (Parcelable) video);
-                intent.putExtra("files", video.files);
-                intent.putExtra("owner_id", owner_id);
-                ctx.startActivity(intent);
-            }
-        });
-    }
-
     public void adjustLayoutSize(int orientation) {
         if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -426,13 +280,13 @@ public class PostViewLayout extends LinearLayout {
                         (600 * (getResources().getDisplayMetrics().density)),
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll))
+                findViewById(R.id.post_with_comments_view_ll)
                         .setLayoutParams(layoutParams);
             } else {
                 LinearLayout.LayoutParams layoutParams = new LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll))
+                findViewById(R.id.post_with_comments_view_ll)
                         .setLayoutParams(layoutParams);
             }
         } else {
@@ -441,40 +295,21 @@ public class PostViewLayout extends LinearLayout {
                         (480 * (getResources().getDisplayMetrics().density)),
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll))
+                findViewById(R.id.post_with_comments_view_ll)
                         .setLayoutParams(layoutParams);
             } else {
                 LinearLayout.LayoutParams layoutParams = new LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                ((LinearLayout) findViewById(R.id.post_with_comments_view_ll)).setLayoutParams(layoutParams);
+                findViewById(R.id.post_with_comments_view_ll).setLayoutParams(layoutParams);
             }
         }
     }
 
-    public void setPhotoListener(final Context ctx) {
-        ((ImageView) findViewById(R.id.post_photo)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-                    ((WallPostActivity) ctx).viewPhotoAttachment();
-                }
-            }
-        });
-        ((ImageView) findViewById(R.id.repost_photo)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("WallPostActivity")) {
-                    ((WallPostActivity) ctx).viewPhotoAttachment();
-                }
-            }
-        });
-    }
-
     public void loadPhotos() {
         if(commentsAdapter != null) {
-            commentsView = (RecyclerView) findViewById(R.id.comments_list);
+            commentsView = findViewById(R.id.comments_list);
             for (int i = 0; i < getCount(); i++) {
                 try {
                     Comment item = comments.get(i);
@@ -515,15 +350,5 @@ public class PostViewLayout extends LinearLayout {
             }
             commentsAdapter.notifyDataSetChanged();
         }
-    }
-
-    public void loadPollAttachment(Context ctx, Poll poll,
-                                   ArrayList<WallPost> wallPosts, WallPost post) {
-        PollAttachView pollAttachView = findViewById(R.id.poll_layout);
-        pollAttachView.createAdapter(ctx, 0, wallPosts, post,
-                poll.answers, poll.multiple, poll.user_votes,
-                poll.votes);
-        pollAttachView.setPollInfo(poll.question, poll.anonymous, poll.end_date);
-        pollAttachView.setVisibility(View.VISIBLE);
     }
 }

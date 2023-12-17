@@ -87,6 +87,11 @@ public class Wall implements Parcelable {
     public void parse(Context ctx, DownloadManager downloadManager, String quality,
                       String response,
                       boolean clear, boolean isWall) {
+        try {
+            next_from = new JSONObject(response).getJSONObject("response").getLong("next_from");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         this.dlm = downloadManager;
         if(items == null) {
             items = new ArrayList<>();

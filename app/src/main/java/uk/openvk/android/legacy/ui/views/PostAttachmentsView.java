@@ -102,8 +102,7 @@ public class PostAttachmentsView extends LinearLayout {
                                 final WallPost post,
                                 ImageLoader imageLoader,
                                 ArrayList<Attachment> attachments,
-                                int position,
-                                boolean isWall) {
+                                int position) {
         flowLayout.removeAllViews();
         this.photoAttachments = new ArrayList<>();
         this.audioAttachments = new ArrayList<>();
@@ -269,7 +268,7 @@ public class PostAttachmentsView extends LinearLayout {
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     flowLayout.addView(photoView);
                     loadPhotoPlaceholder(post, photo, imageLoader, photoView);
-                    loadPhotoAttachment(photo, photoView, imageLoader, isWall);
+                    loadPhotoAttachment(photo, photoView, imageLoader, false);
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
@@ -283,7 +282,7 @@ public class PostAttachmentsView extends LinearLayout {
                 lp.width = FlowLayout.LayoutParams.MATCH_PARENT;
                 photoView.setLayoutParams(lp);
                 loadPhotoPlaceholder(post, photoAttachments.get(0), imageLoader, photoView);
-                loadPhotoAttachment(photoAttachments.get(0), photoView, imageLoader, isWall);
+                loadPhotoAttachment(photoAttachments.get(0), photoView, imageLoader, false);
                 photoView.setVisibility(VISIBLE);
             }
         }
@@ -351,6 +350,11 @@ public class PostAttachmentsView extends LinearLayout {
             Bitmap bitmap = imageLoader.loadImageSync(full_filename);
             if(bitmap != null) {
                 view.setImageBitmap(bitmap);
+            } else {
+                if(photo_fail_count < 5) {
+                    photo_fail_count++;
+                    loadPhotoAttachment(photo, view, imageLoader, true);
+                }
             }
         } catch (OutOfMemoryError oom) {
             imageLoader.clearMemoryCache();

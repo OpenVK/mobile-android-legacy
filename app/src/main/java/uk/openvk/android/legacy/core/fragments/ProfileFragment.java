@@ -403,6 +403,9 @@ public class ProfileFragment extends Fragment {
                             if(ctx instanceof NetworkFragmentActivity){
                                 ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
                                 Global.loadMoreWallPosts(ovk_api, owner_id);
+                            } else if(ctx instanceof NetworkActivity) {
+                                ovk_api = ((NetworkActivity) ctx).ovk_api;
+                                Global.loadMoreWallPosts(ovk_api, owner_id);
                             }
                         }
                     }

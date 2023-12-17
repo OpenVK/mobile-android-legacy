@@ -32,6 +32,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
@@ -187,7 +188,7 @@ public class NewsfeedFragment extends Fragment {
                 int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
                 if (!loading_more_posts) {
                     if (diff == 0) {
-                        if (ctx.getClass().getSimpleName().equals("AppActivity")) {
+                        if (ctx instanceof AppActivity) {
                             loading_more_posts = true;
                             ((AppActivity) ctx).loadMoreNews();
                         }

@@ -203,9 +203,6 @@ public class WallPostActivity extends NetworkFragmentActivity
                             if(post.owner_id == Long.parseLong(ids[0])
                                     && post.post_id == Long.parseLong(ids[1])) {
                                 postViewLayout.setPost(post, this);
-                                postViewLayout.setPhotoListener(this);
-                                postViewLayout.loadWallAvatar(post.author_id, where);
-                                postViewLayout.loadWallPhoto(post, where);
                                 this.post = post;
                                 ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
                                 getWindow().getDecorView().getViewTreeObserver()
@@ -422,9 +419,6 @@ public class WallPostActivity extends NetworkFragmentActivity
 
     private void loadPost(WallPost post) {
         postViewLayout.setPost(post, this);
-        postViewLayout.setPhotoListener(this);
-        postViewLayout.loadWallAvatar(post.author_id, "wall");
-        postViewLayout.loadWallPhoto(post, where);
         ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
     }
 
@@ -450,52 +444,6 @@ public class WallPostActivity extends NetworkFragmentActivity
             postViewLayout.loadPhotos();
         } else if (message == HandlerMessages.COMMENT_AVATARS) {
             postViewLayout.loadAvatars();
-        }
-    }
-
-    public void viewPhotoAttachment() {
-        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
-        intent.putExtra("where", "wall");
-        try {
-            if(attachments.get(0).type.equals("photo")) {
-                Photo photo = (Photo) attachments.get(0);
-                intent.putExtra("original_link", photo.original_url);
-                intent.putExtra("author_id", post.author_id);
-                intent.putExtra("photo_id", photo.id);
-                if(where.equals("newsfeed")) {
-                    intent.putExtra("local_photo_addr",
-                            String.format(
-                                    "%s/photos_cache/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                    getCacheDir(),
-                                    post.owner_id, post.post_id));
-                } else {
-                    intent.putExtra("local_photo_addr",
-                            String.format(
-                                    "%s/photos_cache/wall_photo_attachments/wall_attachment_o%sp%s",
-                                    getCacheDir(),
-                                    post.owner_id, post.post_id));
-                    intent.putExtra("photo_id", getIntent().getExtras().getLong("photo_id"));
-                }
-                startActivity(intent);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void openWallRepostComments() {
-        Intent intent = new Intent(getApplicationContext(), WallPostActivity.class);
-        try {
-            intent.putExtra("post_id", post.repost.newsfeed_item.post_id);
-            intent.putExtra("owner_id", post.repost.newsfeed_item.owner_id);
-            intent.putExtra("account_name", account_name);
-            intent.putExtra("account_id", account_id);
-            intent.putExtra("post_author_id", post.repost.newsfeed_item.author_id);
-            intent.putExtra("post_author_name", post.repost.newsfeed_item.name);
-            intent.putExtra("post_json", post.repost.newsfeed_item.getJSONString());
-            startActivity(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 

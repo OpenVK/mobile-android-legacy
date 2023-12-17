@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.api.entities.Photo;
@@ -68,6 +71,11 @@ public class Newsfeed implements Parcelable {
     };
 
     public void parse(Context ctx, DownloadManager downloadManager, String response, String quality, boolean clear) {
+        try {
+            next_from = new JSONObject(response).getJSONObject("response").getLong("next_from");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         this.dlm = downloadManager;
         if(clear) {
             items = new ArrayList<>();
