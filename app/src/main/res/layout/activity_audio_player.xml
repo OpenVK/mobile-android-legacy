@@ -194,21 +194,23 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-       	android:fadingEdge="vertical"
-        android:scrollbars="none" >
+        android:fadingEdge="vertical"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <ImageView
                 android:id="@+id/audio_player_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/aplayer_cover_border"
                 android:scaleType="centerCrop"
-                android:src="#FF808080" />
+                android:src="@drawable/aplayer_cover_placeholder" />
 
             <TextView
                 android:id="@+id/audio_player_lyrics"
@@ -218,7 +220,7 @@
                 android:text="TextView"
                 android:textColor="#BBFFFFFF"
                 android:textSize="17dip"
-                android:visibility="gone" />
+                android:visibility="visible" />
         </LinearLayout>
     </uk.openvk.android.legacy.ui.views.AlbumScrollView>
 

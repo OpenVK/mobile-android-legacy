@@ -90,6 +90,10 @@ public class AudioPlayerService extends Service implements
         notifySeekbarStatus();
     }
 
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
     public class AudioPlayerBinder extends Binder {
         public AudioPlayerListener listener;
         public AudioPlayerService getService() {
@@ -149,6 +153,7 @@ public class AudioPlayerService extends Service implements
                             notifySeekbarStatus();
                             break;
                         case "PLAYER_START":
+                            isPlaying = false;
                             int position = data.getInt("position");
                             currentTrackPos = position;
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
@@ -165,6 +170,7 @@ public class AudioPlayerService extends Service implements
                             }
                             break;
                         case "PLAYER_START_FROM_WALL":
+                            isPlaying = false;
                             position = data.getInt("position");
                             currentTrackPos = position;
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
@@ -182,16 +188,20 @@ public class AudioPlayerService extends Service implements
                         case "PLAYER_PLAY":
                             mp.start();
                             notifyPlayerStatus(AudioPlayerService.STATUS_PLAYING);
+                            isPlaying = true;
                             break;
                         case "PLAYER_PAUSE":
                             mp.pause();
                             notifyPlayerStatus(AudioPlayerService.STATUS_PAUSED);
+                            isPlaying = false;
                             break;
                         case "PLAYER_STOP":
                             mp.stop();
                             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
+                            isPlaying = false;
                             break;
                         case "PLAYER_PREVIOUS":
+                            isPlaying = false;
                             if(currentTrackPos > 0) {
                                 currentTrackPos--;
                                 startPlaylistFromPosition(currentTrackPos);
@@ -202,6 +212,7 @@ public class AudioPlayerService extends Service implements
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             break;
                         case "PLAYER_NEXT":
+                            isPlaying = false;
                             if(currentTrackPos < playlist.length - 1) {
                                 currentTrackPos++;
                                 startPlaylistFromPosition(currentTrackPos);
@@ -259,6 +270,7 @@ public class AudioPlayerService extends Service implements
                         public void onPrepared(MediaPlayer mediaPlayer) {
                             mp.start();
                             notifyPlayerStatus(STATUS_PLAYING);
+                            isPlaying = true;
                         }
                     });
                     mp.setDataSource(playlist[position].url);
@@ -279,6 +291,7 @@ public class AudioPlayerService extends Service implements
         for(int i = 0; i < listeners.size(); i++) {
             listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
         }
+        isPlaying = false;
         return false;
     }
 
@@ -301,6 +314,7 @@ public class AudioPlayerService extends Service implements
                     public void onPrepared(MediaPlayer mediaPlayer) {
                         mp.start();
                         notifyPlayerStatus(STATUS_PLAYING);
+                        isPlaying = true;
                     }
                 });
                 mp.setOnCompletionListener(this);
@@ -351,17 +365,19 @@ public class AudioPlayerService extends Service implements
     }
 
     public void notifySeekbarStatus() {
-        Intent intent = new Intent();
-        String action = AudioPlayerService.ACTION_UPDATE_SEEKPOS;
-        intent.setAction(action);
-        intent.putExtra("progress", mp.getCurrentPosition());
-        intent.putExtra("duration", mp.getDuration());
-        intent.putExtra("buffer_length", bufferLength);
-        sendBroadcast(intent);
-        for(int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onUpdateSeekbarPosition(
-                    mp.getCurrentPosition(), mp.getDuration(), bufferLength
-            );
+        if(isPlaying) {
+            Intent intent = new Intent();
+            String action = AudioPlayerService.ACTION_UPDATE_SEEKPOS;
+            intent.setAction(action);
+            intent.putExtra("progress", mp.getCurrentPosition());
+            intent.putExtra("duration", mp.getDuration());
+            intent.putExtra("buffer_length", bufferLength);
+            sendBroadcast(intent);
+            for (int i = 0; i < listeners.size(); i++) {
+                listeners.get(i).onUpdateSeekbarPosition(
+                        mp.getCurrentPosition(), mp.getDuration(), bufferLength
+                );
+            }
         }
     }
 

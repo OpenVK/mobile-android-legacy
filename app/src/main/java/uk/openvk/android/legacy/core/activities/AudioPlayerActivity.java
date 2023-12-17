@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,12 +58,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(audioPlayerService != null) {
-                if(audioPlayerService.getMediaPlayer() != null) {
-                    if (audioPlayerService.getMediaPlayer().isPlaying()) {
-                        audioPlayerService.notifyPlayerStatus();
-                        audioPlayerService.notifySeekbarStatus();
-                    }
-                }
+                audioPlayerService.notifyPlayerStatus();
+                audioPlayerService.notifySeekbarStatus();
             }
         }
     };
@@ -239,6 +238,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     @Override
     protected void onDestroy() {
+        timer.cancel();
         unbindService(audioPlayerConnection);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onDestroy();

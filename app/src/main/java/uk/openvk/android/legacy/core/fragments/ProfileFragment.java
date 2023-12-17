@@ -348,19 +348,8 @@ public class ProfileFragment extends Fragment {
 
     public void hideHeaderButtons(Context ctx, WindowManager wm) {
         float smallestWidth = Global.getSmalledWidth(wm);
-        if(!((OvkApplication)getContext().getApplicationContext()).isTablet) {
-            ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
-        } else if(((OvkApplication)getContext().getApplicationContext()).isTablet &&
-                smallestWidth < 800) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
-            } else {
-                ((Button) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
-            }
-        } else {
-            ((ImageButton) view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
-        }
-        ((ImageButton) view.findViewById(R.id.add_to_friends)).setVisibility(GONE);
+        (view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
+        (view.findViewById(R.id.add_to_friends)).setVisibility(GONE);
     }
 
     public void hideTabSelector() {

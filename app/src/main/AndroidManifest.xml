@@ -409,7 +409,7 @@
             android:theme="@style/BaseStyle.Dark.Transparent"
             android:label="@string/now_playing"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
+            android:configChanges="screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
 
         <activity android:name=".core.activities.CrashReporterActivity"
             android:theme="@style/BaseStyle.NoActionBar.NoShadow"

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -272,7 +273,7 @@ public class PostAttachmentsView extends LinearLayout {
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
-                PhotoView photoView = new PhotoView(getContext());
+                ImageView photoView = new ImageView(getContext());
                 photoView.setAdjustViewBounds(true);
                 photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 flowLayout.addView(photoView);

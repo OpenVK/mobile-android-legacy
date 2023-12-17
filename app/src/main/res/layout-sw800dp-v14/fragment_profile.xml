@@ -34,6 +34,19 @@
         android:id="@+id/error_layout"
         android:visibility="gone" />
 
+    <com.reginald.swiperefresh.CustomSwipeRefreshLayout
+        xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/refreshable_layout"
+        swiperefresh:refresh_mode="pull_mode"
+        swiperefresh:keep_refresh_head="true"
+        swiperefresh:enable_top_progress_bar="false"
+        swiperefresh:time_out_refresh_complete="2000"
+        swiperefresh:time_out_return_to_top="1000"
+        swiperefresh:return_to_top_duration="500"
+        swiperefresh:return_to_header_duration="500">
+
     <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -209,5 +222,7 @@
             android:background="#313743"/>
 
     </LinearLayout>
+
+    </com.reginald.swiperefresh.CustomSwipeRefreshLayout>
 
 </LinearLayout>

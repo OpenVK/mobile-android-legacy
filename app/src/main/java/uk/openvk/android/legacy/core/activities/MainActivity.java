@@ -255,6 +255,5 @@ public class MainActivity extends TranslucentActivity {
             //((TextView) view.findViewById(R.id.warn_message_text)).setTextColor(Color.WHITE);
             ((CheckBox) view.findViewById(R.id.do_not_show_messages)).setTextColor(Color.BLACK);
         }
-
     }
 }
