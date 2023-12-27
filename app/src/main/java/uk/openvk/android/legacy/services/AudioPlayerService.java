@@ -292,6 +292,7 @@ public class AudioPlayerService extends Service implements
             listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
         }
         isPlaying = false;
+        mp.reset();
         return false;
     }
 
