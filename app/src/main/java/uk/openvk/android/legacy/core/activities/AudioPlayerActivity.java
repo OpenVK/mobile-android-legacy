@@ -94,6 +94,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
         setContentView(R.layout.activity_audio_player);
         TextView title_tv = findViewById(R.id.aplayer_title);
         TextView artist_tv = findViewById(R.id.aplayer_artist);
+        currentTrackPos = -1;
         title_tv.setText("Unknown title");
         artist_tv.setText("Unknown artist");
         Intent serviceIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
