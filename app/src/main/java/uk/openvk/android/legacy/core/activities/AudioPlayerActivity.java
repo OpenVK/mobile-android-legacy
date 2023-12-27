@@ -186,8 +186,10 @@ public class AudioPlayerActivity extends NetworkActivity implements
         Audio currentTrack = audio_tracks.get(track_pos);
         TextView title_tv = findViewById(R.id.aplayer_title);
         TextView artist_tv = findViewById(R.id.aplayer_artist);
+        TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
         title_tv.setText(currentTrack.title);
         artist_tv.setText(currentTrack.artist);
+        lyrics_tv.setText(currentTrack.lyrics);
         this.currentTrackPos = track_pos;
         this.playerStatus = status;
         switch (status) {
