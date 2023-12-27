@@ -163,8 +163,7 @@
                 android:layout_height="wrap_content"
                 android:padding="16dip"
                 android:textColor="#BBFFFFFF"
-                android:textSize="17dip"
-                android:text="TextView" />
+                android:textSize="17dip" />
         </LinearLayout>
     </uk.openvk.android.legacy.ui.views.AlbumScrollView>
 

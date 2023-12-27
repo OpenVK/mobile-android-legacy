@@ -217,7 +217,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dip"
-                android:text="TextView"
                 android:textColor="#BBFFFFFF"
                 android:textSize="17dip"
                 android:visibility="visible" />
