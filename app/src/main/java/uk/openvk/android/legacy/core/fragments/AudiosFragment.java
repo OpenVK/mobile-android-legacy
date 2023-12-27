@@ -436,10 +436,14 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
 
     @Override
     public void onAudioPlayerError(int what, int extra, int current_track_pos) {
-        Audio track = audios.get(currentTrackPos);
-        Toast.makeText(
-                getContext(),
-                getResources().getString(R.string.audio_play_error),
-                Toast.LENGTH_LONG).show();
+        try {
+            Audio track = audios.get(currentTrackPos);
+            Toast.makeText(
+                    getContext(),
+                    getResources().getString(R.string.audio_play_error),
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
