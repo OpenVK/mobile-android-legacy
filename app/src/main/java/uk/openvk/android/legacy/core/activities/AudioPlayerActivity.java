@@ -184,16 +184,18 @@ public class AudioPlayerActivity extends NetworkActivity implements
     public void updateCurrentTrackPosition(int track_pos, int status) {
         ImageView play_button = findViewById(R.id.aplayer_play);
         Audio currentTrack = audio_tracks.get(track_pos);
-        TextView title_tv = findViewById(R.id.aplayer_title);
-        TextView artist_tv = findViewById(R.id.aplayer_artist);
-        TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
-        title_tv.setText(currentTrack.title);
-        artist_tv.setText(currentTrack.artist);
-        lyrics_tv.setText(currentTrack.lyrics);
-        title_tv.setSelected(true);
-        artist_tv.setSelected(true);
-        this.currentTrackPos = track_pos;
-        this.playerStatus = status;
+        if(currentTrackPos != track_pos) {
+            TextView title_tv = findViewById(R.id.aplayer_title);
+            TextView artist_tv = findViewById(R.id.aplayer_artist);
+            TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
+            title_tv.setText(currentTrack.title);
+            artist_tv.setText(currentTrack.artist);
+            lyrics_tv.setText(currentTrack.lyrics);
+            title_tv.setSelected(true);
+            artist_tv.setSelected(true);
+            this.currentTrackPos = track_pos;
+            this.playerStatus = status;
+        }
         switch (status) {
             case AudioPlayerService.STATUS_PLAYING:
                 play_button.setImageDrawable(getResources().getDrawable(R.drawable.ic_audio_panel_pause));
