@@ -190,6 +190,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
         title_tv.setText(currentTrack.title);
         artist_tv.setText(currentTrack.artist);
         lyrics_tv.setText(currentTrack.lyrics);
+        title_tv.setSelected(true);
+        artist_tv.setSelected(true);
         this.currentTrackPos = track_pos;
         this.playerStatus = status;
         switch (status) {
