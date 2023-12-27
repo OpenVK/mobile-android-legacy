@@ -290,12 +290,12 @@ public class AudioPlayerService extends Service implements
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
         Log.e(OvkApplication.APS_TAG, "Invalid track stream");
-        for(int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
-        }
-        isPlaying = false;
-        error_count++;
         if(error_count == 5) {
+            for(int i = 0; i < listeners.size(); i++) {
+                listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
+            }
+            isPlaying = false;
+            error_count++;
             mp.stop();
             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
             stopSelf();
