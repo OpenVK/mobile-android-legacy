@@ -16,8 +16,10 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-    <item android:id="@+id/remove_friend" android:title="@string/delete_friend"/>
+
+    <item
+        android:id="@+id/remove_friend"
+        android:title="@string/delete_friend" />
     <item android:id="@+id/copy_link" android:title="@string/copy_link"/>
     <item android:id="@+id/open_in_browser" android:title="@string/open_in_browser"/>
 

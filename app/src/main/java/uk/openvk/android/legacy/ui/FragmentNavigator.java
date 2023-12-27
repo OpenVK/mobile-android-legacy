@@ -51,18 +51,6 @@ public class FragmentNavigator {
                     }
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "profile");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                        appActivity.createActionPopupMenu(appActivity.popup_menu.getMenu(),
-                                "account", true);
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                            appActivity.menu_id = R.menu.profile;
-                            appActivity.onCreateOptionsMenu(appActivity.activity_menu);
-                            appActivity.activity_menu.getItem(0).setVisible(false);
-                        }
-                    }
                     break;
                 case "friends":
                     ft.show(appActivity.friendsFragment);
@@ -169,29 +157,6 @@ public class FragmentNavigator {
                     appActivity.selectedFragment = appActivity.newsfeedFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "newsfeed");
                     appActivity.setActionBar("custom_newsfeed");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar = appActivity.findViewById(R.id.actionbar);
-                        if(appActivity.actionBar.getActionCount() > 0) {
-                            appActivity.actionBar.removeAllActions();
-                        }
-                        appActivity.actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
-                            @Override
-                            public int getDrawable() {
-                                return R.drawable.ic_ab_write;
-                            }
-
-                            @Override
-                            public void performAction(View view) {
-                                Global.openNewPostActivity(appActivity, appActivity.ovk_api);
-                            }
-                        });
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                            appActivity.menu_id = R.menu.newsfeed;
-                            appActivity.onCreateOptionsMenu(appActivity.activity_menu);
-                        }
-                    }
                     break;
                 case "settings":
                     ft.show(appActivity.mainSettingsFragment);
@@ -199,13 +164,6 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.mainSettingsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "settings");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
             }
             ft.commit();

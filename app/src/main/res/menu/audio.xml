@@ -15,12 +15,16 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/add" android:id="@+id/audio_add" android:icon="@drawable/ic_ab_add" android:showAsAction="always"/>
-  	<item android:title="@string/save" android:id="@+id/audio_cache" android:icon="@drawable/ic_aplayer_cache_normal" android:showAsAction="always"/>
-  	<item android:title="@string/audio_lyrics" android:id="@+id/audio_lyrics"/>
-  	<item android:title="@string/delete" android:id="@+id/audio_delete"/>
-	<item android:title="@string/audio_search_artist" android:id="@+id/audio_search_artist"/>
-	<item android:title="@string/send_to_friend" android:id="@+id/send_to_friend"/>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+		android:id="@+id/audio_search"
+		android:icon="@drawable/ic_ab_search"
+		android:showAsAction="always"
+		android:title="@string/search"
+		android:visible="true"
+		android:actionViewClass="android.widget.SearchView"
+		tools:ignore="AppCompatResource"
+		tools:targetApi="honeycomb" />
 </menu>

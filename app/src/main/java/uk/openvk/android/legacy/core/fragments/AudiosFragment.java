@@ -1,24 +1,31 @@
 package uk.openvk.android.legacy.core.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +35,9 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Audio;
+import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
-import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.list.adapters.AudiosListAdapter;
@@ -42,7 +48,6 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_PLAYLIST;
-import static uk.openvk.android.legacy.services.AudioPlayerService.STATUS_STARTING_FROM_WALL;
 
 /*  Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -91,6 +96,15 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
             audioPlayerService.addListener(AudiosFragment.this);
         }
     };
+    private Menu fragment_menu;
+    private ArrayList<Audio> search_results;
+    public SearchView searchView;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -99,6 +113,114 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         audiosView = view.findViewById(R.id.audios_listview);
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.audio, menu);
+        fragment_menu = menu;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        createSearchItem(menu);
+    }
+
+    private void createSearchItem(Menu menu) {
+        SearchManager searchManager =
+                (SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
+        searchView = null;
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if(searchManager != null) {
+                searchView = (SearchView) menu.findItem(R.id.audio_search)
+                        .getActionView();
+                int searchBtnId =
+                        getResources().getIdentifier(
+                                "android:id/search_button",
+                                null,
+                                null
+                        );
+                ImageView search_btn = searchView.findViewById(searchBtnId);
+                search_btn.setImageResource(R.drawable.ic_ab_search);
+                searchView.setSearchableInfo(
+                        searchManager.getSearchableInfo(getActivity().getComponentName()));
+                final ActionBar ab = getActivity().getActionBar();
+                searchView.setOnSearchClickListener(new View.OnClickListener() {
+                    @SuppressLint("NewApi")
+                    @Override
+                    public void onClick(View view) {
+                        if(ab != null)
+                            ab.getCustomView()
+                                    .findViewById(R.id.custom_ab_layout)
+                                    .setVisibility(View.GONE);
+                    }
+                });
+                searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                    @SuppressLint("NewApi")
+                    @Override
+                    public boolean onClose() {
+                        if(ab != null)
+                            ab.getCustomView()
+                                    .findViewById(R.id.custom_ab_layout)
+                                    .setVisibility(View.VISIBLE);
+                        createSearchResultsAdapter(audios);
+                        return false;
+                    }
+                });
+                final SearchView.OnQueryTextListener queryTextListener =
+                        new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                search_results = audiosAdapter.findItems(newText);
+                                createSearchResultsAdapter(search_results);
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                return true;
+                            }
+                        };
+                searchView.setMaxWidth(
+                        (int)(
+                            getResources().getDisplayMetrics().widthPixels -
+                            ((44 * dp))
+                        )
+                );
+                searchView.setPadding(
+                        0, (int)(4 * dp), 0, (int)(4 * dp)
+                );
+                searchView.setQueryHint(getResources().getString(R.string.search));
+                searchView.setOnQueryTextListener(queryTextListener);
+            }
+        }
+    }
+
+    public void closeSearchItem() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ActionBar ab = getActivity().getActionBar();
+            if(ab != null)
+                ab.getCustomView()
+                        .findViewById(R.id.custom_ab_layout)
+                        .setVisibility(View.VISIBLE);
+            searchView.setIconified(true);
+            createSearchResultsAdapter(audios);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.audio_search:
+                return false;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     public void createAdapter(Context ctx, ArrayList<Audio> audios) {
@@ -134,6 +256,27 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         } else {
             audiosAdapter.notifyDataSetChanged();
         }
+        AudioCacheDB.fillDatabase(parent, audios, true);
+    }
+
+    public void createSearchResultsAdapter(ArrayList<Audio> audios) {
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
+        audiosAdapter = new AudiosListAdapter(parent, bottom_player_view, audios);
+        if(app.isTablet && app.swdp >= 760) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(parent, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            audiosView.setLayoutManager(glm);
+        } else if(app.isTablet && app.swdp >= 600) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(parent, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            audiosView.setLayoutManager(glm);
+        } else {
+            LinearLayoutManager llm = new WrappedLinearLayoutManager(parent);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            audiosView.setLayoutManager(llm);
+        }
+        audiosView.setAdapter(audiosAdapter);
         AudioCacheDB.fillDatabase(parent, audios, true);
     }
 

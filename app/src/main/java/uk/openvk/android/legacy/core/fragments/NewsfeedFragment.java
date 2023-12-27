@@ -1,10 +1,13 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -12,8 +15,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -27,11 +34,14 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
+import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
@@ -74,16 +84,60 @@ public class NewsfeedFragment extends Fragment {
     private Parcelable recyclerViewState;
     private View view;
     private String instance;
+    private Menu fragment_menu;
+    private Account account;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        onPrepareOptionsMenu(fragment_menu);
         view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
         adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.newsfeed, menu);
+        fragment_menu = menu;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if(menu != null) {
+            if (menu.size() > 0) {
+                if (account == null || account.id == 0) {
+                    menu.findItem(R.id.newpost).setVisible(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.newpost:
+                Global.openNewPostActivity(
+                        getContext(),
+                        ((NetworkFragmentActivity) getActivity()).ovk_api
+                );
+                return false;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     public void loadFromCache(Context ctx) {
@@ -198,7 +252,6 @@ public class NewsfeedFragment extends Fragment {
         });
     }
 
-
     public int getCount() {
         try {
             return newsfeedView.getAdapter().getItemCount();
@@ -279,6 +332,38 @@ public class NewsfeedFragment extends Fragment {
                 newsfeedView.scrollToPosition(0);
             }
             adjustLayoutSize(getResources().getConfiguration().orientation);
+        }
+    }
+
+    public void loadAccount(final OpenVKAPI ovk_api) {
+        this.account = ovk_api.account;
+        refreshOptionsMenu();
+    }
+
+    public void refreshOptionsMenu() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActivity().invalidateOptionsMenu();
+        } else {
+            dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            if (actionBar.getActionCount() > 0) {
+                actionBar.removeAllActions();
+            }
+            dev.tinelix.retro_ab.ActionBar.Action newpost =
+                    new dev.tinelix.retro_ab.ActionBar.Action() {
+                        @Override
+                        public int getDrawable() {
+                            return R.drawable.ic_ab_write;
+                        }
+
+                        @Override
+                        public void performAction(View view) {
+                            if(getActivity() instanceof NetworkFragmentActivity) {
+                                NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
+                                Global.openNewPostActivity(getContext(), activity.ovk_api);
+                            }
+                        }
+                    };
+            actionBar.addAction(newpost);
         }
     }
 }

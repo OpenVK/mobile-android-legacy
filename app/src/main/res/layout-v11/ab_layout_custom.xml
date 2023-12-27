@@ -16,7 +16,7 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/actionbar"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/actionbar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -31,16 +31,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/margin_adjust_zone"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_alignLeft="@+id/home_button"
-                android:layout_alignParentLeft="false"
-                android:layout_alignRight="@+id/home_button"
-                android:layout_centerVertical="true"
-                android:visibility="invisible" />
 
             <ImageButton
                 android:id="@+id/home_button"
@@ -63,10 +53,9 @@
                 android:layout_alignParentLeft="false"
                 android:layout_alignParentRight="false"
                 android:layout_alignRight="@+id/home_button"
-                android:layout_alignTop="@+id/margin_adjust_zone"
                 android:layout_centerHorizontal="false"
                 android:layout_centerInParent="false"
-                android:layout_centerVertical="false"
+                android:layout_centerVertical="true"
                 android:layout_marginRight="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/badge_head"
@@ -74,7 +63,7 @@
                 android:focusableInTouchMode="false"
                 android:focusedByDefault="false"
                 android:gravity="center"
-                android:paddingBottom="1dp"
+                android:paddingBottom="16dp"
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
                 android:text="120"
@@ -107,8 +96,8 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="clip_vertical"
                         android:dropDownWidth="wrap_content"
-                        android:spinnerMode="dropdown"
-                        android:overlapAnchor="true" />
+                        android:overlapAnchor="true"
+                        android:spinnerMode="dropdown" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,9 +116,10 @@
                         android:gravity="center_vertical"
                         android:text="Title"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"
+                        tools:targetApi="honeycomb_mr2" />
 
-                    </LinearLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/title_with_subtitle_ab"
@@ -153,7 +143,8 @@
                             android:gravity="center_vertical"
                             android:text="Title"
                             android:textColor="@color/white"
-                            android:textSize="18sp" />
+                            android:textSize="18sp"
+                            tools:targetApi="honeycomb_mr2" />
 
                         <TextView
                             android:id="@+id/ab_subtitle2"
@@ -161,7 +152,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
-                            android:text="Title" />
+                            android:text="Title"
+                            tools:targetApi="honeycomb_mr2" />
                     </LinearLayout>
 
                 </LinearLayout>

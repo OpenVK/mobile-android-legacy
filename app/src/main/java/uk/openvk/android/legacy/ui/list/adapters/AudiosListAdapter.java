@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Audio;
+import uk.openvk.android.legacy.api.models.Audios;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
@@ -119,6 +120,22 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
 
     public int getCurrentTrackPosition() {
         return currentTrackPos;
+    }
+
+    public ArrayList<Audio> findItems(String query) {
+        ArrayList<Audio> results = new ArrayList<>();
+        for(int i = 0; i < objects.size(); i++) {
+            Audio track = objects.get(i);
+            if(
+                String.format("%s - %s", track.artist, track.title).toLowerCase().contains(query)
+              ) {
+                results.add(track);
+            }
+        }
+        if(results.size() == 0) {
+            Log.e(OvkApplication.APP_TAG, String.format("Local Tracks by '%s' query not found!", query));
+        }
+        return results;
     }
 
     public class Holder extends RecyclerView.ViewHolder {

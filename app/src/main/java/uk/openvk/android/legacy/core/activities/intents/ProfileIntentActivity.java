@@ -120,8 +120,8 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
 
     @SuppressLint("CommitTransaction")
     private void installLayouts() {
-        progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
-        errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
+        progressLayout = findViewById(R.id.progress_layout);
+        errorLayout = findViewById(R.id.error_layout);
         profileFragment = new ProfileFragment();
         ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.app_fragment, profileFragment, "profile");
@@ -183,45 +183,10 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        if(activity_menu != null) {
-            activity_menu.clear();
-        }
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.profile, menu);
-        activity_menu = menu;
-        for (int i = 0; i < menu.size(); i++) {
-            menu.getItem(i).setVisible(false);
-        }
-        return true;
-    }
-
-    @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (item.getItemId() == android.R.id.home) {
                 onBackPressed();
-            }
-        }
-        if(item.getItemId() == R.id.copy_link) {
-            Global.copyToClipboard(
-                    this,
-                    String.format("http://%s/id%s",
-                            instance_prefs.getString("server", ""),
-                            user.id)
-            );
-        } else if(item.getItemId() == R.id.open_in_browser) {
-            String user_url = String.format("http://%s/id%s",
-                    instance_prefs.getString("server", ""), user.id);
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(user_url));
-            startActivity(i);
-        } else if(item.getItemId() == R.id.remove_friend) {
-            if(user.friends_status > 1) {
-                deleteFromFriends(user.id);
-            } else {
-                addToFriends(user.id);
             }
         }
         return super.onMenuItemSelected(featureId, item);
@@ -250,64 +215,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.USERS_GET) {
                 ovk_api.user = user;
                 profileFragment.loadAPIData(this, ovk_api, getWindowManager());
-                if(user.id != ovk_api.account.id) {
-                    ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
-                    popup_menu = new android.support.v7.widget.PopupMenu(this, null);
-                    getMenuInflater().inflate(R.menu.profile, popup_menu.getMenu());
-                    if (user.friends_status == 0) {
-                        findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                        if(activity_menu != null) {
-                            activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_add_friend);
-                        }
-                        if(popup_menu.getMenu() != null) {
-                            popup_menu.getMenu().findItem(R.id.remove_friend)
-                                    .setTitle(R.string.profile_add_friend);
-                        }
-                    } else if (user.friends_status == 1) {
-                        findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                        if(activity_menu != null) {
-                            activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_friend_cancel);
-                        }
-                        if(popup_menu.getMenu() != null) {
-                            popup_menu.getMenu().findItem(R.id.remove_friend)
-                                    .setTitle(R.string.profile_friend_cancel);
-                        }
-                    } else if (user.friends_status == 2) {
-                        findViewById(R.id.add_to_friends).setVisibility(View.VISIBLE);
-                        if(activity_menu != null) {
-                            activity_menu.findItem(R.id.remove_friend).setTitle(R.string.profile_friend_accept);
-                        }
-                        if(popup_menu.getMenu() != null) {
-                            popup_menu.getMenu().findItem(R.id.remove_friend)
-                                    .setTitle(R.string.profile_friend_accept);
-                        }
-                    }
-                    if(activity_menu != null) {
-                        for (int i = 0; i < activity_menu.size(); i++) {
-                            activity_menu.getItem(i).setVisible(true);
-                        }
-                    }
-                }
-                if(user.deactivated == null) {
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        createActionPopupMenu(popup_menu.getMenu(), "account", true);
-                    }
-                } else {
-                    profileFragment.hideHeaderButtons(this, getWindowManager());
-                    if(activity_menu != null) {
-                        activity_menu.getItem(0).setVisible(false);
-                    }
-                    if(popup_menu != null) {
-                        popup_menu.getMenu().getItem(0).setVisible(false);
-                    }
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        if(ovk_api.account.id == user.id) {
-                            createActionPopupMenu(popup_menu.getMenu(), "account", true);
-                        } else {
-                            createActionPopupMenu(popup_menu.getMenu(), "profile", true);
-                        }
-                    }
-                }
+                ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
             } else if(message == HandlerMessages.FRIENDS_ADD) {
@@ -434,48 +342,5 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         errorLayout.setTitle(getResources().getString(R.string.err_text));
         progressLayout.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
-    }
-
-    public void addToFriends(long user_id) {
-        if(user_id != ovk_api.account.id) {
-            ovk_api.friends.add(ovk_api.wrapper, user_id);
-        }
-    }
-
-    public void deleteFromFriends(long user_id) {
-        if(user_id != ovk_api.account.id) {
-            ovk_api.friends.delete(ovk_api.wrapper, user_id);
-        }
-    }
-
-    private void createActionPopupMenu(final Menu menu, String where, boolean enable) {
-        if(popup_menu == null) {
-            popup_menu = new android.support.v7.widget.PopupMenu(this, null);
-        }
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            actionBar = findViewById(R.id.actionbar);
-            if(menu.size() == 0) {
-                if (where.equals("account")) {
-                    getMenuInflater().inflate(R.menu.profile, menu);
-                    menu.getItem(0).setVisible(false);
-                } else if (where.equals("profile")) {
-                    getMenuInflater().inflate(R.menu.profile, menu);
-                }
-            }
-            if (enable) {
-                if(actionBar.getActionCount() > 0) {
-                    actionBar.removeAllActions();
-                }
-                dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
-                        new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
-                                R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                                onMenuItemSelected(0, menu.getItem(item.getItemId()));
-                            }
-                        });
-                actionBar.addAction(action);
-            }
-        }
     }
 }

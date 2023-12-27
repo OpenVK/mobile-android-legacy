@@ -6,20 +6,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,11 +31,14 @@ import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import java.util.ArrayList;
 
+import dev.tinelix.retro_ab.ActionBar;
+import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
@@ -43,7 +48,6 @@ import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
-import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
 import uk.openvk.android.legacy.ui.views.AboutProfileLayout;
@@ -79,6 +83,16 @@ public class ProfileFragment extends Fragment {
     private SharedPreferences global_prefs;
     public WallLayout wallLayout;
     public boolean loadedFromCache;
+    private Menu fragment_menu;
+    private User user;
+    private android.support.v7.widget.PopupMenu popup_menu;
+    private OpenVKAPI ovk_api;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -129,7 +143,64 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    public void updateLayout(User user, final WindowManager wm) {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.profile, menu);
+        fragment_menu = menu;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if(menu != null && menu.size() > 0) {
+            if (getActivity() instanceof NetworkFragmentActivity) {
+                NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
+                if(user != null) {
+                    if (user.id == activity.ovk_api.account.id || user.deactivated == null) {
+                        menu.findItem(R.id.remove_friend).setVisible(false);
+                    } else {
+                        if (user.friends_status == 0 || user.friends_status == 2)
+                            menu.findItem(R.id.remove_friend).setTitle(
+                                    getResources().getString(R.string.profile_add_friend)
+                            );
+                    }
+                } else {
+                    menu.clear();
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.remove_friend:
+                if(ovk_api.account.id != user.id)
+                    if(user.friends_status == 3 || user.friends_status == 1)
+                        Global.deleteFromFriends(ovk_api, user.id);
+                    else
+                        Global.addToFriends(ovk_api, user.id);
+                return false;
+            case R.id.copy_link:
+                Global.copyToClipboard(getContext(), String.format("http://%s/id%s", instance, user.id));
+                return false;
+            case R.id.open_in_browser:
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(String.format("http://%s/id%s", instance, user.id)));
+                startActivity(intent);
+                return false;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    public void updateLayout(OpenVKAPI ovk_api, final WindowManager wm) {
+        this.ovk_api = ovk_api;
+        this.user = ovk_api.user;
+        refreshOptionsMenu();
         ProfileHeader header = view.findViewById(R.id.profile_header);
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
         header.setOnline(user.online);
@@ -217,18 +288,6 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-    }
-
-    public void openNewPostActivity(User user, OpenVKAPI ovk_api) {
-        try {
-            Intent intent = new Intent(getContext().getApplicationContext(), NewPostActivity.class);
-            intent.putExtra("owner_id", user.id);
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("account_first_name", user.first_name);
-            startActivity(intent);
-        } catch (Exception ignored) {
-
-        }
     }
 
     public void getConversationById(long peer_id, OpenVKAPI ovk_api) {
@@ -364,8 +423,7 @@ public class ProfileFragment extends Fragment {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean load_photos,
-                                      final boolean infinity_scroll, final long owner_id) {
+    public void setScrollingPositions(final Context ctx, final boolean load_photos) {
         loading_more_posts = false;
         if(load_photos) {
             ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
@@ -382,10 +440,10 @@ public class ProfileFragment extends Fragment {
                         if (diff == 0) {
                             if(ctx instanceof NetworkFragmentActivity){
                                 ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
-                                Global.loadMoreWallPosts(ovk_api, owner_id);
+                                Global.loadMoreWallPosts(ovk_api, ovk_api.user.id);
                             } else if(ctx instanceof NetworkActivity) {
                                 ovk_api = ((NetworkActivity) ctx).ovk_api;
-                                Global.loadMoreWallPosts(ovk_api, owner_id);
+                                Global.loadMoreWallPosts(ovk_api, ovk_api.user.id);
                             }
                         }
                     }
@@ -402,10 +460,10 @@ public class ProfileFragment extends Fragment {
                         if (diff == 0) {
                             if(ctx instanceof NetworkFragmentActivity){
                                 ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
-                                Global.loadMoreWallPosts(ovk_api, owner_id);
+                                Global.loadMoreWallPosts(ovk_api, ovk_api.user.id);
                             } else if(ctx instanceof NetworkActivity) {
                                 ovk_api = ((NetworkActivity) ctx).ovk_api;
-                                Global.loadMoreWallPosts(ovk_api, owner_id);
+                                Global.loadMoreWallPosts(ovk_api, ovk_api.user.id);
                             }
                         }
                     }
@@ -434,7 +492,7 @@ public class ProfileFragment extends Fragment {
             }
         });
         getWallSelector().setUserName(ovk_api.account.first_name);
-        updateLayout(ovk_api.user, wm);
+        updateLayout(ovk_api, wm);
         setDMButtonListener(ctx, ovk_api.user.id, wm);
         setAddToFriendsButtonListener(ctx, ovk_api.user.id, ovk_api.user);
         if(ovk_api.user.id == ovk_api.account.id) {
@@ -469,7 +527,7 @@ public class ProfileFragment extends Fragment {
             wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
             loading_more_posts = true;
             setScrollingPositions(
-                    ctx, false, true, ovk_api.account.id
+                    ctx, false
             );
             WallCacheDB.putPosts(ctx, ovk_api.wall.getWallItems(), ovk_api.user.id, true);
         } else {
@@ -495,7 +553,7 @@ public class ProfileFragment extends Fragment {
                 wallLayout.createAdapter(ctx, posts);
                 loading_more_posts = true;
                 setScrollingPositions(
-                        ctx, false, true, ovk_api.account.id
+                        ctx, false
                 );
             } else {
                 ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
@@ -510,6 +568,28 @@ public class ProfileFragment extends Fragment {
             selector.showNewPostIcon();
         } else {
             ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+        }
+    }
+
+    public void refreshOptionsMenu() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActivity().invalidateOptionsMenu();
+        } else {
+            ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            if(popup_menu == null) {
+                popup_menu = new android.support.v7.widget.PopupMenu(getContext(), null);
+            }
+            popup_menu.inflate(R.menu.profile);
+            dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
+                    new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(
+                            getContext(), "", popup_menu.getMenu(),
+                            R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                                    onOptionsItemSelected(popup_menu.getMenu().findItem(item.getItemId()));
+                                }
+                        });
+            actionBar.addAction(action);
         }
     }
 

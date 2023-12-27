@@ -4,22 +4,24 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.app.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.Menu;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
@@ -29,16 +31,24 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.api.counters.AccountCounters;
+import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.legacy.api.entities.Friend;
+import uk.openvk.android.legacy.api.entities.Group;
+import uk.openvk.android.legacy.api.entities.LongPollServer;
+import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.counters.*;
-import uk.openvk.android.legacy.api.entities.*;
+import uk.openvk.android.legacy.api.entities.PollAnswer;
+import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.*;
+import uk.openvk.android.legacy.api.models.Messages;
+import uk.openvk.android.legacy.api.models.Newsfeed;
+import uk.openvk.android.legacy.api.models.Users;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.ConversationsFragment;
 import uk.openvk.android.legacy.core.fragments.FriendsFragment;
@@ -49,17 +59,20 @@ import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.core.fragments.ProfileFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
+import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
-import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
-import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
-import uk.openvk.android.legacy.ui.list.items.*;
-import uk.openvk.android.legacy.ui.views.*;
+import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.views.ActionBarLayout;
+import uk.openvk.android.legacy.ui.views.ErrorLayout;
+import uk.openvk.android.legacy.ui.views.ProgressLayout;
+import uk.openvk.android.legacy.ui.views.SlidingMenuLayout;
+import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.NotificationManager;
 
@@ -204,6 +217,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 if(notifMan != null) notifMan.clearAudioPlayerNotification();
                 exitApplication();
+            } else if (selectedFragment instanceof AudiosFragment) {
+                audiosFragment.closeSearchItem();
+                fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             } else {
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             }
@@ -288,57 +304,6 @@ public class AppActivity extends NetworkFragmentActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if(item.getItemId() == android.R.id.home) {
-                if(!((OvkApplication) getApplicationContext()).isTablet) {
-                    menu.toggle(true);
-                } else {
-                    if(slidingmenuLayout.getVisibility() == View.VISIBLE) {
-                        slidingmenuLayout.setVisibility(View.GONE);
-                    } else {
-                        slidingmenuLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        }
-        if(item.getItemId() == R.id.newpost) {
-            Global.openNewPostActivity(this, ovk_api);
-        } else if(item.getItemId() == R.id.copy_link) {
-            Global.copyToClipboard(
-                    this,
-                    String.format("http://%s/id%s",
-                    instance_prefs.getString("server", ""),
-                    ovk_api.user.id)
-            );
-        } else if(item.getItemId() == R.id.open_in_browser) {
-            String user_url = String.format("http://%s/id%s",
-                    instance_prefs.getString("server", ""),
-                    ovk_api.user.id);
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(user_url));
-            startActivity(i);
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        MenuInflater inflater = getMenuInflater();
-        try {
-            inflater.inflate(menu_id, menu);
-            if (ovk_api.account == null || ovk_api.account.id == 0) {
-                menu.findItem(R.id.newpost).setVisible(false);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        activity_menu = menu;
-        return true;
     }
 
     @Override
@@ -532,27 +497,6 @@ public class AppActivity extends NetworkFragmentActivity {
         setActionBarTitle(getResources().getString(R.string.newsfeed));
     }
 
-    public void createActionPopupMenu(final Menu menu, String where, boolean enable) {
-        if(popup_menu == null) {
-            popup_menu = new android.support.v7.widget.PopupMenu(this, null);
-        }
-        menu.clear();
-        if(where.equals("account")) {
-            getMenuInflater().inflate(R.menu.profile, menu);
-            menu.getItem(0).setVisible(false);
-        }
-        if(enable) {
-            dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
-                    new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(this, "", menu,
-                            R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                            onMenuItemSelected(0, menu.getItem(item.getItemId()));
-                        }
-                    });
-            actionBar.addAction(action);
-        }
-    }
 
     public void setActionBarTitle(String title) {
         try {
@@ -644,6 +588,8 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.videos.getVideos(ovk_api.wrapper, ovk_api.account.id, 25);
                 break;
             case 3:
+                menu_id = R.menu.audio;
+                onPrepareOptionsMenu(activity_menu);
                 setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[3]);
                 fn.navigateTo("audios", ft);
                 ovk_api.audios.get(ovk_api.wrapper, ovk_api.account.id, 25, true);
@@ -664,8 +610,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 25, 1);
                 break;
             case 7:
-                menu_id = R.menu.newsfeed;
-                onCreateOptionsMenu(activity_menu);
                 setActionBarTitle(getResources().getString(R.string.newsfeed));
                 fn.navigateTo("newsfeed", ft);
                 if (ovk_api.newsfeed == null) {
@@ -715,35 +659,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 ovk_api.messages.getLongPollServer(ovk_api.wrapper);
                 if(selectedFragment == newsfeedFragment) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        dev.tinelix.retro_ab.ActionBar actionBar = findViewById(R.id.actionbar);
-                        if(actionBar.getActionCount() > 0) {
-                            actionBar.removeAllActions();
-                        }
-                        dev.tinelix.retro_ab.ActionBar.Action newpost =
-                                new dev.tinelix.retro_ab.ActionBar.Action() {
-                                    @Override
-                                    public int getDrawable() {
-                                        return R.drawable.ic_ab_write;
-                                    }
-
-                                    @Override
-                                    public void performAction(View view) {
-                                        Global.openNewPostActivity(AppActivity.this, ovk_api);
-                                    }
-                                };
-                        actionBar.addAction(newpost);
-                    } else {
-                        if (activity_menu == null) {
-                            onPrepareOptionsMenu(activity_menu);
-                        }
-                        try {
-                            MenuItem newpost = activity_menu.findItem(R.id.newpost);
-                            newpost.setVisible(true);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
+                    newsfeedFragment.loadAccount(ovk_api);
                 }
                 ovk_api.account.getCounters(ovk_api.wrapper);
                 ovk_api.users.getAccountUser(ovk_api.wrapper, ovk_api.account.id);
@@ -1062,8 +978,7 @@ public class AppActivity extends NetworkFragmentActivity {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        progressLayout.setVisibility(View.GONE);
-                        errorLayout.setVisibility(View.VISIBLE);
+                        setErrorPage(data, "error", message, false);
                     }
                 } else {
                     if(ovk_api.account.first_name == null && ovk_api.account.last_name == null) {
@@ -1236,14 +1151,7 @@ public class AppActivity extends NetworkFragmentActivity {
     protected void onDestroy() {
         try {
             unregisterReceiver(lpReceiver);
-        } catch (Exception ignored) {
-
-        }
+        } catch (Exception ignored) { }
         super.onDestroy();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-
     }
 }

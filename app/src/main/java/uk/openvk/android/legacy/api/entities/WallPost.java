@@ -191,11 +191,6 @@ public class WallPost implements Parcelable {
                         photo_original_size = photo_sizes.getJSONObject(10).getString("url");
                         photoAttachment.filename = String.format("wall_o%sp%s", owner_id, post_id);
                         photoAttachment.original_url = photo_original_size;
-                        if (photo_medium_size.length() > 0 || photo_high_size.length() > 0) {
-                            attachment_status = "loading";
-                        } else {
-                            attachment_status = "none";
-                        }
                         this.attachments.add(photoAttachment);
                         break;
                     }
@@ -235,7 +230,6 @@ public class WallPost implements Parcelable {
                             videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
                         }
                         videoAttachment.duration = video.getInt("duration");
-                        attachment_status = "done";
                         this.attachments.add(videoAttachment);
                         break;
                     }
@@ -325,7 +319,7 @@ public class WallPost implements Parcelable {
             attachments = new ArrayList<>();
         contains_repost = values.getAsBoolean("contains_repost");
         if (contains_repost) {
-            repost = new RepostInfo( values.getAsString("repost_text"),
+            repost = new RepostInfo( values.getAsString("repost_author_name"),
                     values.getAsLong("repost_original_time"), ctx);
             repost.newsfeed_item = new WallPost();
             repost.newsfeed_item.post_id = values.getAsInteger("repost_original_id");

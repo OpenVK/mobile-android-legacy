@@ -19,6 +19,7 @@
     android:id="@+id/video_att_view"
     android:layout_width="match_parent"
     android:layout_height="200dip"
+    android:minHeight="200dip"
     android:background="#000000"
     android:clickable="true"
     android:focusable="true"

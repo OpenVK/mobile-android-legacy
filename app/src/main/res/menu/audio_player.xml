@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022, 2023 OpenVK Team
+    Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+		android:id="@+id/audio_add"
+		android:icon="@drawable/ic_ab_add"
+		android:showAsAction="always"
+		android:title="@string/add"
+		android:visible="true" />
+  	<item android:title="@string/save" android:id="@+id/audio_cache" android:icon="@drawable/ic_aplayer_cache_normal" android:showAsAction="always"/>
+  	<item android:title="@string/audio_lyrics" android:id="@+id/audio_lyrics"/>
+  	<item android:title="@string/delete" android:id="@+id/audio_delete"/>
+	<item android:title="@string/audio_search_artist" android:id="@+id/audio_search_artist"/>
+	<item android:title="@string/send_to_friend" android:id="@+id/send_to_friend"/>
+</menu>
