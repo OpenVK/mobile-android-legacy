@@ -76,6 +76,7 @@ public class AudioPlayerService extends Service implements
     private Audio[] playlist;
     private int playerStatus;
     private double bufferLength;
+    private int error_count;
 
     public AudioPlayerService() {
 
@@ -292,7 +293,11 @@ public class AudioPlayerService extends Service implements
             listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
         }
         isPlaying = false;
-        mp.reset();
+        error_count++;
+        if(error_count == 5) {
+            mp.stop();
+            notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
+        }
         return false;
     }
 
