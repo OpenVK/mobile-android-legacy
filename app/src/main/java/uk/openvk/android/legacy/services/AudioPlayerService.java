@@ -297,6 +297,8 @@ public class AudioPlayerService extends Service implements
         if(error_count == 5) {
             mp.stop();
             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
+        } else {
+            mp.reset();
         }
         return false;
     }
