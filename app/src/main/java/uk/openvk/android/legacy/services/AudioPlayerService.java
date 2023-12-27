@@ -200,6 +200,7 @@ public class AudioPlayerService extends Service implements
                             mp.stop();
                             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
                             isPlaying = false;
+                            stopSelf();
                             break;
                         case "PLAYER_PREVIOUS":
                             isPlaying = false;
@@ -297,6 +298,7 @@ public class AudioPlayerService extends Service implements
         if(error_count == 5) {
             mp.stop();
             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
+            stopSelf();
         } else {
             mp.reset();
         }
