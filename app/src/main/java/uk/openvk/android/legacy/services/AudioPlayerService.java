@@ -291,7 +291,7 @@ public class AudioPlayerService extends Service implements
     public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
         Log.e(OvkApplication.APS_TAG, "Invalid track stream");
         error_count++;
-        if(error_count == 5) {
+        if(error_count % 5 == 0) {
             for(int i = 0; i < listeners.size(); i++) {
                 listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
             }
