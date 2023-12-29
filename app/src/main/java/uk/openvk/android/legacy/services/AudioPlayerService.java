@@ -223,8 +223,6 @@ public class AudioPlayerService extends Service implements
                             mp.seekTo(seek_position);
                             break;
                         case "PLAYER_CONNECT":
-                            notifyPlayerStatus();
-                            notifySeekbarStatus();
                             break;
                     }
                 }

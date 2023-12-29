@@ -82,6 +82,15 @@ public class AudioPlayerActivity extends NetworkActivity implements
             audioPlayerService = mLocalBinder.getService();
             mediaPlayer = audioPlayerService.getMediaPlayer();
             audioPlayerService.addListener(AudioPlayerActivity.this);
+            audioPlayerService.notifyPlayerStatus();
+            audioPlayerService.notifySeekbarStatus();
+            if(audioPlayerService.isPlaying()) {
+                receivePlayerStatus(
+                        AudioPlayerService.ACTION_PLAYER_CONTROL,
+                        AudioPlayerService.STATUS_PLAYING,
+                        currentTrackPos,
+                        null);
+            }
         }
     };
     private ArrayList<Audio> audio_tracks;
