@@ -86,6 +86,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
     private ArrayList<Audio> audio_tracks;
     private int currentTrackPos;
     private int playerStatus;
+    private boolean isFocusedSeekBar;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -184,6 +185,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     public void updateCurrentTrackPosition(int track_pos, int status) {
         ImageView play_button = findViewById(R.id.aplayer_play);
+        SeekBar seekBar = findViewById(R.id.aplayer_progress);
         Audio currentTrack = audio_tracks.get(track_pos);
         if(currentTrackPos != track_pos) {
             TextView title_tv = findViewById(R.id.aplayer_title);
@@ -210,9 +212,27 @@ public class AudioPlayerActivity extends NetworkActivity implements
                     getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
             );
         }
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isFocusedSeekBar = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_SEEKING);
+                isFocusedSeekBar = false;
+            }
+        });
     }
 
     public void setAudioPlayerState(int position, int status) {
+        SeekBar seekBar = findViewById(R.id.aplayer_progress);
         String action = "";
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
@@ -230,6 +250,9 @@ public class AudioPlayerActivity extends NetworkActivity implements
             case AudioPlayerService.STATUS_GOTO_NEXT:
                 action = "PLAYER_NEXT";
                 break;
+            case AudioPlayerService.STATUS_SEEKING:
+                action = "PLAYER_SEEK";
+                break;
             default:
                 action = "PLAYER_STOP";
                 break;
@@ -238,6 +261,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
         serviceIntent.putExtra("action", action);
         if(status == AudioPlayerService.STATUS_STARTING) {
             serviceIntent.putExtra("position", position);
+        } else if (status == AudioPlayerService.STATUS_SEEKING) {
+            serviceIntent.putExtra("seek_position", seekBar.getProgress());
         }
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
         startService(serviceIntent);
@@ -263,7 +288,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     @Override
     public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
-        updateSeekbarPosition(position, duration, buffer_length);
+        if(!isFocusedSeekBar)
+            updateSeekbarPosition(position, duration, buffer_length);
     }
 
     @Override

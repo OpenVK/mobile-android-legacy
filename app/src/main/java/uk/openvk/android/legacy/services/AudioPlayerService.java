@@ -67,6 +67,7 @@ public class AudioPlayerService extends Service implements
     public static final int STATUS_GOTO_NEXT = 1006;
     public static final int STATUS_REPEATING = 1007;
     public static final int STATUS_SHUFFLE = 1008;
+    public static final int STATUS_SEEKING = 1009;
     List<AudioPlayerListener> listeners = new ArrayList<>();
 
     private Audio[] playlist;
@@ -220,6 +221,10 @@ public class AudioPlayerService extends Service implements
                                 startPlaylistFromPosition(currentTrackPos);
                             }
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
+                            break;
+                        case "PLAYER_SEEK":
+                            int seek_position = data.getInt("seek_position");
+                            mp.seekTo(seek_position);
                             break;
                     }
                 }
