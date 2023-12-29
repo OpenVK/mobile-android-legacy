@@ -92,6 +92,10 @@ public class AudioPlayerService extends Service implements
         return isPlaying;
     }
 
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
     public class AudioPlayerBinder extends Binder {
         public AudioPlayerListener listener;
         public AudioPlayerService getService() {

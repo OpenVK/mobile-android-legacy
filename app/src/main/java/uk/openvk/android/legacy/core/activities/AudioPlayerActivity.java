@@ -115,13 +115,15 @@ public class AudioPlayerActivity extends NetworkActivity implements
         findViewById(R.id.aplayer_prev).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_PREVIOUS);
+                if(audioPlayerService.isPrepared())
+                    setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_PREVIOUS);
             }
         });
         findViewById(R.id.aplayer_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_NEXT);
+                if(audioPlayerService.isPrepared())
+                    setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_NEXT);
             }
         });
         findViewById(R.id.aplayer_play).setOnClickListener(new View.OnClickListener() {
@@ -161,7 +163,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
                         @Override
                         public void run() {
                             if(audioPlayerService != null && audioPlayerService.getMediaPlayer() != null) {
-                                handler.sendEmptyMessage(0);
+                                if(audioPlayerService.isPrepared())
+                                    handler.sendEmptyMessage(0);
                             } else {
                                 cancel();
                             }
@@ -305,10 +308,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
     @Override
     public void onAudioPlayerError(int what, int extra, int currentTrackPos) {
         Audio track = audio_tracks.get(currentTrackPos);
-        Toast.makeText(
-                this,
-                getResources().getString(R.string.audio_play_error),
-                Toast.LENGTH_LONG).show();
+        timer.cancel();
     }
 
     @SuppressLint("DefaultLocale")
