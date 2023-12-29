@@ -97,10 +97,6 @@ public class AudioPlayerService extends Service implements
         public AudioPlayerService getService() {
             return AudioPlayerService.this;
         }
-
-        public void setAudioPlayerListener(AudioPlayerListener listener) {
-            this.listener = listener;
-        }
     }
 
     public interface AudioPlayerListener {
@@ -225,6 +221,10 @@ public class AudioPlayerService extends Service implements
                         case "PLAYER_SEEK":
                             int seek_position = data.getInt("seek_position");
                             mp.seekTo(seek_position);
+                            break;
+                        case "PLAYER_CONNECT":
+                            notifyPlayerStatus();
+                            notifySeekbarStatus();
                             break;
                     }
                 }

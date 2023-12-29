@@ -1,15 +1,9 @@
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,16 +29,25 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.core.fragments.AudiosFragment;
-import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
-import uk.openvk.android.legacy.utils.NotificationManager;
 
-import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
-import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
-import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_PLAYLIST;
+/*  Copyleft © 2022, 2023 OpenVK Team
+ *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This program is free software: you can redistribute it and/or modify it under the terms of
+ *  the GNU Affero General Public License as published by the Free Software Foundation, either
+ *  version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
 
 public class AudioPlayerActivity extends NetworkActivity implements
         AudioPlayerService.AudioPlayerListener {
@@ -76,11 +79,9 @@ public class AudioPlayerActivity extends NetworkActivity implements
             isBoundAP = true;
             AudioPlayerService.AudioPlayerBinder mLocalBinder =
                     (AudioPlayerService.AudioPlayerBinder) service;
-            ((AudioPlayerService.AudioPlayerBinder) service).setAudioPlayerListener(AudioPlayerActivity.this);
             audioPlayerService = mLocalBinder.getService();
             mediaPlayer = audioPlayerService.getMediaPlayer();
             audioPlayerService.addListener(AudioPlayerActivity.this);
-            audioPlayerService.notifyPlayerStatus();
         }
     };
     private ArrayList<Audio> audio_tracks;

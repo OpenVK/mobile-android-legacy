@@ -91,7 +91,6 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
             isBoundAP = true;
             AudioPlayerService.AudioPlayerBinder mLocalBinder =
                     (AudioPlayerService.AudioPlayerBinder) service;
-            ((AudioPlayerService.AudioPlayerBinder) service).setAudioPlayerListener(AudiosFragment.this);
             audioPlayerService = mLocalBinder.getService();
             audioPlayerService.addListener(AudiosFragment.this);
         }
