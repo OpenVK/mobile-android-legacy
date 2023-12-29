@@ -46,17 +46,13 @@ public class AudioPlayerService extends Service implements
         MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnErrorListener{
 
-    private static AudioPlayerService instance;
-    private NotificationManager notifMan;
-    private Context ctx;
     private int currentTrackPos;
     private AudioPlayerBinder binder = new AudioPlayerBinder();
-    private boolean isRunnung = false;
-    private String url;
-    private String title;
-    private String artist;
+    private boolean isRunning = false;
     private MediaPlayer mp;
     private boolean isPlaying;
+    private boolean isPrepared;
+    private boolean isStarted;
     private BroadcastReceiver receiver;
     public static final String ACTION_UPDATE_PLAYLIST = "uk.openvk.android.legacy.AP_UPDATE_PLAYLIST";
     public static final String ACTION_UPDATE_CURRENT_TRACKPOS = "uk.openvk.android.legacy.AP_UPDATE_CURRENT_TRACKPOS";
@@ -119,7 +115,7 @@ public class AudioPlayerService extends Service implements
     }
 
     public boolean isRunning() {
-        return isRunnung;
+        return isRunning;
     }
 
     @Nullable
@@ -141,7 +137,7 @@ public class AudioPlayerService extends Service implements
             if (data != null) {
                 String action = data.getString("action");
                 Log.d(OvkApplication.APS_TAG, String.format("Starting AudioPlayerService by ID: %s | Action: %s", startId, action));
-                isRunnung = true;
+                isRunning = true;
                 if(action != null) {
                     switch (action) {
                         case "PLAYER_CREATE":
@@ -200,6 +196,7 @@ public class AudioPlayerService extends Service implements
                             mp.stop();
                             notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
                             isPlaying = false;
+                            isPrepared = false;
                             stopSelf();
                             break;
                         case "PLAYER_PREVIOUS":
@@ -234,19 +231,21 @@ public class AudioPlayerService extends Service implements
     }
 
     private void createMediaPlayer() {
+        isPrepared = true;
         if(mp != null) {
-            mp.stop();
+            mp.reset();
+        } else {
+            mp = new MediaPlayer();
+            if (Build.VERSION.SDK_INT >= 26)
+                mp.setAudioAttributes(
+                        new AudioAttributes
+                                .Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .build()
+                );
+            else
+                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         }
-        mp = new MediaPlayer();
-        if(Build.VERSION.SDK_INT >= 26)
-            mp.setAudioAttributes(
-                    new AudioAttributes
-                            .Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build()
-            );
-        else
-            mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
     @Override
@@ -273,10 +272,12 @@ public class AudioPlayerService extends Service implements
                             mp.start();
                             notifyPlayerStatus(STATUS_PLAYING);
                             isPlaying = true;
+                            isPrepared = true;
                         }
                     });
                     mp.setDataSource(playlist[position].url);
-                    mp.prepareAsync();
+                    if(isPrepared)
+                        mp.prepareAsync();
                 } else {
                     mp.stop();
                     notifyPlayerStatus(STATUS_STOPPED);
@@ -289,18 +290,15 @@ public class AudioPlayerService extends Service implements
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-        Log.e(OvkApplication.APS_TAG, "Invalid track stream");
-        error_count++;
-        if(error_count % 5 == 0) {
+        Log.e(OvkApplication.APS_TAG, String.format("Invalid track stream (w: %s, x: %s)", what, extra));
+        if((what == MediaPlayer.MEDIA_ERROR_UNKNOWN && extra == MediaPlayer.MEDIA_ERROR_IO)
+                || what == -38) {
             for(int i = 0; i < listeners.size(); i++) {
                 listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
             }
-            isPlaying = false;
-            mp.stop();
-            notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
-            stopSelf();
-        } else {
-            mp.reset();
+            if(isPrepared && isPlaying)
+                mp.reset();
+            return true;
         }
         return false;
     }
@@ -311,25 +309,24 @@ public class AudioPlayerService extends Service implements
 
     private void startPlaylistFromPosition(int track_position) {
         try {
-            if(mp == null)
-                mp = new MediaPlayer();
-            if(mp.isPlaying())
-                mp.reset();
+            createMediaPlayer();
             currentTrackPos = track_position;
             if(playlist[track_position].url != null) {
-                mp.setDataSource(playlist[track_position].url);
-                mp.prepareAsync();
                 mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mediaPlayer) {
                         mp.start();
                         notifyPlayerStatus(STATUS_PLAYING);
                         isPlaying = true;
+                        isPrepared = true;
                     }
                 });
                 mp.setOnCompletionListener(this);
                 mp.setOnErrorListener(this);
                 mp.setOnBufferingUpdateListener(this);
+                mp.setDataSource(playlist[track_position].url);
+                if(isPrepared)
+                    mp.prepareAsync();
             } else {
                 Log.e(OvkApplication.APS_TAG, "Invalid Track URL");
             }
@@ -389,10 +386,6 @@ public class AudioPlayerService extends Service implements
                 );
             }
         }
-    }
-
-    public static AudioPlayerService getInstance() {
-        return instance;
     }
 
     public void addListener(AudioPlayerListener listener) {
