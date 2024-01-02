@@ -145,6 +145,9 @@ public class CacheDatabaseTables {
             db.execSQL(
                     "DROP TABLE IF EXISTS `wall_tracks`"
             );
+            db.execSQL(
+                    "DROP TABLE IF EXISTS `search_results`"
+            );
         }
         db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `tracks` (" +
@@ -155,7 +158,7 @@ public class CacheDatabaseTables {
                         "duration int, " +
                         "lastplay int, " +
                         "user bit, " +
-                        "lyrics text, " +
+                        "lyrics bigint, " +
                         "url varchar(700), " +
                         "status int" +
                 ")"
@@ -170,7 +173,21 @@ public class CacheDatabaseTables {
                         "duration int, " +
                         "lastplay int, " +
                         "user bit, " +
-                        "lyrics text, " +
+                        "lyrics bigint, " +
+                        "url varchar(700), " +
+                        "status int" +
+                        ")"
+        );
+        db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `search_results` (" +
+                        "owner_id bigint, " +
+                        "audio_id bigint, " +
+                        "title varchar(500), " +
+                        "artist varchar(500), " +
+                        "duration int, " +
+                        "lastplay int, " +
+                        "user bit, " +
+                        "lyrics bigint, " +
                         "url varchar(700), " +
                         "status int" +
                         ")"

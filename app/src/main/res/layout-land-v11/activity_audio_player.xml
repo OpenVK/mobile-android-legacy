@@ -132,8 +132,8 @@
 
     <uk.openvk.android.legacy.ui.views.AlbumScrollView
         android:id="@+id/audio_player_cover_scroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="340dp"
+        android:layout_height="340dp"
         android:layout_above="@+id/aplayer_title"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
@@ -151,6 +151,7 @@
                 android:id="@+id/audio_player_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
                 android:background="@drawable/aplayer_cover_border"
                 android:scaleType="centerCrop"
                 android:src="@drawable/aplayer_cover_placeholder" />

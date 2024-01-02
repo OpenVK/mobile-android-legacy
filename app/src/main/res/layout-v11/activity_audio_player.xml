@@ -23,6 +23,49 @@
     android:paddingTop="50dp">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_above="@+id/aplayer_title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true">
+
+        <uk.openvk.android.legacy.ui.views.AlbumScrollView
+            android:id="@+id/audio_player_cover_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="352dp"
+            android:fadingEdge="vertical"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/audio_player_cover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/aplayer_cover_border"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/aplayer_cover_placeholder" />
+
+                <TextView
+                    android:id="@+id/audio_player_lyrics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dip"
+                    android:textColor="#BBFFFFFF"
+                    android:textSize="17dip"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </uk.openvk.android.legacy.ui.views.AlbumScrollView>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/audio_player_buttons"
         android:layout_width="fill_parent"
         android:layout_height="52dip"
@@ -184,42 +227,5 @@
         android:background="@drawable/highlight"
         android:padding="7dip"
         android:src="@drawable/ic_audio_broadcast" />
-
-    <uk.openvk.android.legacy.ui.views.AlbumScrollView
-        android:id="@+id/audio_player_cover_scroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/aplayer_title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:fadingEdge="vertical"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/audio_player_cover"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/aplayer_cover_border"
-                android:scaleType="centerCrop"
-                android:src="@drawable/aplayer_cover_placeholder" />
-
-            <TextView
-                android:id="@+id/audio_player_lyrics"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dip"
-                android:textColor="#BBFFFFFF"
-                android:textSize="17dip"
-                android:visibility="visible" />
-        </LinearLayout>
-    </uk.openvk.android.legacy.ui.views.AlbumScrollView>
 
 </RelativeLayout>

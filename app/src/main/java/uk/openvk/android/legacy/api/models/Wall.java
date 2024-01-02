@@ -676,7 +676,7 @@ public class Wall implements Parcelable {
                         audio.artist = audio_attachment.getString("artist");
                         audio.title = audio_attachment.getString("title");
                         audio.album = audio_attachment.getString("album");
-                        audio.lyrics = audio_attachment.getString("lyrics");
+                        audio.lyrics = audio_attachment.getLong("lyrics");
                         audio.url = audio_attachment.getString("url");
                         audio.setDuration(audio_attachment.getInt("duration"));
                         attachments_list.add(audio);

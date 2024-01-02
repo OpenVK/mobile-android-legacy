@@ -102,7 +102,9 @@ public class HandlerMessages {
     public static int VIDEOS_GET                        = 1100;
 
     // Audios (/method/Audio)
-    public static int AUDIOS_GET                         = 1200;
+    public static int AUDIOS_GET                        = 1200;
+    public static int AUDIOS_GET_LYRICS                 = 1201;
+    public static int AUDIOS_SEARCH                     = 1202;
 
     // OpenVK specific (/method/Ovk)
     public static int OVK_VERSION                       = 1300;

@@ -25,6 +25,7 @@ import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
@@ -534,6 +535,15 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
                             downloadManager
                     );
+                    break;
+            }
+        } else if(activity instanceof AudioPlayerActivity) {
+            AudioPlayerActivity aplayer_a = ((AudioPlayerActivity) activity);
+            assert method != null;
+            switch (method) {
+                case "Audio.getLyrics":
+                    msg.what = HandlerMessages.AUDIOS_GET_LYRICS;
+                    aplayer_a.ovk_api.audios.parseLyrics(data.getString("response"));
                     break;
             }
         }

@@ -173,8 +173,10 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
                         new SearchView.OnQueryTextListener() {
                             @Override
                             public boolean onQueryTextChange(String newText) {
-                                search_results = audiosAdapter.findItems(newText);
-                                createSearchResultsAdapter(search_results);
+                                if(newText.length() > 2) {
+                                    search_results = audiosAdapter.findItems(audios, newText);
+                                    createSearchResultsAdapter(search_results);
+                                }
                                 return true;
                             }
 
@@ -237,7 +239,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         startAudioPlayerService();
         if (audiosAdapter == null) {
             LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
-            audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios);
+            audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios, false);
             if(app.isTablet && app.swdp >= 760) {
                 LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -255,13 +257,14 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         } else {
             audiosAdapter.notifyDataSetChanged();
         }
-        AudioCacheDB.fillDatabase(parent, audios, true);
+        AudioCacheDB.clear(parent, false);
+        AudioCacheDB.fillDatabase(parent, audios, false, false);
     }
 
     public void createSearchResultsAdapter(ArrayList<Audio> audios) {
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
-        audiosAdapter = new AudiosListAdapter(parent, bottom_player_view, audios);
+        audiosAdapter = new AudiosListAdapter(parent, bottom_player_view, audios, true);
         if(app.isTablet && app.swdp >= 760) {
             LinearLayoutManager glm = new WrappedGridLayoutManager(parent, 3);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -276,7 +279,8 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
             audiosView.setLayoutManager(llm);
         }
         audiosView.setAdapter(audiosAdapter);
-        AudioCacheDB.fillDatabase(parent, audios, true);
+        AudioCacheDB.clear(parent, true);
+        AudioCacheDB.fillDatabase(parent, audios, false, true);
     }
 
     public void startAudioPlayerService() {
@@ -292,7 +296,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         parent.getApplicationContext().bindService(serviceIntent, audioPlayerConnection, BIND_AUTO_CREATE);
     }
 
-    public void setAudioPlayerState(int position, int status) {
+    public void setAudioPlayerState(int position, int status, boolean fromList) {
         String action = "";
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
@@ -312,6 +316,9 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         serviceIntent.putExtra("action", action);
         if(status == AudioPlayerService.STATUS_STARTING) {
             serviceIntent.putExtra("position", position);
+            if(audiosAdapter.isSearchResults() && fromList) {
+                serviceIntent.putExtra("from", "search");
+            }
         }
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
         parent.getApplicationContext().startService(serviceIntent);
@@ -439,7 +446,7 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
             // The main thing is that this workaround should force the AudioPlayerService service
             // to switch/play audio tracks without fail.
             if(what == -38 && extra == 0) {
-                setAudioPlayerState(current_track_pos, AudioPlayerService.STATUS_STARTING);
+                setAudioPlayerState(current_track_pos, AudioPlayerService.STATUS_STARTING, false);
             } else {
                 Toast.makeText(
                         getContext(),

@@ -1,10 +1,6 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,13 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Audio;
-import uk.openvk.android.legacy.api.models.Audios;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
@@ -47,8 +41,12 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
     ArrayList<Audio> objects;
     public boolean opened_sliding_menu;
     private int currentTrackPos;
+    private boolean fromSearch;
 
-    public AudiosListAdapter(Context context, LinearLayout bottom_player_view, ArrayList<Audio> items) {
+    public AudiosListAdapter(Context context, LinearLayout bottom_player_view,
+                             ArrayList<Audio> items,
+                             boolean fromSearch) {
+        this.fromSearch = fromSearch;
         ctx = context;
         objects = items;
         this.bottom_player_view = bottom_player_view;
@@ -122,14 +120,17 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         return currentTrackPos;
     }
 
-    public ArrayList<Audio> findItems(String query) {
+    public ArrayList<Audio> findItems(ArrayList<Audio> objects, String query) {
         ArrayList<Audio> results = new ArrayList<>();
         for(int i = 0; i < objects.size(); i++) {
             Audio track = objects.get(i);
             if(
                 String.format("%s - %s", track.artist, track.title).toLowerCase().contains(query)
               ) {
-                results.add(track);
+                results.add(i, track);
+            } else {
+                track = new Audio();
+                results.add(i, track);
             }
         }
         if(results.size() == 0) {
@@ -152,6 +153,11 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
 
         void bind(final int position) {
             final Audio item = getItem(position);
+            if(item.id == 0) {
+                view.setVisibility(View.GONE);
+                view.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+                return;
+            }
             item_name.setText(item.title);
             item_subtext.setText(item.artist);
 
@@ -224,17 +230,21 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                 AppActivity activity = ((AppActivity) ctx);
                 switch (track.status) {
                     case 0:
-                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING);
+                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING, true);
                         break;
                     case 2:
-                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED);
+                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED, true);
                         break;
                     case 3:
-                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING);
+                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING, true);
                         break;
                 }
             }
         }
+    }
+
+    public boolean isSearchResults() {
+        return fromSearch;
     }
 
     @Override

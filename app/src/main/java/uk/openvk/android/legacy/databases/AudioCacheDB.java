@@ -39,10 +39,10 @@ public class AudioCacheDB extends CacheDatabase {
     private static Context ctx;
     public static String prefix = "audio";
 
-    public void putTrack(Context ctx, Audio track, boolean forced) {
+    public void putTrack(Context ctx, Audio track, boolean forced, boolean intoSearchResults) {
         CacheOpenHelper helper2 = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db2 = helper2.getWritableDatabase();
-        if (!isExist(ctx, track.id)) {
+        if (!isExist(ctx, track.id, intoSearchResults)) {
             if (!cachedIDs.contains(String.valueOf(track.owner_id) + "_" + track.id)) {
                 cachedIDs.add(String.valueOf(track.owner_id) + "_" + track.id);
             }
@@ -57,7 +57,11 @@ public class AudioCacheDB extends CacheDatabase {
                 values2.put("lastplay", System.currentTimeMillis() / 1000);
                 values2.put("user", forced);
                 values2.put("lyrics", track.lyrics);
-                db2.insert("tracks", null, values2);
+                String table_name = "tracks";
+                if(intoSearchResults) {
+                    table_name = "search_results";
+                }
+                db2.insert(table_name, null, values2);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -67,7 +71,11 @@ public class AudioCacheDB extends CacheDatabase {
             try {
                 ContentValues values = new ContentValues();
                 values.put("user", true);
-                db.update("tracks", values,
+                String table_name = "tracks";
+                if(intoSearchResults) {
+                    table_name = "search_results";
+                }
+                db.update(table_name, values,
                         "audio_id=" + track.id
                                 + " and owner_id=" + track.owner_id,
                         null);
@@ -79,12 +87,16 @@ public class AudioCacheDB extends CacheDatabase {
         helper2.close();
     }
 
-    private boolean isExist(Context ctx, long track_id) {
+    private boolean isExist(Context ctx, long track_id, boolean inSearchResults) {
         boolean result = false;
         CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
-            Cursor cursor = db.query("tracks", new String[]{"count(*)"},
+            String table_name = "tracks";
+            if(inSearchResults) {
+                table_name = "search_results";
+            }
+            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
                     "`audio_id`=" + track_id,
                     null, null, null, null);
             result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
@@ -97,7 +109,8 @@ public class AudioCacheDB extends CacheDatabase {
         return result;
     }
 
-    public static void fillDatabase(Context ctx2, ArrayList<Audio> audios, boolean clear) {
+    public static void fillDatabase(Context ctx2, ArrayList<Audio> audios,
+                                    boolean clear, boolean intoSearchResults) {
         CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, "audio"));
 
         Cursor cursor = null;
@@ -107,7 +120,11 @@ public class AudioCacheDB extends CacheDatabase {
                 cachedIDs.clear();
             }
             CacheDatabaseTables.createAudioTracksTable(db, clear);
-            cursor = db.query("tracks", new String[]{"owner_id", "audio_id"},
+            String table_name = "tracks";
+            if(intoSearchResults) {
+                table_name = "search_results";
+            }
+            cursor = db.query(table_name, new String[]{"owner_id", "audio_id"},
                     null, null, null, null, null);
             cursor.moveToFirst();
 
@@ -121,10 +138,10 @@ public class AudioCacheDB extends CacheDatabase {
                 values.put("duration", track.getDurationInSeconds());
                 values.put("lastplay", 0);
                 values.put("user", true);
-                values.put("lyrics", track.lyrics != null ? track.lyrics : "");
+                values.put("lyrics", track.lyrics);
                 values.put("url", track.url);
                 values.put("status", track.status);
-                db.insert("tracks", null, values);
+                db.insert(table_name, null, values);
                 String track_name = String.format("%s_%s", track.id, track.owner_id);
                 cachedIDs.add(track_name);
             }
@@ -162,7 +179,7 @@ public class AudioCacheDB extends CacheDatabase {
                 values.put("duration", track.getDurationInSeconds());
                 values.put("lastplay", 0);
                 values.put("user", true);
-                values.put("lyrics", track.lyrics != null ? track.lyrics : "");
+                values.put("lyrics", track.lyrics);
                 values.put("url", track.url);
                 values.put("status", track.status);
                 db.insert("wall_tracks", null, values);
@@ -177,12 +194,16 @@ public class AudioCacheDB extends CacheDatabase {
         }
     }
 
-    public static ArrayList<Audio> getCachedAudiosList(Context ctx2) {
+    public static ArrayList<Audio> getCachedAudiosList(Context ctx2, boolean fromSearchResults) {
         CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         ArrayList<Audio> list = new ArrayList<>();
         try {
-            Cursor cursor = db.query("tracks", null, null,
+            String table_name = "tracks";
+            if(fromSearchResults) {
+                table_name = "search_results";
+            }
+            Cursor cursor = db.query(table_name, null, null,
                     null, null, null, "user desc");
             cursor.moveToFirst();
             int i = 0;
@@ -195,7 +216,7 @@ public class AudioCacheDB extends CacheDatabase {
                 track.title = cursor.getString(2);
                 track.artist = cursor.getString(3);
                 track.setDuration(cursor.getInt(4));
-                track.lyrics = cursor.getString(7);
+                track.lyrics = cursor.getLong(7);
                 track.url = cursor.getString(8);
                 list.add(track);
                 i++;
@@ -224,13 +245,13 @@ public class AudioCacheDB extends CacheDatabase {
             do {
                 Audio track = new Audio();
                 track.sender = new User();
-                track.sender.id = cursor.getInt(0);
-                track.owner_id = cursor.getInt(0);
+                track.sender.id = cursor.getInt(1);
+                track.owner_id = cursor.getInt(1);
                 track.id = cursor.getInt(1);
                 track.title = cursor.getString(2);
                 track.artist = cursor.getString(3);
                 track.setDuration(cursor.getInt(4));
-                track.lyrics = cursor.getString(7);
+                track.lyrics = cursor.getLong(7);
                 track.url = cursor.getString(8);
                 list.add(track);
                 i++;
@@ -276,11 +297,15 @@ public class AudioCacheDB extends CacheDatabase {
         helper.close();
     }
 
-    public static void clear(Context ctx) {
+    public static void clear(Context ctx, boolean fromSearchOnly) {
         CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
-            db.delete("tracks", null, null);
+            if(fromSearchOnly) {
+                db.delete("search_results", null, null);
+            } else {
+                db.delete("tracks", null, null);
+            }
             cachedIDs.clear();
             Intent intent = new Intent(AudioPlayerService.ACTION_UPDATE_PLAYLIST);
             intent.putExtra("reload_cached_list", true);
@@ -327,7 +352,7 @@ public class AudioCacheDB extends CacheDatabase {
                 track.title = cursor.getString(2);
                 track.artist = cursor.getString(3);
                 track.setDuration(cursor.getInt(4));
-                track.lyrics = cursor.getString(8);
+                track.lyrics = cursor.getLong(8);
                 track.url = cursor.getString(9);
                 list.add(track);
                 i++;

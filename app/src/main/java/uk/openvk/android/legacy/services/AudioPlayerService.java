@@ -152,13 +152,23 @@ public class AudioPlayerService extends Service implements
                             break;
                         case "PLAYER_START":
                             isPlaying = false;
+                            String from = data.getString("from");
                             int position = data.getInt("position");
                             currentTrackPos = position;
+                            boolean fromSearch = from != null && from.equals("search");
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             ArrayList<Audio> parcelablePlaylist =
-                                    AudioCacheDB.getCachedAudiosList(this);
+                                    AudioCacheDB.getCachedAudiosList(this, fromSearch);
                             if(parcelablePlaylist != null) {
                                 if(parcelablePlaylist.size() > 0) {
+                                    Log.d(OvkApplication.APS_TAG,
+                                            String.format(
+                                                    "Starting playback (%s of %s) from %s...",
+                                                    position + 1,
+                                                    parcelablePlaylist.size(),
+                                                    fromSearch ? "search results" : "playlist"
+                                            )
+                                    );
                                     playlist = new Audio[parcelablePlaylist.size()];
                                     parcelablePlaylist.toArray(playlist);
                                     startPlaylistFromPosition(position);
@@ -316,6 +326,11 @@ public class AudioPlayerService extends Service implements
 
     private void startPlaylistFromPosition(int track_position) {
         try {
+            if(playlist[track_position].id == 0) {
+                track_position++;
+                startPlaylistFromPosition(track_position);
+                return;
+            }
             createMediaPlayer();
             currentTrackPos = track_position;
             if(playlist[track_position].url != null) {
@@ -336,10 +351,18 @@ public class AudioPlayerService extends Service implements
                     mp.prepareAsync();
             } else {
                 Log.e(OvkApplication.APS_TAG, "Invalid Track URL");
+                for(int i = 0; i < listeners.size(); i++) {
+                    listeners.get(i).onAudioPlayerError(
+                            MediaPlayer.MEDIA_ERROR_UNKNOWN,
+                            0,
+                            currentTrackPos);
+                }
             }
         } catch (IOException e) {
+            Audio audio = playlist[track_position];
             Log.e(OvkApplication.APS_TAG,
-                    String.format("Can't play from URL: %s", playlist[track_position].url)
+                    String.format("Can't play from URL: %s (%s - %s)",
+                            audio.url, audio.artist, audio.title)
             );
             for(int i = 0; i < listeners.size(); i++) {
                 listeners.get(i).onAudioPlayerError(

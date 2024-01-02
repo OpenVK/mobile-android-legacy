@@ -41,6 +41,10 @@ public class Audios {
         );
     }
 
+    public void getLyrics(OvkAPIWrapper wrapper, long lyrics_id) {
+        wrapper.sendAPIMethod("Audio.getLyrics", String.format("lyrics_id=%s", lyrics_id));
+    }
+
     public void parseAudioTracks(String response, boolean clear) {
         JSONObject json = jsonParser.parseJSON(response);
         if(clear) {
@@ -62,6 +66,9 @@ public class Audios {
                     audio.album = audio_track.getString("album");
                     audio.genre = audio_track.getString("genre_str");
                     audio.setDuration(audio_track.getInt("duration"));
+                    audio.lyrics =
+                            audio_track.isNull("lyrics") ?
+                            0 : audio_track.getLong("lyrics");
                     audio.url = audio_track.getString("url");
                     if(audio_track.has("user")) {
                         JSONObject sender = audio_track.getJSONObject("user");
@@ -82,5 +89,23 @@ public class Audios {
 
     public ArrayList<Audio> getList() {
         return audios;
+    }
+
+    public void parseLyrics(String response) {
+        try {
+            JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
+            for(int i = 0; i < audios.size(); i++) {
+                Audio track = audios.get(i);
+                if(track.lyrics == json.getLong("lyrics_id"))
+                    track.lyrics_text = json.getString("text");
+                audios.set(i, track);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void fillList(ArrayList<Audio> audios) {
+        this.audios = audios;
     }
 }

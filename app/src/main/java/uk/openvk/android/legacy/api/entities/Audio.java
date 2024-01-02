@@ -20,11 +20,12 @@ public class Audio extends Attachment implements Parcelable, Serializable {
     private String duration;
     public String genre;
     public boolean is_explicit;
-    public String lyrics;
+    public long lyrics;
     public String url;
     public User sender;
     public int status;
     public long owner_id;
+    public String lyrics_text;
 
     public Audio() {
         type = "audio";
@@ -40,7 +41,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
         duration = in.readString();
         genre = in.readString();
         is_explicit = in.readByte() != 0;
-        lyrics = in.readString();
+        lyrics = in.readLong();
         url = in.readString();
         status = in.readInt();
     }
@@ -93,7 +94,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
         parcel.writeString(duration);
         parcel.writeString(genre);
         parcel.writeByte((byte) (is_explicit ? 1 : 0));
-        parcel.writeString(lyrics);
+        parcel.writeLong(lyrics);
         parcel.writeString(url);
         parcel.writeInt(status);
     }
@@ -111,6 +112,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
             audio.put("album", album);
             audio.put("duration", duration_sec);
             audio.put("is_explicit", is_explicit);
+            audio.put("lyrics", lyrics);
             audio.put("url", url);
             object.put("audio", audio);
         } catch (Exception ex) {
@@ -136,6 +138,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
                             duration_sec % 60
                     );
             is_explicit = audio.getBoolean("is_explicit");
+            lyrics = audio.getLong("lyrics");
             url = audio.getString("url");
         } catch (Exception ex) {
             ex.printStackTrace();

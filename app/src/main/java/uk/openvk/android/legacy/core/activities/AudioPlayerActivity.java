@@ -28,6 +28,7 @@ import java.util.TimerTask;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Audio;
+import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
@@ -97,6 +98,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
     private int currentTrackPos;
     private int playerStatus;
     private boolean isFocusedSeekBar;
+    private boolean fromSearch;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -135,7 +137,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
                     setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_PAUSED);
             }
         });
-        audio_tracks = AudioCacheDB.getCachedAudiosList(this);
+        audio_tracks = AudioCacheDB.getCachedAudiosList(this, fromSearch);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -200,17 +202,20 @@ public class AudioPlayerActivity extends NetworkActivity implements
         ImageView play_button = findViewById(R.id.aplayer_play);
         SeekBar seekBar = findViewById(R.id.aplayer_progress);
         Audio currentTrack = audio_tracks.get(track_pos);
+        ovk_api.audios.fillList(audio_tracks);
         if(currentTrackPos != track_pos) {
             TextView title_tv = findViewById(R.id.aplayer_title);
             TextView artist_tv = findViewById(R.id.aplayer_artist);
             TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
             title_tv.setText(currentTrack.title);
             artist_tv.setText(currentTrack.artist);
-            lyrics_tv.setText(currentTrack.lyrics);
+            lyrics_tv.setText("");
             title_tv.setSelected(true);
             artist_tv.setSelected(true);
             this.currentTrackPos = track_pos;
             this.playerStatus = status;
+            if(currentTrack.lyrics > 0 && currentTrack.lyrics_text == null)
+                ovk_api.audios.getLyrics(ovk_api.wrapper, currentTrack.lyrics);
         }
         switch (status) {
             case AudioPlayerService.STATUS_PLAYING:
@@ -329,5 +334,29 @@ public class AudioPlayerActivity extends NetworkActivity implements
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void receiveState(int message, Bundle data) {
+        try {
+            if (data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if (activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(
+                        String.format("%s_%s", getLocalClassName(), getSessionId())
+                );
+                if (!isCurrentActivity) {
+                    return;
+                }
+            }
+            if(message == HandlerMessages.AUDIOS_GET_LYRICS) {
+                TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
+                lyrics_tv.setText(audio_tracks.get(currentTrackPos).lyrics_text);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
