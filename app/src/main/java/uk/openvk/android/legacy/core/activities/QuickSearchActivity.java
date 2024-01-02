@@ -162,7 +162,7 @@ public class QuickSearchActivity extends NetworkActivity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://ovkclub" + ovk_api.groups.getList().get(position).id;
+        String url = "openvk://ovk/club" + ovk_api.groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setPackage("uk.openvk.android.legacy");
         i.setData(Uri.parse(url));
