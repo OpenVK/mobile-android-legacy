@@ -59,7 +59,7 @@ _Работает на OpenVK API._
 [GNU Affero GPL v3.0](COPYING) или более поздней версии.
 
 ## Ссылки
-[Документация по OpenVK API](https://docs.openvk.su/openvk_engine/api/description/)\
+[Документация по OpenVK API](https://docs.openvk.su/openvk_engine/ru/api/description/)\
 [OpenVK Mobile](https://openvk.uk/app)
 
 <a href="https://codeberg.org/OpenVK/mobile-android-legacy">
