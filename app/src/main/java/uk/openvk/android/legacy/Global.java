@@ -963,4 +963,38 @@ public class Global {
         }
         return strftime;
     }
+
+    public static int[] generateSearchViewIds(Resources res) {
+        int searchBtnId =
+                res.getIdentifier(
+                        "android:id/search_button",
+                        null,
+                        null
+                );
+        int searchPlateId =
+                res.getIdentifier(
+                "android:id/search_plate",
+                null,
+                null
+            );
+        final int searchTextId =
+                res.getIdentifier(
+                        "android:id/search_src_text",
+                        null,
+                        null
+                );
+        final int searchMagIconId =
+                res.getIdentifier(
+                        "android:id/search_mag_icon",
+                        null,
+                        null
+                );
+        final int searchCloseBtnId =
+                res.getIdentifier(
+                        "android:id/search_close_btn",
+                        null,
+                        null
+                );
+        return new int[] {searchBtnId, searchPlateId, searchTextId, searchMagIconId, searchCloseBtnId};
+    }
 }

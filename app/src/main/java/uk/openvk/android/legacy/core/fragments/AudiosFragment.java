@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
@@ -161,13 +163,12 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
             if(searchManager != null) {
                 searchView = (SearchView) menu.findItem(R.id.audio_search)
                         .getActionView();
-                int searchBtnId =
-                        getResources().getIdentifier(
-                                "android:id/search_button",
-                                null,
-                                null
-                        );
-                ImageView search_btn = searchView.findViewById(searchBtnId);
+                int[] searchViewIds = Global.generateSearchViewIds(getResources());
+                final ImageView search_btn = searchView.findViewById(searchViewIds[0]);
+                final View search_plate = searchView.findViewById(searchViewIds[1]);
+                final TextView query_tv = searchView.findViewById(searchViewIds[2]);
+                final ImageView search_mag_icon = searchView.findViewById(searchViewIds[3]);
+                final ImageView search_close_btn = searchView.findViewById(searchViewIds[4]);
                 search_btn.setImageResource(R.drawable.ic_ab_search);
                 searchView.setSearchableInfo(
                         searchManager.getSearchableInfo(getActivity().getComponentName()));
@@ -176,10 +177,23 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
                     @SuppressLint("NewApi")
                     @Override
                     public void onClick(View view) {
-                        if(ab != null)
-                            ab.getCustomView()
-                                    .findViewById(R.id.custom_ab_layout)
-                                    .setVisibility(View.GONE);
+                        search_plate.setBackgroundDrawable(
+                                getResources().getDrawable(R.drawable.login_fields)
+                        );
+                        search_mag_icon.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_ab_search_light)
+                        );
+                        search_close_btn.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_search_clear)
+                        );
+                        query_tv.setTextColor(Color.BLACK);
+
+                        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                            if (ab != null)
+                                ab.getCustomView()
+                                        .findViewById(R.id.custom_ab_layout)
+                                        .setVisibility(View.GONE);
+                        }
                     }
                 });
                 searchView.setOnCloseListener(new SearchView.OnCloseListener() {
