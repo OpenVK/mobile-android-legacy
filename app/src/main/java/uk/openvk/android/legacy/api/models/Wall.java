@@ -87,11 +87,6 @@ public class Wall implements Parcelable {
     public void parse(Context ctx, DownloadManager downloadManager, String quality,
                       String response,
                       boolean clear, boolean isWall) {
-        try {
-            next_from = new JSONObject(response).getJSONObject("response").getLong("next_from");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         this.dlm = downloadManager;
         if(items == null) {
             items = new ArrayList<>();
@@ -676,7 +671,8 @@ public class Wall implements Parcelable {
                         audio.artist = audio_attachment.getString("artist");
                         audio.title = audio_attachment.getString("title");
                         audio.album = audio_attachment.getString("album");
-                        audio.lyrics = audio_attachment.getLong("lyrics");
+                        if(!audio_attachment.isNull("lyrics"))
+                            audio.lyrics = audio_attachment.getLong("lyrics");
                         audio.url = audio_attachment.getString("url");
                         audio.setDuration(audio_attachment.getInt("duration"));
                         attachments_list.add(audio);

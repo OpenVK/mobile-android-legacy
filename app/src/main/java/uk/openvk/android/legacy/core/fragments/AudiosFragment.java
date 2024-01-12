@@ -16,13 +16,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -37,6 +42,7 @@ import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
@@ -65,7 +71,7 @@ import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class AudiosFragment extends Fragment implements AudioPlayerService.AudioPlayerListener {
+public class AudiosFragment extends ActiviableFragment implements AudioPlayerService.AudioPlayerListener {
     private RecyclerView audiosView;
     private Account account;
     private View view;
@@ -98,6 +104,25 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
     private Menu fragment_menu;
     private ArrayList<Audio> search_results;
     public SearchView searchView;
+    private TextWatcher searchWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if(editable.length() > 2) {
+                search_results = audiosAdapter.findItems(audios, editable.toString());
+                createSearchResultsAdapter(search_results);
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -197,6 +222,39 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
                 searchView.setQueryHint(getResources().getString(R.string.search));
                 searchView.setOnQueryTextListener(queryTextListener);
             }
+        } else {
+            final dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            actionBar.removeAllActions();
+            final EditText search_edit = ((EditText) actionBar.findViewById(R.id.search_view));
+            search_edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    // TODO Auto-generated method stub
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null &&
+                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                        String query = search_edit.getText().toString();
+                        if(query.length() > 2) {
+                            search_results = audiosAdapter.findItems(audios, query);
+                            createSearchResultsAdapter(search_results);
+                        }
+                    }
+                    return true;
+                }
+            });
+            actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
+                @Override
+                public int getDrawable() {
+                    return R.drawable.ic_ab_search;
+                }
+
+                @Override
+                public void performAction(View view) {
+                    actionBar.findViewById(R.id.title_ab).setVisibility(View.GONE);
+                    actionBar.findViewById(R.id.search_ab).setVisibility(View.VISIBLE);
+                    actionBar.removeAllActions();
+                }
+            });
         }
     }
 
@@ -209,6 +267,12 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
                         .setVisibility(View.VISIBLE);
             searchView.setIconified(true);
             createSearchResultsAdapter(audios);
+        } else {
+            final dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            final EditText search_edit = ((EditText) actionBar.findViewById(R.id.search_view));
+            actionBar.findViewById(R.id.title_ab).setVisibility(View.VISIBLE);
+            actionBar.findViewById(R.id.search_ab).setVisibility(View.GONE);
+            search_edit.setText("");
         }
     }
 
@@ -408,6 +472,45 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         audiosAdapter.setTrackState(audiosAdapter.getCurrentTrackPosition(), status);
     }
 
+    public void refreshOptionsMenu() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActivity().invalidateOptionsMenu();
+        } else {
+            final dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            actionBar.removeAllActions();
+            final EditText search_edit = ((EditText) actionBar.findViewById(R.id.search_view));
+            search_edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    // TODO Auto-generated method stub
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null &&
+                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_DOWN)) {
+                        String query = search_edit.getText().toString();
+                        if(query.length() > 2) {
+                            search_results = audiosAdapter.findItems(audios, query);
+                            createSearchResultsAdapter(search_results);
+                        }
+                    }
+                    return true;
+                }
+            });
+            actionBar.addAction(new dev.tinelix.retro_ab.ActionBar.Action() {
+                @Override
+                public int getDrawable() {
+                    return R.drawable.ic_ab_search;
+                }
+
+                @Override
+                public void performAction(View view) {
+                    actionBar.findViewById(R.id.title_ab).setVisibility(View.GONE);
+                    actionBar.findViewById(R.id.search_ab).setVisibility(View.VISIBLE);
+                    actionBar.removeAllActions();
+                }
+            });
+        }
+    }
+
     @Override
     public void onDestroy() {
         if(audioPlayerReceiver != null) {
@@ -456,5 +559,17 @@ public class AudiosFragment extends Fragment implements AudioPlayerService.Audio
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void onActivated() {
+        super.onActivated();
+        refreshOptionsMenu();
+    }
+
+    @Override
+    public void onDeactivated() {
+        super.onDeactivated();
+        closeSearchItem();
     }
 }

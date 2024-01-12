@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
@@ -66,7 +67,7 @@ import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class NewsfeedFragment extends Fragment {
+public class NewsfeedFragment extends ActiviableFragment {
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -365,5 +366,35 @@ public class NewsfeedFragment extends Fragment {
                     };
             actionBar.addAction(newpost);
         }
+    }
+
+    public void clearOptionsMenu() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if(fragment_menu != null)
+                fragment_menu.clear();
+        } else {
+            dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            if (actionBar.getActionCount() > 0) {
+                actionBar.removeAllActions();
+            }
+        }
+    }
+
+    @Override
+    public void onActivated() {
+        super.onActivated();
+        refreshOptionsMenu();
+    }
+
+    @Override
+    public void onDeactivated() {
+        super.onDeactivated();
+        clearOptionsMenu();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshOptionsMenu();
     }
 }

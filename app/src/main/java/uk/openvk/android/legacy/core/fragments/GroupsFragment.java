@@ -22,6 +22,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Group;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
@@ -44,7 +45,7 @@ import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class GroupsFragment extends Fragment {
+public class GroupsFragment extends ActiviableFragment {
     public TextView titlebar_title;
     public String state;
     public String send_request;

@@ -10,6 +10,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 
 /**
  * OPENVK LEGACY LICENSE NOTIFICATION
@@ -42,6 +43,9 @@ public class FragmentNavigator {
             appActivity.errorLayout.setVisibility(View.GONE);
             appActivity.progressLayout.setVisibility(View.VISIBLE);
             ft.hide(appActivity.selectedFragment);
+            if(appActivity.selectedFragment instanceof ActiviableFragment) {
+                ((ActiviableFragment) appActivity.selectedFragment).onDeactivated();
+            }
             switch (where) {
                 case "profile":
                     ft.show(appActivity.profileFragment);
@@ -168,6 +172,9 @@ public class FragmentNavigator {
             }
             ft.commit();
             appActivity.global_prefs_editor.commit();
+            if(appActivity.selectedFragment instanceof ActiviableFragment) {
+                ((ActiviableFragment) appActivity.selectedFragment).onActivated();
+            }
         }
     }
 

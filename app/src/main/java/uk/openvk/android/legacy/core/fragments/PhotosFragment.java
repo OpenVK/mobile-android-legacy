@@ -18,6 +18,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.PhotoAlbumsListAdapter;
 import uk.openvk.android.legacy.ui.list.decorations.VerticalSpace;
@@ -25,7 +26,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
-public class PhotosFragment extends Fragment {
+public class PhotosFragment extends ActiviableFragment {
 
     private View view;
     private InfinityRecyclerView albumsListView;

@@ -17,7 +17,7 @@
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/actionbar"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/actionbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
@@ -94,6 +94,31 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/search_ab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+
+                    <EditText
+                        android:id="@+id/search_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginRight="8dp"
+                        android:background="@drawable/login_fields"
+                        android:drawableLeft="@drawable/ic_left_search"
+                        android:drawablePadding="8dp"
+                        android:ems="10"
+                        android:hint="@string/search"
+                        android:imeOptions="actionSearch"
+                        android:inputType="textPersonName"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/spinner_ab"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -107,8 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="clip_vertical"
-                        android:dropDownWidth="wrap_content"
-                        android:spinnerMode="dropdown" />
+                        android:dropDownWidth="wrap_content" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,7 +151,7 @@
                         android:gravity="center_vertical"
                         android:text="Title"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp" tools:targetApi="honeycomb_mr2"/>
 
                 </LinearLayout>
 
@@ -153,7 +177,7 @@
                             android:gravity="center_vertical"
                             android:text="Title"
                             android:textColor="@color/white"
-                            android:textSize="18sp" />
+                            android:textSize="18sp" tools:targetApi="honeycomb_mr2"/>
 
                         <TextView
                             android:id="@+id/ab_subtitle2"
@@ -161,7 +185,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
-                            android:text="Title" />
+                            android:text="Title" tools:targetApi="honeycomb_mr2"/>
                     </LinearLayout>
 
                 </LinearLayout>

@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AboutApplicationActivity;
 import uk.openvk.android.legacy.core.activities.MainActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviablePreferenceFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.core.activities.AppActivity;
@@ -67,7 +68,7 @@ import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
+public class MainSettingsFragment extends ActiviablePreferenceFragment {
     private boolean isQuiting;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;

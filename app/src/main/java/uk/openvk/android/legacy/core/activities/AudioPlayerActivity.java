@@ -154,6 +154,14 @@ public class AudioPlayerActivity extends NetworkActivity implements
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void receivePlayerStatus(String action, int status, int track_pos, Bundle data) {
         ImageView play_button = findViewById(R.id.aplayer_play);
         playerStatus = status;
@@ -326,14 +334,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
         time_tv.setText(String.format("%d:%02d", position / 60 / 1000, (position / 1000) % 60));
         TextView duration_tv = findViewById(R.id.aplayer_duration);
         duration_tv.setText(String.format("%d:%02d", duration / 60 / 1000, (duration / 1000) % 60));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

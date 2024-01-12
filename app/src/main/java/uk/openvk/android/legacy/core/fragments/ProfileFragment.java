@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.api.entities.User;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
@@ -75,7 +76,7 @@ import static android.view.View.GONE;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends ActiviableFragment {
     private View view;
     private boolean showExtended;
     public boolean loading_more_posts;
@@ -158,7 +159,7 @@ public class ProfileFragment extends Fragment {
             if (getActivity() instanceof NetworkFragmentActivity) {
                 NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
                 if(user != null) {
-                    if (user.id == activity.ovk_api.account.id || user.deactivated == null) {
+                    if (user.id == activity.ovk_api.account.id || user.deactivated != null) {
                         menu.findItem(R.id.remove_friend).setVisible(false);
                     } else {
                         if (user.friends_status == 0 || user.friends_status == 2)
@@ -584,6 +585,21 @@ public class ProfileFragment extends Fragment {
                 popup_menu.getMenu().clear();
             }
             popup_menu.inflate(R.menu.profile);
+            if(popup_menu != null && popup_menu.getMenu().size() > 0) {
+                if (getActivity() instanceof NetworkFragmentActivity) {
+                    NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
+                    if(user != null) {
+                        if (user.id == activity.ovk_api.account.id || user.deactivated != null) {
+                            popup_menu.getMenu().findItem(R.id.remove_friend).setVisible(false);
+                        } else {
+                            if (user.friends_status == 0 || user.friends_status == 2)
+                                popup_menu.getMenu().findItem(R.id.remove_friend).setTitle(
+                                        getResources().getString(R.string.profile_add_friend)
+                                );
+                        }
+                    }
+                }
+            }
 
             dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
                     new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(

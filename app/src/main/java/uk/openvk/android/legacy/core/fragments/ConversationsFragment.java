@@ -18,6 +18,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Account;
 import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
@@ -38,7 +39,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ConversationsFragment extends Fragment {
+public class ConversationsFragment extends ActiviableFragment {
     private ArrayList<Conversation> conversations;
     private ConversationsListAdapter conversationsAdapter;
     private RecyclerView convListView;

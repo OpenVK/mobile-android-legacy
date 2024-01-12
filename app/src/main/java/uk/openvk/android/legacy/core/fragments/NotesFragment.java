@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.entities.Note;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.ui.list.adapters.NotesListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
@@ -37,7 +38,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class NotesFragment extends Fragment {
+public class NotesFragment extends ActiviableFragment {
     public TextView titlebar_title;
     public String state;
     public String send_request;

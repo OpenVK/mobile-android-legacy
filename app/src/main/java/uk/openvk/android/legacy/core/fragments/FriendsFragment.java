@@ -26,6 +26,7 @@ import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.Friend;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
@@ -50,7 +51,7 @@ import uk.openvk.android.legacy.ui.views.TabSelector;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends ActiviableFragment {
     public TextView titlebar_title;
     public String state;
     public String send_request;
