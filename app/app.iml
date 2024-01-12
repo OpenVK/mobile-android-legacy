@@ -161,9 +161,5 @@
     <orderEntry type="module" module-name="wrhttp" exported="" />
     <orderEntry type="module" module-name="twemojicon" exported="" />
     <orderEntry type="module" module-name="popupmenu" exported="" />
-    <orderEntry type="module" module-name="actionbar" exported="" />
-    <orderEntry type="module" module-name="wrhttp" exported="" />
-    <orderEntry type="module" module-name="twemojicon" exported="" />
-    <orderEntry type="module" module-name="popupmenu" exported="" />
   </component>
 </module>
