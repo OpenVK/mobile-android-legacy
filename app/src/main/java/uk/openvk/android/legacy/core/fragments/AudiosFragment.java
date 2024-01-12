@@ -210,15 +210,17 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
                                 return true;
                             }
                         };
-                searchView.setMaxWidth(
-                        (int)(
-                            getResources().getDisplayMetrics().widthPixels -
-                            ((44 * dp))
-                        )
-                );
-                searchView.setPadding(
-                        0, (int)(4 * dp), 0, (int)(4 * dp)
-                );
+                if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                    searchView.setMaxWidth((int) (320 * dp));
+                } else {
+                    searchView.setMaxWidth(
+                            (int) (
+                                    getResources().getDisplayMetrics().widthPixels -
+                                            ((44 * dp))
+                            )
+                    );
+                }
+                searchView.setPadding(0, (int)(4 * dp), 0, (int)(4 * dp));
                 searchView.setQueryHint(getResources().getString(R.string.search));
                 searchView.setOnQueryTextListener(queryTextListener);
             }
