@@ -21,14 +21,12 @@
         Current list of instances: https://github.com/openvk/openvk/wiki/Instances
     !-->
     <string-array name="official_instances_list" translable="false">
-        <item>openvk.uk|HTTPS</item>
-        <item>openvk.su|HTTPS</item>
+        <item>ovk.to|HTTPS</item>
         <item>openvk.xyz|HTTP</item>
     </string-array>
     <string-array name="instances_list" translable="false">
         <item>social.fetbuk.ru|HTTPS</item>
         <item>vepurovk.xyz|HTTPS</item>
         <item>vepurovk.fun|HTTP</item>
-        <item>ovk.tinelix.ru|HTTP</item>
     </string-array>
 </resources>

@@ -87,6 +87,7 @@ public class ProfileFragment extends Fragment {
     private User user;
     private android.support.v7.widget.PopupMenu popup_menu;
     private OpenVKAPI ovk_api;
+    private boolean isActivated;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -200,7 +201,9 @@ public class ProfileFragment extends Fragment {
     public void updateLayout(OpenVKAPI ovk_api, final WindowManager wm) {
         this.ovk_api = ovk_api;
         this.user = ovk_api.user;
-        refreshOptionsMenu();
+        isActivated = !(getActivity() instanceof AppActivity) ||
+                ((AppActivity) getActivity()).selectedFragment instanceof ProfileFragment;
+        if (isActivated) refreshOptionsMenu();
         ProfileHeader header = view.findViewById(R.id.profile_header);
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
         header.setOnline(user.online);
@@ -221,7 +224,7 @@ public class ProfileFragment extends Fragment {
                         R.plurals.profile_mutual_friends, 0), "");
         ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
         (view.findViewById(R.id.wall_error_layout)).setVisibility(GONE);
-        if(user.deactivated == null) {
+        if (user.deactivated == null) {
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setBirthdate("");
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setStatus(user.status);
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setInterests(
@@ -234,8 +237,8 @@ public class ProfileFragment extends Fragment {
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                            ((OvkApplication)getContext().getApplicationContext()).isTablet &&
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
+                            ((OvkApplication) getContext().getApplicationContext()).isTablet &&
                             getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
                         View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_ll);
                         if (aboutProfile.getVisibility() == GONE) {
@@ -552,9 +555,7 @@ public class ProfileFragment extends Fragment {
                 loadedFromCache = true;
                 wallLayout.createAdapter(ctx, posts);
                 loading_more_posts = true;
-                setScrollingPositions(
-                        ctx, false
-                );
+                setScrollingPositions(ctx, false);
             } else {
                 ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
             }
@@ -576,10 +577,14 @@ public class ProfileFragment extends Fragment {
             getActivity().invalidateOptionsMenu();
         } else {
             ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+            actionBar.removeAllActions();
             if(popup_menu == null) {
                 popup_menu = new android.support.v7.widget.PopupMenu(getContext(), null);
+            } else {
+                popup_menu.getMenu().clear();
             }
             popup_menu.inflate(R.menu.profile);
+
             dev.tinelix.retro_ab.ActionBar.PopupMenuAction action =
                     new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(
                             getContext(), "", popup_menu.getMenu(),
@@ -598,5 +603,15 @@ public class ProfileFragment extends Fragment {
         if(wallLayout.isActivatedAP)
             wallLayout.closeAudioPlayer();
         super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

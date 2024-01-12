@@ -837,6 +837,8 @@ public class CustomViewAbove extends ViewGroup {
 			mViewBehind.drawShadow(mContent, canvas);
 			mViewBehind.drawFade(mContent, canvas, getPercentOpen());
 			mViewBehind.drawSelector(mContent, canvas, getPercentOpen());
+		} catch (StackOverflowError ignored) {
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
