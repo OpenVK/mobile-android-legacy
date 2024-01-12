@@ -485,7 +485,11 @@ public class ProfileFragment extends ActiviableFragment {
         p2r_view.refreshComplete();
         OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
         rhl.enableDarkTheme();
-        p2r_view.setCustomHeadview(rhl);
+        try {
+            p2r_view.setCustomHeadview(rhl);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         p2r_view.setTriggerDistance(80);
         p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override

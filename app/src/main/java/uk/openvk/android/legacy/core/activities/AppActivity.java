@@ -326,7 +326,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     private void createSlidingMenu(boolean isTablet) {
         slidingmenuLayout = new SlidingMenuLayout(this);
-        if(isTablet) {
+        if(!isTablet) {
             while(slidingmenuLayout == null) {
                 slidingmenuLayout = new SlidingMenuLayout(this);
             }
@@ -369,7 +369,7 @@ public class AppActivity extends NetworkFragmentActivity {
                             });
                 }
             } catch (Exception ex) {
-                createSlidingMenu(true);
+                createSlidingMenu(false);
                 return;
             }
         }
