@@ -59,7 +59,7 @@ You may also find them useful for developing applications that support very old 
 [GNU Affero GPL v3.0](COPYING) or later version.
 
 ## Links
-[OpenVK API docs](https://docs.openvk.su/openvk_engine/api/description/)\
+[OpenVK API docs](https://docs.openvk.su/openvk_engine/en/api/description/)\
 [OpenVK Mobile](https://openvk.uk/app)
 
 <a href="https://codeberg.org/OpenVK/mobile-android-legacy">
