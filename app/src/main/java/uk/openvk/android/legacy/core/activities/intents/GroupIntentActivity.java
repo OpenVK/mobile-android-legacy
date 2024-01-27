@@ -479,10 +479,9 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     }
 
     private void setJoinButtonListener(long id) {
-        View aboutGroup = findViewById(R.id.about_group_ll);
         float smallestWidth = Global.getSmalledWidth(getWindowManager());
         if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
-            final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
+            final Button join_btn = (findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -494,14 +493,14 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 }
             });
             if(group.is_member > 0) {
-                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+                join_btn.setText(R.string.leave_group);
             } else {
-                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+                join_btn.setText(R.string.join_group);
             }
             join_btn.setVisibility(View.VISIBLE);
         } else if(((OvkApplication)getApplicationContext()).isTablet &&
                 smallestWidth < 800) {
-            final ImageButton join_btn = ((ImageButton) findViewById(R.id.join_to_comm));
+            final Button join_btn = (findViewById(R.id.join_to_comm));
             join_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -513,9 +512,9 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 }
             });
             if(group.is_member > 0) {
-                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+                join_btn.setText(R.string.leave_group);
             } else {
-                join_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+                join_btn.setText(R.string.join_group);
             }
             join_btn.setVisibility(View.VISIBLE);
         } else {
@@ -579,20 +578,11 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
             public void onClick(View view) {
                 float smallestWidth = Global.getSmalledWidth(getWindowManager());
                 toggleExtendedInfo();
-                if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
-                    View aboutGroup = findViewById(R.id.about_group_ll);
-                    if (aboutGroup.getVisibility() == View.GONE) {
-                        aboutGroup.setVisibility(View.VISIBLE);
-                    } else {
-                        aboutGroup.setVisibility(View.GONE);
-                    }
+                View aboutGroup = findViewById(R.id.about_group_layout);
+                if (aboutGroup.getVisibility() == View.GONE) {
+                    aboutGroup.setVisibility(View.VISIBLE);
                 } else {
-                    View aboutGroup = findViewById(R.id.about_group_layout);
-                    if (aboutGroup.getVisibility() == View.GONE) {
-                        aboutGroup.setVisibility(View.VISIBLE);
-                    } else {
-                        aboutGroup.setVisibility(View.GONE);
-                    }
+                    aboutGroup.setVisibility(View.GONE);
                 }
             }
         });

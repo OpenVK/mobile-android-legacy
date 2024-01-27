@@ -36,7 +36,7 @@ public class AboutGroupLayout extends LinearLayout {
     public AboutGroupLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view = LayoutInflater.from(getContext()).inflate(
-                R.layout.block_group_about, null);
+                R.layout.layout_group_about, null);
 
         this.addView(view);
 
