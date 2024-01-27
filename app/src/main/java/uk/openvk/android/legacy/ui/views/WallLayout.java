@@ -320,23 +320,7 @@ public class WallLayout extends LinearLayout {
     }
 
     public void adjustLayoutSize(int orientation) {
-        if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                wallView = (RecyclerView) findViewById(R.id.wall_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
-                        (600 * (getResources().getDisplayMetrics().density)),
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                wallView.setLayoutParams(layoutParams);
-            } else {
-                wallView = (RecyclerView) findViewById(R.id.wall_listview);
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
-                        (500 * (getResources().getDisplayMetrics().density)),
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                wallView.setLayoutParams(layoutParams);
-            }
-        } else {
+        if (!((OvkApplication) getContext().getApplicationContext()).isTablet) {
             wallView = (RecyclerView) findViewById(R.id.wall_listview);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 LinearLayout.LayoutParams layoutParams = new LayoutParams((int)

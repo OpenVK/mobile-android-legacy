@@ -47,16 +47,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
+                android:minHeight="400dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="164dp"
+                    android:layout_width="180dp"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <FrameLayout
                         android:id="@+id/profile_photo_wrap"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentTop="true"
@@ -69,11 +70,59 @@
 
                         <ImageView
                             android:id="@+id/profile_photo"
-                            android:layout_width="151dp"
-                            android:layout_height="151dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="160dp"
+                            android:adjustViewBounds="false"
                             android:scaleType="centerCrop"
                             android:src="@drawable/photo_loading_black" />
+
                     </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/friend_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dip"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dip"
+                        android:layout_marginRight="4dip"
+                        android:layout_marginStart="8dp"
+                        android:gravity="center_horizontal"
+                        android:text="@string/friend_status_friend"
+                        android:textColor="@color/timestamp_color"
+                        android:textSize="16sp"
+                        android:textStyle="italic" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="38dip"
+                        android:layout_marginBottom="6dip"
+                        android:layout_marginLeft="8dip"
+                        android:layout_marginRight="4dip"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/send_direct_msg"
+                            style="@style/BlueButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="@string/message"
+                            android:textSize="16sp"
+                            tools:ignore="InefficientWeight,RtlHardcoded" />
+
+                        <ImageButton
+                            android:id="@+id/add_to_friends"
+                            android:layout_width="40dip"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="4dip"
+                            android:background="@drawable/btn_light_blue"
+                            android:cropToPadding="false"
+                            android:src="@drawable/ic_ab_add"
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription,RtlHardcoded" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -91,60 +140,29 @@
                         <uk.openvk.android.legacy.ui.views.ProfileHeader
                             android:id="@+id/profile_header"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content">
+
+                        </uk.openvk.android.legacy.ui.views.ProfileHeader>
 
                         <uk.openvk.android.legacy.ui.views.AboutProfileLayout
                             android:id="@+id/about_profile_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="gone" />
+                            android:visibility="gone">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="6dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginLeft="8dp"
-                            android:layout_marginRight="8dp"
-                            android:layout_marginStart="8dp"
-                            android:orientation="horizontal">
-
-                            <Button
-                                android:id="@+id/send_direct_msg"
-                                style="@style/BlueButton"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:layout_weight="1"
-                                android:text="@string/message"
-                                android:textSize="20sp"
-                                tools:ignore="InefficientWeight,RtlHardcoded" />
-
-                            <ImageButton
-                                android:id="@+id/add_to_friends"
-                                android:layout_width="60dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="4dp"
-                                android:background="@drawable/btn_light_blue"
-                                android:src="@drawable/ic_ab_add"
-                                android:visibility="gone"
-                                tools:ignore="ContentDescription,RtlHardcoded" />
-
-                        </LinearLayout>
+                        </uk.openvk.android.legacy.ui.views.AboutProfileLayout>
 
                         <TextView
-                            android:id="@+id/friend_status"
+                            android:id="@+id/deactivated_info"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginStart="8dp"
-                            android:gravity="center_horizontal"
-                            android:text="@string/friend_status_friend"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:padding="8dp"
+                            android:text="@string/profile_inactive_deleted"
                             android:textColor="@color/timestamp_color"
-                            android:textSize="18sp"
-                            android:textStyle="italic" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
 
                         <TableRow
                             android:id="@+id/profile_counters"
@@ -187,17 +205,6 @@
                         </TableRow>
 
                     </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/deactivated_info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="@string/profile_inactive_deleted"
-                        android:textColor="@color/timestamp_color"
-                        android:textSize="16sp"
-                        android:visibility="gone" />
 
                     <uk.openvk.android.legacy.ui.views.ProfileWallSelector
                         android:id="@+id/wall_selector"

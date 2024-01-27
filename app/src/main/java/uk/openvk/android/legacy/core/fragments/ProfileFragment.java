@@ -117,8 +117,6 @@ public class ProfileFragment extends ActiviableFragment {
                 Global.openNewPostActivity(getActivity(), ovk_api);
             }
         });
-        ((WallLayout) view.findViewById(R.id.wall_layout)).adjustLayoutSize(getResources()
-                .getConfiguration().orientation);
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
             view.findViewById(R.id.profile_ext_header)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
@@ -251,7 +249,9 @@ public class ProfileFragment extends ActiviableFragment {
             ((ProfileWallSelector) view.findViewById(R.id.wall_selector)).setUserName(user.first_name);
         } else {
             view.findViewById(R.id.profile_counters).setVisibility(GONE);
+            header.findViewById(R.id.profile_activity).setVisibility(GONE);
             (view.findViewById(R.id.deactivated_info)).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.send_direct_msg).setVisibility(GONE);
         }
         adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
     }
@@ -634,8 +634,8 @@ public class ProfileFragment extends ActiviableFragment {
             InfinityScrollView.LayoutParams lp = ((InfinityScrollView.LayoutParams)
                     placeholder.getLayoutParams());
             if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                lp.leftMargin = 180 * dp;
-                lp.rightMargin = 180 * dp;
+                lp.leftMargin = 160 * dp;
+                lp.rightMargin = 160 * dp;
             } else {
                 lp.leftMargin = 15 * dp;
                 lp.rightMargin = 15 * dp;

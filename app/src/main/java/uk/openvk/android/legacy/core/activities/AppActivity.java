@@ -155,8 +155,7 @@ public class AppActivity extends NetworkFragmentActivity {
         if(((OvkApplication) getApplicationContext()).isTablet) {
             newsfeedFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
             try {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                        .adjustLayoutSize(getResources().getConfiguration().orientation);
+                profileFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
             } catch (Exception ignored) {
             }
         }

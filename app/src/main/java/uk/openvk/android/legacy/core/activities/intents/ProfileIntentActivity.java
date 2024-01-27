@@ -107,7 +107,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout)).adjustLayoutSize(
+        profileFragment.adjustLayoutSize(
                 getResources().getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
     }
