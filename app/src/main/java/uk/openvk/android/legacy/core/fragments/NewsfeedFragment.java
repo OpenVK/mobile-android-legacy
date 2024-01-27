@@ -390,6 +390,9 @@ public class NewsfeedFragment extends ActiviableFragment {
     public void onDeactivated() {
         super.onDeactivated();
         clearOptionsMenu();
+        if(getActivity() instanceof AppActivity) {
+            ((AppActivity) getActivity()).setActionBar("");
+        }
     }
 
     @Override
