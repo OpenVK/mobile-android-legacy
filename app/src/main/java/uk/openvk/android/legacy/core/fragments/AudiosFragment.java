@@ -226,6 +226,7 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
                         };
                 if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
                     searchView.setMaxWidth((int) (320 * dp));
+                    searchView.setPadding(0, (int)(4 * dp), 0, (int)(4 * dp));
                 } else {
                     searchView.setMaxWidth(
                             (int) (
@@ -233,8 +234,9 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
                                             ((44 * dp))
                             )
                     );
+                    searchView.setPadding(0, (int)(2 * dp), 0, (int)(2 * dp));
                 }
-                searchView.setPadding(0, (int)(4 * dp), 0, (int)(4 * dp));
+
                 searchView.setQueryHint(getResources().getString(R.string.search));
                 searchView.setOnQueryTextListener(queryTextListener);
             }
