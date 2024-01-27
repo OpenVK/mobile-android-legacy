@@ -47,11 +47,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:minHeight="400dp"
+                android:minHeight="500dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="180dp"
+                    android:layout_width="200dp"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
@@ -71,8 +71,8 @@
                         <ImageView
                             android:id="@+id/profile_photo"
                             android:layout_width="match_parent"
-                            android:layout_height="160dp"
-                            android:adjustViewBounds="false"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
                             android:src="@drawable/photo_loading_black" />
 
@@ -140,28 +140,23 @@
                         <uk.openvk.android.legacy.ui.views.ProfileHeader
                             android:id="@+id/profile_header"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                        </uk.openvk.android.legacy.ui.views.ProfileHeader>
-
-                        <uk.openvk.android.legacy.ui.views.AboutProfileLayout
-                            android:id="@+id/about_profile_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone">
-
-                        </uk.openvk.android.legacy.ui.views.AboutProfileLayout>
+                            android:layout_height="wrap_content" />
 
                         <TextView
                             android:id="@+id/deactivated_info"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:gravity="center"
                             android:padding="8dp"
                             android:text="@string/profile_inactive_deleted"
                             android:textColor="@color/timestamp_color"
                             android:textSize="16sp"
+                            android:visibility="gone" />
+
+                        <uk.openvk.android.legacy.ui.views.AboutProfileLayout
+                            android:id="@+id/about_profile_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:visibility="gone" />
 
                         <TableRow
