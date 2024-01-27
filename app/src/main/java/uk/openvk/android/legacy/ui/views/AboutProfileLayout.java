@@ -44,7 +44,7 @@ public class AboutProfileLayout extends LinearLayout {
     public AboutProfileLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view = LayoutInflater.from(getContext()).inflate(
-                R.layout.profile_about, null);
+                R.layout.layout_profile_about, null);
 
         this.addView(view);
 

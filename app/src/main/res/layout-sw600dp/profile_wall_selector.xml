@@ -27,7 +27,7 @@
     android:paddingTop="4dip">
 
     <LinearLayout
-        android:layout_width="360dp"
+        android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="false"

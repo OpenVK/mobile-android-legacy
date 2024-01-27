@@ -4,6 +4,8 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -238,22 +240,11 @@ public class ProfileFragment extends ActiviableFragment {
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                            ((OvkApplication) getContext().getApplicationContext()).isTablet &&
-                            getContext().getResources().getConfiguration().smallestScreenWidthDp >= 800) {
-                        View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_ll);
-                        if (aboutProfile.getVisibility() == GONE) {
-                            aboutProfile.setVisibility(View.VISIBLE);
-                        } else {
-                            aboutProfile.setVisibility(GONE);
-                        }
+                    View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_layout);
+                    if (aboutProfile.getVisibility() == GONE) {
+                        aboutProfile.setVisibility(View.VISIBLE);
                     } else {
-                        View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_layout);
-                        if (aboutProfile.getVisibility() == GONE) {
-                            aboutProfile.setVisibility(View.VISIBLE);
-                        } else {
-                            aboutProfile.setVisibility(GONE);
-                        }
+                        aboutProfile.setVisibility(GONE);
                     }
                 }
             });
@@ -262,6 +253,7 @@ public class ProfileFragment extends ActiviableFragment {
             view.findViewById(R.id.profile_counters).setVisibility(GONE);
             (view.findViewById(R.id.deactivated_info)).setVisibility(View.VISIBLE);
         }
+        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
     }
 
     public void toggleExtendedInfo() {
@@ -633,5 +625,25 @@ public class ProfileFragment extends ActiviableFragment {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    public void adjustLayoutSize(int orientation) {
+        int dp = (int) getResources().getDisplayMetrics().scaledDensity;
+        if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            View placeholder = view.findViewById(R.id.tablet_profile_placeholder);
+            InfinityScrollView.LayoutParams lp = ((InfinityScrollView.LayoutParams)
+                    placeholder.getLayoutParams());
+            if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                lp.leftMargin = 180 * dp;
+                lp.rightMargin = 180 * dp;
+            } else {
+                lp.leftMargin = 15 * dp;
+                lp.rightMargin = 15 * dp;
+            }
+            placeholder.setLayoutParams(lp);
+        } else {
+            wallLayout.adjustLayoutSize(orientation);
+        }
+
     }
 }

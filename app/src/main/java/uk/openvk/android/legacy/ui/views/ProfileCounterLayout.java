@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 
 /** Copyleft © 2022, 2023 OpenVK Team
@@ -35,17 +36,21 @@ public class ProfileCounterLayout extends LinearLayout {
         super(context, attrs);
         View view = null;
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-            view =  LayoutInflater.from(getContext()).inflate(
-                    R.layout.profile_counter_gray, null);
-        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-            view =  LayoutInflater.from(getContext()).inflate(
-                    R.layout.profile_counter_black, null);
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                view = LayoutInflater.from(getContext()).inflate(
+                        R.layout.profile_counter_gray, null);
+            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                view = LayoutInflater.from(getContext()).inflate(
+                        R.layout.profile_counter_black, null);
+            } else {
+                view = LayoutInflater.from(getContext()).inflate(
+                        R.layout.profile_counter, null);
+            }
         } else {
-            view =  LayoutInflater.from(getContext()).inflate(
-                    R.layout.profile_counter, null);
+            view = LayoutInflater.from(getContext()).inflate(
+                    R.layout.profile_counter_light, null);
         }
-
         this.addView(view);
 
         LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();

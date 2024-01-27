@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
@@ -159,7 +161,10 @@ public class ProfileHeader extends RelativeLayout {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
            ImageSpan imageSpan;
-           imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
+           if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
+               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
+           else
+               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
            ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
@@ -167,6 +172,7 @@ public class ProfileHeader extends RelativeLayout {
     }
 
     public void setAvatarPlaceholder(String picture) {
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
         if(picture.equals("common_user")) {
             ((ImageView) findViewById(R.id.profile_photo)).setImageDrawable(
                     getResources().getDrawable(R.drawable.profile_user_placeholder));
@@ -179,6 +185,7 @@ public class ProfileHeader extends RelativeLayout {
 
     public void createProfilePhotoViewer(
             final long user_id, final String original_url) {
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
         ((ImageView) findViewById(R.id.profile_photo)).setOnClickListener(
                 new OnClickListener() {
                     @Override

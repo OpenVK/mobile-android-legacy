@@ -308,10 +308,9 @@ public class AppActivity extends NetworkFragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        // Adjusting layout for Mobile UI or Tablet UI
+        // Adjusting layout for Mobile UI and Tablet UI
         newsfeedFragment.adjustLayoutSize(newConfig.orientation);
-        ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
-                .adjustLayoutSize(newConfig.orientation);
+        profileFragment.adjustLayoutSize(newConfig.orientation);
         if(!((OvkApplication) getApplicationContext()).isTablet) {
             menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
