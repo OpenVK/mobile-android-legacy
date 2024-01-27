@@ -51,6 +51,7 @@ import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.list.adapters.AudiosListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
+import uk.openvk.android.legacy.ui.views.OvkSearchView;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
@@ -158,18 +159,11 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
         SearchManager searchManager =
                 (SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
         searchView = null;
-        float dp = getResources().getDisplayMetrics().scaledDensity;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(searchManager != null) {
-                searchView = (SearchView) menu.findItem(R.id.audio_search)
+                searchView = (OvkSearchView) menu.findItem(R.id.audio_search)
                         .getActionView();
-                int[] searchViewIds = Global.generateSearchViewIds(getResources());
-                final ImageView search_btn = searchView.findViewById(searchViewIds[0]);
-                final View search_plate = searchView.findViewById(searchViewIds[1]);
-                final TextView query_tv = searchView.findViewById(searchViewIds[2]);
-                final ImageView search_mag_icon = searchView.findViewById(searchViewIds[3]);
-                final ImageView search_close_btn = searchView.findViewById(searchViewIds[4]);
-                search_btn.setImageResource(R.drawable.ic_ab_search);
+
                 searchView.setSearchableInfo(
                         searchManager.getSearchableInfo(getActivity().getComponentName()));
                 final ActionBar ab = getActivity().getActionBar();
@@ -177,17 +171,6 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
                     @SuppressLint("NewApi")
                     @Override
                     public void onClick(View view) {
-                        search_plate.setBackgroundDrawable(
-                                getResources().getDrawable(R.drawable.login_fields)
-                        );
-                        search_mag_icon.setImageDrawable(
-                                getResources().getDrawable(R.drawable.ic_ab_search_light)
-                        );
-                        search_close_btn.setImageDrawable(
-                                getResources().getDrawable(R.drawable.ic_search_clear)
-                        );
-                        query_tv.setTextColor(Color.BLACK);
-
                         if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
                             if (ab != null)
                                 ab.getCustomView()
@@ -224,20 +207,7 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
                                 return true;
                             }
                         };
-                if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
-                    searchView.setMaxWidth((int) (320 * dp));
-                    searchView.setPadding(0, (int)(4 * dp), 0, (int)(4 * dp));
-                } else {
-                    searchView.setMaxWidth(
-                            (int) (
-                                    getResources().getDisplayMetrics().widthPixels -
-                                            ((44 * dp))
-                            )
-                    );
-                    searchView.setPadding(0, (int)(2 * dp), 0, (int)(2 * dp));
-                }
 
-                searchView.setQueryHint(getResources().getString(R.string.search));
                 searchView.setOnQueryTextListener(queryTextListener);
             }
         } else {

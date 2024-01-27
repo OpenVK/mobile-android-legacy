@@ -24,7 +24,7 @@
 		android:showAsAction="always"
 		android:title="@string/search"
 		android:visible="true"
-		android:actionViewClass="android.widget.SearchView"
+		android:actionViewClass="uk.openvk.android.legacy.ui.views.OvkSearchView"
 		tools:ignore="AppCompatResource"
 		tools:targetApi="honeycomb" />
 </menu>

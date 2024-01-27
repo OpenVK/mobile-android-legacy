@@ -101,10 +101,12 @@ public class Global {
 
     public boolean isTablet() {
         if(ctx != null) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                DisplayMetrics dismetrics = ctx.getResources().getDisplayMetrics();
-                float dpWidth = dismetrics.widthPixels / dismetrics.density;
-                return dpWidth >= 600;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                return ctx.getResources().getConfiguration().smallestScreenWidthDp >= 600;
+            } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                return (ctx.getResources().getConfiguration().screenLayout
+                        & Configuration.SCREENLAYOUT_SIZE_MASK)
+                        >= Configuration.SCREENLAYOUT_SIZE_LARGE;
             } else {
                 return false;
             }
