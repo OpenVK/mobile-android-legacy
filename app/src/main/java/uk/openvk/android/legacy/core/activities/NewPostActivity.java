@@ -208,7 +208,6 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     }
 
     private void setUiListeners() {
-
         findViewById(R.id.newpost_btn_photo).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -343,7 +342,6 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 }
             }
         });
-
     }
 
     @Override
@@ -485,7 +483,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 int pos = attachmentsAdapter.searchByFileName(filename);
                 attach = attachments.get(pos);
                 attach.progress = attach.length;
-                attach.status = "uploaded";
+                attach.status = "saving";
                 attachments.set(pos, attach);
                 attachmentsAdapter.notifyDataSetChanged();
                 ovk_api.photos.saveWallPhoto(ovk_api.wrapper, params.photo, params.hash);
@@ -507,6 +505,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                             activity_menu.getItem(0).setEnabled(true);
                         }
                     }
+                    attach.status = "uploaded";
+                    attachments.set(pos, attach);
+                    attachmentsAdapter.notifyDataSetChanged();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

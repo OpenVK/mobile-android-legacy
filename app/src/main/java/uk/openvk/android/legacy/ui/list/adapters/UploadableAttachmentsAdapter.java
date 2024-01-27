@@ -116,6 +116,8 @@ public class UploadableAttachmentsAdapter extends
                 } else {
                     if(attach.status.equals("uploaded")) {
                         progress_layout.setVisibility(View.GONE);
+                    } else {
+                        progress_status.setText(ctx.getResources().getString(R.string.saving));
                     }
                 }
 

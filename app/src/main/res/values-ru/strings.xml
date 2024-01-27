@@ -1081,4 +1081,5 @@
     <string name="notes">Заметки</string>
 
     <string name="report_content">Пожаловаться</string>
+    <string name="saving">Сохранение...</string>
 </resources>

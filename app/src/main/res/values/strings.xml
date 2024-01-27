@@ -312,6 +312,7 @@
 	<string name="audio_add_error">Error adding audio file</string>
 	<string name="status">Status</string>
 	<string name="save">Save</string>
+	<string name="saving">Saving...</string>
 	<string name="sett_account">Your account</string>
 	<string name="log_out">Log out</string>
     <string name="change_account">Change account</string>
@@ -1155,4 +1156,5 @@
 	<string name="notes">Notes</string>
 
 	<string name="report_content">Report</string>
+    <string name="auth_error_deleted">You cannot log into your account because your page has been deleted. If you think an error has occurred, please restore it or contact support.</string>
 </resources>

@@ -308,6 +308,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        // Adjusting layout for Mobile UI or Tablet UI
         newsfeedFragment.adjustLayoutSize(newConfig.orientation);
         ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
                 .adjustLayoutSize(newConfig.orientation);

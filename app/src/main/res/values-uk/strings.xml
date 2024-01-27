@@ -1248,4 +1248,6 @@
     <string name="notes">Нонатки</string>
 
     <string name="report_content">Поскаржитись</string>
+    <string name="saving">Збереження...</string>
+    <string name="auth_error_deleted">Ви не можете увійти в обліковий запис, оскільки Вашу сторінку видалено. Якщо Ви вважаєте, що виникла помилка, відновіть її або зверніться до служби підтримки.</string>
 </resources>
