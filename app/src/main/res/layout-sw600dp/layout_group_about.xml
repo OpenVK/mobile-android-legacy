@@ -57,14 +57,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/group_descr"
                     android:textAllCaps="true"
-                    android:textColor="#888888" />
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/description_label2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Group description"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -84,7 +85,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/group_site"
                     android:textAllCaps="true"
-                    android:textColor="#888888" />
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/site_label2"
@@ -94,7 +96,7 @@
                     android:text="Group website"
                     android:textColorHighlight="@color/ovk_color"
                     android:textColorLink="@color/ovk_color"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
