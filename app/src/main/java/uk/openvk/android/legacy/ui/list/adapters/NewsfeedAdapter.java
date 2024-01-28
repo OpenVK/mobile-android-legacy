@@ -11,7 +11,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,18 +31,15 @@ import java.util.ArrayList;
 import dev.tinelix.retro_pm.MenuItem;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.OvkExpandableText;
 import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
-import uk.openvk.android.legacy.core.fragments.ProfileFragment;
-import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.views.PostAttachmentsView;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 
@@ -528,10 +524,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
                 newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
-                if (((AppActivity) ctx).selectedFragment instanceof ProfileFragment) {
-                    ProfileFragment profileFragment = ((AppActivity) ctx).profileFragment;
-                    if(profileFragment.getView() != null) {
-                        wallLayout = profileFragment.getView().findViewById(R.id.wall_layout);
+                if (((AppActivity) ctx).selectedFragment instanceof ProfilePageFragment) {
+                    ProfilePageFragment profilePageFragment = ((AppActivity) ctx).profilePageFragment;
+                    if(profilePageFragment.getView() != null) {
+                        wallLayout = profilePageFragment.getView().findViewById(R.id.wall_layout);
                         if (wallLayout != null) {
                             wallLayout.select(position, "likes", "add");
                         } else {
@@ -547,9 +543,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
             } else if(ctx instanceof ProfileIntentActivity) {
                 ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-                ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
-                if(profileFragment.getView() != null) {
-                    wallLayout = (profileFragment.getView().findViewById(R.id.wall_layout));
+                ProfilePageFragment profilePageFragment = ((ProfileIntentActivity) ctx).profilePageFragment;
+                if(profilePageFragment.getView() != null) {
+                    wallLayout = (profilePageFragment.getView().findViewById(R.id.wall_layout));
                 } else {
                     return;
                 }
@@ -573,9 +569,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
             } else if(ctx instanceof ProfileIntentActivity) {
                 ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-                ProfileFragment profileFragment = ((ProfileIntentActivity) ctx).profileFragment;
-                if(profileFragment.getView() != null) {
-                    wallLayout = (profileFragment.getView().findViewById(R.id.wall_layout));
+                ProfilePageFragment profilePageFragment = ((ProfileIntentActivity) ctx).profilePageFragment;
+                if(profilePageFragment.getView() != null) {
+                    wallLayout = (profilePageFragment.getView().findViewById(R.id.wall_layout));
                 } else {
                     return;
                 }

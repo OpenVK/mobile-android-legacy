@@ -1,7 +1,6 @@
 package uk.openvk.android.legacy.ui.views.attach;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,23 +16,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.attachments.CommonAttachment;
 import uk.openvk.android.legacy.api.entities.Audio;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
-import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.views.WallLayout;
-
-import static android.content.Context.BIND_AUTO_CREATE;
 
 /** Copyleft © 2022, 2023 OpenVK Team
  *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
@@ -100,9 +92,9 @@ public class AudioAttachView extends FrameLayout {
                             default:
                                 WallLayout wallLayout = null;
                                 if(ctx instanceof AppActivity) {
-                                    wallLayout = ((AppActivity) ctx).profileFragment.wallLayout;
+                                    wallLayout = ((AppActivity) ctx).profilePageFragment.wallLayout;
                                 } else if(ctx instanceof ProfileIntentActivity) {
-                                    wallLayout = ((ProfileIntentActivity) ctx).profileFragment.wallLayout;
+                                    wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
                                 } else if(ctx instanceof GroupIntentActivity) {
                                     wallLayout = ((GroupIntentActivity) ctx).wallLayout;
                                 }
@@ -117,9 +109,9 @@ public class AudioAttachView extends FrameLayout {
                             case 1:
                                 wallLayout = null;
                                 if(ctx instanceof AppActivity) {
-                                    wallLayout = ((AppActivity) ctx).profileFragment.wallLayout;
+                                    wallLayout = ((AppActivity) ctx).profilePageFragment.wallLayout;
                                 } else if(ctx instanceof ProfileIntentActivity) {
-                                    wallLayout = ((ProfileIntentActivity) ctx).profileFragment.wallLayout;
+                                    wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
                                 } else if(ctx instanceof GroupIntentActivity) {
                                     wallLayout = ((GroupIntentActivity) ctx).wallLayout;
                                 }
@@ -134,9 +126,9 @@ public class AudioAttachView extends FrameLayout {
                             case 2:
                                 wallLayout = null;
                                 if(ctx instanceof AppActivity) {
-                                    wallLayout = ((AppActivity) ctx).profileFragment.wallLayout;
+                                    wallLayout = ((AppActivity) ctx).profilePageFragment.wallLayout;
                                 } else if(ctx instanceof ProfileIntentActivity) {
-                                    wallLayout = ((ProfileIntentActivity) ctx).profileFragment.wallLayout;
+                                    wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
                                 } else if(ctx instanceof GroupIntentActivity) {
                                     wallLayout = ((GroupIntentActivity) ctx).wallLayout;
                                 }

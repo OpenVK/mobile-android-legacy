@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
@@ -23,7 +24,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.api.entities.PollAnswer;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.fragments.pages.GroupPageFragment;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
@@ -88,16 +89,17 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     private ActionBar actionBar;
     private android.support.v7.widget.PopupMenu popup_menu;
     private boolean showExtended;
-    private boolean loading_more_posts;
     private String instance;
     public WallLayout wallLayout;
+    private FragmentTransaction ft;
+    private GroupPageFragment groupFragment;
 
     @SuppressWarnings("ConstantConditions")
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_group_page);
+        setContentView(R.layout.activity_intent);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -108,10 +110,6 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
-
-        wallLayout = findViewById(R.id.wall_layout);
-
-        instance = instance_prefs.getString("server", "");
 
         DisplayMetrics metrics = new DisplayMetrics();
         Display display = getWindowManager().getDefaultDisplay();
@@ -144,8 +142,8 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 return;
             }
         }
-        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().
-                getConfiguration().orientation);
+//        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().
+//                getConfiguration().orientation);
     }
 
     @Override
@@ -177,7 +175,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
             }
         }
         if(item.getItemId() == R.id.newpost) {
-            openNewPostActivity();
+            Global.openNewPostActivity(this, ovk_api);
         } else if(item.getItemId() == R.id.leave_group) {
             if(group != null) {
                 if (group.is_member > 0) {
@@ -205,8 +203,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        ((WallLayout) findViewById(R.id.wall_layout)).adjustLayoutSize(getResources().
-                getConfiguration().orientation);
+        groupFragment.adjustLayoutSize(newConfig.orientation);
         super.onConfigurationChanged(newConfig);
     }
 
@@ -236,25 +233,14 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     private void installLayouts() {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
-        groupScrollView = findViewById(R.id.group_scrollview);
-        groupScrollView.setVisibility(View.GONE);
+        groupFragment = new GroupPageFragment();
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.app_fragment, groupFragment, "group_page");
+        ft.commit();
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.show(groupFragment);
+        ft.commit();
         progressLayout.setVisibility(View.VISIBLE);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-            findViewById(R.id.profile_ext_header)
-                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-            findViewById(R.id.about_group_layout)
-                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-            findViewById(R.id.join_to_comm)
-                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
-        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-            findViewById(R.id.profile_ext_header)
-                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-            findViewById(R.id.about_group_layout)
-                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-            findViewById(R.id.join_to_comm)
-                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
-        }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
@@ -337,39 +323,16 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 } else {
                     ovk_api.groups.search(ovk_api.wrapper, args);
                 }
-                ProfileWallSelector selector = findViewById(R.id.wall_selector);
-                (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openNewPostActivity();
-                    }
-                });
-                selector.setToGroup();
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID
                     || message == HandlerMessages.GROUPS_SEARCH) {
                 group = ovk_api.groups.getList().get(0);
-                updateLayout(group);
+                groupFragment.loadAPIData(group);
                 progressLayout.setVisibility(View.GONE);
-                groupScrollView.setVisibility(View.VISIBLE);
-                setJoinButtonListener(group.id);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                groupFragment.setJoinButtonListener(group, ovk_api);
                 group.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
                 ovk_api.wall.get(ovk_api.wrapper, -group.id, 25);
-                if(group.is_member > 0) {
-                    findViewById(R.id.join_to_comm).setVisibility(View.GONE);
-                    if(activity_menu != null) {
-                        activity_menu.findItem(R.id.leave_group).setTitle(R.string.leave_group);
-                    }
-                } else {
-                    findViewById(R.id.join_to_comm).setVisibility(View.VISIBLE);
-                    if(activity_menu != null) {
-                        activity_menu.findItem(R.id.leave_group).setTitle(R.string.join_group);
-                    }
-                }
-                if(activity_menu != null) {
-                    for (int i = 0; i < activity_menu.size(); i++) {
-                        activity_menu.getItem(i).setVisible(true);
-                    }
-                }
+                groupFragment.refreshOptionsMenu();
             } else if (message == HandlerMessages.GROUPS_JOIN) {
                 Button join_btn = findViewById(R.id.join_to_comm);
                 join_btn.setText(R.string.leave_group);
@@ -385,36 +348,19 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 ovk_api.likes.parse(data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).select(ovk_api.likes.position, "likes", 0);
             } else if (message == HandlerMessages.GROUP_AVATARS) {
-                loadAvatar();
+                groupFragment.loadAvatar(group);
             } else if (message == HandlerMessages.WALL_GET) {
-                ((WallLayout) findViewById(R.id.wall_layout)).createAdapter(this, ovk_api.wall.getWallItems());
-                ProfileWallSelector selector = findViewById(R.id.wall_selector);
-                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        openNewPostActivity();
-                    }
-                });
-                selector.showNewPostIcon();
-                loading_more_posts = true;
-                setScrollingPositions(this, false, -group.id);
+                groupFragment.loadWall(this, group, ovk_api);
+                groupFragment.loading_more_posts = true;
+                groupFragment.setScrollingPositions(this, ovk_api, false, -group.id);
             } else if (message == HandlerMessages.WALL_GET_MORE) {
-                ((WallLayout) findViewById(R.id.wall_layout))
-                        .createAdapter(this, ovk_api.wall.getWallItems());
-                ProfileWallSelector selector = findViewById(R.id.wall_selector);
-                selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        openNewPostActivity();
-                    }
-                });
-                selector.showNewPostIcon();
+                groupFragment.loadWall(this, group, ovk_api);
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) findViewById(R.id.wall_layout)).setScrollingPositions();
+                groupFragment.setScrollingPositions(this, ovk_api, true, -group.id);
             } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) findViewById(R.id.wall_layout)).loadAvatars();
+                groupFragment.wallLayout.loadAvatars();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
-                ((WallLayout) findViewById(R.id.wall_layout)).refreshAdapter();
+                groupFragment.refreshWallAdapter();
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
                 WallPost item = ovk_api.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
@@ -448,7 +394,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                     message == HandlerMessages.INTERNAL_ERROR) {
                 if (data.containsKey("method")) {
                     if ("Wall.get".equals(data.getString("method"))) {
-                        ((WallErrorLayout) findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
+                        (groupFragment.view.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);
                     } else if("Users.get".equals(data.getString("method"))) {
                         setErrorPage(data, message);
                     } else {
@@ -478,138 +424,8 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
     }
 
-    private void setJoinButtonListener(long id) {
-        float smallestWidth = Global.getSmalledWidth(getWindowManager());
-        if(((OvkApplication)getApplicationContext()).isTablet && smallestWidth >= 800) {
-            final Button join_btn = (findViewById(R.id.join_to_comm));
-            join_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(group.is_member > 0) {
-                        group.leave(ovk_api.wrapper);
-                    } else {
-                        group.join(ovk_api.wrapper);
-                    }
-                }
-            });
-            if(group.is_member > 0) {
-                join_btn.setText(R.string.leave_group);
-            } else {
-                join_btn.setText(R.string.join_group);
-            }
-            join_btn.setVisibility(View.VISIBLE);
-        } else if(((OvkApplication)getApplicationContext()).isTablet &&
-                smallestWidth < 800) {
-            final Button join_btn = (findViewById(R.id.join_to_comm));
-            join_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(group.is_member > 0) {
-                        group.leave(ovk_api.wrapper);
-                    } else {
-                        group.join(ovk_api.wrapper);
-                    }
-                }
-            });
-            if(group.is_member > 0) {
-                join_btn.setText(R.string.leave_group);
-            } else {
-                join_btn.setText(R.string.join_group);
-            }
-            join_btn.setVisibility(View.VISIBLE);
-        } else {
-            final Button join_btn = (findViewById(R.id.join_to_comm));
-            join_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(group.is_member > 0) {
-                        group.leave(ovk_api.wrapper);
-                    } else {
-                        group.join(ovk_api.wrapper);
-                    }
-                }
-            });
-            if(group.is_member > 0) {
-                join_btn.setText(R.string.leave_group);
-            } else {
-                join_btn.setText(R.string.join_group);
-            }
-            join_btn.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void toggleExtendedInfo() {
-        this.showExtended = !this.showExtended;
-        View arrow = (findViewById(R.id.group_header)).findViewById(R.id.profile_expand);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            float[] fArr = new float[2];
-            fArr[0] = this.showExtended ? 0 : -180;
-            fArr[1] = this.showExtended ? -180 : 0;
-            ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
-        } else {
-            RotateAnimation anim = new RotateAnimation(this.showExtended ? 0 : -180,
-                    this.showExtended ? -180 : 0, 1, 0.5f, 1, 0.5f);
-            anim.setFillAfter(true);
-            anim.setDuration(300L);
-            arrow.startAnimation(anim);
-        }
-    }
-
-
-    private void updateLayout(final Group group) {
-        GroupHeader header = findViewById(R.id.group_header);
-        header.setProfileName(String.format("%s  ", group.name));
-        header.setVerified(group.verified, this);
-        ((ProfileCounterLayout) findViewById(R.id.members_counter)).setCounter(group.members_count,
-                Global.getPluralQuantityString(getApplicationContext(),
-                        R.plurals.profile_members, (int) group.members_count), "");
-        ((ProfileCounterLayout) findViewById(R.id.members_counter)).setOnCounterClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new Intent(GroupIntentActivity.this, GroupMembersActivity.class);
-                        i.putExtra("group_id", GroupIntentActivity.this.group.id);
-                        startActivity(i);
-                    }
-                });
-        ((AboutGroupLayout) findViewById(R.id.about_group_layout)).setGroupInfo(group.description, group.site);
-        header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                float smallestWidth = Global.getSmalledWidth(getWindowManager());
-                toggleExtendedInfo();
-                View aboutGroup = findViewById(R.id.about_group_layout);
-                if (aboutGroup.getVisibility() == View.GONE) {
-                    aboutGroup.setVisibility(View.VISIBLE);
-                } else {
-                    aboutGroup.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    public void loadAvatar() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(
-                String.format("%s/%s/photos_cache/group_avatars/avatar_%s",
-                        getCacheDir(), instance, group.id), options);
-        if (bitmap != null) {
-            group.avatar = bitmap;
-        } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0
-                || group.avatar_osize_url.length() > 0) {
-            group.avatar = null;
-        } else {
-            group.avatar = null;
-        }
-        if(group.avatar != null) {
-            ((ImageView) findViewById(R.id.profile_photo)).setImageBitmap(group.avatar);
-            getHeader().createGroupPhotoViewer(group.id, group.avatar_url);
-        }
-    }
-
     public void hideSelectedItemBackground(int position) {
-        ((ListView) findViewById(R.id.groups_listview))
+        (findViewById(R.id.groups_listview))
                 .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
@@ -621,85 +437,10 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         startActivity(i);
     }
 
-    private void openNewPostActivity() {
-        try {
-            Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
-            intent.putExtra("owner_id", -group.id);
-            intent.putExtra("account_id", ovk_api.account.id);
-            intent.putExtra("account_first_name", group.name);
-            startActivity(intent);
-        } catch (Exception ignored) {
-
-        }
-    }
-
-    public void repost(int position) {
-        final WallPost post = ovk_api.wall.getWallItems().get(position);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final ArrayList<String> functions = new ArrayList<>();
-        builder.setTitle(R.string.repost_dlg_title);
-        functions.add(getResources().getString(R.string.repost_own_wall));
-        ArrayAdapter<String> adapter = new
-                ArrayAdapter<>(this, android.R.layout.simple_list_item_1, functions);
-        builder.setSingleChoiceItems(adapter, -1, null);
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(functions.get(position).equals(getResources().getString(R.string.repost_own_wall))) {
-                    Global.openRepostDialog(GroupIntentActivity.this, ovk_api,
-                            "own_wall", post);
-                    dialog.dismiss();
-                }
-            }
-        });
-    }
-
-    public void setScrollingPositions(final Context ctx, final boolean load_photos, final long owner_id) {
-        loading_more_posts = false;
-        if(load_photos) {
-            ((WallLayout) findViewById(R.id.wall_layout)).loadPhotos();
-        }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final InfinityScrollView scrollView = findViewById(R.id.group_scrollview);
-            scrollView.setOnScrollListener(new OnScrollListener() {
-                @Override
-                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                    if (!loading_more_posts) {
-                        if (diff == 0) {
-                            Global.loadMoreWallPosts(ovk_api, owner_id);
-                        }
-                    }
-                }
-            });
-        } else {
-            final InfinityScrollView scrollView = findViewById(R.id.group_scrollview);
-            scrollView.setOnScrollListener(new OnScrollListener() {
-                @Override
-                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                    if (!loading_more_posts) {
-                        if (diff == 0) {
-                            Global.loadMoreWallPosts(ovk_api, owner_id);
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    public GroupHeader getHeader() {
-        return findViewById(R.id.group_header);
-    }
-
     @Override
     protected void onDestroy() {
-        if(((WallLayout) findViewById(R.id.wall_layout)).isActivatedAP)
-            ((WallLayout) findViewById(R.id.wall_layout)).closeAudioPlayer();
+        if(groupFragment.wallLayout.isActivatedAP)
+            groupFragment.wallLayout.closeAudioPlayer();
         super.onDestroy();
     }
 }

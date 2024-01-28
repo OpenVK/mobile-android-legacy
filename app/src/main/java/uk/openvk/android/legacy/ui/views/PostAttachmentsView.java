@@ -11,6 +11,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -95,6 +96,10 @@ public class PostAttachmentsView extends LinearLayout {
         safeViewing = global_prefs.getBoolean("safeViewing", true);
         flowLayout = findViewById(R.id.post_flow_layout);
         parent = ctx;
+    }
+
+    public double getPhotoAspectRatio(Photo photo) {
+        return (double)photo.size[0] / (double)photo.size[1];
     }
 
     public void loadAttachments(Context ctx,
@@ -249,7 +254,8 @@ public class PostAttachmentsView extends LinearLayout {
             }
 
             if(photoAttachments.size() > 1) {
-                int max_height = getMaxPhotoHeight(photoAttachments);
+                int max_height;
+                max_height = getMaxPhotoHeight(photoAttachments);
                 int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
                 for(int i = 0; i < photoAttachments.size(); i++) {
                     Photo photo = photoAttachments.get(i);
@@ -264,6 +270,11 @@ public class PostAttachmentsView extends LinearLayout {
                                     i < photoAttachments.size() - 1 ? 2*dp : 0,
                                     4*dp
                             );
+                    if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
+                        FlowLayout.LayoutParams lp = ((FlowLayout.LayoutParams) photoView.getLayoutParams());
+                        lp = adjustPhotoView(lp, photoAttachments.get(0));
+                        photoView.setLayoutParams(lp);
+                    }
                     photoView.setAdjustViewBounds(true);
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     flowLayout.addView(photoView);
@@ -277,9 +288,11 @@ public class PostAttachmentsView extends LinearLayout {
                 photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 flowLayout.addView(photoView);
                 FlowLayout.LayoutParams lp = ((FlowLayout.LayoutParams) photoView.getLayoutParams());
-                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
                 lp.weight = 0;
                 lp.width = FlowLayout.LayoutParams.MATCH_PARENT;
+                if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
+                    lp = adjustPhotoView(lp, photoAttachments.get(0));
+                }
                 photoView.setLayoutParams(lp);
                 loadPhotoPlaceholder(post, photoAttachments.get(0), imageLoader, photoView);
                 loadPhotoAttachment(photoAttachments.get(0), photoView, imageLoader, false);
@@ -287,6 +300,24 @@ public class PostAttachmentsView extends LinearLayout {
             }
         }
         setVisibility(VISIBLE);
+    }
+
+    private FlowLayout.LayoutParams adjustPhotoView(FlowLayout.LayoutParams lp, Photo photo) {
+        int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
+        int res = 0;
+        if(getPhotoAspectRatio(photo) >= 1.77) {
+            res = 240 * dp;
+        } else if(getPhotoAspectRatio(photo) >= 1.32) {
+            res = 288 * dp;
+        } else if(getPhotoAspectRatio(photo) >= 0.8) {
+            res = 320 * dp;
+        } else {
+            res = 384 * dp;
+        }
+        lp.width = (int) ((double)res * getPhotoAspectRatio(photo));
+        lp.height = res;
+        flowLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+        return lp;
     }
 
     private int getMinPhotoHeight(ArrayList<Photo> photos) {

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022, 2023 OpenVK Team
+    Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <uk.openvk.android.legacy.ui.views.ProgressLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_layout"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.ui.views.ErrorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/error_layout"
+        android:visibility="gone" />
+
+    <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
+        android:id="@+id/group_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#e3e4e6"
+        android:descendantFocusability="blocksDescendants"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/tablet_group_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/profile_ext_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_post"
+                    android:orientation="vertical">
+
+                    <uk.openvk.android.legacy.ui.views.GroupHeader
+                        android:id="@+id/group_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </uk.openvk.android.legacy.ui.views.GroupHeader>
+
+
+                    <uk.openvk.android.legacy.ui.views.AboutGroupLayout
+                        android:id="@+id/about_group_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:visibility="gone">
+
+                    </uk.openvk.android.legacy.ui.views.AboutGroupLayout>
+
+                    <Button
+                        android:id="@+id/join_to_comm"
+                        style="@style/BlueButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/join_group"
+                        android:visibility="gone" />
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp">
+
+                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
+                            android:id="@+id/members_counter"
+                            android:layout_width="110dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1">
+
+                        </uk.openvk.android.legacy.ui.views.ProfileCounterLayout>
+                    </TableRow>
+
+                </LinearLayout>
+
+                <uk.openvk.android.legacy.ui.views.ProfileWallSelector
+                    android:id="@+id/wall_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <uk.openvk.android.legacy.ui.views.WallErrorLayout
+                    android:id="@+id/wall_error_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#ffffff"
+                    android:visibility="gone" />
+
+                <uk.openvk.android.legacy.ui.views.WallLayout
+                    android:id="@+id/wall_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#e3e4e6"
+                    android:nestedScrollingEnabled="false">
+
+                </uk.openvk.android.legacy.ui.views.WallLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:id="@+id/group_photo_wrap"
+                        android:layout_width="188dp"
+                        android:layout_height="188dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginBottom="8dip"
+                        android:layout_marginLeft="8dip"
+                        android:layout_marginRight="4dip"
+                        android:layout_marginTop="8dip"
+                        android:background="@drawable/profile_photo_shadow"
+                        android:foreground="@drawable/profile_photo_highlight">
+
+                        <ImageView
+                            android:id="@+id/group_photo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/photo_loading_black" />
+
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="38dip"
+                        android:layout_marginBottom="6dip"
+                        android:layout_marginLeft="8dip"
+                        android:layout_marginRight="4dip"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
+
+</LinearLayout>

@@ -6,7 +6,6 @@ import android.os.Build;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
@@ -48,8 +47,8 @@ public class FragmentNavigator {
             }
             switch (where) {
                 case "profile":
-                    ft.show(appActivity.profileFragment);
-                    appActivity.selectedFragment = appActivity.profileFragment;
+                    ft.show(appActivity.profilePageFragment);
+                    appActivity.selectedFragment = appActivity.profilePageFragment;
                     if(appActivity.profile_loaded) {
                         showFragment(activity, appActivity.ovk_api.user.first_name != null);
                     }

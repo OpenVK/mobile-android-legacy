@@ -1,18 +1,16 @@
-package uk.openvk.android.legacy.core.fragments;
+package uk.openvk.android.legacy.core.fragments.pages;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -40,10 +38,8 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
-import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
@@ -78,7 +74,7 @@ import static android.view.View.GONE;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ProfileFragment extends ActiviableFragment {
+public class ProfilePageFragment extends ActiviableFragment {
     private View view;
     private boolean showExtended;
     public boolean loading_more_posts;
@@ -102,7 +98,7 @@ public class ProfileFragment extends ActiviableFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_profile, container, false);
+        view = inflater.inflate(R.layout.fragment_profile_page, container, false);
         ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
@@ -203,7 +199,7 @@ public class ProfileFragment extends ActiviableFragment {
         this.ovk_api = ovk_api;
         this.user = ovk_api.user;
         isActivated = !(getActivity() instanceof AppActivity) ||
-                ((AppActivity) getActivity()).selectedFragment instanceof ProfileFragment;
+                ((AppActivity) getActivity()).selectedFragment instanceof ProfilePageFragment;
         if (isActivated) refreshOptionsMenu();
         ProfileHeader header = view.findViewById(R.id.profile_header);
         header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
@@ -238,7 +234,7 @@ public class ProfileFragment extends ActiviableFragment {
                     DisplayMetrics metrics = new DisplayMetrics();
                     Display display = wm.getDefaultDisplay();
                     display.getMetrics(metrics);
-                    View aboutProfile = ProfileFragment.this.view.findViewById(R.id.about_profile_layout);
+                    View aboutProfile = ProfilePageFragment.this.view.findViewById(R.id.about_profile_layout);
                     if (aboutProfile.getVisibility() == GONE) {
                         aboutProfile.setVisibility(View.VISIBLE);
                     } else {
@@ -415,6 +411,10 @@ public class ProfileFragment extends ActiviableFragment {
         return view.findViewById(R.id.profile_header);
     }
 
+    public ProfileWallSelector getWallSelector() {
+        return view.findViewById(R.id.wall_selector);
+    }
+
     public void refreshWallAdapter() {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
@@ -466,10 +466,6 @@ public class ProfileFragment extends ActiviableFragment {
                 }
             });
         }
-    }
-
-    public ProfileWallSelector getWallSelector() {
-        return view.findViewById(R.id.wall_selector);
     }
 
     public void loadAPIData(Context ctx, final OpenVKAPI ovk_api, WindowManager wm) {
@@ -610,23 +606,6 @@ public class ProfileFragment extends ActiviableFragment {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        if(wallLayout.isActivatedAP)
-            wallLayout.closeAudioPlayer();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
     public void adjustLayoutSize(int orientation) {
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
@@ -644,6 +623,22 @@ public class ProfileFragment extends ActiviableFragment {
         } else {
             wallLayout.adjustLayoutSize(orientation);
         }
+    }
 
+    @Override
+    public void onDestroy() {
+        if(wallLayout.isActivatedAP)
+            wallLayout.closeAudioPlayer();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

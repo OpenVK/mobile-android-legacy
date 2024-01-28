@@ -61,7 +61,7 @@ import uk.openvk.android.legacy.core.fragments.GroupsFragment;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
-import uk.openvk.android.legacy.core.fragments.ProfileFragment;
+import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 
@@ -905,7 +905,7 @@ public class Global {
                     || (method.equals("Groups.get")
                             && selectedFragment instanceof GroupsFragment)
                     || (method.equals("Users.get")
-                            && selectedFragment instanceof ProfileFragment)
+                            && selectedFragment instanceof ProfilePageFragment)
                     || (method.equals("Messages.getConversations")
                             && selectedFragment instanceof ConversationsFragment)
                     || (method.equals("Photos.getAlbums")

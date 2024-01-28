@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022, 2023 OpenVK Team
+    Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.reginald.swiperefresh.CustomSwipeRefreshLayout
+        xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/refreshable_layout"
+        swiperefresh:refresh_mode="pull_mode"
+        swiperefresh:keep_refresh_head="true"
+        swiperefresh:enable_top_progress_bar="false"
+        swiperefresh:time_out_refresh_complete="2000"
+        swiperefresh:time_out_return_to_top="1000"
+        swiperefresh:return_to_top_duration="500"
+        swiperefresh:return_to_header_duration="500">
+
+    <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#e3e4e6"
+        android:descendantFocusability="blocksDescendants"
+        tools:ignore="UselessParent"
+        android:isScrollContainer="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/profile_ext_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#313743"
+                android:orientation="vertical">
+
+                <uk.openvk.android.legacy.ui.views.ProfileHeader
+                    android:id="@+id/profile_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <uk.openvk.android.legacy.ui.views.AboutProfileLayout
+                    android:id="@+id/about_profile_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/send_direct_msg"
+                        style="@style/BlueButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/message"
+                        android:textSize="20sp"
+                        tools:ignore="InefficientWeight,RtlHardcoded" />
+
+                    <ImageButton
+                        android:id="@+id/add_to_friends"
+                        android:layout_width="60dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/btn_light_blue"
+                        android:src="@drawable/ic_ab_add"
+                        tools:ignore="ContentDescription,RtlHardcoded"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/friend_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/friend_status_friend"
+                    android:textColor="#bdffffff"
+                    android:textSize="18sp"
+                    android:textStyle="italic" />
+
+                <TableRow
+                    android:id="@+id/profile_counters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
+                        android:id="@+id/photos_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="4dp"
+                        android:layout_weight="1"
+                        android:visibility="gone"
+                        tools:ignore="RtlHardcoded"/>
+
+                    <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
+                        android:id="@+id/friends_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_weight="1"
+                        tools:ignore="RtlHardcoded"/>
+
+                    <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
+                        android:id="@+id/mutual_counter"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:visibility="gone"/>
+                </TableRow>
+
+            </LinearLayout>
+
+            <uk.openvk.android.legacy.ui.views.ProfileWallSelector
+                android:id="@+id/wall_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <uk.openvk.android.legacy.ui.views.WallErrorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:visibility="gone"
+                android:id="@+id/wall_error_layout" />
+
+            <uk.openvk.android.legacy.ui.views.WallLayout
+                android:id="@+id/wall_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#e3e4e6"
+                android:tag="wall" />
+
+            <TextView
+                android:id="@+id/deactivated_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/profile_inactive_deleted"
+                android:textColor="@color/timestamp_color"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
+
+    </com.reginald.swiperefresh.CustomSwipeRefreshLayout>
+
+</LinearLayout>

@@ -8,9 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -33,7 +30,7 @@ import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.JSONParser;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.fragments.ProfileFragment;
+import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProfileHeader;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
@@ -61,7 +58,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
 
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    public ProfileFragment profileFragment;
+    public ProfilePageFragment profilePageFragment;
     private String access_token;
     public User user;
     private String args;
@@ -107,7 +104,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        profileFragment.adjustLayoutSize(
+        profilePageFragment.adjustLayoutSize(
                 getResources().getConfiguration().orientation);
         super.onConfigurationChanged(newConfig);
     }
@@ -122,12 +119,12 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
     private void installLayouts() {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
-        profileFragment = new ProfileFragment();
+        profilePageFragment = new ProfilePageFragment();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.app_fragment, profileFragment, "profile");
+        ft.add(R.id.app_fragment, profilePageFragment, "profile");
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.show(profileFragment);
+        ft.show(profilePageFragment);
         ft.commit();
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -214,7 +211,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 }
             } else if (message == HandlerMessages.USERS_GET) {
                 ovk_api.user = user;
-                profileFragment.loadAPIData(this, ovk_api, getWindowManager());
+                profilePageFragment.loadAPIData(this, ovk_api, getWindowManager());
                 ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
@@ -227,7 +224,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 } else if(status == 2) {
                     user.friends_status = 3;
                 }
-                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
+                profilePageFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.FRIENDS_DELETE) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                 int status = response.getInt("response");
@@ -235,30 +232,30 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     user.friends_status = 0;
                 }
                 activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
-                profileFragment.setAddToFriendsButtonListener(this, user.id, user);
+                profilePageFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
                 ovk_api.users.getUser(ovk_api.wrapper, ovk_api.users.getList().get(0).id);
             } else if (message == HandlerMessages.WALL_GET ||
                     message == HandlerMessages.WALL_GET_MORE) {
-                profileFragment.loadWall(this, ovk_api);
+                profilePageFragment.loadWall(this, ovk_api);
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
                         .setScrollingPositions();
             } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
                         .loadAvatars();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
-                profileFragment.refreshWallAdapter();
+                profilePageFragment.refreshWallAdapter();
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
-                profileFragment.setCounter(user, "friends",  ovk_api.friends.count);
+                profilePageFragment.setCounter(user, "friends",  ovk_api.friends.count);
             } else if(message == HandlerMessages.LIKES_ADD) {
                 ovk_api.likes.parse(data.getString("response"));
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
                         .select(ovk_api.likes.position, "likes", 1);
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 ovk_api.likes.parse(data.getString("response"));
-                ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
                         .select(ovk_api.likes.position, "likes", 0);
             } else if(message == HandlerMessages.POLL_ADD_VOTE ||
                     message == HandlerMessages.POLL_DELETE_VOTE) {
@@ -275,7 +272,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                             answer.is_voted = addVote;
                             poll.answers.set(poll_answer, answer);
                             ovk_api.wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profileFragment.getView().findViewById(R.id.wall_layout))
+                            ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
                                     .updateItem(item, item_pos);
                         }
                     }
@@ -284,14 +281,14 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 try {
                     if (data.containsKey("method")) {
                         String method = data.getString("method");
-                        if (Global.checkShowErrorLayout(method, profileFragment)) {
+                        if (Global.checkShowErrorLayout(method, profilePageFragment)) {
                             setErrorPage(data, message);
                         } else {
                             if (data.getString("method").equals("Wall.get")) {
-                                profileFragment.getView()
+                                profilePageFragment.getView()
                                         .findViewById(R.id.wall_error_layout)
                                         .setVisibility(View.VISIBLE);
-                                profileFragment.getWallSelector()
+                                profilePageFragment.getWallSelector()
                                         .findViewById(R.id.profile_wall_progress)
                                         .setVisibility(View.GONE);
                             } else {
@@ -307,19 +304,19 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 switch (global_prefs.getString("photos_quality", "")) {
                     case "medium":
                         if (user.avatar_msize_url.length() > 0) {
-                            profileFragment.loadAvatar(
+                            profilePageFragment.loadAvatar(
                                     user, global_prefs.getString("photos_quality", ""));
                         }
                         break;
                     case "high":
                         if (user.avatar_hsize_url.length() > 0) {
-                            profileFragment.loadAvatar(
+                            profilePageFragment.loadAvatar(
                                     user, global_prefs.getString("photos_quality", ""));
                         }
                         break;
                     default:
                         if (user.avatar_osize_url.length() > 0) {
-                            profileFragment.loadAvatar(
+                            profilePageFragment.loadAvatar(
                                     user, global_prefs.getString("photos_quality", ""));
                         }
                         break;
