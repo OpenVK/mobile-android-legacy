@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022, 2023 OpenVK Team
+    Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#313743"
+    android:clickable="true">
+
+    <View
+        android:id="@+id/profile_head_highlight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/profile_activity"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="8dip"
+        android:layout_marginEnd="8dip"
+        android:layout_marginLeft="8dip"
+        android:layout_marginRight="8dip"
+        android:layout_marginStart="8dip"
+        android:layout_marginTop="8dip"
+        android:background="@drawable/highlight_profile_head" />
+
+    <ImageView
+        android:id="@+id/profile_expand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="12dip"
+        android:layout_marginTop="53dip"
+        android:src="@drawable/ic_profile_expand" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/profile_name"
+        android:layout_below="@+id/profile_name"
+        android:layout_marginTop="-2dip"
+        android:layout_toRightOf="@+id/profile_photo_wrap"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/profile_last_seen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="10dip"
+            android:singleLine="true"
+            android:text="last seen 32 mar 2012"
+            android:textColor="#bebfc0"
+            android:textSize="15dip" />
+
+        <ImageView
+            android:id="@+id/profile_api_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_api_android_app_indicator" />
+    </LinearLayout>
+
+    <dev.tinelix.twemojicon.EmojiconTextView
+        android:id="@+id/profile_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/profile_photo_wrap"
+        android:layout_below="@+id/profile_last_seen"
+        android:layout_marginBottom="-12dip"
+        android:layout_marginTop="5dip"
+        android:layout_toLeftOf="@+id/profile_expand"
+        android:layout_toRightOf="@+id/profile_photo_wrap"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:lines="2"
+        android:paddingBottom="12dip"
+        android:text="Status status status"
+        android:textColor="#d8d8d9"
+        android:textSize="15dip"
+        tools:ignore="NotSibling" />
+
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/profile_expand"
+        android:layout_toRightOf="@+id/profile_photo_wrap"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:paddingTop="8dip"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:text="User Name"
+        android:textColor="#FFF"
+        android:textSize="20dip" />
+
+
+    <FrameLayout
+        android:id="@+id/profile_photo_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="12dip"
+        android:layout_marginLeft="12dip"
+        android:layout_marginRight="12dip"
+        android:layout_marginTop="12dip"
+        android:background="@drawable/profile_photo_shadow"
+        android:foreground="@drawable/profile_photo_highlight">
+
+        <ImageView
+            android:id="@+id/profile_photo"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:scaleType="centerCrop"
+            android:src="@drawable/photo_loading_black" />
+    </FrameLayout>
+</RelativeLayout>

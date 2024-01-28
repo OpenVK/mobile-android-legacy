@@ -206,6 +206,8 @@ public class GroupPageFragment extends ActiviableFragment {
                 }
             }
         });
+        header.findViewById(R.id.profile_activity).getLayoutParams().height =
+                (int) (10 * getResources().getDisplayMetrics().scaledDensity);
         getWallSelector().setToGroup();
         adjustLayoutSize(getResources().getConfiguration().orientation);
     }

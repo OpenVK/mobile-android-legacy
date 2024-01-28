@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
@@ -41,7 +42,7 @@ public class GroupHeader extends RelativeLayout {
     public GroupHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.profile_header, null);
+                R.layout.header_profile, null);
 
         this.addView(view);
 
@@ -71,9 +72,14 @@ public class GroupHeader extends RelativeLayout {
     public void setVerified(boolean verified, Context ctx) {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
-           ImageSpan imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
-           ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
-                   ctx.getResources().getDisplayMetrics().density));
+           ImageSpan imageSpan;
+           if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
+               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
+           else
+               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
+           imageSpan.getDrawable().setBounds(
+                   0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density)
+           );
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }

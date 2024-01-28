@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -48,7 +47,7 @@ public class ProfileHeader extends RelativeLayout {
     public ProfileHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.profile_header, null);
+                R.layout.header_profile, null);
 
         this.addView(view);
 
@@ -165,7 +164,9 @@ public class ProfileHeader extends RelativeLayout {
                imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
            else
                imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
-           ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density));
+           imageSpan.getDrawable().setBounds(
+                   0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density)
+           );
            sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
            ((TextView) findViewById(R.id.profile_name)).setText(sb);
        }
