@@ -442,6 +442,7 @@ public class ProfilePageFragment extends ActiviableFragment {
                                 Global.loadMoreWallPosts(ovk_api, ovk_api.user.id);
                             }
                         }
+                        loading_more_posts = true;
                     }
                 }
             });
@@ -462,6 +463,7 @@ public class ProfilePageFragment extends ActiviableFragment {
                                 Global.loadMoreWallPosts(ovk_api, ovk_api.user.id);
                             }
                         }
+                        loading_more_posts = true;
                     }
                 }
             });
@@ -539,6 +541,7 @@ public class ProfilePageFragment extends ActiviableFragment {
             }
         });
         selector.showNewPostIcon();
+        loading_more_posts = false;
     }
 
     public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, long owner_id) {
@@ -563,6 +566,7 @@ public class ProfilePageFragment extends ActiviableFragment {
         } else {
             ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
         }
+        loading_more_posts = false;
     }
 
     public void refreshOptionsMenu() {

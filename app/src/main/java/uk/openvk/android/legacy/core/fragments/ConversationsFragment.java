@@ -106,6 +106,8 @@ public class ConversationsFragment extends ActiviableFragment {
             conversations = conversations_list;
             conversationsAdapter = new ConversationsListAdapter(getContext(), conversations, account);
             convListView.setAdapter(conversationsAdapter);
+        } catch (OutOfMemoryError ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

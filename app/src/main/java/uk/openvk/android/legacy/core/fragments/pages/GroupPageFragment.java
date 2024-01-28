@@ -241,6 +241,7 @@ public class GroupPageFragment extends ActiviableFragment {
                         if (diff == 0) {
                             Global.loadMoreWallPosts(ovk_api, owner_id);
                         }
+                        loading_more_posts = true;
                     }
                 }
             });
@@ -255,6 +256,7 @@ public class GroupPageFragment extends ActiviableFragment {
                         if (diff == 0) {
                             Global.loadMoreWallPosts(ovk_api, owner_id);
                         }
+                        loading_more_posts = true;
                     }
                 }
             });
