@@ -406,7 +406,7 @@
         </service>
 
         <activity android:name=".core.activities.AudioPlayerActivity"
-            android:theme="@style/BaseStyle.Dark.Transparent"
+            android:theme="@style/BaseStyle.Dark.PopupIfTablet"
             android:label="@string/now_playing"
             android:exported="true"
             android:configChanges="screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>

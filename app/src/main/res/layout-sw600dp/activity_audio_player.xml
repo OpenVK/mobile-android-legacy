@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022, 2023 OpenVK Team
+    Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/aplayer_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_audio_player">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/aplayer_title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <uk.openvk.android.legacy.ui.views.AlbumScrollView
+            android:id="@+id/audio_player_cover_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="352dp"
+            android:fadingEdge="vertical"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/audio_player_cover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/aplayer_cover_border"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/aplayer_cover_placeholder" />
+
+                <TextView
+                    android:id="@+id/audio_player_lyrics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dip"
+                    android:textColor="#BBFFFFFF"
+                    android:textSize="17dip"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </uk.openvk.android.legacy.ui.views.AlbumScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/audio_player_buttons"
+        android:layout_width="fill_parent"
+        android:layout_height="52dip"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/aplayer_shuffle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:scaleType="center"
+            android:src="@drawable/ic_audio_shuffle"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/aplayer_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dip"
+            android:layout_weight="1"
+            android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:scaleType="center"
+            android:src="@drawable/ic_aplayer_prev"></ImageView>
+
+        <ImageView
+            android:id="@+id/aplayer_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:layout_weight="1"
+            android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:scaleType="center"
+            android:src="@drawable/ic_aplayer_play"></ImageView>
+
+        <ImageView
+            android:id="@+id/aplayer_next"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dip"
+            android:layout_weight="1"
+            android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:scaleType="center"
+            android:src="@drawable/ic_aplayer_next"></ImageView>
+
+        <ImageView
+            android:id="@+id/aplayer_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/highlight"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:scaleType="center"
+            android:src="@drawable/ic_audio_repeat"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/audio_player_progress_wrap"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/audio_player_buttons"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/aplayer_time"
+            android:layout_width="40dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="0:00"
+            android:textColor="#B2FFFFFF"
+            android:textSize="12.5dip" />
+
+        <SeekBar
+            android:id="@+id/aplayer_progress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-10dip"
+            android:layout_marginRight="-10dip"
+            android:layout_weight="1"
+            android:max="1000"
+            android:maxHeight="3dip"
+            android:minHeight="3dip"
+            android:paddingLeft="20dip"
+            android:paddingRight="20dip"
+            android:progressDrawable="@drawable/progress_player"
+            android:thumb="@drawable/audio_seeker"
+            android:thumbOffset="15dip" />
+
+        <TextView
+            android:id="@+id/aplayer_duration"
+            android:layout_width="40dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="3:21"
+            android:textColor="#B2FFFFFF"
+            android:textSize="12.5dip" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/aplayer_artist"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/audio_player_progress_wrap"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="8dip"
+        android:layout_toLeftOf="@+id/aplayer_broadcast"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="10dip"
+        android:gravity="left"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="#CCFFFFFF"
+        android:textSize="17dip"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/aplayer_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/aplayer_artist"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="8dip"
+        android:layout_toLeftOf="@+id/aplayer_broadcast"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="10dip"
+        android:gravity="left"
+        android:singleLine="true"
+        android:text="TextView"
+        android:textColor="#FFF"
+        android:textSize="28dip" />
+
+    <ImageView
+        android:id="@+id/aplayer_broadcast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/audio_player_progress_wrap"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/aplayer_title"
+        android:layout_marginRight="10dip"
+        android:background="@drawable/highlight"
+        android:padding="7dip"
+        android:src="@drawable/ic_audio_broadcast" />
+
+</RelativeLayout>

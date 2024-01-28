@@ -16,6 +16,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -104,6 +106,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(((OvkApplication) getApplicationContext()).isTablet)
+            enableDialogMode();
         setContentView(R.layout.activity_audio_player);
         TextView title_tv = findViewById(R.id.aplayer_title);
         TextView artist_tv = findViewById(R.id.aplayer_artist);
@@ -151,6 +155,20 @@ public class AudioPlayerActivity extends NetworkActivity implements
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setTranslucentStatusBar(0, android.R.color.black);
+        }
+    }
+
+    private void enableDialogMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            requestWindowFeature(Window.FEATURE_ACTION_BAR);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+                    WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.width = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
+            params.height = (int) (576 * getResources().getDisplayMetrics().scaledDensity);
+            params.alpha = 1.0f;
+            params.dimAmount = 0.5f;
+            getWindow().setAttributes(params);
         }
     }
 
