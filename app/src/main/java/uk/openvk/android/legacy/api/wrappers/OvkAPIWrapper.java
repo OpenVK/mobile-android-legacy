@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.wrappers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
@@ -22,12 +23,21 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.security.cert.CertificateException;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.Route;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.entities.Error;
@@ -162,7 +172,7 @@ public class OvkAPIWrapper {
         this.access_token = token;
     }
 
-    public void setProxyConnection(boolean useProxy, String address) {
+    public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
             if(useProxy) {
                 String[] address_array = address.split(":");
@@ -170,11 +180,44 @@ public class OvkAPIWrapper {
                     if (legacy_mode) {
                         httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-                                .writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
+                        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(30, TimeUnit.SECONDS)
+                                .readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false);
+                        httpClientBuilder = httpClientBuilder.proxy(
+                                new Proxy(Proxy.Type.HTTP,
                                         new InetSocketAddress(address_array[0],
-                                        Integer.valueOf(address_array[1])))).build();
+                                                Integer.valueOf(address_array[1])
+                                        )
+                                )
+                        );
+                        if(type.equals("https")) {
+                            // Set custom TrustManager for HTTPS proxies
+                            final TrustManager[] trustAllCerts = new TrustManager[] {
+                                    new X509TrustManager() {
+                                        @SuppressLint("TrustAllX509TrustManager")
+                                        @Override
+                                        public void checkClientTrusted(
+                                                java.security.cert.X509Certificate[] chain, String authType
+                                        ) {}
+                                        @Override
+                                        public void checkServerTrusted(
+                                                java.security.cert.X509Certificate[] chain, String authType
+                                        ) {}
+                                        @Override
+                                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                            return new java.security.cert.X509Certificate[]{};
+                                        }
+                                    }
+                            };
+                            final SSLContext sslContext = SSLContext.getInstance("SSL");
+                            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+                            httpClientBuilder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+                            httpClient = httpClientBuilder.build();
+                        }
+
                     }
                     this.proxy_connection = true;
                 }
@@ -705,7 +748,7 @@ public class OvkAPIWrapper {
                                                 server, method, response_code));
                                 sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, "");
                             }
-                        };
+                        }
                     } catch (ConnectException | ProtocolException | UnknownHostException e) {
                         if (logging_enabled) {
                             if (e.getMessage() != null) {

@@ -49,6 +49,7 @@
 
 	<string-array name="proxy_type" translable="false">
 		<item>HTTP</item>
+		<item>HTTPS</item>
 	</string-array>
 
     <string-array name="connection_error_reasons">

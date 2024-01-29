@@ -154,8 +154,12 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 SharedPreferences.Editor editor = global_prefs.edit();
-                if(proxy_types[proxy_type_spinner.getSelectedItemPosition()].equals("HTTP")) {
-                    editor.putString("proxy_type", "http");
+                switch (proxy_types[proxy_type_spinner.getSelectedItemPosition()]) {
+                    case "HTTP":
+                        editor.putString("proxy_type", "http");
+                        break;
+                    case "HTTPS":
+                        editor.putString("proxy_type", "https");
                 }
                 if(proxy_port.getText().length() > 0) {
                     editor.putString("proxy_address", String.format("%s:%s",
@@ -167,7 +171,7 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
                 editor.commit();
                 if(global_prefs.contains("proxy_address")) {
                     if(global_prefs.getString("proxy_address", "").length() > 0) {
-                        ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
+                        (findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
                     }
                 }
             }
