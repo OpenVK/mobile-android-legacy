@@ -50,6 +50,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         ctx = context;
         objects = items;
         this.bottom_player_view = bottom_player_view;
+        if(ctx != null)
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }

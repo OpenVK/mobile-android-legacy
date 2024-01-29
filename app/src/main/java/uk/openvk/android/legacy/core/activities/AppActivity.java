@@ -591,7 +591,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 onPrepareOptionsMenu(activity_menu);
                 setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[3]);
                 fn.navigateTo("audios", ft);
-                ovk_api.audios.get(ovk_api.wrapper, ovk_api.account.id, 25, true);
+                ovk_api.audios.get(ovk_api.wrapper, ovk_api.account.id, 80, true);
                 break;
             case 4:
                 setActionBarTitle(getResources().getString(R.string.messages));
@@ -606,7 +606,7 @@ public class AppActivity extends NetworkFragmentActivity {
             case 6:
                 setActionBarTitle(getResources().getString(R.string.notes));
                 fn.navigateTo("notes", ft);
-                ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 25, 1);
+                ovk_api.notes.get(ovk_api.wrapper, ovk_api.account.id, 80, 1);
                 break;
             case 7:
                 setActionBarTitle(getResources().getString(R.string.newsfeed));

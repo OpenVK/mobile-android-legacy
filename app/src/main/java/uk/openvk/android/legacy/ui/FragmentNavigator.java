@@ -61,13 +61,6 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.friendsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "friends");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
                 case "photos":
                     ft.show(appActivity.photosFragment);
@@ -75,13 +68,6 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(true);
                     appActivity.selectedFragment = appActivity.photosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "photos");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
                 case "videos":
                     ft.show(appActivity.videosFragment);
@@ -89,13 +75,6 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(true);
                     appActivity.selectedFragment = appActivity.videosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "videos");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
                 case "audios":
                     ft.show(appActivity.audiosFragment);
@@ -103,13 +82,6 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.audiosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "audios");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
                 case "messages":
                     ft.show(appActivity.conversationsFragment);
@@ -117,13 +89,6 @@ public class FragmentNavigator {
                     appActivity.selectedFragment = appActivity.conversationsFragment;
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "messages");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
                 case "groups":
                     ft.show(appActivity.groupsFragment);
@@ -131,13 +96,6 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.groupsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "groups");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
                     break;
                 case "notes":
                     ft.show(appActivity.notesFragment);
@@ -145,13 +103,7 @@ public class FragmentNavigator {
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.selectedFragment = appActivity.notesFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "notes");
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                        appActivity.actionBar.removeAllActions();
-                    } else {
-                        if(appActivity.activity_menu != null) {
-                            appActivity.activity_menu.clear();
-                        }
-                    }
+
                     break;
                 case "newsfeed":
                     ft.show(appActivity.newsfeedFragment);
