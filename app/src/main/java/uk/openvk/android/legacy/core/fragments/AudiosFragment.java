@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,6 +48,7 @@ import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
+import uk.openvk.android.legacy.receivers.MediaButtonEventReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.list.adapters.AudiosListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
@@ -131,6 +133,16 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            AudioManager am = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+            if(am != null) {
+                MediaButtonEventReceiver receiver = new MediaButtonEventReceiver(getActivity());
+                ComponentName mReceiverComponent = new ComponentName(
+                        getActivity(), receiver.getClass()
+                );
+                am.registerMediaButtonEventReceiver(mReceiverComponent);
+            }
+        }
     }
 
     @Nullable
@@ -559,5 +571,9 @@ public class AudiosFragment extends ActiviableFragment implements AudioPlayerSer
     public void onDeactivated() {
         super.onDeactivated();
         closeSearchItem();
+    }
+
+    public int getCurrentPosition() {
+        return currentTrackPos;
     }
 }

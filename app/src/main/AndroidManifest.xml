@@ -29,34 +29,6 @@
         tools:ignore="UnusedAttribute"
         android:usesCleartextTraffic="true">
 
-        <receiver android:name=".receivers.LongPollReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="uk.openvk.android.legacy.LONGPOLL_RECEIVE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".receivers.OvkAPIReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="uk.openvk.android.legacy.API_DATA_RECEIVE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".receivers.AudioPlayerReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="uk.openvk.android.legacy.AP_UPDATE_PLAYLIST" />
-                <action android:name="uk.openvk.android.legacy.AP_UPDATE_CURRENT_TRACKPOS" />
-                <action android:name="uk.openvk.android.legacy.AP_UPDATE_SEEKPOS" />
-                <action android:name="uk.openvk.android.legacy.AP_CONTROL" />
-            </intent-filter>
-        </receiver>
-
         <activity android:name=".core.activities.MainActivity"
             android:label="@string/app_name"
             android:exported="true"
@@ -389,6 +361,51 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name=".receivers.LongPollReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="uk.openvk.android.legacy.LONGPOLL_RECEIVE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.OvkAPIReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="uk.openvk.android.legacy.API_DATA_RECEIVE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.AudioPlayerReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="uk.openvk.android.legacy.AP_UPDATE_PLAYLIST" />
+                <action android:name="uk.openvk.android.legacy.AP_UPDATE_CURRENT_TRACKPOS" />
+                <action android:name="uk.openvk.android.legacy.AP_UPDATE_SEEKPOS" />
+                <action android:name="uk.openvk.android.legacy.AP_CONTROL" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".core.activities.AudioPlayerActivity"
+            android:theme="@style/BaseStyle.Dark.PopupIfTablet"
+            android:label="@string/now_playing"
+            android:exported="true"
+            android:configChanges="screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
+
+        <activity android:name=".core.activities.CrashReporterActivity"
+            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
+
+        <receiver android:name=".receivers.MediaButtonEventReceiver" android:enabled="true">
+            <intent-filter android:priority="900000">
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
         <!--suppress AndroidDomInspection -->
         <service android:name=".services.LongPollService" android:enabled="true" android:exported="true"/>
 
@@ -405,16 +422,6 @@
                 android:resource="@xml/authenticator"/>
         </service>
 
-        <activity android:name=".core.activities.AudioPlayerActivity"
-            android:theme="@style/BaseStyle.Dark.PopupIfTablet"
-            android:label="@string/now_playing"
-            android:exported="true"
-            android:configChanges="screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
-
-        <activity android:name=".core.activities.CrashReporterActivity"
-            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
-            android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"/>
     </application>
 
 </manifest>

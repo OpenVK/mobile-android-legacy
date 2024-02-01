@@ -60,6 +60,7 @@ public class OvkApplication extends Application {
     public static String UL_TAG = "OVK-ULM";
     public static String LP_TAG = "OVK-LP";
     public static String APS_TAG = "OVK-APS";
+    public static String MBER_TAG = "OVK-MBER";
     public PluralResources pluralResources;
     public Configuration config;
     private Global global;
