@@ -629,7 +629,7 @@ public class ProfilePageFragment extends ActiviableFragment {
                                 placeholder.findViewById(R.id.profile_left_frame).getLayoutParams();
 
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    placeholder_lp.width = 900 * dp;
+                    placeholder_lp.width = 800 * dp;
                     profile_photo_lp.width = 188 * dp;
                     profile_photo_lp.height = 188 * dp;
                     left_frame_lp.width = 200 * dp;
