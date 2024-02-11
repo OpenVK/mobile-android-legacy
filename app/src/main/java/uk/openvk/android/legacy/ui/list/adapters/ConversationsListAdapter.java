@@ -102,28 +102,31 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
             ((TextView) view.findViewById(R.id.conversation_time)).setText(lastMsgTimestamp);
             if(item.lastMsgTime != 0 && item.lastMsgText != null) {
                 if (item.lastMsgText.length() > 0) {
-                    ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.last_msg_rl).setVisibility(View.VISIBLE);
                     ((TextView) view.findViewById(R.id.conversation_text)).setText(item.lastMsgText);
                 } else {
-                    ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.GONE);
+                    view.findViewById(R.id.last_msg_rl).setVisibility(View.GONE);
                 }
             } else {
-                ((RelativeLayout) view.findViewById(R.id.last_msg_rl)).setVisibility(View.GONE);
-                ((TextView) view.findViewById(R.id.conversation_time)).setVisibility(View.GONE);
+                view.findViewById(R.id.last_msg_rl).setVisibility(View.GONE);
+                view.findViewById(R.id.conversation_time).setVisibility(View.GONE);
             }
 
             if(item.avatar_url.length() > 0 && item.avatar != null) {
                 ((ImageView) view.findViewById(R.id.conversation_avatar)).setImageBitmap(item.avatar);
             }
-
-            if(item.lastMsgAuthorId == item.peer_id) {
-                ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
-                        .setImageBitmap(account.user.avatar);
-                ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setVisibility(View.GONE);
-            } else if(item.lastMsgAuthorId == account.id) {
-                ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
-                        .setImageBitmap(account.user.avatar);
-                ((ImageView) view.findViewById(R.id.last_msg_author_avatar)).setVisibility(View.VISIBLE);
+            try {
+                if (item.lastMsgAuthorId == item.peer_id) {
+                    ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
+                            .setImageBitmap(account.user.avatar);
+                    view.findViewById(R.id.last_msg_author_avatar).setVisibility(View.GONE);
+                } else if (item.lastMsgAuthorId == account.id) {
+                    ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
+                            .setImageBitmap(account.user.avatar);
+                    view.findViewById(R.id.last_msg_author_avatar).setVisibility(View.VISIBLE);
+                }
+            } catch (Exception ex) {
+                view.findViewById(R.id.last_msg_author_avatar).setVisibility(View.VISIBLE);
             }
 
             view.setOnClickListener(new View.OnClickListener() {
