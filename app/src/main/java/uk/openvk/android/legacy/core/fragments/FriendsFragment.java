@@ -284,4 +284,10 @@ public class FriendsFragment extends ActiviableFragment {
         updateTabsCounters(1, ovk_api.account.counters.friends_requests);
         setScrollingPositions(ctx, infinity_scroll);
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adjustLayoutSize(getContext(), newConfig.orientation);
+    }
 }
