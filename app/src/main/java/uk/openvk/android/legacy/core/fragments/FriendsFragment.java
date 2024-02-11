@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -98,25 +99,11 @@ public class FriendsFragment extends ActiviableFragment {
     }
 
     public void createAdapter(Context ctx, ArrayList<Friend> friends, String where) {
-        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if(view != null) {
             if (where.equals("friends")) {
                 this.friends = friends;
                 if (friendsAdapter == null) {
                     friendsAdapter = new FriendsListAdapter(ctx, this, friends);
-                    if(app.isTablet && app.swdp >= 760) {
-                        LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-                        glm.setOrientation(LinearLayoutManager.VERTICAL);
-                        ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
-                    } else if(app.isTablet && app.swdp >= 600) {
-                        LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
-                        glm.setOrientation(LinearLayoutManager.VERTICAL);
-                        ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
-                    } else {
-                        LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
-                        llm.setOrientation(LinearLayoutManager.VERTICAL);
-                        ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(llm);
-                    }
                     friendsListView.setAdapter(friendsAdapter);
                 } else {
                     friendsAdapter.notifyDataSetChanged();
@@ -128,21 +115,29 @@ public class FriendsFragment extends ActiviableFragment {
                 } else {
                     requestsAdapter.notifyDataSetChanged();
                 }
-                if(app.isTablet && app.swdp >= 760) {
-                    LinearLayoutManager glm = new GridLayoutManager(ctx, 3);
-                    glm.setOrientation(LinearLayoutManager.VERTICAL);
-                    ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
-                } else if(app.isTablet && app.swdp >= 600) {
-                    LinearLayoutManager glm = new GridLayoutManager(ctx, 2);
-                    glm.setOrientation(LinearLayoutManager.VERTICAL);
-                    ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
-                } else {
-                    LinearLayoutManager llm = new LinearLayoutManager(ctx);
-                    llm.setOrientation(LinearLayoutManager.VERTICAL);
-                    ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
-                }
                 ((RecyclerView) view.findViewById(R.id.requests_view)).setAdapter(requestsAdapter);
             }
+        }
+        adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
+    }
+
+    private void adjustLayoutSize(Context ctx, int orientation) {
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        if(app.isTablet && app.swdp >= 760 && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+            ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+        } else if(app.isTablet && app.swdp >= 600) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+            ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+        } else {
+            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(llm);
+            ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
         }
     }
 
