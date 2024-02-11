@@ -124,19 +124,34 @@ public class FriendsFragment extends ActiviableFragment {
     private void adjustLayoutSize(Context ctx, int orientation) {
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if(app.isTablet && app.swdp >= 760 && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
+            // Linking WGLM to ListView for Friends tab
             LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+
+            // Linking WGLM to ListView for Requests tab
+            glm = new WrappedGridLayoutManager(ctx, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
         } else if(app.isTablet && app.swdp >= 600) {
+            // Linking WGLM to ListView for Friends tab
             LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+
+            // Linking WGLM to ListView for Requests tab
+            glm = new WrappedGridLayoutManager(ctx, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
         } else {
+            // Linking WGLM to ListView for Friends tab
             LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(llm);
+
+            // Linking WGLM to ListView for Requests tab
+            llm = new WrappedLinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
         }
     }
