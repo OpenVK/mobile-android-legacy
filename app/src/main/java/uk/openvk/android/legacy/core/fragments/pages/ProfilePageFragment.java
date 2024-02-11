@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -474,7 +476,9 @@ public class ProfilePageFragment extends ActiviableFragment {
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
         OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
-        rhl.enableDarkTheme();
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            rhl.enableDarkTheme();
+        }
         try {
             p2r_view.setCustomHeadview(rhl);
         } catch (Exception ex) {
@@ -614,16 +618,36 @@ public class ProfilePageFragment extends ActiviableFragment {
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
             View placeholder = view.findViewById(R.id.tablet_profile_placeholder);
-            InfinityScrollView.LayoutParams lp = ((InfinityScrollView.LayoutParams)
-                    placeholder.getLayoutParams());
-            if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                lp.leftMargin = 160 * dp;
-                lp.rightMargin = 160 * dp;
+            InfinityScrollView.LayoutParams placeholder_lp =
+                    ((InfinityScrollView.LayoutParams) placeholder.getLayoutParams());
+            if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                LinearLayout.LayoutParams profile_photo_lp =
+                        (LinearLayout.LayoutParams)
+                                placeholder.findViewById(R.id.profile_photo_wrap).getLayoutParams();
+                LinearLayout.LayoutParams left_frame_lp =
+                        (LinearLayout.LayoutParams)
+                                placeholder.findViewById(R.id.profile_left_frame).getLayoutParams();
+
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    placeholder_lp.width = 900 * dp;
+                    profile_photo_lp.width = 188 * dp;
+                    profile_photo_lp.height = 188 * dp;
+                    left_frame_lp.width = 200 * dp;
+                } else {
+                    profile_photo_lp.width = 147 * dp;
+                    profile_photo_lp.height = 147 * dp;
+                    left_frame_lp.width = 155 * dp;
+                    placeholder_lp.width = InfinityScrollView.LayoutParams.MATCH_PARENT;
+                }
             } else {
-                lp.leftMargin = 15 * dp;
-                lp.rightMargin = 15 * dp;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    placeholder_lp.width = 500 * dp;
+                } else {
+                    placeholder_lp.width = InfinityScrollView.LayoutParams.MATCH_PARENT;
+                }
             }
-            placeholder.setLayoutParams(lp);
+            placeholder_lp.gravity = Gravity.CENTER_HORIZONTAL;
+            placeholder.setLayoutParams(placeholder_lp);
         } else {
             wallLayout.adjustLayoutSize(orientation);
         }

@@ -52,10 +52,14 @@ public class GroupHeader extends RelativeLayout {
         ((TextView) view.findViewById(R.id.profile_last_seen)).setText(getResources().getString(R.string.open_group));
         ((TextView) view.findViewById(R.id.profile_activity)).setText("");
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        try {
+            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

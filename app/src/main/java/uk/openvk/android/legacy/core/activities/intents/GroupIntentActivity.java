@@ -326,7 +326,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID
                     || message == HandlerMessages.GROUPS_SEARCH) {
                 group = ovk_api.groups.getList().get(0);
-                groupFragment.loadAPIData(group);
+                groupFragment.loadAPIData(ovk_api, group);
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 groupFragment.setJoinButtonListener(group, ovk_api);

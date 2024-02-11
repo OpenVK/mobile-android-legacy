@@ -13,12 +13,16 @@ import android.support.annotation.Nullable;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import java.util.ArrayList;
 
@@ -35,6 +39,7 @@ import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.AboutGroupLayout;
 import uk.openvk.android.legacy.ui.views.GroupHeader;
+import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 import uk.openvk.android.legacy.ui.views.ProfileCounterLayout;
 import uk.openvk.android.legacy.ui.views.ProfileWallSelector;
 import uk.openvk.android.legacy.ui.views.WallErrorLayout;
@@ -50,6 +55,7 @@ public class GroupPageFragment extends ActiviableFragment {
     public WallLayout wallLayout;
     private boolean loadedFromCache;
     private Group group;
+    private SharedPreferences global_prefs;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +71,28 @@ public class GroupPageFragment extends ActiviableFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_group_page, container, false);
         wallLayout = view.findViewById(R.id.wall_layout);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                view.findViewById(R.id.group_ext_header)
+                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                view.findViewById(R.id.about_group_layout)
+                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+                p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                view.findViewById(R.id.join_to_comm)
+                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
+            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                view.findViewById(R.id.group_ext_header)
+                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                view.findViewById(R.id.about_group_layout)
+                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+                p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                view.findViewById(R.id.join_to_comm)
+                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
+            }
+        }
         return view;
     }
 
@@ -174,7 +202,25 @@ public class GroupPageFragment extends ActiviableFragment {
         }
     }
 
-    public void loadAPIData(final Group group) {
+    public void loadAPIData(final OpenVKAPI ovk_api, final Group group) {
+        CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+        p2r_view.refreshComplete();
+        OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            rhl.enableDarkTheme();
+        }
+        try {
+            p2r_view.setCustomHeadview(rhl);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        p2r_view.setTriggerDistance(80);
+        p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ovk_api.groups.getGroupByID(ovk_api.wrapper, group.id);
+            }
+        });
         this.group = group;
         GroupHeader header = getHeader();
         header.setProfileName(String.format("%s  ", group.name));
@@ -327,16 +373,36 @@ public class GroupPageFragment extends ActiviableFragment {
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
             View placeholder = view.findViewById(R.id.tablet_group_placeholder);
-            InfinityScrollView.LayoutParams lp = ((InfinityScrollView.LayoutParams)
-                    placeholder.getLayoutParams());
-            if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                lp.leftMargin = 160 * dp;
-                lp.rightMargin = 160 * dp;
+            InfinityScrollView.LayoutParams placeholder_lp =
+                    ((InfinityScrollView.LayoutParams) placeholder.getLayoutParams());
+            if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                LinearLayout.LayoutParams group_photo_lp =
+                        (LinearLayout.LayoutParams)
+                                placeholder.findViewById(R.id.group_photo_wrap).getLayoutParams();
+                LinearLayout.LayoutParams right_frame_lp =
+                        (LinearLayout.LayoutParams)
+                                placeholder.findViewById(R.id.group_right_frame).getLayoutParams();
+
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    placeholder_lp.width = 900 * dp;
+                    group_photo_lp.width = 188 * dp;
+                    group_photo_lp.height = 188 * dp;
+                    right_frame_lp.width = 200 * dp;
+                } else {
+                    group_photo_lp.width = 147 * dp;
+                    group_photo_lp.height = 147 * dp;
+                    right_frame_lp.width = 155 * dp;
+                    placeholder_lp.width = InfinityScrollView.LayoutParams.MATCH_PARENT;
+                }
             } else {
-                lp.leftMargin = 15 * dp;
-                lp.rightMargin = 15 * dp;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    placeholder_lp.width = 500 * dp;
+                } else {
+                    placeholder_lp.width = InfinityScrollView.LayoutParams.MATCH_PARENT;
+                }
             }
-            placeholder.setLayoutParams(lp);
+            placeholder_lp.gravity = Gravity.CENTER_HORIZONTAL;
+            placeholder.setLayoutParams(placeholder_lp);
         } else {
             wallLayout.adjustLayoutSize(orientation);
         }

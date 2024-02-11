@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -58,28 +59,35 @@ public class PhotosFragment extends ActiviableFragment {
 
     public void createAdapter(final Context ctx, ArrayList<PhotoAlbum> albumsList, String type) {
         this.albums = albumsList;
-        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+
         if (albumsAdapter == null) {
             albumsAdapter = new PhotoAlbumsListAdapter(ctx, albumsList);
-            if(app.isTablet && app.swdp >= 760) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(glm);
-            } else if(app.isTablet && app.swdp >= 600) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(glm);
-            } else {
-                LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(llm);
-            }
+            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
             albumsListView.setAdapter(albumsAdapter);
         } else {
             albumsAdapter.notifyDataSetChanged();
         }
         Log.d(OvkApplication.APP_TAG, String.format("Photo Albums count: %s | Real count: %s",
                 albums.size(), albumsListView.getChildCount()));
+    }
+
+    private void adjustLayoutSize(Context ctx, int orientation) {
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        if(app.isTablet && app.swdp >= 760
+                && (orientation == Configuration.ORIENTATION_LANDSCAPE)
+                ) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(glm);
+        } else if(app.isTablet && app.swdp >= 600) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(glm);
+        } else {
+            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.albums_listview)).setLayoutManager(llm);
+        }
     }
 
     public void refresh() {
@@ -98,5 +106,11 @@ public class PhotosFragment extends ActiviableFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adjustLayoutSize(getContext(), newConfig.orientation);
     }
 }

@@ -38,21 +38,22 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="10dp"
                 android:layout_alignParentStart="true" />
+
             <TextView
-                android:textSize="18sp"
-                android:textColor="#e5ffffff"
-                android:ellipsize="marquee"
                 android:id="@+id/audio_panel_title"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="TextView"
-                android:singleLine="true"
-                android:layout_toRightOf="@+id/audio_panel_cover"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/audio_panel_cover" />
+                android:layout_marginTop="6dp"
+                android:layout_toEndOf="@+id/audio_panel_cover"
+                android:layout_toRightOf="@+id/audio_panel_cover"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:fadingEdgeLength="10dp"
+                android:singleLine="true"
+                android:text="TextView"
+                android:textColor="#e5ffffff"
+                android:textSize="18sp" />
             <TextView
                 android:textSize="15sp"
                 android:textColor="#99ffffff"

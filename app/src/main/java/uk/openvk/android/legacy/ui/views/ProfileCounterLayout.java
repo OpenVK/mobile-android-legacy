@@ -36,26 +36,37 @@ public class ProfileCounterLayout extends LinearLayout {
         super(context, attrs);
         View view = null;
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                view = LayoutInflater.from(getContext()).inflate(
-                        R.layout.profile_counter_gray, null);
-            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                view = LayoutInflater.from(getContext()).inflate(
-                        R.layout.profile_counter_black, null);
+        try {
+            if (!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                switch (global_prefs.getString("uiTheme", "blue")) {
+                    case "Gray":
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter_gray, null);
+                        break;
+                    case "Black":
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter_black, null);
+                        break;
+                    default:
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter, null);
+                        break;
+                }
             } else {
                 view = LayoutInflater.from(getContext()).inflate(
-                        R.layout.profile_counter, null);
+                        R.layout.profile_counter_light, null);
             }
-        } else {
+        } catch (Exception ex) {
+            ex.printStackTrace();
             view = LayoutInflater.from(getContext()).inflate(
-                    R.layout.profile_counter_light, null);
+                    R.layout.profile_counter, null);
         }
         this.addView(view);
-
-        LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-        layoutParams.width = LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
+        if(view != null) {
+            LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
+            layoutParams.width = LayoutParams.MATCH_PARENT;
+            view.setLayoutParams(layoutParams);
+        }
     }
 
     public void setCounter(long count, String label, String action) {

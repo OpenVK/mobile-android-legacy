@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -61,8 +62,17 @@ public class ConversationsFragment extends ActiviableFragment {
         this.conversations = conversations;
         this.account = account;
         conversationsAdapter = new ConversationsListAdapter(ctx, this.conversations, account);
+
+        int orientation = getResources().getConfiguration().orientation;
+        adjustLayoutSize(ctx, orientation);
+        convListView.setAdapter(conversationsAdapter);
+    }
+
+    public void adjustLayoutSize(Context ctx, int orientation) {
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
-        if(app.isTablet && app.swdp >= 760) {
+        if((app.isTablet && app.swdp >= 760) &&
+                (orientation == Configuration.ORIENTATION_LANDSCAPE)
+                ) {
             LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
@@ -75,7 +85,6 @@ public class ConversationsFragment extends ActiviableFragment {
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(llm);
         }
-        convListView.setAdapter(conversationsAdapter);
     }
 
     public int getCount() {
@@ -111,5 +120,12 @@ public class ConversationsFragment extends ActiviableFragment {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //createAdapter(getContext(), conversations, account);
+        adjustLayoutSize(getContext(), newConfig.orientation);
     }
 }

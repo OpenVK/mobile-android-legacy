@@ -11,16 +11,12 @@ import android.os.Message;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.api.OpenVKAPI;
 import uk.openvk.android.legacy.api.entities.PhotoAlbum;
-import uk.openvk.android.legacy.api.entities.WallPost;
 import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
@@ -38,7 +34,7 @@ import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
-import uk.openvk.android.legacy.core.activities.intents.PhotoAlbumIntentActivity;
+import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 
 /*  Copyleft © 2022, 2023 OpenVK Team
@@ -512,8 +508,8 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     }
                     break;
             }
-        } else if(activity instanceof PhotoAlbumIntentActivity) {
-            PhotoAlbumIntentActivity album_a = ((PhotoAlbumIntentActivity) activity);
+        } else if(activity instanceof PhotoAlbumActivity) {
+            PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);
             downloadManager = album_a.ovk_api.dlman;
             assert method != null;
             switch (method) {

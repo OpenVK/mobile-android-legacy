@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.ui.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -42,7 +43,8 @@ import static uk.openvk.android.legacy.BuildConfig.DEBUG;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSwipeRefreshLayout.CustomSwipeRefreshHeadLayout {
+public class OvkRefreshableHeaderLayout extends LinearLayout
+        implements CustomSwipeRefreshLayout.CustomSwipeRefreshHeadLayout {
 
     private final SharedPreferences global_prefs;
     private Context ctx;
@@ -53,7 +55,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
     private static final SparseArray<String> STATE_MAP = new SparseArray<>();
     private View header;
 
-    {
+    static {
         STATE_MAP.put(0, "STATE_NORMAL");
         STATE_MAP.put(1, "STATE_READY");
         STATE_MAP.put(2, "STATE_REFRESHING");
@@ -67,6 +69,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
         setup();
     }
 
+    @SuppressLint("InflateParams")
     private void setup() {
         ViewGroup.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -132,8 +135,8 @@ public class OvkRefreshableHeaderLayout extends LinearLayout implements CustomSw
     }
 
     private void setImageRotation(float rotation) {
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+        int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentApiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             p2r_arrow.setRotation(rotation);
         } else {
             if (p2r_arrow.getTag() == null){

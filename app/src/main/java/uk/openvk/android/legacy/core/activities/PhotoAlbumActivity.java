@@ -1,4 +1,4 @@
-package uk.openvk.android.legacy.core.activities.intents;
+package uk.openvk.android.legacy.core.activities;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -44,7 +44,7 @@ import uk.openvk.android.legacy.ui.utils.FlexibleGridLayoutManager;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class PhotoAlbumIntentActivity extends NetworkActivity {
+public class PhotoAlbumActivity extends NetworkActivity {
     private String access_token;
     private String action;
     private String instance;
@@ -91,7 +91,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
                 return;
             }
             try {
-                args = Global.getUrlArguments(path);
+                args = Global.getUrlArguments(path).substring(5);
                 album = new PhotoAlbum(args);
                 if(args.length() > 0) {
                     installLayouts();
@@ -182,7 +182,7 @@ public class PhotoAlbumIntentActivity extends NetworkActivity {
             } else if(message == HandlerMessages.PHOTOS_GET) {
                 createPhotoAlbumAdapter();
                 for(int i = 0; i < ovk_api.photos.albumsList.size(); i++) {
-                    if(ovk_api.photos.albumsList.get(i).ids[0] == Long.parseLong(ids[0])) {
+                    if(ovk_api.photos.albumsList.get(i).ids[1] == Long.parseLong(ids[1])) {
                         ovk_api.photos.album.title = ovk_api.photos.albumsList.get(i).title;
                     }
                 }

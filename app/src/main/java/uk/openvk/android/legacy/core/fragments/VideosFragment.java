@@ -1,6 +1,7 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -58,28 +59,33 @@ public class VideosFragment extends ActiviableFragment {
 
     public void createAdapter(final Context ctx, ArrayList<Video> videos) {
         this.videos = videos;
-        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if (videosAdapter == null) {
             videosAdapter = new VideosListAdapter(ctx, videos);
-            if(app.isTablet && app.swdp >= 760) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(glm);
-            } else if(app.isTablet && app.swdp >= 600) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(glm);
-            } else {
-                LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(llm);
-            }
+            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
             videosListView.setAdapter(videosAdapter);
         } else {
             videosAdapter.notifyDataSetChanged();
         }
         Log.d(OvkApplication.APP_TAG, String.format("Videos count: %s | Real count: %s",
                 videos.size(), videosListView.getChildCount()));
+    }
+
+    private void adjustLayoutSize(Context ctx, int orientation) {
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        if(app.isTablet && app.swdp >= 760
+                && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(glm);
+        } else if(app.isTablet && app.swdp >= 600) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(glm);
+        } else {
+            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.videos_listview)).setLayoutManager(llm);
+        }
     }
 
     public void refresh() {
@@ -102,5 +108,11 @@ public class VideosFragment extends ActiviableFragment {
 
     public void refreshListAdapter() {
         videosAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adjustLayoutSize(getContext(), newConfig.orientation);
     }
 }

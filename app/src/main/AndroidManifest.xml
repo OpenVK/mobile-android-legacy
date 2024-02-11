@@ -332,7 +332,7 @@
         </activity>
 
         <activity
-            android:name=".core.activities.intents.PhotoAlbumIntentActivity"
+            android:name=".core.activities.PhotoAlbumActivity"
             android:label="@string/albums"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle.Dark.Transparent"

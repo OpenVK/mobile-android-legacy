@@ -17,21 +17,22 @@
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical">
 
-    <com.reginald.swiperefresh.CustomSwipeRefreshLayout
-        xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
+    <com.reginald.swiperefresh.CustomSwipeRefreshLayout xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/refreshable_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/refreshable_layout"
-        swiperefresh:refresh_mode="pull_mode"
-        swiperefresh:keep_refresh_head="true"
         swiperefresh:enable_top_progress_bar="false"
-        swiperefresh:time_out_refresh_complete="2000"
-        swiperefresh:time_out_return_to_top="1000"
+        swiperefresh:keep_refresh_head="true"
+        swiperefresh:refresh_mode="pull_mode"
+        swiperefresh:return_to_header_duration="500"
         swiperefresh:return_to_top_duration="500"
-        swiperefresh:return_to_header_duration="500">
+        swiperefresh:time_out_refresh_complete="2000"
+        swiperefresh:time_out_return_to_top="1000">
 
         <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
             android:id="@+id/scrollView"
@@ -39,8 +40,8 @@
             android:layout_height="match_parent"
             android:background="#e3e4e6"
             android:descendantFocusability="blocksDescendants"
-            tools:ignore="UselessParent"
-            android:isScrollContainer="false">
+            android:isScrollContainer="false"
+            tools:ignore="UselessParent">
 
             <LinearLayout
                 android:id="@+id/tablet_profile_placeholder"
@@ -51,6 +52,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/profile_left_frame"
                     android:layout_width="200dp"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
