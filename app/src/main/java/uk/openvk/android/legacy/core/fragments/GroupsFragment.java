@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -69,25 +70,29 @@ public class GroupsFragment extends ActiviableFragment {
 
     public void createAdapter(Context ctx, ArrayList<Group> groups) {
         this.groups = groups;
-        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
         if (groupsAdapter == null) {
             groupsAdapter = new GroupsListAdapter(ctx, groups);
-            if(app.isTablet && app.swdp >= 760) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
-            } else if(app.isTablet && app.swdp >= 600) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
-            } else {
-                LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(llm);
-            }
             groupsListView.setAdapter(groupsAdapter);
+            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
         } else {
             groupsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void adjustLayoutSize(Context ctx, int orientation) {
+        OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        if(app.isTablet && app.swdp >= 760 && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+        } else if(app.isTablet && app.swdp >= 600) {
+            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
+            glm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+        } else {
+            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(llm);
         }
     }
 
@@ -142,5 +147,11 @@ public class GroupsFragment extends ActiviableFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adjustLayoutSize(getContext(), newConfig.orientation);
     }
 }
