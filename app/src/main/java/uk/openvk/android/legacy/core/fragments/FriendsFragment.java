@@ -104,6 +104,7 @@ public class FriendsFragment extends ActiviableFragment {
                 this.friends = friends;
                 if (friendsAdapter == null) {
                     friendsAdapter = new FriendsListAdapter(ctx, this, friends);
+                    adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
                     friendsListView.setAdapter(friendsAdapter);
                 } else {
                     friendsAdapter.notifyDataSetChanged();
@@ -115,10 +116,10 @@ public class FriendsFragment extends ActiviableFragment {
                 } else {
                     requestsAdapter.notifyDataSetChanged();
                 }
+                adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
                 ((RecyclerView) view.findViewById(R.id.requests_view)).setAdapter(requestsAdapter);
             }
         }
-        adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
     }
 
     private void adjustLayoutSize(Context ctx, int orientation) {
@@ -128,31 +129,36 @@ public class FriendsFragment extends ActiviableFragment {
             LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
-
-            // Linking WGLM to ListView for Requests tab
-            glm = new WrappedGridLayoutManager(ctx, 3);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+            if(getActivity() instanceof AppActivity) {
+                // Linking WGLM to ListView for Requests tab
+                glm = new WrappedGridLayoutManager(ctx, 3);
+                glm.setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+            }
         } else if(app.isTablet && app.swdp >= 600) {
             // Linking WGLM to ListView for Friends tab
             LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
 
-            // Linking WGLM to ListView for Requests tab
-            glm = new WrappedGridLayoutManager(ctx, 2);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+            if(getActivity() instanceof AppActivity) {
+                // Linking WGLM to ListView for Requests tab
+                glm = new WrappedGridLayoutManager(ctx, 2);
+                glm.setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+            }
         } else {
             // Linking WGLM to ListView for Friends tab
             LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(llm);
 
-            // Linking WGLM to ListView for Requests tab
-            llm = new WrappedLinearLayoutManager(ctx);
-            llm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
+            if(getActivity() instanceof AppActivity) {
+                // Linking WGLM to ListView for Requests tab
+                llm = new WrappedLinearLayoutManager(ctx);
+                llm.setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
+            }
         }
     }
 
@@ -254,6 +260,7 @@ public class FriendsFragment extends ActiviableFragment {
             tabSpec.setIndicator(getResources().getString(R.string.friend_requests));
             tabhost.addTab(tabSpec);
         }
+        tabhost.setCurrentTab(0);
     }
 
     public void setActivityContext(Context ctx) {
