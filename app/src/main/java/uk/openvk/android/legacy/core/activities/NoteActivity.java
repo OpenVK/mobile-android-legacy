@@ -1,15 +1,20 @@
 package uk.openvk.android.legacy.core.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.view.MenuItem;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.TranslucentActivity;
 
@@ -51,7 +56,46 @@ public class NoteActivity extends TranslucentActivity {
             }
         }
         webView = findViewById(R.id.webview);
+        forceBrowserForExternalLinks();
         loadNote();
+    }
+
+    private void forceBrowserForExternalLinks() {
+        final String instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    String url = view.getOriginalUrl();
+                    if (url != null) {
+                        if(url.startsWith("/")) {
+                            url = String.format("http://%s%s", instance, url);
+                        }
+                        view.getContext().startActivity(
+                                new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        } else {
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    if (url != null) {
+                        if(url.startsWith("/")) {
+                            url = String.format("http://%s%s", instance, url);
+                        }
+                        view.getContext().startActivity(
+                                new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
     }
 
     @Override
