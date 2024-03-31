@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.activities.intents;
 
 import android.annotation.SuppressLint;
@@ -23,11 +42,11 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.Note;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Notes;
-import uk.openvk.android.legacy.api.models.Users;
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.Note;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.models.Notes;
+import uk.openvk.android.client.models.Users;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
@@ -35,22 +54,6 @@ import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 public class NotesIntentActivity extends TranslucentFragmentActivity {
 
@@ -106,7 +109,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
                         @Override
                         public void run() {
                             Intent intent = new Intent();
-                            intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            intent.setAction("uk.openvk.android.client_DATA_RECEIVE");
                             intent.putExtras(data);
                             sendBroadcast(intent);
                         }
@@ -126,7 +129,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
+                    ovk_api = new OpenVKAPI(this, NotesIntentActivity.this.client_info, handler);
                     ovk_api.users = new Users();
                     ovk_api.notes = new Notes();
                     if(args.startsWith("id")) {

@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.activities.intents;
 
 import android.annotation.SuppressLint;
@@ -22,13 +41,12 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.entities.Friend;
-import uk.openvk.android.legacy.api.entities.PollAnswer;
-import uk.openvk.android.legacy.api.entities.User;
-import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.wrappers.JSONParser;
+import uk.openvk.android.client.entities.Poll;
+import uk.openvk.android.client.entities.Friend;
+import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.entities.WallPost;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
@@ -36,22 +54,6 @@ import uk.openvk.android.legacy.ui.views.ProfileHeader;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 @SuppressWarnings("ConstantConditions")
 public class ProfileIntentActivity extends NetworkFragmentActivity {
@@ -267,7 +269,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                          attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
                             Poll poll = ((Poll) item.attachments.get(attachment_index));
-                            PollAnswer answer = poll.answers.get(poll_answer);
+                            Poll.PollAnswer answer = poll.answers.get(poll_answer);
                             poll.user_votes = addVote ? 0 : 1;
                             answer.is_voted = addVote;
                             poll.answers.set(poll_answer, answer);

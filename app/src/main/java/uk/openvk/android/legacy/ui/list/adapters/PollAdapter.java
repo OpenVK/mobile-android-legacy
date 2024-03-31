@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
@@ -16,26 +35,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.client.entities.Poll;
+import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.api.entities.PollAnswer;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
 
@@ -43,7 +45,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
     private WallPost post;
     private int item_pos;
     private long total_votes;
-    private ArrayList<PollAnswer> items = new ArrayList<>();
+    private ArrayList<Poll.PollAnswer> items = new ArrayList<>();
     private Context ctx;
     private boolean multiple;
     public LruCache memCache;
@@ -51,7 +53,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
     private long total_votes_2;
 
     public PollAdapter(Context context, int item_pos, ArrayList<WallPost> wallPosts, WallPost post,
-                       ArrayList<PollAnswer> answers, boolean multiple,
+                       ArrayList<Poll.PollAnswer> answers, boolean multiple,
                        int user_votes, long total_votes) {
         ctx = context;
         this.item_pos = item_pos;
@@ -80,7 +82,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
         super.onViewRecycled(holder);
     }
 
-    public PollAnswer getItem(int position) {
+    public Poll.PollAnswer getItem(int position) {
         return items.get(position);
     }
 
@@ -109,7 +111,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
         }
 
         void bind(final int position) {
-            final PollAnswer item = getItem(position);
+            final Poll.PollAnswer item = getItem(position);
             answer_name.setText(item.text);
             int item_votes = item.votes;
             if(user_votes > 0) {
@@ -197,7 +199,7 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
         }
     }
 
-    public void setArray(ArrayList<PollAnswer> array) {
+    public void setArray(ArrayList<Poll.PollAnswer> array) {
         items = array;
     }
 }

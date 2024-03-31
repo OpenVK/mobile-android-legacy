@@ -1,69 +1,12 @@
-package uk.openvk.android.legacy.core.activities.intents;
-
-import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.RotateAnimation;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Locale;
-
-import dev.tinelix.retro_ab.ActionBar;
-import dev.tinelix.retro_pm.PopupMenu;
-import uk.openvk.android.legacy.Global;
-import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.entities.Group;
-import uk.openvk.android.legacy.api.entities.PollAnswer;
-import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
-import uk.openvk.android.legacy.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.fragments.pages.GroupPageFragment;
-import uk.openvk.android.legacy.core.listeners.OnScrollListener;
-import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
-import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
-import uk.openvk.android.legacy.ui.views.AboutGroupLayout;
-import uk.openvk.android.legacy.ui.views.ErrorLayout;
-import uk.openvk.android.legacy.ui.views.GroupHeader;
-import uk.openvk.android.legacy.ui.views.ProfileCounterLayout;
-import uk.openvk.android.legacy.ui.views.ProfileWallSelector;
-import uk.openvk.android.legacy.ui.views.ProgressLayout;
-import uk.openvk.android.legacy.ui.views.WallErrorLayout;
-import uk.openvk.android.legacy.ui.views.WallLayout;
-import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
  *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
  *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU Affero General Public License for more details.
@@ -72,7 +15,47 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
  *  program. If not, see https://www.gnu.org/licenses/.
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+ */
+
+package uk.openvk.android.legacy.core.activities.intents;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.FragmentTransaction;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.util.Locale;
+
+import dev.tinelix.retro_ab.ActionBar;
+import dev.tinelix.retro_pm.PopupMenu;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.Poll;
+import uk.openvk.android.client.entities.WallPost;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
+import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.fragments.pages.GroupPageFragment;
+import uk.openvk.android.legacy.ui.views.ErrorLayout;
+import uk.openvk.android.legacy.ui.views.ProgressLayout;
+import uk.openvk.android.legacy.ui.views.WallLayout;
+import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
+import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
+import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class GroupIntentActivity extends NetworkFragmentActivity {
     public Handler handler;
@@ -367,7 +350,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
                         Poll poll = ((Poll) item.attachments.get(attachment_index));
                         poll.user_votes = 0;
-                        PollAnswer answer = poll.answers.get(poll_answer);
+                        Poll.PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
                         ovk_api.wall.getWallItems().set(item_pos, item);
@@ -380,7 +363,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
                         Poll poll = ((Poll) item.attachments.get(attachment_index));
                         poll.user_votes = 0;
-                        PollAnswer answer = poll.answers.get(poll_answer);
+                        Poll.PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
                         ovk_api.wall.getWallItems().set(item_pos, item);

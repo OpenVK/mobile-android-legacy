@@ -1,2 +1,7 @@
-include ':app', ':modules:slidingmenu', ':modules:popupmenu', ':modules:actionbar', ':modules:twemojicon'
+include ':app',
+        ':modules:slidingmenu',
+        ':modules:popupmenu',
+        ':modules:actionbar',
+        ':modules:twemojicon',
+        ':modules:ovk-api'
 include ':modules:wrhttp'

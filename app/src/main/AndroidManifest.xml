@@ -373,7 +373,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="uk.openvk.android.legacy.API_DATA_RECEIVE" />
+                <action android:name="uk.openvk.android.client_DATA_RECEIVE" />
             </intent-filter>
         </receiver>
 

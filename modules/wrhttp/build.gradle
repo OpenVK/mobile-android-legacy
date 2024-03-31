@@ -2,10 +2,13 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 29
+    //noinspection GradleDependency
     buildToolsVersion "29.0.0"
 
     defaultConfig {
-        minSdkVersion 7
+        //noinspection MinSdkTooLow
+        minSdkVersion 3
+        //noinspection OldTargetApi
         targetSdkVersion 29
     }
 

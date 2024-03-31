@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
@@ -41,13 +60,13 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.entities.Video;
-import uk.openvk.android.legacy.api.entities.Photo;
-import uk.openvk.android.legacy.api.models.Wall;
-import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.entities.Comment;
+import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.entities.Video;
+import uk.openvk.android.client.entities.Photo;
+import uk.openvk.android.client.models.Wall;
+import uk.openvk.android.client.entities.Poll;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.entities.Comment;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
@@ -55,25 +74,9 @@ import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.CommentPanel;
 import uk.openvk.android.legacy.ui.views.PostViewLayout;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 public class WallPostActivity extends NetworkFragmentActivity
         implements EmojiconGridFragment.OnEmojiconClickedListener,

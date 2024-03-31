@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.ui.views;
 
 import android.content.Context;
@@ -34,36 +53,21 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.attachments.Attachment;
-import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.entities.Video;
-import uk.openvk.android.legacy.api.entities.Comment;
-import uk.openvk.android.legacy.api.entities.OvkLink;
-import uk.openvk.android.legacy.api.entities.Photo;
+import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.entities.Poll;
+import uk.openvk.android.client.entities.Video;
+import uk.openvk.android.client.entities.Comment;
+import uk.openvk.android.client.entities.OvkLink;
+import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
-import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.ui.views.attach.PollAttachView;
 import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 @SuppressWarnings("ConstantConditions")
 public class PostViewLayout extends LinearLayout {
@@ -168,7 +172,7 @@ public class PostViewLayout extends LinearLayout {
     }
 
     public void setPost(WallPost item, final Context ctx) {
-        ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.name);
+        ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.author_name);
         ArrayList<WallPost> posts = new ArrayList<WallPost>();
         posts.add(item);
 
@@ -228,7 +232,7 @@ public class PostViewLayout extends LinearLayout {
             } else {
                 findViewById(R.id.post_view).setVisibility(GONE);
             }
-            ((TextView) findViewById(R.id.wall_view_time)).setText(item.info);
+            ((TextView) findViewById(R.id.wall_view_time)).setText(Global.formatTimestamp(ctx, item.dt.getTime()));
 
             if (item.avatar != null) {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);

@@ -1,23 +1,12 @@
-package uk.openvk.android.legacy.services;
-
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
-import android.os.IBinder;
-import android.util.Log;
-
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.api.longpoll.LongPollWrapper;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
-
-/*  Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
  *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
  *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU Affero General Public License for more details.
@@ -27,6 +16,24 @@ import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
  *
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
+
+package uk.openvk.android.legacy.services;
+
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.IBinder;
+import android.util.Log;
+
+import java.util.HashMap;
+
+import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
+import uk.openvk.android.client.longpoll.LongPollWrapper;
+import uk.openvk.android.client.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 public class LongPollService extends Service {
     private String lp_server;
@@ -43,11 +50,11 @@ public class LongPollService extends Service {
     }
 
     public LongPollService(Context ctx, Handler handler,
-                           String access_token, boolean use_https, boolean legacy_client) {
+                           HashMap<String, Object> client_info) {
         this.handler = handler;
         this.ctx = ctx;
         this.access_token = access_token;
-        lpW = new LongPollWrapper(ctx, use_https, legacy_client);
+        lpW = new LongPollWrapper(ctx, client_info);
     }
 
     @Override
@@ -65,10 +72,11 @@ public class LongPollService extends Service {
     public void run(String instance, String lp_server, String key, int ts, boolean use_https,
                     boolean legacy_client) {
         this.use_https = use_https;
+        HashMap<String, Object> client_info = SecureCredentialsStorage.generateClientInfo();
         if(lpW == null) {
-            lpW = new LongPollWrapper(ctx, use_https, use_https);
+            lpW = new LongPollWrapper(ctx, client_info);
         }
-        ovk_api = new OvkAPIWrapper(ctx, use_https, legacy_client, handler);
+        ovk_api = new OvkAPIWrapper(ctx, client_info, handler);
         ovk_api.setServer(instance);
         ovk_api.setAccessToken(access_token);
         if(BuildConfig.BUILD_TYPE.equals("release")) ovk_api.log(false);
@@ -98,7 +106,7 @@ public class LongPollService extends Service {
 
     public void setProxyConnection(boolean useProxy, String proxy_address) {
         if(lpW == null) {
-            lpW = new LongPollWrapper(ctx, use_https, use_https);
+            lpW = new LongPollWrapper(ctx, SecureCredentialsStorage.generateClientInfo());
         }
         lpW.setProxyConnection(useProxy, proxy_address);
     }

@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.activities.base;
 
 import android.annotation.SuppressLint;
@@ -14,31 +33,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Random;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.interfaces.OvkAPIListeners;
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
-
-/**
- * OPENVK LEGACY LICENSE NOTIFICATION
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of
- * the GNU Affero General Public License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see https://www.gnu.org/licenses/.
- *
- * Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 @SuppressLint("Registered")
 public class NetworkActivity extends TranslucentActivity {
@@ -50,6 +54,7 @@ public class NetworkActivity extends TranslucentActivity {
     public Handler handler;
     public OvkAPIReceiver receiver;
     private String sessionId;
+    protected HashMap<String, Object> client_info;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -60,17 +65,22 @@ public class NetworkActivity extends TranslucentActivity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
-        ovk_api = new OpenVKAPI(this, global_prefs, instance_prefs, handler);
+        initializeOpenVKAPI();
         generateSessionId();
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
         registerAPIDataReceiver();
     }
 
+    private void initializeOpenVKAPI() {
+        client_info = new HashMap<>();
+        ovk_api = new OpenVKAPI(this, client_info, handler);
+    }
+
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
-                "uk.openvk.android.legacy.API_DATA_RECEIVE"));
+                "uk.openvk.android.client_DATA_RECEIVE"));
     }
 
     private void setAPIListeners(final OvkAPIListeners listeners) {
@@ -91,7 +101,7 @@ public class NetworkActivity extends TranslucentActivity {
                         @Override
                         public void run() {
                             Intent intent = new Intent();
-                            intent.setAction("uk.openvk.android.legacy.API_DATA_RECEIVE");
+                            intent.setAction("uk.openvk.android.client_DATA_RECEIVE");
                             data.putString("address",
                                     String.format("%s_%s", getLocalClassName(), getSessionId())
                             );

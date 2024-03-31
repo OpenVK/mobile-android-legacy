@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.fragments;
 
 import android.accounts.AccountManager;
@@ -35,12 +54,12 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.entities.Account;
-import uk.openvk.android.legacy.api.entities.Ovk;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.entities.InstanceLink;
-import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.client.entities.Account;
+import uk.openvk.android.client.entities.Ovk;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.entities.InstanceLink;
+import uk.openvk.android.client.wrappers.DownloadManager;
+import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AboutApplicationActivity;
 import uk.openvk.android.legacy.core.activities.MainActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiviablePreferenceFragment;
@@ -51,22 +70,7 @@ import uk.openvk.android.legacy.core.activities.DebugMenuActivity;
 import uk.openvk.android.legacy.core.activities.NetworkSettingsActivity;
 import uk.openvk.android.legacy.ui.list.adapters.InstanceCountersAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 public class MainSettingsFragment extends ActiviablePreferenceFragment {
     private boolean isQuiting;
@@ -418,8 +422,8 @@ public class MainSettingsFragment extends ActiviablePreferenceFragment {
                         ex.printStackTrace();
                     }
                 }
-                DownloadManager dlm = new DownloadManager(getActivity(), false,
-                        global_prefs.getBoolean("legacyHttpClient", false),
+                DownloadManager dlm = new DownloadManager(getActivity(),
+                        SecureCredentialsStorage.generateClientInfo(),
                         new Handler(Looper.myLooper()));
                 dlm.clearCache(getContext().getCacheDir());
                 Intent activity = new Intent(getContext().getApplicationContext(), MainActivity.class);

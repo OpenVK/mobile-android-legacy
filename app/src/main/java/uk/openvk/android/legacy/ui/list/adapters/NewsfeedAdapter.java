@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.app.AlertDialog;
@@ -32,9 +51,9 @@ import dev.tinelix.retro_pm.MenuItem;
 import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.OvkExpandableText;
-import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.OvkExpandableText;
+import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
@@ -42,22 +61,6 @@ import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.views.PostAttachmentsView;
 import uk.openvk.android.legacy.ui.views.WallLayout;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
@@ -202,13 +205,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 api_app_indicator.setVisibility(View.GONE);
             }
-            poster_name.setText(item.name);
+            poster_name.setText(item.author_name);
             if(item.verified_author) {
                 verified_icon.setVisibility(View.VISIBLE);
             } else {
                 verified_icon.setVisibility(View.GONE);
             }
-            post_info.setText(item.info);
+            post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
             expand_text_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

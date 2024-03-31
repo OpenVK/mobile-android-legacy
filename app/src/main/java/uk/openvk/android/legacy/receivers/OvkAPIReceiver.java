@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.receivers;
 
 import android.app.Activity;
@@ -15,11 +34,11 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.PhotoAlbum;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.wrappers.DownloadManager;
-import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.PhotoAlbum;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.wrappers.DownloadManager;
+import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
@@ -36,22 +55,6 @@ import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
 import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
-
-/*  Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- */
 
 public class OvkAPIReceiver extends BroadcastReceiver {
     private Activity activity;
@@ -81,7 +84,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     @Override
                     public void run() {
                         if(BuildConfig.DEBUG) {
-                            Log.d(OvkApplication.API_TAG,
+                            Log.d(OpenVKAPI.TAG,
                                     String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
                             );
                         }
@@ -96,7 +99,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     @Override
                     public void run() {
                         if(BuildConfig.DEBUG) {
-                            Log.d(OvkApplication.API_TAG,
+                            Log.d(OpenVKAPI.TAG,
                                     String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
                             );
                         }
@@ -111,7 +114,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     @Override
                     public void run() {
                         if(BuildConfig.DEBUG) {
-                            Log.d(OvkApplication.API_TAG,
+                            Log.d(OpenVKAPI.TAG,
                                     String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
                             );
                         }
@@ -130,8 +133,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         msg.setData(data);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         DownloadManager downloadManager = new DownloadManager(activity,
-                global_prefs.getBoolean("useHTTPS", false),
-                global_prefs.getBoolean("legacyHttpClient", false), handler);
+                wrapper.getClientInfo(), handler);
 
         downloadManager.setInstance(((OvkApplication) activity
                 .getApplicationContext()).getCurrentInstance());
@@ -334,7 +336,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             }
             switch (method) {
                 default:
-                    Log.e(OvkApplication.API_TAG, String.format("[%s / %s] Method not found", method,
+                    Log.e(OpenVKAPI.TAG, String.format("[%s / %s] Method not found", method,
                             msg.what));
                     break;
                 case "Account.getProfileInfo":

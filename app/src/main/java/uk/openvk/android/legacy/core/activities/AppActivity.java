@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.activities;
 
 import android.accounts.AccountManager;
@@ -37,20 +56,19 @@ import java.util.Locale;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.counters.AccountCounters;
-import uk.openvk.android.legacy.api.entities.Conversation;
-import uk.openvk.android.legacy.api.entities.Friend;
-import uk.openvk.android.legacy.api.entities.Group;
-import uk.openvk.android.legacy.api.entities.LongPollServer;
-import uk.openvk.android.legacy.api.entities.PhotoAlbum;
-import uk.openvk.android.legacy.api.entities.Poll;
-import uk.openvk.android.legacy.api.entities.PollAnswer;
-import uk.openvk.android.legacy.api.entities.WallPost;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.models.Messages;
-import uk.openvk.android.legacy.api.models.Newsfeed;
-import uk.openvk.android.legacy.api.models.Users;
-import uk.openvk.android.legacy.api.wrappers.JSONParser;
+import uk.openvk.android.client.counters.AccountCounters;
+import uk.openvk.android.client.entities.Conversation;
+import uk.openvk.android.client.entities.Friend;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.LongPollServer;
+import uk.openvk.android.client.entities.PhotoAlbum;
+import uk.openvk.android.client.entities.Poll;
+import uk.openvk.android.client.entities.WallPost;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.models.Messages;
+import uk.openvk.android.client.models.Newsfeed;
+import uk.openvk.android.client.models.Users;
+import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.ConversationsFragment;
@@ -79,22 +97,6 @@ import uk.openvk.android.legacy.ui.views.SlidingMenuLayout;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.NotificationManager;
-
-/*  Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- */
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends NetworkFragmentActivity {
@@ -878,7 +880,7 @@ public class AppActivity extends NetworkFragmentActivity {
                          attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
                             Poll poll = ((Poll) item.attachments.get(attachment_index));
-                            PollAnswer answer = poll.answers.get(poll_answer);
+                            Poll.PollAnswer answer = poll.answers.get(poll_answer);
                             poll.user_votes = addVote ? 0 : 1;
                             answer.is_voted = addVote;
                             poll.answers.set(poll_answer, answer);
@@ -1021,10 +1023,7 @@ public class AppActivity extends NetworkFragmentActivity {
     private void activateLongPollService() {
         OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
         ovk_app.longPollService =
-                new LongPollService(this, handler,
-                        instance_prefs.getString("access_token", ""),
-                        global_prefs.getBoolean("use_https", true),
-                        global_prefs.getBoolean("debugUseLegacyHttpClient", false));
+                new LongPollService(this, handler, client_info);
         ovk_app.longPollService.setProxyConnection(
                 global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));

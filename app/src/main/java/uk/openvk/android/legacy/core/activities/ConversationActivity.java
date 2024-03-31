@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
@@ -45,8 +64,8 @@ import java.util.Locale;
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.api.enumerations.HandlerMessages;
-import uk.openvk.android.legacy.api.entities.Conversation;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
@@ -56,22 +75,6 @@ import uk.openvk.android.legacy.ui.views.ConversationPanel;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesListAdapter;
 import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
-
-/** Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- **/
 
 public class ConversationActivity extends NetworkFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
@@ -90,8 +93,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     public long peer_id;
     private int cursor_id;
     public ActionBar actionBar;
-    public ArrayList<uk.openvk.android.legacy.api.entities.Message> history;
-    private uk.openvk.android.legacy.api.entities.Message last_sended_message;
+    public ArrayList<uk.openvk.android.client.entities.Message> history;
+    private uk.openvk.android.client.entities.Message last_sended_message;
     private LongPollReceiver lpReceiver;
     private String last_lp_message;
     private int keyboard_height;
@@ -359,13 +362,13 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                        last_sended_message = new uk.openvk.android.legacy.api.entities.Message(0,
+                        last_sended_message = new uk.openvk.android.client.entities.Message(0,
                                 false, false, (int) (System.currentTimeMillis() / 1000), msg_text,
                                 ConversationActivity.this);
                         last_sended_message.sending = true;
                         last_sended_message.isError = false;
                         if (history == null) {
-                            history = new ArrayList<uk.openvk.android.legacy.api.entities.Message>();
+                            history = new ArrayList<uk.openvk.android.client.entities.Message>();
                         }
                         history.add(last_sended_message);
                         if (conversation_adapter == null) {
@@ -399,12 +402,12 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                last_sended_message = new uk.openvk.android.legacy.api.entities.Message(0, false,
+                last_sended_message = new uk.openvk.android.client.entities.Message(0, false,
                         false, (int)(System.currentTimeMillis() / 1000), msg_text, ConversationActivity.this);
                 last_sended_message.sending = true;
                 last_sended_message.isError = false;
                 if(history == null) {
-                    history = new ArrayList<uk.openvk.android.legacy.api.entities.Message>();
+                    history = new ArrayList<uk.openvk.android.client.entities.Message>();
                 }
                 history.add(last_sended_message);
                 if(conversation_adapter == null) {
@@ -592,7 +595,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     private void showDeleteConfirmDialog(final int position) {
         cursor_id = position;
-        uk.openvk.android.legacy.api.entities.Message msg = history.get(position);
+        uk.openvk.android.client.entities.Message msg = history.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String text;
         if(msg.text.length() <= 200) {

@@ -1,3 +1,22 @@
+/*
+ *  Copyleft © 2022, 2023, 2024 OpenVK Team
+ *  Copyleft © 2022, 2023, 2024 Dmitry Tretyakov (aka. Tinelix)
+ *
+ *  This file is part of OpenVK Legacy for Android.
+ *
+ *  OpenVK Legacy for Android is free software: you can redistribute it and/or modify it under
+ *  the terms of the GNU Affero General Public License as published by the Free Software Foundation,
+ *  either version 3 of the License, or (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License along with this
+ *  program. If not, see https://www.gnu.org/licenses/.
+ *
+ *  Source code: https://github.com/openvk/mobile-android-legacy
+ */
+
 package uk.openvk.android.legacy;
 
 import android.accounts.AccountManager;
@@ -45,10 +64,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import uk.openvk.android.legacy.api.OpenVKAPI;
-import uk.openvk.android.legacy.api.entities.OvkExpandableText;
-import uk.openvk.android.legacy.api.entities.OvkLink;
-import uk.openvk.android.legacy.api.entities.WallPost;
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.OvkExpandableText;
+import uk.openvk.android.client.entities.OvkLink;
+import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
@@ -64,24 +83,6 @@ import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
-
-/** Global class - global methods for application **/
-
-/*  Copyleft © 2022, 2023 OpenVK Team
- *  Copyleft © 2022, 2023 Dmitry Tretyakov (aka. Tinelix)
- *
- *  This program is free software: you can redistribute it and/or modify it under the terms of
- *  the GNU Affero General Public License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
- *  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License along with this
- *  program. If not, see https://www.gnu.org/licenses/.
- *
- *  Source code: https://github.com/openvk/mobile-android-legacy
- */
 
 public class Global {
 
@@ -101,15 +102,12 @@ public class Global {
 
     public boolean isTablet() {
         if(ctx != null) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
                 return ctx.getResources().getConfiguration().smallestScreenWidthDp >= 600;
-            } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                return (ctx.getResources().getConfiguration().screenLayout
-                        & Configuration.SCREENLAYOUT_SIZE_MASK)
-                        >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-            } else {
-                return false;
-            }
+            } else
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                        && (ctx.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
+                            >= Configuration.SCREENLAYOUT_SIZE_LARGE;
         } else {
             return false;
         }
@@ -941,20 +939,20 @@ public class Global {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static String formatDateTime(Context ctx, long dt_sec) {
+    public static String formatTimestamp(Context ctx, long seconds) {
         String strftime;
-        Date dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
+        Date dt = new Date(TimeUnit.SECONDS.toMillis(seconds));
         Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
         dt_midnight.setHours(0);
         dt_midnight.setMinutes(0);
         dt_midnight.setSeconds(0);
-        if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 86400000) {
+        if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(seconds))) < 86400000) {
             strftime = String.format("%s %s", ctx.getResources().getString(R.string.today_at),
                     new SimpleDateFormat("HH:mm").format(dt));
-        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < (86400000 * 2)) {
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(seconds))) < (86400000 * 2)) {
             strftime = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at),
                     new SimpleDateFormat("HH:mm").format(dt));
-        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(dt_sec))) < 31536000000L) {
+        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(seconds))) < 31536000000L) {
             strftime = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt),
                     ctx.getResources().getString(R.string.date_at),
                     new SimpleDateFormat("HH:mm").format(dt));

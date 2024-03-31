@@ -1,0 +1,25 @@
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.1"
+
+    defaultConfig {
+        //noinspection MinSdkTooLow
+        minSdkVersion 3
+        //noinspection OldTargetApi
+        targetSdkVersion 29
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    //noinspection GradleDependency
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile project(':modules:wrhttp')
+}
