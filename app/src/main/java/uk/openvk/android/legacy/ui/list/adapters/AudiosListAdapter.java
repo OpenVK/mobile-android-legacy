@@ -35,6 +35,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
 public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Holder> {
@@ -213,7 +214,8 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         private void showBottomPlayer(Audio track) {
             if(ctx instanceof AppActivity) {
                 AppActivity activity = ((AppActivity) ctx);
-                activity.audiosFragment.showBottomPlayer(this, track);
+                if(activity.selectedFragment instanceof AudiosFragment)
+                    ((AudiosFragment) activity.selectedFragment).showBottomPlayer(this, track);
             }
         }
 
@@ -232,16 +234,21 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
             if(ctx instanceof AppActivity) {
                 AppActivity activity = ((AppActivity) ctx);
-                switch (track.status) {
-                    case 0:
-                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING, true);
-                        break;
-                    case 2:
-                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED, true);
-                        break;
-                    case 3:
-                        activity.audiosFragment.setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING, true);
-                        break;
+                if (activity.selectedFragment instanceof AudiosFragment) {
+                    switch (track.status) {
+                        case 0:
+                            ((AudiosFragment) activity.selectedFragment)
+                                    .setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING, true);
+                            break;
+                        case 2:
+                            ((AudiosFragment) activity.selectedFragment)
+                                    .setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED, true);
+                            break;
+                        case 3:
+                            ((AudiosFragment) activity.selectedFragment)
+                                    .setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING, true);
+                            break;
+                    }
                 }
             }
         }

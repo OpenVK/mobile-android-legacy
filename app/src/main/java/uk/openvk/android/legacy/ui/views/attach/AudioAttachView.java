@@ -43,6 +43,7 @@ import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
+import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 
@@ -91,16 +92,18 @@ public class AudioAttachView extends FrameLayout {
                     public void onClick(View view) {
                         AudiosFragment fragment = new AudiosFragment();
                         startAudioPlayerService();
+                        WallLayout wallLayout = null;
+                        if(ctx instanceof AppActivity) {
+                            if(((AppActivity) ctx).selectedFragment instanceof ProfilePageFragment) {
+                                wallLayout = ((ProfilePageFragment) ((AppActivity) ctx).selectedFragment).wallLayout;
+                            }
+                        } else if(ctx instanceof ProfileIntentActivity) {
+                            wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
+                        } else if(ctx instanceof GroupIntentActivity) {
+                            wallLayout = ((GroupIntentActivity) ctx).wallLayout;
+                        }
                         switch (status) {
                             default:
-                                WallLayout wallLayout = null;
-                                if(ctx instanceof AppActivity) {
-                                    wallLayout = ((AppActivity) ctx).profilePageFragment.wallLayout;
-                                } else if(ctx instanceof ProfileIntentActivity) {
-                                    wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
-                                } else if(ctx instanceof GroupIntentActivity) {
-                                    wallLayout = ((GroupIntentActivity) ctx).wallLayout;
-                                }
                                 if(wallLayout != null) {
                                     wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_STARTING_FROM_WALL, position, post_id);
                                     ((ImageView) findViewById(R.id.attach_icon)).setImageDrawable(
@@ -110,14 +113,6 @@ public class AudioAttachView extends FrameLayout {
                                 }
                                 break;
                             case 1:
-                                wallLayout = null;
-                                if(ctx instanceof AppActivity) {
-                                    wallLayout = ((AppActivity) ctx).profilePageFragment.wallLayout;
-                                } else if(ctx instanceof ProfileIntentActivity) {
-                                    wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
-                                } else if(ctx instanceof GroupIntentActivity) {
-                                    wallLayout = ((GroupIntentActivity) ctx).wallLayout;
-                                }
                                 if(wallLayout != null) {
                                     wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_PAUSED, position, post_id);
                                     ((ImageView) findViewById(R.id.attach_icon)).setImageDrawable(
@@ -127,14 +122,6 @@ public class AudioAttachView extends FrameLayout {
                                 }
                                 break;
                             case 2:
-                                wallLayout = null;
-                                if(ctx instanceof AppActivity) {
-                                    wallLayout = ((AppActivity) ctx).profilePageFragment.wallLayout;
-                                } else if(ctx instanceof ProfileIntentActivity) {
-                                    wallLayout = ((ProfileIntentActivity) ctx).profilePageFragment.wallLayout;
-                                } else if(ctx instanceof GroupIntentActivity) {
-                                    wallLayout = ((GroupIntentActivity) ctx).wallLayout;
-                                }
                                 if(wallLayout != null) {
                                     wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_PLAYING, position, post_id);
                                     ((ImageView) findViewById(R.id.attach_icon)).setImageDrawable(

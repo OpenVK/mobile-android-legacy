@@ -28,6 +28,7 @@ import android.support.v7.preference.PreferenceManager;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.utils.AccountAuthenticator;
 
 public class AccountsUpdateListener implements OnAccountsUpdateListener {
     private Context ctx;
@@ -49,8 +50,9 @@ public class AccountsUpdateListener implements OnAccountsUpdateListener {
             }
             if (newAccount == null) {
                 instance_prefs.edit().clear().commit();
-                Global global = new Global(ctx);
-                global.openChangeAccountDialog(ctx, PreferenceManager.getDefaultSharedPreferences(ctx), false);
+                AccountAuthenticator.openChangeAccountDialog(
+                        ctx, PreferenceManager.getDefaultSharedPreferences(ctx), false
+                );
             }
         }
     }

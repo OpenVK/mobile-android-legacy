@@ -45,33 +45,35 @@ public class AudioPlayerReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         AudiosFragment audiosFragment = null;
         if(ctx instanceof AppActivity) {
-            audiosFragment = ((AppActivity)(ctx)).audiosFragment;
-        }
-        if(intent.getExtras() != null && intent.getAction() != null) {
-            Bundle data = intent.getExtras();
-            String action = intent.getAction();
-            switch (action) {
-                case AudioPlayerService.ACTION_PLAYER_CONTROL:
-                    int status = data.getInt("status");
-                    int track_pos = data.getInt("track_position");
-                    if(audiosFragment != null) {
-                        audiosFragment.receivePlayerStatus(action, status, track_pos, data);
-                    } else if(ctx instanceof AudioPlayerActivity) {
-                        ((AudioPlayerActivity) ctx).receivePlayerStatus(action, status, track_pos, data);
-                    }
-                    break;
-                case AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS:
-                    status = data.getInt("status");
-                    track_pos = data.getInt("track_position");
-                    track_pos = data.getInt("track_position");
-                    if(audiosFragment != null) {
-                        audiosFragment.updateCurrentTrackPosition(track_pos, status);
-                    } else if(ctx instanceof AudioPlayerActivity) {
-                        ((AudioPlayerActivity) ctx).updateCurrentTrackPosition(track_pos, status);
-                    }
-                    break;
-            }
+            if (((AppActivity) (ctx)).selectedFragment instanceof AudiosFragment) {
+                audiosFragment = (AudiosFragment) ((AppActivity) (ctx)).selectedFragment;
 
+                if (intent.getExtras() != null && intent.getAction() != null) {
+                    Bundle data = intent.getExtras();
+                    String action = intent.getAction();
+                    switch (action) {
+                        case AudioPlayerService.ACTION_PLAYER_CONTROL:
+                            int status = data.getInt("status");
+                            int track_pos = data.getInt("track_position");
+                            if (audiosFragment != null) {
+                                audiosFragment.receivePlayerStatus(action, status, track_pos, data);
+                            } else if (ctx instanceof AudioPlayerActivity) {
+                                ((AudioPlayerActivity) ctx).receivePlayerStatus(action, status, track_pos, data);
+                            }
+                            break;
+                        case AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS:
+                            status = data.getInt("status");
+                            track_pos = data.getInt("track_position");
+                            track_pos = data.getInt("track_position");
+                            if (audiosFragment != null) {
+                                audiosFragment.updateCurrentTrackPosition(track_pos, status);
+                            } else if (ctx instanceof AudioPlayerActivity) {
+                                ((AudioPlayerActivity) ctx).updateCurrentTrackPosition(track_pos, status);
+                            }
+                            break;
+                    }
+                }
+            }
         }
     }
 }

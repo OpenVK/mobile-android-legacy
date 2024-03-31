@@ -186,7 +186,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        groupFragment.adjustLayoutSize(newConfig.orientation);
+        groupFragment.adjustLayout(newConfig.orientation);
         super.onConfigurationChanged(newConfig);
     }
 

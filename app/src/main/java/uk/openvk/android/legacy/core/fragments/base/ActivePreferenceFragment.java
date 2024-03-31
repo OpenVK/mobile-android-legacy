@@ -24,7 +24,7 @@ import android.support.v4.app.Fragment;
 
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
 
-public class ActiviablePreferenceFragment extends PreferenceFragmentCompatDividers {
+public class ActivePreferenceFragment extends PreferenceFragmentCompatDividers {
     private boolean isActivated;
 
     public boolean isActivated() {

@@ -19,9 +19,14 @@
 
 package uk.openvk.android.legacy.core.fragments.base;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-public class ActiviableFragment extends Fragment {
+public class ActiveFragment extends Fragment {
     private boolean isActivated;
 
     public boolean isActivated() {
@@ -42,5 +47,9 @@ public class ActiviableFragment extends Fragment {
 
     public void onDeactivated() {
         isActivated = false;
+    }
+
+    public void adjustLayout(int orientation) {
+
     }
 }

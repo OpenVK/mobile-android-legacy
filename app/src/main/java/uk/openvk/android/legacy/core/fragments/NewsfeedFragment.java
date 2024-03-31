@@ -20,21 +20,17 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,8 +57,7 @@ import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
@@ -70,7 +65,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 
-public class NewsfeedFragment extends ActiviableFragment {
+public class NewsfeedFragment extends ActiveFragment {
     private View headerView;
     private int param = 0;
     public TextView titlebar_title;
@@ -103,7 +98,7 @@ public class NewsfeedFragment extends ActiviableFragment {
                              @Nullable Bundle savedInstanceState) {
         onPrepareOptionsMenu(fragment_menu);
         view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
-        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+        adjustLayout(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
@@ -182,7 +177,7 @@ public class NewsfeedFragment extends ActiviableFragment {
                 }
             }
         });
-        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+        adjustLayout(getContext().getResources().getConfiguration().orientation);
     }
 
     public void updateItem(WallPost item, int position) {
@@ -278,7 +273,9 @@ public class NewsfeedFragment extends ActiviableFragment {
         }
     }
 
-    public void adjustLayoutSize(int orientation) {
+    @Override
+    public void adjustLayout(int orientation) {
+        super.adjustLayout(orientation);
         try {
             if(newsfeedView != null) {
                 if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
@@ -335,7 +332,7 @@ public class NewsfeedFragment extends ActiviableFragment {
             if(!notScroll) {
                 newsfeedView.scrollToPosition(0);
             }
-            adjustLayoutSize(getResources().getConfiguration().orientation);
+            adjustLayout(getResources().getConfiguration().orientation);
         }
     }
 
@@ -345,29 +342,33 @@ public class NewsfeedFragment extends ActiviableFragment {
     }
 
     public void refreshOptionsMenu() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActivity().invalidateOptionsMenu();
-        } else {
-            dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
-            if (actionBar.getActionCount() > 0) {
-                actionBar.removeAllActions();
-            }
-            dev.tinelix.retro_ab.ActionBar.Action newpost =
-                    new dev.tinelix.retro_ab.ActionBar.Action() {
-                        @Override
-                        public int getDrawable() {
-                            return R.drawable.ic_ab_write;
-                        }
-
-                        @Override
-                        public void performAction(View view) {
-                            if(getActivity() instanceof NetworkFragmentActivity) {
-                                NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
-                                Global.openNewPostActivity(getContext(), activity.ovk_api);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActivity().invalidateOptionsMenu();
+            } else {
+                dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
+                if (actionBar.getActionCount() > 0) {
+                    actionBar.removeAllActions();
+                }
+                dev.tinelix.retro_ab.ActionBar.Action newpost =
+                        new dev.tinelix.retro_ab.ActionBar.Action() {
+                            @Override
+                            public int getDrawable() {
+                                return R.drawable.ic_ab_write;
                             }
-                        }
-                    };
-            actionBar.addAction(newpost);
+
+                            @Override
+                            public void performAction(View view) {
+                                if (getActivity() instanceof NetworkFragmentActivity) {
+                                    NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
+                                    Global.openNewPostActivity(getContext(), activity.ovk_api);
+                                }
+                            }
+                        };
+                actionBar.addAction(newpost);
+            }
+        } catch (Exception ignored) {
+
         }
     }
 

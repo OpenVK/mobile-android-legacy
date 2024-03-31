@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,7 +45,7 @@ import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.client.entities.User;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
@@ -76,7 +75,7 @@ import static android.view.View.GONE;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class ProfilePageFragment extends ActiviableFragment {
+public class ProfilePageFragment extends ActiveFragment {
     private View view;
     private boolean showExtended;
     public boolean loading_more_posts;
@@ -251,7 +250,7 @@ public class ProfilePageFragment extends ActiviableFragment {
             (view.findViewById(R.id.deactivated_info)).setVisibility(View.VISIBLE);
             view.findViewById(R.id.send_direct_msg).setVisibility(GONE);
         }
-        adjustLayoutSize(getContext().getResources().getConfiguration().orientation);
+        adjustLayout(getContext().getResources().getConfiguration().orientation);
     }
 
     public void toggleExtendedInfo() {
@@ -614,7 +613,8 @@ public class ProfilePageFragment extends ActiviableFragment {
         }
     }
 
-    public void adjustLayoutSize(int orientation) {
+    @Override
+    public void adjustLayout(int orientation) {
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
             View placeholder = view.findViewById(R.id.tablet_profile_placeholder);

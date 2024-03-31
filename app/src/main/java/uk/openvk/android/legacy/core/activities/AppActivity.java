@@ -23,12 +23,10 @@ import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -78,12 +76,12 @@ import uk.openvk.android.legacy.core.fragments.MainSettingsFragment;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
-import uk.openvk.android.legacy.receivers.MediaButtonEventReceiver;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
@@ -96,6 +94,7 @@ import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.views.SlidingMenuLayout;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
+import uk.openvk.android.legacy.utils.AccountAuthenticator;
 import uk.openvk.android.legacy.utils.NotificationManager;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
@@ -105,14 +104,6 @@ public class AppActivity extends NetworkFragmentActivity {
     private SlidingMenu menu;
     public ProgressLayout progressLayout;
     public ErrorLayout errorLayout;
-    public NewsfeedFragment newsfeedFragment;
-    public ProfilePageFragment profilePageFragment;
-    public FriendsFragment friendsFragment;
-    public PhotosFragment photosFragment;
-    public VideosFragment videosFragment;
-    public AudiosFragment audiosFragment;
-    public ConversationsFragment conversationsFragment;
-    public MainSettingsFragment mainSettingsFragment;
     private SlidingMenuLayout slidingmenuLayout;
     public NotesFragment notesFragment;
     public ArrayList<Conversation> conversations;
@@ -135,7 +126,6 @@ public class AppActivity extends NetworkFragmentActivity {
     public LongPollServer longPollServer;
     public int old_friends_size;
     public boolean profile_loaded = false;
-    public android.accounts.Account androidAccount;
 
     @SuppressLint({"CommitPrefEdits", "HandlerLeak"})
     @Override
@@ -159,10 +149,9 @@ public class AppActivity extends NetworkFragmentActivity {
         conversations = new ArrayList<>();
         registerBroadcastReceiver();
         if(((OvkApplication) getApplicationContext()).isTablet) {
-            newsfeedFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
-            try {
-                profilePageFragment.adjustLayoutSize(getResources().getConfiguration().orientation);
-            } catch (Exception ignored) {
+            if(selectedFragment instanceof ActiveFragment) {
+                ((ActiveFragment) selectedFragment)
+                        .adjustLayout(getResources().getConfiguration().orientation);
             }
         }
         boolean isTablet = ((OvkApplication) getApplicationContext()).isTablet;
@@ -189,15 +178,14 @@ public class AppActivity extends NetworkFragmentActivity {
         AccountManager accountManager = AccountManager.get(this);
         accountManager.addOnAccountsUpdatedListener(new AccountsUpdateListener(this),
                 null, false);
-        Global.loadAccounts(this, accountArray, accountManager, instance_prefs);
-        if(androidAccount == null) {
+        AccountAuthenticator.loadAccounts(this, accountArray, accountManager, instance_prefs);
+        if(((OvkApplication)getApplication()).androidAccount == null) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
             removeAccount();
             if(accountArray.size() >= 1
                     && global_prefs.getString("current_instance", "").length() == 0) {
-                Global global = new Global();
-                global.openChangeAccountDialog(this, global_prefs, false);
+                AccountAuthenticator.openChangeAccountDialog(this, global_prefs, false);
                 return false;
             } else {
                 Intent activity = new Intent(getApplicationContext(), MainActivity.class);
@@ -223,7 +211,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 if(notifMan != null) notifMan.clearAudioPlayerNotification();
                 exitApplication();
             } else if (selectedFragment instanceof AudiosFragment) {
-                audiosFragment.closeSearchItem();
+                ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             } else {
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
@@ -314,8 +302,9 @@ public class AppActivity extends NetworkFragmentActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // Adjusting layout for Mobile UI and Tablet UI
-        newsfeedFragment.adjustLayoutSize(newConfig.orientation);
-        profilePageFragment.adjustLayoutSize(newConfig.orientation);
+        if(selectedFragment instanceof ActiveFragment) {
+            ((ActiveFragment) selectedFragment).adjustLayout(newConfig.orientation);
+        }
         if(!((OvkApplication) getApplicationContext()).isTablet) {
             menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
@@ -402,7 +391,8 @@ public class AppActivity extends NetworkFragmentActivity {
         if (resultCode == Activity.RESULT_OK && requestCode == 5) {
             Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             if (uri != null) {
-                mainSettingsFragment.setNotificationSound(uri.toString());
+                if(selectedFragment instanceof MainSettingsFragment)
+                    ((MainSettingsFragment) selectedFragment).setNotificationSound(uri.toString());
             }
         }
     }
@@ -411,16 +401,7 @@ public class AppActivity extends NetworkFragmentActivity {
     private void installFragments() {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
-        profilePageFragment = new ProfilePageFragment();
-        newsfeedFragment = new NewsfeedFragment();
-        friendsFragment = new FriendsFragment();
-        photosFragment = new PhotosFragment();
-        videosFragment = new VideosFragment();
-        groupsFragment = new GroupsFragment();
-        notesFragment = new NotesFragment();
-        audiosFragment = new AudiosFragment();
-        mainSettingsFragment = new MainSettingsFragment();
-        friendsFragment.setActivityContext(this);
+        selectedFragment = new NewsfeedFragment();
         fn = new FragmentNavigator(this);
         if(activity_menu == null) {
             popup_menu  = new android.support.v7.widget
@@ -429,32 +410,11 @@ public class AppActivity extends NetworkFragmentActivity {
             getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
             onCreateOptionsMenu(activity_menu);
         }
-        conversationsFragment = new ConversationsFragment();
         FragmentManager fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
-        ft.add(R.id.app_fragment, newsfeedFragment, "newsfeed");
-        ft.add(R.id.app_fragment, friendsFragment, "friends");
-        ft.add(R.id.app_fragment, photosFragment, "photos");
-        ft.add(R.id.app_fragment, videosFragment, "videos");
-        ft.add(R.id.app_fragment, audiosFragment, "audios");
-        ft.add(R.id.app_fragment, groupsFragment, "groups");
-        ft.add(R.id.app_fragment, conversationsFragment, "messages");
-        ft.add(R.id.app_fragment, profilePageFragment, "profile");
-        ft.add(R.id.app_fragment, notesFragment, "notes");
-        ft.add(R.id.app_fragment, mainSettingsFragment, "settings");
+        ft.add(R.id.app_fragment, selectedFragment);
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.hide(friendsFragment);
-        ft.hide(photosFragment);
-        ft.hide(videosFragment);
-        ft.hide(audiosFragment);
-        ft.hide(groupsFragment);
-        ft.hide(conversationsFragment);
-        ft.hide(profilePageFragment);
-        ft.hide(notesFragment);
-        selectedFragment = newsfeedFragment;
-        ft.show(newsfeedFragment);
-        ft.hide(mainSettingsFragment);
         ft.commit();
         if(global_prefs.getBoolean("refreshOnOpen", true)) {
             global_prefs_editor.putString("current_screen", "newsfeed");
@@ -513,44 +473,46 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void refreshPage(String screen) {
         errorLayout.setVisibility(View.GONE);
-        if(screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed")) {
-            if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
-        }
-        if(screen.equals("subscriptions_newsfeed")) {
-            menu_id = R.menu.newsfeed;
-            setActionBarTitle(getResources().getString(R.string.newsfeed));
-            if (newsfeedFragment.getCount() == 0) {
-                findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-            } else {
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
+        if(selectedFragment instanceof NewsfeedFragment) {
+            if (screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed")) {
+                if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
             }
-            newsfeed_count = 25;
-            ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
-        } else if(screen.equals("global_newsfeed")) {
-            menu_id = R.menu.newsfeed;
-            setActionBarTitle(getResources().getString(R.string.newsfeed));
-            if (newsfeedFragment.getCount() == 0) {
-                findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-            } else {
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
+            if (screen.equals("subscriptions_newsfeed")) {
+                menu_id = R.menu.newsfeed;
+                setActionBarTitle(getResources().getString(R.string.newsfeed));
+                if (((NewsfeedFragment) selectedFragment).getCount() == 0) {
+                    findViewById(R.id.app_fragment).setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    progressLayout.setVisibility(View.GONE);
+                }
+                newsfeed_count = 25;
+                ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
+            } else if (screen.equals("global_newsfeed")) {
+                menu_id = R.menu.newsfeed;
+                setActionBarTitle(getResources().getString(R.string.newsfeed));
+                if (((NewsfeedFragment) selectedFragment).getCount() == 0) {
+                    findViewById(R.id.app_fragment).setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    progressLayout.setVisibility(View.GONE);
+                }
+                if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
+                newsfeed_count = 25;
+                ovk_api.newsfeed.getGlobal(ovk_api.wrapper, newsfeed_count);
             }
-            if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
-            newsfeed_count = 25;
-            ovk_api.newsfeed.getGlobal(ovk_api.wrapper, newsfeed_count);
         }
     }
 
     public void onAccountSlidingMenuItemClicked(int position) {
         if(position == 0) {
-            mainSettingsFragment.openChangeAccountDialog();
+            AccountAuthenticator.openChangeAccountDialog(this, global_prefs, true);
         } else if(position == 1) {
             Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
         } else {
-            mainSettingsFragment.openLogoutConfirmationDialog();
+            AccountAuthenticator.openLogoutConfirmationDialog(this, global_prefs);
         }
     }
 
@@ -652,19 +614,23 @@ public class AppActivity extends NetworkFragmentActivity {
                         String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name);
                 instance_prefs_editor.putString("profile_name", profile_name);
                 instance_prefs_editor.commit();
-                mainSettingsFragment.setAccount(ovk_api.account);
+                if(selectedFragment instanceof MainSettingsFragment) {
+                    ((MainSettingsFragment) selectedFragment).setAccount(ovk_api.account);
+                }
                 slidingmenuLayout.setProfileName(profile_name);
                 ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList(this);
                 if(cached_posts != null && cached_posts.size() > 0) {
-                    newsfeedFragment.loadFromCache(this);
+                    if(selectedFragment instanceof NewsfeedFragment) {
+                        ((NewsfeedFragment) selectedFragment).loadFromCache(this);
+                    }
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 } else {
                     ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
                 }
                 ovk_api.messages.getLongPollServer(ovk_api.wrapper);
-                if(selectedFragment == newsfeedFragment) {
-                    newsfeedFragment.loadAccount(ovk_api);
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).loadAccount(ovk_api);
                 }
                 ovk_api.account.getCounters(ovk_api.wrapper);
                 ovk_api.users.getAccountUser(ovk_api.wrapper, ovk_api.account.id);
@@ -705,8 +671,10 @@ public class AppActivity extends NetworkFragmentActivity {
                             message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
                         notScroll = true;
                     }
-                    newsfeedFragment.loadAPIData(this, ovk_api,
-                            ab_spinner, isFromGlobalNewsfeed(message), notScroll);
+                    if(selectedFragment instanceof NewsfeedFragment) {
+                        ((NewsfeedFragment) selectedFragment).loadAPIData(this, ovk_api,
+                                ab_spinner, isFromGlobalNewsfeed(message), notScroll);
+                    }
                     progressLayout.setVisibility(View.GONE);
                     if(ovk_api.newsfeed.getWallPosts().size() > 0) {
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
@@ -721,55 +689,67 @@ public class AppActivity extends NetworkFragmentActivity {
                 slidingmenuLayout.loadAccountAvatar(ovk_api.account,
                         global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
-                newsfeedFragment.setScrollingPositions(this, true, true);
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).setScrollingPositions(this, true, true);
+                }
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
-                newsfeedFragment.loadAvatars();
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).loadAvatars();
+                }
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .setScrollingPositions();
+                if(selectedFragment instanceof ProfilePageFragment) {
+                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
+                            .setScrollingPositions();
+                }
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
                 if(selectedFragment instanceof NewsfeedFragment) {
-                    newsfeedFragment.refreshAdapter();
+                    ((NewsfeedFragment) selectedFragment).refreshAdapter();
                 } else if(selectedFragment instanceof ProfilePageFragment) {
-                    profilePageFragment.refreshWallAdapter();
+                    ((ProfilePageFragment) selectedFragment).refreshWallAdapter();
                 } else if(selectedFragment instanceof VideosFragment) {
-                    videosFragment.createAdapter(this, ovk_api.videos.getList());
+                    ((VideosFragment) selectedFragment).createAdapter(this, ovk_api.videos.getList());
                 }
             } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .loadAvatars();
+                if(selectedFragment instanceof ProfilePageFragment) {
+                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
+                            .loadAvatars();
+                }
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                friendsFragment.loadAvatars();
+                if(selectedFragment instanceof FriendsFragment) {
+                    ((FriendsFragment) selectedFragment).loadAvatars();
+                }
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 groupsFragment.loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 ovk_api.user = ovk_api.users.getList().get(0);
                 ovk_api.account.user = ovk_api.user;
-                profilePageFragment.loadAPIData(this, ovk_api, getWindowManager());
                 if (selectedFragment instanceof ProfilePageFragment) {
+                    ((ProfilePageFragment) selectedFragment).loadAPIData(this, ovk_api, getWindowManager());
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     profile_loaded = true;
                     progressLayout.setVisibility(View.GONE);
                 }
             } else if (message == HandlerMessages.USERS_GET_ALT) {
                 ovk_api.account.user = ovk_api.users.getList().get(0);
-                ovk_api.account.user.downloadAvatar(ovk_api.dlman, global_prefs.
-                        getString("photos_quality", ""), "account_avatar");
+                ovk_api.account.user.downloadAvatar(ovk_api.dlman,
+                        global_prefs.getString("photos_quality", ""), "account_avatar");
             } else if (message == HandlerMessages.WALL_GET ||
                     message == HandlerMessages.WALL_GET_MORE) {
-                profilePageFragment.loadWall(this, ovk_api);
+                if (selectedFragment instanceof ProfilePageFragment) {
+                    ((ProfilePageFragment) selectedFragment).loadWall(this, ovk_api);
+                }
             } else if (message == HandlerMessages.FRIENDS_GET) {
                 if (selectedFragment instanceof FriendsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    friendsFragment.loadAPIData(this, ovk_api, true);
+                    ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api, true);
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 boolean infinity_scroll = old_friends_size != ovk_api.friends.getFriends().size();
-                friendsFragment.loadAPIData(this, ovk_api, infinity_scroll);
+                ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api, infinity_scroll);
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 if(selectedFragment instanceof FriendsFragment) {
-                    ovk_api.friends.requests.remove(friendsFragment.requests_cursor_index);
+                    ovk_api.friends.requests.remove(((FriendsFragment) selectedFragment).requests_cursor_index);
                 } else {
                     JSONObject response = new JSONParser().parseJSON(data.getString("response"));
                     int status = response.getInt("response");
@@ -778,7 +758,9 @@ public class AppActivity extends NetworkFragmentActivity {
                     } else if (status == 2) {
                         ovk_api.user.friends_status = 3;
                     }
-                    profilePageFragment.setAddToFriendsButtonListener(this, ovk_api.user.id, ovk_api.user);
+                    if(selectedFragment instanceof ProfilePageFragment)
+                        ((ProfilePageFragment) selectedFragment)
+                                .setAddToFriendsButtonListener(this, ovk_api.user.id, ovk_api.user);
                 }
             } else if(message == HandlerMessages.FRIENDS_DELETE) {
                 JSONObject response = new JSONParser().parseJSON(data.getString("response"));
@@ -786,44 +768,46 @@ public class AppActivity extends NetworkFragmentActivity {
                 if(status == 1) {
                     ovk_api.user.friends_status = 0;
                 }
-                profilePageFragment.setAddToFriendsButtonListener(this, ovk_api.user.id, ovk_api.user);
+                ((ProfilePageFragment) selectedFragment)
+                        .setAddToFriendsButtonListener(this, ovk_api.user.id, ovk_api.user);
             } else if (message == HandlerMessages.FRIENDS_REQUESTS) {
                 ArrayList<Friend> requestsList = ovk_api.friends.requests;
                 if (selectedFragment instanceof FriendsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                friendsFragment.createAdapter(this, requestsList, "requests");
+                ((FriendsFragment) selectedFragment)
+                        .createAdapter(this, requestsList, "requests");
             } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
                 ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
                 if (selectedFragment instanceof PhotosFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-                photosFragment.createAdapter(this, albumsList, "photos");
-                photosFragment.setScrollingPositions(this, true);
+                ((PhotosFragment) selectedFragment).createAdapter(this, albumsList, "photos");
+                ((PhotosFragment) selectedFragment).setScrollingPositions(this, true);
             } else if (message == HandlerMessages.VIDEOS_GET) {
                 if (selectedFragment instanceof VideosFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    videosFragment.createAdapter(this, ovk_api.videos.getList());
-                    videosFragment.setScrollingPositions(this, true);
+                    ((VideosFragment) selectedFragment).createAdapter(this, ovk_api.videos.getList());
+                    ((VideosFragment) selectedFragment).setScrollingPositions(this, true);
                 }
             } else if (message == HandlerMessages.AUDIOS_GET) {
                 if (selectedFragment instanceof AudiosFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    audiosFragment.createAdapter(this, ovk_api.audios.getList());
-                    audiosFragment.setScrollingPositions(this, true);
+                    ((AudiosFragment) selectedFragment).createAdapter(this, ovk_api.audios.getList());
+                    ((AudiosFragment) selectedFragment).setScrollingPositions(this, true);
                 }
             } else if (message == HandlerMessages.GROUPS_GET) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
                 if (selectedFragment instanceof GroupsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    ((GroupsFragment) selectedFragment).createAdapter(this, groupsList);
+                    ((GroupsFragment) selectedFragment).setScrollingPositions(this, true);
                 }
-                groupsFragment.createAdapter(this, groupsList);
-                groupsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.GROUPS_GET_MORE) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
                 if (selectedFragment instanceof GroupsFragment) {
@@ -837,12 +821,14 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.friends.parse(data.getString("response"), ovk_api.dlman,
                         false, true);
                 if (selectedFragment instanceof ProfilePageFragment) {
-                    profilePageFragment.setCounter(ovk_api.user, "friends", ovk_api.friends.count);
+                    ((ProfilePageFragment) selectedFragment)
+                            .setCounter(ovk_api.user, "friends", ovk_api.friends.count);
                 }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if (selectedFragment instanceof ConversationsFragment) {
                     if (conversations.size() > 0) {
-                        conversationsFragment.createAdapter(this, conversations, ovk_api.account);
+                        ((ConversationsFragment) selectedFragment)
+                                .createAdapter(this, conversations, ovk_api.account);
                         progressLayout.setVisibility(View.GONE);
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     } else {
@@ -852,17 +838,19 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
             } else if(message == HandlerMessages.LIKES_ADD) {
                 if (selectedFragment instanceof NewsfeedFragment) {
-                    newsfeedFragment.select(ovk_api.likes.position, "likes", 1);
+                    ((NewsfeedFragment) selectedFragment)
+                            .select(ovk_api.likes.position, "likes", 1);
                 } else if (selectedFragment instanceof ProfilePageFragment) {
-                    ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
+                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
                             .select(ovk_api.likes.position, "likes", 1);
                 }
             } else if(message == HandlerMessages.LIKES_DELETE) {
                 ovk_api.likes.parse(data.getString("response"));
                 if (selectedFragment instanceof NewsfeedFragment) {
-                    newsfeedFragment.select(ovk_api.likes.position, "likes", 0);
+                    ((NewsfeedFragment) selectedFragment)
+                            .select(ovk_api.likes.position, "likes", 0);
                 } else if (selectedFragment instanceof ProfilePageFragment) {
-                    ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
+                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
                             .select(ovk_api.likes.position, "likes", 0);
                 }
             } else if(message == HandlerMessages.POLL_ADD_VOTE
@@ -885,7 +873,7 @@ public class AppActivity extends NetworkFragmentActivity {
                             answer.is_voted = addVote;
                             poll.answers.set(poll_answer, answer);
                             ovk_api.wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
+                            ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
                                     .updateItem(item, item_pos);
                         }
                     }
@@ -895,8 +883,8 @@ public class AppActivity extends NetworkFragmentActivity {
                         Toast.LENGTH_LONG).show();
             } else if(message == HandlerMessages.NOTES_GET) {
                 if(ovk_api.notes.list.size() > 0) {
-                    notesFragment.createAdapter(this, ovk_api.notes.list);
                     if (selectedFragment instanceof NotesFragment) {
+                        ((NotesFragment) selectedFragment).createAdapter(this, ovk_api.notes.list);
                         progressLayout.setVisibility(View.GONE);
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     }
@@ -905,28 +893,42 @@ public class AppActivity extends NetworkFragmentActivity {
                     setErrorPage(data, "ovk", message, false);
                 }
             } else if(message == HandlerMessages.OVK_CHECK_HTTP) {
-                mainSettingsFragment.setConnectionType(
-                        HandlerMessages.OVK_CHECK_HTTP, ovk_api.wrapper.proxy_connection);
-                ovk_api.ovk.getVersion(ovk_api.wrapper);
-                ovk_api.ovk.aboutInstance(ovk_api.wrapper);
+                if(selectedFragment instanceof MainSettingsFragment) {
+                    ((MainSettingsFragment) selectedFragment).setConnectionType(
+                            HandlerMessages.OVK_CHECK_HTTP, ovk_api.wrapper.proxy_connection);
+                    ovk_api.ovk.getVersion(ovk_api.wrapper);
+                    ovk_api.ovk.aboutInstance(ovk_api.wrapper);
+                }
             } else if(message == HandlerMessages.OVK_CHECK_HTTPS) {
-                mainSettingsFragment.setConnectionType(HandlerMessages.OVK_CHECK_HTTPS,
-                        ovk_api.wrapper.proxy_connection);
-                ovk_api.ovk.getVersion(ovk_api.wrapper);
-                ovk_api.ovk.aboutInstance(ovk_api.wrapper);
+                if(selectedFragment instanceof MainSettingsFragment) {
+                    ((MainSettingsFragment) selectedFragment).setConnectionType(HandlerMessages.OVK_CHECK_HTTPS,
+                            ovk_api.wrapper.proxy_connection);
+                    ovk_api.ovk.getVersion(ovk_api.wrapper);
+                    ovk_api.ovk.aboutInstance(ovk_api.wrapper);
+                }
             } else if(message == HandlerMessages.OVK_ABOUTINSTANCE) {
-                mainSettingsFragment.setAboutInstanceData(ovk_api.ovk);
+                if(selectedFragment instanceof MainSettingsFragment) {
+                    ((MainSettingsFragment) selectedFragment).setAboutInstanceData(ovk_api.ovk);
+                }
             } else if(message == HandlerMessages.OVK_VERSION) {
-                mainSettingsFragment.setInstanceVersion(ovk_api.ovk);
+                if(selectedFragment instanceof MainSettingsFragment) {
+                    ((MainSettingsFragment) selectedFragment).setInstanceVersion(ovk_api.ovk);
+                }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                profilePageFragment.loadAvatar(ovk_api.user,
-                        global_prefs.getString("photos_quality", ""));
+                if(selectedFragment instanceof ProfilePageFragment) {
+                    ((ProfilePageFragment) selectedFragment).loadAvatar(ovk_api.user,
+                            global_prefs.getString("photos_quality", ""));
+                }
                 slidingmenuLayout.loadAccountAvatar(ovk_api.account,
-                        global_prefs.getString("photos_quality", ""));
+                            global_prefs.getString("photos_quality", ""));
             } else if(message == HandlerMessages.PHOTOS_GETALBUMS) {
-                photosFragment.refresh();
+                if(selectedFragment instanceof PhotosFragment) {
+                    ((PhotosFragment) selectedFragment).refresh();
+                }
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
-                conversationsFragment.loadAvatars(conversations);
+                    if(selectedFragment instanceof ConversationsFragment) {
+                        ((ConversationsFragment) selectedFragment).loadAvatars(conversations);
+                    }
             } else if(message == HandlerMessages.LONGPOLL) {
                 notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.
                                 getBoolean("enableNotification", true),
@@ -934,64 +936,64 @@ public class AppActivity extends NetworkFragmentActivity {
                 last_longpoll_response = data.getString("response");
             } else if(message == HandlerMessages.INVALID_TOKEN
                     || message == HandlerMessages.BANNED_ACCOUNT) {
-                Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
-                removeAccount();
-                ArrayList<InstanceAccount> accounts = new ArrayList<>();
-                AccountManager accountManager = AccountManager.get(this);
-                accountManager.addOnAccountsUpdatedListener(
-                        new AccountsUpdateListener(this),
-                        null, false);
-                Global.loadAccounts(this, accounts, accountManager, instance_prefs);
+                    Toast.makeText(getApplicationContext(),
+                            getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
+                    removeAccount();
+                    ArrayList<InstanceAccount> accounts = new ArrayList<>();
+                    AccountManager accountManager = AccountManager.get(this);
+                    accountManager.addOnAccountsUpdatedListener(
+                            new AccountsUpdateListener(this),
+                            null, false);
+                    AccountAuthenticator.loadAccounts(this, accounts, accountManager, instance_prefs);
             } else if (message < 0) {
-                if(data.containsKey("method")) {
-                    try {
-                        String method = data.getString("method");
-                        String where = data.getString("where");
-                        if (Global.checkShowErrorLayout(method, selectedFragment)) {
-                            if(!data.containsKey("where") ||
-                                    !where.startsWith("more")) {
-                                if(ovk_api.account == null)
-                                    slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                                setErrorPage(data,"error", message, true);
-                            } else {
-                                if(!inBackground) {
-                                    Toast.makeText(this,
-                                            getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        } else if(method.equals("Account.getCounters")) {
-                            ab_layout.setNotificationCount(
-                                    new AccountCounters(0, 0, 0)
-                            );
-                        } else {
-                            if(selectedFragment instanceof ProfilePageFragment) {
-                                if (data.getString("method").equals("Wall.get")) {
-                                    profilePageFragment.getView().
-                                            findViewById(R.id.wall_error_layout)
-                                            .setVisibility(View.VISIBLE);
-                                    profilePageFragment.getWallSelector()
-                                            .findViewById(R.id.profile_wall_progress)
-                                            .setVisibility(View.GONE);
+                    if (data.containsKey("method")) {
+                        try {
+                            String method = data.getString("method");
+                            String where = data.getString("where");
+                            if (Global.checkShowErrorLayout(method, selectedFragment)) {
+                                if (!data.containsKey("where") ||
+                                        !where.startsWith("more")) {
+                                    if (ovk_api.account == null)
+                                        slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                                    setErrorPage(data, "error", message, true);
                                 } else {
-                                    if (!inBackground)
+                                    if (!inBackground) {
                                         Toast.makeText(this,
-                                                getResources().getString(R.string.err_text),
-                                                Toast.LENGTH_LONG).show();
+                                                getResources().getString(R.string.err_text), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            } else if (method.equals("Account.getCounters")) {
+                                ab_layout.setNotificationCount(
+                                        new AccountCounters(0, 0, 0)
+                                );
+                            } else {
+                                if (selectedFragment instanceof ProfilePageFragment) {
+                                    if (data.getString("method").equals("Wall.get")) {
+                                        selectedFragment.getView().
+                                                findViewById(R.id.wall_error_layout)
+                                                .setVisibility(View.VISIBLE);
+                                        ((ProfilePageFragment) selectedFragment).getWallSelector()
+                                                .findViewById(R.id.profile_wall_progress)
+                                                .setVisibility(View.GONE);
+                                    } else {
+                                        if (!inBackground)
+                                            Toast.makeText(this,
+                                                    getResources().getString(R.string.err_text),
+                                                    Toast.LENGTH_LONG).show();
+                                    }
                                 }
                             }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            setErrorPage(data, "error", message, false);
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    } else {
+                        if (ovk_api.account.first_name == null && ovk_api.account.last_name == null) {
+                            slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
+                        }
                         setErrorPage(data, "error", message, false);
                     }
-                } else {
-                    if(ovk_api.account.first_name == null && ovk_api.account.last_name == null) {
-                        slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
-                    }
-                    setErrorPage(data, "error", message, false);
                 }
-            }
         } catch (Exception ex) {
             ex.printStackTrace();
             setErrorPage(data, "error", HandlerMessages.INVALID_JSON_RESPONSE, false);
@@ -1001,7 +1003,7 @@ public class AppActivity extends NetworkFragmentActivity {
     private void removeAccount() {
         try {
             AccountManager am = AccountManager.get(this);
-            am.removeAccount(androidAccount, null, null);
+            am.removeAccount(((OvkApplication) getApplication()).androidAccount, null, null);
         } finally {
             instance_prefs_editor = instance_prefs.edit();
             instance_prefs_editor.clear();
@@ -1034,7 +1036,7 @@ public class AppActivity extends NetworkFragmentActivity {
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
-        if(selectedFragment != mainSettingsFragment) {
+        if(!(selectedFragment instanceof MainSettingsFragment)) {
             progressLayout.setVisibility(View.GONE);
             findViewById(R.id.app_fragment).setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
@@ -1099,7 +1101,8 @@ public class AppActivity extends NetworkFragmentActivity {
     }
 
     public void hideSelectedItemBackground() {
-        (friendsFragment.getView().findViewById(R.id.friends_listview))
+        if(selectedFragment instanceof FriendsFragment)
+            (selectedFragment.getView().findViewById(R.id.friends_listview))
                 .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
@@ -1131,7 +1134,8 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.newsfeed.getGlobal(ovk_api.wrapper, 25);
             }
             findViewById(R.id.app_fragment).setVisibility(View.GONE);
-            ((RecyclerView) newsfeedFragment.getView().findViewById(R.id.news_listview))
+            if(selectedFragment instanceof NewsfeedFragment)
+                ((RecyclerView) selectedFragment.getView().findViewById(R.id.news_listview))
                     .scrollToPosition(0);
             progressLayout.setVisibility(View.VISIBLE);
         }

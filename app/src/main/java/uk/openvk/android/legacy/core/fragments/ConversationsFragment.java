@@ -25,7 +25,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,12 +37,12 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.client.entities.Conversation;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.ui.list.adapters.ConversationsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 
-public class ConversationsFragment extends ActiviableFragment {
+public class ConversationsFragment extends ActiveFragment {
     private ArrayList<Conversation> conversations;
     private ConversationsListAdapter conversationsAdapter;
     private RecyclerView convListView;

@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,14 +41,14 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
-public class GroupsFragment extends ActiviableFragment {
+public class GroupsFragment extends ActiveFragment {
     public TextView titlebar_title;
     public String state;
     public String send_request;

@@ -65,6 +65,7 @@ public class OvkApplication extends Application {
     private Global global;
     public int swdp;
     public String instance;
+    public android.accounts.Account androidAccount;
 
     @Override
     public void onCreate() {

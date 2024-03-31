@@ -21,14 +21,23 @@ package uk.openvk.android.legacy.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.AudiosFragment;
+import uk.openvk.android.legacy.core.fragments.ConversationsFragment;
+import uk.openvk.android.legacy.core.fragments.FriendsFragment;
+import uk.openvk.android.legacy.core.fragments.GroupsFragment;
+import uk.openvk.android.legacy.core.fragments.MainSettingsFragment;
+import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
+import uk.openvk.android.legacy.core.fragments.NotesFragment;
+import uk.openvk.android.legacy.core.fragments.PhotosFragment;
+import uk.openvk.android.legacy.core.fragments.VideosFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
+import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 
 public class FragmentNavigator {
     private Activity activity;
@@ -45,90 +54,71 @@ public class FragmentNavigator {
             appActivity.errorLayout.setVisibility(View.GONE);
             appActivity.progressLayout.setVisibility(View.VISIBLE);
             ft.hide(appActivity.selectedFragment);
-            if(appActivity.selectedFragment instanceof ActiviableFragment) {
-                ((ActiviableFragment) appActivity.selectedFragment).onDeactivated();
+            if(appActivity.selectedFragment instanceof ActiveFragment) {
+                ((ActiveFragment) appActivity.selectedFragment).onDeactivated();
             }
+            showFragment(activity, true);
             switch (where) {
                 case "profile":
-                    ft.show(appActivity.profilePageFragment);
-                    appActivity.selectedFragment = appActivity.profilePageFragment;
-                    if(appActivity.profile_loaded) {
-                        showFragment(activity, appActivity.ovk_api.user.first_name != null);
-                    }
+                    appActivity.selectedFragment = new ProfilePageFragment();
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "profile");
                     break;
                 case "friends":
-                    ft.show(appActivity.friendsFragment);
-                    showFragment(activity, appActivity.friendsFragment.getCount() != 0);
+                    appActivity.selectedFragment = new FriendsFragment();
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.friendsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "friends");
                     break;
                 case "photos":
-                    ft.show(appActivity.photosFragment);
-                    showFragment(activity, appActivity.photosFragment.getCount() != 0);
-                    appActivity.progressLayout.enableDarkTheme(true);
-                    appActivity.selectedFragment = appActivity.photosFragment;
+                    appActivity.selectedFragment = new PhotosFragment();
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "photos");
                     break;
                 case "videos":
-                    ft.show(appActivity.videosFragment);
-                    showFragment(activity, appActivity.videosFragment.getCount() != 0);
-                    appActivity.progressLayout.enableDarkTheme(true);
-                    appActivity.selectedFragment = appActivity.videosFragment;
+                    appActivity.selectedFragment = new VideosFragment();
+                    appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "videos");
                     break;
                 case "audios":
-                    ft.show(appActivity.audiosFragment);
-                    showFragment(activity, appActivity.videosFragment.getCount() != 0);
+                    appActivity.selectedFragment = new AudiosFragment();
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.audiosFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "audios");
                     break;
                 case "messages":
-                    ft.show(appActivity.conversationsFragment);
-                    showFragment(activity, appActivity.conversationsFragment.getCount() != 0);
-                    appActivity.selectedFragment = appActivity.conversationsFragment;
+                    appActivity.selectedFragment = new ConversationsFragment();
+                    showFragment(activity, true);
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.global_prefs_editor.putString("current_screen", "messages");
+                    appActivity.global_prefs_editor.putString("current_screen", "conversations");
                     break;
                 case "groups":
-                    ft.show(appActivity.groupsFragment);
-                    showFragment(activity, appActivity.groupsFragment.getCount() != 0);
+                    appActivity.selectedFragment = new GroupsFragment();
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.groupsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "groups");
                     break;
                 case "notes":
-                    ft.show(appActivity.notesFragment);
-                    showFragment(activity, appActivity.notesFragment.getCount() != 0);
+                    appActivity.selectedFragment = new NotesFragment();
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.notesFragment;
-                    appActivity.global_prefs_editor.putString("current_screen", "notes");
-
+                    appActivity.global_prefs_editor.putString("current_screen", "groups");
                     break;
                 case "newsfeed":
-                    ft.show(appActivity.newsfeedFragment);
-                    showFragment(activity, appActivity.newsfeedFragment.getCount() != 0);
+                    appActivity.selectedFragment = new NewsfeedFragment();
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.newsfeedFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "newsfeed");
                     appActivity.setActionBar("custom_newsfeed");
                     break;
                 case "settings":
-                    ft.show(appActivity.mainSettingsFragment);
+                    appActivity.selectedFragment = new MainSettingsFragment();
                     showFragment(activity, true);
                     appActivity.progressLayout.enableDarkTheme(false);
-                    appActivity.selectedFragment = appActivity.mainSettingsFragment;
                     appActivity.global_prefs_editor.putString("current_screen", "settings");
                     break;
             }
             ft.commit();
             appActivity.global_prefs_editor.commit();
-            if(appActivity.selectedFragment instanceof ActiviableFragment) {
-                ((ActiviableFragment) appActivity.selectedFragment).onActivated();
+            if(appActivity.selectedFragment instanceof ActiveFragment) {
+                ((ActiveFragment) appActivity.selectedFragment).onActivated();
             }
+            ft.replace(R.id.app_fragment, appActivity.selectedFragment);
         }
     }
 

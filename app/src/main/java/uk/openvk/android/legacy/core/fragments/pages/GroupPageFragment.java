@@ -10,8 +10,6 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v14.preference.PreferenceFragment;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,8 +31,7 @@ import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
-import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.AboutGroupLayout;
@@ -46,7 +43,7 @@ import uk.openvk.android.legacy.ui.views.WallErrorLayout;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
 
-public class GroupPageFragment extends ActiviableFragment {
+public class GroupPageFragment extends ActiveFragment {
 
     public View view;
     public boolean loading_more_posts;
@@ -255,7 +252,7 @@ public class GroupPageFragment extends ActiviableFragment {
         header.findViewById(R.id.profile_activity).getLayoutParams().height =
                 (int) (10 * getResources().getDisplayMetrics().scaledDensity);
         getWallSelector().setToGroup();
-        adjustLayoutSize(getResources().getConfiguration().orientation);
+        adjustLayout(getResources().getConfiguration().orientation);
     }
 
     public GroupHeader getHeader() {
@@ -369,7 +366,8 @@ public class GroupPageFragment extends ActiviableFragment {
 //        }
     }
 
-    public void adjustLayoutSize(int orientation) {
+    @Override
+    public void adjustLayout(int orientation) {
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
             View placeholder = view.findViewById(R.id.tablet_group_placeholder);

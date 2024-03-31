@@ -24,13 +24,13 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import uk.openvk.android.legacy.utils.AccountAuthentificator;
+import uk.openvk.android.legacy.utils.AccountAuthenticator;
 
 public class AuthenticatorService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        AccountAuthentificator authenticator = new AccountAuthentificator(this);
+        AccountAuthenticator authenticator = new AccountAuthenticator(this);
         return authenticator.getIBinder();
     }
 }

@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -38,7 +37,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.VideosListAdapter;
 import uk.openvk.android.legacy.ui.list.decorations.VerticalSpace;
@@ -46,7 +45,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
-public class VideosFragment extends ActiviableFragment {
+public class VideosFragment extends ActiveFragment {
 
     private View view;
     private InfinityRecyclerView videosListView;

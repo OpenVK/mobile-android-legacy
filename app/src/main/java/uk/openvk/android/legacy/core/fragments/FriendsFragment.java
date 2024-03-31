@@ -26,8 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -46,7 +44,7 @@ import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActiviableFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
@@ -55,7 +53,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.views.TabSelector;
 
-public class FriendsFragment extends ActiviableFragment {
+public class FriendsFragment extends ActiveFragment {
     public TextView titlebar_title;
     public String state;
     public String send_request;

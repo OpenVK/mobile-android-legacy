@@ -526,11 +526,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             WallLayout wallLayout = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
-                newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
                 if (((AppActivity) ctx).selectedFragment instanceof ProfilePageFragment) {
-                    ProfilePageFragment profilePageFragment = ((AppActivity) ctx).profilePageFragment;
-                    if(profilePageFragment.getView() != null) {
-                        wallLayout = profilePageFragment.getView().findViewById(R.id.wall_layout);
+                    ProfilePageFragment fragment = (ProfilePageFragment) ((AppActivity) ctx).selectedFragment;
+                    if(fragment.getView() != null) {
+                        wallLayout = fragment.getView().findViewById(R.id.wall_layout);
                         if (wallLayout != null) {
                             wallLayout.select(position, "likes", "add");
                         } else {
@@ -538,6 +537,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         }
                     }
                 } else {
+                    newsfeedFragment = ((NewsfeedFragment) ((AppActivity) ctx).selectedFragment);
                     if(newsfeedFragment != null) {
                         newsfeedFragment.select(position, "likes", "add");
                     } else {
@@ -569,7 +569,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             WallLayout wallLayout = null;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
-                newsfeedFragment = ((AppActivity) ctx).newsfeedFragment;
+                newsfeedFragment = (NewsfeedFragment) ((AppActivity) ctx).selectedFragment;
             } else if(ctx instanceof ProfileIntentActivity) {
                 ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 ProfilePageFragment profilePageFragment = ((ProfileIntentActivity) ctx).profilePageFragment;
