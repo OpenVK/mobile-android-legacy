@@ -22,7 +22,7 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 * **via [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 
 ## Building
-We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/archive) and Java JRE 8 for perfect support of libraries developed for Android 2.1 Eclair and above.
+We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/archive) and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 
