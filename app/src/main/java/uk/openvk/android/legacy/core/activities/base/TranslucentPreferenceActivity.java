@@ -33,6 +33,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import java.util.HashMap;
 
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressWarnings("deprecation")
 public class TranslucentPreferenceActivity extends PreferenceActivity {
@@ -43,6 +44,9 @@ public class TranslucentPreferenceActivity extends PreferenceActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTranslucentStatusBar();
+        client_info = SecureCredentialsStorage.generateClientInfo(
+                this, new HashMap<String, Object>()
+        );
     }
 
     private void setTranslucentStatusBar() {

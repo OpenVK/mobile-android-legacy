@@ -44,6 +44,7 @@ import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressLint("Registered")
 public class NetworkFragmentActivity extends TranslucentFragmentActivity {
@@ -66,6 +67,9 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
         global_prefs_editor = global_prefs.edit();
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
+        client_info = SecureCredentialsStorage.generateClientInfo(
+                this, new HashMap<String, Object>()
+        );
         ovk_api = new OpenVKAPI(this, client_info, handler);
         generateSessionId();
         OvkAPIListeners apiListeners = new OvkAPIListeners();

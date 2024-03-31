@@ -32,7 +32,9 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.HashMap;
 
+import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 public class TranslucentActivity extends Activity {
 
@@ -42,6 +44,9 @@ public class TranslucentActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTranslucentStatusBar();
+        client_info = SecureCredentialsStorage.generateClientInfo(
+                this, new HashMap<String, Object>()
+        );
     }
 
     private void setTranslucentStatusBar() {

@@ -43,6 +43,7 @@ import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressLint("Registered")
 public class NetworkActivity extends TranslucentActivity {
@@ -73,7 +74,9 @@ public class NetworkActivity extends TranslucentActivity {
     }
 
     private void initializeOpenVKAPI() {
-        client_info = new HashMap<>();
+        client_info = SecureCredentialsStorage.generateClientInfo(
+                this, new HashMap<String, Object>()
+        );
         ovk_api = new OpenVKAPI(this, client_info, handler);
     }
 

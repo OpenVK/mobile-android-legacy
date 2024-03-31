@@ -48,6 +48,7 @@ import android.widget.Toast;
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 
 import uk.openvk.android.legacy.BuildConfig;
@@ -423,7 +424,10 @@ public class MainSettingsFragment extends ActiviablePreferenceFragment {
                     }
                 }
                 DownloadManager dlm = new DownloadManager(getActivity(),
-                        SecureCredentialsStorage.generateClientInfo(),
+                        SecureCredentialsStorage.generateClientInfo(
+                                getContext(),
+                                new HashMap<String, Object>()
+                        ),
                         new Handler(Looper.myLooper()));
                 dlm.clearCache(getContext().getCacheDir());
                 Intent activity = new Intent(getContext().getApplicationContext(), MainActivity.class);

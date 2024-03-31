@@ -72,7 +72,8 @@ public class LongPollService extends Service {
     public void run(String instance, String lp_server, String key, int ts, boolean use_https,
                     boolean legacy_client) {
         this.use_https = use_https;
-        HashMap<String, Object> client_info = SecureCredentialsStorage.generateClientInfo();
+        HashMap<String, Object> client_info =
+                SecureCredentialsStorage.generateClientInfo(ctx, new HashMap<String, Object>());
         if(lpW == null) {
             lpW = new LongPollWrapper(ctx, client_info);
         }
@@ -106,7 +107,9 @@ public class LongPollService extends Service {
 
     public void setProxyConnection(boolean useProxy, String proxy_address) {
         if(lpW == null) {
-            lpW = new LongPollWrapper(ctx, SecureCredentialsStorage.generateClientInfo());
+            lpW = new LongPollWrapper(ctx,
+                    SecureCredentialsStorage.generateClientInfo(getBaseContext(), new HashMap<String, Object>())
+            );
         }
         lpW.setProxyConnection(useProxy, proxy_address);
     }
