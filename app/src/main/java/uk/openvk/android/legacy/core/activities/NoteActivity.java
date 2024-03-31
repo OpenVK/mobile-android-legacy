@@ -7,12 +7,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -62,19 +67,32 @@ public class NoteActivity extends TranslucentActivity {
 
     private void forceBrowserForExternalLinks() {
         final String instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webView.setWebViewClient(new WebViewClient() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                    String url = view.getOriginalUrl();
-                    if (url != null) {
-                        if(url.startsWith("/")) {
-                            url = String.format("http://%s%s", instance, url);
+                    String url;
+                    if (request.getUrl() != null) {
+                        if(request.getUrl().getHost() != null) {
+                            url = String.format(
+                                    "http://%s%s",
+                                    request.getUrl().getHost(),
+                                    request.getUrl().getPath()
+                            );
+                        } else {
+                            url = String.format(
+                                    "http://%s%s",
+                                    instance,
+                                    request.getUrl().getPath()
+                            );
                         }
+                        Log.d(OvkApplication.APP_TAG, String.format("Moving from note to %s", url));
                         view.getContext().startActivity(
                                 new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                         return true;
                     } else {
+                        Log.d(OvkApplication.APP_TAG, "Moving from note to empty link");
                         return false;
                     }
                 }

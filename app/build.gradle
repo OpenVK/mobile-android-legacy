@@ -81,6 +81,9 @@ android {
         targetSdkVersion 29
         versionCode 236
         versionName "1.2.236-u"
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
@@ -133,8 +136,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -155,7 +158,8 @@ dependencies {
     compile project(':modules:actionbar')
     compile project(':modules:popupmenu')
     compile 'com.reginald.swiperefresh:library:1.1.2'
-    compile 'com.seppius.plurals:android-i18n-plurals:1.1' // Android 2.x plurals patch
+    compile 'com.seppius.plurals:android-i18n-plurals:1.1'
+    // Android 2.x plurals patch
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'ch.acra:acra:4.6.0'
     compile 'com.nineoldandroids:library:2.4.0'

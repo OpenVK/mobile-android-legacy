@@ -221,7 +221,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 if(notifMan != null) notifMan.clearAudioPlayerNotification();
                 exitApplication();
             } else if (selectedFragment instanceof AudiosFragment) {
-                audiosFragment.closeSearchItem();
+                ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             } else {
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());

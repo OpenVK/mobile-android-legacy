@@ -22,7 +22,7 @@ _Работает на OpenVK API._
 * **через [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 
 ## Сборка
-Мы советуем использовать [Android Studio 3.1.2](https://developer.android.com/studio/archive) вместе с Java 7 для идеальной поддержки библиотек, разработанные для Android 2.1 Eclair и выше.
+Мы советуем использовать [Android Studio 3.1.2](https://developer.android.com/studio/archive) вместе с Java JRE 8 для идеальной поддержки библиотек, разработанные для Android 2.1 Eclair и выше.
 
 **ВНИМАНИЕ!** После возникновения ошибки `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` в задаче `:[package_name]:mockableAndroidJar`, при использовании Android SDK Build-tools 28 и выше необходимо очистить проект (Clean Project).
 
