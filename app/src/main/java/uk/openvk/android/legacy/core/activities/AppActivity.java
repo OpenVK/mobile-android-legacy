@@ -326,11 +326,6 @@ public class AppActivity extends NetworkFragmentActivity {
             }
             menu = new SlidingMenu(this);
             Global.setSlidingMenu(this, slidingmenuLayout, menu);
-            if (Global.isXmas()) {
-                ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
-                        getResources().getDrawable(R.drawable.xmas_left_menu)
-                );
-            }
             menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
                 @Override
                 public void onClosed() {
@@ -590,7 +585,11 @@ public class AppActivity extends NetworkFragmentActivity {
                 fn.navigateTo("settings", ft);
                 break;
             default:
-                Toast.makeText(this, R.string.not_supported, Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                        this,
+                        R.string.not_supported,
+                        Toast.LENGTH_LONG
+                ).show();
                 break;
         }
     }
@@ -724,7 +723,8 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.user = ovk_api.users.getList().get(0);
                 ovk_api.account.user = ovk_api.user;
                 if (selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment).loadAPIData(this, ovk_api, getWindowManager());
+                    ((ProfilePageFragment) selectedFragment)
+                            .loadAPIData(this, ovk_api, getWindowManager());
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     profile_loaded = true;
                     progressLayout.setVisibility(View.GONE);

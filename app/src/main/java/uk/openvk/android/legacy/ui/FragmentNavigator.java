@@ -57,7 +57,7 @@ public class FragmentNavigator {
             if(appActivity.selectedFragment instanceof ActiveFragment) {
                 ((ActiveFragment) appActivity.selectedFragment).onDeactivated();
             }
-            showFragment(activity, true);
+            showFragment(activity, where.equals("settings"));
             switch (where) {
                 case "profile":
                     appActivity.selectedFragment = new ProfilePageFragment();

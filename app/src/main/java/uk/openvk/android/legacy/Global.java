@@ -48,6 +48,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -386,6 +387,11 @@ public class Global {
         menu.setFadeDegree(0.8f);
         menu.attachToActivity(((Activity) ctx), SlidingMenu.SLIDING_WINDOW);
         menu.setSlidingEnabled(true);
+        if (Global.isXmas()) {
+            ((ImageView) menuLayout.findViewById(R.id.menu_background)).setImageDrawable(
+                    ctx.getResources().getDrawable(R.drawable.xmas_left_menu)
+            );
+        }
     }
 
     public static ArrayList<SlidingMenuItem> createSlidingMenuItems(Context ctx) {
