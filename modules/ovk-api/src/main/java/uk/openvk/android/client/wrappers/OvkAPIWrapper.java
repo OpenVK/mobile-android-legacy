@@ -620,6 +620,7 @@ public class OvkAPIWrapper {
                                     null
                             );
                         }
+                        request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
                                 .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
@@ -636,6 +637,7 @@ public class OvkAPIWrapper {
                             );
                         }
                         request = builder.build();
+                        request_obj = request;
                     }
                     sendAPIRequest(request_obj, fUrl, method, args, null);
                 } catch (Exception ex) {
