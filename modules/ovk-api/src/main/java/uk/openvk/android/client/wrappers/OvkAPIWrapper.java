@@ -57,8 +57,10 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Route;
 import uk.openvk.android.client.OpenVKAPI;
@@ -173,15 +175,13 @@ public class OvkAPIWrapper {
 
     public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
-            proxy_type = type;
             if(useProxy) {
+                proxy_type = type;
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
                         if(type.startsWith("http")) {
                             httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
-                        } else if(type.startsWith("relay")) {
-                            relayAddress = String.format("http://%s", address_array[0]);
                         }
                     } else {
                         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
@@ -229,6 +229,9 @@ public class OvkAPIWrapper {
                         }
                     }
                     this.proxy_connection = true;
+                } else {
+                    this.proxy_connection = true;
+                    relayAddress = String.format("http://%s", address);
                 }
             }
         } catch (Exception ex) {
@@ -422,7 +425,7 @@ public class OvkAPIWrapper {
                     if (legacy_mode) {
                         request_legacy = proxy_type.equals("relay-selfeco") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
-                        if(proxy_type.equals("relay-selfeco")) {
+                        if(proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -568,16 +571,24 @@ public class OvkAPIWrapper {
                     if(legacy_mode) {
                         request_legacy = proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
-                        if(proxy_type.equals("relay-selfeco")) {
+                        if(proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
                             );
                         }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent()).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent());
+                        if(proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                        MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if (legacy_mode) {

@@ -101,7 +101,7 @@ public class NewsfeedFragment extends ActiveFragment {
         adjustLayout(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        loadFromCache(getActivity());
+        //loadFromCache(getActivity());
         return view;
     }
 

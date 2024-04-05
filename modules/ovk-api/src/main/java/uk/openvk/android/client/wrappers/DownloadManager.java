@@ -166,8 +166,6 @@ public class DownloadManager {
                     if (legacy_mode) {
                         if(type.startsWith("http")) {
                             httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
-                        } else if(type.startsWith("relay")) {
-                            relayAddress = String.format("http://%s", address_array[0]);
                         }
                     } else {
                         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
@@ -215,6 +213,11 @@ public class DownloadManager {
                         }
                     }
                     this.proxy_connection = true;
+                } else {
+                    this.proxy_connection = true;
+                    if(type.startsWith("relay")) {
+                        relayAddress = String.format("http://%s", address_array[0]);
+                    }
                 }
             }
         } catch (Exception ex) {

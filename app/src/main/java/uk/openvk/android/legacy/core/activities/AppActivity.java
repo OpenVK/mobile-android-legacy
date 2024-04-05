@@ -605,7 +605,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 boolean isCurrentActivity = activityName.equals(
                         String.format("%s_%s", getLocalClassName(), getSessionId())
                 );
-                Log.d(OvkApplication.APP_TAG, String.format("%s != %s", activityName, String.format("%s_%s", getLocalClassName(), getSessionId())));
                 if(!isCurrentActivity) {
                     return;
                 }
