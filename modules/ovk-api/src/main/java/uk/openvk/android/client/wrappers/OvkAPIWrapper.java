@@ -294,12 +294,35 @@ public class OvkAPIWrapper {
             @Override
             public void run() throws OutOfMemoryError {
                 try {
-                    if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                    if(legacy_mode) {
+                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent()).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent());
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if (legacy_mode) {
@@ -422,9 +445,13 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if (legacy_mode) {
-                        request_legacy = proxy_type.equals("relay-selfeco") ?
+                    if(legacy_mode) {
+                        request_legacy = proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
                         if(proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
@@ -432,9 +459,21 @@ public class OvkAPIWrapper {
                             );
                         }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent()).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent());
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if (legacy_mode) {
@@ -571,6 +610,10 @@ public class OvkAPIWrapper {
                     if(legacy_mode) {
                         request_legacy = proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
                         if(proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
@@ -581,6 +624,10 @@ public class OvkAPIWrapper {
                         Request.Builder builder = new Request.Builder()
                                 .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
                         if(proxy_type.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
@@ -735,21 +782,37 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if(legacy_mode) {
-                        request_legacy = proxy_type.equals("selfeco-relay") ?
-                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
-                        if(proxy_type.equals("selfeco-relay")) {
-                            request_legacy.content(
-                                    String.format("%s", fUrl).getBytes(),
-                                    null
-                            );
-                        }
-                    } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent()).build();
-                    }
                     try {
+                        if(legacy_mode) {
+                            request_legacy = proxy_type.equals("selfeco-relay") ?
+                                    httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                            // Use SelfEco Relay as alternative proxy connection
+                            // default: http://minvk.ru/apirelay.php (POST)
+
+                            if(proxy_type.equals("selfeco-relay")) {
+                                request_legacy.content(
+                                        String.format("%s", fUrl).getBytes(),
+                                        null
+                                );
+                            }
+                        } else {
+                            Request.Builder builder = new Request.Builder()
+                                    .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                    .addHeader("User-Agent", generateUserAgent());
+
+                            // Use SelfEco Relay as alternative proxy connection
+                            // default: http://minvk.ru/apirelay.php (POST)
+
+                            if(proxy_type.equals("selfeco-relay")) {
+                                builder.post(
+                                        RequestBody.create(
+                                                MediaType.parse("text/plain"), fUrl
+                                        )
+                                );
+                            }
+                            request = builder.build();
+                        }
                         if(legacy_mode) {
                             HttpResponse response = request_legacy.execute();
                             assert response != null;
@@ -890,11 +953,34 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent()).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent());
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if(legacy_mode) {
