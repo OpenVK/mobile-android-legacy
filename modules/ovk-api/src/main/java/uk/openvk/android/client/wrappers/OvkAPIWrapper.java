@@ -639,7 +639,7 @@ public class OvkAPIWrapper {
                         request = builder.build();
                         request_obj = request;
                     }
-                    sendAPIRequest(request_obj, fUrl, method, args, null);
+                    sendAPIRequest(request_obj, fUrl, method, args, where);
                 } catch (Exception ex) {
                     sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                     ex.printStackTrace();
