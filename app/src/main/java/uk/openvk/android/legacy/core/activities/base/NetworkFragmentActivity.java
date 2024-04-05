@@ -102,7 +102,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
                         @Override
                         public void run() {
                             Intent intent = new Intent();
-                            intent.setAction("uk.openvk.android.client_DATA_RECEIVE");
+                            intent.setAction("uk.openvk.android.client.DATA_RECEIVE");
                             data.putString("address",
                                     String.format("%s_%s", getLocalClassName(), getSessionId())
                             );

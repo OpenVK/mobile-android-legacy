@@ -58,9 +58,13 @@ public class CacheDatabase {
     }
 
     public static String getCurrentDatabaseName(Context ctx, String prefix) {
-        OvkApplication app = (OvkApplication) ctx.getApplicationContext();
-        String instance = app.getCurrentInstance();
-        long user_id = app.getCurrentUserId();
-        return String.format("%s_%s_a%s.db", prefix, instance, user_id);
+        try {
+            OvkApplication app = (OvkApplication) ctx.getApplicationContext();
+            String instance = app.getCurrentInstance();
+            long user_id = app.getCurrentUserId();
+            return String.format("%s_%s_a%s.db", prefix, instance, user_id);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

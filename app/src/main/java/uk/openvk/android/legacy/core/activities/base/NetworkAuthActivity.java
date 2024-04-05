@@ -79,7 +79,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
-                "uk.openvk.android.client_DATA_RECEIVE"));
+                "uk.openvk.android.client.DATA_RECEIVE"));
     }
 
     public void setAPIListeners(final OvkAPIListeners listeners) {
@@ -100,7 +100,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                         @Override
                         public void run() {
                             Intent intent = new Intent();
-                            intent.setAction("uk.openvk.android.client_DATA_RECEIVE");
+                            intent.setAction("uk.openvk.android.client.DATA_RECEIVE");
                             data.putString("address",
                                     String.format("%s_%s", getLocalClassName(), getSessionId())
                             );

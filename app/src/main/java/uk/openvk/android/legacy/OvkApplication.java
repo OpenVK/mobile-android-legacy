@@ -52,6 +52,9 @@ import uk.openvk.android.legacy.utils.ACRACustomSender;
         resDialogTitle = R.string.crash_title, buildConfigClass = BuildConfig.class,
         reportDialogClass = CrashReporterActivity.class)
 public class OvkApplication extends Application {
+
+    private static final String DEFAULT_RELAY_SERVER = "http://minvk.ru/apirelay.php";
+
     public String version;
     public boolean isTablet;
     public LongPollService longPollService;
@@ -141,9 +144,11 @@ public class OvkApplication extends Application {
         }
 
         if(!global_prefs.contains("useHTTPS")) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 global_prefs_editor.putBoolean("useHTTPS", true);
             } else {
+                global_prefs_editor.putString("proxy_address", DEFAULT_RELAY_SERVER);
+                global_prefs_editor.putString("proxy_type", "selfeco-relay");
                 global_prefs_editor.putBoolean("useHTTPS", false);
             }
         }

@@ -87,13 +87,12 @@ public class OvkAPIWrapper {
     private String client_name = "openvk_legacy_android";
     public Handler handler;
     OvkAPIListeners apiListeners;
+    private String relayAddress;
 
 
     public OvkAPIWrapper(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
-        if(BuildConfig.BUILD_TYPE.equals("release")) {
-            logging_enabled = false;
-        }
+        logging_enabled = BuildConfig.DEBUG;
         setAPIListeners();
         this.handler = handler;
         if(handler == null) {
@@ -174,50 +173,60 @@ public class OvkAPIWrapper {
 
     public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
+            proxy_type = type;
             if(useProxy) {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        if(type.startsWith("http")) {
+                            httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        } else if(type.startsWith("relay")) {
+                            relayAddress = String.format("http://%s", address_array[0]);
+                        }
                     } else {
                         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
                                 .connectTimeout(30, TimeUnit.SECONDS)
                                 .writeTimeout(30, TimeUnit.SECONDS)
                                 .readTimeout(30, TimeUnit.SECONDS)
                                 .retryOnConnectionFailure(false);
-                        httpClientBuilder = httpClientBuilder.proxy(
-                                new Proxy(Proxy.Type.HTTP,
-                                        new InetSocketAddress(address_array[0],
-                                                Integer.valueOf(address_array[1])
-                                        )
-                                )
-                        );
-                        if(type.equals("https")) {
-                            // Set custom TrustManager for HTTPS proxies
-                            final TrustManager[] trustAllCerts = new TrustManager[] {
-                                    new X509TrustManager() {
-                                        @SuppressLint("TrustAllX509TrustManager")
-                                        @Override
-                                        public void checkClientTrusted(
-                                                java.security.cert.X509Certificate[] chain, String authType
-                                        ) {}
-                                        @Override
-                                        public void checkServerTrusted(
-                                                java.security.cert.X509Certificate[] chain, String authType
-                                        ) {}
-                                        @Override
-                                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                                            return new java.security.cert.X509Certificate[]{};
+                        if(type.startsWith("http")) {
+                            httpClientBuilder = httpClientBuilder.proxy(
+                                    new Proxy(Proxy.Type.HTTP,
+                                            new InetSocketAddress(address_array[0],
+                                                    Integer.valueOf(address_array[1])
+                                            )
+                                    )
+                            );
+                            if (type.equals("https")) {
+                                // Set custom TrustManager for HTTPS proxies
+                                final TrustManager[] trustAllCerts = new TrustManager[]{
+                                        new X509TrustManager() {
+                                            @SuppressLint("TrustAllX509TrustManager")
+                                            @Override
+                                            public void checkClientTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public void checkServerTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                                return new java.security.cert.X509Certificate[]{};
+                                            }
                                         }
-                                    }
-                            };
-                            final SSLContext sslContext = SSLContext.getInstance("SSL");
-                            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-                            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-                            httpClientBuilder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+                                };
+                                final SSLContext sslContext = SSLContext.getInstance("SSL");
+                                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                                final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+                                httpClientBuilder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+                            }
                             httpClient = httpClientBuilder.build();
                         }
-
                     }
                     this.proxy_connection = true;
                 }
@@ -306,10 +315,13 @@ public class OvkAPIWrapper {
                                 Log.d(OpenVKAPI.TAG, String.format("Connected (%d)", response_code));
                             if (response_code == 400) {
                                 sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
+                                Log.e(OpenVKAPI.TAG, String.format("Authorization error (%d)", response_code));
                             } else if (response_code == 401) {
                                 sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
+                                Log.e(OpenVKAPI.TAG, String.format("Authorization error (%d)", 401));
                             } else if (response_code == 404) {
                                 sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
+                                Log.e(OpenVKAPI.TAG, String.format("Authorization error (%d)", response_code));
                             } else if (response_code == 200) {
                                 if(!(response_body.startsWith("{") && response_body.endsWith("}"))) {
                                     if(response_body.length() > 16) {
@@ -322,6 +334,7 @@ public class OvkAPIWrapper {
                                                 response_body.replace("\r", "").replace("\n", "")), 0);
                                     }
                                 }
+                                Log.d(OpenVKAPI.TAG, String.format("Connected (%d)", response_code));
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
                             } else if (response_code == 502) {
                                 sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
@@ -407,7 +420,14 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_type.equals("relay-selfeco") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+                        if(proxy_type.equals("relay-selfeco")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
                         request = new Request.Builder()
                                 .url(fUrl)
@@ -546,7 +566,14 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+                        if(proxy_type.equals("relay-selfeco")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
                         request = new Request.Builder()
                                 .url(fUrl)
@@ -698,7 +725,14 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
                         request = new Request.Builder()
                                 .url(fUrl)

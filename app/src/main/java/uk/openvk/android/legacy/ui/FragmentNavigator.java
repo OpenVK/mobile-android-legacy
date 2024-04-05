@@ -86,7 +86,6 @@ public class FragmentNavigator {
                     break;
                 case "messages":
                     appActivity.selectedFragment = new ConversationsFragment();
-                    showFragment(activity, true);
                     appActivity.progressLayout.enableDarkTheme(false);
                     appActivity.global_prefs_editor.putString("current_screen", "conversations");
                     break;

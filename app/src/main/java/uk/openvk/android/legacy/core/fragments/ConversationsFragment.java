@@ -130,4 +130,9 @@ public class ConversationsFragment extends ActiveFragment {
         //createAdapter(getContext(), conversations, account);
         adjustLayoutSize(getContext(), newConfig.orientation);
     }
+
+    @Override
+    public int getObjectsSize() {
+        return conversations != null ? conversations.size() : 0;
+    }
 }

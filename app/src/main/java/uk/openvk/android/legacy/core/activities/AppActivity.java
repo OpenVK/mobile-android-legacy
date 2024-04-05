@@ -36,6 +36,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -604,6 +605,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 boolean isCurrentActivity = activityName.equals(
                         String.format("%s_%s", getLocalClassName(), getSessionId())
                 );
+                Log.d(OvkApplication.APP_TAG, String.format("%s != %s", activityName, String.format("%s_%s", getLocalClassName(), getSessionId())));
                 if(!isCurrentActivity) {
                     return;
                 }
@@ -1159,5 +1161,13 @@ public class AppActivity extends NetworkFragmentActivity {
             unregisterReceiver(lpReceiver);
         } catch (Exception ignored) { }
         super.onDestroy();
+    }
+
+    public int getActiveObjectsSize() {
+        if(selectedFragment instanceof ActiveFragment) {
+            return ((ActiveFragment) selectedFragment).getObjectsSize();
+        } else {
+            return 0;
+        }
     }
 }

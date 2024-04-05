@@ -313,4 +313,9 @@ public class FriendsFragment extends ActiveFragment {
         super.onConfigurationChanged(newConfig);
         adjustLayoutSize(getContext(), newConfig.orientation);
     }
+
+    @Override
+    public int getObjectsSize() {
+        return friends != null ? friends.size() : 0;
+    }
 }

@@ -48,8 +48,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
@@ -85,6 +87,7 @@ public final class HttpRequestBuilder {
     private InputStream contentStream;
     private String contentDisposition;
     private HttpProgressHandler progressHandler;
+    private SSLSocketFactory ssf;
 
     HttpRequestBuilder(final HttpClient hc, final String uri, final String method) {
         this.hc = hc;
@@ -296,7 +299,11 @@ public final class HttpRequestBuilder {
             conn.setRequestProperty("Accept-Charset", CONTENT_CHARSET);
 
             if (conn instanceof HttpsURLConnection) {
-                setupSecureConnection(hc.getContext(), (HttpsURLConnection) conn);
+                if(ssf != null) {
+                    setupSecureConnection(ssf, (HttpsURLConnection) conn);
+                } else {
+                    setupSecureConnection(hc.getContext(), (HttpsURLConnection) conn);
+                }
             }
 
             if (HTTP_POST.equals(method) || HTTP_DELETE.equals(method) || HTTP_PUT.equals(method)) {
@@ -311,7 +318,7 @@ public final class HttpRequestBuilder {
                     conn.setFixedLengthStreamingMode(content.length);
 
                     final OutputStream out = conn.getOutputStream();
-                    out.write(content);
+                    out.write(content, 0, content.length);
                     out.flush();
                 } else if (contentStream != null) {
                     conn.setDoOutput(true);
@@ -566,7 +573,6 @@ public final class HttpRequestBuilder {
             ioe.initCause(e);
             throw ioe;
         }
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             // Fix slow read:
             // http://code.google.com/p/android/issues/detail?id=13117
@@ -594,7 +600,7 @@ public final class HttpRequestBuilder {
 
                 @Override
                 public Socket createSocket(InetAddress address, int port, InetAddress localAddress,
-                        int localPort) throws IOException {
+                                           int localPort) throws IOException {
                     return delegate.createSocket(address, port, localAddress, localPort);
                 }
 
@@ -630,6 +636,25 @@ public final class HttpRequestBuilder {
         }
 
         conn.setHostnameVerifier(new BrowserCompatHostnameVerifier());
+    }
+
+    /**
+     * Setup SSL connection with custom SSLSocketFactory.
+     */
+    public static void setupSecureConnection(SSLSocketFactory ssf, HttpsURLConnection conn) throws IOException {
+        if(ssf != null) {
+            conn.setSSLSocketFactory(ssf);
+            conn.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String s, SSLSession sslSession) {
+                    return true;
+                }
+            });
+        }
+    }
+
+    public void setupSecureConnection(SSLSocketFactory ssf) throws IOException {
+        this.ssf = ssf;
     }
 
     public void contentDisposition(String contentDisposition) {

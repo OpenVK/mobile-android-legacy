@@ -156,4 +156,9 @@ public class GroupsFragment extends ActiveFragment {
         super.onConfigurationChanged(newConfig);
         adjustLayoutSize(getContext(), newConfig.orientation);
     }
+
+    @Override
+    public int getObjectsSize() {
+        return groups != null ? groups.size() : 0;
+    }
 }

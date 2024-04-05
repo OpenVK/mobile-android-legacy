@@ -131,4 +131,9 @@ public class PhotosFragment extends ActiveFragment {
         super.onConfigurationChanged(newConfig);
         adjustLayoutSize(getContext(), newConfig.orientation);
     }
+
+    @Override
+    public int getObjectsSize() {
+        return albums != null ? albums.size() : 0;
+    }
 }

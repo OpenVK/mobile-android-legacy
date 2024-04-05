@@ -321,8 +321,9 @@ public class AuthActivity extends NetworkAuthActivity {
         EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
         String regexp = Pattern.quote("|");
         String server;
-        if(position >= getResources().getStringArray(R.array.official_instances_list).length) {
-            server = getResources().getStringArray(R.array.instances_list)[position - 3].split(regexp)[0];
+        int official_instances_count = getResources().getStringArray(R.array.official_instances_list).length;
+        if(position >= official_instances_count) {
+            server = getResources().getStringArray(R.array.instances_list)[position - official_instances_count].split(regexp)[0];
             instance_edit.setText(server);
         } else {
             server = getResources().getStringArray(R.array.official_instances_list)[position].split(regexp)[0];
@@ -344,6 +345,7 @@ public class AuthActivity extends NetworkAuthActivity {
                     String.format("%s_%s", getLocalClassName(), getSessionId())
             );
             if(!isCurrentActivity) {
+                Log.d(OvkApplication.APP_TAG, String.format("%s != %s", activityName, String.format("%s_%s", getLocalClassName(), getSessionId())));
                 return;
             }
         }

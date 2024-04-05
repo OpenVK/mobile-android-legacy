@@ -299,23 +299,25 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static void clear(Context ctx, boolean fromSearchOnly) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
-        SQLiteDatabase db = helper.getWritableDatabase();
-        try {
-            if(fromSearchOnly) {
-                db.delete("search_results", null, null);
-            } else {
-                db.delete("tracks", null, null);
+        if(getCurrentDatabaseName(ctx, prefix) != null) {
+            CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
+            SQLiteDatabase db = helper.getWritableDatabase();
+            try {
+                if (fromSearchOnly) {
+                    db.delete("search_results", null, null);
+                } else {
+                    db.delete("tracks", null, null);
+                }
+                cachedIDs.clear();
+                Intent intent = new Intent(AudioPlayerService.ACTION_UPDATE_PLAYLIST);
+                intent.putExtra("reload_cached_list", true);
+                ctx.getApplicationContext().sendBroadcast(intent);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            cachedIDs.clear();
-            Intent intent = new Intent(AudioPlayerService.ACTION_UPDATE_PLAYLIST);
-            intent.putExtra("reload_cached_list", true);
-            ctx.getApplicationContext().sendBroadcast(intent);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            db.close();
+            helper.close();
         }
-        db.close();
-        helper.close();
     }
 
     public static void updatePlayTime(Context ctx, int owner_id, int audio_id) {

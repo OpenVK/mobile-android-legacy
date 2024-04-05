@@ -133,4 +133,9 @@ public class VideosFragment extends ActiveFragment {
         super.onConfigurationChanged(newConfig);
         adjustLayoutSize(getContext(), newConfig.orientation);
     }
+
+    @Override
+    public int getObjectsSize() {
+        return videos != null ? videos.size() : 0;
+    }
 }

@@ -89,6 +89,7 @@ public class OpenVKAPI {
         }
         dlman.setProxyConnection(
                 (boolean) client_info.get("useProxy"),
+                (String) client_info.get("proxyType"),
                 (String) client_info.get("proxyAddress")
         );
         dlman.setForceCaching((boolean) client_info.get("forcedCaching"));

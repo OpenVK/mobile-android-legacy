@@ -101,6 +101,7 @@ public class NewsfeedFragment extends ActiveFragment {
         adjustLayout(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
+        loadFromCache(getActivity());
         return view;
     }
 
@@ -403,5 +404,10 @@ public class NewsfeedFragment extends ActiveFragment {
     public void onResume() {
         super.onResume();
         refreshOptionsMenu();
+    }
+
+    @Override
+    public int getObjectsSize() {
+        return wallPosts != null ? wallPosts.size() : 0;
     }
 }

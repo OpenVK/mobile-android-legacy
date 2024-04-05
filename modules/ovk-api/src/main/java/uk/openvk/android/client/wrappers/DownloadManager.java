@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -76,6 +77,9 @@ public class DownloadManager {
     private String instance;
     OvkAPIListeners apiListeners;
     Handler handler;
+    private boolean proxy_connection;
+    private String relayAddress;
+    private String proxy_type;
 
     public DownloadManager(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
@@ -153,20 +157,64 @@ public class DownloadManager {
         forceCaching = value;
     }
 
-    public void setProxyConnection(boolean useProxy, String address) {
+    public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
+            proxy_type = type;
             if(useProxy) {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        if(type.startsWith("http")) {
+                            httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        } else if(type.startsWith("relay")) {
+                            relayAddress = String.format("http://%s", address_array[0]);
+                        }
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-                                .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
-                                        new InetSocketAddress(address_array[0],
-                                        Integer.valueOf(address_array[1])))).build();
+                        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(30, TimeUnit.SECONDS)
+                                .readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false);
+                        if(type.startsWith("http")) {
+                            httpClientBuilder = httpClientBuilder.proxy(
+                                    new Proxy(Proxy.Type.HTTP,
+                                            new InetSocketAddress(address_array[0],
+                                                    Integer.valueOf(address_array[1])
+                                            )
+                                    )
+                            );
+                            if (type.equals("https")) {
+                                // Set custom TrustManager for HTTPS proxies
+                                final TrustManager[] trustAllCerts = new TrustManager[]{
+                                        new X509TrustManager() {
+                                            @SuppressLint("TrustAllX509TrustManager")
+                                            @Override
+                                            public void checkClientTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public void checkServerTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                                return new java.security.cert.X509Certificate[]{};
+                                            }
+                                        }
+                                };
+                                final SSLContext sslContext = SSLContext.getInstance("SSL");
+                                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                                final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+                                httpClientBuilder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+                            }
+                            httpClient = httpClientBuilder.build();
+                        }
                     }
+                    this.proxy_connection = true;
                 }
             }
         } catch (Exception ex) {
@@ -280,7 +328,14 @@ public class DownloadManager {
                             }
 
                             if (legacy_mode) {
-                                request_legacy = httpClientLegacy.get(url);
+                                request_legacy = proxy_type.equals("selfeco-relay") ?
+                                        httpClientLegacy.post(relayAddress) : httpClientLegacy.get(url);
+                                if(proxy_type.equals("relay-selfeco")) {
+                                    request_legacy.content(
+                                            String.format("%s", url).getBytes(),
+                                            null
+                                    );
+                                }
                             } else {
                                 request = new Request.Builder()
                                         .url(url)

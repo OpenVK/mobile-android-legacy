@@ -127,4 +127,9 @@ public class NotesFragment extends ActiveFragment {
         super.onConfigurationChanged(newConfig);
         adjustLayoutSize(getContext(), newConfig.orientation);
     }
+
+    @Override
+    public int getObjectsSize() {
+        return notes != null ? notes.size() : 0;
+    }
 }

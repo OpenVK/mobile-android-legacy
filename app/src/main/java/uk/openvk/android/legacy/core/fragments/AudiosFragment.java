@@ -584,4 +584,9 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
     public int getCurrentPosition() {
         return currentTrackPos;
     }
+
+    @Override
+    public int getObjectsSize() {
+        return audios != null ? audios.size() : 0;
+    }
 }
