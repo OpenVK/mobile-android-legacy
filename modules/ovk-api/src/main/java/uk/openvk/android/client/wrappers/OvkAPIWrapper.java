@@ -228,11 +228,10 @@ public class OvkAPIWrapper {
                             httpClient = httpClientBuilder.build();
                         }
                     }
-                    this.proxy_connection = true;
                 } else {
-                    this.proxy_connection = true;
                     relayAddress = String.format("http://%s", address);
                 }
+                this.proxy_connection = true;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
