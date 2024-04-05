@@ -43,7 +43,7 @@ public class TranslucentAuthActivity extends AccountAuthenticatorActivity {
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int statusbar_color = R.color.transparent_statusbar_color;
+        int statusbar_color = R.color.transparent_statusbar_color2;
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
             statusbar_color = R.color.transparent_statusbar_color_gray;
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {

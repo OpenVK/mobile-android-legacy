@@ -209,7 +209,7 @@ public class AboutApplicationActivity extends TranslucentActivity {
     }
 
     private void openWebViewDialog(String link) {
-        View webviewLayout = getLayoutInflater().inflate(R.layout.layout_web, null, false);
+        View webviewLayout = getLayoutInflater().inflate(R.layout.dialog_web, null, false);
         WebView page = webviewLayout.findViewById(R.id.webview);
         page.getSettings().setSupportZoom(true);
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);

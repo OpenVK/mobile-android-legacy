@@ -89,6 +89,7 @@ android {
             ndk {
                 abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             }
+
         }
         debug {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
@@ -96,6 +97,7 @@ android {
             ndk {
                 abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             }
+
         }
     }
     productFlavors {

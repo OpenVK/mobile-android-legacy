@@ -79,8 +79,9 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
 
     public void registerAPIDataReceiver() {
         receiver = new OvkAPIReceiver(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(
-                "uk.openvk.android.client_DATA_RECEIVE"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
+                new IntentFilter("uk.openvk.android.client.DATA_RECEIVE")
+        );
     }
 
     private void setAPIListeners(final OvkAPIListeners listeners) {
