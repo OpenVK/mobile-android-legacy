@@ -598,6 +598,7 @@ public class OvkAPIWrapper {
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
+            Object request_obj;
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
@@ -636,115 +637,7 @@ public class OvkAPIWrapper {
                         }
                         request = builder.build();
                     }
-                    try {
-                        if (legacy_mode) {
-                            HttpResponse response = null;
-                            response = request_legacy.execute();
-                            assert response != null;
-                            response_body = response.readString();
-                            response_code = response.getStatusCode();
-                        } else {
-                            Response response = httpClient.newCall(request).execute();
-                            response_body = response.body().string();
-                            response_code = response.code();
-                        }
-                        if (response_body.length() > 0) {
-                            if (response_code == 200) {
-                                if(logging_enabled) Log.d(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s): [%s]",
-                                                server, method, response_code, response_body));
-                                sendMessage(HandlerMessages.PARSE_JSON, method, args, where, response_body);
-                            } else if (response_code == 400) {
-                                error = new Error();
-                                error.parse(response_body);
-                                if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
-                                                server, method, response_code, error.description, error.code));
-                                if (error.code == 3) {
-                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args,
-                                            where, error.description);
-                                } else if (error.code == 5) {
-                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, where,
-                                            error.description);
-                                } else if (error.code == 15) {
-                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, where,
-                                            error.description);
-                                } else if (error.code == 10 || error.code == 100) {
-                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, where,
-                                            error.description);
-                                }
-                            } else if (response_code == 301 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
-                            } else if (response_code == 302 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
-                            } else if (response_code == 503) {
-                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method,
-                                        args, where, response_body);
-                            } else if (response_code >= 500 && response_code <= 526) {
-                                if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s)", server, method,
-                                                response_code));
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, where,"");
-                            }
-                        }
-                    } catch (ConnectException | ProtocolException e) {
-                        if (logging_enabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (SocketException e) {
-                        if(e.getMessage().contains("ETIMEDOUT")) {
-                            if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                    String.format("Connection error: %s", e.getMessage()));
-                            error.description = e.getMessage();
-                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method,
-                                    args, where, error.description);
-                        }
-                    } catch (SocketTimeoutException e) {
-                        if (logging_enabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method,
-                                args, where, error.description);
-                    } catch (UnknownHostException e) {
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method,
-                                args, where, error.description);
-                    } catch(javax.net.ssl.SSLException e) {
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (IOException | HttpClientException ex) {
-                        if (ex.getMessage().startsWith("Authorization required")) {
-                            response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                            String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
-                            response_code = Integer.parseInt(code_str);
-                        }
-                    } catch (OutOfMemoryError | Exception e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                        e.printStackTrace();
-                    }
+                    sendAPIRequest(request_obj, fUrl, method, args, null);
                 } catch (Exception ex) {
                     sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
                     ex.printStackTrace();
@@ -773,6 +666,7 @@ public class OvkAPIWrapper {
         }
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
+            Object request_obj;
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
@@ -781,136 +675,41 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    try {
-                        if(legacy_mode) {
-                            request_legacy = proxy_type.equals("selfeco-relay") ?
-                                    httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+                    if(legacy_mode) {
+                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
-                            // Use SelfEco Relay as alternative proxy connection
-                            // default: http://minvk.ru/apirelay.php (POST)
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
 
-                            if(proxy_type.equals("selfeco-relay")) {
-                                request_legacy.content(
-                                        String.format("%s", fUrl).getBytes(),
-                                        null
-                                );
-                            }
-                        } else {
-                            Request.Builder builder = new Request.Builder()
-                                    .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
-                                    .addHeader("User-Agent", generateUserAgent());
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
+                        request_obj = request_legacy;
+                    } else {
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent());
 
-                            // Use SelfEco Relay as alternative proxy connection
-                            // default: http://minvk.ru/apirelay.php (POST)
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
 
-                            if(proxy_type.equals("selfeco-relay")) {
-                                builder.post(
-                                        RequestBody.create(
-                                                MediaType.parse("text/plain"), fUrl
-                                        )
-                                );
-                            }
-                            request = builder.build();
+                        if(proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
                         }
-                        if(legacy_mode) {
-                            HttpResponse response = request_legacy.execute();
-                            assert response != null;
-                            response_body = response.readString();
-                            response_code = response.getStatusCode();
-                        } else {
-                            Response response = httpClient.newCall(request).execute();
-                            response_body = response.body().string();
-                            response_code = response.code();
-                        }
-                        if (response_body.length() > 0) {
-                            if(response_code == 200) {
-                                if(logging_enabled) Log.d(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s): [%s]",
-                                                server, method, response_code, response_body));
-                                sendMessage(HandlerMessages.PARSE_JSON, method, args, response_body);
-                            } else if(response_code == 400) {
-                                error = new Error();
-                                error.parse(response_body);
-                                if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
-                                                server, method, response_code, error.description, error.code));
-                                if(error.code == 3) {
-                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, error.description);
-                                } else if(error.code == 5) {
-                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, args, error.description);
-                                } else if (error.code == 15) {
-                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, args, error.description);
-                                } else if(error.code == 10 || error.code == 100) {
-                                    sendMessage(HandlerMessages.INVALID_USAGE, method, args, error.description);
-                                } else if(error.code == 945) {
-                                    sendMessage(HandlerMessages.CHAT_DISABLED, method, args, error.description);
-                                }
-                            } else if (response_code == 301 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, response_body);
-                            } else if (response_code == 302 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, response_body);
-                            } else if (response_code == 503) {
-                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, response_body);
-                            } else if (response_code >= 500 && response_code <= 526) {
-                                if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s)",
-                                                server, method, response_code));
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, "");
-                            }
-                        }
-                    } catch (ConnectException | ProtocolException | UnknownHostException e) {
-                        if (logging_enabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, error.description);
-                    } catch (SocketException e) {
-                        if(e.getMessage().contains("ETIMEDOUT")) {
-                            if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                    String.format("Connection error: %s", e.getMessage()));
-                            error.description = e.getMessage();
-                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
-                        }
-                    } catch (SocketTimeoutException e) {
-                        if (logging_enabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, error.description);
-                    } catch(javax.net.ssl.SSLException e) {
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, error.description);
-                    } catch (IOException | HttpClientException ex) {
-                        if (ex.getMessage().startsWith("Authorization required")) {
-                            response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                            String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 3);
-                            response_code = Integer.parseInt(code_str);
-                        }
-                    } catch (OutOfMemoryError | Exception e) {
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
-                        e.printStackTrace();
+                        request = builder.build();
+                        request_obj = request;
                     }
+                    sendAPIRequest(request_obj, fUrl, method, args, null);
                 } catch (Exception ex) {
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, "");
+                    sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
                     ex.printStackTrace();
                 }
             }
@@ -945,6 +744,7 @@ public class OvkAPIWrapper {
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
+            private Object request_obj;
             int response_code = 0;
             private String response_body = "";
 
@@ -964,6 +764,7 @@ public class OvkAPIWrapper {
                                     null
                             );
                         }
+                        request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
                                 .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
@@ -980,133 +781,9 @@ public class OvkAPIWrapper {
                             );
                         }
                         request = builder.build();
+                        request_obj = request;
                     }
-                    try {
-                        if(legacy_mode) {
-                            HttpResponse response = null;
-                            response = request_legacy.execute();
-                            assert response != null;
-                            response_body = response.readString();
-                            response_code = response.getStatusCode();
-                        } else {
-                            Response response = httpClient.newCall(request).execute();
-                            response_body = response.body().string();
-                            response_code = response.code();
-                        }
-                        if (response_body.length() > 0) {
-                            if(response_code == 200) {
-                                if(logging_enabled) Log.d(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s):\r\n[%s]",
-                                                server, method, response_code, response_body));
-                                sendMessage(HandlerMessages.PARSE_JSON, method, response_body);
-                            } else if(response_code == 400) {
-                                error = new Error();
-                                error.parse(response_body);
-                                if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
-                                                server, method, response_code, error.description, error.code));
-                                if(error.code == 3) {
-                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
-                                } else if(error.code == 5) {
-                                    sendMessage(HandlerMessages.INVALID_TOKEN, method, error.description);
-                                } else if (error.code == 15) {
-                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
-                                } else if (error.code == 18) {
-                                    sendMessage(HandlerMessages.BANNED_ACCOUNT, method, error.description);
-                                } else if (error.code == 10 || error.code == 100) {
-                                    sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
-                                } else if(error.code == 945) {
-                                    sendMessage(HandlerMessages.CHAT_DISABLED, method, error.description);
-                                }
-                            } else if (response_code == 301 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
-                            } else if (response_code == 302 && !use_https) {
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
-                            } else if (response_code == 503) {
-                                sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, response_body);
-                            } else if (response_code >= 500 && response_code <= 526) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s)", server,
-                                                method, response_code));
-                                sendMessage(HandlerMessages.INTERNAL_ERROR, method, "");
-                            }
-                        }
-                    } catch (ConnectException | ProtocolException e) {
-                        if (logging_enabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
-                    } catch (SocketException e) {
-                        if(e.getMessage().contains("ETIMEDOUT")) {
-                            if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                    String.format("Connection error: %s", e.getMessage()));
-                            error.description = e.getMessage();
-                            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
-                        }
-                    } catch (SocketTimeoutException e) {
-                        if (logging_enabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG,
-                                        String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, error.description);
-                    } catch (UnknownHostException e) {
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, error.description);
-                    } catch(javax.net.ssl.SSLException e) {
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                String.format("Connection error: %s", e.getMessage()));
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, error.description);
-                    } catch (IOException | HttpClientException ex) {
-                        if (ex.getMessage().startsWith("Authorization required")) {
-                            response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                            String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 3);
-                            response_code = Integer.parseInt(code_str);
-                            if (response_code == 400) {
-                                error = new Error();
-                                error.parse(response_body);
-                                if(logging_enabled) Log.e(OpenVKAPI.TAG,
-                                        String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
-                                                server, method, response_code, error.description, error.code));
-                                if (error.code == 3) {
-                                    sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, error.description);
-                                } else if (error.code == 5) {
-                                    sendMessage(HandlerMessages.INVALID_TOKEN, method,  error.description);
-                                } else if (error.code == 15) {
-                                    sendMessage(HandlerMessages.ACCESS_DENIED, method, error.description);
-                                } else if (error.code == 10 || error.code == 100) {
-                                    sendMessage(HandlerMessages.INVALID_USAGE, method, error.description);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        if(e.getMessage().equals("Scheme 'https' not registered.")) {
-                            Log.e(OpenVKAPI.TAG, String.format("WTF? %s", fUrl));
-                        }
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
-                        e.printStackTrace();
-                        error.description = e.getMessage();
-                    }
+                    sendAPIRequest(request_obj, fUrl, method, null, null);
                 } catch (Exception ex) {
                     sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
                     ex.printStackTrace();
@@ -1115,6 +792,141 @@ public class OvkAPIWrapper {
         };
         Thread thread = new Thread(httpRunnable);
         thread.start();
+    }
+
+    private void sendAPIRequest(Object request, String fUrl,
+                                String method, String args,
+                                String where) {
+        int response_code = 0;
+        String response_body = "";
+        try {
+            if(request instanceof HttpRequestBuilder) {
+                HttpResponse response = null;
+                response = ((HttpRequestBuilder) request).execute();
+                assert response != null;
+                response_body = response.readString();
+                response_code = response.getStatusCode();
+            } else {
+                Response response = httpClient.newCall((Request) request).execute();
+                response_body = response.body().string();
+                response_code = response.code();
+            }
+            if (response_body.length() > 0) {
+                if(response_code == 200) {
+                    if(logging_enabled) Log.d(OpenVKAPI.TAG,
+                            String.format("Getting response from %s (%s, %s):\r\n[%s]",
+                                    server, method, response_code, response_body));
+                    sendMessage(HandlerMessages.PARSE_JSON, method, args, where, response_body);
+                } else if(response_code == 400) {
+                    error = new Error();
+                    error.parse(response_body);
+                    if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                            String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                    server, method, response_code, error.description, error.code));
+                    if(error.code == 3) {
+                        sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, where, error.description);
+                    } else if(error.code == 5) {
+                        sendMessage(HandlerMessages.INVALID_TOKEN, method, args, where, error.description);
+                    } else if (error.code == 15) {
+                        sendMessage(HandlerMessages.ACCESS_DENIED, method, args, where, error.description);
+                    } else if (error.code == 18) {
+                        sendMessage(HandlerMessages.BANNED_ACCOUNT, method, args, where, error.description);
+                    } else if (error.code == 10 || error.code == 100) {
+                        sendMessage(HandlerMessages.INVALID_USAGE, method, args, where, error.description);
+                    } else if(error.code == 945) {
+                        sendMessage(HandlerMessages.CHAT_DISABLED, method, args, where, error.description);
+                    }
+                } else if (response_code == 301 && !use_https) {
+                    sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
+                } else if (response_code == 302 && !use_https) {
+                    sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, where, response_body);
+                } else if (response_code == 503) {
+                    sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, method, args, where, response_body);
+                } else if (response_code >= 500 && response_code <= 526) {
+                    Log.e(OpenVKAPI.TAG,
+                            String.format("Getting response from %s (%s, %s)", server,
+                                    method, response_code));
+                    sendMessage(HandlerMessages.INTERNAL_ERROR, method, args, where, "");
+                }
+            }
+        } catch (ConnectException | ProtocolException e) {
+            if (logging_enabled) {
+                if (e.getMessage() != null) {
+                    Log.e(OpenVKAPI.TAG,
+                            String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                } else {
+                    Log.e(OpenVKAPI.TAG,
+                            String.format("Connection error: %s", e.getClass().getSimpleName()));
+                    error.description = e.getClass().getSimpleName();
+                }
+            }
+            error.description = e.getMessage();
+            sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, where, error.description);
+        } catch (SocketException e) {
+            if(e.getMessage().contains("ETIMEDOUT")) {
+                if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                        String.format("Connection error: %s", e.getMessage()));
+                error.description = e.getMessage();
+                sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, where, error.description);
+            }
+        } catch (SocketTimeoutException e) {
+            if (logging_enabled) {
+                if (e.getMessage() != null) {
+                    Log.e(OpenVKAPI.TAG,
+                            String.format("Connection error: %s", e.getMessage()));
+                    error.description = e.getMessage();
+                } else {
+                    Log.e(OpenVKAPI.TAG,
+                            String.format("Connection error: %s", e.getClass().getSimpleName()));
+                    error.description = e.getClass().getSimpleName();
+                }
+            }
+            sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, where, error.description);
+        } catch (UnknownHostException e) {
+            if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                    String.format("Connection error: %s", e.getMessage()));
+            error.description = e.getMessage();
+            sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, where, error.description);
+        } catch(javax.net.ssl.SSLException e) {
+            if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                    String.format("Connection error: %s", e.getMessage()));
+            error.description = e.getMessage();
+            sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, where, error.description);
+        } catch (IOException | HttpClientException ex) {
+            if (ex.getMessage().startsWith("Authorization required")) {
+                response_code = 401;
+            } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                String code_str = ex.getMessage().substring
+                        (ex.getMessage().length() - 3);
+                response_code = Integer.parseInt(code_str);
+                if (response_code == 400) {
+                    error = new Error();
+                    error.parse(response_body);
+                    if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                            String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
+                                    server, method, response_code, error.description, error.code));
+                    if (error.code == 3) {
+                        sendMessage(HandlerMessages.METHOD_NOT_FOUND, method, args, where, error.description);
+                    } else if (error.code == 5) {
+                        sendMessage(HandlerMessages.INVALID_TOKEN, method, args, where,  error.description);
+                    } else if (error.code == 15) {
+                        sendMessage(HandlerMessages.ACCESS_DENIED, method, args, where, error.description);
+                    } else if (error.code == 10 || error.code == 100) {
+                        sendMessage(HandlerMessages.INVALID_USAGE, method, args, where, error.description);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if(e.getMessage() != null) {
+                if (e.getMessage().equals("Scheme 'https' not registered.")) {
+                    Log.e(OpenVKAPI.TAG, String.format("WTF? %s", fUrl));
+                }
+                sendMessage(HandlerMessages.UNKNOWN_ERROR, method, args, where);
+                e.printStackTrace();
+                error.description = e.getMessage();
+            }
+        }
     }
 
     private void sendMessage(final int message, String response) {
@@ -1142,57 +954,11 @@ public class OvkAPIWrapper {
     }
 
     private void sendMessage(final int message, String method, String response) {
-        try {
-            Message msg = new Message();
-            msg.what = message;
-            final Bundle bundle = new Bundle();
-            bundle.putString("response", response);
-            bundle.putString("method", method);
-            bundle.putString("address", apiListeners.from);
-            msg.setData(bundle);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(apiListeners != null) {
-                        if (message < 0) {
-                            apiListeners.failListener.onAPIFailed(ctx, message, bundle);
-                        } else {
-                            apiListeners.successListener.onAPISuccess(ctx, message, bundle);
-                        }
-                    } else {
-                        Log.e(OpenVKAPI.TAG,
-                                "API Listener not found! Handling is not possible.");
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        sendMessage(message, method, null, null, response);
     }
 
     private void sendMessage(final int message, String method, String args, String response) {
-        try {
-            Message msg = new Message();
-            msg.what = message;
-            final Bundle bundle = new Bundle();
-            bundle.putString("response", response);
-            bundle.putString("method", method);
-            bundle.putString("args", args);
-            bundle.putString("address", apiListeners.from);
-            msg.setData(bundle);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(message < 0) {
-                        apiListeners.failListener.onAPIFailed(ctx, message, bundle);
-                    } else {
-                        apiListeners.successListener.onAPISuccess(ctx, message, bundle);
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+       sendMessage(message, method, args, null, response);
     }
 
     private void sendMessage(final int message, String method, String args, String where, String response) {
@@ -1200,10 +966,14 @@ public class OvkAPIWrapper {
             Message msg = new Message();
             msg.what = message;
             final Bundle bundle = new Bundle();
-            bundle.putString("response", response);
-            bundle.putString("method", method);
-            bundle.putString("args", args);
-            bundle.putString("where", where);
+            if(response != null)
+                bundle.putString("response", response);
+            if(method != null)
+                bundle.putString("method", method);
+            if(args != null)
+                bundle.putString("args", args);
+            if(where != null)
+                bundle.putString("where", where);
             bundle.putString("address", apiListeners.from);
             msg.setData(bundle);
             handler.post(new Runnable() {
