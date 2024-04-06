@@ -20,6 +20,7 @@
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -27,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -42,6 +44,7 @@ import uk.openvk.android.legacy.core.methods.CustomLinkMovementMethod;
 public class NoteActivity extends TranslucentActivity {
     private WebView webView;
     private SharedPreferences global_prefs;
+    private String page;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,8 +64,8 @@ public class NoteActivity extends TranslucentActivity {
             }
         }
         webView = findViewById(R.id.webview);
-        forceBrowserForExternalLinks();
         loadNote();
+        forceBrowserForExternalLinks();
     }
 
     private void forceBrowserForExternalLinks() {
@@ -71,8 +74,12 @@ public class NoteActivity extends TranslucentActivity {
                 @SuppressLint("NewApi")
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
-                    view.getContext().startActivity(intent);
+                    String url;
+                    if(request.getUrl() != null) {
+                        url = request.getUrl().toString();
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        view.getContext().startActivity(intent);
+                    }
                     return true;
                 }
             });
@@ -80,8 +87,10 @@ public class NoteActivity extends TranslucentActivity {
             webView.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    view.getContext().startActivity(i);
+                    if(url != null) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        view.getContext().startActivity(intent);
+                    }
                     return true;
                 }
             });
@@ -98,10 +107,11 @@ public class NoteActivity extends TranslucentActivity {
 
     private void loadNote() {
         Bundle data = getIntent().getExtras();
+        String instance = ((OvkApplication) getApplication()).getCurrentInstance();
         if(data != null) {
             if (data.containsKey("content")) {
                 // Generate (X)HTML note layout to web document
-                String page =
+                page =
                         "<!DOCTYPE html>" +
                         "<html>" +
                         "   <head>" +
@@ -110,7 +120,11 @@ public class NoteActivity extends TranslucentActivity {
                         "   </head>" +
                         "   <body bgcolor=\"#d5e8fe\" style=\"margin: 0\">" +
                         "       <div>" +
-                        data.getString("content") +
+                                data.getString("content")
+                                    .replace("&amp;", "&")
+                                    .replace("<a href=\"/",
+                                            String.format("<a href=\"http://%s/", instance)
+                                    ) +
                         "       </div>" +
                         "   </body>" +
                         "</html>";
