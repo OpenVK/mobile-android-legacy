@@ -22,6 +22,8 @@ package uk.openvk.android.legacy.ui.views;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -109,18 +111,21 @@ public class ProfileCounterLayout extends LinearLayout {
         }
         this.addView(view);
 
-        float dp = context.getResources().getDisplayMetrics().scaledDensity;
-
         if(view != null) {
-            LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-            int screen_width = getResources().getDisplayMetrics().widthPixels;
-            if(((OvkApplication) context.getApplicationContext()).isTablet) {
-                layoutParams.width = (int) (100 * dp);
-            } else {
-                layoutParams.width = screen_width / 3 - (int) (10 * dp);
-            }
-            view.setLayoutParams(layoutParams);
+            adjustSize(view, context, context.getResources().getConfiguration().orientation);
         }
+    }
+
+    private void adjustSize(View view, Context ctx, int orientation) {
+        float dp = ctx.getResources().getDisplayMetrics().scaledDensity;
+        LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
+        int screen_width = ctx.getResources().getDisplayMetrics().widthPixels;
+        if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
+            layoutParams.width = (int) (100 * dp);
+        } else if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutParams.width = screen_width / 3 - (int) (12 * dp);
+        }
+        view.setLayoutParams(layoutParams);
     }
 
     public void setCounter(long count, String label, String action) {
@@ -130,7 +135,7 @@ public class ProfileCounterLayout extends LinearLayout {
     }
 
     public void setOnCounterClickListener() {
-        ((LinearLayout) findViewById(R.id.counter)).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Global.openIntentFromCounters(getContext(), action);
@@ -139,6 +144,6 @@ public class ProfileCounterLayout extends LinearLayout {
     }
 
     public void setOnCounterClickListener(OnClickListener onClickListener) {
-        ((LinearLayout) findViewById(R.id.counter)).setOnClickListener(onClickListener);
+        findViewById(R.id.counter).setOnClickListener(onClickListener);
     }
 }

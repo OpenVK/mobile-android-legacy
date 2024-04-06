@@ -95,6 +95,7 @@
                         android:textStyle="italic" />
 
                     <LinearLayout
+                        android:id="@+id/actions_layout"
                         android:layout_width="match_parent"
                         android:layout_height="38dip"
                         android:layout_marginBottom="6dip"

@@ -288,9 +288,9 @@ public class ProfilePageFragment extends ActiveFragment {
     }
 
     public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {
-        TextView friend_status = ((TextView) view.findViewById(R.id.friend_status));
+        TextView friend_status = view.findViewById(R.id.friend_status);
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
-        ImageButton add_to_friends_btn = ((ImageButton) view.findViewById(R.id.add_to_friends));
+        ImageButton add_to_friends_btn = view.findViewById(R.id.add_to_friends);
         ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).leftMargin = 8 * dp;
         ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).rightMargin = 0;
         if(user.friends_status == 0) {
@@ -436,29 +436,32 @@ public class ProfilePageFragment extends ActiveFragment {
 
         float dp = getResources().getDisplayMetrics().scaledDensity;
 
-        int default_margin = (int) (2 * dp);
+        int default_horizontal_margin = (int) (2 * dp);
+        int default_vertical_margin = (int) (4 * dp);
         ((FlowLayout.LayoutParams) friends_counter.getLayoutParams()).setMargins(
-                default_margin, default_margin, default_margin, default_margin
+                default_vertical_margin, default_horizontal_margin,
+                default_vertical_margin, default_horizontal_margin
         );
         ((FlowLayout.LayoutParams) photos_counter.getLayoutParams()).setMargins(
-                default_margin, default_margin, default_margin, default_margin
+                default_vertical_margin, default_horizontal_margin,
+                default_vertical_margin, default_horizontal_margin
         );
         ((FlowLayout.LayoutParams) videos_counter.getLayoutParams()).setMargins(
-                default_margin, default_margin, default_margin, default_margin
+                default_vertical_margin, default_horizontal_margin,
+                default_vertical_margin, default_horizontal_margin
         );
         ((FlowLayout.LayoutParams) audios_counter.getLayoutParams()).setMargins(
-                default_margin, default_margin, default_margin, default_margin
+                default_vertical_margin, default_horizontal_margin,
+                default_vertical_margin, default_horizontal_margin
         );
     }
 
     public void hideHeaderButtons(Context ctx, WindowManager wm) {
-        float smallestWidth = Global.getSmalledWidth(wm);
-        (view.findViewById(R.id.send_direct_msg)).setVisibility(GONE);
-        (view.findViewById(R.id.add_to_friends)).setVisibility(GONE);
+        (view.findViewById(R.id.actions_layout)).setVisibility(GONE);
     }
 
     public void hideTabSelector() {
-        ((ProfileWallSelector) view.findViewById(R.id.wall_selector)).setVisibility(GONE);
+        view.findViewById(R.id.wall_selector).setVisibility(GONE);
     }
 
     public ProfileHeader getHeader() {

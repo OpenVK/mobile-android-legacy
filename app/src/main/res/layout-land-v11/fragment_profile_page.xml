@@ -67,13 +67,14 @@
                         android:visibility="gone" />
 
                     <LinearLayout
+                        android:id="@+id/actions_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
                         android:layout_marginBottom="6dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
                         android:orientation="horizontal">
 
                         <Button
@@ -89,12 +90,12 @@
                         <ImageButton
                             android:id="@+id/add_to_friends"
                             android:layout_width="60dp"
-                            android:layout_marginRight="4dp"
                             android:layout_height="match_parent"
+                            android:layout_marginRight="4dp"
                             android:background="@drawable/btn_light_blue"
                             android:src="@drawable/ic_ab_add"
-                            tools:ignore="ContentDescription,RtlHardcoded"
-                            android:visibility="gone"/>
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription,RtlHardcoded" />
 
                     </LinearLayout>
 
