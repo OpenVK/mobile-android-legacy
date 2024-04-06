@@ -53,7 +53,7 @@ import uk.openvk.android.legacy.utils.ACRACustomSender;
         reportDialogClass = CrashReporterActivity.class)
 public class OvkApplication extends Application {
 
-    private static final String DEFAULT_RELAY_SERVER = "http://minvk.ru/apirelay.php";
+    private static final String DEFAULT_RELAY_SERVER = "minvk.ru/apirelay.php";
 
     public String version;
     public boolean isTablet;
@@ -150,6 +150,7 @@ public class OvkApplication extends Application {
                 global_prefs_editor.putString("proxy_address", DEFAULT_RELAY_SERVER);
                 global_prefs_editor.putString("proxy_type", "selfeco-relay");
                 global_prefs_editor.putBoolean("useHTTPS", false);
+                global_prefs_editor.putBoolean("useProxy", true);
             }
         }
 
