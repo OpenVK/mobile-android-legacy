@@ -97,6 +97,7 @@ import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.AccountAuthenticator;
 import uk.openvk.android.legacy.utils.NotificationManager;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends NetworkFragmentActivity {
@@ -716,7 +717,8 @@ public class AppActivity extends NetworkFragmentActivity {
                     ((FriendsFragment) selectedFragment).loadAvatars();
                 }
             } else if (message == HandlerMessages.GROUP_AVATARS) {
-                groupsFragment.loadAvatars();
+                if(selectedFragment instanceof GroupsFragment)
+                    ((GroupsFragment) selectedFragment).loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 ovk_api.user = ovk_api.users.getList().get(0);
                 ovk_api.account.user = ovk_api.user;
@@ -1023,6 +1025,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     private void activateLongPollService() {
         OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
+        client_info = SecureCredentialsStorage.generateClientInfo(this, client_info);
         ovk_app.longPollService =
                 new LongPollService(this, handler, client_info);
         ovk_app.longPollService.setProxyConnection(
@@ -1030,8 +1033,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 global_prefs.getString("proxy_address", ""));
         ovk_app.longPollService.run(instance_prefs.
                         getString("server", ""), longPollServer.address, longPollServer.key,
-                longPollServer.ts, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                longPollServer.ts, client_info);
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
