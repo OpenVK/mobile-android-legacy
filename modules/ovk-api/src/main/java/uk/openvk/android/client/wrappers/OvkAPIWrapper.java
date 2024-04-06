@@ -103,6 +103,7 @@ public class OvkAPIWrapper {
         this.ctx = ctx;
         this.use_https = use_https;
         this.legacy_mode = legacy_mode;
+        this.proxy_type = "";
         error = new Error();
         try {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
@@ -232,6 +233,8 @@ public class OvkAPIWrapper {
                     relayAddress = String.format("http://%s", address);
                 }
                 this.proxy_connection = true;
+            } else {
+                proxy_type = "";
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -294,7 +297,7 @@ public class OvkAPIWrapper {
             public void run() throws OutOfMemoryError {
                 try {
                     if(legacy_mode) {
-                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
@@ -308,13 +311,13 @@ public class OvkAPIWrapper {
                         }
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
@@ -445,13 +448,13 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -459,7 +462,7 @@ public class OvkAPIWrapper {
                         }
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
@@ -608,13 +611,13 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -623,7 +626,7 @@ public class OvkAPIWrapper {
                         request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
@@ -678,13 +681,13 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -693,13 +696,13 @@ public class OvkAPIWrapper {
                         request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
@@ -754,13 +757,13 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = proxy_type.equals("selfeco-relay") ?
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -769,13 +772,13 @@ public class OvkAPIWrapper {
                         request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
