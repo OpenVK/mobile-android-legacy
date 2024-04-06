@@ -17,12 +17,15 @@
 package dev.tinelix.twemojicon;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.style.DynamicDrawableSpan;
 
 import java.lang.ref.WeakReference;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * @author Hieu Rocker (rockerhieu@gmail.com)
@@ -58,7 +61,8 @@ class EmojiconSpan extends DynamicDrawableSpan {
     public Drawable getDrawable() {
         if (mDrawable == null) {
             try {
-                mDrawable = mContext.getResources().getDrawable(mResourceId);
+                mDrawable = new GifDrawable(mContext.getResources(), mResourceId ); // -> use for GIF emojis
+                // mDrawable = mContext.getResources().getDrawable(mResourceId); -> use for PNG emojis
                 mHeight = mSize;
                 mWidth = mHeight * mDrawable.getIntrinsicWidth() / mDrawable.getIntrinsicHeight();
                 mTop = (mTextSize - mHeight) / 2;

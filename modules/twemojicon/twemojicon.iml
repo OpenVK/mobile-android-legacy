@@ -96,6 +96,7 @@
     <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-v4-24.0.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: pl.droidsonroids.gif:android-gif-drawable-1.0.12" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-annotations:24.0.0@jar" level="project" />
   </component>
 </module>
