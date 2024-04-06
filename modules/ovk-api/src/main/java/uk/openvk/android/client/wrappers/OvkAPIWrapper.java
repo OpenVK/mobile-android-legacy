@@ -94,7 +94,7 @@ public class OvkAPIWrapper {
 
     public OvkAPIWrapper(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
-        logging_enabled = BuildConfig.DEBUG;
+        logging_enabled = uk.openvk.android.client.BuildConfig.VERSION_NAME.endsWith("debug");
         setAPIListeners();
         this.handler = handler;
         if(handler == null) {

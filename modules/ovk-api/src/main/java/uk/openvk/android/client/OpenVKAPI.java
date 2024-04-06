@@ -74,6 +74,7 @@ public class OpenVKAPI {
     public OpenVKAPI(Context ctx, HashMap<String, Object> client_info,
                      android.os.Handler handler) {
         wrapper = new OvkAPIWrapper(ctx, client_info, handler);
+        wrapper.requireHTTPS((boolean) client_info.get("useHTTPS"));
         wrapper.setProxyConnection(
                 (boolean) client_info.get("useProxy"),
                 (String) client_info.get("proxyType"),
