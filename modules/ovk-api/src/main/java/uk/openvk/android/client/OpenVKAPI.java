@@ -103,7 +103,7 @@ public class OpenVKAPI {
         }
         ulman.setForceCaching((boolean) client_info.get("forcedCaching"));
         account = new Account(ctx);
-        if(client_info.containsKey("server")) {
+        if(client_info.containsKey("server") && client_info.containsKey("accessToken")) {
             account.getProfileInfo(wrapper);
         }
         newsfeed = new Newsfeed();

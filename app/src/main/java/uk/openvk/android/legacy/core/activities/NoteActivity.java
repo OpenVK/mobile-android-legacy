@@ -36,6 +36,7 @@ import android.widget.TextView;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.TranslucentActivity;
+import uk.openvk.android.legacy.core.methods.CustomLinkMovementMethod;
 
 public class NoteActivity extends TranslucentActivity {
     private WebView webView;
@@ -65,40 +66,19 @@ public class NoteActivity extends TranslucentActivity {
 
     private void forceBrowserForExternalLinks() {
         final String instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                    String url = view.getOriginalUrl();
-                    if (url != null) {
-                        if(url.startsWith("/")) {
-                            url = String.format("http://%s%s", instance, url);
-                        }
-                        view.getContext().startActivity(
-                                new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                        return true;
-                    } else {
-                        return false;
+        CustomLinkMovementMethod linkMovementMethod = new CustomLinkMovementMethod(this);
+        linkMovementMethod.setOnLinkClickListener(
+                new CustomLinkMovementMethod.OnTextViewClickMovementListener() {
+                    @Override
+                    public void onLinkClicked(String linkText, CustomLinkMovementMethod.LinkType linkType) {
+
                     }
-                }
-            });
-        } else {
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    if (url != null) {
-                        if(url.startsWith("/")) {
-                            url = String.format("http://%s%s", instance, url);
-                        }
-                        view.getContext().startActivity(
-                                new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                        return true;
-                    } else {
-                        return false;
+
+                    @Override
+                    public void onLongClick(String text) {
+
                     }
-                }
-            });
-        }
+                });
     }
 
     @Override

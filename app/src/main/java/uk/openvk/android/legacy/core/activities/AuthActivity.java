@@ -425,12 +425,9 @@ public class AuthActivity extends NetworkAuthActivity {
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
                 Log.d(OvkApplication.APP_TAG, "Creating OpenVK Account...");
                 account = new Account(response, this, ovk_api.wrapper);
-                if(instance_prefs != null && instance_prefs.contains("access_token") &&
-                        instance_prefs.getString("access_token", "").length() > 0) {
-                    instance_prefs = getSharedPreferences(
-                            String.format("instance_a%s_%s", account.id, server),
-                            0);
-                }
+                instance_prefs = getSharedPreferences(
+                        String.format("instance_a%s_%s", account.id, server),
+                        0);
                 SharedPreferences.Editor global_editor = global_prefs.edit();
                 global_editor.putString("current_instance", server);
                 global_editor.putLong("current_uid", account.id);
