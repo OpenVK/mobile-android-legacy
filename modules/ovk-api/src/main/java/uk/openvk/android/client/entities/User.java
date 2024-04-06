@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.openvk.android.client.counters.UserCounters;
 import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
 
@@ -60,6 +61,7 @@ public class User implements Parcelable {
     public int sex;
     public String avatar_url;
     public String ban_reason;
+    public UserCounters counters;
 
     public User(JSONObject user) {
         parse(user);
@@ -67,30 +69,6 @@ public class User implements Parcelable {
 
     public User(String response, int position) {
         parse(response, position);
-    }
-
-    public User(String first_name, String last_name, int id, String status, String city, String screen_name,
-                String avatar_msize_url, int friends_status, int ls_date, String birthdate,
-                String interests, String movies, String music, String tv, String books, boolean verified) {
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.id = id;
-        this.verified = verified;
-        this.status = status;
-        this.city = city;
-        this.birthdate = birthdate;
-        this.screen_name = screen_name;
-        this.avatar_msize_url = avatar_msize_url;
-        this.friends_status = friends_status;
-        this.ls_date = ls_date;
-        this.interests = interests;
-        this.movies = movies;
-        this.music = music;
-        this.tv = tv;
-        this.books = books;
-        avatar_hsize_url = "";
-        avatar_osize_url = "";
-        jsonParser = new JSONParser();
     }
 
     public User() {
@@ -151,24 +129,36 @@ public class User implements Parcelable {
                 //screen_name = user.getString("screen_name");
                 if (user.has("photo_50")) {
                     avatar_msize_url = user.getString("photo_50");
-                } else if (user.has("photo_100")) {
+                } if (user.has("photo_100")) {
                     avatar_msize_url = user.getString("photo_100");
-                } else if (user.has("photo_200")) {
+                } if (user.has("photo_200")) {
                     avatar_msize_url = user.getString("photo_200");
-                } else if (user.has("photo_200_orig")) {
+                } if (user.has("photo_200_orig")) {
                     avatar_msize_url = user.getString("photo_200_orig");
                     avatar_url = avatar_msize_url;
-                } else if (user.has("photo_400")) {
+                } if (user.has("photo_400")) {
                     avatar_hsize_url = user.getString("photo_400");
-                } else if (user.has("photo_400_orig")) {
+                } if (user.has("photo_400_orig")) {
                     avatar_hsize_url = user.getString("photo_400_orig");
                     avatar_url = avatar_hsize_url;
-                } else if (user.has("photo_max")) {
+                } if (user.has("photo_max")) {
                     avatar_osize_url = user.getString("photo_max");
-                } else if (user.has("photo_max_orig")) {
+                } if (user.has("photo_max_orig")) {
                     avatar_osize_url = user.getString("photo_max_orig");
                     avatar_url = avatar_osize_url;
                 }
+
+                if(user.has("counters")) {
+                    JSONObject counters_obj = user.getJSONObject("counters");
+                    counters = new UserCounters(
+                            counters_obj.getLong("friends_count"),
+                            counters_obj.getLong("photos_count"),
+                            counters_obj.getLong("videos_count"),
+                            counters_obj.getLong("audios_count"),
+                            counters_obj.getLong("notes_count")
+                    );
+                }
+
                 if(user.has("deactivated")) {
                     deactivated = user.getString("deactivated");
                     if(deactivated.equals("banned") && user.isNull("ban_reason")) {
@@ -178,37 +168,13 @@ public class User implements Parcelable {
                     }
                 } else {
                     friends_status = user.getInt("friend_status");
-                    if (!user.isNull("interests")) {
-                        interests = user.getString("interests");
-                    } else {
-                        interests = "";
-                    }
-                    if (!user.isNull("movies")) {
-                        movies = user.getString("movies");
-                    } else {
-                        movies = "";
-                    }
-                    if (!user.isNull("music")) {
-                        music = user.getString("music");
-                    } else {
-                        music = "";
-                    }
-                    if (!user.isNull("tv")) {
-                        tv = user.getString("tv");
-                    } else {
-                        tv = "";
-                    }
-                    if (!user.isNull("books")) {
-                        books = user.getString("books");
-                    } else {
-                        books = "";
-                    }
+                    interests = !user.isNull("interests") ? user.getString("interests") : "";
+                    movies = !user.isNull("movies") ? user.getString("movies") : "";
+                    music = !user.isNull("music") ? user.getString("music") : "";
+                    tv = !user.isNull("tv") ? user.getString("tv") : "";
+                    books = !user.isNull("books") ? user.getString("books") : "";
                     //birthdate = user.getString("bdate");
-                    if (!user.isNull("city")) {
-                        city = user.getString("city");
-                    } else {
-                        city = "";
-                    }
+                    city = !user.isNull("city") ? user.getString("city") : "";
                     //birthdate = user.getString("bdate");
                     if (!user.isNull("city")) {
                         city = user.getString("city");
@@ -260,48 +226,27 @@ public class User implements Parcelable {
                             avatar_url = avatar_osize_url;
                         }
 
+                        if(user.has("counters")) {
+                            JSONObject counters_obj = user.getJSONObject("counters");
+                            counters = new UserCounters(
+                                    counters_obj.getLong("friends_count"),
+                                    counters_obj.getLong("photos_count"),
+                                    counters_obj.getLong("videos_count"),
+                                    counters_obj.getLong("audios_count"),
+                                    counters_obj.getLong("notes_count")
+                            );
+                        }
+
                         friends_status = user.getInt("friend_status");
-                        if (!user.isNull("interests")) {
-                            interests = user.getString("interests");
-                        } else {
-                            interests = "";
-                        }
-                        if (!user.isNull("movies")) {
-                            movies = user.getString("movies");
-                        } else {
-                            movies = "";
-                        }
-                        if (!user.isNull("music")) {
-                            music = user.getString("music");
-                        } else {
-                            music = "";
-                        }
-                        if (!user.isNull("tv")) {
-                            tv = user.getString("tv");
-                        } else {
-                            tv = "";
-                        }
-                        if (!user.isNull("books")) {
-                            books = user.getString("books");
-                        } else {
-                            books = "";
-                        }
+                        interests = !user.isNull("interests") ? user.getString("interests") : "";
+                        movies = !user.isNull("movies") ? user.getString("movies") : "";
+                        music = !user.isNull("music") ? user.getString("music") : "";
+                        tv = !user.isNull("tv") ? user.getString("tv") : "";
+                        books = !user.isNull("books") ? user.getString("books") : "";
                         //birthdate = user.getString("bdate");
-                        if (!user.isNull("city")) {
-                            city = user.getString("city");
-                        } else {
-                            city = "";
-                        }
-                        if (user.getInt("verified") == 1) {
-                            verified = true;
-                        } else {
-                            verified = false;
-                        }
-                        if (user.getInt("online") == 1) {
-                            online = true;
-                        } else {
-                            online = false;
-                        }
+                        city = !user.isNull("city") ? user.getString("city") : "";
+                        verified = user.getInt("verified") == 1;
+                        online = user.getInt("online") == 1;
                     }
                 }
             }
@@ -311,21 +256,25 @@ public class User implements Parcelable {
     }
 
     public void downloadAvatar(DownloadManager downloadManager, String quality) {
-        if(quality.equals("medium")) {
-            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
-                    "profile_avatars");
-        } else if(quality.equals("high")) {
-            if(avatar_hsize_url.length() == 0) {
-                avatar_hsize_url = avatar_msize_url;
-            }
-            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
-                    "profile_avatars");
-        } else if(quality.equals("original")) {
-            if(avatar_osize_url.length() == 0) {
-                avatar_osize_url = avatar_msize_url;
-            }
-            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
-                    "profile_avatars");
+        switch (quality) {
+            case "medium":
+                downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
+                        "profile_avatars");
+                break;
+            case "high":
+                if (avatar_hsize_url.length() == 0) {
+                    avatar_hsize_url = avatar_msize_url;
+                }
+                downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
+                        "profile_avatars");
+                break;
+            case "original":
+                if (avatar_osize_url.length() == 0) {
+                    avatar_osize_url = avatar_msize_url;
+                }
+                downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
+                        "profile_avatars");
+                break;
         }
     }
 

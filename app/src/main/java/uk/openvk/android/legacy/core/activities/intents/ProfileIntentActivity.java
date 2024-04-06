@@ -249,9 +249,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                         .loadAvatars();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
                 profilePageFragment.refreshWallAdapter();
-            } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
-                profilePageFragment.setCounter(user, "friends",  ovk_api.friends.count);
             } else if(message == HandlerMessages.LIKES_ADD) {
                 ovk_api.likes.parse(data.getString("response"));
                 ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))

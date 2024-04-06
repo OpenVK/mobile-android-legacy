@@ -98,7 +98,7 @@ public class Users implements Parcelable {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONObject("response").getJSONArray("items");
             ArrayList<Photo> avatars;
-            avatars = new ArrayList<Photo>();
+            avatars = new ArrayList<>();
             if(this.users.size() > 0) {
                 this.users.clear();
             }
@@ -127,7 +127,7 @@ public class Users implements Parcelable {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
                 "photo_200_orig,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city",
+                                "interests,music,movies,tv,books,city,counters",
                 user_id));
     }
 
@@ -135,7 +135,7 @@ public class Users implements Parcelable {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
                 "photo_200_orig,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city",
+                                "interests,music,movies,tv,books,city,counters",
                 user_id), "account_user");
     }
 
@@ -155,7 +155,7 @@ public class Users implements Parcelable {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
                 "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city",
+                                "interests,music,movies,tv,books,city,counters",
                 ids_list), "peers");
     }
 
@@ -171,7 +171,7 @@ public class Users implements Parcelable {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
                 "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city",
+                                "interests,music,movies,tv,books,city,counters",
                 ids_list.toString()));
     }
 
@@ -183,7 +183,7 @@ public class Users implements Parcelable {
         wrapper.sendAPIMethod("Users.search",
                 String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200," +
                 "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city",
+                                "interests,music,movies,tv,books,city,counters",
                 URLEncoder.encode(query)));
     }
 

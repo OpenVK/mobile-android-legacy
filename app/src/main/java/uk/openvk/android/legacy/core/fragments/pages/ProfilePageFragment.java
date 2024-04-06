@@ -23,12 +23,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 
@@ -208,19 +212,6 @@ public class ProfilePageFragment extends ActiveFragment {
         header.setStatus(user.status);
         header.setLastSeen(user.sex, user.ls_date, user.ls_platform);
         header.setVerified(user.verified, getContext());
-        ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setCounter(0,
-                Global.getPluralQuantityString(getContext().getApplicationContext(),
-                        R.plurals.profile_photos, 0), "");
-        ((ProfileCounterLayout) view.findViewById(R.id.photos_counter)).setOnCounterClickListener();
-        ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(0,
-                Global.getPluralQuantityString(getContext().getApplicationContext(),
-                        R.plurals.profile_friends, 0),
-                "openvk://ovk/friends" + user.id);
-        ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setOnCounterClickListener();
-        ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setCounter(0,
-                Global.getPluralQuantityString(getContext().getApplicationContext(),
-                        R.plurals.profile_mutual_friends, 0), "");
-        ((ProfileCounterLayout) view.findViewById(R.id.mutual_counter)).setOnCounterClickListener();
         (view.findViewById(R.id.wall_error_layout)).setVisibility(GONE);
         if (user.deactivated == null) {
             ((AboutProfileLayout) view.findViewById(R.id.about_profile_layout)).setBirthdate("");
@@ -389,13 +380,75 @@ public class ProfilePageFragment extends ActiveFragment {
         }
     }
 
-    public void setCounter(User user, String where, int count) {
-        if(where.equals("friends")) {
-            ((ProfileCounterLayout) view.findViewById(R.id.friends_counter)).setCounter(count,
-                    Global.getPluralQuantityString(getContext().getApplicationContext(),
-                            R.plurals.profile_friends, count),
-                    "openvk://ovk/friends" + user.id);
-        }
+    public void setCounters(User user) {
+        ProfileCounterLayout friends_counter = new ProfileCounterLayout(getContext());
+        ProfileCounterLayout photos_counter = new ProfileCounterLayout(getContext());
+        ProfileCounterLayout videos_counter = new ProfileCounterLayout(getContext());
+        ProfileCounterLayout audios_counter = new ProfileCounterLayout(getContext());
+
+        friends_counter.setCounter(
+                user.counters.friends_count,
+                Global.getPluralQuantityString(
+                        getContext(),
+                        R.plurals.profile_friends,
+                        Global.getEndNumberFromLong(user.counters.friends_count)
+                ),
+                "openvk://ovk/friends" + user.id
+        );
+
+        photos_counter.setCounter(
+                user.counters.photos_count,
+                Global.getPluralQuantityString(
+                        getContext(),
+                        R.plurals.profile_photos,
+                        Global.getEndNumberFromLong(user.counters.photos_count)
+                ),
+                "openvk://ovk/photos" + user.id
+        );
+
+        videos_counter.setCounter(
+                user.counters.videos_count,
+                Global.getPluralQuantityString(
+                        getContext(),
+                        R.plurals.profile_videos,
+                        Global.getEndNumberFromLong(user.counters.videos_count)
+                ),
+                "openvk://ovk/videos" + user.id
+        );
+
+        audios_counter.setCounter(
+                user.counters.audios_count,
+                Global.getPluralQuantityString(
+                        getContext(),
+                        R.plurals.profile_audios,
+                        Global.getEndNumberFromLong(user.counters.audios_count)
+                ),
+                "openvk://ovk/audios" + user.id
+        );
+
+        FlowLayout row = view.findViewById(R.id.profile_counters);
+        if(row.getChildCount() > 0)
+            row.removeAllViews();
+        row.addView(friends_counter);
+        row.addView(photos_counter);
+        row.addView(videos_counter);
+        row.addView(audios_counter);
+
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+
+        int default_margin = (int) (2 * dp);
+        ((FlowLayout.LayoutParams) friends_counter.getLayoutParams()).setMargins(
+                default_margin, default_margin, default_margin, default_margin
+        );
+        ((FlowLayout.LayoutParams) photos_counter.getLayoutParams()).setMargins(
+                default_margin, default_margin, default_margin, default_margin
+        );
+        ((FlowLayout.LayoutParams) videos_counter.getLayoutParams()).setMargins(
+                default_margin, default_margin, default_margin, default_margin
+        );
+        ((FlowLayout.LayoutParams) audios_counter.getLayoutParams()).setMargins(
+                default_margin, default_margin, default_margin, default_margin
+        );
     }
 
     public void hideHeaderButtons(Context ctx, WindowManager wm) {
@@ -502,7 +555,9 @@ public class ProfilePageFragment extends ActiveFragment {
         if(ovk_api.user.deactivated == null) {
             ovk_api.user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
             loadWallFromCache(ctx, ovk_api, ovk_api.user.id);
-            ovk_api.friends.get(ovk_api.wrapper, ovk_api.user.id, 10, "profile_counter");
+            if(ovk_api.user.counters != null) {
+                setCounters(user);
+            }
         } else {
             hideTabSelector();
             getHeader().hideExpandArrow();

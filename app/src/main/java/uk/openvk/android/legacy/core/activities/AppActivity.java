@@ -106,14 +106,11 @@ public class AppActivity extends NetworkFragmentActivity {
     public ProgressLayout progressLayout;
     public ErrorLayout errorLayout;
     private SlidingMenuLayout slidingmenuLayout;
-    public NotesFragment notesFragment;
     public ArrayList<Conversation> conversations;
     public Menu activity_menu;
     public GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
     private String last_longpoll_response;
-    private int item_pos;
-    private int poll_answer;
     public NotificationManager notifMan;
     private boolean inBackground;
     public ActionBarLayout ab_layout;
@@ -821,10 +818,6 @@ public class AppActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 ovk_api.friends.parse(data.getString("response"), ovk_api.dlman,
                         false, true);
-                if (selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment)
-                            .setCounter(ovk_api.user, "friends", ovk_api.friends.count);
-                }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if (selectedFragment instanceof ConversationsFragment) {
                     if (conversations.size() > 0) {
@@ -859,6 +852,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 boolean addVote = message == HandlerMessages.POLL_ADD_VOTE
                         || message == HandlerMessages.POLL_DELETE_VOTE;
                 WallPost item = null;
+                int item_pos = -1;
                 if (selectedFragment instanceof NewsfeedFragment) {
                     item = ovk_api.newsfeed.getWallPosts().get(item_pos);
                 } else if(selectedFragment instanceof ProfilePageFragment) {
@@ -869,6 +863,7 @@ public class AppActivity extends NetworkFragmentActivity {
                          attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
                             Poll poll = ((Poll) item.attachments.get(attachment_index));
+                            int poll_answer = -1;
                             Poll.PollAnswer answer = poll.answers.get(poll_answer);
                             poll.user_votes = addVote ? 0 : 1;
                             answer.is_voted = addVote;

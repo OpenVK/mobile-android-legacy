@@ -19,6 +19,7 @@
 
 package uk.openvk.android.legacy.ui.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
@@ -35,6 +36,7 @@ import uk.openvk.android.legacy.R;
 public class ProfileCounterLayout extends LinearLayout {
     public String action;
 
+    @SuppressLint("InflateParams")
     public ProfileCounterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view = null;
@@ -65,9 +67,58 @@ public class ProfileCounterLayout extends LinearLayout {
                     R.layout.profile_counter, null);
         }
         this.addView(view);
+
+        float dp = context.getResources().getDisplayMetrics().scaledDensity;
+
         if(view != null) {
             LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-            layoutParams.width = LayoutParams.MATCH_PARENT;
+            layoutParams.width =  (int) (92 * dp);
+            view.setLayoutParams(layoutParams);
+        }
+    }
+
+    @SuppressLint("InflateParams")
+    public ProfileCounterLayout(Context context) {
+        super(context);
+        View view = null;
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        try {
+            if (!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                switch (global_prefs.getString("uiTheme", "blue")) {
+                    case "Gray":
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter_gray, null);
+                        break;
+                    case "Black":
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter_black, null);
+                        break;
+                    default:
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter, null);
+                        break;
+                }
+            } else {
+                view = LayoutInflater.from(getContext()).inflate(
+                        R.layout.profile_counter_light, null);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            view = LayoutInflater.from(getContext()).inflate(
+                    R.layout.profile_counter, null);
+        }
+        this.addView(view);
+
+        float dp = context.getResources().getDisplayMetrics().scaledDensity;
+
+        if(view != null) {
+            LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
+            int screen_width = getResources().getDisplayMetrics().widthPixels;
+            if(((OvkApplication) context.getApplicationContext()).isTablet) {
+                layoutParams.width = (int) (100 * dp);
+            } else {
+                layoutParams.width = screen_width / 3 - (int) (10 * dp);
+            }
             view.setLayoutParams(layoutParams);
         }
     }
