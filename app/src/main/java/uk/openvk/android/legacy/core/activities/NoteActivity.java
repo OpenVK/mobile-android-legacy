@@ -19,6 +19,7 @@
 
 package uk.openvk.android.legacy.core.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -67,18 +68,26 @@ public class NoteActivity extends TranslucentActivity {
     private void forceBrowserForExternalLinks() {
         final String instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
         CustomLinkMovementMethod linkMovementMethod = new CustomLinkMovementMethod(this);
-        linkMovementMethod.setOnLinkClickListener(
-                new CustomLinkMovementMethod.OnTextViewClickMovementListener() {
-                    @Override
-                    public void onLinkClicked(String linkText, CustomLinkMovementMethod.LinkType linkType) {
-
-                    }
-
-                    @Override
-                    public void onLongClick(String text) {
-
-                    }
-                });
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            webView.setWebViewClient(new WebViewClient() {
+                @SuppressLint("NewApi")
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, request.getUrl());
+                    view.getContext().startActivity(intent);
+                    return true;
+                }
+            });
+        } else {
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    view.getContext().startActivity(i);
+                    return true;
+                }
+            });
+        }
     }
 
     @Override
