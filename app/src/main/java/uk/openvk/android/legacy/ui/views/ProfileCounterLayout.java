@@ -128,19 +128,18 @@ public class ProfileCounterLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void setCounter(long count, String label, String action) {
+    public void setCounter(long count, String label, final String action) {
         this.action = action;
+        if(action != null) {
+            findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Global.openIntentFromCounters(getContext(), action);
+                }
+            });
+        }
         ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
         ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
-    }
-
-    public void setOnCounterClickListener() {
-        findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Global.openIntentFromCounters(getContext(), action);
-            }
-        });
     }
 
     public void setOnCounterClickListener(OnClickListener onClickListener) {
