@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -118,12 +119,34 @@ public class ProfilePageFragment extends ActiveFragment {
                 Global.openNewPostActivity(getActivity(), ovk_api);
             }
         });
+        CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+        p2r_view.refreshComplete();
+        OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            rhl.enableDarkTheme();
+        }
+        try {
+            p2r_view.setCustomHeadview(rhl);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        p2r_view.setTriggerDistance(80);
+        p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ArrayList<Long> ids = new ArrayList<>();
+                ids.add(ovk_api.user.id);
+                ovk_api.users.get(ovk_api.wrapper, ids);
+            }
+        });
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
+            p2r_view.setBackgroundColor(Color.parseColor("#313743"));
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
             view.findViewById(R.id.profile_ext_header)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
             view.findViewById(R.id.about_profile_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-            CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+
             p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
             view.findViewById(R.id.send_direct_msg)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
@@ -134,7 +157,6 @@ public class ProfilePageFragment extends ActiveFragment {
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
             view.findViewById(R.id.about_profile_layout)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-            CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
             p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
             view.findViewById(R.id.send_direct_msg)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
@@ -530,24 +552,6 @@ public class ProfilePageFragment extends ActiveFragment {
     public void loadAPIData(Context ctx, final OpenVKAPI ovk_api, WindowManager wm) {
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
-        OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
-        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            rhl.enableDarkTheme();
-        }
-        try {
-            p2r_view.setCustomHeadview(rhl);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        p2r_view.setTriggerDistance(80);
-        p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                ArrayList<Long> ids = new ArrayList<>();
-                ids.add(ovk_api.user.id);
-                ovk_api.users.get(ovk_api.wrapper, ids);
-            }
-        });
         getWallSelector().setUserName(ovk_api.account.first_name);
         updateLayout(ovk_api, wm);
         setDMButtonListener(ctx, ovk_api.user.id, wm);

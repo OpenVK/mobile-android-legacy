@@ -160,6 +160,8 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
             header.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
         } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
             header.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+        } else {
+            header.setBackgroundColor(Color.parseColor("#313743"));
         }
         p2r_tv = findViewById(R.id.p2r_text);
         p2r_arrow = findViewById(R.id.p2r_arrow);
