@@ -66,8 +66,6 @@ public class NoteActivity extends TranslucentActivity {
     }
 
     private void forceBrowserForExternalLinks() {
-        final String instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
-        CustomLinkMovementMethod linkMovementMethod = new CustomLinkMovementMethod(this);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             webView.setWebViewClient(new WebViewClient() {
                 @SuppressLint("NewApi")
