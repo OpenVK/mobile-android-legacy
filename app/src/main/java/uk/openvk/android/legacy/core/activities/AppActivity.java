@@ -1004,7 +1004,10 @@ public class AppActivity extends NetworkFragmentActivity {
     private void removeAccount() {
         try {
             AccountManager am = AccountManager.get(this);
-            am.removeAccount(((OvkApplication) getApplication()).androidAccount, null, null);
+            if(((OvkApplication) getApplication()).androidAccount != null)
+                am.removeAccount(
+                        ((OvkApplication) getApplication()).androidAccount, null, null
+                );
         } finally {
             instance_prefs_editor = instance_prefs.edit();
             instance_prefs_editor.clear();
