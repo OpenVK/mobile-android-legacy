@@ -262,11 +262,16 @@ public class User implements Parcelable {
                         "profile_avatars");
                 break;
             case "high":
-                if (avatar_hsize_url.length() == 0) {
-                    avatar_hsize_url = avatar_msize_url;
+                if(avatar_hsize_url != null) {
+                    if (avatar_hsize_url.length() == 0) {
+                        avatar_hsize_url = avatar_msize_url;
+                    }
+                    downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
+                            "profile_avatars");
+                } else {
+                    downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
+                            "profile_avatars");
                 }
-                downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
-                        "profile_avatars");
                 break;
             case "original":
                 if (avatar_osize_url.length() == 0) {

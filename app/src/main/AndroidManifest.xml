@@ -127,7 +127,7 @@
 
         <activity
             android:name=".core.activities.intents.VideosIntentActivity"
-            android:label="@string/video"
+            android:label="@string/videos"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -149,6 +149,60 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/videos" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.activities.intents.PhotosIntentActivity"
+            android:label="@string/photo"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/photos" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/photos"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/photos" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.activities.intents.AudiosIntentActivity"
+            android:label="@string/photo"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/audios" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/audios"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/audios" />
             </intent-filter>
         </activity>
 

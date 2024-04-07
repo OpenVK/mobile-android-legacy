@@ -138,98 +138,6 @@ public class OvkAPIReceiver extends BroadcastReceiver {
 
         downloadManager.setInstance(((OvkApplication) activity
                 .getApplicationContext()).getCurrentInstance());
-        if (activity instanceof AuthActivity) {
-            assert method != null;
-            switch (method) {
-                case "Account.getProfileInfo":
-                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
-                    break;
-            }
-        } else if (activity instanceof NetworkFragmentActivity) {
-            NetworkFragmentActivity net_a = (NetworkFragmentActivity) activity;
-            downloadManager = net_a.ovk_api.dlman;
-            assert method != null;
-            if(activity instanceof AppActivity) {
-                AppActivity app_a = ((AppActivity) activity);
-                switch (method) {
-                    case "Messages.getLongPollServer":
-                        app_a.longPollServer = app_a.ovk_api.messages
-                                .parseLongPollServer(data.getString("response"));
-                        msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
-                        break;
-                }
-            } else if(activity instanceof NotesIntentActivity) {
-                if(method.equals("Notes.get")) {
-                    msg.what = HandlerMessages.NOTES_GET;
-                    net_a.ovk_api.notes.parse(data.getString("response"));
-                }
-            }
-        } else if (activity instanceof NetworkActivity) {
-            NetworkActivity net_a = (NetworkActivity) activity;
-            assert method != null;
-            if(activity instanceof ConversationActivity) {
-                ConversationActivity conv_a = ((ConversationActivity) activity);
-                switch (method) {
-                    case "Messages.getHistory":
-                        conv_a.history = conv_a.conversation.parseHistory(activity, data.getString("response"));
-                        msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
-                        break;
-                    case "Messages.send":
-                        msg.what = HandlerMessages.MESSAGES_SEND;
-                        break;
-                    case "Messages.delete":
-                        msg.what = HandlerMessages.MESSAGES_DELETE;
-                        break;
-                }
-            } else if(activity instanceof NewPostActivity) {
-                if(method.equals("Wall.post")) {
-                    msg.what = HandlerMessages.WALL_POST;
-                } else if(method.startsWith("Photos.get") && method.endsWith("Server")) {
-                    net_a.ovk_api.photos.parseUploadServer(data.getString("response"), method);
-                    msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
-                } else if(method.startsWith("Photos.save")) {
-                    msg.what = HandlerMessages.PHOTOS_SAVE;
-                    net_a.ovk_api.photos.parseOnePhoto(data.getString("response"));
-                }
-            }
-        } else if(activity instanceof GroupMembersActivity) {
-            GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
-            downloadManager = group_members_a.ovk_api.dlman;
-            assert method != null;
-            switch (method) {
-                case "Groups.getMembers":
-                    group_members_a.group.members = new ArrayList<>();
-                    group_members_a.group.parseMembers(data.getString("response"),
-                            downloadManager, true);
-                    msg.what = HandlerMessages.GROUP_MEMBERS;
-                    break;
-            }
-        } else if(activity instanceof PhotoAlbumActivity) {
-            PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);
-            downloadManager = album_a.ovk_api.dlman;
-            assert method != null;
-            switch (method) {
-                case "Photos.getAlbums":
-                    msg.what = HandlerMessages.PHOTOS_GETALBUMS;
-                    if (args != null && args.contains("offset")) {
-                        album_a.ovk_api.photos.parseAlbums(data.getString("response"),
-                                downloadManager, false);
-                    } else {
-                        assert where != null;
-                        album_a.ovk_api.photos.parseAlbums(data.getString("response"),
-                                downloadManager, true);
-                    }
-                    break;
-                case "Photos.get":
-                    msg.what = HandlerMessages.PHOTOS_GET;
-                    album_a.ovk_api.photos.parse(
-                            data.getString("response"),
-                            new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
-                            downloadManager
-                    );
-                    break;
-            }
-        }
         if(activity instanceof NetworkFragmentActivity || activity instanceof NetworkActivity) {
             OpenVKAPI ovk_api;
             if(activity instanceof NetworkActivity) {
@@ -283,6 +191,11 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 case "Likes.delete":
                     ovk_api.likes.parse(data.getString("response"));
                     msg.what = HandlerMessages.LIKES_DELETE;
+                    break;
+                case "Users.search":
+                    ovk_api.users.parseSearch(data.getString("response"),
+                            ovk_api.dlman);
+                    msg.what = HandlerMessages.USERS_SEARCH;
                     break;
                 case "Users.get":
                     ovk_api.users.parse(data.getString("response"));
@@ -381,14 +294,101 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             ovk_api.dlman);
                     msg.what = HandlerMessages.GROUPS_SEARCH;
                     break;
-                case "Users.search":
-                    ovk_api.users.parseSearch(data.getString("response"),
-                            ovk_api.dlman);
-                    msg.what = HandlerMessages.USERS_SEARCH;
-                    break;
                 case "Audio.getLyrics":
                     msg.what = HandlerMessages.AUDIOS_GET_LYRICS;
                     ovk_api.audios.parseLyrics(data.getString("response"));
+                    break;
+            }
+        }
+
+        if (activity instanceof AuthActivity) {
+            assert method != null;
+            switch (method) {
+                case "Account.getProfileInfo":
+                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
+                    break;
+            }
+        } else if (activity instanceof NetworkFragmentActivity) {
+            NetworkFragmentActivity net_a = (NetworkFragmentActivity) activity;
+            downloadManager = net_a.ovk_api.dlman;
+            assert method != null;
+            if(activity instanceof AppActivity) {
+                AppActivity app_a = ((AppActivity) activity);
+                switch (method) {
+                    case "Messages.getLongPollServer":
+                        app_a.longPollServer = app_a.ovk_api.messages
+                                .parseLongPollServer(data.getString("response"));
+                        msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
+                        break;
+                }
+            } else if(activity instanceof NotesIntentActivity) {
+                if(method.equals("Notes.get")) {
+                    msg.what = HandlerMessages.NOTES_GET;
+                    net_a.ovk_api.notes.parse(data.getString("response"));
+                }
+            }
+        } else if (activity instanceof NetworkActivity) {
+            NetworkActivity net_a = (NetworkActivity) activity;
+            assert method != null;
+            if(activity instanceof ConversationActivity) {
+                ConversationActivity conv_a = ((ConversationActivity) activity);
+                switch (method) {
+                    case "Messages.getHistory":
+                        conv_a.history = conv_a.conversation.parseHistory(activity, data.getString("response"));
+                        msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
+                        break;
+                    case "Messages.send":
+                        msg.what = HandlerMessages.MESSAGES_SEND;
+                        break;
+                    case "Messages.delete":
+                        msg.what = HandlerMessages.MESSAGES_DELETE;
+                        break;
+                }
+            } else if(activity instanceof NewPostActivity) {
+                if(method.equals("Wall.post")) {
+                    msg.what = HandlerMessages.WALL_POST;
+                } else if(method.startsWith("Photos.get") && method.endsWith("Server")) {
+                    net_a.ovk_api.photos.parseUploadServer(data.getString("response"), method);
+                    msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
+                } else if(method.startsWith("Photos.save")) {
+                    msg.what = HandlerMessages.PHOTOS_SAVE;
+                    net_a.ovk_api.photos.parseOnePhoto(data.getString("response"));
+                }
+            } else if(activity instanceof PhotoAlbumActivity) {
+                PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);
+                downloadManager = album_a.ovk_api.dlman;
+                switch (method) {
+                    case "Photos.getAlbums":
+                        msg.what = HandlerMessages.PHOTOS_GETALBUMS;
+                        if (args != null && args.contains("offset")) {
+                            album_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                    downloadManager, false);
+                        } else {
+                            assert where != null;
+                            album_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                    downloadManager, true);
+                        }
+                        break;
+                    case "Photos.get":
+                        msg.what = HandlerMessages.PHOTOS_GET;
+                        album_a.ovk_api.photos.parse(
+                                data.getString("response"),
+                                new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
+                                downloadManager
+                        );
+                        break;
+                }
+            }
+        } else if(activity instanceof GroupMembersActivity) {
+            GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
+            downloadManager = group_members_a.ovk_api.dlman;
+            assert method != null;
+            switch (method) {
+                case "Groups.getMembers":
+                    group_members_a.group.members = new ArrayList<>();
+                    group_members_a.group.parseMembers(data.getString("response"),
+                            downloadManager, true);
+                    msg.what = HandlerMessages.GROUP_MEMBERS;
                     break;
             }
         }

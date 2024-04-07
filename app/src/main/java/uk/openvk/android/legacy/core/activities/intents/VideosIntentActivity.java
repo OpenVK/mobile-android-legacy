@@ -128,13 +128,14 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
         ft = getSupportFragmentManager().beginTransaction();
         ft.show(videosFragment);
         ft.commit();
+        progressLayout.enableDarkTheme(true, 0);
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.profile));
+                    getActionBar().setTitle(getResources().getString(R.string.videos));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -166,7 +167,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
                     onBackPressed();
                 }
             });
-            actionBar.setTitle(getResources().getString(R.string.profile));
+            actionBar.setTitle(getResources().getString(R.string.videos));
             switch (global_prefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
