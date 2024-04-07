@@ -40,53 +40,10 @@
     <string name="menu_about">О приложении</string>
     <string name="instances_list_title">Список инстанций</string>
 
-    <string-array name="popup_menu_api_v8">
-        <item>Настройки</item>
-        <item>О приложении</item>
-        <item>Закрыть</item>
-    </string-array>
-
-    <string-array name="connection_error_reasons">
-        <item>Отсутствует подключение к Интернету</item>
-        <item>Сервер отправил некорректный ответ</item>
-        <item>Превышено время ожидания ответа</item>
-        <item>Обрыв защищенного соединения</item>
-        <item>Сбой инстанции или приложения</item>
-        <item>Инстанция недоступна</item>
-        <item>Неизвестная ошибка</item>
-    </string-array>
-
     <string name="invalid_password">Неверный пароль</string>
 
     <string name="load_more">Загрузить ещё</string>
-    <string-array name="months_short">
-        <item>янв</item>
-        <item>фев</item>
-        <item>мар</item>
-        <item>апр</item>
-        <item>мая</item>
-        <item>июн</item>
-        <item>июл</item>
-        <item>авг</item>
-        <item>сен</item>
-        <item>окт</item>
-        <item>ноя</item>
-        <item>дек</item>
-    </string-array>
-    <string-array name="months_full">
-        <item>января</item>
-        <item>февраля</item>
-        <item>марта</item>
-        <item>апреля</item>
-        <item>мая</item>
-        <item>июня</item>
-        <item>июля</item>
-        <item>августа</item>
-        <item>сентября</item>
-        <item>октября</item>
-        <item>ноября</item>
-        <item>декабря</item>
-    </string-array>
+
     <string name="today">сегодня</string>
     <string name="yesterday">вчера</string>
     <string name="today_at">сегодня в</string>
@@ -111,10 +68,6 @@
     <string name="app_version_s">Версия %1$s (%2$s)</string>
     <string name="vk_not_supported">Извините, но этот клиент несовместим с API ВКонтакте.</string>
 
-    <string-array name="like_menu">
-	    <item>Не нравится</item>
-	    <item>Рассказать друзьям</item>
-    </string-array>
     <string name="newsfeed">Новости</string>
     <string name="auth">Авторизация</string>
     <string name="wall_view">Запись на стене</string>
@@ -130,20 +83,6 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="refresh">Обновить</string>
-
-    <string-array name="photo_menu">
-	    <item>Сделать снимок</item>
-	    <item>Загрузить с телефона</item>
-    </string-array>
-    <string-array name="photo_menu2">
-	    <item>Сделать снимок</item>
-	    <item>Загрузить с телефона</item>
-	    <item>Не прикреплять</item>
-    </string-array>
-    <string-array name="photo_menu3">
-	    <item>Загрузить с телефона</item>
-	    <item>Не прикреплять</item>
-    </string-array>
 
     <string name="instance">Инстанция</string>
     <string name="mail">Электронная почта</string>
@@ -185,11 +124,7 @@
     <string name="sett_load_images">Загружать изображения</string>
     <string name="sett_load_images_summary">Отключение изображений значительно снизит количество передаваемых данных.</string>
     <string name="sett_flist_sort">Сортировка списка друзей</string>
-    <string-array name="sett_friends_order">
-    	<item>По имени</item>
-    	<item>По фамилии</item>
-    	<item>По популярности</item>
-    </string-array>
+
     <string name="sett_general">Общие</string>
     <string name="sett_notifications">Уведомления</string>
     <string name="sett_notify_sound">Звук</string>
@@ -250,25 +185,6 @@
     <string name="add_friend_already_sent">Заявка уже была отправлена. Повторно заявка отправлена не будет.</string>
     <string name="users_audio">Аудиозаписи %s</string>
 
-    <string-array name="profile_relation_m">
-    	<item>Не женат</item>
-    	<item>Есть подруга</item>
-    	<item>Помолвлен</item>
-    	<item>Женат</item>
-    	<item>Всё сложно</item>
-    	<item>В активном поиске</item>
-    	<item>Влюблён</item>
-    </string-array>
-    <string-array name="profile_relation_f">
-    	<item>Не замужем</item>
-    	<item>Есть друг</item>
-    	<item>Помолвлена</item>
-    	<item>Замужем</item>
-    	<item>Всё сложно</item>
-    	<item>В активном поиске</item>
-    	<item>Влюблена</item>
-    </string-array>
-
     <string name="online">Онлайн</string>
     <string name="search_results">Результаты поиска</string>
     <string name="audio_added">Аудиозапись добавлена на Вашу страницу</string>
@@ -282,10 +198,7 @@
     <string name="menu_exit">Закрыть</string>
 
     <string name="post_options">Опции записи</string>
-    <string-array name="post_options">
-    	<item>Только для друзей</item>
-    	<item>Экспорт в Telegram</item>
-    </string-array>
+
     <string name="photo_save_ok">Фотография сохранена в память устройства</string>
 
     <string name="share_wall">OpenVK - стена</string>
@@ -322,20 +235,6 @@
     <string name="nothing_found">Ничего не найдено</string>
     <string name="user_photos_title">Фотографии с %s</string>
 
-    <string-array name="sett_update_interval_items">
-    	<item>30 секунд</item>
-    	<item>45 секунд</item>
-    	<item>1 минута</item>
-    	<item>2 минуты</item>
-    	<item>3 минуты</item>
-    	<item>5 минут</item>
-    	<item>10 минут</item>
-    	<item>15 минут</item>
-    	<item>30 минут</item>
-    	<item>1 час</item>
-    	<item>2 часа</item>
-    	<item>Отключить</item>
-    </string-array>
     <string name="sett_update_interval">Интервал обновления</string>
 
     <string name="contact_profile_subtitle">Открыть профиль</string>
@@ -344,19 +243,6 @@
     <string name="create_album_title">Название</string>
     <string name="create_album_description">Описание</string>
     <string name="create_album_privacy">Доступ:</string>
-    <string-array name="album_privacy_options">
-    	<item>Все пользователи</item>
-    	<item>Только друзья</item>
-    	<item>Друзья друзей</item>
-    	<item>Только я</item>
-    	<item>Расширенные настройки</item>
-    </string-array>
-    <string-array name="album_displayable_privacy_options">
-    	<item>Все пользователи</item>
-    	<item>Только друзья</item>
-    	<item>Друзья друзей</item>
-    	<item>Только я</item>
-    </string-array>
 
     <string name="welcome_next">Далее</string>
 
@@ -423,43 +309,12 @@
     <string name="place">Место</string>
     <string name="select_geo_point">Выберите точку</string>
     <string name="select">Выбрать</string>
-    <string-array name="message_attach_options">
-        <item>Фотографию</item>
-        <item>Аудиозапись</item>
-        <item>Видеозапись</item>
-        <item>Документ</item>
-        <item>Карту</item>
-    </string-array>
-    <string-array name="message_attach_options_noplace">
-        <item>Фотографию</item>
-        <item>Аудиозапись</item>
-        <item>Видеозапись</item>
-        <item>Документ</item>
-    </string-array>
     <string name="notification">Уведомление</string>
     <string name="view">Показать</string>
     <string name="close">Закрыть</string>
     <string name="audio_saved">Сохранённые</string>
 
     <string name="error_loading_poll">Ошибка при загрузке опроса: %s</string>
-
-	<string-array name="profile_counters">
-        <item>Фотографии</item>
-        <item>Фотографии с %s</item>
-        <item>Альбомы</item>
-        <item>Аудиозаписи</item>
-        <item>Видеозаписи</item>
-        <item>Видеозаписи с %s</item>
-        <item>Друзья</item>
-        <item>Общие друзья</item>
-        <item>Сообщества</item>
-        <item>Заметки</item>
-        <item>Обсуждения</item>
-        <item>Участники</item>
-        <item>Документы</item>
-        <item>w</item>
-        <item>Подписчики</item>
-    </string-array>
 
 	<string name="group_s">сообщества</string>
 	<string name="video_select_quality">Выберите качество</string>
@@ -489,11 +344,6 @@
 	<string name="sett_update_on_open">Обновлять при открытии</string>
 	<string name="sett_update_on_open_summary">Обновлять новости при запуске приложения</string>
 
-	<string-array name="wall_attach_options">
-    	<item>Аудиозапись</item>
-    	<item>Видеозапись</item>
-    	<item>Документ</item>
-    </string-array>
     <string name="attach">Добавить</string>
     <string name="docs">Документы</string>
     <string name="no_docs">Нет документов</string>
@@ -503,75 +353,6 @@
 	<string name="ntf_to_video">к видеозаписи</string>
 	<string name="ntf_to_comment">на комментарий</string>
 	<string name="ntf_to_topic">к обсуждению</string>
-
-	<string-array name="ntf_like_m">
-		<item>оценил запись</item>
-		<item>оценил фотографию</item>
-		<item>оценил видеозапись</item>
-		<item>оценил комментарий</item>
-	</string-array>
-
-	<string-array name="ntf_like_f">
-		<item>оценила запись</item>
-		<item>оценила фотографию</item>
-		<item>оценила видеозапись</item>
-		<item>оценила комментарий</item>
-	</string-array>
-
-	<string-array name="ntf_like_x">
-		<item>оценили запись</item>
-		<item>оценили фотографию</item>
-		<item>оценили видеозапись</item>
-		<item>оценили комментарий</item>
-	</string-array>
-
-	<string-array name="ntf_rt_m">
-		<item>поделился записью</item>
-		<item>поделился фотографией</item>
-		<item>поделился видеозаписью</item>
-		<item>поделился комментарием</item>
-	</string-array>
-
-	<string-array name="ntf_rt_f">
-		<item>поделилась записью</item>
-		<item>поделилась фотографией</item>
-		<item>поделилась видеозаписью</item>
-		<item>поделилась комментарием</item>
-	</string-array>
-
-	<string-array name="ntf_rt_x">
-		<item>поделились записью</item>
-		<item>поделились фотографией</item>
-		<item>поделились видеозаписью</item>
-		<item>поделились комментарием</item>
-	</string-array>
-
-	<string-array name="ntf_follow_m">
-		<item>подписался на Ваши обновления</item>
-	</string-array>
-	<string-array name="ntf_follow_f">
-		<item>подписалась на Ваши обновления</item>
-	</string-array>
-	<string-array name="ntf_follow_x">
-		<item>подписались на Ваши обновления</item>
-	</string-array>
-
-	<string-array name="ntf_accepted_m">
-		<item>принял Вашу заявку в друзья</item>
-	</string-array>
-	<string-array name="ntf_accepted_f">
-		<item>приняла Вашу заявку в друзья</item>
-	</string-array>
-	<string-array name="ntf_accepted_x">
-		<item>приняли Вашу заявку в друзья</item>
-	</string-array>
-
-    <string name="ntf_two_users_c">и</string>
-    <string name="replies">Ответы</string>
-    <string-array name="replies_options">
-    	<item>Мне нравится</item>
-    	<item>Ответить</item>
-    </string-array>
 
     <string name="all_videos">Все видеозаписи</string>
     <string name="like">Мне нравится</string>
@@ -592,14 +373,8 @@
 	<string name="join_page">Подписаться</string>
 	<string name="leave_closed_group_confirm">Это закрытая группа. Если Вы из нее выйдете, попасть обратно, возможно, будет непросто. Выйти из группы?</string>
 
-	<string-array name="community_types">
-    	<item>Встречи</item>
-    	<item>Группы</item>
-    	<item>Страницы</item>
-    </string-array>
     <string name="no_groups">Нет сообществ</string>
     <string name="no_events">Нет встреч</string>
-
 
 	<string name="chat_typing">%s набирает сообщение..</string>
 	<string name="chat_typing_multiple">%s набирают сообщение..</string>
@@ -632,12 +407,6 @@
 	<string name="sett_cache">Кэш изображений</string>
     <string name="sett_cache_quality">Качество</string>
     <string name="sett_forced_caching">Принудительное кэширование</string>
-    <string-array name="sett_cache_quality_array">
-        <item>Низкое</item>
-        <item>Среднее</item>
-        <item>Высокое</item>
-        <item>Исходное</item>
-    </string-array>
     <string name="sett_cache_quality_alt">Качество изображений</string>
     <string name="sett_cache_quality_lowres">Изображения могут загружаться
         как можно быстрее в условиях низкой скорости интернета.</string>
@@ -648,10 +417,6 @@
 	<string name="sett_clear_img_cache">Очистить</string>
     <string name="img_cache_cleared">Кэш очищен!</string>
 	<string name="sett_cache_location">Расположение</string>
-	<string-array name="sett_img_cache_location">
-    	<item>Память устройства</item>
-    	<item>SD-карта</item>
-    </string-array>
 	<string name="attach_wall_post">Запись со стены</string>
 
 	<string name="topic_info_fixed">Тема закреплена</string>
@@ -679,24 +444,6 @@
 	<string name="birthdays_title">Дни рождения</string>
 	<string name="tomorrow">завтра</string>
 	<string name="sett_bdays">Напоминания о днях рожд.</string>
-	<string-array name="profile_relation_pm">
-    	<item>Не женат</item>
-    	<item>Встречается с %s</item>
-    	<item>Помолвлен с %s</item>
-    	<item>Женат на %s</item>
-    	<item>Всё сложно с %s</item>
-    	<item>В активном поиске</item>
-    	<item>Влюблён в %s</item>
-    </string-array>
-    <string-array name="profile_relation_pf">
-    	<item>Не замужем</item>
-    	<item>Встречается с %s</item>
-    	<item>Помолвлена с %s</item>
-    	<item>Замужем за %s</item>
-    	<item>Всё сложно с %s</item>
-    	<item>В активном поиске</item>
-    	<item>Влюблена в %s</item>
-    </string-array>
 
 	<string name="group_descr">Описание</string>
 	<string name="group_site">Веб-сайт</string>
@@ -716,26 +463,6 @@
 
 	<string name="albums">Альбомы</string>
 
-	<string-array name="leftmenu">
-    	<item>Друзья</item>
-    	<item>Фотографии</item>
-    	<item>Видеозаписи</item>
-        <item>Аудиозаписи</item>
-    	<item>Сообщения</item>
-    	<item>Группы</item>
-        <item>Заметки</item>
-    	<item>Новости</item>
-    	<item>Ответы</item>
-    	<item>Закладки</item>
-    	<item>Настройки</item>
-	</string-array>
-
-    <string-array name="leftmenu_account">
-        <item>Сменить аккаунт</item>
-        <item>Сменить фотографию</item>
-        <item>Выйти</item>
-    </string-array>
-
 	<string name="link_not_supported">Открытие этой ссылки не поддерживается в приложении</string>
 	<string name="send_to_friend">Отправить другу</string>
 	<string name="delete_msgs_title">Удалить сообщения</string>
@@ -743,13 +470,6 @@
 	<string name="menu">Меню</string>
 	<string name="reminder">Напоминание</string>
 	<string name="bookmarks">Закладки</string>
-	<string-array name="fave_tabs">
-    	<item>Люди</item>
-    	<item>Записи</item>
-    	<item>Ссылки</item>
-    	<item>Фотографии</item>
-    	<item>Видео</item>
-	</string-array>
 	<string name="sett_clear_audio_cache">Очистить</string>
 	<string name="sett_audio_cache">Кэш аудиозаписей</string>
 	<string name="clear_audio_cache_confirm">Вы действительно хотите удалить все сохранённые аудиозаписи?</string>
@@ -846,15 +566,6 @@
 
 	<string name="retry">Повторить попытку</string>
 	<string name="delete_audio_confirm">Вы действительно хотите удалить эту аудиозапись со своей страницы?</string>
-	<string-array name="video_search_quality">
-		<item>Любое качество</item>
-		<item>Только HD</item>
-	</string-array>
-	<string-array name="video_search_length">
-		<item>Любая длительность</item>
-		<item>Короткие</item>
-		<item>Длинные</item>
-	</string-array>
 	<string name="groups_past_events">Прошедшие встречи</string>
 	<string name="groups_of_user">Сообщества %s</string>
 	<string name="groups_mgmt">Управление</string>
@@ -890,12 +601,6 @@
 	<string name="off">Выкл</string>
 	<string name="chat_sound">Звук</string>
 	<string name="chat_dnd">Не беспокоить</string>
-	<string-array name="dnd_options">
-	    <item>1 час</item>
-	    <item>24 часа</item>
-	    <item>7 дней</item>
-	    <item>Навсегда</item>
-	</string-array>
 	<string name="dnd_cancel">Включить уведомления?</string>
 	<string name="chat_leave_confirm">Вы действительно хотите покинуть эту беседу?</string>
 	<string name="attachments_limit">Можно добавить не более %d вложений.</string>
@@ -921,42 +626,7 @@
 	<string name="personal_alcohol">Отношение к алкоголю</string>
 	<string name="personal_inspiration">Источники вдохновения</string>
 	<string name="personal_langs">Языки</string>
-	<string-array name="personal_politics_options">
-	    <item>Коммунистические</item>
-	    <item>Социалистические</item>
-	    <item>Умеренные</item>
-	    <item>Либеральные</item>
-	    <item>Консервативные</item>
-	    <item>Монархические</item>
-	    <item>Ультраконсервативные</item>
-	    <item>Индифферентные</item>
-	    <item>Либертарианские</item>
-	</string-array>
-	<string-array name="personal_life_options">
-	    <item>Семья и дети</item>
-	    <item>Карьера и деньги</item>
-	    <item>Развлечения и отдых</item>
-	    <item>Наука и исследования</item>
-	    <item>Совершенствование мира</item>
-	    <item>Саморазвитие</item>
-	    <item>Красота и искусство</item>
-	    <item>Слава и влияние</item>
-	</string-array>
-	<string-array name="personal_people_options">
-	    <item>Ум и креативность</item>
-	    <item>Доброта и честность</item>
-	    <item>Красота и здоровье</item>
-	    <item>Власть и богатство</item>
-	    <item>Смелость и упорство</item>
-	    <item>Юмор и жизнелюбие</item>
-	</string-array>
-	<string-array name="personal_views_options">
-	    <item>Резко негативное</item>
-	    <item>Негативное</item>
-	    <item>Компромиссное</item>
-	    <item>Нейтральное</item>
-	    <item>Положительное</item>
-	</string-array>
+
 	<string name="add_video_existing">Выбрать существующее</string>
 	<string name="add_video_new">Записать видео</string>
 	<string name="profile_hometown">Родной город</string>
@@ -1060,10 +730,7 @@
     <string name="instance_admins_count">%d администраторов</string>
     <string name="instance_links">Ссылки:</string>
     <string name="connection_error">Ошибка подключения</string>
-    <string-array name="newsfeed_actionbar_items">
-        <item>Подписки</item>
-        <item>Все новости</item>
-    </string-array>
+
     <string name="err_picture_not_enough_memory_text">Недостаточно памяти для обработки изображений. Закройте все неиспользуемые приложения и повторите попытку.</string>
     <string name="reason">Причина: %s</string>
     <string name="official_state">Официальная инстанция OpenVK</string>

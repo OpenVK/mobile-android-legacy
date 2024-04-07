@@ -41,59 +41,10 @@
 	<string name="menu_about">About</string>
 	<string name="instances_list_title">Instances list</string>
 
-	<string-array name="popup_menu_api_v8">
-		<item>Settings</item>
-		<item>About</item>
-		<item>Quit</item>
-	</string-array>
-
-	<string-array name="proxy_type" translable="false">
-		<item>HTTP</item>
-		<item>HTTPS</item>
-		<item>SelfEco Relay</item>
-	</string-array>
-
-    <string-array name="connection_error_reasons">
-        <item>No internet connection</item>
-        <item>Server sent an invalid response</item>
-        <item>Response timed out</item>
-		<item>Secure connection failure</item>
-        <item>Instance/app failure</item>
-        <item>Instance unavailable</item>
-        <item>Unknown error</item>
-    </string-array>
-
     <string name="invalid_password">Invalid password</string>
 
 	<string name="load_more">Load more</string>
-	<string-array name="months_short">
-		<item>Jan</item>
-		<item>Feb</item>
-		<item>Mar</item>
-		<item>Apr</item>
-		<item>May</item>
-		<item>Jun</item>
-		<item>Jul</item>
-		<item>Aug</item>
-		<item>Sep</item>
-		<item>Oct</item>
-		<item>Nov</item>
-		<item>Dec</item>
-	</string-array>
-	<string-array name="months_full">
-		<item>January</item>
-		<item>February</item>
-		<item>March</item>
-		<item>April</item>
-		<item>May</item>
-		<item>June</item>
-		<item>July</item>
-		<item>August</item>
-		<item>September</item>
-		<item>October</item>
-		<item>November</item>
-		<item>December</item>
-	</string-array>
+
 	<string name="today">Today</string>
 	<string name="yesterday">Yesterday</string>
 	<string name="today_at">Today at</string>
@@ -116,10 +67,6 @@
 	<string name="app_version_text">Version: %1$s\r\nCommit: %2$s</string>
 	<string name="app_version_s">Version %1$s (%2$s)</string>
 
-	<string-array name="like_menu">
-		<item>Unlike</item>
-		<item>Share with friends</item>
-	</string-array>
 	<string name="newsfeed">News</string>
 	<string name="auth">Authorization</string>
 	<string name="wall_view">Post</string>
@@ -133,42 +80,6 @@
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 	<string name="refresh">Refresh</string>
-	<string-array name="photo_menu">
-		<item>Take a photos</item>
-		<item>Choose from album</item>
-	</string-array>
-	<string-array name="photo_menu2">
-		<item>Take a photos</item>
-		<item>Select from gallery</item>
-		<item>Remove photos</item>
-	</string-array>
-	<string-array name="photo_menu3">
-		<item>Select from gallery</item>
-		<item>Remove photo</item>
-	</string-array>
-	<string-array name="place_titles">
-		<item>Home</item>
-		<item>Work</item>
-		<item>Restaurant</item>
-		<item>Club</item>
-		<item>Movie Theater</item>
-		<item>Bar</item>
-		<item>Entertainment</item>
-		<item>Store</item>
-		<item>Airport</item>
-		<item>Train Station</item>
-		<item>Hotel</item>
-		<item>Cafe</item>
-		<item>Fast Food Restaurant</item>
-		<item>Pizzeria</item>
-		<item>Swimming Pool</item>
-		<item>Gym</item>
-		<item>Educational Institution</item>
-		<item>Museum</item>
-		<item>Theater</item>
-		<item>Park</item>
-		<item>Other</item>
-	</string-array>
 
 	<string name="instance">Instance</string>
 	<string name="mail">E-mail</string>
@@ -210,11 +121,7 @@
 	<string name="sett_load_images">Load images</string>
 	<string name="sett_load_images_summary">Disabling images significantly decreases amount of transferred data.</string>
 	<string name="sett_flist_sort">Friend list order</string>
-	<string-array name="sett_friends_order">
-		<item>By first name</item>
-		<item>By last name</item>
-		<item>By popularity</item>
-	</string-array>
+
 	<string name="sett_general">General</string>
 	<string name="sett_notifications">Notifications</string>
 	<string name="sett_notify_sound">Sound</string>
@@ -233,20 +140,6 @@
 	<string name="sett_proxy_address">Proxy server address</string>
 	<string name="sett_proxy_address_alt">Address:</string>
 	<string name="sett_proxy_type">Type:</string>
-
-	<string-array name="date_ago_hrs">
-		<item>an hour ago</item>
-		<item>two hours ago</item>
-		<item>three hours ago</item>
-	</string-array>
-	<string-array name="date_ago_mins">
-		<item>one minute ago</item>
-		<item>%d minutes ago</item>
-	</string-array>
-	<string-array name="date_ago_secs">
-		<item>one second ago</item>
-		<item>%d seconds ago</item>
-	</string-array>
 	<string name="date_ago_now">Just now</string>
 	<string name="message">Message</string>
 	<string name="fsize_b">bytes</string>
@@ -260,10 +153,6 @@
 	<string name="msg_error">Error sending message</string>
 	<string name="comments">Comments</string>
 	<string name="no_comments">There are no comments, but you can send your own.</string>
-	<string-array name="ncomments_last">
-		<item>One comment</item>
-		<item>Last out of %d comments</item>
-	</string-array>
 	<string name="no_news">No news</string>
 	<string name="no_notes">No notes</string>
 	<string name="no_messages">No messages</string>
@@ -290,24 +179,6 @@
 	<string name="add_friend_accepted">Request accepted</string>
 	<string name="add_friend_already_sent">The request has already been sent.</string>
 	<string name="users_audio">%s\'s music</string>
-	<string-array name="profile_relation_m">
-		<item>Single</item>
-		<item>In a relationship</item>
-		<item>Engaged</item>
-		<item>Married</item>
-		<item>It\'s complicated</item>
-		<item>Actively searching</item>
-		<item>In love</item>
-	</string-array>
-	<string-array name="profile_relation_f">
-		<item>Single</item>
-		<item>In a relationship</item>
-		<item>Engaged</item>
-		<item>Married</item>
-		<item>It\'s complicated</item>
-		<item>Actively searching</item>
-		<item>In love</item>
-	</string-array>
 	<string name="online">Online</string>
 	<string name="search_results">Search results</string>
 	<string name="audio_added">The audio file has been added to your page</string>
@@ -320,11 +191,6 @@
     <string name="change_account">Change account</string>
 	<string name="menu_exit">Quit</string>
 	<string name="post_options">Post settings</string>
-	<string-array name="post_options">
-		<item>Friends only</item>
-		<item>Export to Telegram</item>
-		<!--item>Add my location</item-->
-	</string-array>
 	<string name="photo_save_ok">The photo has been saved to the Device Memory</string>
 	<string name="share_wall">OpenVK – Wall</string>
 	<string name="share_album">OpenVK – Album</string>
@@ -351,45 +217,14 @@
 	<string name="msg_out">Outbox</string>
 	<string name="msg_in">Inbox</string>
 	<string name="widget_audio">Music</string>
-	<string-array name="album_numphotos">
-		<item>%d photo</item>
-		<item>%d photos</item>
-	</string-array>
 	<string name="nothing_found">Nothing was found</string>
 	<string name="user_photos_title">Photos of %s</string>
-	<string-array name="sett_update_interval_items">
-		<item>30 seconds</item>
-		<item>45 seconds</item>
-		<item>One minute</item>
-		<item>2 minutes</item>
-		<item>3 minutes</item>
-		<item>5 minutes</item>
-		<item>10 minutes</item>
-		<item>15 minutes</item>
-		<item>30 minutes</item>
-		<item>One hour</item>
-		<item>Two hours</item>
-		<item>Disable</item>
-	</string-array>
 	<string name="sett_update_interval">Update interval</string>
-        <string name="contact_profile_subtitle">View profile</string>
+	<string name="contact_profile_subtitle">View profile</string>
 	<string name="create_album">Create an album</string>
 	<string name="create_album_title">Title</string>
 	<string name="create_album_description">Description</string>
 	<string name="create_album_privacy">Access:</string>
-	<string-array name="album_privacy_options">
-		<item>All users</item>
-		<item>Friends only</item>
-		<item>Friends and friends of friends</item>
-		<item>Only me</item>
-		<item>Advanced settings</item>
-	</string-array>
-	<string-array name="album_displayable_privacy_options">
-		<item>All users</item>
-		<item>Friends only</item>
-		<item>Friends and friends of friends</item>
-		<item>Only me</item>
-	</string-array>
 	<string name="welcome_next">Next</string>
 	<string name="set_default_account">Use as main account</string>
 	<string name="welcome_title3">Contacts sync</string>
@@ -426,10 +261,6 @@
 	<string name="friends_add">Add friend</string>
     <string name="friends_decline">Hide</string>
     <string name="sett_ringtone">Notification tone</string>
-    <string-array name="num_mutual_friends_req">
-        <item>One mutual friend</item>
-        <item>%d mutual friends</item>
-    </string-array>
     <string name="friend_req_accepted">Request accepted</string>
     <string name="friend_req_declined">Request declined</string>
     <string name="friend_requests">Requests</string>
@@ -460,19 +291,6 @@
     <string name="place">Map</string>
     <string name="select_geo_point">Choose location</string>
     <string name="select">Select</string>
-    <string-array name="message_attach_options">
-        <item>Photo</item>
-        <item>Audio file</item>
-        <item>Video</item>
-        <item>Document</item>
-        <item>Map</item>
-    </string-array>
-    <string-array name="message_attach_options_noplace">
-        <item>Photo</item>
-        <item>Audio file</item>
-        <item>Video</item>
-        <item>Document</item>
-    </string-array>
     <string name="notification">Notification</string>
     <string name="view">View</string>
     <string name="close">Close</string>
@@ -480,24 +298,6 @@
 
 
     <string name="error_loading_poll">Error loading poll: %s</string>
-
-    <string-array name="profile_counters">
-        <item>Photos</item>
-        <item>Photos of %s</item>
-        <item>Albums</item>
-        <item>Audio files</item>
-        <item>Videos</item>
-        <item>Videos of %s</item>
-        <item>Friends</item>
-        <item>Mutual friends</item>
-        <item>Communities</item>
-        <item>Notes</item>
-        <item>Topics</item>
-        <item>Members</item>
-        <item>Documents</item>
-        <item>News</item>
-        <item>Followers</item>
-    </string-array>
 
 	<string name="group_s">Group</string>
 	<string name="video_select_quality">Select quality</string>
@@ -515,10 +315,6 @@
 	<string name="video_err_os">Android 2.3 or higher is required in order to view this video.</string>
 	<string name="video_err_decode">Your device can not play this video. Try selecting lower quality.</string>
 
-	<string-array name="video_views">
-    	<item>%d view</item>
-    	<item>%d views</item>
-    </string-array>
     <string name="page_deleted">This profile was deleted or banned. Information on this profile is unavailable.</string>
 	<string name="page_blacklist">Access denied</string>
 	<string name="sett_push">Push notifications</string>
@@ -531,11 +327,6 @@
 	<string name="sett_update_on_open">Refresh on open</string>
 	<string name="sett_update_on_open_summary">Refresh the news feed when you open application</string>
 
-	<string-array name="wall_attach_options">
-    	<item>Audio</item>
-    	<item>Video</item>
-    	<item>Document</item>
-    </string-array>
     <string name="attach">Add</string>
     <string name="docs">Documents</string>
     <string name="no_docs">No documents</string>
@@ -546,94 +337,9 @@
 	<string name="ntf_to_comment">to comment</string>
 	<string name="ntf_to_topic">in topic</string>
 
-	<string-array name="ntf_like_m">
-		<item>liked a post</item>
-		<item>liked a photo</item>
-		<item>liked a video</item>
-		<item>liked a comment</item>
-	</string-array>
-
-	<string-array name="ntf_like_f">
-		<item>liked a post</item>
-		<item>liked a photos</item>
-		<item>liked a video</item>
-		<item>liked a comment</item>
-	</string-array>
-
-	<string-array name="ntf_like_x">
-		<item>liked a post</item>
-		<item>liked a photo</item>
-		<item>liked a video</item>
-		<item>liked a comment</item>
-	</string-array>
-
-	<string-array name="ntf_rt_m">
-		<item>shared a post</item>
-		<item>shared a photo</item>
-		<item>shared a video</item>
-		<item>shared a comment</item>
-	</string-array>
-
-	<string-array name="ntf_rt_f">
-		<item>shared a post</item>
-		<item>shared a photos</item>
-		<item>shared a video</item>
-		<item>shared a comment</item>
-	</string-array>
-
-	<string-array name="ntf_rt_x">
-		<item>shared a post</item>
-		<item>shared a photos</item>
-		<item>shared a video</item>
-		<item>shared a comment</item>
-	</string-array>
-
-	<string-array name="ntf_follow_m">
-		<item>followed you</item>
-	</string-array>
-	<string-array name="ntf_follow_f">
-		<item>followed you</item>
-	</string-array>
-	<string-array name="ntf_follow_x">
-		<item>followed you</item>
-	</string-array>
-
-	<string-array name="ntf_accepted_m">
-		<item>accepted your friend request</item>
-	</string-array>
-	<string-array name="ntf_accepted_f">
-		<item>accepted your friend request</item>
-	</string-array>
-	<string-array name="ntf_accepted_x">
-		<item>accepted your friend request</item>
-	</string-array>
-
-	<string-array name="ntf_x_more_users">
-    	<item>and %d other</item>
-    	<item>and %d others</item>
-    </string-array>
     <string name="ntf_two_users_c">and</string>
     <string name="replies">Replies</string>
-    <string-array name="replies_options">
-    	<item>Like</item>
-    	<item>Reply</item>
-    </string-array>
-    <string-array name="news_added_photo_m">
-    	<item>added a photo</item>
-    	<item>added %d photos</item>
-    </string-array>
-    <string-array name="news_added_photo_f">
-    	<item>added a photo</item>
-    	<item>added %d photos</item>
-    </string-array>
-    <string-array name="news_tagged_photo_m">
-    	<item>was tagged in a photo</item>
-    	<item>was tagged in %d photo</item>
-    </string-array>
-    <string-array name="news_tagged_photo_f">
-    	<item>was tagged in a photo</item>
-    	<item>was tagged in %d photos</item>
-    </string-array>
+
     <string name="all_videos">All videos</string>
     <string name="like">Like</string>
     <string name="unlike">Unlike</string>
@@ -653,11 +359,6 @@
 	<string name="join_page">Subscribe</string>
 	<string name="leave_closed_group_confirm">You are about to leave a closed community. It may not be easy to come back. Leave community?</string>
 
-	<string-array name="community_types">
-    	<item>Events</item>
-    	<item>Groups</item>
-    	<item>Pages</item>
-    </string-array>
     <string name="no_groups">No communities</string>
     <string name="no_events">No events</string>
 
@@ -669,10 +370,6 @@
 	<string name="wall_comment_repost"><font color="#aaaaaa">Comment to </font><a href="vklink://view/?http://vk.com/wall%1$d_%2$d">post</a></string>
 	<string name="wall_post_reply">In reply to post</string>
 	<string name="topics">Topics</string>
-	<string-array name="topic_posts">
-    	<item>%d post</item>
-    	<item>%d posts</item>
-    </string-array>
     <string name="search_in_msgs1">Search </string>
     <string name="search_in_msgs2"> in messages</string>
 
@@ -696,12 +393,6 @@
 	<string name="sett_cache">Image cache</string>
 	<string name="sett_forced_caching">Forced caching</string>
 	<string name="sett_cache_quality">Quality</string>
-    <string-array name="sett_cache_quality_array">
-        <item>Low</item>
-        <item>Medium</item>
-        <item>High</item>
-        <item>Original</item>
-    </string-array>
     <string name="sett_cache_quality_alt">Image Quality</string>
     <string name="sett_cache_quality_lowres">Images can be loaded
          as soon as possible in conditions of low Internet speed.</string>
@@ -714,18 +405,12 @@
 	<string name="sett_clear_img_cache">Clear</string>
 	<string name="img_cache_cleared">Cache cleared!</string>
 	<string name="sett_cache_location">Location</string>
-	<string-array name="sett_img_cache_location">
-    	<item>Device memory</item>
-    	<item>SD card</item>
-    </string-array>
 	<string name="chat_members">Chat members</string>
 	<string name="attach_wall_post">Wall post</string>
 
 	<string name="topic_info_fixed">Topic is locked</string>
 	<string name="topic_info_closed">Topic is closed</string>
 	<string name="topic_info_fixed_closed">Topic is locked and closed</string>
-
-
 
 	<string name="sett_advanced">Advanced settings</string>
 	<string name="sett_big_images_mobile">Big photos on mobile network</string>
@@ -747,31 +432,8 @@
 	<string name="birthday_today_short">%s\'s birthday</string>
 	<string name="birthdays_title">Birthdays</string>
 
-	<string-array name="birthday_age">
-    	<item>%d year</item>
-    	<item>%d years</item>
-    </string-array>
 	<string name="tomorrow">tomorrow</string>
 	<string name="sett_bdays">Birthday notifications</string>
-
-	<string-array name="profile_relation_pm">
-    	<item>Single</item>
-    	<item>In a relationship with %s</item>
-    	<item>Engaged with %s</item>
-    	<item>Married with %s</item>
-    	<item>It\'s complicated with %s</item>
-    	<item>Actively searching</item>
-    	<item>In love with %s</item>
-    </string-array>
-    <string-array name="profile_relation_pf">
-    	<item>Single</item>
-    	<item>In a relationship with %s</item>
-    	<item>Engaged with %s</item>
-    	<item>Married with %s</item>
-    	<item>It\'s complicated with %s</item>
-    	<item>Actively searching</item>
-    	<item>In love with %s</item>
-    </string-array>
 
 	<string name="group_descr">Description</string>
 	<string name="group_site">Website</string>
@@ -792,26 +454,6 @@
 
 	<string name="albums">Albums</string>
 
-	<string-array name="leftmenu">
-    	<item>Friends</item>
-    	<item>Photos</item>
-    	<item>Videos</item>
-		<item>Music</item>
-    	<item>Messages</item>
-    	<item>Communities</item>
-		<item>Notes</item>
-    	<item>News</item>
-    	<item>Feedback</item>
-    	<item>Bookmarks</item>
-    	<item>Settings</item>
-	</string-array>
-
-	<string-array name="leftmenu_account">
-		<item>Change account</item>
-		<item>Change profile photo</item>
-		<item>Log out</item>
-	</string-array>
-
 	<string name="link_not_supported">This link is not supported in the app</string>
 	<string name="send_to_friend">Share with friend</string>
 	<string name="delete_msgs_title">Delete messages</string>
@@ -819,13 +461,7 @@
 	<string name="menu">Menu</string>
 	<string name="reminder">Reminder</string>
 	<string name="bookmarks">Bookmarks</string>
-	<string-array name="fave_tabs">
-    	<item>People</item>
-    	<item>Posts</item>
-    	<item>Links</item>
-    	<item>Photos</item>
-    	<item>Videos</item>
-	</string-array>
+
     <string name="sett_clear_audio_cache">Clear</string>
 	<string name="sett_audio_cache">Music cache</string>
 	<string name="clear_audio_cache_confirm">Are you sure you want to delete all saved audio files?</string>
@@ -903,11 +539,6 @@
 	<string name="profile_friend_cancel">Decline request</string>
 	<string name="profile_add_post">Post to wall</string>
 
-	<string-array name="profile_friends">
-	    <item>friend</item>
-	    <item>friends</item>
-		<item>friends</item>
-	</string-array>
 	<string name="group_event_join">I\'ll be there</string>
 	<string name="group_event_join_unsure">I may attend</string>
 	<string name="copy_link">Copy link</string>
@@ -915,11 +546,7 @@
 	<string name="link_copied">Link has been copied to the clipboard</string>
 	<string name="friends_of_user">%s\'s friends</string>
 	<string name="invalid_session">The session is invalid. Please login again.</string>
-	<string-array name="friends_mutual">
-	    <item>%d mutual</item>
-	    <item>%d mutual</item>
-		<item>%d mutual</item>
-	</string-array>
+
 	<string name="profile_inactive_banned">This profile has been temporarily suspended due to security concerns.</string>
 	<string name="profile_inactive_deleted">This user deleted their page. Information unavailable.</string>
     <string name="profile_no_info">There is no information for this profile</string>
@@ -931,15 +558,6 @@
 	<string name="selected_n">%d selected</string>
 	<string name="retry">Retry</string>
 	<string name="delete_audio_confirm">Are you sure you want to delete this audio file from your profile?</string>
-	<string-array name="video_search_quality">
-		<item>Any quality</item>
-		<item>Only HD</item>
-	</string-array>
-	<string-array name="video_search_length">
-		<item>Any length</item>
-		<item>Short</item>
-		<item>Long</item>
-	</string-array>
 	<string name="groups_past_events">Past events</string>
 	<string name="groups_of_user">%s\'s communities</string>
 	<string name="groups_mgmt">Management</string>
@@ -974,12 +592,7 @@
 	<string name="off">Off</string>
 	<string name="chat_sound">Sound</string>
 	<string name="chat_dnd">Do not disturb</string>
-	<string-array name="dnd_options">
-	    <item>1 hour</item>
-	    <item>24 hours</item>
-	    <item>7 days</item>
-	    <item>Forever</item>
-	</string-array>
+
 	<string name="dnd_cancel">Enable notifications?</string>
 	<string name="chat_leave_confirm">Are you sure you want to leave this conversation?</string>
 	<string name="attachments_limit">You can add no more than %d attachments.</string>
@@ -1006,42 +619,7 @@
 	<string name="personal_alcohol">Views on alcohol</string>
 	<string name="personal_inspiration">Inspired by</string>
 	<string name="personal_langs">Languages</string>
-	<string-array name="personal_politics_options">
-	    <item>Communist</item>
-	    <item>Socialist</item>
-	    <item>Centrist</item>
-	    <item>Liberal</item>
-	    <item>Conservative</item>
-	    <item>Monarchist</item>
-	    <item>Ultraconservative</item>
-	    <item>Apathetic</item>
-	    <item>Libertarian</item>
-	</string-array>
-	<string-array name="personal_life_options">
-	    <item>Family and children</item>
-	    <item>Career and money</item>
-	    <item>Entertainment and leisure</item>
-	    <item>Science and research</item>
-	    <item>Improving the world</item>
-	    <item>Personal development</item>
-	    <item>Beauty and art</item>
-	    <item>Fame and influence</item>
-	</string-array>
-	<string-array name="personal_people_options">
-	    <item>Intellect and creativity</item>
-	    <item>Kindness and honesty</item>
-	    <item>Health and beauty</item>
-	    <item>Wealth and power</item>
-	    <item>Courage and persistence</item>
-	    <item>Humor and love for life</item>
-	</string-array>
-	<string-array name="personal_views_options">
-	    <item>Very negative</item>
-	    <item>Negative</item>
-	    <item>Compromisable</item>
-	    <item>Neutral</item>
-	    <item>Positive</item>
-	</string-array>
+
 	<string name="add_video_existing">Choose from existing</string>
 	<string name="add_video_new">Record a video</string>
 	<string name="profile_hometown">Hometown</string>
@@ -1134,10 +712,7 @@
 	<string name="instance_admins_count">%d administrators</string>
     <string name="instance_links">Links:</string>
 	<string name="connection_error">Connection error</string>
-	<string-array name="newsfeed_actionbar_items">
-		<item>Subscriptions</item>
-		<item>All news</item>
-	</string-array>
+
 	<string name="err_picture_not_enough_memory_text">Not enough memory for image processing. Close all unused applications and try again.</string>
 	<string name="reason">Reason: %s</string>
 	<string name="official_state">OpenVK official instance</string>

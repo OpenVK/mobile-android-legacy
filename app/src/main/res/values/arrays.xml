@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="popup_menu_api_v8">
+        <item>Settings</item>
+        <item>About</item>
+        <item>Quit</item>
+    </string-array>
+
+    <string-array name="proxy_type" translable="false">
+        <item>HTTP</item>
+        <item>HTTPS</item>
+        <item>SelfEco Relay</item>
+    </string-array>
+
+    <string-array name="connection_error_reasons">
+        <item>No internet connection</item>
+        <item>Server sent an invalid response</item>
+        <item>Response timed out</item>
+        <item>Secure connection failure</item>
+        <item>Instance/app failure</item>
+        <item>Instance unavailable</item>
+        <item>Unknown error</item>
+    </string-array>
+
+    <string-array name="months_short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+
+    <string-array name="months_full">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string-array name="like_menu">
+        <item>Unlike</item>
+        <item>Share with friends</item>
+    </string-array>
+
+    <string-array name="photo_menu">
+        <item>Take a photos</item>
+        <item>Choose from album</item>
+    </string-array>
+
+    <string-array name="photo_menu2">
+        <item>Take a photos</item>
+        <item>Select from gallery</item>
+        <item>Remove photos</item>
+    </string-array>
+
+    <string-array name="photo_menu3">
+        <item>Select from gallery</item>
+        <item>Remove photo</item>
+    </string-array>
+
+    <string-array name="place_titles">
+        <item>Home</item>
+        <item>Work</item>
+        <item>Restaurant</item>
+        <item>Club</item>
+        <item>Movie Theater</item>
+        <item>Bar</item>
+        <item>Entertainment</item>
+        <item>Store</item>
+        <item>Airport</item>
+        <item>Train Station</item>
+        <item>Hotel</item>
+        <item>Cafe</item>
+        <item>Fast Food Restaurant</item>
+        <item>Pizzeria</item>
+        <item>Swimming Pool</item>
+        <item>Gym</item>
+        <item>Educational Institution</item>
+        <item>Museum</item>
+        <item>Theater</item>
+        <item>Park</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="sett_friends_order">
+        <item>By first name</item>
+        <item>By last name</item>
+        <item>By popularity</item>
+    </string-array>
+
+    <string-array name="date_ago_hrs">
+        <item>an hour ago</item>
+        <item>two hours ago</item>
+        <item>three hours ago</item>
+    </string-array>
+
+    <string-array name="date_ago_mins">
+        <item>one minute ago</item>
+        <item>%d minutes ago</item>
+    </string-array>
+
+    <string-array name="date_ago_secs">
+        <item>one second ago</item>
+        <item>%d seconds ago</item>
+    </string-array>
+
+    <string-array name="ncomments_last">
+        <item>One comment</item>
+        <item>Last out of %d comments</item>
+    </string-array>
+
+    <string-array name="profile_relation_m">
+        <item>Single</item>
+        <item>In a relationship</item>
+        <item>Engaged</item>
+        <item>Married</item>
+        <item>It\'s complicated</item>
+        <item>Actively searching</item>
+        <item>In love</item>
+    </string-array>
+
+    <string-array name="profile_relation_f">
+        <item>Single</item>
+        <item>In a relationship</item>
+        <item>Engaged</item>
+        <item>Married</item>
+        <item>It\'s complicated</item>
+        <item>Actively searching</item>
+        <item>In love</item>
+    </string-array>
+
+    <string-array name="post_options">
+        <item>Friends only</item>
+        <item>Export to Telegram</item>
+        <!--item>Add my location</item-->
+    </string-array>
+
+    <string-array name="album_numphotos">
+        <item>%d photo</item>
+        <item>%d photos</item>
+    </string-array>
+
+    <string-array name="sett_update_interval_items">
+        <item>30 seconds</item>
+        <item>45 seconds</item>
+        <item>One minute</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>One hour</item>
+        <item>Two hours</item>
+        <item>Disable</item>
+    </string-array>
+
+    <string-array name="album_privacy_options">
+        <item>All users</item>
+        <item>Friends only</item>
+        <item>Friends and friends of friends</item>
+        <item>Only me</item>
+        <item>Advanced settings</item>
+    </string-array>
+
+    <string-array name="album_displayable_privacy_options">
+        <item>All users</item>
+        <item>Friends only</item>
+        <item>Friends and friends of friends</item>
+        <item>Only me</item>
+    </string-array>
+
+    <string-array name="num_mutual_friends_req">
+        <item>One mutual friend</item>
+        <item>%d mutual friends</item>
+    </string-array>
+
+    <string-array name="message_attach_options">
+        <item>Photo</item>
+        <item>Audio file</item>
+        <item>Video</item>
+        <item>Document</item>
+        <item>Map</item>
+    </string-array>
+
+    <string-array name="message_attach_options_noplace">
+        <item>Photo</item>
+        <item>Audio file</item>
+        <item>Video</item>
+        <item>Document</item>
+    </string-array>
+
+    <string-array name="profile_counters">
+        <item>Photos</item>
+        <item>Photos of %s</item>
+        <item>Albums</item>
+        <item>Audio files</item>
+        <item>Videos</item>
+        <item>Videos of %s</item>
+        <item>Friends</item>
+        <item>Mutual friends</item>
+        <item>Communities</item>
+        <item>Notes</item>
+        <item>Topics</item>
+        <item>Members</item>
+        <item>Documents</item>
+        <item>News</item>
+        <item>Followers</item>
+    </string-array>
+
+    <string-array name="video_views">
+        <item>%d view</item>
+        <item>%d views</item>
+    </string-array>
+
+    <string-array name="wall_attach_options">
+        <item>Audio</item>
+        <item>Video</item>
+        <item>Document</item>
+    </string-array>
+
+    <string-array name="ntf_like_m">
+        <item>liked a post</item>
+        <item>liked a photo</item>
+        <item>liked a video</item>
+        <item>liked a comment</item>
+    </string-array>
+
+    <string-array name="ntf_like_f">
+        <item>liked a post</item>
+        <item>liked a photos</item>
+        <item>liked a video</item>
+        <item>liked a comment</item>
+    </string-array>
+
+    <string-array name="ntf_like_x">
+        <item>liked a post</item>
+        <item>liked a photo</item>
+        <item>liked a video</item>
+        <item>liked a comment</item>
+    </string-array>
+
+    <string-array name="ntf_rt_m">
+        <item>shared a post</item>
+        <item>shared a photo</item>
+        <item>shared a video</item>
+        <item>shared a comment</item>
+    </string-array>
+
+    <string-array name="ntf_rt_f">
+        <item>shared a post</item>
+        <item>shared a photos</item>
+        <item>shared a video</item>
+        <item>shared a comment</item>
+    </string-array>
+
+    <string-array name="ntf_rt_x">
+        <item>shared a post</item>
+        <item>shared a photos</item>
+        <item>shared a video</item>
+        <item>shared a comment</item>
+    </string-array>
+
+    <string-array name="ntf_follow_m">
+        <item>followed you</item>
+    </string-array>
+
+    <string-array name="ntf_follow_f">
+        <item>followed you</item>
+    </string-array>
+
+    <string-array name="ntf_follow_x">
+        <item>followed you</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_m">
+        <item>accepted your friend request</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_f">
+        <item>accepted your friend request</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_x">
+        <item>accepted your friend request</item>
+    </string-array>
+
+    <string-array name="ntf_x_more_users">
+        <item>and %d other</item>
+        <item>and %d others</item>
+    </string-array>
+
+    <string-array name="replies_options">
+        <item>Like</item>
+        <item>Reply</item>
+    </string-array>
+
+    <string-array name="news_added_photo_m">
+        <item>added a photo</item>
+        <item>added %d photos</item>
+    </string-array>
+
+    <string-array name="news_added_photo_f">
+        <item>added a photo</item>
+        <item>added %d photos</item>
+    </string-array>
+
+    <string-array name="news_tagged_photo_m">
+        <item>was tagged in a photo</item>
+        <item>was tagged in %d photo</item>
+    </string-array>
+
+    <string-array name="news_tagged_photo_f">
+        <item>was tagged in a photo</item>
+        <item>was tagged in %d photos</item>
+    </string-array>
+
+    <string-array name="community_types">
+        <item>Events</item>
+        <item>Groups</item>
+        <item>Pages</item>
+    </string-array>
+
+    <string-array name="topic_posts">
+        <item>%d post</item>
+        <item>%d posts</item>
+    </string-array>
+
+    <string-array name="sett_cache_quality_array">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Original</item>
+    </string-array>
+
+    <string-array name="sett_img_cache_location">
+        <item>Device memory</item>
+        <item>SD card</item>
+    </string-array>
+
+    <string-array name="birthday_age">
+        <item>%d year</item>
+        <item>%d years</item>
+    </string-array>
+
+    <string-array name="profile_relation_pm">
+        <item>Single</item>
+        <item>In a relationship with %s</item>
+        <item>Engaged with %s</item>
+        <item>Married with %s</item>
+        <item>It\'s complicated with %s</item>
+        <item>Actively searching</item>
+        <item>In love with %s</item>
+    </string-array>
+
+    <string-array name="profile_relation_pf">
+        <item>Single</item>
+        <item>In a relationship with %s</item>
+        <item>Engaged with %s</item>
+        <item>Married with %s</item>
+        <item>It\'s complicated with %s</item>
+        <item>Actively searching</item>
+        <item>In love with %s</item>
+    </string-array>
+
+    <string-array name="leftmenu">
+        <item>Friends</item>
+        <item>Photos</item>
+        <item>Videos</item>
+        <item>Music</item>
+        <item>Messages</item>
+        <item>Communities</item>
+        <item>Notes</item>
+        <item>News</item>
+        <item>Feedback</item>
+        <item>Bookmarks</item>
+        <item>Settings</item>
+    </string-array>
+
+    <string-array name="leftmenu_account">
+        <item>Change account</item>
+        <item>Change profile photo</item>
+        <item>Log out</item>
+    </string-array>
+
+    <string-array name="fave_tabs">
+        <item>People</item>
+        <item>Posts</item>
+        <item>Links</item>
+        <item>Photos</item>
+        <item>Videos</item>
+    </string-array>
+
+    <string-array name="profile_friends">
+        <item>friend</item>
+        <item>friends</item>
+        <item>friends</item>
+    </string-array>
+
+    <string-array name="friends_mutual">
+        <item>%d mutual</item>
+        <item>%d mutual</item>
+        <item>%d mutual</item>
+    </string-array>
+
+    <string-array name="video_search_quality">
+        <item>Any quality</item>
+        <item>Only HD</item>
+    </string-array>
+
+    <string-array name="video_search_length">
+        <item>Any length</item>
+        <item>Short</item>
+        <item>Long</item>
+    </string-array>
+
+    <string-array name="dnd_options">
+        <item>1 hour</item>
+        <item>24 hours</item>
+        <item>7 days</item>
+        <item>Forever</item>
+    </string-array>
+
+    <string-array name="personal_politics_options">
+        <item>Communist</item>
+        <item>Socialist</item>
+        <item>Centrist</item>
+        <item>Liberal</item>
+        <item>Conservative</item>
+        <item>Monarchist</item>
+        <item>Ultraconservative</item>
+        <item>Apathetic</item>
+        <item>Libertarian</item>
+    </string-array>
+
+    <string-array name="personal_life_options">
+        <item>Family and children</item>
+        <item>Career and money</item>
+        <item>Entertainment and leisure</item>
+        <item>Science and research</item>
+        <item>Improving the world</item>
+        <item>Personal development</item>
+        <item>Beauty and art</item>
+        <item>Fame and influence</item>
+    </string-array>
+
+    <string-array name="personal_people_options">
+        <item>Intellect and creativity</item>
+        <item>Kindness and honesty</item>
+        <item>Health and beauty</item>
+        <item>Wealth and power</item>
+        <item>Courage and persistence</item>
+        <item>Humor and love for life</item>
+    </string-array>
+
+    <string-array name="personal_views_options">
+        <item>Very negative</item>
+        <item>Negative</item>
+        <item>Compromisable</item>
+        <item>Neutral</item>
+        <item>Positive</item>
+    </string-array>
+
+    <string-array name="newsfeed_actionbar_items">
+        <item>Subscriptions</item>
+        <item>All news</item>
+    </string-array>
+</resources>
