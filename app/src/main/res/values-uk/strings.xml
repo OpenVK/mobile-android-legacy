@@ -378,11 +378,6 @@
 	<string name="leave_closed_group_confirm">Це закрита група. Якщо Ви з неї вийдете,
         потрапити назад, можливо, буде непросто. Вийти з групи?</string>
 
-	<string-array name="community_types">
-    	<item>Зустрічі</item>
-    	<item>Групи</item>
-    	<item>Сторінки</item>
-    </string-array>
     <string name="no_groups">Немає спільнот</string>
     <string name="no_events">Немає зустріч</string>
 

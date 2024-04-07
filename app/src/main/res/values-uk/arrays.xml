@@ -334,9 +334,9 @@
     </string-array>
 
     <string-array name="community_types">
-        <item>Встречи</item>
-        <item>Группы</item>
-        <item>Страницы</item>
+        <item>Зустрічі</item>
+        <item>Групи</item>
+        <item>Сторінки</item>
     </string-array>
 
     <string-array name="topic_posts">
