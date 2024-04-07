@@ -822,6 +822,7 @@ public class AppActivity extends NetworkFragmentActivity {
                         false, true);
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if (selectedFragment instanceof ConversationsFragment) {
+                    conversations = ovk_api.messages.getConversations();
                     if (conversations.size() > 0) {
                         ((ConversationsFragment) selectedFragment)
                                 .createAdapter(this, conversations, ovk_api.account);
