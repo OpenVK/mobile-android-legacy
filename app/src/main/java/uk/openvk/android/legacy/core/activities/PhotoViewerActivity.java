@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,6 +42,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,23 +73,13 @@ public class PhotoViewerActivity extends NetworkActivity {
     private ActionBar actionBar;
     private PopupWindow popupMenu;
     private String instance;
+    private boolean isFullScreenMode;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-            }
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
         if(getIntent().getExtras() == null) {
             Toast.makeText(this,
@@ -95,17 +88,7 @@ public class PhotoViewerActivity extends NetworkActivity {
         }
 
         setContentView(R.layout.activity_photo_viewer);
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                Bundle data = message.getData();
-                if(BuildConfig.DEBUG)
-                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
-            }
-        };
         actionBar = findViewById(R.id.actionbar);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
@@ -141,8 +124,8 @@ public class PhotoViewerActivity extends NetworkActivity {
             createActionPopupMenu(activity_menu);
         }
 
-        ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.GONE);
-        ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.VISIBLE);
+        findViewById(R.id.picture_view).setVisibility(View.GONE);
+        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
         ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme(true, 1);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -182,7 +165,7 @@ public class PhotoViewerActivity extends NetworkActivity {
     private void createActionPopupMenu(final Menu menu) {
         @SuppressLint("InflateParams")
         final View menu_container =
-                (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
+                getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
         final ActionBar actionBar = findViewById(R.id.actionbar);
     }
 
@@ -206,8 +189,8 @@ public class PhotoViewerActivity extends NetworkActivity {
                         extras.getLong("photo_id")), bfOptions);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
-                ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.VISIBLE);
-                ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.GONE);
+                findViewById(R.id.picture_view).setVisibility(View.VISIBLE);
+                findViewById(R.id.progress_layout).setVisibility(View.GONE);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if(getActionBar() != null) {
                         getActionBar().show();
@@ -215,13 +198,20 @@ public class PhotoViewerActivity extends NetworkActivity {
                 } else {
                     actionBar.setVisibility(View.VISIBLE);
                 }
-                ((ZoomableImageView) findViewById(R.id.picture_view)).setOnClickListener(new View.OnClickListener() {
+                findViewById(R.id.picture_view).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             if(getActionBar().isShowing()) {
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        enableFullScreenMode();
+                                    }
+                                }, 400);
                                 getActionBar().hide();
                             } else {
+                                enableFullScreenMode();
                                 getActionBar().show();
                             }
                         } else {
@@ -363,5 +353,41 @@ public class PhotoViewerActivity extends NetworkActivity {
         }
         activity_menu = menu;
         return true;
+    }
+
+    @Override
+    protected void setTranslucentStatusBar() {
+        resetTranslucentStatusBar();
+        super.setLegacyTranslucentStatusBar(1, Color.parseColor("#D8000000"));
+    }
+
+    protected void enableFullScreenMode() {
+        if(!isFullScreenMode) {
+            resetTranslucentStatusBar();
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setTranslucentStatusBar();
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }
+        }
+        isFullScreenMode = !isFullScreenMode;
+    }
+
+    @Override
+    protected void resetTranslucentStatusBar() {
+        super.resetTranslucentStatusBar();
     }
 }

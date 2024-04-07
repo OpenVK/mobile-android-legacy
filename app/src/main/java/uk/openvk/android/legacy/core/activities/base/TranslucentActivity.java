@@ -39,6 +39,7 @@ import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 public class TranslucentActivity extends Activity {
 
     protected HashMap<String, Object> client_info;
+    private SystemBarTintManager tintManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,8 +50,9 @@ public class TranslucentActivity extends Activity {
         );
     }
 
-    private void setTranslucentStatusBar() {
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+    protected void setTranslucentStatusBar() {
+        if(tintManager == null)
+            tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int statusbar_color = R.color.transparent_statusbar_color;
@@ -70,8 +72,14 @@ public class TranslucentActivity extends Activity {
         }
     }
 
+    protected void resetTranslucentStatusBar() {
+        if(tintManager != null)
+            tintManager.setStatusBarTintEnabled(false);
+    }
+
     public void setTranslucentStatusBar(int type, int res) {
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        if(tintManager == null)
+            tintManager = new SystemBarTintManager(this);
         tintManager.setStatusBarTintEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -85,6 +93,18 @@ public class TranslucentActivity extends Activity {
             } else {       // Color
                 tintManager.setTintColor(res);
             }
+        }
+    }
+
+    public void setLegacyTranslucentStatusBar(int type, int res) {
+        if(tintManager == null)
+            tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        if (type == 0) { // Drawable (or color resource ID)
+            tintManager.setTintDrawable(
+                    getResources().getDrawable(res));
+        } else {       // Color
+            tintManager.setTintColor(res);
         }
     }
 }
