@@ -305,9 +305,11 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
                 switch (global_prefs.getString("photos_quality", "")) {
                     case "medium":
-                        if (user.avatar_msize_url.length() > 0) {
-                            profilePageFragment.loadAvatar(
-                                    user, global_prefs.getString("photos_quality", ""));
+                        if(user.avatar_msize_url != null) {
+                            if (user.avatar_msize_url.length() > 0) {
+                                profilePageFragment.loadAvatar(
+                                        user, global_prefs.getString("photos_quality", ""));
+                            }
                         }
                         break;
                     case "high":
