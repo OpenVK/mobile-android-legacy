@@ -174,7 +174,7 @@
 	<string name="mail">E-mail</string>
 	<string name="password">Password</string>
 	<string name="log_in">Log in</string>
-	<string name="default_instance" translatable="false">openvk.uk</string>
+	<string name="default_instance" translatable="false">ovk.to</string>
 	<string name="default_instance_no_https" translatable="false">openvk.xyz</string>
 	<string name="auth_error_title">Error logging in</string>
 	<string name="auth_error">An error occurred while trying to log in. Please check your login and password and try again.</string>
