@@ -140,4 +140,8 @@ public class Messages {
     public void delete(OvkAPIWrapper wrapper, long id) {
         wrapper.sendAPIMethod("Messages.delete", String.format("message_ids=%s", id));
     }
+
+    public ArrayList<Conversation> getConversations() {
+        return conversations;
+    }
 }

@@ -206,11 +206,16 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
                 }
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                if(args.startsWith("id")) {
-                    ovk_api.users.getUser(ovk_api.wrapper, Integer.parseInt(args.substring(2)));
-                } else {
-                    ovk_api.users.search(ovk_api.wrapper, args);
-                }
+                ovk_api.videos.getVideos(
+                        ovk_api.wrapper,
+                        Long.parseLong(args.substring("videos".length())),
+                        25
+                );
+            } else if (message == HandlerMessages.VIDEOS_GET) {
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                videosFragment.createAdapter(this, ovk_api.videos.getList());
+                videosFragment.setScrollingPositions(this, true);
             } else if (message < 0) {
                 try {
                     setErrorPage(data, message);
