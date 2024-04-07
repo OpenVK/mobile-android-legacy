@@ -144,8 +144,9 @@
     </string-array>
 
     <string-array name="album_numphotos">
-        <item>%d photo</item>
-        <item>%d photos</item>
+        <item>%d фотография</item>
+        <item>%d фотографии</item>
+        <item>%d фотографий</item>
     </string-array>
 
     <string-array name="sett_update_interval_items">
@@ -313,8 +314,8 @@
     </string-array>
 
     <string-array name="topic_posts">
-        <item>%d post</item>
-        <item>%d posts</item>
+        <item>%d публикаций</item>
+        <item>%d публикаций</item>
     </string-array>
 
     <string-array name="sett_cache_quality_array">
@@ -330,8 +331,9 @@
     </string-array>
 
     <string-array name="birthday_age">
-        <item>%d year</item>
-        <item>%d years</item>
+        <item>%d год</item>
+        <item>%d года</item>
+        <item>%d лет</item>
     </string-array>
 
     <string-array name="profile_relation_pm">
