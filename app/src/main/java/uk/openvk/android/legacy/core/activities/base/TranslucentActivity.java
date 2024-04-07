@@ -107,4 +107,8 @@ public class TranslucentActivity extends Activity {
             tintManager.setTintColor(res);
         }
     }
+
+    public SystemBarTintManager getTintManager() {
+        return tintManager;
+    }
 }
