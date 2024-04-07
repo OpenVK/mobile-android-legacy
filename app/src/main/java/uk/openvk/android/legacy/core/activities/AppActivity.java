@@ -31,6 +31,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -209,17 +211,15 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 if(notifMan != null) notifMan.clearAudioPlayerNotification();
                 exitApplication();
-            } else if (selectedFragment instanceof AudiosFragment) {
-                ((AudiosFragment) selectedFragment).closeSearchItem();
-                fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).loadFromCache(this);
-                }
             } else {
+                if (selectedFragment instanceof AudiosFragment)
+                    ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
                 if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).loadFromCache(this);
+                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
                 }
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
             }
         } catch (Exception ex) {
             exitApplication();
@@ -582,12 +582,12 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (ovk_api.newsfeed == null) {
                     ovk_api.newsfeed = new Newsfeed();
                     newsfeed_count = 25;
-                    ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
-                } else {
-                    if(selectedFragment instanceof NewsfeedFragment) {
-                        ((NewsfeedFragment) selectedFragment).loadFromCache(this);
-                    }
                 }
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
+                }
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 break;
             case 8:
                 setActionBarTitle(getResources().getString(R.string.menu_settings));

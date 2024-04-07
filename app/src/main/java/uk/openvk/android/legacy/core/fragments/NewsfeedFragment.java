@@ -85,6 +85,7 @@ public class NewsfeedFragment extends ActiveFragment {
     private String instance;
     private Menu fragment_menu;
     private Account account;
+    public boolean autoLoad;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,7 +102,8 @@ public class NewsfeedFragment extends ActiveFragment {
         adjustLayout(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        //loadFromCache(getActivity());
+        if(autoLoad)
+            loadFromCache(getActivity());
         return view;
     }
 
