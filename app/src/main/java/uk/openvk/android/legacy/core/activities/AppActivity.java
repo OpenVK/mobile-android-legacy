@@ -212,8 +212,14 @@ public class AppActivity extends NetworkFragmentActivity {
             } else if (selectedFragment instanceof AudiosFragment) {
                 ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).loadFromCache(this);
+                }
             } else {
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).loadFromCache(this);
+                }
             }
         } catch (Exception ex) {
             exitApplication();
@@ -577,6 +583,10 @@ public class AppActivity extends NetworkFragmentActivity {
                     ovk_api.newsfeed = new Newsfeed();
                     newsfeed_count = 25;
                     ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
+                } else {
+                    if(selectedFragment instanceof NewsfeedFragment) {
+                        ((NewsfeedFragment) selectedFragment).loadFromCache(this);
+                    }
                 }
                 break;
             case 8:
