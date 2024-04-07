@@ -345,10 +345,10 @@ public class Global {
             qStr = ctx.getResources().getQuantityString(id, value, value);
         } else {
             // Using patched getQuantityString() method version for Android 2.x
-            if(ctx instanceof OvkApplication) {
-                OvkApplication app = ((OvkApplication) ctx);
-                qStr = app.pluralResources.getQuantityString(id, value, value);
-            }
+            OvkApplication app;
+            app = ctx instanceof OvkApplication ?
+                    (OvkApplication) ctx : (OvkApplication) ctx.getApplicationContext();
+            qStr = app.pluralResources.getQuantityString(id, value, value);
         }
         return qStr;
     }

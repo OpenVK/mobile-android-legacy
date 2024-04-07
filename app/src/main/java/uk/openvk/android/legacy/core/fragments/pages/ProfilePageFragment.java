@@ -458,23 +458,22 @@ public class ProfilePageFragment extends ActiveFragment {
 
         float dp = getResources().getDisplayMetrics().scaledDensity;
 
-        int default_horizontal_margin = (int) (2 * dp);
-        int default_vertical_margin = (int) (4 * dp);
+        int default_margin = (int) (4 * dp);
         ((FlowLayout.LayoutParams) friends_counter.getLayoutParams()).setMargins(
-                default_vertical_margin, default_horizontal_margin,
-                default_vertical_margin, default_horizontal_margin
+                default_margin, default_margin,
+                default_margin, default_margin
         );
         ((FlowLayout.LayoutParams) photos_counter.getLayoutParams()).setMargins(
-                default_vertical_margin, default_horizontal_margin,
-                default_vertical_margin, default_horizontal_margin
+                default_margin, default_margin,
+                default_margin, default_margin
         );
         ((FlowLayout.LayoutParams) videos_counter.getLayoutParams()).setMargins(
-                default_vertical_margin, default_horizontal_margin,
-                default_vertical_margin, default_horizontal_margin
+                default_margin, default_margin,
+                default_margin, default_margin
         );
         ((FlowLayout.LayoutParams) audios_counter.getLayoutParams()).setMargins(
-                default_vertical_margin, default_horizontal_margin,
-                default_vertical_margin, default_horizontal_margin
+                default_margin, default_margin,
+                default_margin, default_margin
         );
     }
 
