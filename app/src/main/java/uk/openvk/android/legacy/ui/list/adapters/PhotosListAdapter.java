@@ -174,15 +174,15 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
                     if(bitmap.getWidth() > bitmap.getHeight()) { // Landscape
                         photo_scaled = Bitmap.createScaledBitmap(
                                 bitmap,
-                                h_scaled,
                                 160,
+                                h_scaled,
                                 false
                         );
                     } else if(bitmap.getHeight() > bitmap.getWidth()) { // Portrait
                         photo_scaled = Bitmap.createScaledBitmap(
                                 bitmap,
-                                w_scaled,
                                 160,
+                                w_scaled,
                                 false
                         );
                     } else {
