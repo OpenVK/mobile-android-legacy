@@ -248,7 +248,8 @@ public class AppActivity extends NetworkFragmentActivity {
         };
         // Register LongPoll Broadcast Receiver
         registerReceiver(lpReceiver, new IntentFilter(
-                "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
+                "uk.openvk.android.legacy.LONGPOLL_RECEIVE")
+        );
     }
 
     public void setActionBar(String layout_name) {

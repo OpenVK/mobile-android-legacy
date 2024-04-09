@@ -162,34 +162,26 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
                     );
                     return null;
                 }
-                int max_size = 160;
-                float aspect_ratio = (float)bitmap.getWidth() / (float)160.0;
+                int max_size = 360;
+                if(ctx.getResources().getDisplayMetrics().widthPixels <= 480) {
+                    max_size = 192;
+                }
+                float aspect_ratio = (float)bitmap.getWidth() / (float)max_size;
                 if(bitmap.getWidth() > max_size || bitmap.getHeight() > max_size) {
                     Bitmap photo_scaled;
                     int w_scaled = (int)(bitmap.getHeight() / aspect_ratio);
-                    int h_scaled = (int)(bitmap.getWidth() / aspect_ratio);
-                    Log.d(OvkApplication.APP_TAG, "Thumbnail: " + w_scaled + "x" + h_scaled +
-                    "\r\nOriginal: " + bitmap.getWidth() + "x" + bitmap.getHeight()
-                            + "\r\nAS: " + aspect_ratio);
                     if(bitmap.getWidth() > bitmap.getHeight()) { // Landscape
                         photo_scaled = Bitmap.createScaledBitmap(
                                 bitmap,
-                                160,
-                                w_scaled,
-                                false
-                        );
-                    } else if(bitmap.getHeight() > bitmap.getWidth()) { // Portrait
-                        photo_scaled = Bitmap.createScaledBitmap(
-                                bitmap,
-                                160,
+                                max_size,
                                 w_scaled,
                                 false
                         );
                     } else {
                         photo_scaled = Bitmap.createScaledBitmap(
                                 bitmap,
-                                160,
-                                160,
+                                max_size,
+                                max_size,
                                 false
                         );
                     }

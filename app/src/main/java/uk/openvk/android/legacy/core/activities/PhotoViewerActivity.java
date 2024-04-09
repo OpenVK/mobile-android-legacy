@@ -43,6 +43,10 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
@@ -59,6 +63,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.ui.list.adapters.PhotosListAdapter;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.views.base.ZoomableImageView;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -74,11 +79,29 @@ public class PhotoViewerActivity extends NetworkActivity {
     private PopupWindow popupMenu;
     private String instance;
     private boolean isFullScreenMode;
+    private DisplayImageOptions displayimageOptions;
+    private ImageLoaderConfiguration imageLoaderConfig;
+    private ImageLoader imageLoader;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        this.imageLoaderConfig =
+                new ImageLoaderConfiguration.Builder(getApplicationContext()).
+                        defaultDisplayImageOptions(displayimageOptions)
+                        .memoryCacheSize(16777216) // 16 MB memory cache
+                        .writeDebugLogs()
+                        .build();
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
+        this.imageLoader = ImageLoader.getInstance();
+        imageLoader.init(this.imageLoaderConfig);
+
         instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
 
         if(getIntent().getExtras() == null) {
@@ -178,15 +201,18 @@ public class PhotoViewerActivity extends NetworkActivity {
         if(message == HandlerMessages.ACCESS_DENIED_MARSHMALLOW) {
             Global.allowPermissionDialog(this, false);
         } else if(message == HandlerMessages.ORIGINAL_PHOTO) {
-            bfOptions = new BitmapFactory.Options();
-            bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
             try {
                 Bundle extras = getIntent().getExtras();
                 assert extras != null;
-                bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
+                String full_filename = String.format("file://%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
                         getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
-                        extras.getLong("photo_id")), bfOptions);
+                        extras.getLong("photo_id"));
+                int max_size = 1600;
+                if(getResources().getDisplayMetrics().widthPixels <= 720) {
+                    max_size = 400;
+                }
+                ImageSize targetSize = new ImageSize(max_size, max_size);
+                bitmap = imageLoader.loadImageSync(full_filename, targetSize);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
                 findViewById(R.id.picture_view).setVisibility(View.VISIBLE);
@@ -302,12 +328,18 @@ public class PhotoViewerActivity extends NetworkActivity {
                             break;
                     }
 
-                    File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "OpenVK");
+                    File directory = new File(
+                            Environment.getExternalStorageDirectory().getAbsolutePath(),
+                            "OpenVK"
+                    );
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
 
-                    directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/OpenVK", "Photos");
+                    directory = new File(
+                            Environment.getExternalStorageDirectory().getAbsolutePath() + "/OpenVK",
+                            "Photos"
+                    );
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
