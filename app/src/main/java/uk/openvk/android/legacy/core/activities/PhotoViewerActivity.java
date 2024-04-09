@@ -88,20 +88,6 @@ public class PhotoViewerActivity extends NetworkActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.displayimageOptions =
-                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
-        this.imageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(getApplicationContext()).
-                        defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(16777216) // 16 MB memory cache
-                        .writeDebugLogs()
-                        .build();
-        if (ImageLoader.getInstance().isInited()) {
-            ImageLoader.getInstance().destroy();
-        }
-        this.imageLoader = ImageLoader.getInstance();
-        imageLoader.init(this.imageLoaderConfig);
-
         instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
 
         if(getIntent().getExtras() == null) {
@@ -201,22 +187,50 @@ public class PhotoViewerActivity extends NetworkActivity {
         if(message == HandlerMessages.ACCESS_DENIED_MARSHMALLOW) {
             Global.allowPermissionDialog(this, false);
         } else if(message == HandlerMessages.ORIGINAL_PHOTO) {
+            bfOptions = new BitmapFactory.Options();
+            bfOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
             try {
                 Bundle extras = getIntent().getExtras();
                 assert extras != null;
-                String full_filename = String.format("file://%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
-                        getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
-                        extras.getLong("photo_id"));
-                int max_size = 1600;
+                bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
+                                getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
+                                extras.getLong("photo_id")), bfOptions);
+                int max_size = 2880;
                 if(getResources().getDisplayMetrics().widthPixels <= 720) {
-                    max_size = 400;
+                    max_size = 1536;
+                } else if(getResources().getDisplayMetrics().widthPixels <= 480) {
+                    max_size = 960;
                 }
-                ImageSize targetSize = new ImageSize(max_size, max_size);
-                bitmap = imageLoader.loadImageSync(full_filename, targetSize);
-                ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
+                float aspect_ratio = (float)bitmap.getWidth() / (float)max_size;
+                if(bitmap.getWidth() > max_size || bitmap.getHeight() > max_size) {
+                    Bitmap photo_scaled;
+                    int w_scaled = (int)(bitmap.getHeight() / aspect_ratio);
+                    if(bitmap.getWidth() > bitmap.getHeight()) { // Landscape
+                        photo_scaled = Bitmap.createScaledBitmap(
+                                bitmap,
+                                max_size,
+                                w_scaled,
+                                false
+                        );
+                    } else {
+                        photo_scaled = Bitmap.createScaledBitmap(
+                                bitmap,
+                                max_size,
+                                max_size,
+                                false
+                        );
+                    }
+                    ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(photo_scaled);
+                } else {
+                    ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
+                }
+
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
+
                 findViewById(R.id.picture_view).setVisibility(View.VISIBLE);
                 findViewById(R.id.progress_layout).setVisibility(View.GONE);
+
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if(getActionBar() != null) {
                         getActionBar().show();
