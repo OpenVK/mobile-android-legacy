@@ -85,8 +85,6 @@ int gAudioStreamIndex;      // audio stream index
 AVCodecContext *gVideoCodecCtx;
 AVCodecContext *gAudioCodecCtx;
 
-jobject generateTrackInfo(JNIEnv* env, AVStream* pStream, AVCodec *pCodec, AVCodecContext *pCodecCtx, int type);
-
 bool debug_mode;
 
 AVDictionary *avFormatOptions = NULL;
