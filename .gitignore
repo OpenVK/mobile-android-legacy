@@ -21,3 +21,4 @@ app/.signing/openvk.jks
 *.a
 *.o.d
 app/.signing/app-release.prop
+/app/src/main/jniLibs
