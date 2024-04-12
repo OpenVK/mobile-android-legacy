@@ -97,7 +97,7 @@ jint FFMPEG_PLAYBACK_PAUSED = 2;
 
 int gFrameCount;
 
-void naInitFFmpeg(JNIEnv *env, jobject instance) {
+void naInit(JNIEnv *env, jobject instance) {
     if(debug_mode) {
         LOGD(10, "[DEBUG] Initializing FFmpeg...");
     }
@@ -125,7 +125,7 @@ void naSetDebugMode(JNIEnv *env, jobject instance, jboolean value) {
     }
 }
 
-jint naPlay(JNIEnv *env, jobject instance, jstring filename) {
+jint naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
     AVDictionary    *optionsDict = NULL;
     AVFrame         *decodedFrame = NULL;
     AVFrame         *frameRGBA = NULL;
@@ -134,12 +134,12 @@ jint naPlay(JNIEnv *env, jobject instance, jstring filename) {
     gFileName = (char *)env->GetStringUTFChars(filename, NULL);
     if(avformat_open_input(&gFormatCtx, gFileName, NULL, NULL)!=0){
         LOGE(10, "FAILED to open input %s", gFileName);
-        return -1; // Couldn't open file
+        return -1;
     }
 
     if(avformat_find_stream_info(gFormatCtx, NULL)<0){
         LOGE(10, "FAILED to find stream info %s", gFileName);
-        return -1; // Couldn't find stream information
+        return -1;
     }
 
     av_dump_format(gFormatCtx, 0, gFileName, 0);
@@ -266,3 +266,34 @@ jobject generateTrackInfo(
     return NULL;
 }
 #pragma clang diagnostic pop
+
+jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
+	JNIEnv* env;
+	if (pVm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
+		 return -1;
+	}
+	JNINativeMethod nm[4];
+	nm[0].name = "naInit";
+	nm[0].signature = "()[I";
+	nm[0].fnPtr = (void*)naInit;
+
+	nm[1].name = "naShowLogo";
+    nm[1].signature = "()Ljava/lang/String;";
+    nm[1].fnPtr = (void*)naShowLogo;
+
+	/* nm[2].name = "naPlay";
+       nm[2].signature = "()V";
+       nm[2].fnPtr = (void*)naPlay;
+    */
+	nm[2].name = "naOpenFile";
+	nm[2].signature = "(Ljava/lang/String;)I";
+	nm[2].fnPtr = (void*)naOpenFile;
+    /* nm[3].name = "naStop";
+       nm[3].signature = "()V";
+       nm[3].fnPtr = (void*)naStop;
+    */
+	jclass cls = env->FindClass("uk/openvk/android/legacy/utils/OvkMediaPlayer");
+	//Register methods with env->RegisterNatives.
+	env->RegisterNatives(cls, nm, 6);
+	return JNI_VERSION_1_6;
+}
