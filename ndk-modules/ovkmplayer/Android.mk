@@ -16,11 +16,7 @@
 
 LOCAL_PATH := $(call my-dir)
 PROJECT_PATH := $(call my-dir)/../..
-ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-   FFMPEG_VERSION = 3.1.4
-else
-   FFMPEG_VERSION = 0.8.12
-endif
+FFMPEG_VERSION = 4.0.4
 FFMPEG_PATH = $(call my-dir)/builder/ffmpeg-$(FFMPEG_VERSION)
 #declare the prebuilt library
 
@@ -31,6 +27,7 @@ LOCAL_SRC_FILES := $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libff
 LOCAL_EXPORT_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_EXPORT_LDLIBS :=  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
 LOCAL_PRELINK_MODULE := true
+LOCAL_CFLAGS += -std=c++98
 LOCAL_LDFLAGS += -ljnigraphics
 
 include $(PREBUILT_SHARED_LIBRARY)
@@ -39,13 +36,10 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
 LOCAL_MODULE := ovkmplayer
-ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-    LOCAL_SRC_FILES := ovkmplayer.cpp
-else
-    LOCAL_SRC_FILES := ovkmplayer-legacy.cpp
-endif
+LOCAL_SRC_FILES := ovkmplayer.cpp
 LOCAL_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)
+LOCAL_CFLAGS += -std=c++98
 LOCAL_CPP_FEATURES := exceptions
 LOCAL_SHARED_LIBRARY := ffmpeg-prebuilt
 LOCAL_LDLIBS    := -llog -lz -lm  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
