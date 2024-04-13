@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include "android.h"
 
-int android::getAndroidApiLevel(JNIEnv *env) {
+int android::getApiLevel(JNIEnv *env) {
     bool result = false;
     jclass versionClass = env->FindClass("android/os/Build$VERSION");
     if (NULL != versionClass)

@@ -96,17 +96,12 @@ public class OvkMediaPlayer extends MediaPlayer {
     private Handler handler;
     private AudioTrack audio_track;
     private final Object frameLocker = new Object();
-    private native void initFFmpeg();
-    private native String showLogo();
-    private native Object getTrackInfo(String filename, int type);
-    private native Object getTrackInfo2(int type);
-    private native int getPlaybackState();
-    private native void setPlaybackState(int playbackState);
-    private native int openMediaFile(String filename);
-    private native int renderFrames(IntBuffer buffer, long frame_number);
-    private native void decodeMedia(int audioLength, int videoLength);
-    public native int getLastErrorCode();
-    private native void setDebugMode(boolean value);
+    private native void naInit();
+    private native String naShowLogo();
+    private native Object naGenerateTrackInfo(int type);
+    private native int naOpenFile(String filename);
+    private native int naPlay();
+    private native void naSetDebugMode(boolean value);
 
     public static interface OnPreparedListener {
         public void onPrepared(OvkMediaPlayer mp);
@@ -122,7 +117,7 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @SuppressLint({"UnsafeDynamicallyLoadedCode", "SdCardPath"})
     private static void loadLibrary(Context ctx, String name) {
-        if(BuildConfig.BUILD_TYPE.equals("release")
+        if(BuildConfig.DEBUG
                 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             System.loadLibrary(String.format("%s", name));
         } else {
@@ -135,9 +130,9 @@ public class OvkMediaPlayer extends MediaPlayer {
         this.ctx = ctx;
         loadLibrary(ctx, "ffmpeg");
         loadLibrary(ctx, "ovkmplayer");
-        Log.v(MPLAY_TAG, showLogo());
-        setDebugMode(true);
-        initFFmpeg();
+        Log.v(MPLAY_TAG, naShowLogo());
+        naSetDebugMode(true);
+        naInit();
         handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -148,7 +143,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                     } else if (msg.what == MESSAGE_PREPARE) {
                         onPreparedListener.onPrepared(OvkMediaPlayer.this);
                     } else if(msg.what == MESSAGE_COMPLETE) {
-                        setPlaybackState(STATE_STOPPED);
+                        //setPlaybackState(STATE_STOPPED);
                         if(audio_track != null) {
                             audio_track.stop();
                         }
@@ -171,20 +166,15 @@ public class OvkMediaPlayer extends MediaPlayer {
         OvkVideoTrack video_track;
         OvkAudioTrack audio_track;
         if(filename == null) {
-            video_track = (OvkVideoTrack) getTrackInfo2(OvkMediaTrack.TYPE_VIDEO);
-            if (getLastErrorCode() == FFMPEG_ERROR_EOF) {
-                return null;
-            }
-            audio_track = (OvkAudioTrack) getTrackInfo2(OvkMediaTrack.TYPE_AUDIO);
+            video_track = (OvkVideoTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_VIDEO);
+            audio_track = (OvkAudioTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_AUDIO);
             if(video_track == null && audio_track == null) {
                 return null;
             }
         } else {
-            video_track = (OvkVideoTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_VIDEO);
-            if (getLastErrorCode() == FFMPEG_ERROR_EOF) {
-                return null;
-            }
-            audio_track = (OvkAudioTrack) getTrackInfo(filename, OvkMediaTrack.TYPE_AUDIO);
+            naOpenFile(filename);
+            video_track = (OvkVideoTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_VIDEO);
+            audio_track = (OvkAudioTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_AUDIO);
             if(video_track == null && audio_track == null) {
                 return null;
             }
@@ -231,12 +221,13 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @Override
     public void prepare() throws IOException, IllegalStateException {
-        if(openMediaFile(dataSourceUrl) < 0) {
+        int result = 0;
+        if((result = naOpenFile(dataSourceUrl)) < 0) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
-            onErrorListener.onError(this, getLastErrorCode());
+            onErrorListener.onError(this, result);
         } else if(getMediaInfo() == null) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
-            onErrorListener.onError(this, getLastErrorCode());
+            onErrorListener.onError(this, -1);
         } else {
             getMediaInfo();
             onPreparedListener.onPrepared(this);
@@ -248,18 +239,19 @@ public class OvkMediaPlayer extends MediaPlayer {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(openMediaFile(dataSourceUrl) < 0) {
+                int result;
+                if((result = naOpenFile(dataSourceUrl)) < 0) {
                     Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
                     Message msg = new Message();
                     msg.what = MESSAGE_ERROR;
-                    msg.getData().putInt("error_code", getLastErrorCode());
+                    msg.getData().putInt("error_code", result);
                     handler.sendMessage(msg);
-                    setPlaybackState(STATE_STOPPED);
+                    //setPlaybackState(STATE_STOPPED);
                 } else if(getMediaInfo() == null) {
                     Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
                     Message msg = new Message();
                     msg.what = MESSAGE_ERROR;
-                    msg.getData().putInt("error_code", getLastErrorCode());
+                    msg.getData().putInt("error_code", -1);
                     handler.sendMessage(msg);
                 } else {
                     Message msg = new Message();
@@ -272,98 +264,84 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @Override
     public void start() throws IllegalStateException {
-        if(getPlaybackState() == STATE_STOPPED || getPlaybackState() == STATE_PAUSED) {
-            if(tracks != null) {
-                Log.d(MPLAY_TAG, "Playing...");
-                setPlaybackState(STATE_PLAYING);
-                OvkAudioTrack audio_track = null;
-                OvkVideoTrack video_track = null;
-                for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-                    if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
-                        audio_track = (OvkAudioTrack) tracks.get(tracks_index);
-                    } else if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
-                        video_track = (OvkVideoTrack) tracks.get(tracks_index);
-                    }
+        if(tracks != null) {
+            Log.d(MPLAY_TAG, "Playing...");
+            //setPlaybackState(STATE_PLAYING);
+            OvkAudioTrack audio_track = null;
+            OvkVideoTrack video_track = null;
+            for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+                if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
+                    audio_track = (OvkAudioTrack) tracks.get(tracks_index);
+                } else if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
+                    video_track = (OvkVideoTrack) tracks.get(tracks_index);
                 }
-                int ch_config = 0;
-                int bpp = Integer.parseInt(Build.VERSION.SDK) > 9 ? 16 : 24;
-                if(audio_track != null) {
-                    ch_config = audio_track.channels == 2 ?
-                            AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-                    minAudioBufferSize = AudioTrack.getMinBufferSize((int) audio_track.sample_rate, ch_config,
-                            AudioFormat.ENCODING_PCM_16BIT);
-                }
-                if(video_track != null) {
-                    minVideoBufferSize = video_track.frame_size[0] * video_track.frame_size[1] * bpp;
-                }
-                final int finalAudioBufferSize = minAudioBufferSize;
-                final int finalVideoBufferSize = minVideoBufferSize;
-                final OvkVideoTrack finalVideo_track = video_track;
-                final OvkAudioTrack finalAudio_track = audio_track;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(finalAudio_track != null) {
-                            Log.d(MPLAY_TAG, "Decoding media file...");
-                            try {
-                                decodeMedia(finalAudioBufferSize, finalVideoBufferSize);
-                            } catch (OutOfMemoryError oom) {
-                                stop();
-                            }
-                        } else {
-                            Log.e(MPLAY_TAG, "Audio track not found. Skipping...");
-                        }
-                    }
-                }).start();
             }
+            int ch_config = 0;
+            int bpp = Integer.parseInt(Build.VERSION.SDK) > 9 ? 16 : 24;
+            if(audio_track != null) {
+                ch_config = audio_track.channels == 2 ?
+                        AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+                minAudioBufferSize = AudioTrack.getMinBufferSize((int) audio_track.sample_rate, ch_config,
+                        AudioFormat.ENCODING_PCM_16BIT);
+            }
+            if(video_track != null) {
+                minVideoBufferSize = video_track.frame_size[0] * video_track.frame_size[1] * bpp;
+            }
+            final int finalAudioBufferSize = minAudioBufferSize;
+            final int finalVideoBufferSize = minVideoBufferSize;
+            final OvkVideoTrack finalVideo_track = video_track;
+            final OvkAudioTrack finalAudio_track = audio_track;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if(finalAudio_track != null) {
+                        Log.d(MPLAY_TAG, "Decoding media file...");
+                        try {
+                            naPlay();
+                        } catch (OutOfMemoryError oom) {
+                            stop();
+                        }
+                    } else {
+                        Log.e(MPLAY_TAG, "Audio track not found. Skipping...");
+                    }
+                }
+            }).start();
         }
     }
 
     @SuppressWarnings("deprecation")
     private void renderAudio(final byte[] buffer, final int length) {
-        int state = getPlaybackState();
-        if(state == STATE_PLAYING) {
-            OvkAudioTrack track = null;
-            Log.d(MPLAY_TAG, "Checking audio buffer...");
-            if (buffer == null) {
-                Log.e(MPLAY_TAG, "Audio buffer is empty");
+        OvkAudioTrack track = null;
+        Log.d(MPLAY_TAG, "Checking audio buffer...");
+        if (buffer == null) {
+            Log.e(MPLAY_TAG, "Audio buffer is empty");
+            return;
+        }
+        if (!prepared_audio_buffer) {
+            Log.d(MPLAY_TAG, "Checking audio track...");
+            for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+                if (tracks.get(tracks_index) instanceof OvkAudioTrack) {
+                    track = (OvkAudioTrack) tracks.get(tracks_index);
+                }
+            }
+            if (track == null) {
+                Log.e(MPLAY_TAG, "Audio track not found");
                 return;
             }
-            if (!prepared_audio_buffer) {
-                Log.d(MPLAY_TAG, "Checking audio track...");
-                for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-                    if (tracks.get(tracks_index) instanceof OvkAudioTrack) {
-                        track = (OvkAudioTrack) tracks.get(tracks_index);
-                    }
-                }
-                if (track == null) {
-                    Log.e(MPLAY_TAG, "Audio track not found");
-                    return;
-                }
-                int ch_config = track.channels == 2 ?
-                        AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+            int ch_config = track.channels == 2 ?
+                    AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
 
-                audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
-                        ch_config,
-                        AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
+            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
+                    ch_config,
+                    AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
 
-                audio_track.play();
-                prepared_audio_buffer = true;
-            }
-            Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
-            try {
-                audio_track.write(buffer, 0, buffer.length);
-            } catch (Exception ignored) {
-            }
-        } else if(state == STATE_STOPPED) {
-            if(audio_track != null) {
-                audio_track.stop();
-            }
-            prepared_audio_buffer = false;
-        } else {
-            if(audio_track != null) {
-                audio_track.pause();
-            }
+            audio_track.play();
+            prepared_audio_buffer = true;
+        }
+        Log.d(MPLAY_TAG, "Playing sound... [" + audio_track + "]");
+        try {
+            audio_track.write(buffer, 0, buffer.length);
+        } catch (Exception ignored) {
         }
     }
 
@@ -442,7 +420,8 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @Override
     public boolean isPlaying() {
-        return (getPlaybackState() == STATE_PLAYING);
+        //return (getPlaybackState() == STATE_PLAYING);
+        return false;
     }
 
     public void setOnPreparedListener(OvkMediaPlayer.OnPreparedListener listener) {

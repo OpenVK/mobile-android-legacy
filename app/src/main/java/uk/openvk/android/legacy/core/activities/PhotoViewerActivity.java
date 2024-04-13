@@ -410,7 +410,7 @@ public class PhotoViewerActivity extends NetworkActivity {
     @SuppressLint("NewApi")
     @Override
     protected void setTranslucentStatusBar() {
-        resetTranslucentStatusBar();
+        //resetTranslucentStatusBar();
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             super.setLegacyTranslucentStatusBar(1, Color.parseColor("#D8000000"));
         else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -424,7 +424,7 @@ public class PhotoViewerActivity extends NetworkActivity {
 
     protected void enableFullScreenMode() {
         if (!isFullScreenMode) {
-            resetTranslucentStatusBar();
+            //resetTranslucentStatusBar();
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 getWindow().getDecorView().setSystemUiVisibility(
@@ -447,8 +447,5 @@ public class PhotoViewerActivity extends NetworkActivity {
         isFullScreenMode = !isFullScreenMode;
     }
 
-    @Override
-    protected void resetTranslucentStatusBar() {
-        super.resetTranslucentStatusBar();
-    }
+
 }

@@ -16,8 +16,8 @@
  * Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-#ifndef MOBILE_ANDROID_LEGACY_ANDROID_VERSION_H
-#define MOBILE_ANDROID_LEGACY_ANDROID_VERSION_H
+#ifndef MOBILE_ANDROID_LEGACY_ANDROID_H
+#define MOBILE_ANDROID_LEGACY_ANDROID_H
 
 #include <jni.h>
 
@@ -56,7 +56,7 @@ const int OS_CODENAME_R                                = 30;
 
 class android {
 public:
-    static int getAndroidApiLevel(JNIEnv *env);
+    static int getApiLevel(JNIEnv *env);
 };
 
 

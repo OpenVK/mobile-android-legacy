@@ -36,7 +36,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
 LOCAL_MODULE := ovkmplayer
-LOCAL_SRC_FILES := ovkmplayer.cpp
+LOCAL_SRC_FILES := ovkmplayer.cpp android.cpp
 LOCAL_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)
 LOCAL_CFLAGS += -std=c++98
