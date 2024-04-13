@@ -90,12 +90,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/id"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/id"/>
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/id"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -121,17 +116,93 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/friends"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/friends"/>
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/friends"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/friends" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.activities.intents.VideosIntentActivity"
+            android:label="@string/videos"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/videos" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/videos"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/videos" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.activities.intents.PhotosIntentActivity"
+            android:label="@string/photo"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/photos" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/photos"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/photos" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.activities.intents.AudiosIntentActivity"
+            android:label="@string/photo"
+            android:icon="@drawable/ic_ab_app"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="openvk"
+                    android:host="ovk"
+                    android:pathPrefix="/audios" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/audios"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="openvk.xyz" android:pathPrefix="/audios" />
             </intent-filter>
         </activity>
 
@@ -153,12 +224,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/club"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/club"/>
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/club"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -185,12 +251,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/notes"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/notes"/>
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/notes"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -270,12 +331,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.su" android:pathPrefix="/wall"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="openvk.uk" android:pathPrefix="/wall"/>
+                <data android:scheme="https" android:host="ovk.to" android:pathPrefix="/wall"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
@@ -95,6 +97,11 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
         if(objects != null) {
             return objects.size();
@@ -119,7 +126,13 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
 
         void bind(final int position) {
             final Photo item = getItem(position);
-            loadSmallPicture(item.id, item.album_id, item.owner_id, item_photo);
+            if(item_photo.getTag() == null) {
+                Bitmap bitmap = loadSmallPicture(item.id, item.album_id, item.owner_id, item_photo);
+                item_photo.setTag(bitmap);
+                item_photo.setImageBitmap(bitmap);
+            } else if(item_photo.getTag() instanceof Bitmap) {
+                item_photo.setImageBitmap((Bitmap) item_photo.getTag());
+            }
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,7 +150,7 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
         }); */
         }
 
-        private void loadSmallPicture(long photo_id, long album_id, long owner_id, ImageView view) {
+        private Bitmap loadSmallPicture(long photo_id, long album_id, long owner_id, ImageView view) {
             try {
                 String full_filename = "file://" + ctx.getCacheDir()
                         + "/" + instance + "/photos_cache/album_photos/" +
@@ -147,9 +160,36 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
                     view.setImageDrawable(
                             ctx.getResources().getDrawable(R.drawable.photo_loading_black)
                     );
-                    return;
+                    return null;
                 }
-                view.setImageBitmap(bitmap);
+                int max_size = 360;
+                if(ctx.getResources().getDisplayMetrics().widthPixels <= 480) {
+                    max_size = 192;
+                }
+                float aspect_ratio = (float)bitmap.getWidth() / (float)max_size;
+                if(bitmap.getWidth() > max_size || bitmap.getHeight() > max_size) {
+                    Bitmap photo_scaled;
+                    int w_scaled = (int)(bitmap.getHeight() / aspect_ratio);
+                    if(bitmap.getWidth() > bitmap.getHeight()) { // Landscape
+                        photo_scaled = Bitmap.createScaledBitmap(
+                                bitmap,
+                                max_size,
+                                w_scaled,
+                                false
+                        );
+                    } else {
+                        photo_scaled = Bitmap.createScaledBitmap(
+                                bitmap,
+                                max_size,
+                                max_size,
+                                false
+                        );
+                    }
+                    view.setImageBitmap(photo_scaled);
+                    return photo_scaled;
+                } else {
+                    return bitmap;
+                }
             } catch (OutOfMemoryError oom) {
                 imageLoader.clearMemoryCache();
                 imageLoader.clearDiskCache();
@@ -159,9 +199,10 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
                     loadSmallPicture(owner_id, album_id, owner_id, view);
                 }
             }
+            return null;
         }
 
-        public void openPhoto(Photo photo) {
+        void openPhoto(Photo photo) {
             Intent intent = new Intent(ctx.getApplicationContext(), PhotoViewerActivity.class);
             try {
                 String full_filename = "file://" + ctx.getCacheDir()

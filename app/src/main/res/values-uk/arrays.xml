@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="popup_menu_api_v8">
+        <item>Налаштуваня</item>
+        <item>Про додаток</item>
+        <item>Закрити</item>
+    </string-array>
+
+    <string-array name="connection_error_reasons">
+        <item>Відсутнє підключення до Інтернету</item>
+        <item>Сервер надіслав некоректну відповідь</item>
+        <item>Перевищено час очікування відповіді</item>
+        <item>Обрив захищеного з\'єднання</item>
+        <item>Збій інстанції чи додатки</item>
+        <item>Інстанція недоступна</item>
+        <item>Невідома помилка</item>
+    </string-array>
+
+    <string-array name="months_short">
+        <item>січ</item>
+        <item>лют</item>
+        <item>бер</item>
+        <item>кві</item>
+        <item>тра</item>
+        <item>чер</item>
+        <item>лип</item>
+        <item>сер</item>
+        <item>вер</item>
+        <item>жов</item>
+        <item>лис</item>
+        <item>гру</item>
+    </string-array>
+
+    <string-array name="months_full">
+        <item>січня</item>
+        <item>лютого</item>
+        <item>березня</item>
+        <item>квітня</item>
+        <item>травня</item>
+        <item>червня</item>
+        <item>липня</item>
+        <item>серпня</item>
+        <item>вересня</item>
+        <item>жовтня</item>
+        <item>листопада</item>
+        <item>грудня</item>
+    </string-array>
+
+    <string-array name="like_menu">
+        <item>Не подобається</item>
+        <item>Розповісти друзям</item>
+    </string-array>
+
+    <string-array name="photo_menu">
+        <item>Зробити знімок</item>
+        <item>Завантажити з телефону</item>
+    </string-array>
+
+    <string-array name="photo_menu2">
+        <item>Зробити знімок</item>
+        <item>Завантажити з телефону</item>
+        <item>Не прикріплювати</item>
+    </string-array>
+
+    <string-array name="photo_menu3">
+        <item>Завантажити з телефону</item>
+        <item>Не прикріплювати</item>
+    </string-array>
+
+    <string-array name="num_new_messages">
+        <item>%d нове повідомлення.</item>
+        <item>%d нових повідомлення.</item>
+        <item>%d нових повідомлень.</item>
+    </string-array>
+
+    <string-array name="num_poll_votes">
+        <item>%d голос</item>
+        <item>%d голоси</item>
+        <item>%d голосів</item>
+    </string-array>
+
+    <string-array name="new_posts">
+        <item>Показати %d новий запис</item>
+        <item>Показати %d нових записи</item>
+        <item>Показати %d нових записів</item>
+    </string-array>
+
+    <string-array name="place_titles">
+        <item>Home</item>
+        <item>Work</item>
+        <item>Restaurant</item>
+        <item>Club</item>
+        <item>Movie Theater</item>
+        <item>Bar</item>
+        <item>Entertainment</item>
+        <item>Store</item>
+        <item>Airport</item>
+        <item>Train Station</item>
+        <item>Hotel</item>
+        <item>Cafe</item>
+        <item>Fast Food Restaurant</item>
+        <item>Pizzeria</item>
+        <item>Swimming Pool</item>
+        <item>Gym</item>
+        <item>Educational Institution</item>
+        <item>Museum</item>
+        <item>Theater</item>
+        <item>Park</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="sett_friends_order">
+        <item>За іменем</item>
+        <item>За прізвищем</item>
+        <item>За популярністю</item>
+    </string-array>
+
+    <string-array name="date_ago_hrs">
+        <item>годину тому</item>
+        <item>дві години тому</item>
+        <item>три години тому</item>
+    </string-array>
+
+    <string-array name="date_ago_mins">
+        <item>%d хвилину тому</item>
+        <item>%d хвилини тому</item>
+        <item>%d хвилин тому</item>
+    </string-array>
+
+    <string-array name="date_ago_secs">
+        <item>%d секунду тому</item>
+        <item>%d секунди тому</item>
+        <item>%d секунд тому</item>
+    </string-array>
+
+    <string-array name="ncomments_last">
+        <item>Останній з %d коментаря</item>
+        <item>Останній з %d коментарів</item>
+    </string-array>
+
+    <string-array name="profile_relation_m">
+        <item>Неодружений</item>
+        <item>Є дівчина</item>
+        <item>Заручений</item>
+        <item>Одружений</item>
+        <item>Все складно</item>
+        <item>В активному пошуку</item>
+        <item>Закоханий</item>
+    </string-array>
+
+    <string-array name="profile_relation_f">
+        <item>Незаміжня</item>
+        <item>Є хлопець</item>
+        <item>Заручена</item>
+        <item>Заміжня</item>
+        <item>Все складно</item>
+        <item>В активному пошуку</item>
+        <item>Закохана</item>
+    </string-array>
+
+    <string-array name="post_options">
+        <item>Тільки для друзів</item>
+        <!--item>Вказати місцезнаходження</item-->
+    </string-array>
+
+    <string-array name="album_numphotos">
+        <item>%d фотографія</item>
+        <item>%d фотографії</item>
+        <item>%d фотографій</item>
+    </string-array>
+
+    <string-array name="sett_update_interval_items">
+        <item>30 секунд</item>
+        <item>45 секунд</item>
+        <item>1 хвилина</item>
+        <item>2 хвилини</item>
+        <item>3 хвилини</item>
+        <item>5 хвилин</item>
+        <item>10 хвилин</item>
+        <item>15 хвилин</item>
+        <item>30 хвилин</item>
+        <item>1 година</item>
+        <item>2 години</item>
+        <item>Відключити</item>
+    </string-array>
+
+    <string-array name="album_privacy_options">
+        <item>Всі користувачі</item>
+        <item>Тільки друзі</item>
+        <item>Друзі друзів</item>
+        <item>Тільки я</item>
+        <item>Розширені налаштування</item>
+    </string-array>
+
+    <string-array name="album_displayable_privacy_options">
+        <item>Всі користувачі</item>
+        <item>Тільки друзі</item>
+        <item>Друзі друзів</item>
+        <item>Тільки я</item>
+    </string-array>
+
+    <string-array name="message_attach_options">
+        <item>Фотографію</item>
+        <item>Аудіозапис</item>
+        <item>Відеозапис</item>
+        <item>Документ</item>
+        <item>Карту</item>
+    </string-array>
+
+    <string-array name="message_attach_options_noplace">
+        <item>Фотографію</item>
+        <item>Аудіозапис</item>
+        <item>Відеозапис</item>
+        <item>Документ</item>
+    </string-array>
+
+    <string-array name="profile_counters">
+        <item>Фотографії</item>
+        <item>Фотографії з %s</item>
+        <item>Альбоми</item>
+        <item>Аудіозаписи</item>
+        <item>Відеозаписи</item>
+        <item>Відеозаписи з %s</item>
+        <item>Друзі</item>
+        <item>Спільні друзі</item>
+        <item>Спільноти</item>
+        <item>Нотатки</item>
+        <item>Обговорення</item>
+        <item>Учасники</item>
+        <item>Документи</item>
+        <item>Новини</item>
+        <item>Підписники</item>
+    </string-array>
+
+    <string-array name="ntf_like_m">
+        <item>оцінив запис</item>
+        <item>оцінив фотографію</item>
+        <item>оцінив відеозапис</item>
+        <item>оцінив коментар</item>
+    </string-array>
+
+    <string-array name="ntf_like_f">
+        <item>оцінила запис</item>
+        <item>оцінила фотографію</item>
+        <item>оцінила відеозапис</item>
+        <item>оцінила коментар</item>
+    </string-array>
+
+    <string-array name="ntf_like_x">
+        <item>оцінили запис</item>
+        <item>оцінили фотографію</item>
+        <item>оцінили відеозапис</item>
+        <item>оцінили коментар</item>
+    </string-array>
+
+    <string-array name="ntf_rt_m">
+        <item>поділився записом</item>
+        <item>поділився фотографією</item>
+        <item>поділився відеозаписом</item>
+        <item>поділився коментарем</item>
+    </string-array>
+
+    <string-array name="ntf_rt_f">
+        <item>поділилась записом</item>
+        <item>поділилась фотографією</item>
+        <item>поділилась відеозаписом</item>
+        <item>поділилась коментарем</item>
+    </string-array>
+
+    <string-array name="ntf_rt_x">
+        <item>поділились записом</item>
+        <item>поділились фотографією</item>
+        <item>поділились видеозаписом</item>
+        <item>поділились коментарем</item>
+    </string-array>
+
+    <string-array name="ntf_follow_m">
+        <item>підписався на Ваші оновлення</item>
+    </string-array>
+
+    <string-array name="ntf_follow_f">
+        <item>підписалася на Ваші оновлення</item>
+    </string-array>
+
+    <string-array name="ntf_follow_x">
+        <item>підписалися на Ваші поновлення</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_m">
+        <item>прийняв Вашу заявку в друзі</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_f">
+        <item>прийняла Вашу заявку в друзі</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_x">
+        <item>прийняли Вашу заявку в друзі</item>
+    </string-array>
+
+    <string-array name="ntf_x_more_users">
+        <item>та ще %d людина</item>
+        <item>та ще %d людини</item>
+        <item>та ще %d людей</item>
+    </string-array>
+
+    <string-array name="replies_options">
+        <item>Мені подобається</item>
+        <item>Відповісти</item>
+    </string-array>
+
+    <string-array name="news_added_photo_m">
+        <item>додав %d фотографію</item>
+        <item>додав %d фотографії</item>
+        <item>додав %d фотографій</item>
+    </string-array>
+
+    <string-array name="news_added_photo_f">
+        <item>додала %d фотографію</item>
+        <item>додала %d фотографії</item>
+        <item>додала %d фотографій</item>
+    </string-array>
+
+    <string-array name="news_tagged_photo_m">
+        <item>був позначений на %d фотографії</item>
+        <item>був позначений на %d фотографіях</item>
+        <item>був позначений на %d фотографіях</item>
+    </string-array>
+
+    <string-array name="news_tagged_photo_f">
+        <item>була позначена на %d фотографії</item>
+        <item>була позначена на %d фотографіях</item>
+        <item>була позначена на %d фотографіях</item>
+    </string-array>
+
+    <string-array name="community_types">
+        <item>Зустрічі</item>
+        <item>Групи</item>
+        <item>Сторінки</item>
+    </string-array>
+
+    <string-array name="topic_posts">
+        <item>%d повідомлення</item>
+        <item>%d повідомлення</item>
+        <item>%d повідомлень</item>
+    </string-array>
+
+    <string-array name="sett_cache_quality_array">
+        <item>Низьке</item>
+        <item>Середня</item>
+        <item>Висока</item>
+        <item>Вихiдна</item>
+    </string-array>
+
+    <string-array name="sett_img_cache_location">
+        <item>Память пристрою</item>
+        <item>SD-карта</item>
+    </string-array>
+
+    <string-array name="birthday_age">
+        <item>%d рік</item>
+        <item>%d роки</item>
+        <item>%d років</item>
+    </string-array>
+
+    <string-array name="messages">
+        <item>повідомлення</item>
+        <item>повідомлення</item>
+        <item>повідомлень</item>
+    </string-array>
+
+    <string-array name="profile_relation_pm">
+        <item>Неодружений</item>
+        <item>Зустрічається з %s</item>
+        <item>Заручений з %s</item>
+        <item>Одружений з %s</item>
+        <item>Все складно з %s</item>
+        <item>В активному пошуку</item>
+        <item>Закоханий в %s</item>
+    </string-array>
+
+    <string-array name="profile_relation_pf">
+        <item>Незаміжня</item>
+        <item>Зустрічається з %s</item>
+        <item>Заручена з %s</item>
+        <item>Одружена з %s</item>
+        <item>Все складно з %s</item>
+        <item>В активному пошуку</item>
+        <item>Закохана в %s</item>
+    </string-array>
+
+    <string-array name="leftmenu">
+        <item>Друзі</item>
+        <item>Фотографії</item>
+        <item>Відеозаписи</item>
+        <item>Аудіозаписи</item>
+        <item>Повідомлення</item>
+        <item>Групи</item>
+        <item>Нотатки</item>
+        <item>Новини</item>
+        <item>Відповіді</item>
+        <item>Закладки</item>
+        <item>Налаштування</item>
+    </string-array>
+
+    <string-array name="leftmenu_account">
+        <item>Змінити обліковий запис</item>
+        <item>Змінити фотографію</item>
+        <item>Вийти</item>
+    </string-array>
+
+    <string-array name="fave_tabs">
+        <item>Люди</item>
+        <item>Записи</item>
+        <item>Посилання</item>
+        <item>Фотографії</item>
+        <item>Відео</item>
+    </string-array>
+
+    <string-array name="profile_friends">
+        <item>friend</item>
+        <item>friends</item>
+        <item>friends</item>
+    </string-array>
+
+    <string-array name="friends_mutual">
+        <item>%d спільний</item>
+        <item>%d спільних</item>
+        <item>%d спільних</item>
+    </string-array>
+
+    <string-array name="video_search_quality">
+        <item>Будь-яка якість</item>
+        <item>Тільки HD</item>
+    </string-array>
+
+    <string-array name="video_search_length">
+        <item>Будь-яка тривалість</item>
+        <item>Короткі</item>
+        <item>Довгі</item>
+    </string-array>
+
+    <string-array name="groups">
+        <item>%d спільнота</item>
+        <item>%d спільноти</item>
+        <item>%d спільнот</item>
+    </string-array>
+
+    <string-array name="events">
+        <item>%d зустріч</item>
+        <item>%d зустрічі</item>
+        <item>%d зустрічей</item>
+    </string-array>
+
+    <string-array name="chat_members">
+        <item>%d учасник</item>
+        <item>%d учасника</item>
+        <item>%d учасників</item>
+    </string-array>
+
+    <string-array name="group_members">
+        <item>%d учасник</item>
+        <item>%d учасника</item>
+        <item>%d учасників</item>
+    </string-array>
+
+    <string-array name="dnd_options">
+        <item>1 годину</item>
+        <item>24 години</item>
+        <item>7 днів</item>
+        <item>Назавжди</item>
+    </string-array>
+
+    <string-array name="personal_politics_options">
+        <item>Комуністичні</item>
+        <item>Соціалістичні</item>
+        <item>Помірні</item>
+        <item>Ліберальні</item>
+        <item>Консервативні</item>
+        <item>Монархічні</item>
+        <item>Ультраконсервативні</item>
+        <item>Індиферентні</item>
+        <item>Лібертаріанські</item>
+    </string-array>
+
+    <string-array name="personal_life_options">
+        <item>Сім\'я та діти</item>
+        <item>Кар\'єра та гроші</item>
+        <item>Розваги та відпочинок</item>
+        <item>Наука та дослідження</item>
+        <item>Вдосконалення світу</item>
+        <item>Саморозвиток</item>
+        <item>Краса та мистецтво</item>
+        <item>Слава та вплив</item>
+    </string-array>
+
+    <string-array name="personal_people_options">
+        <item>Розум та креативність</item>
+        <item>Доброта та чесність</item>
+        <item>Краса та здоров\'я</item>
+        <item>Влада та багатство</item>
+        <item>Сміливість та завзятість</item>
+        <item>Гумор та життєлюбство</item>
+    </string-array>
+
+    <string-array name="personal_views_options">
+        <item>Різко негативне</item>
+        <item>Негативне</item>
+        <item>Компромісне</item>
+        <item>Нейтральне</item>
+        <item>Позитивне</item>
+    </string-array>
+
+    <string-array name="wallview_likes">
+        <item>Сподобалось %d людині</item>
+        <item>Сподобалось %d людям</item>
+        <item>Сподобалось %d людям</item>
+    </string-array>
+    <string-array name="wallview_likes_me">
+        <item>Сподобалось Вам та %d людині</item>
+        <item>Сподобалось Вам та %d людям</item>
+        <item>Сподобалось Вам та %d людям</item>
+    </string-array>
+
+    <string-array name="wallview_comments">
+        <item>Показати ще %d коментар</item>
+        <item>Показати ще %d коментарі</item>
+        <item>Показати ще %d коментарів</item>
+    </string-array>
+
+    <string-array name="num_mutual_friends_req">
+        <item>%d спільний друг</item>
+        <item>%d спільних друга</item>
+        <item>%d спільних друзів</item>
+    </string-array>
+
+    <string-array name="num_attach_photo">
+        <item>Фотографія</item>
+        <item>%d фотографії</item>
+        <item>%d фотографій</item>
+    </string-array>
+
+    <string-array name="num_attach_audio">
+        <item>Аудіозапис</item>
+        <item>%d аудіозаписи</item>
+        <item>%d аудіозаписів</item>
+    </string-array>
+
+    <string-array name="num_attach_video">
+        <item>Відеозапис</item>
+        <item>%d відеозаписи</item>
+        <item>%d відеозаписів</item>
+    </string-array>
+
+    <string-array name="num_attach_document">
+        <item>Документ</item>
+        <item>%d документи</item>
+        <item>%d документів</item>
+    </string-array>
+
+    <string-array name="num_attach_fwd_message">
+        <item>%d переслане повідомлення</item>
+        <item>%d пересланих повідомлення</item>
+        <item>%d пересланих повідомлень</item>
+    </string-array>
+
+    <string-array name="newsfeed_actionbar_items">
+        <item>Пiдписки</item>
+        <item>Всi новини</item>
+    </string-array>
+
+    <string-array name="video_views">
+        <item>%d перегляд</item>
+        <item>%d перегляди</item>
+        <item>%d переглядів</item>
+    </string-array>
+
+    <string-array name="wall_attach_options">
+        <item>Аудіозапис</item>
+        <item>Відеозапис</item>
+        <item>Документ</item>
+    </string-array>
+</resources>

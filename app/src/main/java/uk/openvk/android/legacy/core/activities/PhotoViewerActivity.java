@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -42,6 +43,12 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -56,6 +63,7 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.ui.list.adapters.PhotosListAdapter;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.views.base.ZoomableImageView;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -70,23 +78,17 @@ public class PhotoViewerActivity extends NetworkActivity {
     private ActionBar actionBar;
     private PopupWindow popupMenu;
     private String instance;
+    private boolean isFullScreenMode;
+    private DisplayImageOptions displayimageOptions;
+    private ImageLoaderConfiguration imageLoaderConfig;
+    private ImageLoader imageLoader;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         instance = ((OvkApplication) getApplicationContext()).getCurrentInstance();
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-            }
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
         if(getIntent().getExtras() == null) {
             Toast.makeText(this,
@@ -95,17 +97,7 @@ public class PhotoViewerActivity extends NetworkActivity {
         }
 
         setContentView(R.layout.activity_photo_viewer);
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                Bundle data = message.getData();
-                if(BuildConfig.DEBUG)
-                    Log.d(OvkApplication.APP_TAG, String.format("Handling API message: %s", message.what));
-                receiveState(message.what, data);
-            }
-        };
         actionBar = findViewById(R.id.actionbar);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
@@ -141,8 +133,8 @@ public class PhotoViewerActivity extends NetworkActivity {
             createActionPopupMenu(activity_menu);
         }
 
-        ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.GONE);
-        ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.VISIBLE);
+        findViewById(R.id.picture_view).setVisibility(View.GONE);
+        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
         ((ProgressLayout) findViewById(R.id.progress_layout)).enableDarkTheme(true, 1);
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -182,7 +174,7 @@ public class PhotoViewerActivity extends NetworkActivity {
     private void createActionPopupMenu(final Menu menu) {
         @SuppressLint("InflateParams")
         final View menu_container =
-                (View) getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
+                getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
         final ActionBar actionBar = findViewById(R.id.actionbar);
     }
 
@@ -202,12 +194,43 @@ public class PhotoViewerActivity extends NetworkActivity {
                 assert extras != null;
                 bitmap = BitmapFactory.decodeFile(
                         String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
-                        getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
-                        extras.getLong("photo_id")), bfOptions);
-                ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
+                                getCacheDir().getAbsolutePath(), instance, extras.getLong("author_id"),
+                                extras.getLong("photo_id")), bfOptions);
+                int max_size = 2880;
+                if(getResources().getDisplayMetrics().widthPixels <= 720) {
+                    max_size = 1536;
+                } else if(getResources().getDisplayMetrics().widthPixels <= 480) {
+                    max_size = 960;
+                }
+                float aspect_ratio = (float)bitmap.getWidth() / (float)max_size;
+                if(bitmap.getWidth() > max_size || bitmap.getHeight() > max_size) {
+                    Bitmap photo_scaled;
+                    int w_scaled = (int)(bitmap.getHeight() / aspect_ratio);
+                    if(bitmap.getWidth() > bitmap.getHeight()) { // Landscape
+                        photo_scaled = Bitmap.createScaledBitmap(
+                                bitmap,
+                                max_size,
+                                w_scaled,
+                                false
+                        );
+                    } else {
+                        photo_scaled = Bitmap.createScaledBitmap(
+                                bitmap,
+                                max_size,
+                                max_size,
+                                false
+                        );
+                    }
+                    ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(photo_scaled);
+                } else {
+                    ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
+                }
+
                 ((ZoomableImageView) findViewById(R.id.picture_view)).enablePinchToZoom();
-                ((ZoomableImageView) findViewById(R.id.picture_view)).setVisibility(View.VISIBLE);
-                ((ProgressLayout) findViewById(R.id.progress_layout)).setVisibility(View.GONE);
+
+                findViewById(R.id.picture_view).setVisibility(View.VISIBLE);
+                findViewById(R.id.progress_layout).setVisibility(View.GONE);
+
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if(getActionBar() != null) {
                         getActionBar().show();
@@ -215,14 +238,27 @@ public class PhotoViewerActivity extends NetworkActivity {
                 } else {
                     actionBar.setVisibility(View.VISIBLE);
                 }
-                ((ZoomableImageView) findViewById(R.id.picture_view)).setOnClickListener(new View.OnClickListener() {
+                findViewById(R.id.picture_view).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             if(getActionBar().isShowing()) {
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        enableFullScreenMode();
+                                    }
+                                }, 400);
                                 getActionBar().hide();
                             } else {
-                                getActionBar().show();
+                                enableFullScreenMode();
+                                handler.postDelayed(new Runnable() {
+                                    @SuppressLint("NewApi")
+                                    @Override
+                                    public void run() {
+                                        getActionBar().show();
+                                    }
+                                }, 200);
                             }
                         } else {
                             if(actionBar.getVisibility() == View.VISIBLE) {
@@ -306,12 +342,18 @@ public class PhotoViewerActivity extends NetworkActivity {
                             break;
                     }
 
-                    File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "OpenVK");
+                    File directory = new File(
+                            Environment.getExternalStorageDirectory().getAbsolutePath(),
+                            "OpenVK"
+                    );
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
 
-                    directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/OpenVK", "Photos");
+                    directory = new File(
+                            Environment.getExternalStorageDirectory().getAbsolutePath() + "/OpenVK",
+                            "Photos"
+                    );
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
@@ -363,5 +405,50 @@ public class PhotoViewerActivity extends NetworkActivity {
         }
         activity_menu = menu;
         return true;
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    protected void setTranslucentStatusBar() {
+        resetTranslucentStatusBar();
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
+            super.setLegacyTranslucentStatusBar(1, Color.parseColor("#D8000000"));
+        else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(Color.parseColor("#D8000000"));
+            getWindow().setStatusBarColor(Color.parseColor("#D8000000"));
+        } else
+            super.setLegacyTranslucentStatusBar(1, Color.parseColor("#A5000000"));
+    }
+
+    protected void enableFullScreenMode() {
+        if (!isFullScreenMode) {
+            resetTranslucentStatusBar();
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setTranslucentStatusBar();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            }
+        }
+        isFullScreenMode = !isFullScreenMode;
+    }
+
+    @Override
+    protected void resetTranslucentStatusBar() {
+        super.resetTranslucentStatusBar();
     }
 }

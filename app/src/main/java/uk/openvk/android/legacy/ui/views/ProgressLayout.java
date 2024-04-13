@@ -47,19 +47,7 @@ public class ProgressLayout extends LinearLayout {
 
     public void enableDarkTheme(boolean value) {
         ProgressBar progressBar = findViewById(R.id.progressBar);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (value) {
-                setBackgroundColor(getResources().getColor(R.color.color_black_v2));
-                progressBar.setProgressDrawable(
-                        getResources().getDrawable(R.drawable.progress_light)
-                );
-            } else {
-                setBackgroundColor(Color.parseColor("#e3e4e6"));
-                progressBar.setProgressDrawable(
-                        getResources().getDrawable(R.drawable.progress_dark)
-                );
-            }
-        }
+        enableDarkTheme(value, 1);
     }
 
     public void enableDarkTheme(boolean value, int variant) {
@@ -68,18 +56,18 @@ public class ProgressLayout extends LinearLayout {
             if (value) {
                 if (variant == 0) {
                     setBackgroundColor(getResources().getColor(R.color.color_black_v2));
-                    progressBar.setProgressDrawable(
+                    progressBar.setIndeterminateDrawable(
                             getResources().getDrawable(R.drawable.progress_light)
                     );
                 } else {
                     setBackgroundColor(getResources().getColor(R.color.window_bg_black));
-                    progressBar.setProgressDrawable(
+                    progressBar.setIndeterminateDrawable(
                             getResources().getDrawable(R.drawable.progress_light)
                     );
                 }
             } else {
                 setBackgroundColor(Color.parseColor("#e3e4e6"));
-                progressBar.setProgressDrawable(
+                progressBar.setIndeterminateDrawable(
                         getResources().getDrawable(R.drawable.progress_dark));
             }
         }

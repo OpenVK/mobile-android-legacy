@@ -15,7 +15,7 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="BaseStyle.Dark" parent="android:style/Theme.Holo">
         <item name="android:actionBarStyle">@style/ActionBarStyle.Dark</item>
@@ -51,10 +51,13 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:textColor">#ffffff</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 
     <style name="ActionBarStyle.Dark.Transparent" parent="android:style/Widget.Holo.ActionBar.Solid">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@drawable/bg_actionbar_black_transparent_v2</item>
         <item name="android:icon">@drawable/ic_ab_app</item>
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
         <!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>

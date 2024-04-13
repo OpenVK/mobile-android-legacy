@@ -31,6 +31,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -97,6 +99,7 @@ import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.AccountAuthenticator;
 import uk.openvk.android.legacy.utils.NotificationManager;
+import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends NetworkFragmentActivity {
@@ -106,14 +109,11 @@ public class AppActivity extends NetworkFragmentActivity {
     public ProgressLayout progressLayout;
     public ErrorLayout errorLayout;
     private SlidingMenuLayout slidingmenuLayout;
-    public NotesFragment notesFragment;
     public ArrayList<Conversation> conversations;
     public Menu activity_menu;
     public GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
     private String last_longpoll_response;
-    private int item_pos;
-    private int poll_answer;
     public NotificationManager notifMan;
     private boolean inBackground;
     public ActionBarLayout ab_layout;
@@ -211,11 +211,15 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
                 if(notifMan != null) notifMan.clearAudioPlayerNotification();
                 exitApplication();
-            } else if (selectedFragment instanceof AudiosFragment) {
-                ((AudiosFragment) selectedFragment).closeSearchItem();
-                fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
             } else {
+                if (selectedFragment instanceof AudiosFragment)
+                    ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
+                }
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
             }
         } catch (Exception ex) {
             exitApplication();
@@ -244,7 +248,8 @@ public class AppActivity extends NetworkFragmentActivity {
         };
         // Register LongPoll Broadcast Receiver
         registerReceiver(lpReceiver, new IntentFilter(
-                "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
+                "uk.openvk.android.legacy.LONGPOLL_RECEIVE")
+        );
     }
 
     public void setActionBar(String layout_name) {
@@ -578,8 +583,12 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (ovk_api.newsfeed == null) {
                     ovk_api.newsfeed = new Newsfeed();
                     newsfeed_count = 25;
-                    ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
                 }
+                if(selectedFragment instanceof NewsfeedFragment) {
+                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
+                }
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 break;
             case 8:
                 setActionBarTitle(getResources().getString(R.string.menu_settings));
@@ -719,7 +728,8 @@ public class AppActivity extends NetworkFragmentActivity {
                     ((FriendsFragment) selectedFragment).loadAvatars();
                 }
             } else if (message == HandlerMessages.GROUP_AVATARS) {
-                groupsFragment.loadAvatars();
+                if(selectedFragment instanceof GroupsFragment)
+                    ((GroupsFragment) selectedFragment).loadAvatars();
             } else if (message == HandlerMessages.USERS_GET) {
                 ovk_api.user = ovk_api.users.getList().get(0);
                 ovk_api.account.user = ovk_api.user;
@@ -821,12 +831,9 @@ public class AppActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 ovk_api.friends.parse(data.getString("response"), ovk_api.dlman,
                         false, true);
-                if (selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment)
-                            .setCounter(ovk_api.user, "friends", ovk_api.friends.count);
-                }
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if (selectedFragment instanceof ConversationsFragment) {
+                    conversations = ovk_api.messages.getConversations();
                     if (conversations.size() > 0) {
                         ((ConversationsFragment) selectedFragment)
                                 .createAdapter(this, conversations, ovk_api.account);
@@ -859,6 +866,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 boolean addVote = message == HandlerMessages.POLL_ADD_VOTE
                         || message == HandlerMessages.POLL_DELETE_VOTE;
                 WallPost item = null;
+                int item_pos = -1;
                 if (selectedFragment instanceof NewsfeedFragment) {
                     item = ovk_api.newsfeed.getWallPosts().get(item_pos);
                 } else if(selectedFragment instanceof ProfilePageFragment) {
@@ -869,6 +877,7 @@ public class AppActivity extends NetworkFragmentActivity {
                          attachment_index++) {
                         if (item.attachments.get(attachment_index).type.equals("poll")) {
                             Poll poll = ((Poll) item.attachments.get(attachment_index));
+                            int poll_answer = -1;
                             Poll.PollAnswer answer = poll.answers.get(poll_answer);
                             poll.user_votes = addVote ? 0 : 1;
                             answer.is_voted = addVote;
@@ -1028,6 +1037,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     private void activateLongPollService() {
         OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
+        client_info = SecureCredentialsStorage.generateClientInfo(this, client_info);
         ovk_app.longPollService =
                 new LongPollService(this, handler, client_info);
         ovk_app.longPollService.setProxyConnection(
@@ -1035,8 +1045,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 global_prefs.getString("proxy_address", ""));
         ovk_app.longPollService.run(instance_prefs.
                         getString("server", ""), longPollServer.address, longPollServer.key,
-                longPollServer.ts, global_prefs.getBoolean("useHTTPS", true),
-                global_prefs.getBoolean("legacyHttpClient", false));
+                longPollServer.ts, client_info);
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {

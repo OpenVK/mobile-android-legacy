@@ -21,6 +21,7 @@ package uk.openvk.android.legacy.core.activities;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -127,7 +129,7 @@ public class PhotoAlbumActivity extends NetworkActivity {
                 ex.printStackTrace();
             }
         }
-        setTranslucentStatusBar(1, android.R.color.black);
+        installLayouts();
     }
 
     @Override
@@ -157,7 +159,13 @@ public class PhotoAlbumActivity extends NetworkActivity {
     }
 
     private void installLayouts() {
-        
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            setTranslucentStatusBar(1, Color.parseColor("#D8000000"));
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(Color.parseColor("#D8000000"));
+        }
     }
 
     @Override

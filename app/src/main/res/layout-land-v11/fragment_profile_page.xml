@@ -67,13 +67,14 @@
                         android:visibility="gone" />
 
                     <LinearLayout
+                        android:id="@+id/actions_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
                         android:layout_marginBottom="6dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
                         android:orientation="horizontal">
 
                         <Button
@@ -89,12 +90,12 @@
                         <ImageButton
                             android:id="@+id/add_to_friends"
                             android:layout_width="60dp"
-                            android:layout_marginRight="4dp"
                             android:layout_height="match_parent"
+                            android:layout_marginRight="4dp"
                             android:background="@drawable/btn_light_blue"
                             android:src="@drawable/ic_ab_add"
-                            tools:ignore="ContentDescription,RtlHardcoded"
-                            android:visibility="gone"/>
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription,RtlHardcoded" />
 
                     </LinearLayout>
 
@@ -112,7 +113,7 @@
                         android:textSize="18sp"
                         android:textStyle="italic" />
 
-                    <TableRow
+                    <org.apmem.tools.layouts.FlowLayout
                         android:id="@+id/profile_counters"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -124,33 +125,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_marginBottom="8dp">
 
-                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
-                            android:id="@+id/photos_counter"
-                            android:layout_width="110dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="4dp"
-                            android:layout_weight="1"
-                            android:visibility="gone"
-                            tools:ignore="RtlHardcoded"/>
-
-                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
-                            android:id="@+id/friends_counter"
-                            android:layout_width="110dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="4dp"
-                            android:layout_marginRight="4dp"
-                            android:layout_weight="1"
-                            tools:ignore="RtlHardcoded"/>
-
-                        <uk.openvk.android.legacy.ui.views.ProfileCounterLayout
-                            android:id="@+id/mutual_counter"
-                            android:layout_width="110dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginLeft="4dp"
-                            android:layout_weight="1"
-                            android:visibility="gone"/>
-                    </TableRow>
+                    </org.apmem.tools.layouts.FlowLayout>
 
                 </LinearLayout>
 

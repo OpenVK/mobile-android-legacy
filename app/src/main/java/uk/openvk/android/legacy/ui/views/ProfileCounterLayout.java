@@ -19,8 +19,11 @@
 
 package uk.openvk.android.legacy.ui.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -35,6 +38,7 @@ import uk.openvk.android.legacy.R;
 public class ProfileCounterLayout extends LinearLayout {
     public String action;
 
+    @SuppressLint("InflateParams")
     public ProfileCounterLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view = null;
@@ -65,29 +69,80 @@ public class ProfileCounterLayout extends LinearLayout {
                     R.layout.profile_counter, null);
         }
         this.addView(view);
+
+        float dp = context.getResources().getDisplayMetrics().scaledDensity;
+
         if(view != null) {
             LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-            layoutParams.width = LayoutParams.MATCH_PARENT;
+            layoutParams.width =  (int) (92 * dp);
             view.setLayoutParams(layoutParams);
         }
     }
 
-    public void setCounter(long count, String label, String action) {
+    @SuppressLint("InflateParams")
+    public ProfileCounterLayout(Context context) {
+        super(context);
+        View view = null;
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        try {
+            if (!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                switch (global_prefs.getString("uiTheme", "blue")) {
+                    case "Gray":
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter_gray, null);
+                        break;
+                    case "Black":
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter_black, null);
+                        break;
+                    default:
+                        view = LayoutInflater.from(getContext()).inflate(
+                                R.layout.profile_counter, null);
+                        break;
+                }
+            } else {
+                view = LayoutInflater.from(getContext()).inflate(
+                        R.layout.profile_counter_light, null);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            view = LayoutInflater.from(getContext()).inflate(
+                    R.layout.profile_counter, null);
+        }
+        this.addView(view);
+
+        if(view != null) {
+            adjustSize(view, context, context.getResources().getConfiguration().orientation);
+        }
+    }
+
+    private void adjustSize(View view, Context ctx, int orientation) {
+        float dp = ctx.getResources().getDisplayMetrics().scaledDensity;
+        LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
+        int screen_width = ctx.getResources().getDisplayMetrics().widthPixels;
+        if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
+            layoutParams.width = (int) (100 * dp);
+        } else if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutParams.width = screen_width / 3 - (int) (12 * dp);
+        }
+        view.setLayoutParams(layoutParams);
+    }
+
+    public void setCounter(long count, String label, final String action) {
         this.action = action;
+        if(action != null) {
+            findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Global.openIntentFromCounters(getContext(), action);
+                }
+            });
+        }
         ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
         ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
     }
 
-    public void setOnCounterClickListener() {
-        ((LinearLayout) findViewById(R.id.counter)).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Global.openIntentFromCounters(getContext(), action);
-            }
-        });
-    }
-
     public void setOnCounterClickListener(OnClickListener onClickListener) {
-        ((LinearLayout) findViewById(R.id.counter)).setOnClickListener(onClickListener);
+        findViewById(R.id.counter).setOnClickListener(onClickListener);
     }
 }

@@ -69,17 +69,12 @@ public class LongPollService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void run(String instance, String lp_server, String key, int ts, boolean use_https,
-                    boolean legacy_client) {
-        this.use_https = use_https;
-        HashMap<String, Object> client_info =
-                SecureCredentialsStorage.generateClientInfo(ctx, new HashMap<String, Object>());
+    public void run(String instance, String lp_server, String key, int ts, HashMap<String, Object> client_info) {
         if(lpW == null) {
             lpW = new LongPollWrapper(ctx, client_info);
         }
         ovk_api = new OvkAPIWrapper(ctx, client_info, handler);
         ovk_api.setServer(instance);
-        ovk_api.setAccessToken(access_token);
         if(BuildConfig.BUILD_TYPE.equals("release")) ovk_api.log(false);
         runLongPull(lp_server, key, ts, use_https);
     }

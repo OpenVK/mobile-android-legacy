@@ -58,7 +58,7 @@
                     android:gravity="center"
                     android:text="@string/full_app_name"
                     android:textColor="#4682b8"
-                    android:textSize="18dp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     tools:ignore="HardcodedText,SpUsage" />
 

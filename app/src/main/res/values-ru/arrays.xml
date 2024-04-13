@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="popup_menu_api_v8">
+        <item>Настройки</item>
+        <item>О приложении</item>
+        <item>Закрыть</item>
+    </string-array>
+
+    <string-array name="connection_error_reasons">
+        <item>Отсутствует подключение к Интернету</item>
+        <item>Сервер отправил некорректный ответ</item>
+        <item>Превышено время ожидания ответа</item>
+        <item>Обрыв защищенного соединения</item>
+        <item>Сбой инстанции или приложения</item>
+        <item>Инстанция недоступна</item>
+        <item>Неизвестная ошибка</item>
+    </string-array>
+
+    <string-array name="months_short">
+        <item>янв</item>
+        <item>фев</item>
+        <item>мар</item>
+        <item>апр</item>
+        <item>мая</item>
+        <item>июн</item>
+        <item>июл</item>
+        <item>авг</item>
+        <item>сен</item>
+        <item>окт</item>
+        <item>ноя</item>
+        <item>дек</item>
+    </string-array>
+
+    <string-array name="months_full">
+        <item>января</item>
+        <item>февраля</item>
+        <item>марта</item>
+        <item>апреля</item>
+        <item>мая</item>
+        <item>июня</item>
+        <item>июля</item>
+        <item>августа</item>
+        <item>сентября</item>
+        <item>октября</item>
+        <item>ноября</item>
+        <item>декабря</item>
+    </string-array>
+
+    <string-array name="like_menu">
+        <item>Не нравится</item>
+        <item>Рассказать друзьям</item>
+    </string-array>
+
+    <string-array name="photo_menu">
+        <item>Сделать снимок</item>
+        <item>Загрузить с телефона</item>
+    </string-array>
+
+    <string-array name="photo_menu2">
+        <item>Сделать снимок</item>
+        <item>Загрузить с телефона</item>
+        <item>Не прикреплять</item>
+    </string-array>
+
+    <string-array name="photo_menu3">
+        <item>Загрузить с телефона</item>
+        <item>Не прикреплять</item>
+    </string-array>
+
+    <string-array name="place_titles">
+        <item>Home</item>
+        <item>Work</item>
+        <item>Restaurant</item>
+        <item>Club</item>
+        <item>Movie Theater</item>
+        <item>Bar</item>
+        <item>Entertainment</item>
+        <item>Store</item>
+        <item>Airport</item>
+        <item>Train Station</item>
+        <item>Hotel</item>
+        <item>Cafe</item>
+        <item>Fast Food Restaurant</item>
+        <item>Pizzeria</item>
+        <item>Swimming Pool</item>
+        <item>Gym</item>
+        <item>Educational Institution</item>
+        <item>Museum</item>
+        <item>Theater</item>
+        <item>Park</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="sett_friends_order">
+        <item>По имени</item>
+        <item>По фамилии</item>
+        <item>По популярности</item>
+    </string-array>
+
+    <string-array name="date_ago_hrs">
+        <item>an hour ago</item>
+        <item>two hours ago</item>
+        <item>three hours ago</item>
+    </string-array>
+
+    <string-array name="date_ago_mins">
+        <item>one minute ago</item>
+        <item>%d minutes ago</item>
+    </string-array>
+
+    <string-array name="date_ago_secs">
+        <item>one second ago</item>
+        <item>%d seconds ago</item>
+    </string-array>
+
+    <string-array name="ncomments_last">
+        <item>One comment</item>
+        <item>Last out of %d comments</item>
+    </string-array>
+
+    <string-array name="profile_relation_m">
+        <item>Не женат</item>
+        <item>Есть подруга</item>
+        <item>Помолвлен</item>
+        <item>Женат</item>
+        <item>Всё сложно</item>
+        <item>В активном поиске</item>
+        <item>Влюблён</item>
+    </string-array>
+
+    <string-array name="profile_relation_f">
+        <item>Не замужем</item>
+        <item>Есть друг</item>
+        <item>Помолвлена</item>
+        <item>Замужем</item>
+        <item>Всё сложно</item>
+        <item>В активном поиске</item>
+        <item>Влюблена</item>
+    </string-array>
+
+    <string-array name="post_options">
+        <item>Только для друзей</item>
+        <item>Экспорт в Telegram</item>
+    </string-array>
+
+    <string-array name="album_numphotos">
+        <item>%d фотография</item>
+        <item>%d фотографии</item>
+        <item>%d фотографий</item>
+    </string-array>
+
+    <string-array name="sett_update_interval_items">
+        <item>30 секунд</item>
+        <item>45 секунд</item>
+        <item>1 минута</item>
+        <item>2 минуты</item>
+        <item>3 минуты</item>
+        <item>5 минут</item>
+        <item>10 минут</item>
+        <item>15 минут</item>
+        <item>30 минут</item>
+        <item>1 час</item>
+        <item>2 часа</item>
+        <item>Отключить</item>
+    </string-array>
+
+    <string-array name="album_privacy_options">
+        <item>Все пользователи</item>
+        <item>Только друзья</item>
+        <item>Друзья друзей</item>
+        <item>Только я</item>
+        <item>Расширенные настройки</item>
+    </string-array>
+
+    <string-array name="album_displayable_privacy_options">
+        <item>Все пользователи</item>
+        <item>Только друзья</item>
+        <item>Друзья друзей</item>
+        <item>Только я</item>
+    </string-array>
+
+    <string-array name="message_attach_options">
+        <item>Фотографию</item>
+        <item>Аудиозапись</item>
+        <item>Видеозапись</item>
+        <item>Документ</item>
+        <item>Карту</item>
+    </string-array>
+
+    <string-array name="message_attach_options_noplace">
+        <item>Фотографию</item>
+        <item>Аудиозапись</item>
+        <item>Видеозапись</item>
+        <item>Документ</item>
+    </string-array>
+
+    <string-array name="profile_counters">
+        <item>Фотографии</item>
+        <item>Фотографии с %s</item>
+        <item>Альбомы</item>
+        <item>Аудиозаписи</item>
+        <item>Видеозаписи</item>
+        <item>Видеозаписи с %s</item>
+        <item>Друзья</item>
+        <item>Общие друзья</item>
+        <item>Сообщества</item>
+        <item>Заметки</item>
+        <item>Обсуждения</item>
+        <item>Участники</item>
+        <item>Документы</item>
+        <item>Новости</item>
+        <item>Подписчики</item>
+    </string-array>
+
+    <string-array name="ntf_like_m">
+        <item>оценил запись</item>
+        <item>оценил фотографию</item>
+        <item>оценил видеозапись</item>
+        <item>оценил комментарий</item>
+    </string-array>
+
+    <string-array name="ntf_like_f">
+        <item>оценила запись</item>
+        <item>оценила фотографию</item>
+        <item>оценила видеозапись</item>
+        <item>оценила комментарий</item>
+    </string-array>
+
+    <string-array name="ntf_like_x">
+        <item>оценили запись</item>
+        <item>оценили фотографию</item>
+        <item>оценили видеозапись</item>
+        <item>оценили комментарий</item>
+    </string-array>
+
+    <string-array name="ntf_rt_m">
+        <item>поделился записью</item>
+        <item>поделился фотографией</item>
+        <item>поделился видеозаписью</item>
+        <item>поделился комментарием</item>
+    </string-array>
+
+    <string-array name="ntf_rt_f">
+        <item>поделилась записью</item>
+        <item>поделилась фотографией</item>
+        <item>поделилась видеозаписью</item>
+        <item>поделилась комментарием</item>
+    </string-array>
+
+    <string-array name="ntf_rt_x">
+        <item>поделились записью</item>
+        <item>поделились фотографией</item>
+        <item>поделились видеозаписью</item>
+        <item>поделились комментарием</item>
+    </string-array>
+
+    <string-array name="ntf_follow_m">
+        <item>подписался на Ваши обновления</item>
+    </string-array>
+
+    <string-array name="ntf_follow_f">
+        <item>подписалась на Ваши обновления</item>
+    </string-array>
+
+    <string-array name="ntf_follow_x">
+        <item>подписались на Ваши обновления</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_m">
+        <item>принял Вашу заявку в друзья</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_f">
+        <item>приняла Вашу заявку в друзья</item>
+    </string-array>
+
+    <string-array name="ntf_accepted_x">
+        <item>приняли Вашу заявку в друзья</item>
+    </string-array>
+
+    <string name="ntf_two_users_c">и</string>
+
+    <string name="replies">Ответы</string>
+
+    <string-array name="replies_options">
+        <item>Мне нравится</item>
+        <item>Ответить</item>
+    </string-array>
+
+    <string-array name="news_added_photo_m">
+        <item>added a photo</item>
+        <item>added %d photos</item>
+    </string-array>
+
+    <string-array name="news_added_photo_f">
+        <item>added a photo</item>
+        <item>added %d photos</item>
+    </string-array>
+
+    <string-array name="news_tagged_photo_m">
+        <item>was tagged in a photo</item>
+        <item>was tagged in %d photo</item>
+    </string-array>
+
+    <string-array name="news_tagged_photo_f">
+        <item>was tagged in a photo</item>
+        <item>was tagged in %d photos</item>
+    </string-array>
+
+    <string-array name="community_types">
+        <item>Встречи</item>
+        <item>Группы</item>
+        <item>Страницы</item>
+    </string-array>
+
+    <string-array name="topic_posts">
+        <item>%d публикаций</item>
+        <item>%d публикаций</item>
+    </string-array>
+
+    <string-array name="sett_cache_quality_array">
+        <item>Низкое</item>
+        <item>Среднее</item>
+        <item>Высокое</item>
+        <item>Исходное</item>
+    </string-array>
+
+    <string-array name="sett_img_cache_location">
+        <item>Память устройства</item>
+        <item>SD-карта</item>
+    </string-array>
+
+    <string-array name="birthday_age">
+        <item>%d год</item>
+        <item>%d года</item>
+        <item>%d лет</item>
+    </string-array>
+
+    <string-array name="profile_relation_pm">
+        <item>Не женат</item>
+        <item>Встречается с %s</item>
+        <item>Помолвлен с %s</item>
+        <item>Женат на %s</item>
+        <item>Всё сложно с %s</item>
+        <item>В активном поиске</item>
+        <item>Влюблён в %s</item>
+    </string-array>
+
+    <string-array name="profile_relation_pf">
+        <item>Не замужем</item>
+        <item>Встречается с %s</item>
+        <item>Помолвлена с %s</item>
+        <item>Замужем за %s</item>
+        <item>Всё сложно с %s</item>
+        <item>В активном поиске</item>
+        <item>Влюблена в %s</item>
+    </string-array>
+
+    <string-array name="leftmenu">
+        <item>Друзья</item>
+        <item>Фотографии</item>
+        <item>Видеозаписи</item>
+        <item>Аудиозаписи</item>
+        <item>Сообщения</item>
+        <item>Группы</item>
+        <item>Заметки</item>
+        <item>Новости</item>
+        <item>Ответы</item>
+        <item>Закладки</item>
+        <item>Настройки</item>
+    </string-array>
+
+    <string-array name="leftmenu_account">
+        <item>Сменить аккаунт</item>
+        <item>Сменить фотографию</item>
+        <item>Выйти</item>
+    </string-array>
+
+    <string-array name="fave_tabs">
+        <item>Люди</item>
+        <item>Записи</item>
+        <item>Ссылки</item>
+        <item>Фотографии</item>
+        <item>Видео</item>
+    </string-array>
+
+    <string-array name="profile_friends">
+        <item>friend</item>
+        <item>friends</item>
+        <item>friends</item>
+    </string-array>
+
+    <string-array name="friends_mutual">
+        <item>%d mutual</item>
+        <item>%d mutual</item>
+        <item>%d mutual</item>
+    </string-array>
+
+    <string-array name="video_search_quality">
+        <item>Любое качество</item>
+        <item>Только HD</item>
+    </string-array>
+
+    <string-array name="video_search_length">
+        <item>Любая длительность</item>
+        <item>Короткие</item>
+        <item>Длинные</item>
+    </string-array>
+
+    <string-array name="dnd_options">
+        <item>1 час</item>
+        <item>24 часа</item>
+        <item>7 дней</item>
+        <item>Навсегда</item>
+    </string-array>
+
+    <string-array name="personal_politics_options">
+        <item>Коммунистические</item>
+        <item>Социалистические</item>
+        <item>Умеренные</item>
+        <item>Либеральные</item>
+        <item>Консервативные</item>
+        <item>Монархические</item>
+        <item>Ультраконсервативные</item>
+        <item>Индифферентные</item>
+        <item>Либертарианские</item>
+    </string-array>
+
+    <string-array name="personal_life_options">
+        <item>Семья и дети</item>
+        <item>Карьера и деньги</item>
+        <item>Развлечения и отдых</item>
+        <item>Наука и исследования</item>
+        <item>Совершенствование мира</item>
+        <item>Саморазвитие</item>
+        <item>Красота и искусство</item>
+        <item>Слава и влияние</item>
+    </string-array>
+
+    <string-array name="personal_people_options">
+        <item>Ум и креативность</item>
+        <item>Доброта и честность</item>
+        <item>Красота и здоровье</item>
+        <item>Власть и богатство</item>
+        <item>Смелость и упорство</item>
+        <item>Юмор и жизнелюбие</item>
+    </string-array>
+
+    <string-array name="personal_views_options">
+        <item>Резко негативное</item>
+        <item>Негативное</item>
+        <item>Компромиссное</item>
+        <item>Нейтральное</item>
+        <item>Положительное</item>
+    </string-array>
+
+    <string-array name="newsfeed_actionbar_items">
+        <item>Подписки</item>
+        <item>Все новости</item>
+    </string-array>
+
+    <string-array name="wall_attach_options">
+        <item>Аудиозапись</item>
+        <item>Видеозапись</item>
+        <item>Документ</item>
+    </string-array>
+</resources>

@@ -39,10 +39,14 @@ import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -115,6 +119,28 @@ public class MainActivity extends TranslucentActivity {
             setTheme(R.style.BaseStyle);
             Timer timer = new Timer();
             timer.schedule(new AutoRun(), 0);
+        }
+    }
+
+    @Override
+    public void setTranslucentStatusBar(int type, int res) {
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        SharedPreferences global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+        int statusbar_color = Global.isXmas() ? R.color.xmas_statusbar_color : R.color.transparent_statusbar_color2;
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            statusbar_color = R.color.transparent_statusbar_color_gray;
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            statusbar_color = R.color.transparent_statusbar_color_black;
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(statusbar_color));
+        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            tintManager.setTintDrawable(
+                    getResources().getDrawable(statusbar_color));
         }
     }
 

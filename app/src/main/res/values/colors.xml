@@ -39,4 +39,5 @@
     <color name="color_black_v2">#1a1a1a</color>
     <color name="warningColor">#8ffbe684</color>
     <color name="transparent_statusbar_color2">#4682b8</color>
+    <color name="xmas_statusbar_color">#522585</color>
 </resources>
