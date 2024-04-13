@@ -174,6 +174,7 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
     }
 
     if(gVideoStreamIndex != -1) {
+        LOGD(10, "Video Stream");
         gVideoCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
         gVideoCodec = avcodec_find_decoder(gVideoCodecCtx->codec_id);
         if(gVideoCodec==NULL) {
@@ -185,19 +186,15 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
             LOGE(10, "Could not open video codec");
         }
     } else if(gAudioStreamIndex != -1) {
-        gVideoCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
-        gVideoCodec = avcodec_find_decoder(gAudioCodecCtx->codec_id);
+        gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
+        gAudioCodec = avcodec_find_decoder(gAudioCodecCtx->codec_id);
         if(gAudioCodec == NULL) {
             LOGE(10, "Unsupported audio codec");
         }
-
         // Open audio codec
         if(avcodec_open2(gAudioCodecCtx, gAudioCodec, &optionsDict)<0){
            LOGE(10, "Could not open audio codec");
         }
-    }
-    if(gAudioStreamIndex != -1) {
-        gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
     }
     return 0;
 }
@@ -383,6 +380,18 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
                     gAudioStreamIndex, gVideoStreamIndex
         )
     }
+
+    int             vWidth                      =   0;
+    int             vHeight                     =   0;
+
+    if(gVideoStreamIndex != 1) {
+            vWidth = gVideoCodecCtx->width;
+            vHeight = gVideoCodecCtx->height;
+    } else {
+            vWidth = 320;
+            vHeight = 240;
+    }
+
     jclass          jmplay = env->GetObjectClass(instance);
     jmethodID       completePlayback            = env->GetMethodID(jmplay, "completePlayback", "()V");
     AVPacket        avPkt;
@@ -392,11 +401,8 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     int             tAudioFrames                =   0;
     int             tVideoFrames                =   0;
     int             status                      =  -1;
-    int             vWidth                      = gVideoCodecCtx->width;
-    int             vHeight                     = gVideoCodecCtx->height;
     int             aBuffLength                 = 192000 * 4;
     int             vBuffLength                 = avpicture_get_size(AV_PIX_FMT_RGB32, vWidth, vHeight);
-
     audioBuffer = (short*)malloc(aBuffLength);
     videoBuffer = (short*)malloc(vBuffLength);
     av_init_packet(&avPkt);
@@ -405,18 +411,22 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     }
     while ((status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
         if (avPkt.stream_index == gAudioStreamIndex) {
-            decodeAudioFromPacket(
-                env, instance, jmplay,
-                avPkt, tAudioFrames++, audioBuffer,
-                aBuffLength
-            );
+            if(gAudioStreamIndex != -1) {
+                decodeAudioFromPacket(
+                    env, instance, jmplay,
+                    avPkt, tAudioFrames++, audioBuffer,
+                    aBuffLength
+                );
+            }
         } else if(avPkt.stream_index == gVideoStreamIndex) {
-            decodeVideoFromPacket(
-                env, instance, jmplay,
-                avPkt, tVideoFrames++,
-                videoBuffer,
-                vBuffLength
-            );
+            if(gVideoStreamIndex != -1) {
+                decodeVideoFromPacket(
+                    env, instance, jmplay,
+                    avPkt, tVideoFrames++,
+                    videoBuffer,
+                    vBuffLength
+                );
+            }
         }
     }
     jmethodID completePbMid = env->GetMethodID(jmplay, "completePlayback", "()V");
@@ -445,70 +455,78 @@ JNIEXPORT jobject JNICALL naGenerateTrackInfo(
     try {
         AVStream *pStream;
         if (type == AVMEDIA_TYPE_VIDEO) {
-            pStream = gFormatCtx->streams[gVideoStreamIndex];
-            // Load OvkVideoTrack class
-            track_class = env->FindClass(
-                    "uk/openvk/android/legacy/utils/media/OvkVideoTrack"
-            );
-            // Load OvkVideoTrack class method
-            jmethodID video_track_init = env->GetMethodID(
-                    track_class, "<init>", "()V"
-            );
-            jfieldID codec_name_field = env->GetFieldID(
-                    track_class, "codec_name", "Ljava/lang/String;"
-            );
-            jfieldID frame_size_field = env->GetFieldID(track_class, "frame_size", "[I");
-            jfieldID bitrate_field = env->GetFieldID(
-                    track_class, "bitrate", "I"
-            );
-            jfieldID frame_rate_field = env->GetFieldID(
-                    track_class, "frame_rate", "F"
-            );
+            if(gVideoStreamIndex != -1) {
+                pStream = gFormatCtx->streams[gVideoStreamIndex];
+                // Load OvkVideoTrack class
+                track_class = env->FindClass(
+                        "uk/openvk/android/legacy/utils/media/OvkVideoTrack"
+                );
+                // Load OvkVideoTrack class method
+                jmethodID video_track_init = env->GetMethodID(
+                        track_class, "<init>", "()V"
+                );
+                jfieldID codec_name_field = env->GetFieldID(
+                        track_class, "codec_name", "Ljava/lang/String;"
+                );
+                jfieldID frame_size_field = env->GetFieldID(track_class, "frame_size", "[I");
+                jfieldID bitrate_field = env->GetFieldID(
+                        track_class, "bitrate", "J"
+                );
+                jfieldID frame_rate_field = env->GetFieldID(
+                        track_class, "frame_rate", "F"
+                );
 
-            jobject track = env->NewObject(track_class, video_track_init);
+                jobject track = env->NewObject(track_class, video_track_init);
 
-            // Load OvkVideoTrack values form fields (class variables)
-            env->SetObjectField(track, codec_name_field, env->NewStringUTF(gVideoCodec->name));
-            jintArray array = (jintArray) env->GetObjectField(track, frame_size_field);
-            jint *frame_size = env->GetIntArrayElements(array, 0);
-            frame_size[0] = gVideoCodecCtx->width;
-            frame_size[1] = gVideoCodecCtx->height;
-            env->ReleaseIntArrayElements(array, frame_size, 0);
-            env->SetIntField(track, bitrate_field, gVideoCodecCtx->bit_rate);
-            env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
-            return track;
+                // Load OvkVideoTrack values form fields (class variables)
+                env->SetObjectField(track, codec_name_field, env->NewStringUTF(gVideoCodec->name));
+                jintArray array = (jintArray) env->GetObjectField(track, frame_size_field);
+                jint *frame_size = env->GetIntArrayElements(array, 0);
+                frame_size[0] = gVideoCodecCtx->width;
+                frame_size[1] = gVideoCodecCtx->height;
+                env->ReleaseIntArrayElements(array, frame_size, 0);
+                env->SetIntField(track, bitrate_field, gVideoCodecCtx->bit_rate);
+                env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
+                return track;
+            } else {
+                return NULL;
+            }
         } else {
-            pStream = gFormatCtx->streams[gAudioStreamIndex];
-            // Load OvkAudioTrack class
-            track_class = env->FindClass(
-                    "uk/openvk/android/legacy/utils/media/OvkAudioTrack"
-            );
-            // Load OvkVideoTrack class methods
-            jmethodID audio_track_init = env->GetMethodID(
-                    track_class, "<init>", "()V"
-            );
+            if(gAudioStreamIndex != -1) {
+                pStream = gFormatCtx->streams[gAudioStreamIndex];
+                // Load OvkAudioTrack class
+                track_class = env->FindClass(
+                        "uk/openvk/android/legacy/utils/media/OvkAudioTrack"
+                );
+                // Load OvkVideoTrack class methods
+                jmethodID audio_track_init = env->GetMethodID(
+                        track_class, "<init>", "()V"
+                );
 
-            jobject track = env->NewObject(track_class, audio_track_init);
+                jobject track = env->NewObject(track_class, audio_track_init);
 
-            jfieldID codec_name_field = env->GetFieldID(
-                    track_class, "codec_name", "Ljava/lang/String;"
-            );
-            jfieldID sample_rate_field = env->GetFieldID(
-                    track_class, "sample_rate", "J"
-            );
-            jfieldID bitrate_field = env->GetFieldID(
-                    track_class, "bitrate", "J"
-            );
-            jfieldID channels_field = env->GetFieldID(
-                    track_class, "channels", "I"
-            );
+                jfieldID codec_name_field = env->GetFieldID(
+                        track_class, "codec_name", "Ljava/lang/String;"
+                );
+                jfieldID sample_rate_field = env->GetFieldID(
+                        track_class, "sample_rate", "J"
+                );
+                jfieldID bitrate_field = env->GetFieldID(
+                        track_class, "bitrate", "J"
+                );
+                jfieldID channels_field = env->GetFieldID(
+                        track_class, "channels", "I"
+                );
 
-            // Load OvkAudioTrack values form fields (class variables)
-            env->SetObjectField(track, codec_name_field, env->NewStringUTF(gAudioCodec->name));
-            env->SetLongField(track, sample_rate_field, gAudioCodecCtx->sample_rate);
-            env->SetLongField(track, bitrate_field, gAudioCodecCtx->bit_rate);
-            env->SetIntField(track, channels_field, gAudioCodecCtx->channels);
-            return track;
+                // Load OvkAudioTrack values form fields (class variables)
+                env->SetObjectField(track, codec_name_field, env->NewStringUTF(gAudioCodec->name));
+                env->SetLongField(track, sample_rate_field, gAudioCodecCtx->sample_rate);
+                env->SetLongField(track, bitrate_field, gAudioCodecCtx->bit_rate);
+                env->SetIntField(track, channels_field, gAudioCodecCtx->channels);
+                return track;
+            } else {
+                return NULL;
+            }
         }
     } catch (...) {
         if(debug_mode) {

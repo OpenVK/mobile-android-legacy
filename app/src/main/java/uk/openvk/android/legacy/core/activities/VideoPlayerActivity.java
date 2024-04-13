@@ -145,7 +145,8 @@ public class VideoPlayerActivity extends Activity {
 //                intent.setDataAndType(Uri.parse(url), "video/*");
 //                startActivity(intent);
 //                finish();
-                createMediaPlayer(url);
+                //createMediaPlayer(url);
+                createMediaPlayer("http://openvk.xyz/assets/packages/static/openvk/audio/nomusic.mp3");
                 (findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
