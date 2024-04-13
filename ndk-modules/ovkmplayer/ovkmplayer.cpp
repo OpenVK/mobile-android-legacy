@@ -377,14 +377,14 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
 int decodeMediaFile(JNIEnv* env, jobject instance) {
     if(debug_mode) {
         LOGD(10, "[DEBUG] Decoding audio stream #%d and video stream #%d...",
-                    gAudioStreamIndex, gVideoStreamIndex
+                    gAudioStreamIndex + 1, gVideoStreamIndex + 1
         )
     }
 
     int             vWidth                      =   0;
     int             vHeight                     =   0;
 
-    if(gVideoStreamIndex != 1) {
+    if(gVideoStreamIndex != -1) {
             vWidth = gVideoCodecCtx->width;
             vHeight = gVideoCodecCtx->height;
     } else {

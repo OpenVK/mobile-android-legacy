@@ -16,7 +16,7 @@
 
 LOCAL_PATH := $(call my-dir)
 PROJECT_PATH := $(call my-dir)/../..
-FFMPEG_VERSION = 4.0.4
+FFMPEG_VERSION = 3.1.4
 FFMPEG_PATH = $(call my-dir)/builder/ffmpeg-$(FFMPEG_VERSION)
 #declare the prebuilt library
 
