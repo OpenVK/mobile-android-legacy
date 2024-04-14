@@ -348,6 +348,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                     int frame_width = track.frame_size[0];
                     int frame_height = track.frame_size[1];
                     if (frame_width > 0 && frame_height > 0) {
+                        minVideoBufferSize = frame_width * frame_height * 4;
                         try {
                             // RGB_565  == 65K colours (16 bit)
                             // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
