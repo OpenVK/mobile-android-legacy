@@ -50,6 +50,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 
@@ -280,7 +281,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(finalAudioTrack != null && finalVideoTrack != null) {
+                    if(finalAudioTrack != null || finalVideoTrack != null) {
                         Log.d(MPLAY_TAG, "Decoding media file...");
                         try {
                             naPlay();
@@ -288,7 +289,7 @@ public class OvkMediaPlayer extends MediaPlayer {
                             stop();
                         }
                     } else {
-                        Log.e(MPLAY_TAG, "Audio track not found. Skipping...");
+                        Log.e(MPLAY_TAG, "A/V streams not found. Skipping...");
                     }
                 }
             }).start();
@@ -312,18 +313,20 @@ public class OvkMediaPlayer extends MediaPlayer {
                 Log.e(MPLAY_TAG, "Audio track not found");
                 return;
             }
-            int ch_config = track.channels == 2 ?
-                    AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+            if(audio_track == null) {
+                int ch_config = track.channels == 2 ?
+                        AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
 
-            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
-                    ch_config,
-                    AudioFormat.ENCODING_PCM_16BIT, length, AudioTrack.MODE_STREAM);
+                audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
+                        ch_config,
+                        AudioFormat.ENCODING_PCM_16BIT, buffer.length, AudioTrack.MODE_STREAM);
 
-            audio_track.play();
+                audio_track.play();
+            }
             prepared_audio_buffer = true;
         }
         try {
-            audio_track.write(buffer, 0, buffer.length);
+            audio_track.write(buffer, 0, length);
         } catch (Exception ignored) {
         }
     }
@@ -332,7 +335,7 @@ public class OvkMediaPlayer extends MediaPlayer {
         handler.sendEmptyMessage(MESSAGE_COMPLETE);
     }
 
-    private void renderVideoFrames(final byte[] buffer, final int length) {
+    private void renderVideo(final byte[] buffer, final int length) {
         new Thread(new Runnable() {
             @Override
             public void run() {

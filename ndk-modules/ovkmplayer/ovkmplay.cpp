@@ -135,7 +135,9 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
     AVFrame         *decodedFrame = NULL;
     AVFrame         *frameRGBA = NULL;
     jobject			bitmap;
-    int             result;
+    int             result,
+                    aCodecResult,
+                    vCodecResult;
     char            errorString[192];
 
     gFileName = (char *)env->GetStringUTFChars(filename, NULL);
@@ -174,29 +176,33 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
     }
 
     if(gVideoStreamIndex != -1) {
-        LOGD(10, "Video Stream");
         gVideoCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
         gVideoCodec = avcodec_find_decoder(gVideoCodecCtx->codec_id);
         if(gVideoCodec==NULL) {
             LOGE(10, "Unsupported video codec");
-        }
-
-        // Open video codec
-        if(avcodec_open2(gVideoCodecCtx, gVideoCodec, &optionsDict)<0){
+            vCodecResult = -1;
+        } else if(avcodec_open2(gVideoCodecCtx, gVideoCodec, &optionsDict)<0){
             LOGE(10, "Could not open video codec");
+            vCodecResult = -1;
         }
-    } else if(gAudioStreamIndex != -1) {
+    }
+    if(gAudioStreamIndex != -1) {
         gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
         gAudioCodec = avcodec_find_decoder(gAudioCodecCtx->codec_id);
         if(gAudioCodec == NULL) {
             LOGE(10, "Unsupported audio codec");
-        }
-        // Open audio codec
-        if(avcodec_open2(gAudioCodecCtx, gAudioCodec, &optionsDict)<0){
+            aCodecResult = -1;
+        } else if(avcodec_open2(gAudioCodecCtx, gAudioCodec, &optionsDict)<0){
            LOGE(10, "Could not open audio codec");
+           aCodecResult = -1;
         }
     }
-    return 0;
+
+    if(aCodecResult != -1 || vCodecResult != -1) {
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int length) {
@@ -279,13 +285,15 @@ JNIEXPORT void JNICALL decodeAudioFromPacket(       // Decoding audio packets
                                                  gAudioCodecCtx->sample_fmt,
                                                  1
                                               );
+
+        LOGD(10, "Data size: %d | Packet size: %d", dataSize, avPkt.size);
         if (dataSize < 0) {
             dataSize = 192000 * 4;
         }
         buffer = (short *) pFrame->data[0];
         buffer2 = env->NewByteArray((jsize) dataSize);
         env->SetByteArrayRegion(buffer2, 0, (jsize) dataSize, (jbyte *) buffer);
-        env->CallVoidMethod(instance, renderAudioMid, buffer2, audioBufferLength);
+        env->CallVoidMethod(instance, renderAudioMid, buffer2, dataSize);
         env->DeleteLocalRef(buffer2);
     }
     av_free(pFrame);
@@ -392,6 +400,8 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
             vHeight = 240;
     }
 
+
+
     jclass          jmplay = env->GetObjectClass(instance);
     jmethodID       completePlayback            = env->GetMethodID(jmplay, "completePlayback", "()V");
     AVPacket        avPkt;
@@ -403,8 +413,12 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     int             status                      =  -1;
     int             aBuffLength                 = 192000 * 4;
     int             vBuffLength                 = avpicture_get_size(AV_PIX_FMT_RGB32, vWidth, vHeight);
-    audioBuffer = (short*)malloc(aBuffLength);
-    videoBuffer = (short*)malloc(vBuffLength);
+    if(gAudioStreamIndex != -1) {
+        audioBuffer = (short*)malloc(aBuffLength);
+    }
+    if(gVideoStreamIndex != -1) {
+        videoBuffer = (short*)malloc(vBuffLength);
+    }
     av_init_packet(&avPkt);
     if(!gVideoCodec && !gAudioCodec) {
         return -1;
@@ -485,7 +499,7 @@ JNIEXPORT jobject JNICALL naGenerateTrackInfo(
                 frame_size[0] = gVideoCodecCtx->width;
                 frame_size[1] = gVideoCodecCtx->height;
                 env->ReleaseIntArrayElements(array, frame_size, 0);
-                env->SetIntField(track, bitrate_field, gVideoCodecCtx->bit_rate);
+                env->SetLongField(track, bitrate_field, gVideoCodecCtx->bit_rate);
                 env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
                 return track;
             } else {

@@ -16,11 +16,7 @@
 
 LOCAL_PATH := $(call my-dir)
 PROJECT_PATH := $(call my-dir)/../..
-ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-   FFMPEG_VERSION = 2.2.4
-else
-   FFMPEG_VERSION = 1.1.12
-endif
+FFMPEG_VERSION = 2.2.4
 
 FFMPEG_PATH = $(call my-dir)/builder/ffmpeg-$(FFMPEG_VERSION)
 #declare the prebuilt library
@@ -41,11 +37,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
 LOCAL_MODULE := ovkmplayer
-ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-    LOCAL_SRC_FILES := ovkmplay.cpp android.cpp
-else
-    LOCAL_SRC_FILES := ovkmplay-f1.cpp android.cpp
-endif
+LOCAL_SRC_FILES := ovkmplay.cpp android.cpp
 LOCAL_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)
 LOCAL_CFLAGS += -std=c++98

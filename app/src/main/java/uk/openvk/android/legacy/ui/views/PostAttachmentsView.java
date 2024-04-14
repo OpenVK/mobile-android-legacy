@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -387,16 +388,15 @@ public class PostAttachmentsView extends LinearLayout {
 
     private void loadPhotoAttachment(Photo photo, ImageView view,
                                      ImageLoader imageLoader, boolean isWall) {
-        try {
-            String full_filename = "file://" + parent.getCacheDir()
-                    + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
+        String full_filename = "file://" + parent.getCacheDir()
+                + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
+                photo.filename;
+        if (isWall) {
+            full_filename = "file://" + parent.getCacheDir()
+                    + "/" + instance + "/photos_cache/wall_photo_attachments/" +
                     photo.filename;
-            if (isWall) {
-                full_filename = "file://" + parent.getCacheDir()
-                        + "/" + instance + "/photos_cache/wall_photo_attachments/" +
-                        photo.filename;
-            }
-
+        }
+        try {
             Bitmap bitmap = imageLoader.loadImageSync(full_filename);
             if(bitmap != null) {
                 view.setImageBitmap(bitmap);
@@ -414,6 +414,8 @@ public class PostAttachmentsView extends LinearLayout {
                 photo_fail_count++;
                 loadPhotoAttachment(photo, view, imageLoader, isWall);
             }
+        } catch (Exception e) {
+            Log.e(OvkApplication.APP_TAG, String.format("%s: Cannot open file", full_filename));
         }
     }
 
