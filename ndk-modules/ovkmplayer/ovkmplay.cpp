@@ -91,6 +91,9 @@ AVCodecContext      *gAudioCodecCtx;
 AVCodec             *gVideoCodec;
 AVCodec             *gAudioCodec;
 
+PacketQueue         audioPktQueue,
+                    videoPktQueue;
+
 bool                debug_mode;
 
 AVDictionary        *avFormatOptions            = NULL;
@@ -325,6 +328,7 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
 
         struct SwsContext *img_convert_ctx = NULL;
         avcodec_decode_video2(gVideoCodecCtx, pFrame, &frameDecoded, &avPkt);
+
         if (!frameDecoded || pFrame == NULL) {
             if (debug_mode) {
                 LOGE(10, "[ERROR] Frame #%d not decoded.", tVideoFrames - 1);
