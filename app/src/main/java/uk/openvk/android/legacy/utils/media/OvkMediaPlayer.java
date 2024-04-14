@@ -313,20 +313,18 @@ public class OvkMediaPlayer extends MediaPlayer {
                 Log.e(MPLAY_TAG, "Audio track not found");
                 return;
             }
-            if(audio_track == null) {
-                int ch_config = track.channels == 2 ?
-                        AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+            int ch_config = track.channels == 2 ?
+                    AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
 
-                audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
-                        ch_config,
-                        AudioFormat.ENCODING_PCM_16BIT, buffer.length, AudioTrack.MODE_STREAM);
+            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
+                    ch_config,
+                    AudioFormat.ENCODING_PCM_16BIT, buffer.length, AudioTrack.MODE_STREAM);
 
-                audio_track.play();
-            }
+            audio_track.play();
             prepared_audio_buffer = true;
         }
         try {
-            audio_track.write(buffer, 0, length);
+            audio_track.write(buffer, 0, buffer.length);
         } catch (Exception ignored) {
         }
     }

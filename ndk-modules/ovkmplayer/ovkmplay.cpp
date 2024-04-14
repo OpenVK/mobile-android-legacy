@@ -65,6 +65,7 @@ extern "C" {
     #include <libavcodec/avcodec.h>
     #include <libavcodec/avfft.h>
     #include <libavdevice/avdevice.h>
+    #include <libswresample/swresample.h>
 }
 
 /*for Android logs*/
@@ -72,6 +73,7 @@ extern "C" {
 #define LOG_LEVEL 10
 #define LOGD(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);}
 #define LOGI(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__);}
+#define LOGW(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__);}
 #define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
 
 char                version[7]                  = "0.0.1";
@@ -99,6 +101,8 @@ jint                FFMPEG_PLAYBACK_STOPPED     = 0;
 jint                FFMPEG_PLAYBACK_PLAYING     = 1;
 jint                FFMPEG_PLAYBACK_PAUSED      = 2;
 int                 gFramesCount;
+
+struct SwrContext   *swrCtx;
 
 int gFrameCount;
 
@@ -240,33 +244,31 @@ JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int
     int Y, Cr, Cb;
     int R, G, B;
 
-    LOGD(10, "Running SWS_Scale...");
     int ret = sws_scale(img_convert_ctx, (const uint8_t* const*)frame->data, frame->linesize, 0,
                         gVideoCodecCtx->height, frameRGB->data, frameRGB->linesize);
     if(frameRGB->data[0] == NULL) {
         LOGE(10, "SWS_Scale failed");
-    } else {
-        LOGD(10, "SWS_Scale: OK!");
     }
 
     avpicture_layout((AVPicture*)frameRGB, output_pxf, width, height, (unsigned char*)buffer, length);
-
+    av_free(frameRGB);
     return buffer;
 }
 
 JNIEXPORT void JNICALL decodeAudioFromPacket(       // Decoding audio packets
     JNIEnv* env, jobject instance, jclass jmplay,
-    AVPacket avPkt, int tAudioFrames, short* buffer,
+    AVPacket avPkt, int tAudioFrames,
+    uint8_t* buffer, jbyteArray buffer2,
     int audioBufferLength
 ) {
-    jbyteArray  buffer2;
-    AVFrame     *pFrame                 = av_frame_alloc();
-    int         AUDIO_INBUF_SIZE        = 4096;
-    int         dataSize                = 192000 * 4;
-    int         decodedDataSize         = 0;
-    int         packetSize              = avPkt.size;
-    int         status                  = 0;
-    jmethodID   renderAudioMid          = env->GetMethodID(jmplay, "renderAudio", "([BI)V");
+
+    AVFrame             *pFrame                 = av_frame_alloc();
+    int                 AUDIO_INBUF_SIZE        = 4096;
+    int                 dataSize                = 192000 * 4;
+    int                 decodedDataSize         = 0;
+    int                 packetSize              = avPkt.size;
+    int                 status                  = 0;
+    jmethodID           renderAudioMid          = env->GetMethodID(jmplay, "renderAudio", "([BI)V");
 
     // Allocate audio frame
     pFrame = av_frame_alloc();
@@ -285,16 +287,9 @@ JNIEXPORT void JNICALL decodeAudioFromPacket(       // Decoding audio packets
                                                  gAudioCodecCtx->sample_fmt,
                                                  1
                                               );
-
-        LOGD(10, "Data size: %d | Packet size: %d", dataSize, avPkt.size);
-        if (dataSize < 0) {
-            dataSize = 192000 * 4;
-        }
-        buffer = (short *) pFrame->data[0];
-        buffer2 = env->NewByteArray((jsize) dataSize);
+        buffer = (uint8_t *) pFrame->data[0];
         env->SetByteArrayRegion(buffer2, 0, (jsize) dataSize, (jbyte *) buffer);
         env->CallVoidMethod(instance, renderAudioMid, buffer2, dataSize);
-        env->DeleteLocalRef(buffer2);
     }
     av_free(pFrame);
     tAudioFrames++;
@@ -302,10 +297,9 @@ JNIEXPORT void JNICALL decodeAudioFromPacket(       // Decoding audio packets
 
 JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
     JNIEnv* env, jobject instance, jclass jmplay,
-    AVPacket avPkt, int tVideoFrames, short* buffer,
-    int videoBufferLength
+    AVPacket avPkt, int tVideoFrames, uint8_t* buffer,
+    jbyteArray buffer2, int videoBufferLength
 ) {
-    jbyteArray  buffer2;
     int         vWidth                  = gVideoCodecCtx->width;
     int         vHeight                 = gVideoCodecCtx->height;
     int         dataSize                = avpicture_get_size(AV_PIX_FMT_RGB32, vWidth, vHeight);
@@ -348,28 +342,15 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
                 pxf = AV_PIX_FMT_RGB565;
             }
 
-            // Get maximum RGB/BGR buffer size
-            int rgbBytesLength = avpicture_get_size(pxf, gVideoCodecCtx->width, gVideoCodecCtx->height);
-
-            if (debug_mode) {
-                LOGD(10, "[DEBUG] Converting video frame to RGB...");
-            }
-
-            buffer = (short*) convertYuv2Rgb(pxf, pFrame, rgbBytesLength);
+            buffer = (uint8_t*) convertYuv2Rgb(pxf, pFrame, videoBufferLength);
 
             if(buffer == NULL) {
                 LOGE(10, "[ERROR] Conversion failed");
                 return;
             }
 
-            if (debug_mode) {
-                LOGD(10, "[DEBUG] Calling renderVideoFrames method to OvkMediaPlayer...");
-            }
-            buffer2 = env->NewByteArray((jsize) rgbBytesLength);
-            env->SetByteArrayRegion(buffer2, 0, (jsize) rgbBytesLength, (jbyte *) buffer);
-            env->CallVoidMethod(instance, renderVideoMid, buffer2, rgbBytesLength);
-            env->DeleteLocalRef(buffer2);
-            free(buffer);
+            env->SetByteArrayRegion(buffer2, 0, (jsize) videoBufferLength, (jbyte *) buffer);
+            env->CallVoidMethod(instance, renderVideoMid, buffer2, videoBufferLength);
         } catch (...) {
             if (debug_mode) {
                 LOGE(10, "[ERROR] Render video frames failed");
@@ -378,6 +359,7 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
         }
     }
     av_free(pFrame);
+    av_free(pFrameRGB);
     tVideoFrames++;
     gFramesCount = tVideoFrames;
 }
@@ -389,6 +371,7 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
         )
     }
 
+    int             aBuffLength                 =   8192;
     int             vWidth                      =   0;
     int             vHeight                     =   0;
 
@@ -400,52 +383,58 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
             vHeight = 240;
     }
 
-
-
     jclass          jmplay = env->GetObjectClass(instance);
     jmethodID       completePlayback            = env->GetMethodID(jmplay, "completePlayback", "()V");
     AVPacket        avPkt;
-    short           *audioBuffer,
+    uint8_t         *audioBuffer,
                     *videoBuffer;
     int             receivedFrame               =   0;
     int             tAudioFrames                =   0;
     int             tVideoFrames                =   0;
     int             status                      =  -1;
-    int             aBuffLength                 = 192000 * 4;
     int             vBuffLength                 = avpicture_get_size(AV_PIX_FMT_RGB32, vWidth, vHeight);
-    if(gAudioStreamIndex != -1) {
-        audioBuffer = (short*)malloc(aBuffLength);
-    }
-    if(gVideoStreamIndex != -1) {
-        videoBuffer = (short*)malloc(vBuffLength);
-    }
     av_init_packet(&avPkt);
     if(!gVideoCodec && !gAudioCodec) {
         return -1;
     }
+
+    jbyteArray jAudioBuffer = env->NewByteArray((jsize) aBuffLength);
+    jbyteArray jVideoBuffer = env->NewByteArray((jsize) vBuffLength);
+
     while ((status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
         if (avPkt.stream_index == gAudioStreamIndex) {
             if(gAudioStreamIndex != -1) {
+                audioBuffer = (uint8_t*)malloc(aBuffLength);
                 decodeAudioFromPacket(
                     env, instance, jmplay,
-                    avPkt, tAudioFrames++, audioBuffer,
+                    avPkt, tAudioFrames++,
+                    audioBuffer, jAudioBuffer,
                     aBuffLength
                 );
+                free(audioBuffer);
             }
         } else if(avPkt.stream_index == gVideoStreamIndex) {
             if(gVideoStreamIndex != -1) {
+                videoBuffer = (uint8_t*)malloc(vBuffLength);
                 decodeVideoFromPacket(
                     env, instance, jmplay,
                     avPkt, tVideoFrames++,
-                    videoBuffer,
+                    videoBuffer, jVideoBuffer,
                     vBuffLength
                 );
+                free(videoBuffer);
             }
         }
+        av_packet_unref(&avPkt);
     }
     jmethodID completePbMid = env->GetMethodID(jmplay, "completePlayback", "()V");
     env->CallVoidMethod(instance, completePbMid);
     env->DeleteLocalRef(jmplay);
+    env->DeleteLocalRef(jVideoBuffer);
+    env->DeleteLocalRef(jAudioBuffer);
+    avcodec_close(gVideoCodecCtx);
+    avcodec_close(gAudioCodecCtx);
+    avformat_close_input(&gFormatCtx);
     return 0;
 }
 
