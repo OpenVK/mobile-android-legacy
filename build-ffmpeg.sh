@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  FFmpeg 3.1.4 for Android automatic build script using builder by Tinelix
+#  FFmpeg 1.1.12 for Android automatic build script using builder by Tinelix
 #
 #  NOTICE: FFmpeg and FFmpeg for Android builder by Tinelix licensed under LGPLv3 or later version.
 
@@ -12,14 +12,14 @@ git submodule update
 cd ndk-modules/ovkmplayer
 cd builder
 git checkout origin/main
-chmod -R 0777 . && chmod +x ./build-android-2.2.4.sh
+chmod -R 0777 . && chmod +x ./build-android-1.1.12.sh
 
 echo "OpenVK Legacy | Starting FFmpeg builder..."
 
 ./build-android-2.2.4.sh armv8a
-./build-android-2.2.4.sh armv7
-./build-android-2.2.4.sh armv6
-./build-android-2.2.4.sh x86
+./build-android-1.1.12.sh armv7
+./build-android-1.1.12.sh armv6
+./build-android-1.1.12.sh x86
 
 # Create directories in jniLibs and ovkmplayer
 mkdir -p ../../../app/src/main/jniLibs/armeabi
