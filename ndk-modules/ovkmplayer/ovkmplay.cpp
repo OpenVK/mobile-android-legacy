@@ -389,7 +389,6 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
 }
 
 // Media decoder wrapping
-
 int decodeMediaFile(JNIEnv* env, jobject instance) {
     if(debug_mode) {
         LOGD(10, "[DEBUG] Decoding audio stream #%d and video stream #%d...",
