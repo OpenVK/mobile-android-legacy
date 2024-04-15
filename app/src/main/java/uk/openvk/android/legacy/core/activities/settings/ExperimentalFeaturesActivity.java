@@ -37,7 +37,7 @@ public class ExperimentalFeaturesActivity extends TranslucentPreferenceActivity 
             }
         } else {
             final ActionBar actionBar = findViewById(R.id.actionbar);
-            actionBar.setTitle(R.string.experimental_functions);
+            actionBar.setTitle(R.string.experimental_features);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             actionBar.setDisplayHomeAsUpEnabled(true);
