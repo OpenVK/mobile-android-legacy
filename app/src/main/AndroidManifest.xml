@@ -307,8 +307,8 @@
         />
 
         <activity
-            android:name=".core.activities.settings.ExperimentalFunctionsActivity"
-            android:label="@string/experimental_functions"
+            android:name=".core.activities.settings.ExperimentalFeaturesActivity"
+            android:label="@string/experimental_features"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"

@@ -157,11 +157,11 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
             }
         });
 
-        Preference experimentalFuncs = findPreference("experimentalFuncs");
-        experimentalFuncs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        Preference experimentalFeats = findPreference("experimentalFeats");
+        experimentalFeats.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(DebugMenuActivity.this, ExperimentalFunctionsActivity.class);
+                Intent intent = new Intent(DebugMenuActivity.this, ExperimentalFeaturesActivity.class);
                 startActivity(intent);
                 return false;
             }

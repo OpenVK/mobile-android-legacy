@@ -700,8 +700,8 @@
     <string name="use_legacy_http_client_description">Использовать обернутый HTTP(S)-клиент HttpUrlConnection, предназначенный для устаревших версий Android</string>
     <string name="use_legacy_http_client_okhttp_err">Отключение невозможно из-за неподдерживаемой версии Android</string>
     <string name="use_legacy_http_client_apachew_err">Включение невозможно из-за неподдерживаемой версии Android</string>
-    <string name="experimental_functions">Экспериментальные функции</string>
-    <string name="experimental_functions_description">Используйте только на свой страх и риск, так как они могут быть нестабильными или неработоспособными</string>
+    <string name="experimental_features">Экспериментальные функции</string>
+    <string name="experimental_features_description">Используйте только на свой страх и риск, так как они могут быть нестабильными или неработоспособными</string>
     <string name="cause_app_to_crash">Вызвать сбой приложения</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>
