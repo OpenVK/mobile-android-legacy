@@ -387,7 +387,7 @@ public class Global {
         menu.setFadeDegree(0.8f);
         menu.attachToActivity(((Activity) ctx), SlidingMenu.SLIDING_WINDOW);
         menu.setSlidingEnabled(true);
-        if (Global.isXmas()) {
+        if (Global.isXmas() || Global.isXmas(ctx)) {
             ((ImageView) menuLayout.findViewById(R.id.menu_background)).setImageDrawable(
                     ctx.getResources().getDrawable(R.drawable.xmas_left_menu)
             );
@@ -668,6 +668,11 @@ public class Global {
         int day = new Date().getDate();
         // 11 = December, 0 = January
         return (month == 11 && day >= 1) || (month == 0 && day <= 15);
+    }
+
+    public static boolean isXmas(Context ctx) {
+        SharedPreferences experimental_prefs = ctx.getSharedPreferences("experimental", 0);
+        return experimental_prefs.getBoolean("core_xmas_mood", false);
     }
 
     public static void copyToClipboard(Context ctx, String text) {

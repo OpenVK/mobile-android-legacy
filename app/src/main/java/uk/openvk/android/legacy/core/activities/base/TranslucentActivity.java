@@ -90,7 +90,7 @@ public class TranslucentActivity extends Activity {
 
     int getDeviceVendorTranslucentStatusBarFlag() {
         final SharedPreferences experimental_pref = getSharedPreferences("experimental", 0);
-        if(experimental_pref.getBoolean("translucent_systemui_v14", false)) {
+        if(experimental_pref.getBoolean("core_translucent_systemui_v14", false)) {
 
             String[] libs = getPackageManager().getSystemSharedLibraryNames();
             String reflect = null;

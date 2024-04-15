@@ -10,14 +10,21 @@
         android:title="@string/experimental_functions_description" />
     <CheckBoxPreference
         android:defaultValue="false"
-        android:key="ffmpeg_player"
+        android:key="video_ffmpeg_player"
         android:layout="@layout/pref_widget_checkbox"
-        android:title="ffmpeg_player" />
+        android:title="video_ffmpeg_player" />
     <CheckBoxPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:defaultValue="false"
-        android:key="translucent_systemui_v14"
+        android:key="core_translucent_systemui_v14"
         android:layout="@layout/pref_widget_checkbox"
-        android:title="translucent_systemui_v14" />
+        android:title="core_translucent_systemui_v14" />
+    <CheckBoxPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="false"
+        android:key="core_xmas_mood"
+        android:layout="@layout/pref_widget_checkbox"
+        android:title="core_xmas_mood" />
 </PreferenceScreen>

@@ -75,32 +75,49 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
     private void listenPreferences() {
         final SharedPreferences experimental_pref = getSharedPreferences("experimental", 0);
         try {
-            CheckBoxPreference ffmpeg_player = (CheckBoxPreference) findPreference("ffmpeg_player");
+            CheckBoxPreference ffmpeg_player =
+                    (CheckBoxPreference) findPreference("video_ffmpeg_player");
             if(ffmpeg_player != null) {
                 ffmpeg_player.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
                         final SharedPreferences.Editor editor = experimental_pref.edit();
-                        editor.putBoolean("ffmpeg_player", ((CheckBoxPreference) preference).isChecked());
+                        editor.putBoolean("video_ffmpeg_player", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
                         return false;
                     }
                 });
-                ffmpeg_player.setChecked(experimental_pref.getBoolean("ffmpeg_player", false));
+                ffmpeg_player.setChecked(experimental_pref.getBoolean("video_ffmpeg_player", false));
             }
 
-            CheckBoxPreference tSysUI_v14 = (CheckBoxPreference) findPreference("translucent_systemui_v14");
+            CheckBoxPreference tSysUI_v14 =
+                    (CheckBoxPreference) findPreference("core_translucent_systemui_v14");
             if(tSysUI_v14 != null) {
                 tSysUI_v14.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
                         final SharedPreferences.Editor editor = experimental_pref.edit();
-                        editor.putBoolean("translucent_systemui_v14", ((CheckBoxPreference) preference).isChecked());
+                        editor.putBoolean("core_translucent_systemui_v14", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
                         return false;
                     }
                 });
-                tSysUI_v14.setChecked(experimental_pref.getBoolean("translucent_systemui_v14", false));
+                tSysUI_v14.setChecked(experimental_pref.getBoolean("core_translucent_systemui_v14", false));
+            }
+
+            CheckBoxPreference xmas_mood =
+                    (CheckBoxPreference) findPreference("core_xmas_mood");
+            if(xmas_mood != null) {
+                xmas_mood.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object o) {
+                        final SharedPreferences.Editor editor = experimental_pref.edit();
+                        editor.putBoolean("core_xmas_mood", ((CheckBoxPreference) preference).isChecked());
+                        editor.commit();
+                        return false;
+                    }
+                });
+                xmas_mood.setChecked(experimental_pref.getBoolean("core_xmas_mood", false));
             }
         } catch (Exception e) {
             e.printStackTrace();

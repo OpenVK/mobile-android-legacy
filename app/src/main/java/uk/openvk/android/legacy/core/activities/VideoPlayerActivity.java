@@ -142,7 +142,7 @@ public class VideoPlayerActivity extends Activity {
                 if(url == null) {
                     url = "";
                 }
-                if(experimental_pref.getBoolean("ffmpeg_player", false)) {
+                if(experimental_pref.getBoolean("video_ffmpeg_player", false)) {
                     createMediaPlayer(url);
                     // Uncomment to test
                     // createMediaPlayer("http://openvk.xyz/assets/packages/static/openvk/audio/nomusic.mp3");
