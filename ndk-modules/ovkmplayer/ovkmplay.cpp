@@ -367,8 +367,8 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
             }
 
             // Since <android/bitmap.h> and <android/native_window.h> are not available
-            // for Android below 2.2, you will need to pass it to a Java function to
-            // render the frames via Canvas.
+            // for Android below 2.2, you will need to pass a buffer to the Java function
+            // to render the frames via Canvas.
 
             env->SetByteArrayRegion(buffer2, 0, (jsize) videoBufferLength, (jbyte *) buffer);
             env->CallVoidMethod(instance, renderVideoMid, buffer2, videoBufferLength);
