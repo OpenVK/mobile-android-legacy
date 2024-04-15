@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.R;
@@ -22,6 +23,13 @@ public class ExperimentalFeaturesActivity extends TranslucentPreferenceActivity 
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_experimental);
         setContentView(R.layout.layout_custom_preferences);
+
+        // for warning label
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ((LinearLayout.LayoutParams) findViewById(android.R.id.list).getLayoutParams()).topMargin =
+                    (int) (8 * getResources().getDisplayMetrics().scaledDensity);
+        }
+        
         global_prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
