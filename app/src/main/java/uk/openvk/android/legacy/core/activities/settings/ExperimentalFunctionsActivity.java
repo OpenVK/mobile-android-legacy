@@ -29,9 +29,9 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
                         final SharedPreferences.Editor editor = experimental_pref.edit();
-                        editor.putBoolean("ffmpeg_player", !(boolean)o);
+                        editor.putBoolean("ffmpeg_player", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
-                        return (boolean)o;
+                        return ((CheckBoxPreference) preference).isChecked();
                     }
                 });
                 ffmpeg_player.setChecked(experimental_pref.getBoolean("ffmpeg_player", false));
@@ -43,9 +43,9 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
                         final SharedPreferences.Editor editor = experimental_pref.edit();
-                        editor.putBoolean("translucent_systemui_v14", !(boolean)o);
+                        editor.putBoolean("translucent_systemui_v14", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
-                        return (boolean)o;
+                        return ((CheckBoxPreference) preference).isChecked();
                     }
                 });
                 ffmpeg_player.setChecked(experimental_pref.getBoolean("translucent_systemui_v14", false));
