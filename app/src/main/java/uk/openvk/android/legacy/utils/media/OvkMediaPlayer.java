@@ -100,6 +100,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native void naInit();
     private native String naShowLogo();
     private native Object naGenerateTrackInfo(int type);
+    private native void naSetMinAudioBufferSize(int audioBufferSize);
     private native int naOpenFile(String filename);
     private native int naPlay();
     private native void naSetDebugMode(boolean value);
@@ -162,24 +163,17 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @SuppressWarnings("MalformedFormatString")
     public ArrayList<OvkMediaTrack> getMediaInfo(String filename) {
-        ArrayList<OvkMediaTrack> tracks = new ArrayList<>();
+        this.tracks = new ArrayList<>();
         OvkVideoTrack video_track;
         OvkAudioTrack audio_track;
-        if(filename == null) {
-            video_track = (OvkVideoTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_VIDEO);
-            audio_track = (OvkAudioTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_AUDIO);
-            if(video_track == null && audio_track == null) {
-                return null;
-            }
-        } else {
+        if(filename != null) {
             naOpenFile(filename);
-            video_track = (OvkVideoTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_VIDEO);
-            audio_track = (OvkAudioTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_AUDIO);
-            if(video_track == null && audio_track == null) {
-                return null;
-            }
         }
-
+        video_track = (OvkVideoTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_VIDEO);
+        audio_track = (OvkAudioTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_AUDIO);
+        if(video_track == null && audio_track == null) {
+            return null;
+        }
 
         if(audio_track != null) {
             Log.d(MPLAY_TAG,
@@ -272,6 +266,15 @@ public class OvkMediaPlayer extends MediaPlayer {
             for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
                 if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
                     audio_track = (OvkAudioTrack) tracks.get(tracks_index);
+//                    int ch_config = audio_track.channels == 2 ?
+//                            AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+//                    minAudioBufferSize =
+//                            AudioTrack.getMinBufferSize(
+//                                    (int) audio_track.sample_rate,
+//                                    ch_config,
+//                                    AudioFormat.ENCODING_PCM_16BIT
+//                            );
+//                    naSetMinAudioBufferSize(minAudioBufferSize);
                 } else if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
                     video_track = (OvkVideoTrack) tracks.get(tracks_index);
                 }
@@ -324,7 +327,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             prepared_audio_buffer = true;
         }
         try {
-            audio_track.write(buffer, 0, buffer.length);
+            audio_track.write(buffer, 0, length);
         } catch (Exception ignored) {
         }
     }

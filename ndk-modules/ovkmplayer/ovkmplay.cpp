@@ -93,6 +93,7 @@ AVCodec             *gAudioCodec;
 
 
 bool                debug_mode;
+int                 gMinAudioBufferSize;
 
 AVDictionary        *avFormatOptions            = NULL;
 AVDictionary        *avCodecOptions             = NULL;
@@ -107,15 +108,13 @@ struct SwrContext   *swrCtx;
 
 int gFrameCount;
 
-// Initialize FFmpeg
-
 JNIEXPORT void JNICALL naInit(JNIEnv *env, jobject instance) {
     if(debug_mode) {
         LOGD(10, "[DEBUG] Initializing FFmpeg...");
     }
     av_register_all();
-    avcodec_register_all();   // register all available A/V codecs
-    avformat_network_init();  // register all available network protocols
+    avcodec_register_all();
+    avformat_network_init();
     gFormatCtx = avformat_alloc_context();
 }
 
@@ -137,7 +136,10 @@ JNIEXPORT void JNICALL naSetDebugMode(JNIEnv *env, jobject instance, jboolean va
     }
 }
 
-// Open media file from network or local storage
+JNIEXPORT void JNICALL naSetMinAudioBufferSize(JNIEnv *env, jobject instance, jint minBuffSize) {
+    gMinAudioBufferSize = (int)minBuffSize;
+}
+
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
     AVDictionary    *optionsDict = NULL;
     AVFrame         *decodedFrame = NULL;
@@ -147,8 +149,6 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
                     aCodecResult,
                     vCodecResult;
     char            errorString[192];
-
-    // Open file in FFmpeg and check if error occurred
 
     gFileName = (char *)env->GetStringUTFChars(filename, NULL);
     if((result = avformat_open_input(&gFormatCtx, gFileName, NULL, NULL))!=0){
@@ -161,10 +161,8 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
         return -1;
     }
 
-    // Find A/V streams
-
     if(avformat_find_stream_info(gFormatCtx, NULL)<0){
-        LOGE(10, "[ERROR] Failed to find stream info %s", gFileName);
+        LOGE(10, "FAILED to find stream info %s", gFileName);
         return -1;
     }
 
@@ -179,15 +177,13 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
         }
     }
     if(gVideoStreamIndex == -1){
-        LOGE(10, "[ERROR] Didn't find a video stream");
+        LOGE(10, "Didn't find a video stream");
     } else if(gAudioStreamIndex == -1){
         LOGE(10, "Didn't find a audio stream");
     } else if(gVideoStreamIndex == -1 && gAudioStreamIndex == -1){
         LOGE(10, "Media streams not found");
         return -1;
     }
-
-    // Open A/V decoders if found
 
     if(gVideoStreamIndex != -1) {
         gVideoCodecCtx = gFormatCtx->streams[gVideoStreamIndex]->codec;
@@ -218,8 +214,6 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
         return -1;
     }
 }
-
-// Convert video frame to YUV (YCbCr) to RGB
 
 JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int length) {
     uint8_t *buffer = (uint8_t*) malloc((size_t)length);
@@ -284,25 +278,27 @@ JNIEXPORT void JNICALL decodeAudioFromPacket(       // Decoding audio packets
 
     // Allocate audio frame
     pFrame = av_frame_alloc();
-
     int len = avcodec_decode_audio4(
-                                    gAudioCodecCtx,
-                                    pFrame,
-                                    &status,
-                                    &avPkt
-                                   );
+                                            gAudioCodecCtx,
+                                            pFrame,
+                                            &status,
+                                            &avPkt
+                                           );
     if (status) {
-        dataSize = av_samples_get_buffer_size(
-                                                 NULL,
-                                                 gAudioCodecCtx->channels,
-                                                 pFrame->nb_samples,
-                                                 gAudioCodecCtx->sample_fmt,
-                                                 1
-                                              );
+        int sampleSize = av_samples_get_buffer_size(NULL,
+                                                       gAudioCodecCtx->channels,
+                                                       pFrame->nb_samples,
+                                                       gAudioCodecCtx->sample_fmt,
+                                                       1);
+        if(debug_mode) {
+            LOGD(10, "[DEBUG] Decoding audio frame #%d | Length: %d of %d",
+                     tAudioFrames + 1, len, packetSize);
+        }
         buffer = (uint8_t *) pFrame->data[0];
-        env->SetByteArrayRegion(buffer2, 0, (jsize) dataSize, (jbyte *) buffer);
-        env->CallVoidMethod(instance, renderAudioMid, buffer2, dataSize);
+        env->SetByteArrayRegion(buffer2, 0, (jsize) sampleSize, (jbyte *) buffer);
+        env->CallVoidMethod(instance, renderAudioMid, buffer2, sampleSize);
     }
+    //env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0);
     av_free(pFrame);
     tAudioFrames++;
 }
@@ -321,10 +317,6 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
     jmethodID   renderVideoMid          = env->GetMethodID(jmplay, "renderVideo", "([BI)V");
     AVFrame     *pFrame                 = av_frame_alloc(),
                 *pFrameRGB              = av_frame_alloc();
-
-    buffer2 = env->NewByteArray((jsize) videoBufferLength);
-
-    // AVPicture draw
 
     avpicture_fill((AVPicture*) pFrame,
                        (const uint8_t*) buffer,
@@ -366,13 +358,8 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
                 return;
             }
 
-            // Since <android/bitmap.h> and <android/native_window.h> are not available
-            // for Android below 2.2, you will need to pass a buffer to the Java function
-            // to render the frames via Canvas.
-
             env->SetByteArrayRegion(buffer2, 0, (jsize) videoBufferLength, (jbyte *) buffer);
             env->CallVoidMethod(instance, renderVideoMid, buffer2, videoBufferLength);
-
         } catch (...) {
             if (debug_mode) {
                 LOGE(10, "[ERROR] Render video frames failed");
@@ -384,11 +371,9 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
     av_free(pFrameRGB);
     tVideoFrames++;
     gFramesCount = tVideoFrames;
-    env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0); // clear buffer before next video frame
-    env->DeleteLocalRef(buffer2);
+    env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0); // clear buffer before next frame
 }
 
-// Media decoder wrapping
 int decodeMediaFile(JNIEnv* env, jobject instance) {
     if(debug_mode) {
         LOGD(10, "[DEBUG] Decoding audio stream #%d and video stream #%d...",
@@ -423,7 +408,7 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
         return -1;
     }
 
-    jbyteArray jVideoBuffer;
+    jbyteArray jVideoBuffer = env->NewByteArray((jsize) vBuffLength);;
     jbyteArray jAudioBuffer = env->NewByteArray((jsize) aBuffLength);
 
     while ((status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
@@ -456,8 +441,13 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     env->CallVoidMethod(instance, completePbMid);
     env->DeleteLocalRef(jmplay);
     env->DeleteLocalRef(jAudioBuffer);
-    avcodec_close(gVideoCodecCtx);
-    avcodec_close(gAudioCodecCtx);
+    env->DeleteLocalRef(jVideoBuffer);
+    if(gVideoStreamIndex != -1) {
+        avcodec_close(gVideoCodecCtx);
+    }
+    if(gAudioStreamIndex != -1) {
+        avcodec_close(gAudioCodecCtx);
+    }
     avformat_close_input(&gFormatCtx);
     return 0;
 }
@@ -466,11 +456,17 @@ JNIEXPORT jint JNICALL naPlay(JNIEnv *env, jobject instance) {
     return (jint)decodeMediaFile(env, instance);
 }
 
-
-// Generate information about A/V streams
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(
         JNIEnv* env, jobject instance, jint type
 ) {
+    // JNI field types (bad stuff, don't you agree?)
+    // [JNI] => [java]
+    // "[?"  => ?[] == int[], bool[], long[] and etc.
+    // "I"   => int
+    // "J"   => long (aka. int64)
+    // "Z"   => boolean
+    // "D"   => double
+    // "F"   => float
 
     jclass track_class;
     try {
@@ -564,7 +560,7 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
 	if (pVm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
 		 return -1;
 	}
-	JNINativeMethod nm[6];
+	JNINativeMethod nm[7];
 	nm[0].name = "naInit";
 	nm[0].signature = "()V";
 	nm[0].fnPtr = (void*)naInit;
@@ -589,12 +585,16 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
     nm[5].signature = "()I";
     nm[5].fnPtr = (void*)naPlay;
 
+    nm[6].name = "naSetMinAudioBufferSize";
+    nm[6].signature = "(I)V";
+    nm[6].fnPtr = (void*)naSetMinAudioBufferSize;
+
     /* nm[3].name = "naStop";
        nm[3].signature = "()V";
        nm[3].fnPtr = (void*)naStop;
     */
 	jclass cls = env->FindClass("uk/openvk/android/legacy/utils/media/OvkMediaPlayer");
 	//Register methods with env->RegisterNatives.
-	env->RegisterNatives(cls, nm, 6);
+	env->RegisterNatives(cls, nm, 7);
 	return JNI_VERSION_1_6;
 }
