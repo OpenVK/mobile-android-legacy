@@ -25,11 +25,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import uk.openvk.android.legacy.R;
@@ -66,6 +68,11 @@ public class TranslucentFragmentActivity extends FragmentActivity {
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setTintDrawable(
                     getResources().getDrawable(statusbar_color));
+        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.HONEYCOMB) {
+            int vendor_translucent_sb_flag = getDeviceVendorTranslucentStatusBarFlag();
+            View decor = getWindow().getDecorView();
+            if (decor != null && vendor_translucent_sb_flag != 0)
+                decor.setSystemUiVisibility(vendor_translucent_sb_flag);
         }
     }
 
@@ -85,5 +92,34 @@ public class TranslucentFragmentActivity extends FragmentActivity {
                 tintManager.setTintColor(res);
             }
         }
+    }
+
+    int getDeviceVendorTranslucentStatusBarFlag() {
+        final SharedPreferences experimental_pref = getSharedPreferences("experimental", 0);
+        if(experimental_pref.getBoolean("core_translucent_systemui_v14", false)) {
+
+            String[] libs = getPackageManager().getSystemSharedLibraryNames();
+            String reflect = null;
+
+            if (libs == null)
+                return 0;
+            for (String lib : libs) {
+                if (lib.equals("touchwiz")) // if Samsung TouchWiz SystemUI
+                    reflect = "SYSTEM_UI_FLAG_TRANSPARENT_BACKGROUND";
+                else if (lib.startsWith("com.sonyericsson.navigationbar")) // if Sony SystemUI
+                    reflect = "SYSTEM_UI_FLAG_TRANSPARENT";
+            }
+
+            if (reflect == null)
+                return 0;
+
+            try {
+                Field field = View.class.getField(reflect);
+                if (field.getType() == Integer.TYPE)
+                    return field.getInt(null);
+            } catch (Exception ignored) {
+            }
+        }
+        return 0;
     }
 }
