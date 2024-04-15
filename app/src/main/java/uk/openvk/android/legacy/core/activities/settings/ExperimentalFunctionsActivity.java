@@ -75,12 +75,13 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
     private void listenPreferences() {
         final SharedPreferences experimental_pref = getSharedPreferences("experimental", 0);
         try {
-            CheckBoxPreference ffmpeg_player =
+            final CheckBoxPreference ffmpeg_player =
                     (CheckBoxPreference) findPreference("video_ffmpeg_player");
             if(ffmpeg_player != null) {
                 ffmpeg_player.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
+                        ((CheckBoxPreference) preference).setChecked(!((CheckBoxPreference) preference).isChecked());
                         final SharedPreferences.Editor editor = experimental_pref.edit();
                         editor.putBoolean("video_ffmpeg_player", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
@@ -96,6 +97,7 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
                 tSysUI_v14.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
+                        ((CheckBoxPreference) preference).setChecked(!((CheckBoxPreference) preference).isChecked());
                         final SharedPreferences.Editor editor = experimental_pref.edit();
                         editor.putBoolean("core_translucent_systemui_v14", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
@@ -111,6 +113,7 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
                 xmas_mood.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object o) {
+                        ((CheckBoxPreference) preference).setChecked(!((CheckBoxPreference) preference).isChecked());
                         final SharedPreferences.Editor editor = experimental_pref.edit();
                         editor.putBoolean("core_xmas_mood", ((CheckBoxPreference) preference).isChecked());
                         editor.commit();
