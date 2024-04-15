@@ -31,7 +31,7 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
                         final SharedPreferences.Editor editor = experimental_pref.edit();
                         editor.putBoolean("ffmpeg_player", (boolean)o);
                         editor.commit();
-                        return false;
+                        return (boolean)o;
                     }
                 });
             }
@@ -44,7 +44,7 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
                         final SharedPreferences.Editor editor = experimental_pref.edit();
                         editor.putBoolean("translucent_systemui_v14", (boolean)o);
                         editor.commit();
-                        return false;
+                        return (boolean)o;
                     }
                 });
             }
