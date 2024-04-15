@@ -14,7 +14,7 @@ import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.TranslucentPreferenceActivity;
 
-public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity {
+public class ExperimentalFeaturesActivity extends TranslucentPreferenceActivity {
     private SharedPreferences global_prefs;
 
     @Override

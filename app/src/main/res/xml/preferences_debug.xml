@@ -42,10 +42,10 @@
         android:title="@string/use_legacy_http_client"
         android:summary="@string/use_legacy_http_client_description"/>
 
-    <Preference
-            android:key="experimentalFuncs"
-            android:title="@string/experimental_functions"
-            android:layout="@layout/pref_widget"/>
+        <Preference
+            android:key="experimentalFeats"
+            android:layout="@layout/pref_widget"
+            android:title="@string/experimental_features" />
 
 
     <Preference

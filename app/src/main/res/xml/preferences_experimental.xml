@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:key="restart_required"
         android:layout="@layout/pref_notification"
-        android:title="@string/experimental_functions_description" />
+        android:title="@string/experimental_features_description" />
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="video_ffmpeg_player"
