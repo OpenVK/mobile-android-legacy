@@ -17,7 +17,7 @@
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-package uk.openvk.android.legacy.core.activities;
+package uk.openvk.android.legacy.core.activities.settings;
 
 import android.app.AlertDialog;
 import android.content.Context;

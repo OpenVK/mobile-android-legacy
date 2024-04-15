@@ -89,29 +89,31 @@ public class TranslucentActivity extends Activity {
      */
 
     int getDeviceVendorTranslucentStatusBarFlag() {
+        final SharedPreferences experimental_pref = getSharedPreferences("experimental", 0);
+        if(experimental_pref.getBoolean("translucent_systemui_v14", false)) {
 
-        String[] libs = getPackageManager().getSystemSharedLibraryNames();
-        String reflect = null;
+            String[] libs = getPackageManager().getSystemSharedLibraryNames();
+            String reflect = null;
 
-        if (libs == null)
-            return 0;
+            if (libs == null)
+                return 0;
+            for (String lib : libs) {
+                if (lib.equals("touchwiz")) // if Samsung TouchWiz SystemUI
+                    reflect = "SYSTEM_UI_FLAG_TRANSPARENT_BACKGROUND";
+                else if (lib.startsWith("com.sonyericsson.navigationbar")) // if Sony SystemUI
+                    reflect = "SYSTEM_UI_FLAG_TRANSPARENT";
+            }
 
-        for (String lib : libs) {
-            if (lib.equals("touchwiz")) // if Samsung TouchWiz SystemUI
-                reflect = "SYSTEM_UI_FLAG_TRANSPARENT_BACKGROUND";
-            else if (lib.startsWith("com.sonyericsson.navigationbar")) // if Sony SystemUI
-                reflect = "SYSTEM_UI_FLAG_TRANSPARENT";
+            if (reflect == null)
+                return 0;
+
+            try {
+                Field field = View.class.getField(reflect);
+                if (field.getType() == Integer.TYPE)
+                    return field.getInt(null);
+            } catch (Exception ignored) {
+            }
         }
-
-        if (reflect == null)
-            return 0;
-
-        try {
-            Field field = View.class.getField(reflect);
-            if (field.getType() == Integer.TYPE)
-                return field.getInt(null);
-        } catch (Exception ignored) { }
-
         return 0;
     }
 

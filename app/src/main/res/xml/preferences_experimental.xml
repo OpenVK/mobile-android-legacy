@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:id="@+id/preference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:key="restart_required"
+        android:layout="@layout/pref_notification"
+        android:title="@string/experimental_functions_description" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="ffmpeg_player"
+        android:title="ffmpeg_player" />
+    <CheckBoxPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="false"
+        android:key="translucent_systemui_v14"
+        android:title="translucent_systemui_v14" />
+</PreferenceScreen>

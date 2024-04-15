@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -103,6 +104,7 @@ public class VideoPlayerActivity extends Activity {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void loadVideo() {
+        final SharedPreferences experimental_pref = getSharedPreferences("experimental", 0);
         Bundle data = getIntent().getExtras();
         if(data != null) {
             if(data.containsKey("attachment")) {
@@ -140,29 +142,35 @@ public class VideoPlayerActivity extends Activity {
                 if(url == null) {
                     url = "";
                 }
-
-                createMediaPlayer(url);
-                // Uncomment to test
-                // createMediaPlayer("http://openvk.xyz/assets/packages/static/openvk/audio/nomusic.mp3");
-                (findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        playVideo();
-                    }
-                });
-                (findViewById(R.id.video_resize)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(fitVideo) {
-                            ((ImageButton) v).setImageDrawable(
-                                    getResources().getDrawable(R.drawable.ic_video_expand));
-                        } else {
-                            ((ImageButton) v).setImageDrawable(
-                                    getResources().getDrawable(R.drawable.ic_video_shrink));
+                if(experimental_pref.getBoolean("ffmpeg_player", false)) {
+                    createMediaPlayer(url);
+                    // Uncomment to test
+                    // createMediaPlayer("http://openvk.xyz/assets/packages/static/openvk/audio/nomusic.mp3");
+                    (findViewById(R.id.video_btn)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            playVideo();
                         }
-                        //resizeVideo();
-                    }
-                });
+                    });
+                    (findViewById(R.id.video_resize)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (fitVideo) {
+                                ((ImageButton) v).setImageDrawable(
+                                        getResources().getDrawable(R.drawable.ic_video_expand));
+                            } else {
+                                ((ImageButton) v).setImageDrawable(
+                                        getResources().getDrawable(R.drawable.ic_video_shrink));
+                            }
+                            //resizeVideo();
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.setDataAndType(Uri.parse(url), "video/*");
+                    startActivity(intent);
+                    finish();
+                }
             }
         } else {
             finish();

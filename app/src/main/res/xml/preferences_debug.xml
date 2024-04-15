@@ -43,6 +43,12 @@
         android:summary="@string/use_legacy_http_client_description"/>
 
     <Preference
+            android:key="experimentalFuncs"
+            android:title="@string/experimental_functions"
+            android:layout="@layout/pref_widget"/>
+
+
+    <Preference
         android:key="causeAppToCrash"
         android:title="@string/cause_app_to_crash"
         android:layout="@layout/pref_widget"/>

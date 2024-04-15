@@ -690,6 +690,7 @@
     <string name="posting_error">При отправке записи произошла ошибка. Повторите попытку позже.</string>
     <string name="posting_access_denied">Вы не имеете права публиковать запись на этой стене.</string>
     <string name="posted_successfully">Запись опубликована.</string>
+
     <string name="debug_menu">Меню отладки</string>
     <string name="api_logging">Журналирование API</string>
     <string name="write_logs_to_file">Запись журнала в файл</string>
@@ -699,6 +700,8 @@
     <string name="use_legacy_http_client_description">Использовать обернутый HTTP(S)-клиент HttpUrlConnection, предназначенный для устаревших версий Android</string>
     <string name="use_legacy_http_client_okhttp_err">Отключение невозможно из-за неподдерживаемой версии Android</string>
     <string name="use_legacy_http_client_apachew_err">Включение невозможно из-за неподдерживаемой версии Android</string>
+    <string name="experimental_functions">Экспериментальные функции</string>
+    <string name="experimental_functions_description">Используйте только на свой страх и риск, так как они могут быть нестабильными или неработоспособными</string>
     <string name="cause_app_to_crash">Вызвать сбой приложения</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>

@@ -19,7 +19,6 @@
 
 package uk.openvk.android.legacy.core.fragments;
 
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,8 +27,6 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceGroup;
@@ -41,36 +38,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Timer;
 
 import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.client.entities.Ovk;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.entities.InstanceLink;
-import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AboutApplicationActivity;
-import uk.openvk.android.legacy.core.activities.MainActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActivePreferenceFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.core.activities.AdvancedSettingsActivity;
+import uk.openvk.android.legacy.core.activities.settings.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.DebugMenuActivity;
-import uk.openvk.android.legacy.core.activities.NetworkSettingsActivity;
+import uk.openvk.android.legacy.core.activities.settings.DebugMenuActivity;
+import uk.openvk.android.legacy.core.activities.settings.NetworkSettingsActivity;
 import uk.openvk.android.legacy.ui.list.adapters.InstanceCountersAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.utils.AccountAuthenticator;
-import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 public class MainSettingsFragment extends ActivePreferenceFragment {
     private boolean isQuiting;

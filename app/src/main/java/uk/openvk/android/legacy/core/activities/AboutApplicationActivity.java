@@ -46,6 +46,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.settings.DebugMenuActivity;
 import uk.openvk.android.legacy.core.methods.CustomLinkMovementMethod;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentActivity;

@@ -271,7 +271,7 @@
         />
 
         <activity
-            android:name=".core.activities.MainSettingsActivity"
+            android:name=".core.activities.settings.MainSettingsActivity"
             android:label="@string/menu_settings"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -280,7 +280,7 @@
         />
 
         <activity
-            android:name=".core.activities.DebugMenuActivity"
+            android:name=".core.activities.settings.DebugMenuActivity"
             android:label="@string/debug_menu"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -289,7 +289,7 @@
         />
 
         <activity
-            android:name=".core.activities.NetworkSettingsActivity"
+            android:name=".core.activities.settings.NetworkSettingsActivity"
             android:label="@string/sett_network"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -298,13 +298,22 @@
         />
 
         <activity
-            android:name=".core.activities.AdvancedSettingsActivity"
+            android:name=".core.activities.settings.AdvancedSettingsActivity"
             android:label="@string/sett_advanced"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
             android:resizeableActivity="false"
         />
+
+        <activity
+            android:name=".core.activities.ExperimentalFunctionsActivity"
+            android:label="@string/experimental_functions"
+            android:theme="@style/BaseStyle"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:resizeableActivity="false"
+            />
 
         <activity android:name=".core.activities.QuickSearchActivity"
             android:label="@string/search_global"
