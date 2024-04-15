@@ -311,6 +311,8 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
     AVFrame     *pFrame                 = av_frame_alloc(),
                 *pFrameRGB              = av_frame_alloc();
 
+    buffer2 = env->NewByteArray((jsize) videoBufferLength);
+
     avpicture_fill((AVPicture*) pFrame,
                        (const uint8_t*) buffer,
                        gVideoCodecCtx->pix_fmt,
@@ -364,6 +366,8 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
     av_free(pFrameRGB);
     tVideoFrames++;
     gFramesCount = tVideoFrames;
+    env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0); // clear buffer before next frame
+    env->DeleteLocalRef(buffer2);
 }
 
 int decodeMediaFile(JNIEnv* env, jobject instance) {
@@ -400,8 +404,8 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
         return -1;
     }
 
+    jbyteArray jVideoBuffer;
     jbyteArray jAudioBuffer = env->NewByteArray((jsize) aBuffLength);
-    jbyteArray jVideoBuffer = env->NewByteArray((jsize) vBuffLength);
 
     while ((status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
         if (avPkt.stream_index == gAudioStreamIndex) {
@@ -432,7 +436,6 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     jmethodID completePbMid = env->GetMethodID(jmplay, "completePlayback", "()V");
     env->CallVoidMethod(instance, completePbMid);
     env->DeleteLocalRef(jmplay);
-    env->DeleteLocalRef(jVideoBuffer);
     env->DeleteLocalRef(jAudioBuffer);
     avcodec_close(gVideoCodecCtx);
     avcodec_close(gAudioCodecCtx);
