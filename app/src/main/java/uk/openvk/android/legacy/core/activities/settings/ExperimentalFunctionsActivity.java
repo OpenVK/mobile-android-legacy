@@ -7,6 +7,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
+import android.view.MenuItem;
 import android.view.View;
 
 import dev.tinelix.retro_ab.ActionBar;
@@ -59,6 +60,16 @@ public class ExperimentalFunctionsActivity extends TranslucentPreferenceActivity
             }
         }
         listenPreferences();
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if(item.getItemId() == android.R.id.home) {
+                onBackPressed();
+            }
+        }
+        return super.onMenuItemSelected(featureId, item);
     }
 
     private void listenPreferences() {
