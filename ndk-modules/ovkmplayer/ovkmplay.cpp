@@ -91,8 +91,6 @@ AVCodecContext      *gAudioCodecCtx;
 AVCodec             *gVideoCodec;
 AVCodec             *gAudioCodec;
 
-PacketQueue         audioPktQueue,
-                    videoPktQueue;
 
 bool                debug_mode;
 
