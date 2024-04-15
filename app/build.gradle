@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-import org.apache.tools.ant.taskdefs.condition.Os
 
 def getGitHubCommit = {
     try {
@@ -80,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 239
-        versionName "1.2.239-u"
+        versionCode 240
+        versionName "1.2.240-u"
     }
     buildTypes {
         release {
@@ -100,16 +99,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 239
-            versionName "1.2.239-d"
+            versionCode 240
+            versionName "1.2.240-d"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 239
-            versionName '1.2.239'
+            versionCode 240
+            versionName '1.2.240'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -120,8 +119,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 239
-            versionName "1.2.239-f"
+            versionCode 240
+            versionName "1.2.240-f"
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }
