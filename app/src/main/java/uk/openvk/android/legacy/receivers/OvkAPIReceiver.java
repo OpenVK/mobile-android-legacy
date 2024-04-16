@@ -306,18 +306,20 @@ public class OvkAPIReceiver extends BroadcastReceiver {
 
         if (activity instanceof AuthActivity) {
             AuthActivity auth_a = (AuthActivity) activity;
-            assert method != null;
-            switch (method) {
-                case "Account.getProfileInfo":
-                    try {
-                        auth_a.auth = new Authorization(data.getString("response"));
+            if(method != null) {
+                switch (method) {
+                    case "Account.getProfileInfo":
                         msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
-                    } catch (JSONException e) {
-                        msg.what = HandlerMessages.INTERNAL_ERROR;
-                    } catch (IllegalAccessException e) {
-                        msg.what = HandlerMessages.INVALID_USERNAME_OR_PASSWORD;
-                    }
-                    break;
+                        break;
+                }
+            } else {
+                try {
+                    auth_a.auth = new Authorization(data.getString("response"));
+                } catch (JSONException e) {
+                    msg.what = HandlerMessages.INTERNAL_ERROR;
+                } catch (IllegalAccessException e) {
+                    msg.what = HandlerMessages.INVALID_USERNAME_OR_PASSWORD;
+                }
             }
         } else if (activity instanceof NetworkFragmentActivity) {
             NetworkFragmentActivity net_a = (NetworkFragmentActivity) activity;
