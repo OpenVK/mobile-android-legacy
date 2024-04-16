@@ -306,15 +306,6 @@
             android:resizeableActivity="false"
         />
 
-        <activity
-            android:name=".core.activities.settings.ExperimentalFeaturesActivity"
-            android:label="@string/experimental_features"
-            android:theme="@style/BaseStyle"
-            android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
-            android:resizeableActivity="false"
-            />
-
         <activity android:name=".core.activities.QuickSearchActivity"
             android:label="@string/search_global"
             android:theme="@style/BaseStyle.NoActionBar.NoShadow"
