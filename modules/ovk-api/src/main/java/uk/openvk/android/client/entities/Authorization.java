@@ -26,11 +26,14 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.Error;
+
 import uk.openvk.android.client.wrappers.JSONParser;
 
 public class Authorization {
     private String access_token;
     private String response;
+    private String error_msg;
     private JSONParser jsonParser;
     public static String ACCOUNT_TYPE = "uk.openvk.android.legacy.account";
 
@@ -40,8 +43,12 @@ public class Authorization {
         JSONObject json = jsonParser.parseJSON(response);
         if(json != null) {
             try {
-                this.access_token = json.getString("access_token");
-            } catch (JSONException e) {
+                if (json.has("error")) {
+                    error_msg = json.getString("error");
+                } else if (json.has("access_token")) {
+                    this.access_token = json.getString("access_token");
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -49,5 +56,9 @@ public class Authorization {
 
     public String getAccessToken() {
         return access_token;
+    }
+
+    public String getErrorMessage() {
+        return error_msg;
     }
 }

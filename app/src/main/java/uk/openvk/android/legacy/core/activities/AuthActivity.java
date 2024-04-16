@@ -41,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -74,7 +76,7 @@ public class AuthActivity extends NetworkAuthActivity {
     private Account account;
     private JSONParser jsonParser = new JSONParser();
     private int twofactor_fail = -1;
-    private Authorization auth;
+    public Authorization auth;
     private ArrayList<InstancesListItem> instances_list;
 
     @Override
@@ -413,13 +415,30 @@ public class AuthActivity extends NetworkAuthActivity {
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {
-                auth = new Authorization(response);
-                if(connectionDialog.isShowing()) {
-                    connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
+                try {
+                    auth = new Authorization(data.getString("response"));
+                    if(auth.getErrorMessage() != null) {
+                        Log.d(OvkApplication.APP_TAG, "Getting auth error...");
+                        if (auth.getErrorMessage().equals("need_validation")) {
+                            receiveState(HandlerMessages.TWOFACTOR_CODE_REQUIRED, data);
+                        } else {
+                            receiveState(HandlerMessages.INTERNAL_ERROR, data);
+                        }
+                        return;
+                    }
+                    if (connectionDialog.isShowing()) {
+                        connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
+                    }
+                    account = new Account(this);
+                    ovk_api.wrapper.setAccessToken(auth.getAccessToken());
+                    account.getProfileInfo(ovk_api.wrapper);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                            getResources().getString(R.string.auth_error_title),
+                            getResources().getString(R.string.auth_error, getReason(message)), null);
+                    alertDialog.show();
                 }
-                account = new Account(this);
-                ovk_api.wrapper.setAccessToken(auth.getAccessToken());
-                account.getProfileInfo(ovk_api.wrapper);
             } else if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
                 String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
