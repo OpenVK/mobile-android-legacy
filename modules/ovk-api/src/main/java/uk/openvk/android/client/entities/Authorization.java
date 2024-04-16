@@ -37,18 +37,21 @@ public class Authorization {
     private JSONParser jsonParser;
     public static String ACCOUNT_TYPE = "uk.openvk.android.legacy.account";
 
-    public Authorization(String response) throws JSONException, IllegalAccessException {
+    public Authorization(String response) {
         this.response = response;
         jsonParser = new JSONParser();
         JSONObject json = jsonParser.parseJSON(response);
         if(json != null) {
-            if(json.has("error")) {
-                error_msg = json.getString("error");
-                throw new IllegalAccessException(
-                        String.format("Authorization error occurred: %s", json.getString("error_description"))
-                );
-            } else if(json.has("access_token")) {
-                this.access_token = json.getString("access_token");
+            try {
+                if (json.has("error")) {
+                    throw new IllegalAccessException(
+                            String.format("Authorization error occurred: %s", json.getString("error_description"))
+                    );
+                } else if (json.has("access_token")) {
+                    this.access_token = json.getString("access_token");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
