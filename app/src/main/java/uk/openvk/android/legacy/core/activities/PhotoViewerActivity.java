@@ -447,5 +447,8 @@ public class PhotoViewerActivity extends NetworkActivity {
         isFullScreenMode = !isFullScreenMode;
     }
 
-
+//    @Override
+//    protected void resetTranslucentStatusBar() {
+//        super.resetTranslucentStatusBar();
+//    }
 }

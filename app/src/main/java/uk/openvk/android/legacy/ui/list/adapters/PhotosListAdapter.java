@@ -163,7 +163,9 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
                     return null;
                 }
                 int max_size = 360;
-                if(ctx.getResources().getDisplayMetrics().widthPixels <= 480) {
+                if(((OvkApplication) view.getContext().getApplicationContext()).isTablet) {
+                    max_size = 480;
+                } else if(ctx.getResources().getDisplayMetrics().widthPixels <= 480) {
                     max_size = 192;
                 }
                 float aspect_ratio = (float)bitmap.getWidth() / (float)max_size;

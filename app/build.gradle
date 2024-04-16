@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-import org.apache.tools.ant.taskdefs.condition.Os
 
 def getGitHubCommit = {
     try {
@@ -80,23 +79,17 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 239
-        versionName "1.2.239-u"
+        versionCode 240
+        versionName "1.2.240-u"
     }
     buildTypes {
         release {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
             buildConfigField "String", "SOURCE_CODE", "\"https://github.com/openvk/mobile-android-legacy\""
-            ndk {
-                abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-            }
         }
         debug {
             buildConfigField "String", "GITHUB_COMMIT", "\"${getGitHubCommit()}\""
             buildConfigField "String", "SOURCE_CODE", "\"https://github.com/openvk/mobile-android-legacy\""
-            ndk {
-                abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-            }
         }
     }
     productFlavors {
@@ -106,16 +99,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 239
-            versionName "1.2.239-d"
+            versionCode 240
+            versionName "1.2.240-d"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 239
-            versionName '1.2.239'
+            versionCode 240
+            versionName '1.2.240'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -126,8 +119,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 239
-            versionName "1.2.239-f"
+            versionCode 240
+            versionName "1.2.240-f"
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }
@@ -136,33 +129,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
-    }
-    task mPlayerBuild(type: Exec, description: 'Compile OpenVK Media Player via NDK') {
-        def ndkDir = android.ndkDirectory
-        def projDir = project.projectDir.toString()
-        println  "Compiling OpenVK Media Player..."
-        println  "Project Directory:   ${projDir}"
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine "$ndkDir\\ndk-build.cmd",
-                    "NDK_PROJECT_PATH=$projDir/app/src/main",
-                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
-                    "APP_BUILD_SCRIPT=$projDir/../ndk-modules/ovkmplayer/Android.mk",
-                    "NDK_APPLICATION_MK=$projDir/../ndk-modules/ovkmplayer/Application.mk"
-        } else {
-            commandLine "$ndkDir/ndk-build.sh",
-                    "NDK_PROJECT_PATH=$projDir/app/src/main",
-                    "NDK_LIBS_OUT=$projDir/app/src/main/jniLibs",
-                    "APP_BUILD_SCRIPT=$projDir/ndk-modules/ovkmplayer/Android.mk",
-                    "NDK_APPLICATION_MK=$projDir/ndk-modules/ovkmplayer/Application.mk"
-        }
-    }
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn mPlayerBuild
-    }
-    externalNativeBuild {
-        ndkBuild {
-            path '../ndk-modules/ovkmplayer/Android.mk'
-        }
     }
 }
 
