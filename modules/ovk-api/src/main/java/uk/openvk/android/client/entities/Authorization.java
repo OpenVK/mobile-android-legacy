@@ -33,6 +33,7 @@ import uk.openvk.android.client.wrappers.JSONParser;
 public class Authorization {
     private String access_token;
     private String response;
+    private String error_msg;
     private JSONParser jsonParser;
     public static String ACCOUNT_TYPE = "uk.openvk.android.legacy.account";
 
@@ -42,8 +43,9 @@ public class Authorization {
         JSONObject json = jsonParser.parseJSON(response);
         if(json != null) {
             if(json.has("error")) {
+                error_msg = json.getString("error");
                 throw new IllegalAccessException(
-                        String.format("Authorization error occurred: %s", json.get("error_description"))
+                        String.format("Authorization error occurred: %s", json.getString("error_description"))
                 );
             } else if(json.has("access_token")) {
                 this.access_token = json.getString("access_token");
@@ -53,5 +55,9 @@ public class Authorization {
 
     public String getAccessToken() {
         return access_token;
+    }
+
+    public String getErrorMessage() {
+        return error_msg;
     }
 }

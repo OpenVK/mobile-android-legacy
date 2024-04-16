@@ -421,7 +421,12 @@ public class AuthActivity extends NetworkAuthActivity {
                     receiveState(HandlerMessages.INTERNAL_ERROR, data);
                     return;
                 } catch (IllegalAccessException e) {
-                    receiveState(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, data);
+                    if(auth.getErrorMessage() != null &&
+                            auth.getErrorMessage().equals("need_validation")) {
+                        receiveState(HandlerMessages.TWOFACTOR_CODE_REQUIRED, data);
+                    } else {
+                        receiveState(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, data);
+                    }
                     return;
                 }
                 try {
