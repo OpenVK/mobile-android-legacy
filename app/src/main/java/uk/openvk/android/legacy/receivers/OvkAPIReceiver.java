@@ -311,12 +311,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 case "Account.getProfileInfo":
                     try {
                         auth_a.auth = new Authorization(data.getString("response"));
+                        msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     } catch (JSONException e) {
                         msg.what = HandlerMessages.INTERNAL_ERROR;
                     } catch (IllegalAccessException e) {
                         msg.what = HandlerMessages.INVALID_USERNAME_OR_PASSWORD;
                     }
-                    msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
             }
         } else if (activity instanceof NetworkFragmentActivity) {
