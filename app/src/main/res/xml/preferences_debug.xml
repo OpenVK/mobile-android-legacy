@@ -41,7 +41,7 @@
         android:layout="@layout/pref_widget_checkbox"
         android:title="@string/use_legacy_http_client"
         android:summary="@string/use_legacy_http_client_description"/>
-        
+
     <Preference
         android:key="causeAppToCrash"
         android:title="@string/cause_app_to_crash"

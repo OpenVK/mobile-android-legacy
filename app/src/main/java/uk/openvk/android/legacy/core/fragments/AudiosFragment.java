@@ -157,14 +157,22 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.audio, menu);
-        fragment_menu = menu;
+        try {
+            inflater.inflate(R.menu.audio, menu);
+            fragment_menu = menu;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        createSearchItem(menu);
+        try {
+            createSearchItem(menu);
+        } catch (Exception e){
+
+        }
     }
 
     private void createSearchItem(Menu menu) {
@@ -265,7 +273,11 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
                 ab.getCustomView()
                         .findViewById(R.id.custom_ab_layout)
                         .setVisibility(View.VISIBLE);
-            searchView.setIconified(true);
+            try {
+                searchView.setIconified(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             createSearchResultsAdapter(audios);
         } else {
             final dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
