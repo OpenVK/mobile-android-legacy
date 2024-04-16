@@ -26,6 +26,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.Error;
+
 import uk.openvk.android.client.wrappers.JSONParser;
 
 public class Authorization {
@@ -34,15 +36,17 @@ public class Authorization {
     private JSONParser jsonParser;
     public static String ACCOUNT_TYPE = "uk.openvk.android.legacy.account";
 
-    public Authorization(String response) {
+    public Authorization(String response) throws JSONException, IllegalAccessException {
         this.response = response;
         jsonParser = new JSONParser();
         JSONObject json = jsonParser.parseJSON(response);
         if(json != null) {
-            try {
+            if(json.has("error")) {
+                throw new IllegalAccessException(
+                        String.format("Authorization error occurred: %s", json.get("error_description"))
+                );
+            } else if(json.has("access_token")) {
                 this.access_token = json.getString("access_token");
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
     }

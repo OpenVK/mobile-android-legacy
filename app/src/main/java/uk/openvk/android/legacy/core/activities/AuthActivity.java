@@ -74,7 +74,7 @@ public class AuthActivity extends NetworkAuthActivity {
     private Account account;
     private JSONParser jsonParser = new JSONParser();
     private int twofactor_fail = -1;
-    private Authorization auth;
+    public Authorization auth;
     private ArrayList<InstancesListItem> instances_list;
 
     @Override
@@ -413,13 +413,20 @@ public class AuthActivity extends NetworkAuthActivity {
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {
-                auth = new Authorization(response);
-                if(connectionDialog.isShowing()) {
-                    connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
+                try {
+                    if (connectionDialog.isShowing()) {
+                        connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
+                    }
+                    account = new Account(this);
+                    ovk_api.wrapper.setAccessToken(auth.getAccessToken());
+                    account.getProfileInfo(ovk_api.wrapper);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                            getResources().getString(R.string.auth_error_title),
+                            getResources().getString(R.string.auth_error, getReason(message)), null);
+                    alertDialog.show();
                 }
-                account = new Account(this);
-                ovk_api.wrapper.setAccessToken(auth.getAccessToken());
-                account.getProfileInfo(ovk_api.wrapper);
             } else if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
                 String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();

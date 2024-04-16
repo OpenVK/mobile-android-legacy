@@ -30,8 +30,11 @@ import android.os.Message;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Authorization;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.OpenVKAPI;
@@ -302,9 +305,17 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         }
 
         if (activity instanceof AuthActivity) {
+            AuthActivity auth_a = (AuthActivity) activity;
             assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
+                    try {
+                        auth_a.auth = new Authorization(data.getString("response"));
+                    } catch (JSONException e) {
+                        msg.what = HandlerMessages.INTERNAL_ERROR;
+                    } catch (IllegalAccessException e) {
+                        msg.what = HandlerMessages.INVALID_USERNAME_OR_PASSWORD;
+                    }
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
             }
