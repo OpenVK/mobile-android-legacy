@@ -20,6 +20,7 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 * **via [Releases page](https://github.com/openvk/mobile-android-legacy/releases/latest)**
 * **via [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(for Russian phones kinda 😂)_
 * **via [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
+* **via [4PDA](https://4pda.to/forum/index.php?showtopic=1057695)**
 
 ## Building
 We recommend using [Android Studio 3.1.2](https://developer.android.com/studio/archive) and Java 7 for perfect support of libraries developed for Android 2.1 Eclair and above.

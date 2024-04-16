@@ -15,11 +15,12 @@ _Работает на OpenVK API._
 * **через F-Droid**
   * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
   * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
-  * [tinelix.ru](https://fdroid.tinelix.ru)
+  * [tinelix.ru](https://repo.tinelix.ru)
 * **через [Telegram-канал](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **через [страницу релизов](https://github.com/openvk/mobile-android-legacy/releases/latest)**
-* **через [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(как бы для российских телефонов 😂)_
+* **через [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(а почему бы и нет?)_
 * **через [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
+* **через [4PDA](https://4pda.to/forum/index.php?showtopic=1057695)**
 
 ## Сборка
 Мы советуем использовать [Android Studio 3.1.2](https://developer.android.com/studio/archive) вместе с Java 7 для идеальной поддержки библиотек, разработанные для Android 2.1 Eclair и выше.
