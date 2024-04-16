@@ -41,6 +41,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.PhotoAlbum;
 import uk.openvk.android.client.enumerations.HandlerMessages;
@@ -219,12 +220,21 @@ public class PhotoAlbumActivity extends NetworkActivity {
         photosList = findViewById(R.id.photos_listview);
         FlexibleGridLayoutManager flex_lm =
                 new FlexibleGridLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        flex_lm.setColumnCountProvider(new FlexibleGridLayoutManager.ColumnCountProvider() {
-            @Override
-            public int getColumnCount(int recyclerViewWidth) {
-                return recyclerViewWidth / (int)(62 * getResources().getDisplayMetrics().scaledDensity);
-            }
-        });
+        if(((OvkApplication) getApplication()).isTablet) {
+            flex_lm.setColumnCountProvider(new FlexibleGridLayoutManager.ColumnCountProvider() {
+                @Override
+                public int getColumnCount(int recyclerViewWidth) {
+                    return recyclerViewWidth / (int) (104 * getResources().getDisplayMetrics().scaledDensity);
+                }
+            });
+        } else {
+            flex_lm.setColumnCountProvider(new FlexibleGridLayoutManager.ColumnCountProvider() {
+                @Override
+                public int getColumnCount(int recyclerViewWidth) {
+                    return recyclerViewWidth / (int) (62 * getResources().getDisplayMetrics().scaledDensity);
+                }
+            });
+        }
         photosList.setLayoutManager(flex_lm);
         photosList.setAdapter(adapter);
         findViewById(R.id.progress_layout).setVisibility(View.GONE);
