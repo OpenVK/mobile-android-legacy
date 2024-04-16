@@ -41,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -413,6 +415,15 @@ public class AuthActivity extends NetworkAuthActivity {
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
             } else if (message == HandlerMessages.AUTHORIZED) {
+                try {
+                    auth = new Authorization(data.getString("response"));
+                } catch (JSONException e) {
+                    receiveState(HandlerMessages.INTERNAL_ERROR, data);
+                    return;
+                } catch (IllegalAccessException e) {
+                    receiveState(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, data);
+                    return;
+                }
                 try {
                     if (connectionDialog.isShowing()) {
                         connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
