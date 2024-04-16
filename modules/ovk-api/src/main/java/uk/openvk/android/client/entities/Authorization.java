@@ -44,9 +44,7 @@ public class Authorization {
         if(json != null) {
             try {
                 if (json.has("error")) {
-                    throw new IllegalAccessException(
-                            String.format("Authorization error occurred: %s", json.getString("error_description"))
-                    );
+                    error_msg = json.getString("error");
                 } else if (json.has("access_token")) {
                     this.access_token = json.getString("access_token");
                 }

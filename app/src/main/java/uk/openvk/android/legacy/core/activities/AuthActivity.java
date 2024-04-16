@@ -417,19 +417,15 @@ public class AuthActivity extends NetworkAuthActivity {
             } else if (message == HandlerMessages.AUTHORIZED) {
                 try {
                     auth = new Authorization(data.getString("response"));
-                } catch (JSONException e) {
-                    receiveState(HandlerMessages.INTERNAL_ERROR, data);
-                    return;
-                } catch (IllegalAccessException e) {
-                    if(auth.getErrorMessage() != null &&
-                            auth.getErrorMessage().equals("need_validation")) {
-                        receiveState(HandlerMessages.TWOFACTOR_CODE_REQUIRED, data);
-                    } else {
-                        receiveState(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, data);
+                    if(auth.getErrorMessage() != null) {
+                        Log.d(OvkApplication.APP_TAG, "Getting auth error...");
+                        if (auth.getErrorMessage().equals("need_validation")) {
+                            receiveState(HandlerMessages.TWOFACTOR_CODE_REQUIRED, data);
+                        } else {
+                            receiveState(HandlerMessages.INTERNAL_ERROR, data);
+                        }
+                        return;
                     }
-                    return;
-                }
-                try {
                     if (connectionDialog.isShowing()) {
                         connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
                     }
