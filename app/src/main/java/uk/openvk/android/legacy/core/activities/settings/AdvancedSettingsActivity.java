@@ -17,7 +17,7 @@
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-package uk.openvk.android.legacy.core.activities;
+package uk.openvk.android.legacy.core.activities.settings;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -145,14 +145,19 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         });
 
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-        if(global_prefs.getString("photos_quality", "").equals("low")) {
-            image_quality.setSummary(quality_array[0]);
-        } else if(global_prefs.getString("photos_quality", "").equals("medium")) {
-            image_quality.setSummary(quality_array[1]);
-        } else if(global_prefs.getString("photos_quality", "").equals("high")) {
-            image_quality.setSummary(quality_array[2]);
-        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
-            image_quality.setSummary(quality_array[3]);
+        switch (global_prefs.getString("photos_quality", "")) {
+            case "low":
+                image_quality.setSummary(quality_array[0]);
+                break;
+            case "medium":
+                image_quality.setSummary(quality_array[1]);
+                break;
+            case "high":
+                image_quality.setSummary(quality_array[2]);
+                break;
+            case "original":
+                image_quality.setSummary(quality_array[3]);
+                break;
         }
     }
 

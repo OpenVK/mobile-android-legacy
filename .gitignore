@@ -23,5 +23,5 @@ app/.signing/openvk.jks
 app/.signing/app-release.prop
 /app/src/main/jniLibs
 *.hprof
-/app/app
-/ndk-modules
+/app/app/src/main/jniLibs/*/include
+/app/app/src/main/jniLibs/*/lib

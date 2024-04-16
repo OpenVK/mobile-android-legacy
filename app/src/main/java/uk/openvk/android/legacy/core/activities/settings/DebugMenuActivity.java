@@ -17,7 +17,7 @@
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-package uk.openvk.android.legacy.core.activities;
+package uk.openvk.android.legacy.core.activities.settings;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -34,6 +34,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -61,6 +62,7 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentPreferenceActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
     private SharedPreferences global_prefs;
@@ -97,12 +99,16 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                     onBackPressed();
                 }
             });
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
-            } else {
-                actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
+                case "Black":
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar_black));
+                    break;
+                default:
+                    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+                    break;
             }
         }
         setListeners();
@@ -127,7 +133,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
     private void setListeners() {
         PreferenceCategory generalCategory = (PreferenceCategory) findPreference("general_category");
 
-        Preference logToFile = (Preference) findPreference("logToFile");
+        Preference logToFile = findPreference("logToFile");
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             logToFile.setEnabled(false);
             logToFile.setSummary(getResources().getString(R.string.debug_incompatibillity_error));
@@ -139,13 +145,23 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                 return false;
             }
         });
-        Preference bugReport = (Preference) findPreference("bugReport");
+        Preference bugReport = findPreference("bugReport");
         bugReport.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 writeLogToFile();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(getResources().getString(R.string.app_issues_link)));
+                startActivity(intent);
+                return false;
+            }
+        });
+
+        Preference experimentalFeats = findPreference("experimentalFeats");
+        experimentalFeats.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(DebugMenuActivity.this, ExperimentalFeaturesActivity.class);
                 startActivity(intent);
                 return false;
             }
@@ -184,7 +200,9 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
             showAccessToken.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    showConfirmDialog("access_token");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                        showConfirmDialog("access_token");
+                    }
                     return false;
                 }
             });
@@ -193,16 +211,17 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
             preferenceScreen.removePreference(dangerZoneCategory);
         }
 
-        if(BuildConfig.BUILD_TYPE.equals("release")) {
+        if(BuildConfig.DEBUG) {
             generalCategory.removePreference(causeAppToCrash);
             generalCategory.removePreference(legacy_http_client);
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.FROYO)
     private void showConfirmDialog(final String target) {
         AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
         final View confirm_view = getLayoutInflater().inflate(R.layout.dialog_confirm_with_passw, null, false);
-        final EditText password_edit = ((EditText) confirm_view.findViewById(R.id.password_edit));
+        final EditText password_edit = confirm_view.findViewById(R.id.password_edit);
         builder.setView(confirm_view);
         builder.setPositiveButton(R.string.ok, null);
         builder.setNegativeButton(R.string.cancel, null);

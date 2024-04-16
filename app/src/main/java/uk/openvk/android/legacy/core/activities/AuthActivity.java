@@ -53,6 +53,7 @@ import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.client.entities.Authorization;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.wrappers.JSONParser;
+import uk.openvk.android.legacy.core.activities.settings.MainSettingsActivity;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
 import uk.openvk.android.legacy.ui.views.EditTextAction;

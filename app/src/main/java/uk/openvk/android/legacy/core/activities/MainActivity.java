@@ -79,7 +79,7 @@ public class MainActivity extends TranslucentActivity {
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         getAndroidAccounts();
         if(global_prefs.getBoolean("startupSplash", true)) {
-            if (Global.isXmas()) {
+            if (Global.isXmas() || Global.isXmas(this)) {
                 setContentView(R.layout.activity_splash_xmas);
             } else {
                 setContentView(R.layout.activity_splash);

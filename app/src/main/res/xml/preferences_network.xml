@@ -19,7 +19,8 @@
 
 	<Preference
 		android:key="restart_required"
-		android:layout="@layout/pref_notification" />
+		android:layout="@layout/pref_notification"
+		android:title="@string/sett_app_restart_required_many" />
     
 	<PreferenceCategory
 		android:title="@string/sett_general"

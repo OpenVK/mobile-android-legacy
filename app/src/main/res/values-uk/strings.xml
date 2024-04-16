@@ -713,6 +713,8 @@
     <string name="use_legacy_http_client_description">Використовувати обернутий HTTP(S)-клієнт HttpUrlConnection, призначений для застарілих версій Android</string>
     <string name="use_legacy_http_client_okhttp_err">Вимкнення неможливо через непідтримувану версію Android</string>
     <string name="use_legacy_http_client_apachew_err">Увімкнення неможливе через непідтримувану версію Android</string>
+    <string name="experimental_features">Експериментальні функції</string>
+    <string name="experimental_features_description">Використовуйте лише на свій страх і ризик, оскільки вони можуть бути нестабільними чи непрацездатними</string>
     <string name="cause_app_to_crash">Викликати збій додатку</string>
     <string name="terminate">Завершити процес</string>
     <string name="dnd_mode">Режим \"Не турбувати\"</string>
