@@ -232,6 +232,7 @@ JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int
 
     if(img_convert_ctx == NULL) {
         LOGE(10, "Cannot initialize the conversion context!");
+        sws_freeContext(img_convert_ctx);
         return NULL;
     }
 
@@ -447,14 +448,6 @@ JNIEXPORT jint JNICALL naPlay(JNIEnv *env, jobject instance) {
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(
         JNIEnv* env, jobject instance, jint type
 ) {
-    // JNI field types (bad stuff, don't you agree?)
-    // [JNI] => [java]
-    // "[?"  => ?[] == int[], bool[], long[] and etc.
-    // "I"   => int
-    // "J"   => long (aka. int64)
-    // "Z"   => boolean
-    // "D"   => double
-    // "F"   => float
 
     jclass track_class;
     try {
@@ -558,7 +551,7 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
     nm[1].fnPtr = (void*)naShowLogo;
 
     nm[2].name = "naSetDebugMode";
-    nm[2].signature = "(Z)V"; // мда
+    nm[2].signature = "(Z)V";
     nm[2].fnPtr = (void*)naSetDebugMode;
 
     nm[3].name = "naOpenFile";
