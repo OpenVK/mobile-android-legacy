@@ -223,19 +223,6 @@ JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int
 
     avpicture_fill((AVPicture *)frameRGB, (uint8_t*)buffer, output_pxf,
                    gVideoCodecCtx->width, gVideoCodecCtx->height);
-    SwsContext* sws_ctx = sws_getContext
-            (
-                    gVideoCodecCtx->width,
-                    gVideoCodecCtx->height,
-                    gVideoCodecCtx->pix_fmt,
-                    gVideoCodecCtx->width,
-                    gVideoCodecCtx->height,
-                    output_pxf,
-                    SWS_BILINEAR,
-                    NULL,
-                    NULL,
-                    NULL
-            );
     const int width = gVideoCodecCtx->width, height = gVideoCodecCtx->height;
     SwsContext* img_convert_ctx = sws_getContext(width, height,
                                      gVideoCodecCtx->pix_fmt,
@@ -247,17 +234,15 @@ JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int
         LOGE(10, "Cannot initialize the conversion context!");
         return NULL;
     }
-    int Y, Cr, Cb;
-    int R, G, B;
 
     int ret = sws_scale(img_convert_ctx, (const uint8_t* const*)frame->data, frame->linesize, 0,
                         gVideoCodecCtx->height, frameRGB->data, frameRGB->linesize);
     if(frameRGB->data[0] == NULL) {
         LOGE(10, "SWS_Scale failed");
     }
-
-    avpicture_layout((AVPicture*)frameRGB, output_pxf, width, height, (unsigned char*)buffer, length);
     av_free(frameRGB);
+    av_frame_unref(frameRGB);
+    sws_freeContext(img_convert_ctx);
     return buffer;
 }
 
@@ -300,6 +285,7 @@ JNIEXPORT void JNICALL decodeAudioFromPacket(       // Decoding audio packets
     }
     //env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0);
     av_free(pFrame);
+    av_frame_unref(pFrame);
     tAudioFrames++;
 }
 
@@ -367,10 +353,11 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
             }
         }
     }
-    av_free(pFrame);
-    av_free(pFrameRGB);
+
     tVideoFrames++;
     gFramesCount = tVideoFrames;
+    av_free(pFrame);
+    av_frame_unref(pFrame);
     env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0); // clear buffer before next frame
 }
 
@@ -435,6 +422,7 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
                 free(videoBuffer);
             }
         }
+        av_free_packet(&avPkt);
         av_packet_unref(&avPkt);
     }
     jmethodID completePbMid = env->GetMethodID(jmplay, "completePlayback", "()V");
