@@ -202,7 +202,7 @@ public class VideoPlayerActivity extends Activity {
     }
 
     private void createMediaPlayer(String url) {
-        OvkMediaPlayer mp = new OvkMediaPlayer(this);
+        mp = new OvkMediaPlayer(this);
         try {
             mp.setOnPreparedListener(new OvkMediaPlayer.OnPreparedListener() {
                 @Override
@@ -323,5 +323,11 @@ public class VideoPlayerActivity extends Activity {
 
     public boolean isError() {
         return isErr;
+    }
+
+    @Override
+    protected void onDestroy() {
+        mp.stop();
+        super.onDestroy();
     }
 }

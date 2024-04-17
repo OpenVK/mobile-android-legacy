@@ -97,13 +97,18 @@ public class OvkMediaPlayer extends MediaPlayer {
     private Handler handler;
     private AudioTrack audio_track;
     private final Object frameLocker = new Object();
+
+    // C++ player native functions
     private native void naInit();
     private native String naShowLogo();
     private native Object naGenerateTrackInfo(int type);
     private native void naSetMinAudioBufferSize(int audioBufferSize);
     private native int naOpenFile(String filename);
     private native int naPlay();
+    private native void naPause();
+    private native void naStop();
     private native void naSetDebugMode(boolean value);
+    private native int naGetPlaybackState();
 
     public static interface OnPreparedListener {
         public void onPrepared(OvkMediaPlayer mp);
@@ -119,12 +124,16 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @SuppressLint({"UnsafeDynamicallyLoadedCode", "SdCardPath"})
     private static void loadLibrary(Context ctx, String name) {
-        if(BuildConfig.DEBUG
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            System.loadLibrary(String.format("%s", name));
-        } else {
-            // unsafe but changeable
-            System.load(String.format("/data/data/%s/lib/lib%s.so", ctx.getPackageName(), name));
+        try {
+            if (BuildConfig.DEBUG
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                System.loadLibrary(String.format("%s", name));
+            } else {
+                // unsafe but changeable
+                System.load(String.format("/data/data/%s/lib/lib%s.so", ctx.getPackageName(), name));
+            }
+        } catch (Error | Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -266,15 +275,6 @@ public class OvkMediaPlayer extends MediaPlayer {
             for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
                 if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
                     audio_track = (OvkAudioTrack) tracks.get(tracks_index);
-//                    int ch_config = audio_track.channels == 2 ?
-//                            AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-//                    minAudioBufferSize =
-//                            AudioTrack.getMinBufferSize(
-//                                    (int) audio_track.sample_rate,
-//                                    ch_config,
-//                                    AudioFormat.ENCODING_PCM_16BIT
-//                            );
-//                    naSetMinAudioBufferSize(minAudioBufferSize);
                 } else if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
                     video_track = (OvkVideoTrack) tracks.get(tracks_index);
                 }
@@ -358,7 +358,6 @@ public class OvkMediaPlayer extends MediaPlayer {
                             int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
                             Bitmap.Config bmp_config =
                                     bpp == 24 ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
-                            Paint paint = new Paint();
                             if(buffer != null && holder != null) {
                                 holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
                                 if((c = holder.lockCanvas()) == null) {
@@ -402,14 +401,27 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     @Override
+    public void stop() throws IllegalStateException {
+        naStop();
+    }
+
+    @Override
+    public void pause() throws IllegalStateException {
+        naPause();
+    }
+
+    @Override
     public int getDuration() {
         return 0;
     }
 
     @Override
     public boolean isPlaying() {
-        //return (getPlaybackState() == STATE_PLAYING);
-        return false;
+        return (getPlaybackState() == STATE_PLAYING);
+    }
+
+    private int getPlaybackState() {
+        return naGetPlaybackState();
     }
 
     public void setOnPreparedListener(OvkMediaPlayer.OnPreparedListener listener) {

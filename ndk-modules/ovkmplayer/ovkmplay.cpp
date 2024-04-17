@@ -98,7 +98,7 @@ int                 gMinAudioBufferSize;
 AVDictionary        *avFormatOptions            = NULL;
 AVDictionary        *avCodecOptions             = NULL;
 
-jint                g_playbackState;
+jint                gPlaybackState;
 jint                FFMPEG_PLAYBACK_STOPPED     = 0;
 jint                FFMPEG_PLAYBACK_PLAYING     = 1;
 jint                FFMPEG_PLAYBACK_PAUSED      = 2;
@@ -138,6 +138,10 @@ JNIEXPORT void JNICALL naSetDebugMode(JNIEnv *env, jobject instance, jboolean va
 
 JNIEXPORT void JNICALL naSetMinAudioBufferSize(JNIEnv *env, jobject instance, jint minBuffSize) {
     gMinAudioBufferSize = (int)minBuffSize;
+}
+
+JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
+    return (jint)gPlaybackState;
 }
 
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
@@ -362,6 +366,21 @@ JNIEXPORT void JNICALL decodeVideoFromPacket(       // Decoding video packets
     env->ReleaseByteArrayElements(buffer2, (jbyte *) buffer, 0); // clear buffer before next frame
 }
 
+JNIEXPORT void JNICALL naPause(JNIEnv *env, jobject instance) {
+    gPlaybackState = FFMPEG_PLAYBACK_PAUSED;
+}
+
+JNIEXPORT void JNICALL naStop(JNIEnv *env, jobject instance) {
+    gPlaybackState = FFMPEG_PLAYBACK_STOPPED;
+    if(gVideoStreamIndex != -1) {
+        avcodec_close(gVideoCodecCtx);
+    }
+    if(gAudioStreamIndex != -1) {
+        avcodec_close(gAudioCodecCtx);
+    }
+    avformat_close_input(&gFormatCtx);
+}
+
 int decodeMediaFile(JNIEnv* env, jobject instance) {
     if(debug_mode) {
         LOGD(10, "[DEBUG] Decoding audio stream #%d and video stream #%d...",
@@ -399,30 +418,35 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     jbyteArray jVideoBuffer = env->NewByteArray((jsize) vBuffLength);;
     jbyteArray jAudioBuffer = env->NewByteArray((jsize) aBuffLength);
 
-    while ((status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
-        if (avPkt.stream_index == gAudioStreamIndex) {
-            if(gAudioStreamIndex != -1) {
-                audioBuffer = (uint8_t*)malloc(aBuffLength);
-                decodeAudioFromPacket(
-                    env, instance, jmplay,
-                    avPkt, tAudioFrames++,
-                    audioBuffer, jAudioBuffer,
-                    aBuffLength
-                );
-                free(audioBuffer);
-            }
-        } else if(avPkt.stream_index == gVideoStreamIndex) {
-            if(gVideoStreamIndex != -1) {
-                videoBuffer = (uint8_t*)malloc(vBuffLength);
-                decodeVideoFromPacket(
-                    env, instance, jmplay,
-                    avPkt, tVideoFrames++,
-                    videoBuffer, jVideoBuffer,
-                    vBuffLength
-                );
-                free(videoBuffer);
+    while (gPlaybackState == FFMPEG_PLAYBACK_PLAYING &&
+    (status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
+        if(avPkt.size > 0) {
+            if (avPkt.stream_index == gAudioStreamIndex) {
+                if(gAudioStreamIndex != -1) {
+                    audioBuffer = (uint8_t*)malloc(aBuffLength);
+                    decodeAudioFromPacket(
+                        env, instance, jmplay,
+                        avPkt, tAudioFrames++,
+                        audioBuffer, jAudioBuffer,
+                        aBuffLength
+                    );
+                    free(audioBuffer);
+                }
+            } else if(avPkt.stream_index == gVideoStreamIndex) {
+                if(gVideoStreamIndex != -1) {
+                    videoBuffer = (uint8_t*)malloc(vBuffLength);
+                    decodeVideoFromPacket(
+                        env, instance, jmplay,
+                        avPkt, tVideoFrames++,
+                        videoBuffer, jVideoBuffer,
+                        vBuffLength
+                    );
+                    free(videoBuffer);
+                }
             }
         }
+
+        // Clear packet from memory
         av_free_packet(&avPkt);
         av_packet_unref(&avPkt);
     }
@@ -431,17 +455,14 @@ int decodeMediaFile(JNIEnv* env, jobject instance) {
     env->DeleteLocalRef(jmplay);
     env->DeleteLocalRef(jAudioBuffer);
     env->DeleteLocalRef(jVideoBuffer);
-    if(gVideoStreamIndex != -1) {
-        avcodec_close(gVideoCodecCtx);
+    if(status < 0) {
+        naStop(env, instance);
     }
-    if(gAudioStreamIndex != -1) {
-        avcodec_close(gAudioCodecCtx);
-    }
-    avformat_close_input(&gFormatCtx);
     return 0;
 }
 
 JNIEXPORT jint JNICALL naPlay(JNIEnv *env, jobject instance) {
+    gPlaybackState = FFMPEG_PLAYBACK_PLAYING;
     return (jint)decodeMediaFile(env, instance);
 }
 
@@ -541,7 +562,7 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
 	if (pVm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
 		 return -1;
 	}
-	JNINativeMethod nm[7];
+	JNINativeMethod nm[10];
 	nm[0].name = "naInit";
 	nm[0].signature = "()V";
 	nm[0].fnPtr = (void*)naInit;
@@ -566,16 +587,24 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
     nm[5].signature = "()I";
     nm[5].fnPtr = (void*)naPlay;
 
-    nm[6].name = "naSetMinAudioBufferSize";
-    nm[6].signature = "(I)V";
-    nm[6].fnPtr = (void*)naSetMinAudioBufferSize;
+    nm[6].name = "naPause";
+    nm[6].signature = "()V";
+    nm[6].fnPtr = (void*)naPause;
 
-    /* nm[3].name = "naStop";
-       nm[3].signature = "()V";
-       nm[3].fnPtr = (void*)naStop;
-    */
+    nm[7].name = "naStop";
+    nm[7].signature = "()V";
+    nm[7].fnPtr = (void*)naStop;
+
+    nm[8].name = "naGetPlaybackState";
+    nm[8].signature = "()I";
+    nm[8].fnPtr = (void*)naGetPlaybackState;
+
+    nm[9].name = "naSetMinAudioBufferSize";
+    nm[9].signature = "(I)V";
+    nm[9].fnPtr = (void*)naSetMinAudioBufferSize;
+
 	jclass cls = env->FindClass("uk/openvk/android/legacy/utils/media/OvkMediaPlayer");
 	//Register methods with env->RegisterNatives.
-	env->RegisterNatives(cls, nm, 7);
+	env->RegisterNatives(cls, nm, 10);
 	return JNI_VERSION_1_6;
 }
