@@ -104,7 +104,9 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native Object naGenerateTrackInfo(int type);
     private native void naSetMinAudioBufferSize(int audioBufferSize);
     private native int naOpenFile(String filename);
-    private native int naPlay();
+    private native void naDecodeVideoFromPacket();
+    private native void naDecodeAudioFromPacket(int aBuffLength);
+    private native void naPlay();
     private native void naPause();
     private native void naStop();
     private native void naSetDebugMode(boolean value);
@@ -223,7 +225,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     @Override
-    public void prepare() throws IOException, IllegalStateException {
+    public void prepare() throws IllegalStateException {
         int result;
         if((result = naOpenFile(dataSourceUrl)) < 0) {
             Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
@@ -268,6 +270,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     @Override
     public void start() throws IllegalStateException {
         if(tracks != null) {
+            naPlay();
             Log.d(MPLAY_TAG, "Playing...");
             //setPlaybackState(STATE_PLAYING);
             OvkAudioTrack audio_track = null;
@@ -279,20 +282,40 @@ public class OvkMediaPlayer extends MediaPlayer {
                     video_track = (OvkVideoTrack) tracks.get(tracks_index);
                 }
             }
-            final OvkVideoTrack finalVideoTrack = video_track;
             final OvkAudioTrack finalAudioTrack = audio_track;
+            final OvkVideoTrack finalVideoTrack = video_track;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(finalAudioTrack != null || finalVideoTrack != null) {
-                        Log.d(MPLAY_TAG, "Decoding media file...");
+                    if(finalAudioTrack != null) {
+                        int ch_config = finalAudioTrack.channels == 2 ?
+                                AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
+                        Log.d(MPLAY_TAG, "Decoding audio track...");
                         try {
-                            naPlay();
+                            naDecodeAudioFromPacket(AudioTrack.getMinBufferSize(
+                                    (int) finalAudioTrack.sample_rate, ch_config, AudioFormat.ENCODING_PCM_16BIT
+                            ));
                         } catch (OutOfMemoryError oom) {
                             stop();
                         }
                     } else {
-                        Log.e(MPLAY_TAG, "A/V streams not found. Skipping...");
+                        Log.e(MPLAY_TAG, "Audio stream not found. Skipping...");
+                    }
+                }
+            }).start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if(finalVideoTrack != null) {
+                        Log.d(MPLAY_TAG, "Decoding video track...");
+                        try {
+                            naDecodeVideoFromPacket();
+                        } catch (OutOfMemoryError oom) {
+                            stop();
+                        }
+                    } else {
+                        Log.e(MPLAY_TAG, "Video stream not found. Skipping...");
                     }
                 }
             }).start();
@@ -321,7 +344,7 @@ public class OvkMediaPlayer extends MediaPlayer {
 
             audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
                     ch_config,
-                    AudioFormat.ENCODING_PCM_16BIT, buffer.length, AudioTrack.MODE_STREAM);
+                    AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
 
             audio_track.play();
             prepared_audio_buffer = true;
