@@ -251,18 +251,21 @@ JNIEXPORT void JNICALL naDecodeAudioFromPacket(       // Decoding audio packets
                                        );
 
         if (status) {
-            if(debug_mode) {
-                LOGD(10, "[DEBUG] Decoding audio frame #%d | Length: %d of %d",
-                             tAudioFrames + 1, len, aBuffLength / 2);
-            }
                 int dataSize = av_samples_get_buffer_size(NULL,
                                                               gAudioCodecCtx->channels,
                                                               pFrame->nb_samples,
                                                               gAudioCodecCtx->sample_fmt,
                                                               1);
+
+            if (debug_mode) {
+                LOGD(10, "[DEBUG] Decoding audio frame #%d... | Length: %d of %d",
+                    tAudioFrames + 1, dataSize, aBuffLength
+                );
+            }
+
             buffer = (short *) pFrame->data[0];
-            env->SetByteArrayRegion(jBuffer, 0, (jsize) dataSize / 2, (jbyte *) buffer);
-            env->CallVoidMethod(instance, renderAudioMid, jBuffer, dataSize / 2);
+            env->SetByteArrayRegion(jBuffer, 0, (jsize) dataSize / gAudioCodecCtx->channels, (jbyte *) buffer);
+            env->CallVoidMethod(instance, renderAudioMid, jBuffer, dataSize / gAudioCodecCtx->channels);
         }
 
         tAudioFrames++;
