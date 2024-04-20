@@ -23,8 +23,14 @@ int FFmpegWrapper::getPlaybackState() {
     return gPlaybackState;
 }
 
+void FFmpegWrapper::setPlaybackState(int pPlaybackState) {
+    gPlaybackState = pPlaybackState;
+    if(gDebugMode) {
+        LOGD(10, "[DEBUG] gPlaybackState now is %d...", gPlaybackState);
+    }
+}
+
 void FFmpegWrapper::openInputFile(char* pFileName, bool afterFindStreams) {
-    AVDictionary    *optionsDict = NULL;
     int             result;
     char            errorString[192] = "No error";
 
@@ -57,7 +63,9 @@ void FFmpegWrapper::openInputFile(char* pFileName, bool afterFindStreams) {
 
 void FFmpegWrapper::findStreams() {
     if(avformat_find_stream_info(gFormatCtx, NULL)<0){
-        LOGE(10, "FAILED to find stream info %s", gFileName);
+        if(gDebugMode) {
+            LOGE(10, "[ERROR] Failed to find stream info %s", gFileName);
+        }
         gInterface->onError(FFMPEG_COMMAND_FIND_STREAMS, -1);
     }
 
@@ -73,13 +81,59 @@ void FFmpegWrapper::findStreams() {
     }
 
     if(gVideoStreamIndex == -1){
-        LOGE(10, "Didn't find a video stream");
+        if(gDebugMode) {
+            LOGE(10, "[ERROR] Didn't find a video stream");
+        }
     } else if(gAudioStreamIndex == -1){
-        LOGE(10, "Didn't find a audio stream");
+        if(gDebugMode) {
+            LOGE(10, "[ERROR] Didn't find a audio stream");
+        }
     } else if(gVideoStreamIndex == -1 && gAudioStreamIndex == -1){
-        LOGE(10, "Media streams not found");
+        if(gDebugMode) {
+            LOGE(10, "[ERROR] Media streams not found");
+        }
         gInterface->onError(FFMPEG_COMMAND_FIND_STREAMS, -1);
+    } else {
+        gInterface->onResult(FFMPEG_COMMAND_FIND_STREAMS, 0);
     }
+}
+
+void FFmpegWrapper::openCodecs() {
+    int             vCodecResult, aCodecResult;
+    AVDictionary    *optionsDict = NULL;
+
+    if(gVideoStreamIndex != -1) {
+        gVideoCodecCtx = getStream(gVideoStreamIndex)->codec;
+        gVideoCodec = avcodec_find_decoder(gVideoCodecCtx->codec_id);
+        if(gVideoCodec==NULL) {
+            LOGE(10, "Unsupported video codec");
+            vCodecResult = -1;
+        } else if(avcodec_open2(gVideoCodecCtx, gVideoCodec, &optionsDict)<0){
+            LOGE(10, "Could not open video codec");
+            vCodecResult = -1;
+        }
+    }
+    if(gAudioStreamIndex != -1) {
+        gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
+        gAudioCodec = avcodec_find_decoder(gAudioCodecCtx->codec_id);
+        if(gAudioCodec == NULL) {
+            LOGE(10, "Unsupported audio codec");
+            aCodecResult = -1;
+        } else if(avcodec_open2(gAudioCodecCtx, gAudioCodec, &optionsDict)<0){
+            LOGE(10, "Could not open audio codec");
+            aCodecResult = -1;
+        }
+    }
+
+    if(aCodecResult != -1 || vCodecResult != -1) {
+        gInterface->onResult(FFMPEG_COMMAND_OPEN_CODECS, 0);
+    } else {
+        gInterface->onError(FFMPEG_COMMAND_OPEN_CODECS, -1);
+    }
+}
+
+AVStream* FFmpegWrapper::getStream(int index) {
+    return gFormatCtx->streams[index];
 }
 
 

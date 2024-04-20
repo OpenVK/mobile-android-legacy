@@ -217,7 +217,7 @@ public class VideoPlayerActivity extends Activity {
                     vsh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
                     mp.setDisplay(vsh);
                     mp.start();
-                    handler.postDelayed(hideCtrl, 5000);
+                    //handler.postDelayed(hideCtrl, 5000);
                     new Handler(Looper.myLooper()).post(new Runnable() {
                         @Override
                         public void run() {

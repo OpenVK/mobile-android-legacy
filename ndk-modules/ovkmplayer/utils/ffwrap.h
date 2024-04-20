@@ -66,21 +66,25 @@ class FFmpegWrapper {
         AVCodecContext      *gVideoCodecCtx;
         AVCodecContext      *gAudioCodecCtx;
 
+        int                 gAudioStreamIndex,
+                            gVideoStreamIndex;
+
         AVCodec             *gVideoCodec;
         AVCodec             *gAudioCodec;
         void setDebugMode(bool pDebugMode);
         int getPlaybackState();
+        void setPlaybackState(int pPlaybackState);
         void openInputFile(char* pFileName, bool afterFindStreams);
         void findStreams();
+        AVStream* getStream(int index);
+        void openCodecs();
 
     private:
         IFFmpegWrapper      *gInterface;
 
         bool    gDebugMode;
         int     gPlaybackState,
-                gErrorCode,
-                gAudioStreamIndex,
-                gVideoStreamIndex;
+                gErrorCode;
         char*   gFileName;
 };
 
