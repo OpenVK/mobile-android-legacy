@@ -53,21 +53,6 @@ extern "C"{
 // Android implementations headers
 #include <android/log.h>
 
-// FFmpeg implementation headers (using LGPLv3.0 model)
-extern "C" {
-    #include <libavutil/avstring.h>
-    #include <libavutil/pixdesc.h>
-    #include <libavutil/imgutils.h>
-    #include <libavutil/samplefmt.h>
-    #include <libavformat/avformat.h>
-    #include <libavformat/url.h>
-    #include <libavformat/avio.h>
-    #include <libswscale/swscale.h>
-    #include <libavcodec/avcodec.h>
-    #include <libavcodec/avfft.h>
-    #include <libavdevice/avdevice.h>
-    #include <libswresample/swresample.h>
-}
 
 #include <utils/ffwrap.h>
 #include <interfaces/ffwrap.h>
@@ -93,11 +78,14 @@ int                 gFramesCount;
 
 FFmpegWrapper       *gWrapper;
 
+JavaVM*             gVM;
+JavaVMAttachArgs    gVMArgs;
+jobject             gInstance;
+
 class IPlayerWrapper : public IFFmpegWrapper {
     public:
         void onError(int cmdId, int errorCode);
-        void onResult(int cmdId,
-                              int resultCode) {};
+        void onResult(int cmdId, int resultCode);
         void onStreamDecoding(uint8_t *buffer,
                                       int bufferLen,
                                       int streamIndex) {};
@@ -106,8 +94,12 @@ class IPlayerWrapper : public IFFmpegWrapper {
 
 JNIEXPORT void JNICALL naInit(JNIEnv *env, jobject instance) {
     IFFmpegWrapper* interface = new IPlayerWrapper();
-    //IFFmpegWrapper *interface2 = (IFFmpegWrapper*) new IPlayerWrapper();
-    //gWrapper = new FFmpegWrapper(gDebugMode, NULL);
+    gWrapper = new FFmpegWrapper(gDebugMode, interface);
+    env->GetJavaVM(&gVM);
+    gInstance = env->NewGlobalRef(instance);
+    gVMArgs.version = JNI_VERSION_1_6;
+    gVMArgs.name = NULL;
+    gVMArgs.group = NULL;
 }
 
 JNIEXPORT jstring JNICALL naShowLogo(JNIEnv *env, jobject instance) {
@@ -120,7 +112,9 @@ JNIEXPORT jstring JNICALL naShowLogo(JNIEnv *env, jobject instance) {
 }
 
 JNIEXPORT void JNICALL naSetDebugMode(JNIEnv *env, jobject instance, jboolean value) {
-    gWrapper->setDebugMode(value == JNI_TRUE);
+    if(gWrapper != NULL) {
+        gWrapper->setDebugMode(value == JNI_TRUE);
+    }
 }
 
 JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
@@ -128,14 +122,22 @@ JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
 }
 
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
-
     gFileName = (char *)env->GetStringUTFChars(filename, NULL);
     gWrapper->openInputFile(gFileName, true);
     return 0;
 }
 
 void IPlayerWrapper::onError(int cmdId, int errorCode) {
+    LOGE(10, "Error Callback Test: %d | %d", cmdId, errorCode);
+}
 
+void IPlayerWrapper::onResult(int cmdId, int resultCode) {
+    JNIEnv* env;
+    gVM->AttachCurrentThread(&env, &gVMArgs);
+    jclass jmPlay = env->GetObjectClass(gInstance);
+    jmethodID onResultMid = env->GetMethodID(jmPlay, "onResult", "(II)V");
+    env->CallVoidMethod(gInstance, onResultMid, (jint)cmdId, (jint)resultCode);
+    gVM->DetachCurrentThread();
 }
 
 /*env->SetByteArrayRegion(jBuffer, 0, (jsize) dataSize / gAudioCodecCtx->channels, (jbyte *) buffer);
@@ -146,7 +148,7 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
 	if (pVm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
 		 return -1;
 	}
-	JNINativeMethod nm[12];
+	JNINativeMethod nm[5];
 
 	nm[0].name = "naInit";
 	nm[0].signature = "()V";
@@ -164,12 +166,15 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
     nm[3].signature = "(Ljava/lang/String;)I";
     nm[3].fnPtr = (void*)naOpenFile;
 
-    nm[10].name = "naGetPlaybackState";
-    nm[10].signature = "()I";
-    nm[10].fnPtr = (void*)naGetPlaybackState;
+    nm[4].name = "naGetPlaybackState";
+    nm[4].signature = "()I";
+    nm[4].fnPtr = (void*)naGetPlaybackState;
 
 	jclass cls = env->FindClass("uk/openvk/android/legacy/utils/media/OvkMediaPlayer");
 	//Register methods with env->RegisterNatives.
-	env->RegisterNatives(cls, nm, 12);
+	env->RegisterNatives(cls, nm, 5);
+
+	gVM = pVm;
+
 	return JNI_VERSION_1_6;
 }

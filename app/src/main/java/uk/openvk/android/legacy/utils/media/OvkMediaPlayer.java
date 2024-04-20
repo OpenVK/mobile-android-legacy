@@ -143,8 +143,8 @@ public class OvkMediaPlayer extends MediaPlayer {
         loadLibrary(ctx, "ffmpeg");
         loadLibrary(ctx, "ovkmplayer");
         Log.v(MPLAY_TAG, naShowLogo());
-        naSetDebugMode(true);
         naInit();
+        naSetDebugMode(true);
         handler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -445,6 +445,10 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     private int getPlaybackState() {
         return naGetPlaybackState();
+    }
+
+    public void onResult(int cmdId, int resultCode) {
+
     }
 
     public void setOnPreparedListener(OvkMediaPlayer.OnPreparedListener listener) {
