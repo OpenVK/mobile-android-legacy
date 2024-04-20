@@ -7,6 +7,13 @@
 
 #include <../utils/pktqueue.h>
 
+#define LOG_TAG "FFwrap"
+#define LOG_LEVEL 10
+#define LOGD(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);}
+#define LOGI(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__);}
+#define LOGW(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__);}
+#define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
+
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
     #define __STDC_CONSTANT_MACROS          // workaround for compiler
