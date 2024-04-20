@@ -31,7 +31,7 @@
 #include <assert.h>
 #include <pthread.h>
 
-#include <android.h>
+#include <utils/android.h>
 
 // Non-standard 'stdint' implementation
 #pragma clang diagnostic push
@@ -223,57 +223,11 @@ JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filenam
 JNIEXPORT void JNICALL naDecodeAudioFromPacket(       // Decoding audio packets
     JNIEnv* env, jobject instance, int aBuffLength
 ) {
-    AVPacket            avPkt;
-    AVFrame             *pFrame                 = av_frame_alloc();
-    int                 AUDIO_INBUF_SIZE        = 4096;
-    int                 decodedDataSize         = 0,
-                        packetSize              = avPkt.size,
-                        status                  = 0,
-                        tAudioFrames            = 0;
-    jclass              jmPlay                  = env->GetObjectClass(instance);
-    jmethodID           renderAudioMid          = env->GetMethodID(jmPlay, "renderAudio", "([BI)V");
-    short*              buffer                  = (short*)malloc(aBuffLength);
-    jbyteArray          jBuffer                 = env->NewByteArray(aBuffLength);
 
-    pFrame = av_frame_alloc();
-
-    if (debug_mode) {
-        LOGD(10, "[DEBUG] Starting audio decoder...");
-    }
-
-    while (gPlaybackState == FFMPEG_PLAYBACK_PLAYING &&
-                    (status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
-        int len = avcodec_decode_audio4(
-                                        gAudioCodecCtx,
-                                        pFrame,
-                                        &status,
-                                        &avPkt
-                                       );
-
-        if (status) {
-                int dataSize = av_samples_get_buffer_size(NULL,
-                                                              gAudioCodecCtx->channels,
-                                                              pFrame->nb_samples,
-                                                              gAudioCodecCtx->sample_fmt,
-                                                              1);
-
-            if (debug_mode) {
-                LOGD(10, "[DEBUG] Decoding audio frame #%d... | Length: %d of %d",
-                    tAudioFrames + 1, dataSize, aBuffLength
-                );
-            }
-
-            buffer = (short *) pFrame->data[0];
-            env->SetByteArrayRegion(jBuffer, 0, (jsize) dataSize / gAudioCodecCtx->channels, (jbyte *) buffer);
-            env->CallVoidMethod(instance, renderAudioMid, jBuffer, dataSize / gAudioCodecCtx->channels);
-        }
-
-        tAudioFrames++;
-
-        av_free_packet(&avPkt);
-        av_packet_unref(&avPkt);
-    }
 }
+
+/*env->SetByteArrayRegion(jBuffer, 0, (jsize) dataSize / gAudioCodecCtx->channels, (jbyte *) buffer);
+    env->CallVoidMethod(instance, renderAudioMid, jBuffer, dataSize / gAudioCodecCtx->channels);*/
 
 
 JNIEXPORT uint8_t* JNICALL convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int length) {
@@ -328,7 +282,7 @@ JNIEXPORT void JNICALL naDecodeVideoFromPacket(
         LOGD(10, "[DEBUG] Starting video decoder...");
     }
 
-    while (gPlaybackState == FFMPEG_PLAYBACK_PLAYING &&
+    /*while (gPlaybackState == FFMPEG_PLAYBACK_PLAYING &&
                 (status = av_read_frame(gFormatCtx, &avPkt)) >= 0) {
         if (avPkt.stream_index == gVideoStreamIndex) {
             AVFrame     *pFrame     = av_frame_alloc(),
@@ -385,6 +339,7 @@ JNIEXPORT void JNICALL naDecodeVideoFromPacket(
         av_free_packet(&avPkt);
         av_packet_unref(&avPkt);
     }
+    */
 }
 
 JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance) {

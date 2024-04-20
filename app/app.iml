@@ -146,6 +146,12 @@
     <content url="file://$MODULE_DIR$/../ndk-modules/ovkmplayer">
       <sourceFolder url="file://$MODULE_DIR$/../ndk-modules/ovkmplayer" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/../ndk-modules/ovkmplayer/decoders">
+      <sourceFolder url="file://$MODULE_DIR$/../ndk-modules/ovkmplayer/decoders" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../ndk-modules/ovkmplayer/utils">
+      <sourceFolder url="file://$MODULE_DIR$/../ndk-modules/ovkmplayer/utils" isTestSource="false" />
+    </content>
     <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Gradle: com.reginald.swiperefresh:library-1.1.2" level="project" />

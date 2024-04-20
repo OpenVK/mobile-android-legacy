@@ -37,9 +37,16 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_ALLOW_UNDEFINED_SYMBOLS=false
 LOCAL_MODULE := ovkmplayer
-LOCAL_SRC_FILES := ovkmplay.cpp android.cpp
+LOCAL_SRC_FILES := 	ovkmplay.cpp \
+					utils/android.cpp \
+ 				   	decoders/audiodec.cpp \
+ 				    decoders/videodec.cpp \
+ 				   	utils/pktqueue.cpp \
+ 				   	utils/decthread.cpp
 LOCAL_C_INCLUDES := $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
-LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)
+LOCAL_C_INCLUDES += $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION) \
+					$(PROJECT_PATH)/ndk-modules/ovkmplayer/utils \
+					$(PROJECT_PATH)/ndk-modules/ovkmplayer/decoders \
 LOCAL_CFLAGS += -std=c++98
 LOCAL_CPP_FEATURES := exceptions
 LOCAL_SHARED_LIBRARIES := ffmpeg-prebuilt
