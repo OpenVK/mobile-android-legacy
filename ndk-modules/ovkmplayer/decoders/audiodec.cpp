@@ -6,13 +6,23 @@
 
 #include <../utils/android.h>
 
+#include <stdio.h>
+#include <math.h>
+
 #define AV_MAX_AUDIO_FRAME_SIZE 192000;
 
 AVStream*           gStream;
 
-AudioDecoder::AudioDecoder(AVStream* pStream, PacketQueue *pPktQueue) {
+AudioDecoder::AudioDecoder(AVFormatContext *pFormatCtx,
+                           AVCodecContext *pCodecCtx,
+                           AVStream* pStream,
+                           int pStreamIndex,
+                           IFFmpegWrapper *pInterface) {
+    gFormatCtx = pFormatCtx;
+    gCodecCtx = pCodecCtx;
     gStream = pStream;
-    gPktQueue = pPktQueue;
+    gStreamIndex = pStreamIndex;
+    gInterface = pInterface;
 }
 
 bool AudioDecoder::prepare() {
@@ -21,23 +31,50 @@ bool AudioDecoder::prepare() {
     return gBuffer != NULL;
 }
 
-bool AudioDecoder::decode(void* ptr) {
-    AVPacket            avPkt;
+static void *s_decodeInThread(void *arg) {
+    return ((AudioDecoder*) arg)->decodeInThread();
+}
 
-    while(gRunning) {
-        if(gPktQueue->get(&avPkt, true) < 0) {
-            gRunning = false;
-            return gRunning;
+void *AudioDecoder::decodeInThread() {
+    int         status, dataSize, len;
+    AVPacket    avPkt;
+    AVFrame     *pFrame     = av_frame_alloc();
+
+    while(av_read_frame(gFormatCtx, &avPkt)>=0) {
+        // It is from the audio stream?
+        if(avPkt.stream_index == gStreamIndex) {
+            len = avcodec_decode_audio4(gStream->codec, pFrame, &status, &avPkt);
+            if(len < 0) {
+            	break;
+            }
+            if (status) {
+                dataSize = av_samples_get_buffer_size(
+                            NULL,
+                            gCodecCtx->channels,
+                            pFrame->nb_samples,
+                            gCodecCtx->sample_fmt,
+                            1
+                           );
+                memcpy(gBuffer, pFrame->data[0], dataSize);
+                gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize / 2, gStreamIndex);
+            }
         }
-        /*if(!process()) {
-            gRunning = false;
-            return gRunning;
-        }*/
         // Free the packet that was allocated by av_read_frame
         av_free_packet(&avPkt);
     }
+    av_free(pFrame);
+    stop();
+}
 
-    av_free(gBuffer);
+bool AudioDecoder::start() {
+    pthread_t decoderThread;
+    pthread_create(&decoderThread, NULL, s_decodeInThread, (void*)this);
+    pthread_join(decoderThread, NULL);
+    return true;
+}
 
+bool AudioDecoder::stop() {
+    free(gBuffer);
+    avcodec_close(gCodecCtx);
     return true;
 }

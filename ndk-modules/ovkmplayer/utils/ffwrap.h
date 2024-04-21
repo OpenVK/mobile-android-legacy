@@ -8,8 +8,6 @@
 #include <android/log.h>
 #include <utils/android.h>
 
-#include <../interfaces/ffwrap.h>
-
 // Non-standard 'stdint' implementation
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCDFAInspection"
@@ -26,6 +24,9 @@ extern "C"{
 #define INT64_C(c) (c ## LL)
 #define UINT64_C(c) (c ## ULL)
 #endif
+
+#include <../interfaces/ffwrap.h>
+#include <../decoders/audiodec.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
@@ -78,6 +79,7 @@ class FFmpegWrapper {
         void findStreams();
         AVStream* getStream(int index);
         void openCodecs();
+        void startDecoding();
 
     private:
         IFFmpegWrapper      *gInterface;

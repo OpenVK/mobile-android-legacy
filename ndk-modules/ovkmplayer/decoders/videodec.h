@@ -14,6 +14,27 @@
 #define LOGW(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__);}
 #define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
 
+typedef void (*DecoderHandler) (short*, int);
+
+// Non-standard 'stdint' implementation
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
+extern "C"{
+    #ifdef __cplusplus
+    #define __STDC_CONSTANT_MACROS
+    #ifdef _STDINT_H
+    #undef _STDINT_H
+    #endif
+    # include <stdint.h>
+    #endif
+}
+#ifndef INT64_C
+#define INT64_C(c) (c ## LL)
+#define UINT64_C(c) (c ## ULL)
+#endif
+
+#include <../interfaces/ffwrap.h>
+
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
     #define __STDC_CONSTANT_MACROS          // workaround for compiler
@@ -34,16 +55,24 @@ extern "C" {
 
 class VideoDecoder {
     public:
-        VideoDecoder(AVStream* pStream, PacketQueue *pPktQueue);
-        AVFrame *gFrame;
-        AVStream *gStream;
-        bool gRunning;
-        uint64_t gPktPts;
-        bool prepare();
-        bool process(AVPacket *avPkt);
-        bool decode();
-        int getBuffer(struct AVCodecContext *pCodecCtx, AVFrame *pFrame);
-        void releaseBuffer(struct AVCodecContext *pCodecCtx, AVFrame *pFrame);
+        VideoDecoder(AVFormatContext *pFormatCtx,
+                     AVCodecContext *pCodecCtx,
+                     AVStream* pStream,
+                     int pStreamIndex,
+                     IFFmpegWrapper *pInterface);
+        bool                prepare();
+        bool                decode(void *ptr);
+        int                 gBufferSize, gStreamIndex;
+        short*              gBuffer;
+        bool                gRunning;
+        AVFormatContext     *gFormatCtx;
+        AVCodecContext      *gCodecCtx;
+        AVStream            *gStream;
+        IFFmpegWrapper      *gInterface;
+        AVFrame             *gFrame;
+        bool start();
+        bool stop();
+        void* decodeInThread();
     private:
         PacketQueue*        gPktQueue;
 };

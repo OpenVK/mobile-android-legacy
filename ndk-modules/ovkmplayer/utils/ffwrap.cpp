@@ -136,4 +136,16 @@ AVStream* FFmpegWrapper::getStream(int index) {
     return gFormatCtx->streams[index];
 }
 
+void FFmpegWrapper::startDecoding() {
+    AudioDecoder *audioDec = new AudioDecoder(
+                                                gFormatCtx,
+                                                gAudioCodecCtx,
+                                                getStream(gAudioStreamIndex),
+                                                gAudioStreamIndex,
+                                                gInterface
+                                             );
+    audioDec->prepare();
+    audioDec->start();
+}
+
 

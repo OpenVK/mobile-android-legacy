@@ -6,6 +6,8 @@
 #define MOBILE_ANDROID_LEGACY_AUDIODEC_H
 
 #include <../utils/pktqueue.h>
+#include <../interfaces/ffwrap.h>
+#include <android/log.h>
 
 #define LOG_TAG "FFwrap"
 #define LOG_LEVEL 10
@@ -15,6 +17,23 @@
 #define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
 
 typedef void (*DecoderHandler) (short*, int);
+
+// Non-standard 'stdint' implementation
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
+extern "C"{
+    #ifdef __cplusplus
+    #define __STDC_CONSTANT_MACROS
+    #ifdef _STDINT_H
+    #undef _STDINT_H
+    #endif
+    # include <stdint.h>
+    #endif
+}
+#ifndef INT64_C
+#define INT64_C(c) (c ## LL)
+#define UINT64_C(c) (c ## ULL)
+#endif
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
@@ -35,14 +54,24 @@ extern "C" {
 
 class AudioDecoder {
     public:
-        AudioDecoder(AVStream* pStream, PacketQueue *pPktQueue);
+        AudioDecoder(AVFormatContext *pFormatCtx,
+                     AVCodecContext *pCodecCtx,
+                     AVStream* pStream,
+                     int pStreamIndex,
+                     IFFmpegWrapper *pInterface);
         bool                prepare();
         bool                process();
         bool                decode(void *ptr);
         DecoderHandler		onDecode;
-        int                 gBufferSize;
+        int                 gBufferSize, gStreamIndex;
         short*              gBuffer;
         bool                gRunning;
+        AVFormatContext     *gFormatCtx;
+        AVCodecContext      *gCodecCtx;
+        IFFmpegWrapper      *gInterface;
+        bool start();
+        bool stop();
+        void* decodeInThread();
     private:
         PacketQueue*        gPktQueue;
 };

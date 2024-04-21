@@ -236,7 +236,12 @@ public class OvkMediaPlayer extends MediaPlayer {
     @Override
     public void start() throws IllegalStateException {
         if(tracks != null) {
-            naPlay();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    naPlay();
+                }
+            }).start();
             Log.d(MPLAY_TAG, "Playing...");
             OvkAudioTrack audio_track = null;
             OvkVideoTrack video_track = null;
@@ -307,7 +312,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             int ch_config = track.channels == 2 ?
                     AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
 
-            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
+            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate / 2,
                     ch_config,
                     AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
 

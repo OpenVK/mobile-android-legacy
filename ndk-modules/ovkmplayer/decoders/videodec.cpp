@@ -4,8 +4,16 @@
 
 #include "videodec.h"
 
-VideoDecoder::VideoDecoder(AVStream* stream, PacketQueue *pPktQueue) {
-
+VideoDecoder::VideoDecoder(AVFormatContext *pFormatCtx,
+                           AVCodecContext *pCodecCtx,
+                           AVStream* pStream,
+                           int pStreamIndex,
+                           IFFmpegWrapper *pInterface) {
+    gFormatCtx = pFormatCtx;
+    gCodecCtx = pCodecCtx;
+    gStream = pStream;
+    gStreamIndex = pStreamIndex;
+    gInterface = pInterface;
 }
 
 bool VideoDecoder::prepare() {
@@ -13,61 +21,30 @@ bool VideoDecoder::prepare() {
 	return gFrame != NULL;
 }
 
-bool VideoDecoder::process(AVPacket *avPkt) {
-    int	completed;
-    int pts = 0;
-
-	// TODO: Put FFmpeg decoding method here.
-
-	if (avPkt->dts == AV_NOPTS_VALUE && gFrame->opaque
-			&& *(uint64_t*) gFrame->opaque != AV_NOPTS_VALUE) {
-		pts = *(uint64_t *) gFrame->opaque;
-	} else if (avPkt->dts != AV_NOPTS_VALUE) {
-		pts = avPkt->dts;
-	} else {
-		pts = 0;
-	}
-	pts *= av_q2d(gStream->time_base);
-
-	if (completed) {
-		//pts = synchronize(gFrame, pts);
-		//onDecode(gFrame, pts);
-	}
-	return completed;
+static void *s_decodeInThread(void *arg) {
+    return ((VideoDecoder*) arg)->decodeInThread();
 }
 
-bool VideoDecoder::decode() {
-	AVPacket        avPkt;
+void *VideoDecoder::decodeInThread() {
+    int         status, dataSize, len;
+    AVPacket    avPkt;
 
-    while(gRunning) {
-        if(gPktQueue->get(&avPkt, true) < 0) {
-            gRunning = false;
-            return gRunning;
-        }
-        if(!process(&avPkt)) {
-            gRunning = false;
-            return gRunning;
+    while(av_read_frame(gFormatCtx, &avPkt)>=0) {
+        // It is from the video stream?
+        if(avPkt.stream_index == gStreamIndex) {
+
+            // TODO: Implement video decoding stages
+            //gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize / 2, gStreamIndex);
         }
         // Free the packet that was allocated by av_read_frame
         av_free_packet(&avPkt);
     }
 
-    // Free the RGB image
+    stop();
+}
+
+bool VideoDecoder::stop() {
     av_free(gFrame);
-
-	return true;
-}
-
-int VideoDecoder::getBuffer(struct AVCodecContext *pCodecCtx, AVFrame *pFrame) {
-	int ret = avcodec_default_get_buffer(pCodecCtx, pFrame);
-	uint64_t *pts = (uint64_t *)av_malloc(sizeof(uint64_t));
-	*pts = gPktPts;
-	pFrame->opaque = pts;
-	return ret;
-}
-
-void VideoDecoder::releaseBuffer(struct AVCodecContext *pCodecCtx, AVFrame *pFrame) {
-	if(pFrame)
-	    av_freep(&pFrame->opaque);
-	avcodec_default_release_buffer(pCodecCtx, pFrame);
+    avcodec_close(gCodecCtx);
+    return true;
 }
