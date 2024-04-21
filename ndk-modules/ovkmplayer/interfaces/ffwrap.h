@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <jni.h>
+
 class IFFmpegWrapper {
     public:
         IFFmpegWrapper() {};
@@ -15,6 +17,9 @@ class IFFmpegWrapper {
                                       int bufferLen,
                                       int streamIndex) = 0;
         virtual void onChangePlaybackState(int playbackState) = 0;
+        virtual void onChangeWrapperState(int wrapperState) = 0;
+        JNIEnv *env;
+        jobject instance;
     private:
         bool gDebugMode;
 };

@@ -7,6 +7,8 @@
 
 #include <../utils/pktqueue.h>
 
+#include <android/log.h>
+
 #define LOG_TAG "FFwrap"
 #define LOG_LEVEL 10
 #define LOGD(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);}
@@ -70,9 +72,10 @@ class VideoDecoder {
         AVStream            *gStream;
         IFFmpegWrapper      *gInterface;
         AVFrame             *gFrame;
-        bool start();
-        bool stop();
-        void* decodeInThread();
+        bool                start();
+        bool                stop();
+        void*               decodeInThread();
+        short*              convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int length);
     private:
         PacketQueue*        gPktQueue;
 };

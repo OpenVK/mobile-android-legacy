@@ -80,6 +80,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private OnCompletionListener onCompletionListener;
     private Handler handler;
     private AudioTrack audio_track;
+    private byte[] videoBuffer;
 
     // C++ player native functions
     private native void naInit();
@@ -319,6 +320,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             audio_track.play();
             prepared_audio_buffer = true;
         }
+
         try {
             audio_track.write(buffer, 0, length);
         } catch (Exception ignored) {
@@ -330,67 +332,69 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     private void renderVideo(final byte[] buffer, final int length) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Canvas c;
-                OvkVideoTrack track = null;
-                for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-                    if (tracks.get(tracks_index) instanceof OvkVideoTrack) {
-                        track = (OvkVideoTrack) tracks.get(tracks_index);
-                    }
-                }
-                if (track != null) {
-                    int frame_width = track.frame_size[0];
-                    int frame_height = track.frame_size[1];
-                    if (frame_width > 0 && frame_height > 0) {
-                        minVideoBufferSize = frame_width * frame_height * 4;
-                        try {
-                            // RGB_565  == 65K colours (16 bit)
-                            // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
-                            int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
-                            Bitmap.Config bmp_config =
-                                    bpp == 24 ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
-                            if(buffer != null && holder != null) {
-                                holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
-                                if((c = holder.lockCanvas()) == null) {
-                                    Log.d(MPLAY_TAG, "Lock canvas failed");
-                                    return;
-                                }
-                                ByteBuffer bbuf =
-                                        ByteBuffer.allocateDirect(minVideoBufferSize);
-                                bbuf.rewind();
-                                for(int i = 0; i < buffer.length; i++) {
-                                    bbuf.put(i, buffer[i]);
-                                }
-                                bbuf.rewind();
-                                Bitmap bmp = Bitmap.createBitmap(frame_width, frame_height, bmp_config);
-                                bmp.copyPixelsFromBuffer(bbuf);
-                                float aspect_ratio = (float) frame_width / (float) frame_height;
-                                int scaled_width = (int)(aspect_ratio * (c.getHeight()));
-                                c.drawBitmap(bmp,
-                                        null,
-                                        new RectF(
-                                                ((c.getWidth() - scaled_width) / 2), 0,
-                                                ((c.getWidth() - scaled_width) / 2) + scaled_width,
-                                                c.getHeight()),
-                                        null);
-                                holder.unlockCanvasAndPost(c);
-                                bmp.recycle();
-                                bbuf.clear();
-                            } else {
-                                Log.d(MPLAY_TAG, "Video frame buffer is null");
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        } catch (OutOfMemoryError oom) {
-                            oom.printStackTrace();
-                            stop();
+        Canvas c;
+        videoBuffer = buffer;
+        OvkVideoTrack track = null;
+        for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
+            if (tracks.get(tracks_index) instanceof OvkVideoTrack) {
+                track = (OvkVideoTrack) tracks.get(tracks_index);
+            }
+        }
+        if (track != null) {
+            int frame_width = track.frame_size[0];
+            int frame_height = track.frame_size[1];
+            if (frame_width > 0 && frame_height > 0) {
+                minVideoBufferSize = frame_width * frame_height * 4;
+                try {
+                    // RGB_565  == 65K colours (16 bit)
+                    // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
+                    int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
+                    Bitmap.Config bmp_config =
+                            bpp == 24 ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
+                    if(videoBuffer != null && holder != null) {
+                        holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+                        if((c = holder.lockCanvas()) == null) {
+                            Log.d(MPLAY_TAG, "Lock canvas failed");
+                            return;
                         }
+                        ByteBuffer bbuf =
+                                ByteBuffer.allocateDirect(minVideoBufferSize);
+                        bbuf.rewind();
+                        for(int i = 0; i < videoBuffer.length; i++) {
+                            bbuf.put(i, videoBuffer[i]);
+                        }
+                        bbuf.rewind();
+                        Bitmap bmp = Bitmap.createBitmap(frame_width, frame_height, bmp_config);
+                        bmp.copyPixelsFromBuffer(bbuf);
+                        float aspect_ratio = (float) frame_width / (float) frame_height;
+                        int scaled_width = (int)(aspect_ratio * (c.getHeight()));
+                        videoBuffer = null;
+                        c.drawBitmap(bmp,
+                                null,
+                                new RectF(
+                                        ((c.getWidth() - scaled_width) / 2), 0,
+                                        ((c.getWidth() - scaled_width) / 2) + scaled_width,
+                                        c.getHeight()),
+                                null);
+                        holder.unlockCanvasAndPost(c);
+                        bmp.recycle();
+                        bbuf.clear();
+                    } else {
+                        Log.d(MPLAY_TAG, "Video frame buffer is null");
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                } catch (OutOfMemoryError oom) {
+                    oom.printStackTrace();
+                    stop();
+                }
+                try {
+                    Thread.sleep((long) (1000 / track.frame_rate));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+        }
     }
 
     @Override

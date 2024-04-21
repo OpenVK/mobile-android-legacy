@@ -67,9 +67,7 @@ void *AudioDecoder::decodeInThread() {
 }
 
 bool AudioDecoder::start() {
-    pthread_t decoderThread;
-    pthread_create(&decoderThread, NULL, s_decodeInThread, (void*)this);
-    pthread_join(decoderThread, NULL);
+    decodeInThread();
     return true;
 }
 

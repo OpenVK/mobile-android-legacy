@@ -71,7 +71,8 @@ int                 gErrorCode;
 
 bool                gDebugMode                  = true;
 
-int                 gFramesCount;
+int                 gFramesCount,
+                    gAttachResult               = -54;
 
 FFmpegWrapper       *gWrapper;
 
@@ -90,19 +91,38 @@ class IPlayerWrapper : public IFFmpegWrapper {
                                       int bufferLen,
                                       int streamIndex);
         void onChangePlaybackState(int playbackState) {};
+        void onChangeWrapperState(int wrapperState);
+        JNIEnv *env;
+        jobject instance;
 };
 
+IPlayerWrapper* gInterface;
+
+int attachEnv(JNIEnv **pEnv) {
+    int getEnvStat = gVM->GetEnv((void **) pEnv, JNI_VERSION_1_6);
+    if (getEnvStat == JNI_EDETACHED) {
+        if (gVM->AttachCurrentThread(pEnv, NULL) != 0) {
+            LOGE(10, "Failed to attach thread with JNIEnv*");
+            return 2; //Failed to attach
+        }
+        return 1; //Attached. Need detach
+    } else if (JNI_OK == getEnvStat) {
+        return 0;//Already attached
+    } else {
+        return 3;
+    }
+}
+
 JNIEXPORT void JNICALL naInit(JNIEnv *env, jobject instance) {
-    IFFmpegWrapper* interface = new IPlayerWrapper();
-    gWrapper = new FFmpegWrapper(gDebugMode, interface);
-    env->GetJavaVM(&gVM);
-    gInstance = env->NewGlobalRef(instance);
+    gInterface = new IPlayerWrapper();
+    gInterface->instance = env->NewGlobalRef(instance);
+    gWrapper = new FFmpegWrapper(gDebugMode, gInterface);
+}
+
+JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance, int streamType) {
     gVMArgs.version = JNI_VERSION_1_6;
     gVMArgs.name = NULL;
     gVMArgs.group = NULL;
-}
-
-JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance) {
     gWrapper->setPlaybackState(FFMPEG_PLAYBACK_PLAYING);
     gWrapper->startDecoding();
 }
@@ -146,38 +166,50 @@ void IPlayerWrapper::onError(int cmdId, int errorCode) {
 
 void IPlayerWrapper::onResult(int cmdId, int resultCode) {
     JNIEnv* env;
-    gVM->AttachCurrentThread(&env, &gVMArgs);
-
-    if(cmdId == FFMPEG_COMMAND_FIND_STREAMS) {
-        gWrapper->openCodecs();
-    } else if(cmdId == FFMPEG_COMMAND_OPEN_CODECS) {
-        jclass jmPlay = env->GetObjectClass(gInstance);
-        jmethodID onResultMid = env->GetMethodID(jmPlay, "onResult", "(II)V");
-        env->CallVoidMethod(gInstance, onResultMid, (jint)cmdId, (jint)resultCode);
+    int attachResult = attachEnv(&env);
+    if(attachResult < 2) {
+        jclass jmPlay = env->GetObjectClass(instance);
+        if(cmdId == FFMPEG_COMMAND_FIND_STREAMS) {
+            gWrapper->openCodecs();
+        } else if(cmdId == FFMPEG_COMMAND_OPEN_CODECS) {
+            jmethodID onResultMid = env->GetMethodID(jmPlay, "onResult", "(II)V");
+            env->CallVoidMethod(instance, onResultMid, (jint)cmdId, (jint)resultCode);
+        }
+        if(attachResult == 1) {
+            gVM->DetachCurrentThread();
+        }
     }
-    //gVM->DetachCurrentThread();
 }
 
 void IPlayerWrapper::onStreamDecoding(uint8_t* buffer, int bufferLen, int streamIndex) {
     JNIEnv* env;
-    gVM->AttachCurrentThread(&env, &gVMArgs);
-    jBuffer = env->NewByteArray(bufferLen);
-    jclass jmPlay = env->GetObjectClass(gInstance);
-    if(streamIndex == gWrapper->gAudioStreamIndex) {
-        jmethodID renderAudioMid = env->GetMethodID(jmPlay, "renderAudio", "([BI)V");
+    int attachResult = attachEnv(&env);
+    if(attachResult < 2) {
+        jclass jmPlay = env->GetObjectClass(instance);
+        jBuffer = env->NewByteArray((jsize) bufferLen);
         env->SetByteArrayRegion(jBuffer, 0, (jsize) bufferLen, (jbyte *) buffer);
-        env->CallVoidMethod(gInstance, renderAudioMid, jBuffer, bufferLen);
-    } else if(streamIndex == gWrapper->gVideoStreamIndex) {
-
+        if(streamIndex == gWrapper->gAudioStreamIndex) {
+            jmethodID renderAudioMid = env->GetMethodID(jmPlay, "renderAudio", "([BI)V");
+            env->CallVoidMethod(instance, renderAudioMid, jBuffer, bufferLen);
+        } else if(streamIndex == gWrapper->gVideoStreamIndex) {
+            jmethodID renderVideoMid = env->GetMethodID(jmPlay, "renderVideo", "([BI)V");
+            env->CallVoidMethod(instance, renderVideoMid, jBuffer, bufferLen);
+        }
+        env->ReleaseByteArrayElements(jBuffer, (jbyte *)env->GetByteArrayElements(jBuffer, NULL), JNI_ABORT);
+        env->DeleteLocalRef(jBuffer);
+        env->DeleteLocalRef(jmPlay);
+        if(attachResult == 1) {
+            gVM->DetachCurrentThread();
+        }
     }
-    //env->ReleaseByteArrayElements(jBuffer, (jbyte *)buffer, 0);
-    gVM->DetachCurrentThread();
+}
+
+void IPlayerWrapper::onChangeWrapperState(int wrapperState) {
 }
 
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(
         JNIEnv* env, jobject instance, jint type
 ) {
-
     jclass track_class;
     try {
         AVStream *pStream;

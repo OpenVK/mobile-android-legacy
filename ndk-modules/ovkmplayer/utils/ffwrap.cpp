@@ -4,6 +4,9 @@
 
 #include "ffwrap.h"
 
+#include <stdio.h>
+#include <math.h>
+
 FFmpegWrapper::FFmpegWrapper(bool pDebugMode, IFFmpegWrapper *pInterface) {
     gInterface = pInterface;
     setDebugMode(pDebugMode);
@@ -136,16 +139,38 @@ AVStream* FFmpegWrapper::getStream(int index) {
     return gFormatCtx->streams[index];
 }
 
-void FFmpegWrapper::startDecoding() {
-    AudioDecoder *audioDec = new AudioDecoder(
-                                                gFormatCtx,
-                                                gAudioCodecCtx,
-                                                getStream(gAudioStreamIndex),
-                                                gAudioStreamIndex,
-                                                gInterface
-                                             );
+static void *audioDecoderThread(void *arg) {
+    AudioDecoder *audioDec = (AudioDecoder*) arg;
     audioDec->prepare();
     audioDec->start();
+}
+
+static void *videoDecoderThread(void *arg) {
+    VideoDecoder *videoDec = (VideoDecoder*) arg;
+    videoDec->prepare();
+    videoDec->start();
+}
+
+void FFmpegWrapper::startDecoding() {
+    AudioDecoder *audioDec = new AudioDecoder(
+        gFormatCtx,
+        gAudioCodecCtx,
+        getStream(gAudioStreamIndex),
+        gAudioStreamIndex,
+        gInterface
+    );
+    VideoDecoder *videoDec = new VideoDecoder(
+        gFormatCtx,
+        gVideoCodecCtx,
+        getStream(gVideoStreamIndex),
+        gVideoStreamIndex,
+        gInterface
+    );
+    pthread_t audioDecThread;
+    pthread_create(&audioDecThread, NULL, &audioDecoderThread, (void*)audioDec);
+    pthread_t videoDecThread;
+    pthread_create(&videoDecThread, NULL, &videoDecoderThread, (void*)videoDec);
+
 }
 
 

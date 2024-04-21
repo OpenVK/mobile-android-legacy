@@ -8,6 +8,7 @@
 #include <../utils/pktqueue.h>
 #include <../interfaces/ffwrap.h>
 #include <android/log.h>
+#include <android.h>
 
 #define LOG_TAG "FFwrap"
 #define LOG_LEVEL 10

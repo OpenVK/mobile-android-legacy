@@ -27,6 +27,7 @@ extern "C"{
 
 #include <../interfaces/ffwrap.h>
 #include <../decoders/audiodec.h>
+#include <../decoders/videodec.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
