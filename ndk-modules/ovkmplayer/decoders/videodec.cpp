@@ -67,8 +67,6 @@ void *VideoDecoder::decodeInThread() {
         av_packet_unref(&avPkt);
     }
 
-            av_free(gBuffer);
-
     stop();
 }
 
@@ -110,5 +108,6 @@ short* VideoDecoder::convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int lengt
 bool VideoDecoder::stop() {
     av_free(gFrame);
     avcodec_close(gCodecCtx);
+    av_free(gBuffer);
     return true;
 }

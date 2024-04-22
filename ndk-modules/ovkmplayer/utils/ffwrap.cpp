@@ -12,10 +12,80 @@ FFmpegWrapper::FFmpegWrapper(bool pDebugMode, IFFmpegWrapper *pInterface) {
     setDebugMode(pDebugMode);
     if(pDebugMode) {
         LOGD(10, "[DEBUG] Initializing FFmpeg...");
+        getAVFormatVersion();
+        getAVFormatLicense();
+        getAVFormatBuildConf();
+
     }
     av_register_all();
     avcodec_register_all();
     avformat_network_init();
+}
+
+char* FFmpegWrapper::getAVFormatVersion() {
+    char avfVersion[10];
+
+    int avfVersionI = avformat_version();
+    if(gDebugMode) {
+        LOGD(10, "[DEBUG] libavformat version: %d.%d.%d",
+                LIBAVUTIL_VERSION_MAJOR,
+                LIBAVUTIL_VERSION_MINOR,
+                LIBAVUTIL_VERSION_MICRO
+        );
+    }
+    sprintf(avfVersion,
+            "%d.%d.%d",
+            LIBAVUTIL_VERSION_MAJOR,
+            LIBAVUTIL_VERSION_MINOR,
+            LIBAVUTIL_VERSION_MICRO
+    );
+
+    return avfVersion;
+}
+
+char* FFmpegWrapper::getAVFormatBuildConf() {
+    char* originalBuildConf = (char*)av_malloc(2048 * sizeof(char));
+    char* token;
+    char* formattedBuildConf  = (char*)av_malloc(2048 * sizeof(char));
+
+    sprintf(originalBuildConf, "%s", avformat_configuration());
+
+    token = strtok(originalBuildConf, " ");
+    int result = 0;
+    int lines = 0;
+    while (token != NULL){
+        if(lines % 8 > 0) {
+            result += sprintf(formattedBuildConf + result, "\t%s\r\n", token);
+        } else {
+            if(gDebugMode) {
+                if(lines == 8) {
+                    LOGD(10, "[DEBUG] libavformat build configuration:\r\n%s",
+                        formattedBuildConf
+                    )
+                } else if(lines > 8) {
+                    LOGD(10, "%s",
+                        formattedBuildConf
+                    )
+                }
+            }
+            result = sprintf(formattedBuildConf, "\t%s\r\n", token);
+        }
+        lines++;
+        token = strtok(NULL, " ");
+    }
+    av_free(originalBuildConf);
+    av_free(formattedBuildConf);
+    return (char*)avformat_configuration();
+}
+
+char* FFmpegWrapper::getAVFormatLicense() {
+    if(gDebugMode) {
+        LOGD(10, "[DEBUG] libavformat license: %s",
+            avformat_license()
+        );
+    }
+    return (char*)avformat_license();
+
 }
 
 void FFmpegWrapper::setDebugMode(bool pDebugMode) {
@@ -109,10 +179,10 @@ void FFmpegWrapper::openCodecs() {
         gVideoCodecCtx = getStream(gVideoStreamIndex)->codec;
         gVideoCodec = avcodec_find_decoder(gVideoCodecCtx->codec_id);
         if(gVideoCodec==NULL) {
-            LOGE(10, "Unsupported video codec");
+            LOGE(10, "[ERROR] Unsupported video codec");
             vCodecResult = -1;
         } else if(avcodec_open2(gVideoCodecCtx, gVideoCodec, &optionsDict)<0){
-            LOGE(10, "Could not open video codec");
+            LOGE(10, "[ERROR] Could not open video codec");
             vCodecResult = -1;
         }
     }
@@ -120,10 +190,10 @@ void FFmpegWrapper::openCodecs() {
         gAudioCodecCtx = gFormatCtx->streams[gAudioStreamIndex]->codec;
         gAudioCodec = avcodec_find_decoder(gAudioCodecCtx->codec_id);
         if(gAudioCodec == NULL) {
-            LOGE(10, "Unsupported audio codec");
+            LOGE(10, "[ERROR] Unsupported audio codec");
             aCodecResult = -1;
         } else if(avcodec_open2(gAudioCodecCtx, gAudioCodec, &optionsDict)<0){
-            LOGE(10, "Could not open audio codec");
+            LOGE(10, "[ERROR] Could not open audio codec");
             aCodecResult = -1;
         }
     }
@@ -170,7 +240,4 @@ void FFmpegWrapper::startDecoding() {
     pthread_create(&audioDecThread, NULL, &audioDecoderThread, (void*)audioDec);
     pthread_t videoDecThread;
     pthread_create(&videoDecThread, NULL, &videoDecoderThread, (void*)videoDec);
-
 }
-
-

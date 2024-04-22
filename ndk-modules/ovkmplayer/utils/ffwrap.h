@@ -31,6 +31,7 @@ extern "C"{
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
+    #include <libavutil/version.h>
     #include <libavutil/avstring.h>
     #include <libavutil/pixdesc.h>
     #include <libavutil/imgutils.h>
@@ -64,6 +65,7 @@ const int FFMPEG_PLAYBACK_PAUSED                = 0x8002;
 class FFmpegWrapper {
     public:
         FFmpegWrapper(bool pDebugMode, IFFmpegWrapper *pInterface);
+
         AVFormatContext     *gFormatCtx;
         AVCodecContext      *gVideoCodecCtx;
         AVCodecContext      *gAudioCodecCtx;
@@ -73,6 +75,11 @@ class FFmpegWrapper {
 
         AVCodec             *gVideoCodec;
         AVCodec             *gAudioCodec;
+
+        char* getAVFormatVersion();
+        char* getAVFormatLicense();
+        char* getAVFormatBuildConf();
+
         void setDebugMode(bool pDebugMode);
         int getPlaybackState();
         void setPlaybackState(int pPlaybackState);
