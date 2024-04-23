@@ -114,5 +114,5 @@ bool VideoDecoder::stop() {
 }
 
 double VideoDecoder::getPacketTime(AVPacket avPkt) {
-    return (avPkt->dts - gStream->start_time) * av_q2d(gStream->time_base);
+    return (avPkt.dts - gStream->start_time) * av_q2d(gStream->time_base);
 }
