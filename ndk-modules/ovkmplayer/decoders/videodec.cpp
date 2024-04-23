@@ -60,6 +60,7 @@ void *VideoDecoder::decodeInThread() {
             convertYuv2Rgb(pxf, gFrame, dataSize);
             tVideoFrames++;
             gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize, gStreamIndex);
+            sleep((unsigned int)getPacketTime());
         }
         av_free(gFrame);
         // Free the packet that was allocated by av_read_frame
@@ -110,4 +111,8 @@ bool VideoDecoder::stop() {
     avcodec_close(gCodecCtx);
     av_free(gBuffer);
     return true;
+}
+
+double VideoDecoder::getPacketTime(AVPacket avPkt) {
+    return (avPkt->dts - gStream->start_time) * av_q2d(gStream->time_base);
 }

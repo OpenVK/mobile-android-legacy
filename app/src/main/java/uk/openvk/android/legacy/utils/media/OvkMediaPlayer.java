@@ -31,6 +31,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -74,6 +75,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private String dataSourceUrl;
     private ArrayList<OvkMediaTrack> tracks;
     private SurfaceHolder holder;
+    private int minAudioBufferSize;
     private int minVideoBufferSize;
     private OnPreparedListener onPreparedListener;
     private OnErrorListener onErrorListener;
@@ -90,8 +92,8 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native int naOpenFile(String filename);
     private native Object naGenerateTrackInfo(int type);
     // private native void naSetMinAudioBufferSize(int audioBufferSize);
-    // private native void naDecodeVideoFromPacket();
-    // private native void naDecodeAudioFromPacket(int aBuffLength);
+    private native void naStartAudioDecoding();
+    private native void naStartVideoDecoding();
     private native void naPlay();
     private native void naPause();
     private native void naStop();
@@ -219,7 +221,6 @@ public class OvkMediaPlayer extends MediaPlayer {
             onErrorListener.onError(this, -1);
         } else {
             getMediaInfo();
-
         }
     }
 
@@ -237,12 +238,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     @Override
     public void start() throws IllegalStateException {
         if(tracks != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    naPlay();
-                }
-            }).start();
+            naPlay();
             Log.d(MPLAY_TAG, "Playing...");
             OvkAudioTrack audio_track = null;
             OvkVideoTrack video_track = null;
@@ -255,41 +251,9 @@ public class OvkMediaPlayer extends MediaPlayer {
             }
             final OvkAudioTrack finalAudioTrack = audio_track;
             final OvkVideoTrack finalVideoTrack = video_track;
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    if(finalAudioTrack != null) {
-//                        int ch_config = finalAudioTrack.channels == 2 ?
-//                                AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
-//                        Log.d(MPLAY_TAG, "Decoding audio track...");
-//                        try {
-//                            naDecodeAudioFromPacket(AudioTrack.getMinBufferSize(
-//                                    (int) finalAudioTrack.sample_rate, ch_config, AudioFormat.ENCODING_PCM_16BIT
-//                            ));
-//                        } catch (OutOfMemoryError oom) {
-//                            stop();
-//                        }
-//                    } else {
-//                        Log.e(MPLAY_TAG, "Audio stream not found. Skipping...");
-//                    }
-//                }
-//            }).start();
+            naStartAudioDecoding();
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    if(finalVideoTrack != null) {
-//                        Log.d(MPLAY_TAG, "Decoding video track...");
-//                        try {
-//                            naDecodeVideoFromPacket();
-//                        } catch (OutOfMemoryError oom) {
-//                            stop();
-//                        }
-//                    } else {
-//                        Log.e(MPLAY_TAG, "Video stream not found. Skipping...");
-//                    }
-//                }
-//            }).start();
+            naStartVideoDecoding();
         }
     }
 
@@ -300,6 +264,7 @@ public class OvkMediaPlayer extends MediaPlayer {
             Log.e(MPLAY_TAG, "Audio buffer is empty");
             return;
         }
+
         if (!prepared_audio_buffer) {
             for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
                 if (tracks.get(tracks_index) instanceof OvkAudioTrack) {
@@ -316,6 +281,11 @@ public class OvkMediaPlayer extends MediaPlayer {
             audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate / 2,
                     ch_config,
                     AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
+
+            minAudioBufferSize = AudioRecord.getMinBufferSize(
+                    (int) (track.sample_rate / 2),
+                    ch_config,
+                    AudioFormat.ENCODING_PCM_16BIT);
 
             audio_track.play();
             prepared_audio_buffer = true;
@@ -388,11 +358,6 @@ public class OvkMediaPlayer extends MediaPlayer {
                     oom.printStackTrace();
                     stop();
                 }
-                try {
-                    Thread.sleep((long) (1000 / track.frame_rate));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
@@ -423,7 +388,6 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     public void onResult(int cmdId, int resultCode) {
         if(cmdId == FFMPEG_COMMAND_OPEN_CODECS) {
-
             if(getMediaInfo() == null) {
                 Log.e(MPLAY_TAG, String.format("Can't open file: %s", dataSourceUrl));
                 Message msg = new Message();

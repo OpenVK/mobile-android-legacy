@@ -88,6 +88,7 @@ class FFmpegWrapper {
         AVStream* getStream(int index);
         void openCodecs();
         void startDecoding();
+        void startDecoding(int pStreamIndex);
 
     private:
         IFFmpegWrapper      *gInterface;

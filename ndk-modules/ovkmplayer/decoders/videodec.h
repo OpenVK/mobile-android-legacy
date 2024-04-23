@@ -36,6 +36,7 @@ extern "C"{
 #endif
 
 #include <../interfaces/ffwrap.h>
+#include <unistd.h>
 
 // FFmpeg implementation headers (using LGPLv3.0 model)
 extern "C" {
@@ -76,6 +77,7 @@ class VideoDecoder {
         bool                stop();
         void*               decodeInThread();
         short*              convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int length);
+        double              getPacketTime(AVPacket avPkt);
     private:
         PacketQueue*        gPktQueue;
 };

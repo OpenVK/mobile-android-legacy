@@ -124,7 +124,15 @@ JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance, int streamType) {
     gVMArgs.name = NULL;
     gVMArgs.group = NULL;
     gWrapper->setPlaybackState(FFMPEG_PLAYBACK_PLAYING);
-    gWrapper->startDecoding();
+    //gWrapper->startDecoding();
+}
+
+JNIEXPORT void JNICALL naStartAudioDecoding(JNIEnv *env, jobject instance) {
+    gWrapper->startDecoding(gWrapper->gAudioStreamIndex);
+}
+
+JNIEXPORT void JNICALL naStartVideoDecoding(JNIEnv *env, jobject instance) {
+    gWrapper->startDecoding(gWrapper->gVideoStreamIndex);
 }
 
 JNIEXPORT void JNICALL naPause(JNIEnv *env, jobject instance) {
@@ -303,7 +311,7 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
 	if (pVm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
 		 return -1;
 	}
-	JNINativeMethod nm[9];
+	JNINativeMethod nm[11];
 
 	nm[0].name = "naInit";
 	nm[0].signature = "()V";
@@ -341,9 +349,17 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
     nm[8].signature = "()V";
     nm[8].fnPtr = (void*)naStop;
 
+    nm[9].name = "naStartAudioDecoding";
+    nm[9].signature = "()V";
+    nm[9].fnPtr = (void*)naStartAudioDecoding;
+
+    nm[10].name = "naStartVideoDecoding";
+    nm[10].signature = "()V";
+    nm[10].fnPtr = (void*)naStartVideoDecoding;
+
 	jclass cls = env->FindClass("uk/openvk/android/legacy/utils/media/OvkMediaPlayer");
 	//Register methods with env->RegisterNatives.
-	env->RegisterNatives(cls, nm, 9);
+	env->RegisterNatives(cls, nm, 11);
 
 	gVM = pVm;
 

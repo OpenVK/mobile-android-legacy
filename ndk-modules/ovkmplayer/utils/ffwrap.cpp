@@ -241,3 +241,29 @@ void FFmpegWrapper::startDecoding() {
     pthread_t videoDecThread;
     pthread_create(&videoDecThread, NULL, &videoDecoderThread, (void*)videoDec);
 }
+
+void FFmpegWrapper::startDecoding(int pStreamIndex) {
+    if(pStreamIndex == gAudioStreamIndex) {
+        AudioDecoder *audioDec = new AudioDecoder(
+            gFormatCtx,
+            gAudioCodecCtx,
+            getStream(gAudioStreamIndex),
+            gAudioStreamIndex,
+            gInterface
+        );
+
+        pthread_t audioDecThread;
+        pthread_create(&audioDecThread, NULL, &audioDecoderThread, (void*)audioDec);
+    } else if(pStreamIndex == gVideoStreamIndex) {
+        VideoDecoder *videoDec = new VideoDecoder(
+            gFormatCtx,
+            gVideoCodecCtx,
+            getStream(gVideoStreamIndex),
+            gVideoStreamIndex,
+            gInterface
+        );
+
+        pthread_t videoDecThread;
+        pthread_create(&videoDecThread, NULL, &videoDecoderThread, (void*)videoDec);
+    }
+}

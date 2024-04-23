@@ -55,6 +55,7 @@ void *AudioDecoder::decodeInThread() {
                             gCodecCtx->sample_fmt,
                             1
                            );
+
                 memcpy(gBuffer, pFrame->data[0], dataSize);
                 gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize / 2, gStreamIndex);
             }
@@ -76,4 +77,8 @@ bool AudioDecoder::stop() {
     free(gBuffer);
     avcodec_close(gCodecCtx);
     return true;
+}
+
+double AudioDecoder::getPacketTime(AVPacket avPkt) {
+    return (avPkt.dts - gStream->start_time) * av_q2d(gStream->time_base);
 }

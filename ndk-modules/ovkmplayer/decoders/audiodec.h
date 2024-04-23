@@ -70,9 +70,10 @@ class AudioDecoder {
         AVFormatContext     *gFormatCtx;
         AVCodecContext      *gCodecCtx;
         IFFmpegWrapper      *gInterface;
-        bool start();
-        bool stop();
-        void* decodeInThread();
+        bool                start();
+        bool                stop();
+        void*               decodeInThread();
+        double              getPacketTime(AVPacket avPkt);
     private:
         PacketQueue*        gPktQueue;
 };
