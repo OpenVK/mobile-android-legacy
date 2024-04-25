@@ -89,7 +89,7 @@ short* VideoDecoder::convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int lengt
 
 
     if(img_convert_ctx == NULL) {
-        LOGE(10, "Cannot initialize the conversion context!");
+        LOGE(10, "[ERROR] Cannot initialize the conversion context!");
         sws_freeContext(img_convert_ctx);
         return NULL;
     }
@@ -97,7 +97,7 @@ short* VideoDecoder::convertYuv2Rgb(AVPixelFormat pxf, AVFrame* frame, int lengt
     int ret = sws_scale(img_convert_ctx, (const uint8_t* const*)frame->data, frame->linesize, 0,
                         gCodecCtx->height, frameRGB->data, frameRGB->linesize);
     if(frameRGB->data[0] == NULL) {
-        LOGE(10, "SWS_Scale failed");
+        LOGE(10, "[ERROR] SWS_Scale failed");
     }
     av_free(frameRGB);
     av_frame_unref(frameRGB);

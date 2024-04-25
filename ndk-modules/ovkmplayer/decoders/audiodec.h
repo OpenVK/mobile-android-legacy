@@ -70,6 +70,7 @@ class AudioDecoder {
         AVFormatContext     *gFormatCtx;
         AVCodecContext      *gCodecCtx;
         IFFmpegWrapper      *gInterface;
+        SwrContext          *gSwrCtx;
         bool                start();
         bool                stop();
         void*               decodeInThread();

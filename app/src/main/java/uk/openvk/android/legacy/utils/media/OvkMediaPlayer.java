@@ -278,12 +278,12 @@ public class OvkMediaPlayer extends MediaPlayer {
             int ch_config = track.channels == 2 ?
                     AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO;
 
-            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate / 2,
+            audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
                     ch_config,
                     AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
 
             minAudioBufferSize = AudioRecord.getMinBufferSize(
-                    (int) (track.sample_rate / 2),
+                    (int) (track.sample_rate),
                     ch_config,
                     AudioFormat.ENCODING_PCM_16BIT);
 

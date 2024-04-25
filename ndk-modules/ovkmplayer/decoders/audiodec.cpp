@@ -28,6 +28,13 @@ AudioDecoder::AudioDecoder(AVFormatContext *pFormatCtx,
 bool AudioDecoder::prepare() {
     gBufferSize = AV_MAX_AUDIO_FRAME_SIZE;
     gBuffer = (short*) av_malloc(gBufferSize);
+    gSwrCtx = swr_alloc();
+    gSwrCtx = swr_alloc_set_opts(
+        gSwrCtx, (int64_t) gCodecCtx->channel_layout, AV_SAMPLE_FMT_S16,
+        gCodecCtx->sample_rate, gCodecCtx->channel_layout,
+        gCodecCtx->sample_fmt, gCodecCtx->sample_rate, 0, NULL
+    );
+    swr_init(gSwrCtx);
     return gBuffer != NULL;
 }
 
@@ -49,14 +56,17 @@ void *AudioDecoder::decodeInThread() {
             }
             if (status) {
                 dataSize = av_samples_get_buffer_size(
-                            NULL,
-                            gCodecCtx->channels,
-                            pFrame->nb_samples,
-                            gCodecCtx->sample_fmt,
-                            1
-                           );
-
-                memcpy(gBuffer, pFrame->data[0], dataSize);
+                    NULL, gCodecCtx->channels, pFrame->nb_samples,
+                    gCodecCtx->sample_fmt, 1
+                );
+                uint8_t* buffer = (uint8_t*)av_malloc(sizeof(uint8_t) * dataSize);
+                swr_convert(
+                    gSwrCtx, &buffer, dataSize,
+                    (const uint8_t **) pFrame->data,
+                    pFrame->nb_samples
+                );
+                memcpy(gBuffer, buffer, dataSize);
+                av_free(buffer);
                 gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize / 2, gStreamIndex);
             }
         }
@@ -75,6 +85,7 @@ bool AudioDecoder::start() {
 
 bool AudioDecoder::stop() {
     free(gBuffer);
+    swr_free(&gSwrCtx);
     avcodec_close(gCodecCtx);
     return true;
 }
