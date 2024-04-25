@@ -67,7 +67,7 @@ void *AudioDecoder::decodeInThread() {
                 );
                 memcpy(gBuffer, buffer, dataSize);
                 av_free(buffer);
-                gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize / 2, gStreamIndex);
+                gInterface->onStreamDecoding((uint8_t*)gBuffer, dataSize, gStreamIndex);
             }
         }
         // Free the packet that was allocated by av_read_frame

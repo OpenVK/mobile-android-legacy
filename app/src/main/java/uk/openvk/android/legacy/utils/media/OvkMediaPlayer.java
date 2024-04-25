@@ -280,7 +280,7 @@ public class OvkMediaPlayer extends MediaPlayer {
 
             audio_track = new AudioTrack(AudioManager.STREAM_MUSIC, (int) track.sample_rate,
                     ch_config,
-                    AudioFormat.ENCODING_PCM_16BIT, length * 2, AudioTrack.MODE_STREAM);
+                    AudioFormat.ENCODING_PCM_16BIT, length, AudioTrack.MODE_STREAM);
 
             minAudioBufferSize = AudioRecord.getMinBufferSize(
                     (int) (track.sample_rate),
@@ -352,6 +352,8 @@ public class OvkMediaPlayer extends MediaPlayer {
                     } else {
                         Log.d(MPLAY_TAG, "Video frame buffer is null");
                     }
+
+                    Thread.sleep((long) (800 / track.frame_rate));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 } catch (OutOfMemoryError oom) {
