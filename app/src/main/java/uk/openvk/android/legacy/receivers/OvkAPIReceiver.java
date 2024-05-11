@@ -48,6 +48,7 @@ import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.core.activities.NoteActivity;
 import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
 import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
@@ -380,6 +381,17 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
                                 downloadManager
                         );
+                        break;
+                }
+            } else if(activity instanceof NoteActivity) {
+                NoteActivity note_a = ((NoteActivity) activity);
+                switch (method) {
+                    case "Notes.getById":
+                        note_a.ovk_api.notes.parseNote(data.getString("response"));
+                        msg.what = HandlerMessages.NOTES_GET_BY_ID;
+                        break;
+                    case "Notes.edit":
+                        msg.what = HandlerMessages.NOTES_EDIT;
                         break;
                 }
             }

@@ -423,6 +423,7 @@ public class PostAttachmentsView extends LinearLayout {
                                     CommonAttachment attachment,
                                     WallPost post) {
         Intent intent = new Intent(parent, NoteActivity.class);
+        intent.putExtra("id", 0);
         intent.putExtra("title", attachment.title);
         intent.putExtra("content", attachment.text);
         intent.putExtra("author", post.author_name);

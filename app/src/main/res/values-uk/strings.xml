@@ -769,4 +769,7 @@
     <string name="report_content">Поскаржитись</string>
     <string name="saving">Збереження…</string>
     <string name="auth_error_deleted">Ви не можете увійти в обліковий запис, оскільки Вашу сторінку видалено. Якщо Ви вважаєте, що виникла помилка, відновіть її або зверніться до служби підтримки.</string>
+    <string name="some_xhtml_features_text"><![CDATA[
+    	<i><a href="openvk://notes/xhtml">Щось</a> з (X)HTML підтримується.</i>
+    ]]></string>
 </resources>

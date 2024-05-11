@@ -44,16 +44,91 @@
                 android:orientation="vertical"></LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <uk.openvk.android.legacy.ui.views.ProgressLayout
+            android:id="@+id/progress_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/note_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginStart="12dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginBottom="12dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/note_title_editor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Note title"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/note_author_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="8dip"
+                android:text="Note author"
+                android:textAllCaps="true"
+                android:textColor="#9f000000"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:background="@color/statusbar_color" />
+
+            <EditText
+                android:id="@+id/note_content_editor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="top"
+                android:inputType="textMultiLine|text"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:scrollHorizontally="false"
+                android:singleLine="false"
+                android:textSize="14sp"
+                android:typeface="monospace" />
+
+            <TextView
+                android:id="@+id/note_some_xhtml_features"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="@string/some_xhtml_features_text"
+                android:textColorLink="#0000FF" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/note_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             android:layout_marginTop="26dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="12dp"
             android:orientation="vertical">
 
             <TextView

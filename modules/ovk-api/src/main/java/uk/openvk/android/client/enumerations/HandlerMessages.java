@@ -94,8 +94,10 @@ public class HandlerMessages {
     public static int NEWSFEED_GET_MORE_GLOBAL          =  803;
 
     // Notes (/method/Notes)
-    public static int NOTES_GET                         =  900;
-    public static int NOTES_GET_BY_ID                   =  901;
+    public static int NOTES_ADD                        =   900;
+    public static int NOTES_GET                         =  901;
+    public static int NOTES_GET_BY_ID                   =  902;
+    public static int NOTES_EDIT                        =  903;
 
     // Photos (/method/Photos)
     public static int PHOTOS_GET                        = 1000;

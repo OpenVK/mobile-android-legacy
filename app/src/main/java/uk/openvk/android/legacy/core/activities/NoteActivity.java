@@ -28,23 +28,35 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.core.methods.CustomLinkMovementMethod;
 
-public class NoteActivity extends TranslucentActivity {
+public class NoteActivity extends NetworkActivity {
     private WebView webView;
     private SharedPreferences global_prefs;
     private String page;
+    private long note_id;
+    private Menu menu;
+    private boolean editor_mode;
+    private long owner_id;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,8 +75,30 @@ public class NoteActivity extends TranslucentActivity {
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
         }
+        ((TextView) findViewById(R.id.note_some_xhtml_features)).setText(
+                Html.fromHtml(getResources().getString(R.string.some_xhtml_features_text))
+        );
         webView = findViewById(R.id.webview);
-        loadNote();
+        Bundle data = getIntent().getExtras();
+        if(data != null) {
+            if (data.containsKey("id")) {
+                note_id = data.getLong("id");
+            } else {
+                finish();
+            }
+
+            if (data.containsKey("owner_id")) {
+                owner_id = data.getLong("owner_id");
+            } else {
+                finish();
+            }
+            ovk_api.notes.getById(ovk_api.wrapper, owner_id, note_id);
+            findViewById(R.id.note_viewer).setVisibility(View.GONE);
+            findViewById(R.id.note_editor).setVisibility(View.GONE);
+            findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+        } else {
+            finish();
+        }
         forceBrowserForExternalLinks();
     }
 
@@ -98,14 +132,28 @@ public class NoteActivity extends TranslucentActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.note, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home) {
             onBackPressed();
+        } else if(item.getItemId() == R.id.edit){
+            switchToEditorMode(true);
+        } else if(item.getItemId() == R.id.note_save) {
+            switchToEditorMode(false);
+            String new_title = ((EditText) findViewById(R.id.note_title_editor)).getText().toString();
+            String new_content = ((EditText) findViewById(R.id.note_content_editor)).getText().toString();
+            ovk_api.notes.edit(ovk_api.wrapper, note_id, new_title, new_content);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadNote() {
+    private void loadNote(String text) {
         Bundle data = getIntent().getExtras();
         String instance = ((OvkApplication) getApplication()).getCurrentInstance();
         if(data != null) {
@@ -120,7 +168,7 @@ public class NoteActivity extends TranslucentActivity {
                         "   </head>" +
                         "   <body bgcolor=\"#d5e8fe\" style=\"margin: 0\">" +
                         "       <div>" +
-                                data.getString("content")
+                                text
                                     .replace("&amp;", "&")
                                     .replace("<a href=\"/",
                                             String.format("<a href=\"http://%s/", instance)
@@ -138,15 +186,67 @@ public class NoteActivity extends TranslucentActivity {
                 } else {
                     webView.loadData(page, "text/html; charset=UTF-8", "UTF-8");
                 }
+
+                ((EditText) findViewById(R.id.note_content_editor)).setText(data.getString("content"));
             }
             if(data.containsKey("title")) {
                 ((TextView) findViewById(R.id.note_title)).setText(data.getString("title"));
+                ((EditText) findViewById(R.id.note_title_editor)).setText(data.getString("title"));
             }
             if(data.containsKey("author")) {
                 ((TextView) findViewById(R.id.note_author)).setText(data.getString("author"));
+                ((TextView) findViewById(R.id.note_author_2)).setText(data.getString("author"));
             }
         } else {
             finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(editor_mode) {
+            switchToEditorMode(false);
+        } else {
+            finish();
+        }
+    }
+
+    public void switchToEditorMode(boolean value) {
+        editor_mode = value;
+        menu.findItem(R.id.edit).setVisible(!value);
+        menu.findItem(R.id.note_save).setVisible(value);
+        findViewById(R.id.note_viewer).setVisibility(value ? View.GONE : View.VISIBLE);
+        findViewById(R.id.note_editor).setVisibility(value ? View.VISIBLE : View.GONE);
+    }
+
+    public void receiveState(int message, Bundle data) {
+        try {
+            if (data.containsKey("address")) {
+                String activityName = data.getString("address");
+                if (activityName == null) {
+                    return;
+                }
+                boolean isCurrentActivity = activityName.equals(
+                        String.format("%s_%s", getLocalClassName(), getSessionId())
+                );
+                if (!isCurrentActivity) {
+                    return;
+                }
+            }
+            if (message == HandlerMessages.NOTES_GET_BY_ID) {
+                findViewById(R.id.progress_layout).setVisibility(View.GONE);
+                loadNote(ovk_api.notes.list.get(0).content);
+                switchToEditorMode(false);
+                ((TextView) findViewById(R.id.note_title)).setText(ovk_api.notes.list.get(0).title);
+                ((EditText) findViewById(R.id.note_title_editor)).setText(ovk_api.notes.list.get(0).title);
+            } else if (message == HandlerMessages.NOTES_EDIT) {
+                ovk_api.notes.getById(ovk_api.wrapper, owner_id, note_id);
+                switchToEditorMode(editor_mode);
+            } else if (message < 0) {
+                Toast.makeText(this, R.string.connection_error, Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -736,4 +736,7 @@
 
 	<string name="report_content">Report</string>
     <string name="auth_error_deleted">You cannot log into your account because your page has been deleted. If you think an error has occurred, please restore it or contact support.</string>
+    <string name="some_xhtml_features_text"><![CDATA[
+    	<i><a href="openvk://notes/xhtml">Something</a> from (X)HTML supported.</i>
+    ]]></string>
 </resources>

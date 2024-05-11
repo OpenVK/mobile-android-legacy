@@ -752,4 +752,7 @@
 
     <string name="report_content">Пожаловаться</string>
     <string name="saving">Сохранение...</string>
+    <string name="some_xhtml_features_text"><![CDATA[
+    	<i><a href="openvk://notes/xhtml">Кое-что</a> из (X)HTML поддерживается.</i>
+    ]]></string>
 </resources>

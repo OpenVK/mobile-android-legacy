@@ -21,15 +21,18 @@
 
 package uk.openvk.android.client.models;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Note;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
@@ -44,6 +47,12 @@ public class Notes {
     public void get(OvkAPIWrapper wrapper, long user_id, int count, int sort) {
         wrapper.sendAPIMethod("Notes.get",
                 String.format("user_id=%s&count=%s&sort=%s", user_id, count, sort)
+        );
+    }
+
+    public void getById(OvkAPIWrapper wrapper, long owner_id, long note_id) {
+        wrapper.sendAPIMethod("Notes.getById",
+                String.format("owner_id=%s&note_id=%s", owner_id, note_id)
         );
     }
 
@@ -70,5 +79,35 @@ public class Notes {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void parseNote(String response) {
+        try {
+            JSONObject json = jsonParser.parseJSON(response);
+            list = new ArrayList<>();
+            JSONObject item = json.getJSONObject("response");
+            Note note = new Note();
+            note.id = item.getLong("id");
+            note.owner_id = item.getLong("owner_id");
+            note.title = item.getString("title");
+            note.content = item.getString("text");
+            note.date = item.getLong("date");
+            try { // handle floating crash
+                list.add(note);
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+                Log.e(OpenVKAPI.TAG, "WTF? The length itself in an array must not " +
+                        "be overestimated.");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void edit(OvkAPIWrapper wrapper, long note_id, String new_title, String new_content) {
+        wrapper.sendAPIMethod("Notes.edit",
+                String.format("note_id=%s&title=%s&text=%s",
+                        note_id, URLEncoder.encode(new_title), URLEncoder.encode(new_content)
+                )
+        );
     }
 }
