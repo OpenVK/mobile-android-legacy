@@ -19,10 +19,16 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url "https://mvnrepository.com/artifact" }
         maven { url "https://jitpack.io" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://repo.spring.io/plugins-release/'}
+        maven { url "https://maven.aliyun.com/repository/jcenter" }
         google()
+        maven {
+            url "https://maven.vriska.ru/"
+            credentials {
+                username "gradle"
+                password "gradle"
+            }
+        }
     }
 }

@@ -138,8 +138,10 @@
     <orderEntry type="library" exported="" name="Gradle: ch.acra:acra:4.6.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-v4:24.0.0@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: pl.droidsonroids.gif:android-gif-drawable:1.0.12@aar" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.commit451:PhotoView:1.2.5@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-annotations:24.0.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:animated-vector-drawable:24.0.0@aar" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.reginald.swiperefresh:library:1.1.2@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apmem.tools:layouts:1.8@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:multidex:1.0.3@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.nostra13.universalimageloader:universal-image-loader:1.9.5@jar" level="project" />
