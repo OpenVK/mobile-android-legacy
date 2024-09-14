@@ -266,15 +266,9 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
                 public boolean onPreferenceClick(Preference preference) {
                     if (instance_prefs.getString("access_token", "").length() > 0) {
                         danger_zone_multiple_tap += 1;
-                        if (danger_zone_multiple_tap == 1) {
-                            Timer timer = new Timer();
-                            //timer.schedule(new MainSettingsActivity.HideDangerZone(), 8000, 8000);
-                        }
                         if (danger_zone_multiple_tap < 5) {
                             Intent intent = new Intent(getContext(), DebugMenuActivity.class);
                             startActivity(intent);
-                        } else if (danger_zone_multiple_tap == 5) {
-                            Toast.makeText(getContext(), "злой армянин кушает", Toast.LENGTH_LONG).show();
                         } else if (danger_zone_multiple_tap == 10) {
                             global_prefs.edit().putBoolean("debugDangerZone", true).commit();
                             Intent intent = new Intent(getContext(), DebugMenuActivity.class);
@@ -294,7 +288,6 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
     private void showUiLanguageSelectionDialog() {
         int valuePos = 0;
         String value = global_prefs.getString("uiLanguage", "System");
-        String[] array = getResources().getStringArray(R.array.interface_languages);
         selectedPosition = 0;
         switch (value) {
             default:
@@ -345,7 +338,6 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
     private void showUiThemeSelectionDialog() {
         int valuePos = 0;
         String value = global_prefs.getString("uiTheme", "Blue");
-        String[] array = getResources().getStringArray(R.array.ui_themes);
         selectedPosition = 0;
         switch (value) {
             default:
@@ -556,7 +548,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         editor.commit();
         Preference notif_ringtone = findPreference("notifyRingtone");
         if (notif_ringtone != null) {
-            Uri notif_uri = Uri.parse("content://settings/system/notification_sound");
+            Uri notif_uri;
             if (global_prefs.getString("notifyRingtone", "content://settings/system/notification_sound")
                     .equals("content://settings/system/notification_sound")) {
                 notif_ringtone.setSummary("OpenVK");

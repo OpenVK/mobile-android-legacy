@@ -21,7 +21,6 @@ package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,7 +44,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import dev.tinelix.twemojicon.EmojiconEditText;
 import dev.tinelix.twemojicon.EmojiconGridFragment;
@@ -61,10 +59,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.attachments.Attachment;
-import uk.openvk.android.client.entities.Video;
-import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.models.Wall;
-import uk.openvk.android.client.entities.Poll;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.entities.Comment;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
@@ -105,7 +100,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         setContentView(R.layout.activity_wall_post);
         instance = instance_prefs.getString("server", "");
         ((XLinearLayout) findViewById(R.id.comments_view)).setOnKeyboardStateListener(this);
-        setEmojiconFragment(false);
+        setEmojiconFragment();
         postViewLayout = findViewById(R.id.comments_layout);
         postViewLayout.adjustLayoutSize(getResources().getConfiguration().orientation);
         commentPanel = findViewById(R.id.comment_panel);
@@ -467,10 +462,10 @@ public class WallPostActivity extends NetworkFragmentActivity
     }
 
 
-    private void setEmojiconFragment(boolean useSystemDefault) {
+    private void setEmojiconFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.emojicons, EmojiconsFragment.newInstance(useSystemDefault))
+                .replace(R.id.emojicons, EmojiconsFragment.newInstance(false))
                 .commit();
     }
 

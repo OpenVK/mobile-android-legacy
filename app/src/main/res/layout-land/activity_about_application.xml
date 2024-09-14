@@ -18,21 +18,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:id="@+id/about_layout"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/about_layout">
+    android:orientation="vertical">
+
+    <dev.tinelix.retro_ab.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        app:title="@string/app_name" />
 
     <LinearLayout
+        android:id="@+id/easter_egg_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/easter_egg_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ee_adrod_13_installer" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/about_app_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:ignore="UselessParent">
-
-        <dev.tinelix.retro_ab.ActionBar
-            android:id="@+id/actionbar"
-            app:title="@string/app_name"
-            style="@style/ActionBar"
-            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,9 +97,9 @@
         </LinearLayout>
 
         <ScrollView
+            android:id="@+id/about_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/about_scrollview">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,9 +116,9 @@
                         android:id="@+id/app_links_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/about_app_links"
@@ -112,9 +128,9 @@
                         android:id="@+id/app_links_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="[this is app links]"
@@ -126,9 +142,9 @@
                         android:id="@+id/app_credits_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:gravity="center"
                         android:text="@string/credits"
                         android:textStyle="bold" />
@@ -200,9 +216,9 @@
                         android:id="@+id/app_development_team_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:gravity="center"
                         android:text="@string/openvk_legacy_devteam"
                         android:textStyle="bold" />
@@ -211,9 +227,9 @@
                         android:id="@+id/app_development_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/app_devteam"
@@ -224,9 +240,9 @@
                         android:id="@+id/app_translations_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:gravity="center"
                         android:text="@string/about_app_translations"
                         android:textStyle="bold" />
@@ -332,9 +348,9 @@
                         android:id="@+id/app_license_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:gravity="center"
                         android:text="@string/app_license_title"
                         android:textStyle="bold"
@@ -344,9 +360,9 @@
                         android:id="@+id/agpl_logo"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:layout_weight="5.92"
                         android:adjustViewBounds="false"
                         android:scaleType="fitCenter"
@@ -356,9 +372,9 @@
                         android:id="@+id/app_license_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/app_license_text"
@@ -370,9 +386,9 @@
                         android:id="@+id/app_disclaimer_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
                         android:gravity="center"
                         android:text="@string/app_disclaimer_title"
                         android:textStyle="bold"
@@ -382,9 +398,9 @@
                         android:id="@+id/app_disclaimer_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/app_disclaimer"

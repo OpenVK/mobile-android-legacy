@@ -52,6 +52,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.BuildConfig;
@@ -191,7 +192,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                        showConfirmDialog("access_token");
+                        showConfirmDialog();
                     }
                     return false;
                 }
@@ -208,7 +209,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.FROYO)
-    private void showConfirmDialog(final String target) {
+    private void showConfirmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
         final View confirm_view = getLayoutInflater().inflate(R.layout.dialog_confirm_with_passw, null, false);
         final EditText password_edit = confirm_view.findViewById(R.id.password_edit);
@@ -228,18 +229,20 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                             try {
                                 if(instance_prefs.getString("account_password_hash", "")
                                         .equals(Global.GetSHA256Hash(password_edit.getText().toString()))) {
-                                    if (target.equals("access_token")) {
-                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                                            android.text.ClipboardManager clipboard =
-                                                    (android.text.ClipboardManager)
-                                                            getSystemService(Context.CLIPBOARD_SERVICE);
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                                        android.text.ClipboardManager clipboard =
+                                                (android.text.ClipboardManager)
+                                                        getSystemService(Context.CLIPBOARD_SERVICE);
+                                        if (clipboard != null) {
                                             clipboard.setText(instance_prefs.getString("access_token", ""));
-                                        } else {
-                                            android.content.ClipboardManager clipboard =
-                                                    (android.content.ClipboardManager)
-                                                    getSystemService(Context.CLIPBOARD_SERVICE);
-                                            android.content.ClipData clip = android.content.ClipData
-                                                    .newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
+                                        }
+                                    } else {
+                                        android.content.ClipboardManager clipboard =
+                                                (android.content.ClipboardManager)
+                                                        getSystemService(Context.CLIPBOARD_SERVICE);
+                                        android.content.ClipData clip = android.content.ClipData
+                                                .newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
+                                        if (clipboard != null) {
                                             clipboard.setPrimaryClip(clip);
                                         }
                                     }

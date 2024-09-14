@@ -68,7 +68,7 @@ public class PhotoAlbumActivity extends NetworkActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_album);
-        ProgressLayout progressLayout = ((ProgressLayout) findViewById(R.id.progress_layout));
+        ProgressLayout progressLayout = findViewById(R.id.progress_layout);
         progressLayout.setVisibility(View.VISIBLE);
         progressLayout.enableDarkTheme(true);
         if (savedInstanceState == null) {

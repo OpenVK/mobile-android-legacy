@@ -213,6 +213,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     private void setUiListeners() {
         findViewById(R.id.newpost_btn_photo).setOnClickListener(
                 new View.OnClickListener() {
+                    @SuppressLint("IntentReset")
                     @Override
                     public void onClick(View v) {
                         Intent intent =

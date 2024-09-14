@@ -236,10 +236,16 @@ public class DownloadManager {
             client_name = "OpenVK API";
             version = BuildConfig.VERSION_NAME;
         } finally {
-            user_agent = String.format("%s/%s (Android %s; SDK %s; %s; %s %s; %s)",
-                    client_name, version, Build.VERSION.RELEASE, Build.VERSION.SDK_INT,
-                    Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language")
-            );
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.DONUT) {
+                user_agent = String.format("%s/%s (Android %s; SDK %s; %s; %s %s; %s)",
+                        client_name, version, Build.VERSION.RELEASE, Build.VERSION.SDK_INT,
+                        Build.CPU_ABI, Build.MANUFACTURER, Build.MODEL, System.getProperty("user.language")
+                );
+            } else {
+                user_agent = String.format("%s/%s (Android %s; SDK %s; %s)",
+                        client_name, version, Build.VERSION.RELEASE, 3, System.getProperty("user.language")
+                );
+            }
         }
         return user_agent;
     }

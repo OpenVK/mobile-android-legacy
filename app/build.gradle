@@ -79,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 241
-        versionName "1.2.241-u"
+        versionCode 242
+        versionName "1.2.242-u"
     }
     buildTypes {
         release {
@@ -99,16 +99,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 241
-            versionName "1.2.241-d"
+            versionCode 242
+            versionName "1.2.242-d"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 241
-            versionName '1.2.241'
+            versionCode 242
+            versionName '1.2.242'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -119,8 +119,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 241
-            versionName "1.2.241-f"
+            versionCode 242
+            versionName "1.2.242-f"
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }
@@ -148,7 +148,7 @@ dependencies {
     compile project(':modules:actionbar')
     compile project(':modules:popupmenu')
     compile 'com.reginald.swiperefresh:library:1.1.2'
-    compile 'com.seppius.plurals:android-i18n-plurals:1.1'
+    compile 'com.seppius.plurals:android-i18n-plurals:1.0'
     // Android 2.x plurals patch
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'ch.acra:acra:4.6.0'

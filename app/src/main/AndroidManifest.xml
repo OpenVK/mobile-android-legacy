@@ -27,7 +27,8 @@
         android:theme="@style/BaseStyleNoTitle"
         android:largeHeap="true"
         tools:ignore="UnusedAttribute"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:installLocation="auto">
 
         <activity android:name=".core.activities.MainActivity"
             android:label="@string/app_name"

@@ -116,13 +116,44 @@ public class AboutApplicationActivity extends TranslucentActivity {
 
     private void setView() {
         ImageView logo = findViewById(R.id.logo);
+
+        /*  OpenVK Easter Egg Types in "About Application" activity
+        *
+        *   0 - not a easter egg
+        *   2 - adrod 13 installer, ovksome people or freakbarinov
+        */
+
+        final int[] easterEggType = {0};
+
         logo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 if(logo_longclicks == 2) {
-                    Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
-                    startActivity(intent);
+                    switch (easterEggType[0]) {
+                        default:
+                            Intent intent = new Intent(getApplicationContext(), DebugMenuActivity.class);
+                            startActivity(intent);
+                            break;
+                        case 2:
+                            findViewById(R.id.easter_egg_page).setVisibility(View.VISIBLE);
+                            findViewById(R.id.about_app_page).setVisibility(View.GONE);
+                            if(Build.VERSION.SDK_INT == 33) {
+                                findViewById(R.id.about_app_page).setVisibility(View.GONE);
+                            } else if(Build.VERSION.SDK_INT < 11) {
+                                ((ImageView) findViewById(R.id.easter_egg_imageview))
+                                        .setImageDrawable(
+                                                getResources().getDrawable(R.drawable.ee_freakbarinov)
+                                        );
+                            } else {
+                                ((ImageView) findViewById(R.id.easter_egg_imageview))
+                                        .setImageDrawable(
+                                                getResources().getDrawable(R.drawable.ee_ovksome_people)
+                                        );
+                            }
+                            break;
+                    }
                     logo_longclicks = 0;
+                    easterEggType[0]++;
                 } else {
                     logo_longclicks++;
                 }
@@ -141,7 +172,6 @@ public class AboutApplicationActivity extends TranslucentActivity {
         TextView app_links = findViewById(R.id.app_links_text);
         TextView app_license_label = findViewById(R.id.app_license_text);
         TextView app_disclaimer_label = findViewById(R.id.app_disclaimer_text);
-        OvkApplication app = ((OvkApplication) getApplicationContext());
 
         app_title.setText(getResources().getString(R.string.full_app_name));
         app_version_label.setText(getResources().getString(R.string.app_version_text,
@@ -243,8 +273,13 @@ public class AboutApplicationActivity extends TranslucentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
-            onBackPressed();
+        if(findViewById(R.id.easter_egg_page).getVisibility() == View.GONE) {
+            if (item.getItemId() == android.R.id.home) {
+                onBackPressed();
+            }
+        } else {
+            findViewById(R.id.easter_egg_page).setVisibility(View.GONE);
+            findViewById(R.id.about_app_page).setVisibility(View.VISIBLE);
         }
         return super.onOptionsItemSelected(item);
     }

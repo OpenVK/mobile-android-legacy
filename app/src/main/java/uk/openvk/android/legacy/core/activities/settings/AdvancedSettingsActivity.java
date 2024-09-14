@@ -177,37 +177,47 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         builder.setView(quality_choose_view);
         builder.setNegativeButton(R.string.cancel, null);
         final OvkAlertDialog dialog = new OvkAlertDialog(this);
-        final SeekBar quality_seek = ((SeekBar) quality_choose_view.findViewById(R.id.quality_seek));
+        final SeekBar quality_seek = quality_choose_view.findViewById(R.id.quality_seek);
         final Preference image_quality = findPreference("imageCacheQuality");
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 SharedPreferences.Editor editor = global_prefs.edit();
-                if(quality_seek.getProgress() == 0) {
-                    editor.putString("photos_quality", "low");
-                } else if(quality_seek.getProgress() == 1) {
-                    editor.putString("photos_quality", "medium");
-                } else if(quality_seek.getProgress() == 2) {
-                    editor.putString("photos_quality", "high");
-                } else if(quality_seek.getProgress() == 3) {
-                    editor.putString("photos_quality", "original");
+                switch (quality_seek.getProgress()) {
+                    case 0:
+                        editor.putString("photos_quality", "low");
+                        break;
+                    case 1:
+                        editor.putString("photos_quality", "medium");
+                        break;
+                    case 2:
+                        editor.putString("photos_quality", "high");
+                        break;
+                    case 3:
+                        editor.putString("photos_quality", "original");
+                        break;
                 }
                 editor.commit();
                 final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-                if(global_prefs.getString("photos_quality", "").equals("low")) {
-                    image_quality.setSummary(quality_array[0]);
-                } else if(global_prefs.getString("photos_quality", "").equals("medium")) {
-                    image_quality.setSummary(quality_array[1]);
-                } else if(global_prefs.getString("photos_quality", "").equals("high")) {
-                    image_quality.setSummary(quality_array[2]);
-                } else if(global_prefs.getString("photos_quality", "").equals("original")) {
-                    image_quality.setSummary(quality_array[3]);
+                switch (global_prefs.getString("photos_quality", "")) {
+                    case "low":
+                        image_quality.setSummary(quality_array[0]);
+                        break;
+                    case "medium":
+                        image_quality.setSummary(quality_array[1]);
+                        break;
+                    case "high":
+                        image_quality.setSummary(quality_array[2]);
+                        break;
+                    case "original":
+                        image_quality.setSummary(quality_array[3]);
+                        break;
                 }
                 dialog.dismiss();
             }
         });
-        final TextView quality_value = ((TextView) quality_choose_view.findViewById(R.id.quality_label));
-        final TextView quality_comm = ((TextView) quality_choose_view.findViewById(R.id.comment_label));
+        final TextView quality_value = quality_choose_view.findViewById(R.id.quality_label);
+        final TextView quality_comm = quality_choose_view.findViewById(R.id.comment_label);
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
         quality_seek.setMax(3);
 
@@ -265,15 +275,19 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         dialog.build(builder, getResources().getString(R.string.sett_cache_quality_alt), "", quality_choose_view);
         dialog.show();
 
-        if(global_prefs.getString("photos_quality", "").equals("low")) {
-            quality_seek.setProgress(2);
-            quality_seek.setProgress(0);
-        } else if(global_prefs.getString("photos_quality", "").equals("medium")) {
-            quality_seek.setProgress(1);
-        } else if(global_prefs.getString("photos_quality", "").equals("high")) {
-            quality_seek.setProgress(2);
-        } else if(global_prefs.getString("photos_quality", "").equals("original")) {
-            quality_seek.setProgress(3);
+        switch (global_prefs.getString("photos_quality", "")) {
+            case "low":
+                quality_seek.setProgress(0);
+                break;
+            case "medium":
+                quality_seek.setProgress(1);
+                break;
+            case "high":
+                quality_seek.setProgress(2);
+                break;
+            case "original":
+                quality_seek.setProgress(3);
+                break;
         }
         dialog.show();
     }

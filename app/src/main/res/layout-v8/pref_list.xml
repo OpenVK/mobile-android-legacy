@@ -61,9 +61,9 @@
 
         <ImageView
             android:id="@+id/arrow"
-            android:layout_width="45dp"
+            android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="16dp"
             android:layout_weight="1"
             android:src="@drawable/spinner"
             app:srcCompat="@drawable/spinner_arrow_dialog" />
