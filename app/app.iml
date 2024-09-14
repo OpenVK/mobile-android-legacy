@@ -133,19 +133,17 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:recyclerview-v7:24.0.0@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:support-vector-drawable:24.0.0@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.readystatesoftware.systembartint:systembartint:1.0.3@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: ch.acra:acra:4.6.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-v4:24.0.0@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: pl.droidsonroids.gif:android-gif-drawable:1.0.12@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.commit451:PhotoView:1.2.5@aar" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.seppius.plurals:android-i18n-plurals:1.1@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-annotations:24.0.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:animated-vector-drawable:24.0.0@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.reginald.swiperefresh:library:1.1.2@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apmem.tools:layouts:1.8@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:multidex:1.0.3@aar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.nostra13.universalimageloader:universal-image-loader:1.9.5@jar" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:appcompat-v7:24.0.0@aar" level="project" />
     <orderEntry type="module" module-name="actionbar" exported="" />
     <orderEntry type="module" module-name="wrhttp" exported="" />
     <orderEntry type="module" module-name="ovk-api" exported="" />

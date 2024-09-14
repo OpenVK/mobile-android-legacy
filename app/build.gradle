@@ -141,9 +141,9 @@ dependencies {
     //noinspection GradleDependency,GradleCompatible
     compile 'com.android.support:support-v4:24.0.0'
     //noinspection GradleDependency,GradleCompatible
-    compile 'com.android.support:appcompat-v7:24.0.0.1'
+    compile 'com.android.support:appcompat-v7:24.0.0'
     //noinspection GradleDependency
-    compile 'com.takisoft.fix:preference-v7:24.0.0'
+    compile 'com.takisoft.fix:preference-v7:24.1.0.0'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile project(':modules:actionbar')
     compile project(':modules:popupmenu')
