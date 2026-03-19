@@ -75,8 +75,8 @@ public class NetworkActivity extends TranslucentActivity {
 
     private void initializeOpenVKAPI() {
         client_info = SecureCredentialsStorage.generateClientInfo(
-                this, new HashMap<String, Object>()
-        );
+                this, new HashMap<String, Object>(),
+                false);
         ovk_api = new OpenVKAPI(this, client_info, handler);
     }
 

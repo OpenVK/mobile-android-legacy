@@ -198,11 +198,11 @@ public class WallPostActivity extends NetworkFragmentActivity
                     if(posts != null && posts.size() > 0) {
                         for (int i = 0; i < posts.size(); i++) {
                             WallPost post = posts.get(i);
-                            if(post.owner_id == Long.parseLong(ids[0])
+                            if(post.owner.id == Long.parseLong(ids[0])
                                     && post.post_id == Long.parseLong(ids[1])) {
                                 postViewLayout.setPost(post, this);
                                 this.post = post;
-                                ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
+                                ovk_api.wall.getComments(ovk_api.wrapper, post.owner.id, post.post_id);
                                 getWindow().getDecorView().getViewTreeObserver()
                                         .addOnGlobalLayoutListener(
                                         new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -302,7 +302,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                                     .findViewById(R.id.comment_edit)).getText().toString();
                             try {
                                 ovk_api.wall.createComment(
-                                        ovk_api.wrapper, post.owner_id,
+                                        ovk_api.wrapper, post.owner.id,
                                         post.post_id, msg_text
                                 );
                             } catch (Exception ex) {
@@ -342,7 +342,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                     final String msg_text = ((EmojiconEditText) commentPanel.
                             findViewById(R.id.comment_edit)).getText().toString();
                     try {
-                        ovk_api.wall.createComment(ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
+                        ovk_api.wall.createComment(ovk_api.wrapper, post.owner.id, post.post_id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -417,7 +417,7 @@ public class WallPostActivity extends NetworkFragmentActivity
 
     private void loadPost(WallPost post) {
         postViewLayout.setPost(post, this);
-        ovk_api.wall.getComments(ovk_api.wrapper, post.owner_id, post.post_id);
+        ovk_api.wall.getComments(ovk_api.wrapper, post.owner.id, post.post_id);
     }
 
     public void receiveState(int message, Bundle data) {

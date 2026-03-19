@@ -37,11 +37,13 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.Poll;
 import uk.openvk.android.client.entities.Video;
 
-public class Attachment implements Parcelable, Serializable {
+public class Attachment extends LazyEntity implements Parcelable, Serializable {
     public String type;
     public String status;
     public JSONObject unserialized_data;

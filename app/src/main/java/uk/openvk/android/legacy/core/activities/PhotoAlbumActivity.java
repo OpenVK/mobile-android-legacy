@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,6 +64,7 @@ public class PhotoAlbumActivity extends NetworkActivity {
     private ImageLoader imageLoader;
     private int photo_fail_count;
     private PhotosListAdapter adapter;
+    private boolean uilDebugging;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,12 +74,7 @@ public class PhotoAlbumActivity extends NetworkActivity {
         progressLayout.setVisibility(View.VISIBLE);
         progressLayout.enableDarkTheme(true);
         if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                access_token = instance_prefs.getString("access_token", "");
-            } else {
-                access_token = instance_prefs.getString("access_token", "");
-            }
+            access_token = instance_prefs.getString("access_token", "");
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
@@ -144,14 +141,19 @@ public class PhotoAlbumActivity extends NetworkActivity {
     }
 
     private void initalizeImageLoader() {
+        uilDebugging = global_prefs.getBoolean("uilDebugging", false);
+
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
-        this.imageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(getApplicationContext()).
-                        defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(16777216) // 16 MB memory cache
-                        .writeDebugLogs()
-                        .build();
+
+        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(getApplicationContext()).
+                defaultDisplayImageOptions(displayimageOptions)
+                .memoryCacheSize(16777216); // 16 MB memory cache
+
+        if(uilDebugging)
+            builder.writeDebugLogs();
+
+        imageLoaderConfig = builder.build();
         if (ImageLoader.getInstance().isInited()) {
             ImageLoader.getInstance().destroy();
         }

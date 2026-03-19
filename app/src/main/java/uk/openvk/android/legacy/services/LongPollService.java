@@ -29,7 +29,6 @@ import android.util.Log;
 import java.util.HashMap;
 
 import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.longpoll.LongPollWrapper;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
@@ -69,13 +68,14 @@ public class LongPollService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void run(String instance, String lp_server, String key, int ts, HashMap<String, Object> client_info) {
+    public void run(String instance, String accessToken,
+                    String lp_server, String key, int ts, HashMap<String, Object> client_info) {
         if(lpW == null) {
             lpW = new LongPollWrapper(ctx, client_info);
         }
         ovk_api = new OvkAPIWrapper(ctx, client_info, handler);
         ovk_api.setServer(instance);
-        if(BuildConfig.BUILD_TYPE.equals("release")) ovk_api.log(false);
+        ovk_api.setAccessToken(accessToken);
         runLongPull(lp_server, key, ts, use_https);
     }
 
@@ -103,7 +103,7 @@ public class LongPollService extends Service {
     public void setProxyConnection(boolean useProxy, String proxy_address) {
         if(lpW == null) {
             lpW = new LongPollWrapper(ctx,
-                    SecureCredentialsStorage.generateClientInfo(getBaseContext(), new HashMap<String, Object>())
+                    SecureCredentialsStorage.generateClientInfo(getBaseContext(), new HashMap<String, Object>(), true)
             );
         }
         lpW.setProxyConnection(useProxy, proxy_address);

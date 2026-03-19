@@ -23,11 +23,9 @@ import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 
-import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
-
 public class InfinityNestedScrollView extends NestedScrollView {
 
-    private OnNestedScrollListener onScrollListener;
+    //private OnNestedScrollListener onScrollListener;
 
     public InfinityNestedScrollView(Context context) {
         super(context);
@@ -37,15 +35,15 @@ public class InfinityNestedScrollView extends NestedScrollView {
         super(context, attrs);
     }
 
-    public void setOnScrollListener(OnNestedScrollListener scrollListener) {
+    /*public void setOnScrollListener(OnNestedScrollListener scrollListener) {
         this.onScrollListener = scrollListener;
-    }
+    }*/
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
-        if(onScrollListener != null) {
+        /*if(onScrollListener != null) {
             onScrollListener.onScroll(this, l, t, oldl, oldt);
-        }
+        }*/
     }
 }

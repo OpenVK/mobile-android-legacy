@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.base.LazyEntity;
 
 public class Video extends Attachment implements Parcelable, Serializable {
     public VideoFiles files;
@@ -80,6 +81,8 @@ public class Video extends Attachment implements Parcelable, Serializable {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 
@@ -158,6 +161,8 @@ public class Video extends Attachment implements Parcelable, Serializable {
             object.put("video", video);
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 
@@ -189,6 +194,8 @@ public class Video extends Attachment implements Parcelable, Serializable {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 }

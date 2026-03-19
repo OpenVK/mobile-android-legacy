@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -46,6 +47,8 @@ import java.util.Collections;
 import java.util.List;
 
 import uk.co.senab.photoview.PhotoView;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.attachments.Attachment;
@@ -148,7 +151,7 @@ public class PostAttachmentsView extends LinearLayout {
                                 videoView.setAttachment(videoAttachment);
                                 flowLayout.addView(videoView);
                                 videoView.setVisibility(View.VISIBLE);
-                                videoView.setThumbnail(post.owner_id);
+                                videoView.setThumbnail(post.owner.id);
                                 if (resize_videoattachviews < 1) {
                                     videoView.post(new Runnable() {
                                         @Override
@@ -359,7 +362,13 @@ public class PostAttachmentsView extends LinearLayout {
     }
 
     private void loadPhotoPlaceholder(final WallPost post, Photo photo, ImageLoader imageLoader, ImageView view) {
-        Drawable drawable = parent.getResources().getDrawable(R.drawable.photo_placeholder);
+        Drawable drawable;
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            drawable = parent.getResources().getDrawable(R.drawable.photo_placeholder, getContext().getTheme());
+        else
+            drawable = parent.getResources().getDrawable(R.drawable.photo_placeholder);
+
         Canvas canvas = new Canvas();
         try {
             Bitmap bitmap = Bitmap.createBitmap(
@@ -426,7 +435,15 @@ public class PostAttachmentsView extends LinearLayout {
         intent.putExtra("id", 0);
         intent.putExtra("title", attachment.title);
         intent.putExtra("content", attachment.text);
-        intent.putExtra("author", post.author_name);
+        if(post.author instanceof User) {
+            User user = ((User) post.author);
+            intent.putExtra("author",
+                    String.format("%s %s", user.first_name, user.last_name)
+            );
+        } else if(post.author instanceof Group) {
+            Group group = ((Group) post.author);
+            intent.putExtra("author", group.name);
+        }
         attachView.setIntent(intent);
         attachView.setVisibility(View.VISIBLE);
     }
@@ -436,7 +453,7 @@ public class PostAttachmentsView extends LinearLayout {
         intent.putExtra("title", video.title);
         intent.putExtra("attachment", (Parcelable) video);
         intent.putExtra("files", video.files);
-        intent.putExtra("owner_id", item.owner_id);
+        intent.putExtra("owner_id", item.owner.id);
         parent.startActivity(intent);
     }
 
@@ -453,19 +470,19 @@ public class PostAttachmentsView extends LinearLayout {
                 intent.putExtra("local_photo_addr",
                         String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
                                 parent.getCacheDir(),
-                                post.owner_id, post.post_id));
+                                post.owner.id, post.post_id));
             } else {
                 intent.putExtra("local_photo_addr",
                         String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
                                 parent.getCacheDir(),
-                                post.owner_id, post.post_id));
+                                post.owner.id, post.post_id));
             }
             if(post.attachments != null) {
                 for(int i = 0; i < post.attachments.size(); i++) {
                     if(post.attachments.get(i).type.equals("photo")) {
                         Photo photo = ((Photo) post.attachments.get(i));
                         intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", post.author_id);
+                        intent.putExtra("author_id", post.author.id);
                         intent.putExtra("photo_id", photo.id);
                     }
                 }

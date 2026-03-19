@@ -28,14 +28,15 @@ public class CacheDatabase {
                 case "audio":
                     CacheDatabaseTables.createAudioTracksTable(database, false);
                     break;
-                case "wall":
-                    CacheDatabaseTables.createWallPostTables(database);
+                case "users":
+                    CacheDatabaseTables.createUsersTables(database, false);
                     break;
+                case "groups":
+                    CacheDatabaseTables.createGroupsTable(database, false);
+                    break;
+                case "wall":
                 case "newsfeed":
                     CacheDatabaseTables.createWallPostTables(database);
-                    break;
-                case "main":
-                    CacheDatabaseTables.createMainCacheTables(database);
                     break;
             }
         }

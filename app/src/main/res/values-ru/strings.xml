@@ -703,6 +703,7 @@
     <string name="use_legacy_http_client_apachew_err">Включение невозможно из-за неподдерживаемой версии Android</string>
     <string name="experimental_features">Экспериментальные функции</string>
     <string name="experimental_features_description">Используйте только на свой страх и риск, так как они могут быть нестабильными или неработоспособными</string>
+    <string name="uil_debugging">Отладка загрузчика фотографий UIL</string>
     <string name="cause_app_to_crash">Вызвать сбой приложения</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>

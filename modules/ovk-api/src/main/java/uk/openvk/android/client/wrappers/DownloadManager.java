@@ -52,8 +52,10 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Photo;
@@ -88,9 +90,8 @@ public class DownloadManager {
         this.ctx = ctx;
         this.use_https = use_https;
         this.legacy_mode = legacy_mode;
-        if(BuildConfig.BUILD_TYPE.equals("release")) {
-            logging_enabled = false;
-        }
+        this.proxy_type = "";
+        //logging_enabled = true;
         try {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 Log.v(OpenVKAPI.DLM_TAG, "Starting DownloadManager in Legacy Mode...");
@@ -212,13 +213,10 @@ public class DownloadManager {
                             httpClient = httpClientBuilder.build();
                         }
                     }
-                    this.proxy_connection = true;
                 } else {
-                    this.proxy_connection = true;
-                    if(type.startsWith("relay")) {
-                        relayAddress = String.format("http://%s", address_array[0]);
-                    }
+                    relayAddress = String.format("http://%s", address);
                 }
+                this.proxy_connection = true;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -257,7 +255,7 @@ public class DownloadManager {
                     "\r\nPrefix: %s", where));
             return;
         }
-        Log.v("DownloadManager", String.format("Downloading %d photos...", photos.size()));
+        Log.v(OpenVKAPI.DLM_TAG, String.format("Downloading %d photos...", photos.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -289,11 +287,7 @@ public class DownloadManager {
                         photo.url = "";
                     }
                     Date lastModDate;
-                    if(downloadedFile.exists()) {
-                        lastModDate = new Date(downloadedFile.lastModified());
-                    } else {
-                        lastModDate = new Date(0);
-                    }
+                    lastModDate = downloadedFile.exists() ? new Date(downloadedFile.lastModified()) : new Date(0);
                     long time_diff = System.currentTimeMillis() - lastModDate.getTime();
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
                     // photo autocaching
@@ -322,34 +316,55 @@ public class DownloadManager {
                         try {
                             filename = photo.filename;
                             String short_address = "";
-                            if(photos.get(i).url.length() > 40) {
-                                short_address = photos.get(i).url.substring(0, 39);
+
+                            if(proxy_type.equals("http")) {
+                                url = photos.get(i).url.replace("https://", "http://");
                             } else {
-                                short_address = photos.get(i).url;
+                                url = photos.get(i).url;
                             }
-                            //Log.v("DownloadManager", String.format("Downloading %s (%d/%d)...",
-                            // short_address, i + 1, photoAttachments.size()));
-                            url = photos.get(i).url;
+
                             if(!url.startsWith("http://") && !url.startsWith("https://")) {
                                 Log.e(OpenVKAPI.DLM_TAG,
                                         String.format("Invalid URL: %s. Download canceled.", url));
                                 return;
                             }
 
+                            short_address = url.length() > 60 ?
+                                    url.substring(0, 59) : photos.get(i).url;
+                            Log.v(
+                                    OpenVKAPI.DLM_TAG,
+                                    String.format("Downloading %s (%d/%d)...", short_address, i + 1, photos.size())
+                            );
+
                             if (legacy_mode) {
-                                request_legacy = proxy_type.equals("selfeco-relay") ?
+                                request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
                                         httpClientLegacy.post(relayAddress) : httpClientLegacy.get(url);
-                                if(proxy_type.equals("relay-selfeco")) {
+
+                                // Use SelfEco Relay as alternative proxy connection
+                                // default: http://minvk.ru/apirelay.php (POST)
+
+                                if(proxy_type.equals("selfeco-relay")) {
                                     request_legacy.content(
                                             String.format("%s", url).getBytes(),
                                             null
                                     );
                                 }
                             } else {
-                                request = new Request.Builder()
-                                        .url(url)
-                                        .addHeader("User-Agent", generateUserAgent())
-                                        .build();
+                                Request.Builder builder = new Request.Builder()
+                                        .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : url)
+                                        .addHeader("User-Agent", generateUserAgent());
+
+                                // Use SelfEco Relay as alternative proxy connection
+                                // default: http://minvk.ru/apirelay.php (POST)
+
+                                if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                                    builder.post(
+                                            RequestBody.create(
+                                                    MediaType.parse("text/plain"), url
+                                            )
+                                    );
+                                }
+                                request = builder.build();
                             }
 
                             if (legacy_mode) {
@@ -366,7 +381,7 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    if(logging_enabled) Log.w(OpenVKAPI.DLM_TAG, "Filesizes match, skipping...");
                                 }
                                 response_in.close();
                                 response_code = response.getStatusCode();
@@ -385,7 +400,7 @@ public class DownloadManager {
                                     }
                                     fos.close();
                                 } else {
-                                    if(logging_enabled) Log.w("DownloadManager", "Filesizes match, skipping...");
+                                    if(logging_enabled) Log.w(OpenVKAPI.DLM_TAG, "Filesizes match, skipping...");
                                 }
                                 response.body().byteStream().close();
                             }
@@ -407,6 +422,7 @@ public class DownloadManager {
                                 }
                             }
                         } catch (Exception e) {
+                            e.printStackTrace();
                             photo.exception_name = e.getClass().getSimpleName();
                             if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG,
                                     String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
@@ -460,7 +476,7 @@ public class DownloadManager {
                         }
                     }
                 }
-                Log.v("DownloadManager", "Downloaded!");
+                Log.v(OpenVKAPI.DLM_TAG, String.format("Downloaded %s photos successfully!", photos.size()));
             }
         };
 
@@ -468,7 +484,7 @@ public class DownloadManager {
         thread.start();
     }
 
-    public void downloadOnePhotoToCache(final String url, final String filename, final String where) {
+    public void downloadOnePhotoToCache(String url, final String filename, final String where) {
         if(url == null) {
             Log.e(OpenVKAPI.DLM_TAG, "URL is empty. Download canceled.");
             return;
@@ -476,7 +492,10 @@ public class DownloadManager {
         if(!url.startsWith("http://") && !url.startsWith("https://")) {
             Log.e(OpenVKAPI.DLM_TAG, String.format("Invalid URL: %s. Download canceled.", url));
             return;
+        } else if(proxy_type.equals("http")) {
+            url = url.replace("https://", "http://");
         }
+        final String finalUrl = url;
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -487,7 +506,7 @@ public class DownloadManager {
 
             @Override
             public void run() {
-                Log.v("DownloadManager", String.format("Downloading %s...", url));
+                Log.v(OpenVKAPI.DLM_TAG, String.format("Downloading %s...", finalUrl));
                 try {
                     File directory = new File(String.format("%s/%s/photos_cache",
                             ctx.getCacheDir().getAbsolutePath(), instance), where);
@@ -514,7 +533,7 @@ public class DownloadManager {
                     if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG, "Duplicated filename. Skipping..." +
                             "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
                             + " ms | Filesize: " + downloadedFile.length() + " bytes");
-                } else if (url.length() == 0) {
+                } else if (finalUrl.length() == 0) {
                     if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG, "Invalid address. Skipping...");
                     try {
                         if(downloadedFile.exists()) {
@@ -529,19 +548,19 @@ public class DownloadManager {
                     }
                 } else {
                     String short_address = "";
-                    if(url.length() > 40) {
-                        short_address = url.substring(0, 39);
+                    if(finalUrl.length() > 40) {
+                        short_address = finalUrl.substring(0, 39);
                     } else {
-                        short_address = url;
+                        short_address = finalUrl;
                     }
 
-                    if(logging_enabled) Log.v("DownloadManager",
+                    if(logging_enabled) Log.v(OpenVKAPI.DLM_TAG,
                             String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(url);
+                        request_legacy = httpClientLegacy.get(finalUrl);
                     } else {
                         request = new Request.Builder()
-                                .url(url)
+                                .url(finalUrl)
                                 .addHeader("User-Agent", generateUserAgent())
                                 .build();
                     }
@@ -598,7 +617,7 @@ public class DownloadManager {
                                 String.format("Download error: %s", e.getMessage()));
                     }
                 }
-                Log.v("DownloadManager", "Downloaded!");
+                Log.v(OpenVKAPI.DLM_TAG, "Downloaded!");
                 switch (where) {
                     case "account_avatar":
                         sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);

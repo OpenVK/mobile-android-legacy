@@ -29,16 +29,12 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -46,8 +42,6 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,13 +51,11 @@ import java.nio.channels.FileChannel;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.legacy.BuildConfig;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
-import uk.openvk.android.legacy.ui.list.adapters.PhotosListAdapter;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.views.base.ZoomableImageView;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -202,6 +194,10 @@ public class PhotoViewerActivity extends NetworkActivity {
                 } else if(getResources().getDisplayMetrics().widthPixels <= 480) {
                     max_size = 960;
                 }
+
+                if(bitmap == null)
+                    return;
+
                 float aspect_ratio = (float)bitmap.getWidth() / (float)max_size;
                 if(bitmap.getWidth() > max_size || bitmap.getHeight() > max_size) {
                     Bitmap photo_scaled;

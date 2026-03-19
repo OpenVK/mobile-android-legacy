@@ -9,13 +9,16 @@ import java.util.HashMap;
 import uk.openvk.android.legacy.OvkApplication;
 
 public class SecureCredentialsStorage {
-    public static HashMap<String, Object> generateClientInfo(Context ctx, HashMap<String, Object> client_info) {
+    public static HashMap<String, Object> generateClientInfo(Context ctx, HashMap<String, Object> client_info, boolean clean) {
         SharedPreferences global_prefs =
                 PreferenceManager.getDefaultSharedPreferences(ctx);
         SharedPreferences instance_prefs =
                 ((OvkApplication) ctx.getApplicationContext()).getAccountPreferences();
-        client_info.put("server", instance_prefs.getString("server", ""));
-        client_info.put("accessToken", instance_prefs.getString("access_token", ""));
+
+        if(instance_prefs != null && !clean) {
+            client_info.put("server", instance_prefs.getString("server", ""));
+            client_info.put("accessToken", instance_prefs.getString("access_token", ""));
+        }
         client_info.put("useHTTPS", global_prefs.getBoolean("useHTTPS", false));
         client_info.put("legacyHttpClient", global_prefs.getBoolean("legacyHttpClient", false));
         client_info.put("useProxy", global_prefs.getBoolean("useProxy", false));

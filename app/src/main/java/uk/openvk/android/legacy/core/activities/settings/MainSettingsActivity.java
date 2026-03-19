@@ -95,7 +95,8 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
                 global_prefs.getString("proxy_type", ""),
                 global_prefs.getString("proxy_address", "")
         );
-        ovk_api.setServer(instance_prefs.getString("server", ""));
+        if(instance_prefs != null)
+            ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk = new Ovk();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {

@@ -366,10 +366,11 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
                 writer.append(
                         String.format(
-                            "\r\nOpenVK Legacy for Android %s (%s)\r\n" +
+                            "OpenVK Legacy for Android %s (%s)\r\n" +
                             "----------------------- DEVICE INFO ------------------------" +
                             "\r\nModel: %s %s (codename: %s)" +
-                            "\r\nAndroid %s (API %s, %s)\r\n" +
+                            "\r\nAndroid %s (API %s)" +
+                            "\r\nBuild fingerprint: %s\r\n" +
                             "----------------------- APP SETTINGS -----------------------" +
                             "\r\nInstance: %s" +
                             "\r\nHTTPS: %s" +

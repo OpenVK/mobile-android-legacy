@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.base.LazyEntity;
 
 public class Photo extends Attachment implements Parcelable, Serializable {
     public long id;
@@ -94,6 +95,8 @@ public class Photo extends Attachment implements Parcelable, Serializable {
             object.put("photo", photo);
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 
@@ -113,6 +116,8 @@ public class Photo extends Attachment implements Parcelable, Serializable {
             filename = photo.getString("filename");
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 }

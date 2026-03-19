@@ -29,14 +29,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.counters.UserCounters;
 import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
 
-public class User implements Parcelable {
+public class User extends LazyEntity implements Parcelable {
     public String first_name;
     public String last_name;
-    public long id;
     public boolean verified;
     public boolean online;
     public long ls_date;
@@ -188,6 +188,8 @@ public class User implements Parcelable {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
 
     }
@@ -252,6 +254,8 @@ public class User implements Parcelable {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 

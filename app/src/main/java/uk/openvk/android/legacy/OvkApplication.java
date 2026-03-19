@@ -26,6 +26,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -119,7 +120,6 @@ public class OvkApplication extends Application {
 
     private void createSettings(SharedPreferences global_prefs, SharedPreferences instance_prefs) {
         SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
-        SharedPreferences.Editor instance_prefs_editor = instance_prefs.edit();
 
         // Create preference parameters
 
@@ -196,7 +196,6 @@ public class OvkApplication extends Application {
         }
 
         global_prefs_editor.commit();
-        instance_prefs_editor.commit();
     }
 
 
@@ -242,8 +241,7 @@ public class OvkApplication extends Application {
                 prefs.getString("server", "").equals(getCurrentInstance())) {
             return String.format("%s/%s/photos_cache", getCacheDir(), prefs.getString("server", ""));
         } else {
-            prefs = getSharedPreferences("instance", 0);
-            return String.format("%s/%s/photos_cache", getCacheDir(), prefs.getString("server", ""));
+            return null;
         }
     }
 
@@ -254,7 +252,7 @@ public class OvkApplication extends Application {
                 prefs.getString("server", "").equals(getCurrentInstance())) {
             return prefs;
         } else {
-            return getSharedPreferences("instance", 0);
+            return null;
         }
     }
 

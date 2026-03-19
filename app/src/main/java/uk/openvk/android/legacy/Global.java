@@ -19,7 +19,6 @@
 
 package uk.openvk.android.legacy;
 
-import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -49,11 +48,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
@@ -69,20 +66,17 @@ import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.OvkExpandableText;
 import uk.openvk.android.client.entities.OvkLink;
 import uk.openvk.android.client.entities.WallPost;
-import uk.openvk.android.legacy.core.fragments.AudiosFragment;
-import uk.openvk.android.legacy.core.fragments.VideosFragment;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.ConversationsFragment;
 import uk.openvk.android.legacy.core.fragments.FriendsFragment;
 import uk.openvk.android.legacy.core.fragments.GroupsFragment;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
+import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
-import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
 
 public class Global {
@@ -572,7 +566,7 @@ public class Global {
                                                 repost_view.findViewById(R.id.text_edit)).getText()
                                                 .toString();
                                         ovk_api.wall.repost
-                                                (ovk_api.wrapper, post.owner_id, post.post_id, msg_text);
+                                                (ovk_api.wrapper, post.owner.id, post.post_id, msg_text);
                                         dialog.close();
                                     } catch (Exception ex) {
                                         ex.printStackTrace();

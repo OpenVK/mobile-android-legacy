@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.List;
 import java.util.Vector;
@@ -35,6 +36,63 @@ public class GroupsCacheDB extends CacheDatabase {
 
     public static String prefix = "groups";
 
+    public static class CacheOpenHelper extends SQLiteOpenHelper {
+
+        public CacheOpenHelper(Context ctx, String db_name) {
+            super(ctx, db_name, null, 1);
+        }
+
+        public CacheOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase database) {
+            CacheDatabaseTables.createGroupsTable(database, false);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase database, int oldVer, int newVer) {
+            if (oldVer == 1 && newVer >= oldVer) {
+                // TODO: Add database auto-upgrade to new versions
+                return;
+            }
+            onCreate(database);
+        }
+
+        @Override // android.database.sqlite.SQLiteOpenHelper
+        public SQLiteDatabase getWritableDatabase() {
+            while (true) {
+                try {
+                    SQLiteDatabase db = super.getWritableDatabase();
+                    db.setLockingEnabled(false);
+                    return db;
+                } catch (Exception ex) {
+                    try {
+                        Thread.sleep(100L);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+
+        @Override // android.database.sqlite.SQLiteOpenHelper
+        public SQLiteDatabase getReadableDatabase() {
+            while (true) {
+                try {
+                    SQLiteDatabase db = super.getReadableDatabase();
+                    db.setLockingEnabled(false);
+                    return db;
+                } catch (Exception ex) {
+                    try {
+                        Thread.sleep(100L);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+    }
+
     public static Vector<Group> getList(Context ctx) {
         NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
@@ -43,7 +101,8 @@ public class GroupsCacheDB extends CacheDatabase {
         SQLiteDatabase db = helper.getReadableDatabase();
         Vector<Group> result = new Vector<>();
         try {
-            Cursor cursor = db.query("groups", null, null, null, null, null, null);
+            Cursor cursor = db.query("groups",
+                    null, null, null, null, null, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 ContentValues values = new ContentValues();
@@ -73,7 +132,8 @@ public class GroupsCacheDB extends CacheDatabase {
         Vector<Group> result = new Vector<>();
         int i = 0;
         try {
-            Cursor cursor = db.query("groups", null, null, null, null, null, null);
+            Cursor cursor = db.query("groups",
+                    null, null, null, null, null, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 ContentValues values = new ContentValues();
@@ -183,5 +243,40 @@ public class GroupsCacheDB extends CacheDatabase {
             ex.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean isExist(Context ctx, SQLiteDatabase db, long group_id) {
+        boolean result = false;
+        try {
+            String table_name = "groups";
+            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
+                    "`group_id`=" + group_id,
+                    null, null, null, null);
+            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static boolean isExist(Context ctx, long groups_id) {
+        boolean result = false;
+        CacheDatabase.CacheOpenHelper helper =
+                new CacheDatabase.CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
+        SQLiteDatabase db = helper.getWritableDatabase();
+        try {
+            String table_name = "groups";
+            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
+                    "`group_id`=" + groups_id,
+                    null, null, null, null);
+            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        db.close();
+        helper.close();
+        return result;
     }
 }

@@ -26,9 +26,10 @@ import android.graphics.Bitmap;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.JSONParser;
 
-public class Comment {
+public class Comment extends LazyEntity {
     public String author;
     public long author_id;
     public long date;
@@ -51,5 +52,6 @@ public class Comment {
         this.text = text;
         this.id = id;
         this.attachments = attachments;
+        this.entityType = LazyEntity.REAL_ENTITY;
     }
 }

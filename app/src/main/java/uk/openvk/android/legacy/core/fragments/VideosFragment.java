@@ -32,13 +32,10 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.OpenVKAPI;
-import uk.openvk.android.client.entities.Video;
-import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
-import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.VideosListAdapter;
 import uk.openvk.android.legacy.ui.list.decorations.VerticalSpace;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
@@ -114,14 +111,6 @@ public class VideosFragment extends ActiveFragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         videosListView.setLoading(!infinity_scroll);
-        videosListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
-            @Override
-            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                if(ctx instanceof AppActivity) {
-                    OpenVKAPI ovk_api = ((AppActivity) ctx).ovk_api;
-                }
-            }
-        });
     }
 
     public void refreshListAdapter() {

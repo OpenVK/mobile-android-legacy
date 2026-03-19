@@ -21,6 +21,7 @@ package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +47,9 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
     private final DisplayImageOptions displayimageOptions;
     private final ImageLoaderConfiguration imageLoaderConfig;
     private final ImageLoader imageLoader;
-    private final String instance;
+    private boolean uilDebugging;
+    private String instance;
+    private SharedPreferences global_prefs;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Photo> objects;
@@ -57,15 +60,22 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
+
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        instance = global_prefs.getString("current_instance", "");
+        uilDebugging = global_prefs.getBoolean("uilDebugging", false);
+
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
-        this.imageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
-                        defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(16777216) // 16 MB memory cache
-                        .writeDebugLogs()
-                        .build();
+
+        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
+                defaultDisplayImageOptions(displayimageOptions)
+                .memoryCacheSize(16777216); // 16 MB memory cache
+
+        if(uilDebugging)
+            builder.writeDebugLogs();
+
+        this.imageLoaderConfig = builder.build();
         if (ImageLoader.getInstance().isInited()) {
             ImageLoader.getInstance().destroy();
         }

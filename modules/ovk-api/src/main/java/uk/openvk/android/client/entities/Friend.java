@@ -29,10 +29,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
 
-public class Friend implements Parcelable {
+public class Friend extends LazyEntity implements Parcelable {
     public String first_name;
     public String last_name;
     public Long id;
@@ -51,9 +52,7 @@ public class Friend implements Parcelable {
         parse(response, position);
     }
 
-    public Friend(String first_name, String last_name, long id, String status, String city,
-                  String screen_name, String avatar_url, int friends_status, int ls_date, String birthdate,
-                  String interests, String movies, String music, String tv, String books, boolean verified) {
+    public Friend(String first_name, String last_name, long id, boolean verified) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.id = id;
@@ -94,11 +93,7 @@ public class Friend implements Parcelable {
                 last_name = user.getString("last_name");
                 id = user.getLong("id");
                 avatar_url = "";
-                if (user.has("verified")) {
-                    verified = user.getInt("verified") == 1;
-                } else {
-                    verified = false;
-                }
+                verified = user.has("verified") && user.getInt("verified") == 1;
                 online = user.has("online") && user.getInt("online") == 1;
                 if (user.has("last_seen") && !user.isNull("last_seen")) {
                     if (user.getJSONObject("last_seen").getInt("platform") != 7) {
@@ -125,6 +120,8 @@ public class Friend implements Parcelable {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
 
     }
@@ -164,6 +161,8 @@ public class Friend implements Parcelable {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 

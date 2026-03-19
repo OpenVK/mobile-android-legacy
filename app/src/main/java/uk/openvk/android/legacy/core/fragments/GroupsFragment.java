@@ -35,14 +35,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.OpenVKAPI;
-import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
-import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
+import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnEndlessScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
@@ -81,20 +82,39 @@ public class GroupsFragment extends ActiveFragment {
         }
     }
 
-    private void adjustLayoutSize(Context ctx, int orientation) {
+    private void adjustLayoutSize(final Context ctx, int orientation) {
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        RecyclerView.LayoutManager lm = null;
+
         if(app.isTablet && app.swdp >= 760 && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
-            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+            lm = new WrappedGridLayoutManager(ctx, 3);
+            ((WrappedGridLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(lm);
         } else if(app.isTablet && app.swdp >= 600) {
-            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(glm);
+            lm = new WrappedGridLayoutManager(ctx, 2);
+            ((WrappedGridLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(lm);
         } else {
-            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
-            llm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(llm);
+            lm = new WrappedLinearLayoutManager(ctx);
+            ((WrappedLinearLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.groups_listview)).setLayoutManager(lm);
+        }
+
+        InfinityRecyclerViewScrollListener listener = new InfinityRecyclerViewScrollListener(lm) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                if(ctx instanceof AppActivity) {
+                    OpenVKAPI ovk_api = ((AppActivity) ctx).ovk_api;
+                    Global.loadMoreGroups(ovk_api);
+                }
+            }
+        };
+
+        groupsListView.setOnRecyclerScrollListener(listener);
+
+        if(ctx instanceof AppActivity) {
+            OpenVKAPI ovk_api = ((AppActivity) ctx).ovk_api;
+            Global.loadMoreGroups(ovk_api);
         }
     }
 
@@ -140,15 +160,6 @@ public class GroupsFragment extends ActiveFragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         groupsListView.setLoading(!infinity_scroll);
-        groupsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
-            @Override
-            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                if(ctx instanceof AppActivity) {
-                    OpenVKAPI ovk_api = ((AppActivity) ctx).ovk_api;
-                    Global.loadMoreGroups(ovk_api);
-                }
-            }
-        });
     }
 
     @Override

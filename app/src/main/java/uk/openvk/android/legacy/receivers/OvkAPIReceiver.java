@@ -137,11 +137,6 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         String where = data.getString("where");
         msg.setData(data);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        DownloadManager downloadManager = new DownloadManager(activity,
-                wrapper.getClientInfo(), handler);
-
-        downloadManager.setInstance(((OvkApplication) activity
-                .getApplicationContext()).getCurrentInstance());
         if(activity instanceof NetworkFragmentActivity || activity instanceof NetworkActivity) {
             OpenVKAPI ovk_api;
             if(activity instanceof NetworkActivity) {
@@ -166,12 +161,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (where != null && where.equals("more_news")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE;
                         ovk_api.newsfeed.parse(activity,
-                                downloadManager, data.getString("response"),
-                                global_prefs.getString("photos_quality", ""), false);
+                                ovk_api.dlman, data.getString("response"),
+                                global_prefs.getString("photos_quality", ""), true);
                     } else {
                         msg.what = HandlerMessages.NEWSFEED_GET;
                         ovk_api.newsfeed.parse(activity,
-                                downloadManager, data.getString("response"),
+                                ovk_api.dlman, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), true);
                     }
                     break;
@@ -179,12 +174,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (where != null && where.equals("more_news")) {
                         msg.what = HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
                         ovk_api.newsfeed.parse(activity,
-                                downloadManager, data.getString("response"),
+                                ovk_api.dlman, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), false);
                     } else {
                         msg.what = HandlerMessages.NEWSFEED_GET_GLOBAL;
                         ovk_api.newsfeed.parse(activity,
-                                downloadManager, data.getString("response"),
+                                ovk_api.dlman, data.getString("response"),
                                 global_prefs.getString("photos_quality", ""), true);
                     }
                     break;
@@ -209,39 +204,39 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.FRIENDS_GET_MORE;
                         ovk_api.friends.parse(data.getString("response"),
-                                downloadManager, true, false);
+                                ovk_api.dlman, true, false);
                     } else {
                         assert where != null;
                         if(where.equals("profile_counter")) {
                             msg.what = HandlerMessages.FRIENDS_GET_ALT;
                             ovk_api.friends.parse(data.getString("response"),
-                                    downloadManager, false, true);
+                                    ovk_api.dlman, false, true);
                         } else {
                             msg.what = HandlerMessages.FRIENDS_GET;
                             ovk_api.friends.parse(data.getString("response"),
-                                    downloadManager, true, true);
+                                    ovk_api.dlman, true, true);
                         }
                     }
                     break;
                 case "Friends.getRequests":
                     msg.what = HandlerMessages.FRIENDS_REQUESTS;
                     ovk_api.friends.parseRequests(data.getString("response"),
-                            downloadManager, true);
+                            ovk_api.dlman, true);
                     break;
                 case "Photos.getAlbums":
                     msg.what = HandlerMessages.PHOTOS_GETALBUMS;
                     if (args != null && args.contains("offset")) {
                         ovk_api.photos.parseAlbums(data.getString("response"),
-                                downloadManager, false);
+                                ovk_api.dlman, false);
                     } else {
                         assert where != null;
                         ovk_api.photos.parseAlbums(data.getString("response"),
-                                downloadManager, true);
+                                ovk_api.dlman, true);
                     }
                     break;
                 case "Video.get":
                     msg.what = HandlerMessages.VIDEOS_GET;
-                    ovk_api.videos.parse(downloadManager, data.getString("response"));
+                    ovk_api.videos.parse(ovk_api.dlman, data.getString("response"));
                     break;
                 case "Audio.get":
                     msg.what = HandlerMessages.AUDIOS_GET;
@@ -249,12 +244,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     break;
                 case "Wall.get":
                     if(where != null && where.equals("more_wall_posts")) {
-                        ovk_api.wall.parse(activity, downloadManager,
+                        ovk_api.wall.parse(activity, ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), false, true);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
-                        ovk_api.wall.parse(activity, downloadManager,
+                        ovk_api.wall.parse(activity, ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),
                                 data.getString("response"), true, true);
                         msg.what = HandlerMessages.WALL_GET;
@@ -268,20 +263,20 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 case "Messages.getConversations":
                     ovk_api.messages.parseConversationsList(
                             data.getString("response"),
-                            downloadManager);
+                            ovk_api.dlman);
                     msg.what = HandlerMessages.MESSAGES_CONVERSATIONS;
                     break;
                 case "Groups.get":
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.GROUPS_GET_MORE;
                         ovk_api.groups.parse(data.getString("response"),
-                                downloadManager,
+                                ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),
                                 true, false);
                     } else {
                         msg.what = HandlerMessages.GROUPS_GET;
                         ovk_api.groups.parse(data.getString("response"),
-                                downloadManager,
+                                ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),
                                 true, true);
                     }
@@ -295,7 +290,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         ((GroupMembersActivity) activity).group.members = new ArrayList<>();
                         ((GroupMembersActivity) activity).group.parseMembers(
                                 data.getString("response"),
-                                downloadManager, true
+                                ovk_api.dlman, true
                         );
                         msg.what = HandlerMessages.GROUP_MEMBERS;
                     }
@@ -333,7 +328,6 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             }
         } else if (activity instanceof NetworkFragmentActivity) {
             NetworkFragmentActivity net_a = (NetworkFragmentActivity) activity;
-            downloadManager = net_a.ovk_api.dlman;
             assert method != null;
             if(activity instanceof AppActivity) {
                 AppActivity app_a = ((AppActivity) activity);
@@ -377,17 +371,16 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 }
             } else if(activity instanceof PhotoAlbumActivity) {
                 PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);
-                downloadManager = album_a.ovk_api.dlman;
                 switch (method) {
                     case "Photos.getAlbums":
                         msg.what = HandlerMessages.PHOTOS_GETALBUMS;
                         if (args != null && args.contains("offset")) {
                             album_a.ovk_api.photos.parseAlbums(data.getString("response"),
-                                    downloadManager, false);
+                                    album_a.ovk_api.dlman, false);
                         } else {
                             assert where != null;
                             album_a.ovk_api.photos.parseAlbums(data.getString("response"),
-                                    downloadManager, true);
+                                    album_a.ovk_api.dlman, true);
                         }
                         break;
                     case "Photos.get":
@@ -395,7 +388,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         album_a.ovk_api.photos.parse(
                                 data.getString("response"),
                                 new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
-                                downloadManager
+                                album_a.ovk_api.dlman
                         );
                         break;
                 }
@@ -413,7 +406,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             }
         } else if(activity instanceof GroupMembersActivity) {
             GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
-            downloadManager = group_members_a.ovk_api.dlman;
+            //downloadManager = group_members_a.ovk_api.dlman;
             assert method != null;
             switch (method) {
                 case "Groups.getMembers":

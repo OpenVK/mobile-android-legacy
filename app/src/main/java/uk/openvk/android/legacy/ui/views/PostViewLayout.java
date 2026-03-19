@@ -53,6 +53,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -71,7 +73,8 @@ import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 
 @SuppressWarnings("ConstantConditions")
 public class PostViewLayout extends LinearLayout {
-    private final String instance;
+    private String instance;
+    private boolean uilDebugging;
     private ImageLoader imageLoader;
     private ImageLoaderConfiguration imageLoaderConfig;
     private DisplayImageOptions displayimageOptions;
@@ -98,18 +101,22 @@ public class PostViewLayout extends LinearLayout {
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
-        instance = PreferenceManager.getDefaultSharedPreferences(
-                getContext()).getString("current_instance", "");
-        global_prefs = android.support.v7.preference
-                .PreferenceManager.getDefaultSharedPreferences(getContext());
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+        instance = global_prefs.getString("current_instance", "");
+        uilDebugging = global_prefs.getBoolean("uilDebugging", false);
+
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
-        this.imageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(context.getApplicationContext()).
-                        defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(16777216) // 16 MB memory cache
-                        .writeDebugLogs()
-                        .build();
+
+        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
+                getContext().getApplicationContext()
+        ).defaultDisplayImageOptions(displayimageOptions).memoryCacheSize(16777216); // 16 MB memory cache
+
+        if(uilDebugging)
+            builder.writeDebugLogs();
+
+        imageLoaderConfig = builder.build();
+
         if (ImageLoader.getInstance().isInited()) {
             ImageLoader.getInstance().destroy();
         }
@@ -172,7 +179,18 @@ public class PostViewLayout extends LinearLayout {
     }
 
     public void setPost(WallPost item, final Context ctx) {
-        ((TextView) findViewById(R.id.wall_view_poster_name)).setText(item.author_name);
+        String author_name = "";
+        if(item.author != null) {
+            if(item.author instanceof User) {
+                User user = ((User) item.author);
+                author_name = String.format("%s %s", user.first_name, user.last_name);
+            } else if(item.owner instanceof Group) {
+                Group group = ((Group) item.author);
+                author_name = group.name;
+            }
+        }
+
+        ((TextView) findViewById(R.id.wall_view_poster_name)).setText(author_name);
         ArrayList<WallPost> posts = new ArrayList<WallPost>();
         posts.add(item);
 
@@ -234,8 +252,16 @@ public class PostViewLayout extends LinearLayout {
             }
             ((TextView) findViewById(R.id.wall_view_time)).setText(Global.formatTimestamp(ctx, item.dt.getTime()));
 
-            if (item.avatar != null) {
-                ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(item.avatar);
+            if(item.author != null) {
+                if(item.author instanceof User) {
+                    User user = (User) item.author;
+                    if (user.avatar != null)
+                        ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(user.avatar);
+                } else if(item.author instanceof Group) {
+                    Group group = (Group) item.author;
+                    if (group.avatar != null)
+                        ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(group.avatar);
+                }
             }
 
         } else {

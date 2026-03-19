@@ -131,7 +131,6 @@ public class CrashReporterActivity extends BaseCrashReportDialog
         final StringBuilder log = new StringBuilder();
         String line;
         OvkApplication ovk = ((OvkApplication) getApplicationContext());
-        SharedPreferences instance_prefs = getSharedPreferences("instance", 0);
         SharedPreferences global_prefs =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -141,7 +140,8 @@ public class CrashReporterActivity extends BaseCrashReportDialog
         String proxy;
 
         isTablet = ovk.isTablet ? "Enabled" : "Disabled";
-        server = instance_prefs.contains("server") ? instance_prefs.getString("server", "") : "N/A";
+        server = global_prefs.contains("current_instance") ?
+                global_prefs.getString("current_instance", "N/A") : "N/A";
         usingHTTPS = global_prefs.getBoolean("useHTTPS", false) ? "Enabled" : "Disabled";
         proxy = global_prefs.getBoolean("useProxy", false) ?
                 String.format(
@@ -152,10 +152,11 @@ public class CrashReporterActivity extends BaseCrashReportDialog
                 "Disabled";
 
         String header = String.format(
-                "\r\nOpenVK Legacy for Android %s (%s)\r\n" +
+                        "OpenVK Legacy for Android %s (%s)\r\n" +
                         "----------------------- DEVICE INFO ------------------------" +
                         "\r\nModel: %s %s (codename: %s)" +
-                        "\r\nAndroid %s (API %s, %s)\r\n" +
+                        "\r\nAndroid %s (API %s)" +
+                        "\r\nBuild fingerprint: %s\r\n" +
                         "----------------------- APP SETTINGS -----------------------" +
                         "\r\nInstance: %s" +
                         "\r\nHTTPS: %s" +

@@ -31,6 +31,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,6 +50,9 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -58,7 +62,7 @@ import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
-import uk.openvk.android.legacy.core.listeners.OnNestedScrollListener;
+import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
@@ -104,6 +108,22 @@ public class NewsfeedFragment extends ActiveFragment {
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         if(autoLoad)
             loadFromCache(getActivity());
+
+        CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
+        p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
+        p2r_news_view.setTriggerDistance(80);
+        p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(getActivity() instanceof AppActivity) {
+                    if (((AppActivity) getActivity()).ab_layout.getNewsfeedSelection() == 0) {
+                        ((AppActivity) getActivity()).refreshPage("subscriptions_newsfeed");
+                    } else {
+                        ((AppActivity) getActivity()).refreshPage("global_newsfeed");
+                    }
+                }
+            }
+        });
         return view;
     }
 
@@ -145,11 +165,22 @@ public class NewsfeedFragment extends ActiveFragment {
     public void loadFromCache(Context ctx) {
         ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(ctx);
         if(posts != null && posts.size() > 0)
-            createAdapter(ctx, posts, false);
+            createAdapter(ctx, posts, false, false);
+        else
+            Log.e("OpenVK","Empty posts");
     }
 
-    public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache) {
-        this.wallPosts = wallPosts;
+    public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache, boolean clear) {
+        if(this.wallPosts == null || clear)
+            this.wallPosts = wallPosts;
+        else
+            this.wallPosts.addAll(wallPosts);
+
+        this.wallPosts.add(new WallPost());
+
+        if(view == null)
+            return;
+
         newsfeedView = view.findViewById(R.id.news_listview);
         newsfeedView.setHasFixedSize(true);
         if(newsfeedAdapter == null) {
@@ -157,29 +188,23 @@ public class NewsfeedFragment extends ActiveFragment {
             llm = new WrappedLinearLayoutManager(ctx);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             newsfeedView.setLayoutManager(llm);
-            newsfeedView.setAdapter(newsfeedAdapter);
-        } else {
-            newsfeedAdapter.setArray(wallPosts);
-            newsfeedAdapter.notifyDataSetChanged();
-        }
-        if(cache) {
-            NewsfeedCacheDB.putPosts(ctx, this.wallPosts, true);
-        }
-        CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
-        p2r_news_view.setTriggerDistance(80);
-        p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(getActivity() instanceof AppActivity) {
-                    if (((AppActivity) getActivity()).ab_layout.getNewsfeedSelection() == 0) {
-                        ((AppActivity) getActivity()).refreshPage("subscriptions_newsfeed");
-                    } else {
-                        ((AppActivity) getActivity()).refreshPage("global_newsfeed");
+            InfinityRecyclerViewScrollListener listener = new InfinityRecyclerViewScrollListener(llm) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    if(getActivity() instanceof AppActivity) {
+                        ((AppActivity) getActivity()).loadMoreNews();
                     }
                 }
-            }
-        });
+            };
+            newsfeedView.addOnScrollListener(listener);
+            newsfeedView.setAdapter(newsfeedAdapter);
+        } else {
+            newsfeedAdapter.setArray(this.wallPosts);
+            newsfeedAdapter.notifyDataSetChanged();
+        }
+
+        if(clear)
+            NewsfeedCacheDB.putPosts(ctx, this.wallPosts, true);
         adjustLayout(getContext().getResources().getConfiguration().orientation);
     }
 
@@ -206,11 +231,26 @@ public class NewsfeedFragment extends ActiveFragment {
                     WallPost item = wallPosts.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(
+
+                    Bitmap bitmap = null;
+                    if(item.author != null)
+                        bitmap = BitmapFactory.decodeFile(
                             String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                    getContext().getCacheDir(), instance, item.author_id), options);
+                                    getContext().getCacheDir(), instance, item.author.id), options);
+                    else if(item.owner != null)
+                        bitmap = BitmapFactory.decodeFile(
+                                String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                        getContext().getCacheDir(), instance, item.owner.id), options);
+
+
                     if (bitmap != null) {
-                        item.avatar = bitmap;
+                        if(item.author instanceof User) {
+                            User user = (User) item.author;
+                            user.avatar = bitmap;
+                        } else if(item.author instanceof Group){
+                            Group group = (Group) item.author;
+                            group.avatar = bitmap;
+                        }
                     }
                     wallPosts.set(i, item);
                 } catch (OutOfMemoryError err) {
@@ -237,7 +277,7 @@ public class NewsfeedFragment extends ActiveFragment {
             loadPhotos();
         }
         final InfinityNestedScrollView scrollView = view.findViewById(R.id.scrollView);
-        scrollView.setOnScrollListener(new OnNestedScrollListener() {
+        /*scrollView.setOnScrollListener(new OnNestedScrollListener() {
             @Override
             public void onScroll(InfinityNestedScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
                 View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
@@ -251,7 +291,7 @@ public class NewsfeedFragment extends ActiveFragment {
                     }
                 }
             }
-        });
+        });*/
     }
 
     public int getCount() {
@@ -323,19 +363,25 @@ public class NewsfeedFragment extends ActiveFragment {
     }
 
     public void loadAPIData(Context ctx, OpenVKAPI ovk_api, Spinner ab_spinner,
-                            int isGlobalFeed, boolean notScroll) {
+                            int isGlobalFeed, boolean clear) {
         ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
         if(ab_spinner.getSelectedItemPosition() == isGlobalFeed) {
-            createAdapter(ctx, ovk_api.newsfeed.getWallPosts(), true);
+            if(wallPosts != null && wallPosts.size() > 0) {
+                int lastEntity = wallPosts.size() - 1;
+                if(wallPosts.get(lastEntity).getEntityType() == LazyEntity.SLEEPING_ENTITY) {
+                    wallPosts.remove(lastEntity);
+                }
+            }
+
+            createAdapter(ctx, ovk_api.newsfeed.getWallPosts(), false, clear);
+            adjustLayout(getResources().getConfiguration().orientation);
             if(ovk_api.newsfeed.getWallPosts().size() > 0) {
                 return;
             }
             loading_more_posts = true;
-            setScrollingPositions(ctx, false, true);
-            if(!notScroll) {
+            if(clear)
                 newsfeedView.scrollToPosition(0);
-            }
-            adjustLayout(getResources().getConfiguration().orientation);
+
         }
     }
 
@@ -411,5 +457,9 @@ public class NewsfeedFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return wallPosts != null ? wallPosts.size() : 0;
+    }
+
+    public WallPost getPost(int index) {
+        return wallPosts != null ? wallPosts.get(index) : null;
     }
 }

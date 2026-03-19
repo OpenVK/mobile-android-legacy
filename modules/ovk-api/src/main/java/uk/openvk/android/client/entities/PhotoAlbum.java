@@ -23,7 +23,9 @@ package uk.openvk.android.client.entities;
 
 import java.util.ArrayList;
 
-public class PhotoAlbum {
+import uk.openvk.android.client.base.LazyEntity;
+
+public class PhotoAlbum extends LazyEntity {
     public long[] ids = new long[2];
     public String title;
     public long size;

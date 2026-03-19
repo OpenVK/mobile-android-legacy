@@ -30,9 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.JSONParser;
 
-public class Message {
+public class Message extends LazyEntity {
     public long id;
     public boolean isIncoming;
     public boolean isError;

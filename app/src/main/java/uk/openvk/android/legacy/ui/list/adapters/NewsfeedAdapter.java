@@ -49,6 +49,9 @@ import java.util.ArrayList;
 
 import dev.tinelix.retro_pm.MenuItem;
 import dev.tinelix.retro_pm.PopupMenu;
+import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.OpenVKAPI;
@@ -64,8 +67,9 @@ import uk.openvk.android.legacy.ui.views.WallLayout;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
-    private final String instance;
-    private final boolean isWall;
+    private String instance;
+    private boolean isWall;
+    private boolean uilDebugging;
     private boolean safeViewing;
     private String where;
     private ArrayList<WallPost> items = new ArrayList<>();
@@ -81,17 +85,23 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     public NewsfeedAdapter(Context context, ArrayList<WallPost> posts, boolean isWall) {
         ctx = context;
         items = posts;
-        instance = PreferenceManager.getDefaultSharedPreferences(ctx).getString("current_instance", "");
-        safeViewing = PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean("safeViewing", true);
+        SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        instance = global_prefs.getString("current_instance", "");
+        safeViewing = global_prefs.getBoolean("safeViewing", true);
+        uilDebugging = global_prefs.getBoolean("uilDebugging", false);
         this.isWall = isWall;
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
-        this.imageLoaderConfig =
-                new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
-                        defaultDisplayImageOptions(displayimageOptions)
-                        .memoryCacheSize(16777216) // 16 MB memory cache
-                        .writeDebugLogs()
-                        .build();
+
+        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
+                defaultDisplayImageOptions(displayimageOptions)
+                .memoryCacheSize(16777216); // 16 MB memory cache
+
+        if(uilDebugging)
+            builder.writeDebugLogs();
+
+        this.imageLoaderConfig = builder.build();
+
         if (ImageLoader.getInstance().isInited()) {
             ImageLoader.getInstance().destroy();
         }
@@ -101,7 +111,20 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_newsfeed, parent, false));
+        int layoutId;
+
+        if(viewType != 0x8000)
+            layoutId = R.layout.list_item_newsfeed;
+        else
+            layoutId = R.layout.layout_progress_compact;
+
+        return new Holder(
+                LayoutInflater.from(ctx).inflate(
+                        ctx.getResources().getLayout(layoutId),
+                        parent, false
+                ),
+                viewType
+        );
     }
 
     @Override
@@ -125,33 +148,35 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
     public class Holder extends RecyclerView.ViewHolder {
 
-        public final TextView poster_name;
-        public final TextView post_info;
-        public final TextView post_text;
-        public final LinearLayout repost_info;
-        public final TextView original_poster_name;
-        public final TextView original_post_info;
-        public final TextView original_post_text;
-        public final TextView likes_counter;
-        public final TextView reposts_counter;
-        public final TextView comments_counter;
+        public TextView poster_name;
+        public TextView post_info;
+        public TextView post_text;
+        public LinearLayout repost_info;
+        public TextView original_poster_name;
+        public TextView original_post_info;
+        public TextView original_post_text;
+        public TextView likes_counter;
+        public TextView reposts_counter;
+        public TextView comments_counter;
         public final View convertView;
-        public final ImageView avatar;
-        private final TextView error_label;
-        private final TextView expand_text_btn;
-        private final TextView repost_expand_text_btn;
-        private final ImageView api_app_indicator;
-        private final ImageView verified_icon;
-        private final ImageButton options_btn;
-        private final PostAttachmentsView post_attach_container;
-        private final PostAttachmentsView repost_attach_container;
+        public ImageView avatar;
+        private TextView error_label;
+        private TextView expand_text_btn;
+        private TextView repost_expand_text_btn;
+        private ImageView api_app_indicator;
+        private ImageView verified_icon;
+        private ImageButton options_btn;
+        private PostAttachmentsView post_attach_container;
+        private PostAttachmentsView repost_attach_container;
         private PopupMenu p_menu;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;
 
-        public Holder(View view) {
+        public Holder(View view, int type) {
             super(view);
             this.convertView = view;
+            if(type == 0x8000)
+                return;
             this.poster_name = view.findViewById(R.id.poster_name_view);
             this.post_info = view.findViewById(R.id.post_info_view);
             this.post_text = view.findViewById(R.id.post_view);
@@ -175,6 +200,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
         void bind(final int position) {
             final WallPost item = getItem(position);
+
+            if(item.getEntityType() == LazyEntity.SLEEPING_ENTITY)
+                return;
 
             options_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -205,7 +233,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 api_app_indicator.setVisibility(View.GONE);
             }
-            poster_name.setText(item.author_name);
+
+            String poster_name_str = "";
+            String original_poster_name_str = "";
+
+            poster_name_str = retrivePosterName(item);
+            poster_name.setText(poster_name_str);
+
             if(item.verified_author) {
                 verified_icon.setVisibility(View.VISIBLE);
             } else {
@@ -273,7 +307,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
                 if (item.repost != null) {
                     repost_info.setVisibility(View.VISIBLE);
-                    original_poster_name.setText(item.repost.name);
+
+                    original_poster_name_str = retrivePosterName(item.repost.newsfeed_item);
+                    original_poster_name.setText(original_poster_name_str);
+
                     original_post_info.setText(item.repost.time);
                     String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<")
                             .replaceAll("&gt;", ">")
@@ -354,7 +391,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 likes_counter.setEnabled(false);
             }
 
-            Bitmap author_avatar = item.avatar;
+            Bitmap author_avatar = null;
+
+            if(item.author instanceof User)
+                author_avatar = ((User) item.author).avatar;
+            else if(item.author instanceof Group)
+                author_avatar = ((Group) item.author).avatar;
+
             if(author_avatar != null) {
                 avatar.setImageBitmap(author_avatar);
             } else {
@@ -363,7 +406,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 try {
                     Bitmap bitmap = BitmapFactory.decodeFile(
                             String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                    ctx.getCacheDir(), instance, item.author_id), options);
+                                    ctx.getCacheDir(), instance, item.author.id), options);
                     if (bitmap != null) {
                         avatar.setImageBitmap(bitmap);
                     } else {
@@ -395,15 +438,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 @Override
                 public void onClick(View view) {
                     if (item.counters.isLiked) {
-                        if(!likeAdded) {
-                            likeDeleted = true;
-                        }
+                        if(!likeAdded) likeDeleted = true;
                         deleteLike(ctx, position, item,"post", view);
                         item.counters.isLiked = false;
                     } else {
-                        if(!likeDeleted) {
-                            likeAdded = true;
-                        }
+                        if(!likeDeleted) likeAdded = true;
                         addLike(ctx, position, item,"post", view);
                         item.counters.isLiked = true;
                     }
@@ -424,6 +463,41 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     openWallComments(ctx, position, view);
                 }
             });
+        }
+
+        private String retrivePosterName(WallPost item) {
+            String name = "(Unknown author)";
+
+            if(item.author == null)
+                return name;
+
+            if(item.owner != null && item.author.id != item.owner.id) {
+                String owner_name = "";
+                String author_name = "";
+                if(item.author instanceof User) {
+                    User user = ((User) item.author);
+                    author_name = String.format("%s %s", user.first_name, user.last_name);
+                } else if(item.author instanceof Group) {
+                    Group group = ((Group) item.author);
+                    author_name = group.name;
+                }
+
+                if(item.owner instanceof User) {
+                    User user = ((User) item.owner);
+                    owner_name = String.format("%s %s", user.first_name, user.last_name);
+                } else if(item.owner instanceof Group) {
+                    Group group = ((Group) item.owner);
+                    owner_name = group.name;
+                }
+                name = ctx.getResources().getString(R.string.on_wall, author_name, owner_name);
+            } else if(item.author instanceof User) {
+                User user = ((User) item.author);
+                name = String.format("%s %s", user.first_name, user.last_name);
+            } else if(item.author instanceof Group) {
+                Group group = ((Group) item.author);
+                name = group.name;
+            }
+            return name;
         }
 
         private void showPostOptions(View view) {
@@ -507,7 +581,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             Uri.parse(
                                 String.format(
                                         "openvk://ovk/wall%s_%s",
-                                        item.owner_id, item.post_id
+                                        item.owner.id, item.post_id
                                 )
                             )
                     );
@@ -558,7 +632,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 return;
             }
-            ovk_api.likes.add(ovk_api.wrapper, item.owner_id, item.post_id, position);
+            ovk_api.likes.add(ovk_api.wrapper, item.owner.id, item.post_id, position);
         }
 
         public void deleteLike(Context ctx, int position, WallPost item, String post, View view) {
@@ -599,7 +673,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     return;
                 }
             }
-            ovk_api.likes.delete(ovk_api.wrapper, item.owner_id, item.post_id, position);
+            ovk_api.likes.delete(ovk_api.wrapper, item.owner.id, item.post_id, position);
         }
 
         public void showAuthorPage(Context ctx, String where, int position) {
@@ -619,12 +693,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
             item = getItem(position);
 
-            if(item.author_id != ovk_api.account.id) {
+            if(item.author.id != ovk_api.account.id) {
                 String url = "";
-                if (item.author_id < 0) {
-                    url = "openvk://ovk/club" + -item.author_id;
+                if (item.author instanceof Group) {
+                    url = "openvk://ovk/club" + -item.author.id;
                 } else {
-                    url = "openvk://ovk/id" + item.author_id;
+                    url = "openvk://ovk/id" + item.author.id;
                 }
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setPackage("uk.openvk.android.legacy");
@@ -645,7 +719,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     @Override
     public int getItemViewType(int position)
     {
-        return position;
+        return items.get(position).getEntityType() == LazyEntity.SLEEPING_ENTITY ? 0x8000 : position;
     }
 
     public void setArray(ArrayList<WallPost> array) {

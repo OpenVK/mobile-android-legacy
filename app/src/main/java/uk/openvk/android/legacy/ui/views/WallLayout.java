@@ -179,7 +179,7 @@ public class WallLayout extends LinearLayout {
                                                                     "/wall_photo_attachments/" +
                                                                     "wall_attachment_o%sp%s",
                                                             getContext().getCacheDir(), instance,
-                                                            item.repost.newsfeed_item.owner_id,
+                                                            item.repost.newsfeed_item.owner.id,
                                                             item.repost.newsfeed_item.post_id), options);
                                             if (bitmap != null) {
                                                 photo.bitmap = bitmap;
@@ -207,7 +207,7 @@ public class WallLayout extends LinearLayout {
                                                 String.format("%s/%s/photos_cache/wall_photo_attachments/" +
                                                                 "wall_attachment_o%sp%s",
                                                         getContext().getCacheDir(), instance,
-                                                        item.owner_id, item.post_id), options);
+                                                        item.owner.id, item.post_id), options);
                                         if (bitmap != null) {
                                             ((Photo) item.attachments.get(0)).bitmap = bitmap;
                                             item.attachments.get(0).status = "done";
@@ -301,9 +301,9 @@ public class WallLayout extends LinearLayout {
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
                             String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
-                                    getContext().getCacheDir(), instance, item.author_id), options);
+                                    getContext().getCacheDir(), instance, item.author.id), options);
                     if (bitmap != null) {
-                        item.avatar = bitmap;
+                        //item.avatar = bitmap;
                     }
                     wallItems.set(i, item);
                 } catch (Exception | OutOfMemoryError ex) {

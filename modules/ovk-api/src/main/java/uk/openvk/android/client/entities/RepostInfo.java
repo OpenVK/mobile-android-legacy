@@ -30,11 +30,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import uk.openvk.android.client.base.LazyEntity;
+
 public class RepostInfo implements Parcelable {
     public Date dt;
     public String name;
     public String time;
     public WallPost newsfeed_item;
+    public LazyEntity author;
+
     @SuppressLint("SimpleDateFormat")
     public RepostInfo(String original_author, long dt_sec, Context ctx) {
         name = original_author;
@@ -58,6 +62,10 @@ public class RepostInfo implements Parcelable {
             return new RepostInfo[size];
         }
     };
+
+    public RepostInfo(Context ctx, int date) {
+
+    }
 
     @Override
     public int describeContents() {

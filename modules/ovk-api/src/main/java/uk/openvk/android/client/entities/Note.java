@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.base.LazyEntity;
 
 public class Note extends Attachment implements Serializable {
     public long id;
@@ -60,6 +61,8 @@ public class Note extends Attachment implements Serializable {
             object.put("note", note);
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 }

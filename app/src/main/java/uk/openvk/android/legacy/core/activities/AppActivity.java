@@ -31,14 +31,11 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -536,8 +533,10 @@ public class AppActivity extends NetworkFragmentActivity {
             } catch (Exception ignored) {
             }
         }
+
         ft = getSupportFragmentManager().beginTransaction();
         if(position < 6 || position == 7) setActionBar("");
+
         switch (position) {
             case 0:
                 setActionBarTitle(getResources().getString(R.string.friends));
@@ -584,9 +583,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     ovk_api.newsfeed = new Newsfeed();
                     newsfeed_count = 25;
                 }
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
-                }
+                ((NewsfeedFragment) selectedFragment).autoLoad = true;
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 break;
@@ -675,21 +672,18 @@ public class AppActivity extends NetworkFragmentActivity {
                     message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
                 if (selectedFragment instanceof NewsfeedFragment) {
                     Spinner ab_spinner = ab_layout.findViewById(R.id.spinner);
-                    boolean notScroll = false;
-                    if(message == HandlerMessages.NEWSFEED_GET_GLOBAL ||
-                            message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
-                        notScroll = true;
-                    }
-                    if(selectedFragment instanceof NewsfeedFragment) {
-                        ((NewsfeedFragment) selectedFragment).loadAPIData(this, ovk_api,
-                                ab_spinner, isFromGlobalNewsfeed(message), notScroll);
-                    }
+                    boolean clear =
+                            message != HandlerMessages.NEWSFEED_GET_MORE &&
+                            message != HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
+
+                    ((NewsfeedFragment) selectedFragment).loadAPIData(
+                            this, ovk_api, ab_spinner, isFromGlobalNewsfeed(message), clear
+                    );
                     progressLayout.setVisibility(View.GONE);
-                    if(ovk_api.newsfeed.getWallPosts().size() > 0) {
+                    if(ovk_api.newsfeed.getWallPosts().size() > 0)
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    } else {
+                    else
                         setErrorPage(data, "ovk", message, false);
-                    }
                 }
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 ovk_api.messages.getConversations(ovk_api.wrapper);
@@ -699,7 +693,8 @@ public class AppActivity extends NetworkFragmentActivity {
                         global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
                 if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).setScrollingPositions(this, true, true);
+                    ((NewsfeedFragment) selectedFragment)
+                            .setScrollingPositions(this, true, true);
                 }
             } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
                 if(selectedFragment instanceof NewsfeedFragment) {
@@ -824,10 +819,10 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (selectedFragment instanceof GroupsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    ((GroupsFragment) selectedFragment).createAdapter(this, groupsList);
+                    ((GroupsFragment) selectedFragment).setScrollingPositions(this,
+                            old_friends_size != ovk_api.groups.getList().size());
                 }
-                groupsFragment.createAdapter(this, groupsList);
-                groupsFragment.setScrollingPositions(this,
-                        old_friends_size != ovk_api.groups.getList().size());
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
                 ovk_api.friends.parse(data.getString("response"), ovk_api.dlman,
                         false, true);
@@ -1037,15 +1032,18 @@ public class AppActivity extends NetworkFragmentActivity {
 
     private void activateLongPollService() {
         OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
-        client_info = SecureCredentialsStorage.generateClientInfo(this, client_info);
+        client_info = SecureCredentialsStorage.generateClientInfo(this, client_info, false);
         ovk_app.longPollService =
                 new LongPollService(this, handler, client_info);
         ovk_app.longPollService.setProxyConnection(
                 global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_address", ""));
-        ovk_app.longPollService.run(instance_prefs.
-                        getString("server", ""), longPollServer.address, longPollServer.key,
-                longPollServer.ts, client_info);
+        ovk_app.longPollService.run(
+                instance_prefs.getString("server", ""),
+                instance_prefs.getString("access_token", ""),
+                longPollServer.address, longPollServer.key,
+                longPollServer.ts, client_info
+        );
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
@@ -1121,7 +1119,17 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void loadMoreNews() {
         if(ovk_api.newsfeed != null) {
-            ovk_api.newsfeed.get(ovk_api.wrapper, 25, ovk_api.newsfeed.next_from);
+            if(ovk_api.newsfeed.next_from > 0) {
+                ovk_api.newsfeed.get(ovk_api.wrapper, 25, ovk_api.newsfeed.next_from);
+            } else if (selectedFragment instanceof NewsfeedFragment) {
+                NewsfeedFragment fragment = ((NewsfeedFragment) selectedFragment);
+                if(fragment.getCount() > 2) {
+                    int lastPostIndex = fragment.getCount() - 2;
+                    WallPost post = fragment.getPost(lastPostIndex);
+                    if(post != null)
+                        ovk_api.newsfeed.get(ovk_api.wrapper, 25, post.post_id);
+                }
+            }
         }
     }
 

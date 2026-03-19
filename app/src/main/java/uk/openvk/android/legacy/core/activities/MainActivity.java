@@ -61,6 +61,7 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
+import uk.openvk.android.legacy.utils.AccountAuthenticator;
 
 public class MainActivity extends TranslucentActivity {
 
@@ -70,14 +71,16 @@ public class MainActivity extends TranslucentActivity {
     private View warn_view;
     private Handler handler;
     private OvkAlertDialog warn_dialog;
-    private ArrayList<InstanceAccount> accountArray;
+    private ArrayList<InstanceAccount> accounts = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+
         getAndroidAccounts();
+
         if(global_prefs.getBoolean("startupSplash", true)) {
             if (Global.isXmas() || Global.isXmas(this)) {
                 setContentView(R.layout.activity_splash_xmas);
@@ -148,9 +151,8 @@ public class MainActivity extends TranslucentActivity {
         public void run() {
             SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(
                     getApplicationContext());
-            SharedPreferences instance_prefs = getApplicationContext().
-                    getSharedPreferences("instance", 0);
-            if ((accountArray.size() == 0) &&
+
+            if (accounts.size() == 0 &&
                     !global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 Message msg = new Message();
                 msg.what = 0;
@@ -203,7 +205,7 @@ public class MainActivity extends TranslucentActivity {
     private void closeSplashScreen() {
         Context context = getApplicationContext();
         Intent intent;
-        if ((accountArray.size() == 0)) {
+        if ((accounts.size() == 0)) {
             intent = new Intent(context, AuthActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         } else {
@@ -214,41 +216,8 @@ public class MainActivity extends TranslucentActivity {
     }
 
     private void getAndroidAccounts() {
-        accountArray = new ArrayList<>();
-        AccountManager accountManager = AccountManager.get(this);
-        android.accounts.Account[] accounts = accountManager.getAccounts();
-        long current_uid = global_prefs.getLong("current_uid", 0);
-        String current_instance = global_prefs.getString("current_instance", "");
-        String package_name = getApplicationContext().getPackageName();
-        @SuppressLint("SdCardPath") String profile_path =
-                String.format("/data/data/%s/shared_prefs", package_name);
-        File prefs_directory = new File(profile_path);
-        File[] prefs_files = prefs_directory.listFiles();
-        String file_extension;
-        Context app_ctx = getApplicationContext();
-        accountArray.clear();
-        try {
-            for (File prefs_file : prefs_files) {
-                String filename = prefs_file.getName();
-                if (prefs_file.getName().startsWith("instance")
-                        && prefs_file.getName().endsWith(".xml")) {
-                    SharedPreferences prefs =
-                            getSharedPreferences(
-                                    filename.substring(0, filename.length() - 4), 0);
-                    String name = prefs.getString("account_name", "[Unknown account]");
-                    long uid = prefs.getLong("uid", 0);
-                    String server = prefs.getString("server", "");
-                    String accessToken = prefs.getString("access_token", "");
-                    if(server.length() > 0
-                            && accessToken.length() > 0) {
-                        InstanceAccount account = new InstanceAccount(name, uid, server);
-                        accountArray.add(account);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        AccountManager accountManager = AccountManager.get(getApplicationContext());
+        AccountAuthenticator.loadAccounts(this, accounts, accountManager, instance_prefs);
     }
 
     @Override

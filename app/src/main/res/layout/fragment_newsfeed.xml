@@ -40,33 +40,14 @@
             swiperefresh:return_to_top_duration="500"
             swiperefresh:return_to_header_duration="500">
 
-            <uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView
-                android:id="@+id/scrollView"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/news_listview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#e3e4e6"
-                android:descendantFocusability="blocksDescendants"
-                android:isScrollContainer="false"
-                tools:ignore="UselessParent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/news_listview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/window_bg_transparent"
-                        android:nestedScrollingEnabled="false"
-                        android:persistentDrawingCache="all"
-                        android:theme="@style/NewsItemTransparentBackground"
-                        android:visibility="visible" />
-
-                </LinearLayout>
-
-            </uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView>
+                android:layout_height="wrap_content"
+                android:background="@color/window_bg_transparent"
+                android:persistentDrawingCache="all"
+                android:theme="@style/NewsItemTransparentBackground"
+                android:visibility="visible" />
 
 
         </com.reginald.swiperefresh.CustomSwipeRefreshLayout>

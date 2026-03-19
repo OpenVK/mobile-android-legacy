@@ -31,10 +31,11 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
-public class Conversation {
+public class Conversation extends LazyEntity {
     public String title;
     public long peer_id;
     public int online;

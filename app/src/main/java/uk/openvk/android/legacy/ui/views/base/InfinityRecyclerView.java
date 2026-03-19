@@ -20,14 +20,13 @@
 package uk.openvk.android.legacy.ui.views.base;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
+import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnEndlessScrollListener;
 
 public class InfinityRecyclerView extends RecyclerView {
 
@@ -47,36 +46,16 @@ public class InfinityRecyclerView extends RecyclerView {
         super(context, attrs, defStyle);
     }
 
-    public void setOnRecyclerScrollListener(final OnRecyclerScrollListener listener) {
+    public void setOnRecyclerScrollListener(final InfinityRecyclerViewScrollListener listener) {
         try {
             if (this.listener != null) {
                 removeOnScrollListener(this.listener);
             }
+            addOnScrollListener(listener);
+            this.listener = listener;
         } catch (Exception ignored) {
 
         }
-        this.listener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-                if (!isLoading) {
-                    if (linearLayoutManager != null &&
-                            linearLayoutManager.findLastCompletelyVisibleItemPosition() == getAdapter().getItemCount() - 6) {
-                        listener.onRecyclerScroll(recyclerView, dx, dy);
-                        isLoading = true;
-                    }
-                }
-            }
-        };
-        addOnScrollListener(this.listener);
     }
 
     public void setLoading(boolean loading) {

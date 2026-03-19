@@ -37,21 +37,22 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.OpenVKAPI;
-import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
-import uk.openvk.android.legacy.core.listeners.OnRecyclerScrollListener;
+import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnEndlessScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 import uk.openvk.android.legacy.ui.views.TabSelector;
+import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class FriendsFragment extends ActiveFragment {
     public TextView titlebar_title;
@@ -123,44 +124,63 @@ public class FriendsFragment extends ActiveFragment {
         }
     }
 
-    private void adjustLayoutSize(Context ctx, int orientation) {
+    private void adjustLayoutSize(final Context ctx, int orientation) {
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
+        RecyclerView.LayoutManager lm = null;
+
         if(app.isTablet && app.swdp >= 760 && (orientation == Configuration.ORIENTATION_LANDSCAPE)) {
             // Linking WGLM to ListView for Friends tab
-            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+            lm = new WrappedGridLayoutManager(ctx, 3);
+            ((WrappedGridLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(lm);
             if(getActivity() instanceof AppActivity) {
                 // Linking WGLM to ListView for Requests tab
-                glm = new WrappedGridLayoutManager(ctx, 3);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+                lm = new WrappedGridLayoutManager(ctx, 3);
+                ((WrappedGridLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(lm);
             }
         } else if(app.isTablet && app.swdp >= 600) {
             // Linking WGLM to ListView for Friends tab
-            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(glm);
+            lm = new WrappedGridLayoutManager(ctx, 2);
+            ((WrappedGridLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(lm);
 
             if(getActivity() instanceof AppActivity) {
                 // Linking WGLM to ListView for Requests tab
-                glm = new WrappedGridLayoutManager(ctx, 2);
-                glm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(glm);
+                lm = new WrappedGridLayoutManager(ctx, 2);
+                ((WrappedGridLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(lm);
             }
         } else {
             // Linking WGLM to ListView for Friends tab
-            LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
-            llm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(llm);
+            lm = new WrappedLinearLayoutManager(ctx);
+            ((WrappedLinearLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+            ((RecyclerView) view.findViewById(R.id.friends_listview)).setLayoutManager(lm);
 
             if(getActivity() instanceof AppActivity) {
                 // Linking WGLM to ListView for Requests tab
-                llm = new WrappedLinearLayoutManager(ctx);
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(llm);
+                lm = new WrappedLinearLayoutManager(ctx);
+                ((WrappedLinearLayoutManager) lm).setOrientation(LinearLayoutManager.VERTICAL);
+                ((RecyclerView) view.findViewById(R.id.requests_view)).setLayoutManager(lm);
             }
         }
+
+        InfinityRecyclerViewScrollListener listener = new InfinityRecyclerViewScrollListener(lm) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                OpenVKAPI ovk_api = null;
+                if(ctx instanceof AppActivity) {
+                    ovk_api = ((AppActivity) ctx).ovk_api;
+                } else if(ctx instanceof FriendsIntentActivity) {
+                    ovk_api = ((FriendsIntentActivity) ctx).ovk_api;
+                } else {
+                    return;
+                }
+                Global.loadMoreFriends(ovk_api);
+            }
+        };
+
+        friendsListView.setOnRecyclerScrollListener(listener);
     }
 
     public int getCount() {
@@ -228,20 +248,6 @@ public class FriendsFragment extends ActiveFragment {
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         friendsListView.setLoading(!infinity_scroll);
-        friendsListView.setOnRecyclerScrollListener(new OnRecyclerScrollListener() {
-            @Override
-            public void onRecyclerScroll(RecyclerView recyclerView, int x, int y) {
-                OpenVKAPI ovk_api = null;
-                if(ctx instanceof AppActivity) {
-                    ovk_api = ((AppActivity) ctx).ovk_api;
-                } else if(ctx instanceof FriendsIntentActivity) {
-                    ovk_api = ((FriendsIntentActivity) ctx).ovk_api;
-                } else {
-                    return;
-                }
-                Global.loadMoreFriends(ovk_api);
-            }
-        });
     }
 
     private void setupTabHost(TabHost tabhost, String where) {

@@ -30,13 +30,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
-public class Group implements Parcelable {
+public class Group extends LazyEntity implements Parcelable {
     public String name;
-    public long id;
     public boolean verified;
     private JSONParser jsonParser;
     public String screen_name;
@@ -76,11 +76,7 @@ public class Group implements Parcelable {
                     screen_name = group.getString("screen_name");
                 }
                 if(group.has("verified")) {
-                    if (group.getInt("verified") == 1) {
-                        verified = true;
-                    } else {
-                        verified = false;
-                    }
+                    verified = group.getInt("verified") == 1;
                 } else {
                     verified = false;
                 }
@@ -162,21 +158,25 @@ public class Group implements Parcelable {
 
 
     public void downloadAvatar(DownloadManager downloadManager, String quality) {
-        if(quality.equals("medium")) {
-            downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
-                    "group_avatars");
-        } else if(quality.equals("high")) {
-            if(avatar_hsize_url.length() == 0) {
-                avatar_hsize_url = avatar_msize_url;
-            }
-            downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
-                    "group_avatars");
-        } else if(quality.equals("original")) {
-            if(avatar_osize_url.length() == 0) {
-                avatar_osize_url = avatar_msize_url;
-            }
-            downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
-                    "group_avatars");
+        switch (quality) {
+            case "medium":
+                downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
+                        "group_avatars");
+                break;
+            case "high":
+                if (avatar_hsize_url.length() == 0) {
+                    avatar_hsize_url = avatar_msize_url;
+                }
+                downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
+                        "group_avatars");
+                break;
+            case "original":
+                if (avatar_osize_url.length() == 0) {
+                    avatar_osize_url = avatar_msize_url;
+                }
+                downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
+                        "group_avatars");
+                break;
         }
     }
 
@@ -239,6 +239,8 @@ public class Group implements Parcelable {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            entityType = LazyEntity.REAL_ENTITY;
         }
     }
 }

@@ -86,13 +86,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
 
     public ProgressDialog connectionDialog;
     public StringBuilder response_sb;
-    public JSONObject json_response;
-    public String connectionErrorString;
     public boolean connection_status;
-    public String send_request;
     public Boolean inputStream_isClosed;
     public long owner_id;
-    private Wall wall;
     public Handler handler;
     private long account_id;
     private String account_first_name;
@@ -151,10 +147,6 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 global_prefs_editor = global_prefs.edit();
                 instance_prefs_editor = instance_prefs.edit();
                 inputStream_isClosed = false;
-                server = getApplicationContext().getSharedPreferences("instance", 0)
-                        .getString("server", "");
-                auth_token = getApplicationContext().getSharedPreferences("instance", 0)
-                        .getString("auth_token", "");
                 if (owner_id == 0) {
                     finish();
                 }

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -37,6 +38,63 @@ public class UsersCacheDB extends CacheDatabase {
 
     public static String prefix = "users";
 
+    public static class CacheOpenHelper extends SQLiteOpenHelper {
+
+        public CacheOpenHelper(Context ctx, String db_name) {
+            super(ctx, db_name, null, 1);
+        }
+
+        public CacheOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase database) {
+            CacheDatabaseTables.createUsersTables(database, false);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase database, int oldVer, int newVer) {
+            if (oldVer == 1 && newVer >= oldVer) {
+                // TODO: Add database auto-upgrade to new versions
+                return;
+            }
+            onCreate(database);
+        }
+
+        @Override // android.database.sqlite.SQLiteOpenHelper
+        public SQLiteDatabase getWritableDatabase() {
+            while (true) {
+                try {
+                    SQLiteDatabase db = super.getWritableDatabase();
+                    db.setLockingEnabled(false);
+                    return db;
+                } catch (Exception ex) {
+                    try {
+                        Thread.sleep(100L);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+
+        @Override // android.database.sqlite.SQLiteOpenHelper
+        public SQLiteDatabase getReadableDatabase() {
+            while (true) {
+                try {
+                    SQLiteDatabase db = super.getReadableDatabase();
+                    db.setLockingEnabled(false);
+                    return db;
+                } catch (Exception ex) {
+                    try {
+                        Thread.sleep(100L);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+    }
+
     public static ArrayList<Friend> getFriendsList(Context ctx) {
         try {
             Cursor cursor = null;
@@ -47,7 +105,7 @@ public class UsersCacheDB extends CacheDatabase {
             SQLiteDatabase db = helper.getReadableDatabase();
             ArrayList<Friend> result = new ArrayList<>();
             try {
-                cursor = db.query("users", null, "is_friend=1",
+                cursor = db.query("friends", null, "",
                         null, null, null, null);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -90,44 +148,40 @@ public class UsersCacheDB extends CacheDatabase {
             );
             SQLiteDatabase db = helper.getWritableDatabase();
             try {
-                ContentValues values = new ContentValues();
+                ContentValues user_values = new ContentValues();
                 db.beginTransaction();
                 if (replace) {
-                    values.put("is_friend", (Boolean) false);
-                    db.update("users", values, null, null);
+                    db.update("users", user_values, null, null);
                 }
                 for (User user : users) {
-                    values.clear();
-                    values.put("user_id", user.id);
-                    values.put("first_name", user.first_name);
-                    values.put("last_name", user.last_name);
-                    values.put("photo_small", user.avatar_url);
-                    values.put("is_friend", true);
-                    values.put("sex", user.sex);
+                    user_values.clear();
+                    user_values.put("user_id", user.id);
+                    user_values.put("first_name", user.first_name);
+                    user_values.put("last_name", user.last_name);
+                    user_values.put("photo_small", user.avatar_url);
+                    user_values.put("sex", user.sex);
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
                         db.insertWithOnConflict("users", null,
-                                values, 5);
+                                user_values, 5);
                     } else {
-                        db.insert("users", null, values);
+                        db.insert("users", null, user_values);
                     }
+
                     if (user.birthdate != null && user.birthdate.length() > 0) {
-                        values.clear();
-                        values.put("id", user.id);
+                        ContentValues birthday_values = new ContentValues();
+                        birthday_values.put("id", user.id);
                         String[] bd = user.birthdate.split("\\.");
                         if (bd.length > 1) {
-                            values.put("bday", Integer.parseInt(bd[0]));
-                            values.put("bmonth", Integer.parseInt(bd[1]));
-                            if (bd.length > 2) {
-                                values.put("byear", Integer.parseInt(bd[2]));
-                            } else {
-                                values.put("byear", (Integer) 0);
-                            }
+                            birthday_values.put("bday", Integer.parseInt(bd[0]));
+                            birthday_values.put("bmonth", Integer.parseInt(bd[1]));
+                            birthday_values.put("byear", bd.length > 2 ? Integer.valueOf(Integer.parseInt(bd[2])) : (Integer) 0);
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                            db.insertWithOnConflict("users", null,
-                                    values, 5);
+                            db.insertWithOnConflict("birthdays", null,
+                                    birthday_values, 5);
                         } else {
-                            db.insert("users", null, values);
+                            db.insert("users", null, birthday_values);
                         }
                     }
                 }
@@ -189,5 +243,44 @@ public class UsersCacheDB extends CacheDatabase {
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    public static boolean isExist(Context ctx, SQLiteDatabase db, long user_id) {
+        boolean result = false;
+        try {
+            String table_name = "users";
+            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
+                    "`user_id`=" + user_id,
+                    null, null, null, null);
+            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static boolean isExist(Context ctx, long user_id) {
+        boolean result = false;
+        CacheDatabase.CacheOpenHelper helper =
+                new CacheDatabase.CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
+        SQLiteDatabase db = helper.getWritableDatabase();
+        try {
+            String table_name = "users";
+            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
+                    "`user_id`=" + user_id,
+                    null, null, null, null);
+            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        db.close();
+        helper.close();
+        return result;
+    }
+
+    public static void addUser(Context ctx, User user) {
+
     }
 }

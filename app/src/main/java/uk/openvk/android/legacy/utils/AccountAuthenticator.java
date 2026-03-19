@@ -35,7 +35,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -124,8 +123,13 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         File[] prefs_files = prefs_directory.listFiles();
         String file_extension;
         String account_names[] = new String[0];
+
         Context app_ctx = ctx.getApplicationContext();
-        accountArray.clear();
+        if(accountArray == null)
+            accountArray = new ArrayList<>();
+        else
+            accountArray.clear();
+
         try {
             for (File prefs_file : prefs_files) {
                 String filename = prefs_file.getName();
@@ -134,10 +138,14 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     SharedPreferences prefs =
                             ctx.getSharedPreferences(
                                     filename.substring(0, filename.length() - 4), 0);
+
                     String name = prefs.getString("account_name", "");
                     long uid = prefs.getLong("uid", 0);
                     String server = prefs.getString("server", "");
-                    if (server.length() > 0 && uid > 0 && name.length() > 0) {
+                    String accessToken = prefs.getString("access_token", "");
+
+                    if (server.length() > 0 && uid > 0
+                            && name.length() > 0 && accessToken.length() > 0) {
                         InstanceAccount account = new InstanceAccount(name, uid, server);
                         try {
                             accountArray.add(account);
@@ -147,6 +155,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     }
                 }
             }
+
             account_names = new String[accounts.length];
             for (int i = 0; i < accounts.length; i++) {
                 if (accounts[i] != null &&
@@ -175,6 +184,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         long current_uid = global_prefs.getLong("current_uid", 0);
         String current_instance = global_prefs.getString("current_instance", "");
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
         String package_name = ctx.getApplicationContext().getPackageName();
         @SuppressLint("SdCardPath") String profile_path =
                 String.format("/data/data/%s/shared_prefs", package_name);
@@ -192,7 +202,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     SharedPreferences prefs =
                             ctx.getSharedPreferences(
                                     filename.substring(0, filename.length() - 4), 0);
-                    String name = prefs.getString("account_name", "[Unknown account]");
+                    String name = prefs.getString("account_name", "");
                     long uid = prefs.getLong("uid", 0);
                     String server = prefs.getString("server", "");
                     if(server.length() > 0 && uid > 0 && name.length() > 0) {
@@ -211,6 +221,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
         if(accountArray.size() > 0) {
             builder.setSingleChoiceItems(account_names, valuePos,
                     new DialogInterface.OnClickListener() {
@@ -246,6 +257,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                             }
                         }
                     });
+
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                     ctx.getResources().getString(R.string.add),
                     new DialogInterface.OnClickListener() {
@@ -288,8 +300,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                 DownloadManager dlm = new DownloadManager(ctx,
                         SecureCredentialsStorage.generateClientInfo(
                                 ctx,
-                                new HashMap<String, Object>()
-                        ),
+                                new HashMap<String, Object>(),
+                                true),
                         new Handler(Looper.myLooper()));
                 dlm.clearCache(ctx.getCacheDir());
                 Intent activity = new Intent(ctx.getApplicationContext(), MainActivity.class);
