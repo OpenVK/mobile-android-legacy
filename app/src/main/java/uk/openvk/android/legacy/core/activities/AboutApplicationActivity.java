@@ -155,20 +155,25 @@ public class AboutApplicationActivity extends TranslucentActivity {
                     R.string.app_disclaimer,
                     String.format("http://%s", instance_prefs.getString("server", "")))));
         } else {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 String serverAddr2 = "https://" +
                         getResources().getString(R.string.default_instance).replace("api.", "");
                 app_author_label.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_author_value, serverAddr2)
+                        getResources().getString(R.string.app_author_value, serverAddr2),
+                         Html.FROM_HTML_MODE_COMPACT
                 ));
                 app_devteam_label.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_devteam, serverAddr2, serverAddr2)
+                        getResources().getString(R.string.app_devteam, serverAddr2, serverAddr2),
+                        Html.FROM_HTML_MODE_COMPACT
                 ));
                 app_links.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_links_text, serverAddr2, serverAddr2)));
+                        getResources().getString(R.string.app_links_text, serverAddr2, serverAddr2),
+                        Html.FROM_HTML_MODE_COMPACT));
                 app_disclaimer_label.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_disclaimer,
-                                serverAddr2)));
+                            getResources().getString(R.string.app_disclaimer, serverAddr2),
+                            Html.FROM_HTML_MODE_COMPACT
+                        )
+                );
             } else {
                 String serverAddr2 = "http://" +
                         getResources().getString(R.string.default_instance_no_https)
