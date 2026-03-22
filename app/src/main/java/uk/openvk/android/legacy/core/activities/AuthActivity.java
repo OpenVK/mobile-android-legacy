@@ -95,7 +95,7 @@ public class AuthActivity extends NetworkAuthActivity {
             });
         }
         final EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             instance_edit.setText(getResources().getText(R.string.default_instance));
         } else {
             instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
@@ -208,7 +208,7 @@ public class AuthActivity extends NetworkAuthActivity {
             }
         }
         if (instance.contains("vkontakte.ru") || instance.contains("vk.com") || instance.contains("vk.ru")) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 instance_edit.setText(getResources().getText(R.string.default_instance));
             } else {
                 instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
