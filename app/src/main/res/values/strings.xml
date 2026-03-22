@@ -49,6 +49,8 @@
 
 	<string-array name="proxy_type" translable="false">
 		<item>HTTP</item>
+		<item>HTTPS</item>
+		<item>SelfEco Relay</item>
 	</string-array>
 
     <string-array name="connection_error_reasons">
@@ -172,8 +174,6 @@
 	<string name="mail">E-mail</string>
 	<string name="password">Password</string>
 	<string name="log_in">Log in</string>
-	<string name="default_instance" translatable="false">openvk.uk</string>
-	<string name="default_instance_no_https" translatable="false">openvk.xyz</string>
 	<string name="auth_error_title">Error logging in</string>
 	<string name="auth_error">An error occurred while trying to log in. Please check your login and password and try again.</string>
     <string name="auth_error_https_disabled">To ensure a HTTPS connection, the device must be enabled.

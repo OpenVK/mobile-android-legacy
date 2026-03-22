@@ -1,5 +1,6 @@
 package uk.openvk.android.legacy.api.wrappers;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Build;
@@ -25,8 +26,15 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
@@ -72,6 +80,7 @@ public class OvkAPIWrapper {
     private String client_name = "openvk_legacy_android";
     public Handler handler;
     OvkAPIListeners apiListeners;
+    private String relayAddress;
 
 
     public OvkAPIWrapper(Context ctx, boolean use_https, boolean legacy_mode, Handler handler) {
@@ -162,27 +171,74 @@ public class OvkAPIWrapper {
         this.access_token = token;
     }
 
-    public void setProxyConnection(boolean useProxy, String address) {
+    public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
             if(useProxy) {
+                proxy_type = type;
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        if(type.startsWith("http")) {
+                            httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        }
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-                                .writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
-                                        new InetSocketAddress(address_array[0],
-                                        Integer.valueOf(address_array[1])))).build();
+                        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(30, TimeUnit.SECONDS)
+                                .readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false);
+                        if(type.startsWith("http")) {
+                            httpClientBuilder = httpClientBuilder.proxy(
+                                    new Proxy(Proxy.Type.HTTP,
+                                            new InetSocketAddress(address_array[0],
+                                                    Integer.valueOf(address_array[1])
+                                            )
+                                    )
+                            );
+                            if (type.equals("https")) {
+                                // Set custom TrustManager for HTTPS proxies
+                                final TrustManager[] trustAllCerts = new TrustManager[]{
+                                        new X509TrustManager() {
+                                            @SuppressLint("TrustAllX509TrustManager")
+                                            @Override
+                                            public void checkClientTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @SuppressLint("TrustAllX509TrustManager")
+                                            @Override
+                                            public void checkServerTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                                return new java.security.cert.X509Certificate[]{};
+                                            }
+                                        }
+                                };
+                                final SSLContext sslContext = SSLContext.getInstance("SSL");
+                                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                                final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+                                httpClientBuilder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+                            }
+                            httpClient = httpClientBuilder.build();
+                        }
                     }
-                    this.proxy_connection = true;
+                } else {
+                    relayAddress = String.format("http://%s", address);
                 }
+                this.proxy_connection = true;
+            } else {
+                proxy_type = "";
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
+
 
     private String generateUserAgent(Context ctx) {
         String version_name = "";
@@ -237,12 +293,35 @@ public class OvkAPIWrapper {
             @Override
             public void run() throws OutOfMemoryError {
                 try {
-                    if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                    if(legacy_mode) {
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx));
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if (legacy_mode) {
@@ -275,6 +354,16 @@ public class OvkAPIWrapper {
                                         throw new java.text.ParseException(String.format("Response data " +
                                                         "must be in JSON format only. Start of response: [%s]",
                                                 response_body.replace("\r", "").replace("\n", "")), 0);
+                                    }
+                                } else if(response_body.contains("\"error\"")) {
+                                    if(response_body.contains("\"2fa_app\"")) {
+                                        throw new IllegalAccessError(
+                                                "Authorization required for 2FA account"
+                                        );
+                                    } else {
+                                        throw new IllegalAccessError(
+                                                "Instance returns HTTP 200 code, but authorization could be completed"
+                                        );
                                     }
                                 }
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
@@ -309,7 +398,7 @@ public class OvkAPIWrapper {
                     } catch (ParseException e) {
                         e.printStackTrace();
                         sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
-                    } catch (HttpClientException | IOException ex) {
+                    } catch (HttpClientException | IOException | IllegalAccessError ex) {
                         if (ex.getMessage().startsWith("Authorization required")) {
                             response_code = 401;
                             sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
@@ -320,6 +409,8 @@ public class OvkAPIWrapper {
                             if(response_code == 400) {
                                 sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                             }
+                        } else if(ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
+                            sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -361,12 +452,35 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                    if(legacy_mode) {
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx));
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if (legacy_mode) {
@@ -399,6 +513,16 @@ public class OvkAPIWrapper {
                                         throw new java.text.ParseException(String.format("Response data " +
                                                         "must be in JSON format only. Start of response: [%s]",
                                                 response_body), 0);
+                                    }
+                                } else if(response_body.contains("\"error\"")) {
+                                    if(response_body.contains("\"2fa_app\"")) {
+                                        throw new IllegalAccessError(
+                                                "Authorization required for 2FA account"
+                                        );
+                                    } else {
+                                        throw new IllegalAccessError(
+                                                "Instance returns HTTP 200 code, but authorization could be completed"
+                                        );
                                     }
                                 }
                                 sendMessage(HandlerMessages.AUTHORIZED, response_body);
@@ -441,7 +565,7 @@ public class OvkAPIWrapper {
                     } catch (ParseException e) {
                         e.printStackTrace();
                         sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
-                    } catch (IOException | HttpClientException ex) {
+                    } catch (IOException | HttpClientException | IllegalAccessError ex) {
                         if (ex.getMessage().startsWith("Authorization required")) {
                             response_code = 401;
                             sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
@@ -452,6 +576,8 @@ public class OvkAPIWrapper {
                             if(response_code == 400) {
                                 sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                             }
+                        } else if(ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
+                            sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
                         }
                     } catch (Exception e) {
                         sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
@@ -501,11 +627,34 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx));
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if (legacy_mode) {
@@ -521,6 +670,11 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if (response_code == 200) {
+                                 if(response_body.contains("\"error_msg\"")) {
+                                    throw new IllegalAccessError(
+                                            "Instance returns HTTP 200 code, but authorization could be completed"
+                                    );
+                                }
                                 if(logging_enabled) Log.d(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s): [%s]",
                                                 server, method, response_code, response_body));
@@ -604,10 +758,11 @@ public class OvkAPIWrapper {
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
-                    } catch (IOException | HttpClientException ex) {
+                    } catch (IOException | HttpClientException | IllegalAccessError ex) {
                         if (ex.getMessage().startsWith("Authorization required")) {
                             response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")
+                                || ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 4, ex.getMessage().length() - 1);
                             response_code = Integer.parseInt(code_str);
@@ -653,11 +808,34 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx));
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if(legacy_mode) {
@@ -672,6 +850,11 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
+                                 if(response_body.contains("\"error_msg\"")) {
+                                    throw new IllegalAccessError(
+                                            "Instance returns HTTP 200 code, but authorization could be completed"
+                                    );
+                                }
                                 if(logging_enabled) Log.d(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s): [%s]",
                                                 server, method, response_code, response_body));
@@ -745,10 +928,11 @@ public class OvkAPIWrapper {
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, error.description);
-                    } catch (IOException | HttpClientException ex) {
+                    } catch (IOException | HttpClientException | IllegalAccessError ex) {
                         if (ex.getMessage().startsWith("Authorization required")) {
                             response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")
+                                || ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);
@@ -800,11 +984,34 @@ public class OvkAPIWrapper {
             public void run() {
                 try {
                     if(legacy_mode) {
-                        request_legacy = httpClientLegacy.get(fUrl);
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", fUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(fUrl)
-                                .addHeader("User-Agent", generateUserAgent(ctx)).build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .addHeader("User-Agent", generateUserAgent(ctx));
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), fUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
                     try {
                         if(legacy_mode) {
@@ -820,6 +1027,11 @@ public class OvkAPIWrapper {
                         }
                         if (response_body.length() > 0) {
                             if(response_code == 200) {
+                                 if(response_body.contains("\"error_msg\"")) {
+                                    throw new IllegalAccessError(
+                                            "Instance returns HTTP 200 code, but authorization could be completed"
+                                    );
+                                }
                                 if(logging_enabled) Log.d(OvkApplication.API_TAG,
                                         String.format("Getting response from %s (%s, %s):\r\n[%s]",
                                                 server, method, response_code, response_body));
@@ -900,10 +1112,11 @@ public class OvkAPIWrapper {
                                 String.format("Connection error: %s", e.getMessage()));
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, error.description);
-                    } catch (IOException | HttpClientException ex) {
+                    } catch (IOException | HttpClientException | IllegalAccessError ex) {
                         if (ex.getMessage().startsWith("Authorization required")) {
                             response_code = 401;
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                        } else if(ex.getMessage().startsWith("Expected status code 2xx")
+                                || ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);

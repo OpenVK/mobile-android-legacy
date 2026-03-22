@@ -26,8 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
-
 import java.util.ArrayList;
 import java.util.Timer;
 
@@ -43,6 +41,7 @@ import uk.openvk.android.legacy.api.wrappers.DownloadManager;
 import uk.openvk.android.legacy.api.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.core.activities.AboutApplicationActivity;
 import uk.openvk.android.legacy.core.activities.MainActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActivePreferenceFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.core.activities.AppActivity;
@@ -67,7 +66,7 @@ import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
  *  Source code: https://github.com/openvk/mobile-android-legacy
  **/
 
-public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
+public class MainSettingsFragment extends ActivePreferenceFragment {
     private boolean isQuiting;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
@@ -79,9 +78,9 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     public  int selectedPosition;
     private ArrayList<InstanceAccount> accountArray;
 
-    @SuppressWarnings("ConstantConditions")
     @Override
-    public void onCreatePreferencesFix(Bundle bundle, String s) {
+    public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance_prefs = ((OvkApplication) getContext().getApplicationContext()).getAccountPreferences();
         Bundle data = getActivity().getIntent().getExtras();
@@ -104,8 +103,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompatDividers {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setDividerPreferences(DIVIDER_PADDING_CHILD | DIVIDER_CATEGORY_AFTER_LAST | DIVIDER_CATEGORY_BETWEEN);
         view.setBackgroundColor(getResources().getColor(R.color.white));
+        setDivider(null);
     }
 
     private void setListeners() {

@@ -329,7 +329,9 @@ public class AppActivity extends NetworkFragmentActivity {
         MenuInflater inflater = getMenuInflater();
         try {
             inflater.inflate(menu_id, menu);
-            if (ovk_api.account == null || ovk_api.account.id == 0) {
+            if (ovk_api.account == null
+                    || ovk_api.account.id == 0
+                    || ovk_api.account.first_name == null) {
                 menu.findItem(R.id.newpost).setVisible(false);
             }
         } catch (Exception ex) {
@@ -695,12 +697,17 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
             }
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                String profile_name =
-                        String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name);
-                instance_prefs_editor.putString("profile_name", profile_name);
-                instance_prefs_editor.commit();
-                mainSettingsFragment.setAccount(ovk_api.account);
-                slidingmenuLayout.setProfileName(profile_name);
+                if(ovk_api.account != null && ovk_api.account.first_name != null) {
+                    String profile_name;
+                    if(ovk_api.account.last_name != null)
+                        profile_name = String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name);
+                    else
+                        profile_name = ovk_api.account.first_name;
+                    instance_prefs_editor.putString("profile_name", profile_name);
+                    instance_prefs_editor.commit();
+                    mainSettingsFragment.setAccount(ovk_api.account);
+                    slidingmenuLayout.setProfileName(profile_name);
+                }
                 ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
                 ovk_api.messages.getLongPollServer(ovk_api.wrapper);
                 if(selectedFragment == newsfeedFragment) {

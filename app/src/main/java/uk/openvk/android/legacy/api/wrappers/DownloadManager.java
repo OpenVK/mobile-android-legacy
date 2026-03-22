@@ -25,11 +25,14 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
@@ -72,6 +75,9 @@ public class DownloadManager {
     private String instance;
     OvkAPIListeners apiListeners;
     Handler handler;
+    private String proxy_type;
+    private boolean proxy_connection;
+    private String relayAddress;
 
     public DownloadManager(Context ctx, boolean use_https, boolean legacy_mode, Handler handler) {
         this.handler = handler;
@@ -151,21 +157,65 @@ public class DownloadManager {
         forceCaching = value;
     }
 
-    public void setProxyConnection(boolean useProxy, String address) {
+    public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
+            proxy_type = type;
             if(useProxy) {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
                     if (legacy_mode) {
-                        httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        if(type.startsWith("http")) {
+                            httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
+                        }
                     } else {
-                        httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-                                .writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
-                                .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP,
-                                        new InetSocketAddress(address_array[0],
-                                        Integer.valueOf(address_array[1])))).build();
+                        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+                                .connectTimeout(30, TimeUnit.SECONDS)
+                                .writeTimeout(30, TimeUnit.SECONDS)
+                                .readTimeout(30, TimeUnit.SECONDS)
+                                .retryOnConnectionFailure(false);
+                        if(type.startsWith("http")) {
+                            httpClientBuilder = httpClientBuilder.proxy(
+                                    new Proxy(Proxy.Type.HTTP,
+                                            new InetSocketAddress(address_array[0],
+                                                    Integer.valueOf(address_array[1])
+                                            )
+                                    )
+                            );
+                            if (type.equals("https")) {
+                                // Set custom TrustManager for HTTPS proxies
+                                final TrustManager[] trustAllCerts = new TrustManager[]{
+                                        new X509TrustManager() {
+                                            @SuppressLint("TrustAllX509TrustManager")
+                                            @Override
+                                            public void checkClientTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public void checkServerTrusted(
+                                                    java.security.cert.X509Certificate[] chain, String authType
+                                            ) {
+                                            }
+
+                                            @Override
+                                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                                return new java.security.cert.X509Certificate[]{};
+                                            }
+                                        }
+                                };
+                                final SSLContext sslContext = SSLContext.getInstance("SSL");
+                                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+                                final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+                                httpClientBuilder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+                            }
+                            httpClient = httpClientBuilder.build();
+                        }
                     }
+                } else {
+                    relayAddress = String.format("http://%s", address);
                 }
+                this.proxy_connection = true;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -276,12 +326,34 @@ public class DownloadManager {
                             }
 
                             if (legacy_mode) {
-                                request_legacy = httpClientLegacy.get(url);
+                                request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                        httpClientLegacy.post(relayAddress) : httpClientLegacy.get(url);
+
+                                // Use SelfEco Relay as alternative proxy connection
+                                // default: http://minvk.ru/apirelay.php (POST)
+
+                                if(proxy_type.equals("selfeco-relay")) {
+                                    request_legacy.content(
+                                            String.format("%s", url).getBytes(),
+                                            null
+                                    );
+                                }
                             } else {
-                                request = new Request.Builder()
-                                        .url(url)
-                                        .addHeader("User-Agent", generateUserAgent(ctx))
-                                        .build();
+                                Request.Builder builder = new Request.Builder()
+                                        .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : url)
+                                        .addHeader("User-Agent", generateUserAgent(ctx));
+
+                                // Use SelfEco Relay as alternative proxy connection
+                                // default: http://minvk.ru/apirelay.php (POST)
+
+                                if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                                    builder.post(
+                                            RequestBody.create(
+                                                    MediaType.parse("text/plain"), url
+                                            )
+                                    );
+                                }
+                                request = builder.build();
                             }
 
                             if (legacy_mode) {
@@ -469,14 +541,38 @@ public class DownloadManager {
 
                     if(logging_enabled) Log.v("DownloadManager",
                             String.format("Downloading %s...", short_address));
+
                     if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(url);
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(url);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", url).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(url)
-                                .addHeader("User-Agent", generateUserAgent(ctx))
-                                .build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : url)
+                                .addHeader("User-Agent", generateUserAgent(ctx));
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), url
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
+
                     try {
                         if (legacy_mode) {
                             HttpResponse response = request_legacy.execute();

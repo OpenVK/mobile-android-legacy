@@ -89,8 +89,11 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
         };
         ovk_api = new OvkAPIWrapper(this, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false), handler);
-        ovk_api.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
+        ovk_api.setProxyConnection(
+                global_prefs.getBoolean("useProxy", false),
+                global_prefs.getString("proxy_type", ""),
+                global_prefs.getString("proxy_address", "")
+        );
         ovk_api.setServer(instance_prefs.getString("server", ""));
         ovk = new Ovk();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

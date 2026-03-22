@@ -64,8 +64,11 @@ public class OpenVKAPI {
                      android.os.Handler handler) {
         wrapper = new OvkAPIWrapper(ctx, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false), handler);
-        wrapper.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
+        wrapper.setProxyConnection(
+                global_prefs.getBoolean("useProxy", false),
+                global_prefs.getString("proxy_type", ""),
+                global_prefs.getString("proxy_address", "")
+        );
         if(instance_prefs != null && instance_prefs.contains("server")) {
             wrapper.setServer(instance_prefs.getString("server", ""));
             wrapper.setAccessToken(instance_prefs.getString("access_token", ""));
@@ -76,7 +79,9 @@ public class OpenVKAPI {
             dlman.setInstance(instance_prefs.getString("server", ""));
         }
         dlman.setProxyConnection(global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
+                global_prefs.getString("proxy_type", ""),
+                global_prefs.getString("proxy_address", "")
+        );
         dlman.setForceCaching(global_prefs.getBoolean("forcedCaching", true));
         ulman = new UploadManager(ctx, global_prefs.getBoolean("useHTTPS", true),
                 global_prefs.getBoolean("legacyHttpClient", false), handler);

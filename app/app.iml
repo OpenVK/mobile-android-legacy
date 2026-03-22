@@ -55,13 +55,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/fdroidConfig/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/fdroidConfig/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/fdroidConfig/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestFdroidConfig/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestFdroidConfig/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestFdroidConfig/assets" type="java-test-resource" />
@@ -69,6 +62,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestFdroidConfig/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestFdroidConfig/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestFdroidConfig/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testFdroidConfig/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/assets" type="java-resource" />
@@ -134,42 +134,20 @@
     <orderEntry type="library" exported="" name="Gradle: com.reginald.swiperefresh:library-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.squareup.okio:okio:1.14.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.android.support:preference-v14-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apmem.tools:layouts-1.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:animated-vector-drawable-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.readystatesoftware.systembartint:systembartint:1.0.3@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: ch.acra:acra:4.6.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:preference-v7-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.squareup.okhttp3:okhttp:3.10.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.seppius.plurals:android-i18n-plurals:1.1@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-annotations:24.0.0@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-vector-drawable-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.commit451:PhotoView-1.2.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.seppius.plurals:android-i18n-plurals-1.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:recyclerview-v7-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.takisoft.fix:preference-v7-24.0.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:support-v4-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.nostra13.universalimageloader:universal-image-loader:1.9.5@jar" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.android.support:appcompat-v7-24.0.0" level="project" />
-    <orderEntry type="module" module-name="actionbar" exported="" />
-    <orderEntry type="module" module-name="wrhttp" exported="" />
-    <orderEntry type="module" module-name="twemojicon" exported="" />
-    <orderEntry type="module" module-name="popupmenu" exported="" />
-    <orderEntry type="module" module-name="actionbar" exported="" />
-    <orderEntry type="module" module-name="wrhttp" exported="" />
-    <orderEntry type="module" module-name="twemojicon" exported="" />
-    <orderEntry type="module" module-name="popupmenu" exported="" />
-    <orderEntry type="module" module-name="actionbar" exported="" />
-    <orderEntry type="module" module-name="wrhttp" exported="" />
-    <orderEntry type="module" module-name="twemojicon" exported="" />
-    <orderEntry type="module" module-name="popupmenu" exported="" />
-    <orderEntry type="module" module-name="actionbar" exported="" />
-    <orderEntry type="module" module-name="wrhttp" exported="" />
-    <orderEntry type="module" module-name="twemojicon" exported="" />
-    <orderEntry type="module" module-name="popupmenu" exported="" />
-    <orderEntry type="module" module-name="actionbar" exported="" />
-    <orderEntry type="module" module-name="wrhttp" exported="" />
-    <orderEntry type="module" module-name="twemojicon" exported="" />
-    <orderEntry type="module" module-name="popupmenu" exported="" />
     <orderEntry type="module" module-name="actionbar" exported="" />
     <orderEntry type="module" module-name="wrhttp" exported="" />
     <orderEntry type="module" module-name="twemojicon" exported="" />

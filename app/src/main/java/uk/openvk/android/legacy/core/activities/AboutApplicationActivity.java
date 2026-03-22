@@ -138,9 +138,10 @@ public class AboutApplicationActivity extends TranslucentActivity {
         app_title.setText(getResources().getString(R.string.full_app_name));
         app_version_label.setText(getResources().getString(R.string.app_version_text,
                 BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
-        if(instance_prefs.getString("server", "").equals("openvk.su") ||
-                instance_prefs.getString("server", "").equals("openvk.uk") ||
-                instance_prefs.getString("server", "").equals("openvk.co")) {
+
+        String serverAddr = instance_prefs.getString("server", "");
+        if(serverAddr.equals(getResources().getString(R.string.default_instance)) ||
+                serverAddr.equals(getResources().getString(R.string.default_instance_no_https))) {
             app_author_label.setText(Html.fromHtml(
                     getResources().getString(R.string.app_author_value, "openvk://profile")));
             app_devteam_label.setText(Html.fromHtml(
@@ -148,37 +149,42 @@ public class AboutApplicationActivity extends TranslucentActivity {
                             "openvk://profile", "openvk://profile")));
             app_links.setText(Html.fromHtml(
                     getResources().getString(R.string.app_links_text,
-                    "openvk://group", String.format("http://%s", instance_prefs.getString("server", "")))));
+                    "openvk://group", String.format("http://%s",
+                                    serverAddr.replace("api.", "")))));
             app_disclaimer_label.setText(Html.fromHtml(getResources().getString(
                     R.string.app_disclaimer,
                     String.format("http://%s", instance_prefs.getString("server", "")))));
         } else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                String serverAddr2 = "https://" +
+                        getResources().getString(R.string.default_instance).replace("api.", "");
                 app_author_label.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_author_value,
-                                "https://openvk.uk/")));
+                        getResources().getString(R.string.app_author_value, serverAddr2)
+                ));
                 app_devteam_label.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_devteam,
-                                "https://openvk.uk/", "https://openvk.uk/")));
+                        getResources().getString(R.string.app_devteam, serverAddr2, serverAddr2)
+                ));
                 app_links.setText(Html.fromHtml(
-                        getResources().getString(R.string.app_links_text,
-                                "https://openvk.uk", "https://openvk.uk")));
+                        getResources().getString(R.string.app_links_text, serverAddr2, serverAddr2)));
                 app_disclaimer_label.setText(Html.fromHtml(
                         getResources().getString(R.string.app_disclaimer,
-                        "https://openvk.uk")));
+                                serverAddr2)));
             } else {
+                String serverAddr2 = "http://" +
+                        getResources().getString(R.string.default_instance_no_https)
+                        .replace("api.", "");
                 app_author_label.setText(Html.fromHtml(
                         getResources().getString(R.string.app_author_value,
-                                "http://openvk.co/")));
+                                serverAddr2)));
                 app_devteam_label.setText(Html.fromHtml(
                         getResources().getString(R.string.app_devteam,
-                                "http://openvk.co/", "http://openvk.co/")));
+                                serverAddr2, serverAddr2)));
                 app_links.setText(Html.fromHtml(
                         getResources().getString(R.string.app_links_text,
-                                "http://openvk.co", "http://openvk.co")));
+                                serverAddr2, serverAddr2)));
                 app_disclaimer_label.setText(Html.fromHtml(
                         getResources().getString(R.string.app_disclaimer,
-                        "http://openvk.co")));
+                                serverAddr2)));
             }
         }
         app_design_label.setText(Html.fromHtml(getResources().getString(R.string.app_design_value)));

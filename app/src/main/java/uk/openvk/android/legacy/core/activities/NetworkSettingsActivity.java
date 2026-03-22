@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -50,6 +51,7 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
     private SharedPreferences instance_prefs;
     private OvkApplication app;
     private View proxy_settings_view;
+    private int proxy_type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,30 +151,72 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
         final String[] proxy_types = getResources().getStringArray(R.array.proxy_type);
         proxy_type_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         proxy_type_spinner.setAdapter(proxy_type_adapter);
+        proxy_type_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                proxy_type = i;
+                proxy_port.setVisibility(i != 2 ? View.VISIBLE : View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 SharedPreferences.Editor editor = global_prefs.edit();
-                if(proxy_types[proxy_type_spinner.getSelectedItemPosition()].equals("HTTP")) {
-                    editor.putString("proxy_type", "http");
+                switch (proxy_type_spinner.getSelectedItemPosition()) {
+                    case 0:
+                        editor.putString("proxy_type", "http");
+                        break;
+                    case 1:
+                        editor.putString("proxy_type", "https");
+                        break;
+                    case 2:
+                        editor.putString("proxy_type", "selfeco-relay");
+                        break;
                 }
-                if(proxy_port.getText().length() > 0) {
-                    editor.putString("proxy_address", String.format("%s:%s",
-                            proxy_address.getText().toString(), proxy_port.getText().toString()));
+
+                if(proxy_port.getVisibility() == View.VISIBLE) {
+                    if (proxy_port.getText().length() > 0) {
+                        editor.putString("proxy_address", String.format("%s:%s",
+                                proxy_address.getText().toString(), proxy_port.getText().toString()));
+                    } else {
+                        editor.putString("proxy_address", String.format("%s:8080",
+                                proxy_address.getText().toString()));
+                    }
                 } else {
-                    editor.putString("proxy_address", String.format("%s:8080",
-                            proxy_address.getText().toString()));
+                    editor.putString("proxy_address",  proxy_address.getText().toString());
                 }
+
                 editor.commit();
                 if(global_prefs.contains("proxy_address")) {
                     if(global_prefs.getString("proxy_address", "").length() > 0) {
-                        ((Preference) findPreference("proxySettings")).setSummary(global_prefs.getString("proxy_address", ""));
+                        ((Preference) findPreference("proxySettings"))
+                                .setSummary(global_prefs.getString("proxy_address", ""));
                     }
                 }
             }
         });
+
+        switch (global_prefs.getString("proxy_type", "")) {
+            case "http":
+                proxy_type_spinner.setSelection(0);
+                proxy_type = 0;
+                break;
+            case "https":
+                proxy_type_spinner.setSelection(1);
+                proxy_type = 1;
+            case "selfeco-relay":
+                proxy_type_spinner.setSelection(2);
+                proxy_type = 2;
+        }
+
         builder.setNegativeButton(R.string.cancel, null);
+
         final OvkAlertDialog dialog = new OvkAlertDialog(this);
         dialog.build(builder, getResources().getString(R.string.sett_proxy_connection), "", proxy_settings_view);
         proxy_address.addTextChangedListener(new TextWatcher() {
@@ -183,9 +227,11 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(proxy_address.getText().length() > 0 && !proxy_address.getText().toString().contains(":") &&
-                        !proxy_address.getText().toString().contains("/") &&
-                        !proxy_address.getText().toString().contains("@")) {
+                if(proxy_address.getText().length() > 0
+                        && isValidCharactersInAddr(proxy_address.getText().toString())
+                        && proxy_type < 2) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                } else if(proxy_type == 2) {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 } else {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
@@ -199,18 +245,22 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
         });
         dialog.show();
         if(global_prefs.contains("proxy_address")) {
-            if (global_prefs.getString("proxy_address", "").length() > 0) {
-                String[] address_split = global_prefs.getString("proxy_address", "").split(":");
-                proxy_address.setText(address_split[0]);
-                proxy_port.setText(address_split[1]);
+            String proxy_faddr = global_prefs.getString("proxy_address", "");
+            if (proxy_faddr.length() > 0) {
+                String[] address_split = proxy_faddr.split(":");
+                if(address_split.length > 1) {
+                    proxy_address.setText(address_split[0]);
+                    proxy_port.setText(address_split[1]);
+                } else {
+                    proxy_address.setText(proxy_faddr);
+                }
             }
         }
-        if (proxy_address.getText().length() > 0 && !proxy_address.getText().toString().contains(":") &&
-                !proxy_address.getText().toString().contains("/") &&
-                !proxy_address.getText().toString().contains("@")) {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-        } else {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-        }
+    }
+
+    private boolean isValidCharactersInAddr(String address) {
+        return  !address.contains(":") &&
+                !address.contains("/") &&
+                !address.contains("@");
     }
 }
