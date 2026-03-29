@@ -68,7 +68,10 @@ public class ProgressLayout extends LinearLayout {
             } else {
                 setBackgroundColor(Color.parseColor("#e3e4e6"));
                 progressBar.setIndeterminateDrawable(
-                        getResources().getDrawable(R.drawable.progress_dark));
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
+                                getResources().getDrawable(R.drawable.progress_dark, getContext().getTheme()) :
+                                getResources().getDrawable(R.drawable.progress_dark)
+                );
             }
         }
     }

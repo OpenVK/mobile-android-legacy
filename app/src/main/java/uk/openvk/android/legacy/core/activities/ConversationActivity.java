@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import uk.openvk.android.client.entities.Message;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.enumerations.HandlerMessages;
@@ -80,9 +81,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
     public Conversation conversation;
     private ListView messagesList;
     private MessagesListAdapter conversation_adapter;
@@ -110,7 +108,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_conversation_msgs);
         conversation = new Conversation();
-        messagesList = (ListView) findViewById(R.id.conversation_msgs_listview);
+        messagesList = findViewById(R.id.conversation_msgs_listview);
         installLayouts();
         setConversationView();
         registerBroadcastReceiver();
@@ -142,7 +140,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 conv_title = extras.getString("conv_title");
                 peer_online = extras.getInt("online");
                 installLayouts();
-                conversation.getHistory(ovk_api.wrapper, peer_id);
+                ovk_api.messages.getConversationById(ovk_api.wrapper, peer_id);
             }
         } else {
             peer_id = savedInstanceState.getInt("peer_id");
@@ -228,7 +226,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 oom.printStackTrace();
             }
         }
-        actionBar = (ActionBar) findViewById(R.id.actionbar);
+        actionBar = findViewById(R.id.actionbar);
     }
 
     private void registerBroadcastReceiver() {
@@ -309,9 +307,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     }
 
     private void setConversationView() {
-        final ConversationPanel conversationPanel = (ConversationPanel)
-                findViewById(R.id.conversation_panel);
-        ((ImageButton) conversationPanel.findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
+        final ConversationPanel conversationPanel = findViewById(R.id.conversation_panel);
+        conversationPanel.findViewById(R.id.emoji_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
@@ -368,7 +365,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         last_sended_message.sending = true;
                         last_sended_message.isError = false;
                         if (history == null) {
-                            history = new ArrayList<uk.openvk.android.client.entities.Message>();
+                            history = new ArrayList<>();
                         }
                         history.add(last_sended_message);
                         if (conversation_adapter == null) {
@@ -390,7 +387,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 return true;
             }
         });
-        final Button send_btn = (Button) conversationPanel.findViewById(R.id.send_btn);
+        final Button send_btn = conversationPanel.findViewById(R.id.send_btn);
         send_btn.setEnabled(false);
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -474,7 +471,11 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 return;
             }
         }
-        if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
+        if(message == HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID) {
+            conversation = ovk_api.messages.searchConversation(peer_id);
+            if(conversation != null)
+                conversation.getHistory(ovk_api.wrapper, peer_id);
+        } else if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             conversation_adapter = new MessagesListAdapter(this, history, peer_id);
             messagesList.setAdapter(conversation_adapter);
         } else if (message == HandlerMessages.CHAT_DISABLED) {
@@ -658,5 +659,9 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     @Override
     public void onKeyboardStateChanged(boolean param1Boolean) {
         if(param1Boolean) findViewById(R.id.emojicons).setVisibility(View.GONE);
+    }
+
+    public void loadMsgHistory(ArrayList<Message> msgHistory) {
+        history = msgHistory;
     }
 }

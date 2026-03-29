@@ -120,24 +120,18 @@ public class Photos {
                     photo.album_id = album.ids[0];
                 }
                 photo.owner_id = item.getLong("owner_id");
-                if(dlman != null && item.has("sizes")) {
+                if(dlman != null && item.has("src_original") && item.has("photo_130")) {
                     Photo attach = new Photo();
-                    if(item.getJSONObject("sizes").has("q")) {
-                        photo.url = item.getJSONObject("sizes").getJSONObject("q").getString("url");
-                        attach.url = photo.url;
-                        attach.filename = String.format(
-                                "photo%s_a%s_o%s",
-                                photo.id,
-                                photo.album_id,
-                                photo.owner_id);
+                    photo.url = item.getString("photo_130");
+                    attach.url = photo.url;
+                    attach.filename = String.format(
+                            "photo%s_a%s_o%s",
+                            photo.id,
+                            photo.album_id,
+                            photo.owner_id);
 
-                    }
-                    if(item.getJSONObject("sizes").has("UPLOADED_MAXRES")) {
-                        photo.original_url =
-                                item.getJSONObject("sizes")
-                                        .getJSONObject("UPLOADED_MAXRES").getString("url");
-                        attach.original_url = photo.original_url;
-                    }
+                    photo.original_url = item.getString("src_original");
+                    attach.original_url = photo.original_url;
                     photoAttachs.add(attach);
                 }
                 album.photos.add(photo);
@@ -182,7 +176,7 @@ public class Photos {
             JSONArray albums = json.getJSONObject("response").getJSONArray("items");
             for(int i = 0; i < albums.length(); i++) {
                 JSONObject item = albums.getJSONObject(i);
-                PhotoAlbum album = new PhotoAlbum(item.getString("id"));
+                PhotoAlbum album = new PhotoAlbum(item.getLong("owner_id"), item.getLong("id"));
                 album.title = item.getString("title");
                 if(item.has("size")) {
                     album.size = item.getLong("size");

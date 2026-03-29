@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.Global;
@@ -99,7 +100,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
         switch (stateCode) {
             case CustomSwipeRefreshLayout.State.STATE_NORMAL:
                 if (stateCode != lastStateCode) {
-                    update_time = TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    update_time = Calendar.getInstance().getTime().getTime();
                     p2r_tv.setText(
                             String.format("%s %s",
                                     getResources().getString(R.string.updated),
@@ -128,7 +129,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
                 }
                 break;
             case CustomSwipeRefreshLayout.State.STATE_COMPLETE:
-                update_time = TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                update_time = Calendar.getInstance().getTime().getTime();
                 p2r_tv.setText(
                         String.format("%s %s",
                                 getResources().getString(R.string.updated),

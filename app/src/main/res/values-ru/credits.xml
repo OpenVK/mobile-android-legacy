@@ -21,37 +21,32 @@
         <a href="https://github.com/openvk/mobile-android-legacy">Исходный код</a>
         | <a href="%s/club181">OpenVK Mobile</a> | <a href="%s/topic181_1">FAQ</a>
     ]]></string>
-    <string name="credits">Титры</string>
-    <string name="about_app_author">Автор</string>
-    <string name="app_author_value" formatted="false"><![CDATA[
-        <a href=\"%s/id2287\">Дмитрий Третьяков</a> (Tinelix)
-    ]]></string>
-    <string name="openvk_legacy_devteam">Команда разработки OpenVK Legacy</string>
-    <string name="app_devteam" formatted="false"><![CDATA[
-        <a href=\"%s/id2287\">Дмитрий Третьяков</a> (Tinelix)
-        <br><a href=\"%s/id1\">Владимир Баринов</a> (Veselcraft)
-    ]]></string>
-    <string name="about_app_design">Дизайн</string>
-    <string name="app_design_value" formatted="false"><![CDATA[
-        ВКонтакте 3.x для Android<br>от <a href=\"https://grishka.me\">Григория Клюшникова</a>
-    ]]></string>
-    <string name="about_app_translations">Переводы</string>
-    <string name="app_eng_translators">Григорий Клюшников\nКоманда OpenVK Legacy</string>
-    <string name="app_rus_translators">Григорий Клюшников\nКоманда OpenVK Legacy</string>
-    <string name="app_ukr_translators">Команда OpenVK Legacy\r\nЯрослав Белоград (AlesAlte)</string>
-    <string name="app_license_title">Лицензия OpenVK Legacy</string>
-    <string name="app_license_text"><![CDATA[
-        Эта программа является свободным программным обеспечением: вы можете распространять и/или
-        изменять его в соответствии с условиями лицензии
-        <a href="file:///android_res/raw/agpl_3.html">GNU Affero General Public License версии 3.0</a>
-        или поздней версии, опубликованной Фондом свободного программного обеспечения.
-        <br><br>БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ ИЛИ ПРИГОДНОСТЬ ДЛЯ КОНКРЕТНЫХ ЦЕЛЕЙ.
-    ]]></string>
+    <string name="donate">Поддержать проект</string>
+    <string name="source_code">Исходный код</string>
+    <string name="ovk_mobile_apps">Приложения OpenVK</string>
+    <string name="about_app_authors">Авторы</string>
+    <string-array name="app_dev_positions">
+        <item>Сопровождающий</item>
+        <item>Шеф-разработчик</item>
+        <item>Разработчик</item>
+        <item>Дизайнер</item>
+        <item>Контрибьютор</item>
+    </string-array>
+    <string name="about_app_translators">Переводчики</string>
+    <string name="about_app_components">Используемые компоненты</string>
+    <string-array name="app_dev_team">
+        <item>Дмитрий Третьяков (Tinelix)|0,1</item>
+        <item>Владимир Баринов (veselcraft)|2,3</item>
+        <item>Григорий Клюшников|2|VK 3.x</item>
+        <item>Ника Фалалеева|4|OpenVK Flux</item>
+    </string-array>
+    <string-array name="app_translators">
+        <item>Григорий Клюшников\r\nКоманда OpenVK Legacy|0,1</item>
+        <item>Ярослав Белоград (AlesAlte)|2</item>
+    </string-array>
+    <string name="app_legal">Правовая информация</string>
+    <string name="app_license_title">Лицензия свободного ПО</string>
+    <string name="app_license_text">GNU Affero General Public License 3.0 или выше</string>
     <string name="app_disclaimer_title">Дисклеймер</string>
-    <string name="app_disclaimer"><![CDATA[
-        Приложение OpenVK Legacy и сеть OpenVK являются любительской разработкой и никак не
-        связаны с компанией ООО \"ВК\" и ВКонтакте.
-        Приложение предназначено для работы <b>только</b> с инстанциями OpenVK,
-        <a href="%s/topic181_1">см. в FAQ</a>.
-    ]]></string>
+    <string name="app_disclaimer">Приложение OpenVK Legacy и сеть OpenVK являются любительской разработкой и никак не связаны с компанией ООО \"ВК\" и ВКонтакте.</string>
 </resources>

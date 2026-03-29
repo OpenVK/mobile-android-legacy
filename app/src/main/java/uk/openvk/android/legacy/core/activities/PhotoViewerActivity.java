@@ -361,14 +361,16 @@ public class PhotoViewerActivity extends NetworkActivity {
                         if (getApplicationContext().checkSelfPermission(
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                             destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+                            Toast.makeText(getApplicationContext(),
+                                    R.string.photo_save_ok, Toast.LENGTH_LONG).show();
                         } else {
                             Global.allowPermissionDialog(this, false);
                         }
                     } else {
                         destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+                        Toast.makeText(getApplicationContext(),
+                                R.string.photo_save_ok, Toast.LENGTH_LONG).show();
                     }
-                    Toast.makeText(getApplicationContext(),
-                            R.string.photo_save_ok, Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         Global.allowPermissionDialog(this, false);
@@ -409,11 +411,14 @@ public class PhotoViewerActivity extends NetworkActivity {
         //resetTranslucentStatusBar();
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             super.setLegacyTranslucentStatusBar(1, Color.parseColor("#D8000000"));
-        else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        else if(Build.VERSION.SDK_INT >= 35) {
+            super.setLegacyTranslucentStatusBar(1, Color.parseColor("#00000000"));
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            super.setLegacyTranslucentStatusBar(1, Color.parseColor("#00000000"));
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             getWindow().setStatusBarColor(Color.parseColor("#D8000000"));
-            getWindow().setStatusBarColor(Color.parseColor("#D8000000"));
+            getWindow().setNavigationBarColor(Color.parseColor("#D8000000"));
         } else
             super.setLegacyTranslucentStatusBar(1, Color.parseColor("#A5000000"));
     }
@@ -430,6 +435,7 @@ public class PhotoViewerActivity extends NetworkActivity {
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                setTranslucentStatusBar(1, Color.parseColor("#00000000"));
             }
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);

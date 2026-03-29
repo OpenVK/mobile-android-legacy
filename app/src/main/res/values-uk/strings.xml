@@ -706,6 +706,8 @@
     <string name="posting_access_denied">Ви не маєте права публікувати запис на цій стіні.</string>
     <string name="posted_successfully">Запись опублікована.</string>
     <string name="debug_menu">Меню налагодження</string>
+    <string name="sett_debug">Налагодження</string>
+    <string name="sett_behavior">Поведінка</string>
     <string name="api_logging">Журналування API</string>
     <string name="write_logs_to_file">Запис журналу у файл</string>
     <string name="send_bug_report">Надіслати баг-репорт</string>
@@ -715,6 +717,7 @@
     <string name="use_legacy_http_client_okhttp_err">Вимкнення неможливо через непідтримувану версію Android</string>
     <string name="use_legacy_http_client_apachew_err">Увімкнення неможливе через непідтримувану версію Android</string>
     <string name="uil_debugging">Налагождення завантажувача фотографiй UIL</string>
+    <string name="reset_personal_db">Скинути персональні БД</string>
     <string name="experimental_features">Експериментальні функції</string>
     <string name="experimental_features_description">Використовуйте лише на свій страх і ризик, оскільки вони можуть бути нестабільними чи непрацездатними</string>
     <string name="cause_app_to_crash">Викликати збій додатку</string>
@@ -730,6 +733,7 @@
     <string name="birthday">День народження</string>
     <string name="post_fail_empty">Перш ніж опублікувати запис, обов\'язково напишіть щось та повторіть ще раз.</string>
     <string name="on_wall">%1$s на стiнi %2$s</string>
+    <string name="on_wall_2">%1$s на стiнi незнайомця</string>
     <string name="debug_incompatibillity_error">Потрібен Android 4.1 або вище</string>
     <string name="about_instance">Про iнстанцiю</string>
     <string name="server_address">Сервер:</string>
@@ -774,4 +778,5 @@
     <string name="some_xhtml_features_text"><![CDATA[
     	<i><a href="openvk://notes/xhtml">Щось</a> з (X)HTML підтримується.</i>
     ]]></string>
+
 </resources>

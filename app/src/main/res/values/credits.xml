@@ -21,32 +21,33 @@
         <a href="https://github.com/openvk/mobile-android-legacy">Source code</a> |
         <a href="%s/club181">OpenVK Mobile</a> | <a href="%s/topic181_1">FAQ</a>
     ]]></string>
+    <string name="donate">Donate</string>
+    <string name="source_code">Source code</string>
+    <string name="ovk_mobile_apps">OpenVK Mobile Apps</string>
+    <string name="faq">FAQ</string>
     <string name="credits">Credits</string>
-    <string name="about_app_author">Author</string>
-    <string name="app_author_value" formatted="false"><![CDATA[
-        <a href=\"%s/id2287\">Dmitry Tretyakov</a> (Tinelix)
-    ]]></string>
-    <string name="openvk_legacy_devteam">OpenVK Legacy Development Team</string>
-    <string name="app_devteam" formatted="false"><![CDATA[
-        <a href=\"%s/id2287\">Dmitry Tretyakov</a> (Tinelix)<br><a href=\"%s/id1\">Vladimir Barinov</a> (Veselcraft)
-    ]]></string>
-    <string name="about_app_design">Design</string>
-    <string name="app_design_value" formatted="false"><![CDATA[VK 3.x for Android<br>by <a href=\"https://grishka.me\">Gregory Klyushnikov</a>]]></string>
-    <string name="about_app_translations">Translations</string>
-    <string name="app_eng_translators">Gregory Klyushnikov\nOpenVK Legacy Team</string>
-    <string name="app_rus_translators">Gregory Klyushnikov\nOpenVK Legacy Team</string>
-    <string name="app_ukr_translators">OpenVK Legacy Team\r\nYaroslav Belograd (AlesAlte)</string>
-    <string name="app_license_title">OpenVK Legacy License</string>
-    <string name="app_license_text"><![CDATA[
-        This program is free software: you may redistribute and/or modify it under the terms
-        <a href="file:///android_res/raw/agpl_3.html">GNU Affero General Public License v3.0</a>
-        or later version published by the Free Software Foundation.
-        <br><br>WITHOUT ANY WARRANTY, NOT EVEN FOR MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
-    ]]></string>
+    <string name="about_app_authors">Authors</string>
+    <string name="about_app_translators">Translators</string>
+    <string-array name="app_dev_positions">
+        <item>Maintainer</item>
+        <item>Chief developer</item>
+        <item>Developer</item>
+        <item>Designer</item>
+        <item>Contributor</item>
+    </string-array>
+    <string-array name="app_dev_team">
+        <item>Dmitry Tretyakov (Tinelix)|0,1</item>
+        <item>Vladimir Barinov (veselcraft)|2</item>
+        <item>Gregory Klyushnikov|2|VK 3.x</item>
+        <item>Nika Falaleeva|2|OpenVK Flux</item>
+    </string-array>
+    <string-array name="app_translators">
+        <item>Gregory Klyushnikov\r\nOpenVK Team|0,1</item>
+        <item>Ярослав Белоград (AlesAlte)|2</item>
+    </string-array>
+    <string name="app_legal">Legal</string>
+    <string name="app_license_title">FOSS License</string>
+    <string name="app_license_text">GNU Affero General Public License v3.0 or later</string>
     <string name="app_disclaimer_title">Disclaimer</string>
-    <string name="app_disclaimer"><![CDATA[
-        The OpenVK Legacy application and the OpenVK network are amateur development and not affiliated in any way
-        with the VK LLC and VKontakte.
-        The application is intended to work with OpenVK instances <b>only</b>, <a href="%s/topic181_1">see the FAQ</a>.
-    ]]></string>
+    <string name="app_disclaimer">The OpenVK Legacy application and the OpenVK network are fan projects and not affiliated in any way with the VK LLC and VKontakte.</string>
 </resources>

@@ -53,7 +53,7 @@ public class Videos {
                 this.videos.clear();
             }
             for (int i = 0; i < videos.length(); i++) {
-                JSONObject video_obj = videos.getJSONObject(i).getJSONObject("video");
+                JSONObject video_obj = videos.getJSONObject(i);
                 Video video = new Video(video_obj);
                 try {
                     if (video_obj.has("image")) {

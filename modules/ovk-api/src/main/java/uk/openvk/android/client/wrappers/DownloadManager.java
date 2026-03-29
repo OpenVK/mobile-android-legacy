@@ -554,16 +554,37 @@ public class DownloadManager {
                         short_address = finalUrl;
                     }
 
-                    if(logging_enabled) Log.v(OpenVKAPI.DLM_TAG,
-                            String.format("Downloading %s...", short_address));
                     if (legacy_mode) {
-                        request_legacy = httpClientLegacy.get(finalUrl);
+                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(finalUrl);
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_type.equals("selfeco-relay")) {
+                            request_legacy.content(
+                                    String.format("%s", finalUrl).getBytes(),
+                                    null
+                            );
+                        }
                     } else {
-                        request = new Request.Builder()
-                                .url(finalUrl)
-                                .addHeader("User-Agent", generateUserAgent())
-                                .build();
+                        Request.Builder builder = new Request.Builder()
+                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : finalUrl)
+                                .addHeader("User-Agent", generateUserAgent());
+
+                        // Use SelfEco Relay as alternative proxy connection
+                        // default: http://minvk.ru/apirelay.php (POST)
+
+                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                            builder.post(
+                                    RequestBody.create(
+                                            MediaType.parse("text/plain"), finalUrl
+                                    )
+                            );
+                        }
+                        request = builder.build();
                     }
+
                     try {
                         if (legacy_mode) {
                             HttpResponse response = request_legacy.execute();

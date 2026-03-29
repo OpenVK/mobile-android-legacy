@@ -79,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 247
-        versionName "1.2.247-u"
+        versionCode 251
+        versionName "1.2.251-u"
     }
     buildTypes {
         release {
@@ -99,16 +99,16 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 248
-            versionName "1.2.248-d"
+            versionCode 251
+            versionName "1.2.251-d"
             signingConfig signingConfigs.debug
         }
         releaseConfig {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 248
-            versionName '1.2.248'
+            versionCode 251
+            versionName '1.2.251'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -119,8 +119,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 248
-            versionName "1.2.248-f"
+            versionCode 251
+            versionName "1.2.251-f"
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }
@@ -144,6 +144,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
     //noinspection GradleCompatible,GradleDependency
     compile 'com.android.support:preference-v7:24.0.0'
+    //noinspection GradleCompatible,GradleDependency
+    compile 'com.android.support:design:24.0.0'
+    //noinspection GradleCompatible,GradleDependency
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile project(':modules:actionbar')
     compile project(':modules:popupmenu')

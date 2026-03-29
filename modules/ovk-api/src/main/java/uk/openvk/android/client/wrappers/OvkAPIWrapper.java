@@ -527,6 +527,10 @@ public class OvkAPIWrapper {
                                                             "must be in JSON format only. Start of response: [%s]",
                                                     response_body), 0);
                                         }
+                                    } else if(response_body.contains("\"error_msg\"")) {
+                                        throw new IllegalAccessError(
+                                                "Instance returns HTTP 200 code, but authorization could be completed"
+                                        );
                                     }
                                     sendMessage(HandlerMessages.AUTHORIZED, response_body);
                                     break;
@@ -576,7 +580,7 @@ public class OvkAPIWrapper {
                         if (ex.getMessage().startsWith("Authorization required")) {
                             response_code = 401;
                             sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+                        } else if(ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
                             String code_str = ex.getMessage().substring
                                     (ex.getMessage().length() - 3);
                             response_code = Integer.parseInt(code_str);
@@ -841,6 +845,11 @@ public class OvkAPIWrapper {
             if (response_body.length() > 0) {
                 switch(response_code) {
                     case 200:
+                         if(response_body.contains("\"error_msg\"")) {
+                            throw new IllegalAccessError(
+                                "Instance returns HTTP 200 code, but API execution could be completed - 400"
+                            );
+                        }
                         if(logging_enabled) Log.d(OpenVKAPI.TAG,
                                 String.format("Getting response from %s (%s, %s):\r\n[%s]",
                                         server, method, response_code, response_body));
@@ -933,10 +942,11 @@ public class OvkAPIWrapper {
                     String.format("Connection error: %s", e.getMessage()));
             error.description = e.getMessage();
             sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, where, error.description);
-        } catch (IOException | HttpClientException ex) {
+        } catch (IOException | HttpClientException | IllegalAccessError ex) {
             if (ex.getMessage().startsWith("Authorization required")) {
                 response_code = 401;
-            } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
+            } else if(ex.getMessage().startsWith("Expected status code 2xx")
+                    || ex.getMessage().startsWith("Instance returns HTTP 200")) {
                 String code_str = ex.getMessage().substring
                         (ex.getMessage().length() - 3);
                 response_code = Integer.parseInt(code_str);

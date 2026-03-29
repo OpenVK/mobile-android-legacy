@@ -254,10 +254,12 @@ public class PostAttachmentsView extends LinearLayout {
                     if (!type.equals("note") && !type.equals("audio")) {
                         switch (post.attachments.get(i).status) {
                             case "not_supported":
-                                error_label.setText(
-                                        parent.getResources().getString(R.string.not_supported)
-                                );
-                                error_label.setVisibility(View.VISIBLE);
+                                if(error_label != null) {
+                                    error_label.setText(
+                                            parent.getResources().getString(R.string.not_supported)
+                                    );
+                                    error_label.setVisibility(View.VISIBLE);
+                                }
                                 break;
                             case "error":
                                 error_label.setText(
@@ -470,12 +472,12 @@ public class PostAttachmentsView extends LinearLayout {
                 intent.putExtra("local_photo_addr",
                         String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
                                 parent.getCacheDir(),
-                                post.owner.id, post.post_id));
+                                post.owner != null ? post.owner.id : post.author.id, post.post_id));
             } else {
                 intent.putExtra("local_photo_addr",
                         String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
                                 parent.getCacheDir(),
-                                post.owner.id, post.post_id));
+                                post.owner != null ? post.owner.id : post.author.id, post.post_id));
             }
             if(post.attachments != null) {
                 for(int i = 0; i < post.attachments.size(); i++) {

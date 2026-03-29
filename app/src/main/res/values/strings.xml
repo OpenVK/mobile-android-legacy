@@ -673,6 +673,7 @@
     <string name="posting_access_denied">You are not allowed to post on this wall.</string>
 	<string name="posted_successfully">Post published.</string>
 	<string name="debug_menu">Debug Menu</string>
+	<string name="sett_debug">Debug</string>
 	<string name="api_logging">API logging</string>
 	<string name="write_logs_to_file">Write logs to file</string>
     <string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>
@@ -683,6 +684,7 @@
     <string name="use_legacy_http_client_okhttp_err">Unable to turn off due to an unsupported Android version</string>
     <string name="use_legacy_http_client_apachew_err">Unable to turn on due to an unsupported Android version</string>
 	<string name="uil_debugging">UIL debugging</string>
+	<string name="reset_personal_db">Reset personal databases</string>
     <string name="cause_app_to_crash">Cause application to crash</string>
 	<string name="terminate">Terminate process</string>
 	<string name="experimental_features">Experimental features</string>
@@ -698,6 +700,7 @@
 	<string name="birthday">Birthday</string>
 	<string name="post_fail_empty">Before posting, be sure to write something and repeat it again.</string>
 	<string name="on_wall">%1$s on %2$s\'s wall</string>
+	<string name="on_wall_2">%1$s on stranger\'s wall</string>
 	<string name="about_instance">About instance</string>
 	<string name="server_address">Server:</string>
 	<string name="connection_type">Connection type</string>
@@ -740,4 +743,5 @@
     <string name="some_xhtml_features_text"><![CDATA[
     	<i><a href="openvk://notes/xhtml">Something</a> from (X)HTML supported.</i>
     ]]></string>
+    <string name="sett_behavior">Behavior</string>
 </resources>

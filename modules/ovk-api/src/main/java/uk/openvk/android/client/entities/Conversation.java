@@ -47,6 +47,7 @@ public class Conversation extends LazyEntity {
     public String avatar_url;
     private ArrayList<Message> history;
     private JSONParser jsonParser;
+    public String peer_type;
 
     public Conversation() {
         jsonParser = new JSONParser();

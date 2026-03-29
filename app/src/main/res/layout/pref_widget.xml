@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Title"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/prefs_name"
             android:textSize="18sp" />
 
         <TextView
@@ -47,7 +47,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Subtitle"
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/prefs_summary" />
     </LinearLayout>
 
     <View

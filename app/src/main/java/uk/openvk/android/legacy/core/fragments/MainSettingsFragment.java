@@ -42,7 +42,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
@@ -52,7 +51,7 @@ import uk.openvk.android.client.entities.Ovk;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.entities.InstanceLink;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.core.activities.AboutApplicationActivity;
+import uk.openvk.android.legacy.core.activities.settings.AboutApplicationActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActivePreferenceFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.settings.AdvancedSettingsActivity;
@@ -266,10 +265,10 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
                 public boolean onPreferenceClick(Preference preference) {
                     if (instance_prefs.getString("access_token", "").length() > 0) {
                         danger_zone_multiple_tap += 1;
-                        if (danger_zone_multiple_tap < 5) {
+                        if (danger_zone_multiple_tap < 15) {
                             Intent intent = new Intent(getContext(), DebugMenuActivity.class);
                             startActivity(intent);
-                        } else if (danger_zone_multiple_tap == 10) {
+                        } else if (danger_zone_multiple_tap == 30) {
                             global_prefs.edit().putBoolean("debugDangerZone", true).commit();
                             Intent intent = new Intent(getContext(), DebugMenuActivity.class);
                             startActivity(intent);
@@ -393,7 +392,8 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
     private void openAboutInstanceDialog() {
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(getContext());
-        about_instance_view = getLayoutInflater(null).inflate(R.layout.dialog_about_instance, null, false);
+        about_instance_view = getLayoutInflater(null)
+                                .inflate(R.layout.dialog_about_instance, null, false);
         TextView server_name = about_instance_view.findViewById(R.id.server_addr_label2);
         ((TextView) about_instance_view.findViewById(R.id.connection_type_label2)).setText(getResources().getString(R.string.loading));
         ((TextView) about_instance_view.findViewById(R.id.instance_version_label2)).setText(getResources().getString(R.string.loading));

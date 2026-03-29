@@ -19,12 +19,15 @@
 
 package uk.openvk.android.legacy.core.activities.base;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
+import android.util.AttributeSet;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -32,6 +35,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.HashMap;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
@@ -47,6 +51,20 @@ public class TranslucentPreferenceActivity extends PreferenceActivity {
         client_info = SecureCredentialsStorage.generateClientInfo(
                 this, new HashMap<String, Object>(),
                 false);
+        adjustLayout(getResources().getConfiguration().orientation);
+    }
+
+    @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+        return super.onCreateView(parent, name, context, attrs);
+    }
+
+    private void adjustLayout(int orientation) {
+        OvkApplication app = (OvkApplication) getApplication();
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+        if(app.isTablet) {
+            getListView().setPadding((int)(15 * dp), 0, (int)(15 * dp), 0);
+        }
     }
 
     private void setTranslucentStatusBar() {

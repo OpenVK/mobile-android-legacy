@@ -22,36 +22,37 @@
         <a href="%s/club181">OpenVK Mobile</a> | <a href="%s/topic181_1">FAQ</a>
     ]]></string>
     <string name="credits">Титри</string>
-    <string name="about_app_author">Автор</string>
-    <string name="app_author_value" formatted="false"><![CDATA[
-        <a href="%s/id2287">Дмитро Третьяков</a> (Tinelix)
-    ]]></string>
-    <string name="openvk_legacy_devteam">Команда розробки OpenVK Legacy</string>
-    <string name="app_devteam" formatted="false"><![CDATA[
-        <a href=\"%s/id2287\">Дмитро Третьяков</a> (Tinelix)
-        <br><a href=\"%s/id1\">Володимир Барiнов</a> (Veselcraft)
-    ]]></string>
-    <string name="about_app_design">Дизайн</string>
-    <string name="app_design_value" formatted="false"><![CDATA[
-        ВКонтакте 3.x для Android<br>вiд <a href=\"https://grishka.me\">Григорія Клюшнікова</a>
-    ]]></string>
-    <string name="about_app_translations">Переклади</string>
+    <string name="donate">Підтримати проект</string>
+    <string name="source_code">Вихідний код</string>
+    <string name="faq">Поширені запитання</string>
+    <string name="ovk_mobile_apps">Додатки OpenVK</string>
+    <string name="about_app_authors">Автори</string>
+    <string name="about_app_translators">Перекладачі</string>
+    <string name="app_legal">Правова інформація</string>
+    <string name="about_app_components">Використовувані компоненти</string>
+    <string-array name="app_dev_positions">
+        <item>Супроводжуючий</item>
+        <item>Шеф-розробник</item>
+        <item>Розробник</item>
+        <item>Дизайнер</item>
+        <item>Контриб\'ютор</item>
+    </string-array>
+    <string-array name="app_dev_team">
+        <item>Дмитро Третьяков (Tinelix)|0,1</item>
+        <item>Володимир Барiнов (veselcraft)|2,3</item>
+        <item>Григорій Клюшніков|2|VK 3.x</item>
+        <item>Ніка Фалалеєва|2|OpenVK Flux</item>
+    </string-array>
+    <string-array name="app_translators">
+        <item>Григорій Клюшніков\r\nКоманда OpenVK Legacy|0,1</item>
+        <item>Ярослав Бєлоград (AlesAlte)|2</item>
+    </string-array>
     <string name="app_eng_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
     <string name="app_rus_translators">Григорій Клюшніков\nКоманда OpenVK Legacy</string>
     <string name="app_ukr_translators">Команда OpenVK Legacy\r\nЯрослав Бєлоград (AlesAlte)</string>
-    <string name="app_license_title">Лiцензiя OpenVK Legacy</string>
-    <string name="app_license_text"><![CDATA[
-    Ця програма є вільним програмним забезпеченням: ви можете розповсюджувати та/або змінювати його
-    відповідно до умов лiцензії <a href="file:///android_res/raw/agpl_3.html">GNU (Affero) General
-    Public License версії 3.0</a> або пізнішої версії, опублікованої Фондом вільного програмного
-    забезпечення.
-    <br><br>БЕЗ БУДЬ-ЯКИХ ГАРАНТІЙ, ВКЛЮЧАЮЧИ КОМЕРЦІЙНУ ЦІННІСТЬ АБО ПРИГОДНІ ДЛЯ КОНКРЕТНИХ ЦІЛІВ.
-    ]]></string>
+    <string name="app_license_title">Ліцензія вільного ПЗ</string>
+    <string name="app_license_text">GNU Affero General Public License версії 3.0 або вище</string>
     <string name="app_disclaimer_title">Дисклеймер</string>
-    <string name="app_disclaimer"><![CDATA[
-        Додаток OpenVK Legacy та мережа OpenVK є аматорською розробкою і жодним
-        чином не пов\'язані з компанією ТОВ \"ВК\" та ВКонтакте.
-        Додаток призначений для роботи <b>тільки</b> з інстанціями OpenVK,
-        <a href="%s/topic181_1">див. у FAQ</a>.
-    ]]></string>
+    <string name="app_disclaimer">Додаток OpenVK Legacy та мережа OpenVK є аматорською розробкою і жодним
+        чином не пов\'язані з компанією ТОВ \"ВК\" та ВКонтакте.</string>
 </resources>

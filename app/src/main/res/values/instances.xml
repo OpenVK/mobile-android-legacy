@@ -23,7 +23,7 @@
         Instance list format: address|protocol|restricted in countries
     !-->
     <string name="default_instance" translatable="false">api.openvk.org</string>
-    <string name="default_instance_no_https" translatable="false">openvk.org</string>
+    <string name="default_instance_no_https" translatable="false">openvk.xyz</string>
 
     <string-array name="official_instances_list" translable="false">
         <item>api.openvk.org|HTTPS</item>

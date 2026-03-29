@@ -133,7 +133,7 @@ public class Wall implements Parcelable {
                     long dt_sec = post.getLong("date");
                     LazyEntity author = null;
                     LazyEntity owner = null;
-                    LazyEntity original_author;
+                    LazyEntity original_author = null;
                     LazyEntity original_owner = null;
                     String author_avatar_url = "";
                     String content = post.getString("text");
@@ -197,24 +197,14 @@ public class Wall implements Parcelable {
                                     repost_attachments, "newsfeed_attachment");
                         }
                         repost_item.attachments = attachments_list;
+
                         if(repost.getLong("from_id") > 0) {
                             if(newsfeed.has("profiles")) {
                                 JSONArray profiles = newsfeed.getJSONArray("profiles");
                                 for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                     JSONObject profile = profiles.getJSONObject(profiles_index);
                                     if (profile.getLong("id") == repost.getLong("from_id")) {
-                                        original_author = new User();
-                                        original_author.id = repost.getLong("from_id");
-                                        ((User) original_author).first_name = profile.getString("first_name");
-                                        ((User) original_author).last_name = profile.getString("last_name");
-                                        ((User) original_author).avatar_url = profile.getString("photo_50");
-                                        if(profile.has("verified")) {
-                                            if(profile.get("verified") instanceof Integer) {
-                                                verified_author = profile.getInt("verified") == 1;
-                                            } else {
-                                                verified_author = profile.getBoolean("verified");
-                                            }
-                                        }
+                                        original_author = parseProfileFromEntity(profile, profile.getLong("id"));
                                     }
                                 }
                             }
@@ -223,14 +213,13 @@ public class Wall implements Parcelable {
                                 for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
                                     JSONObject group = groups.getJSONObject(groups_index);
                                     if (-group.getLong("id") == repost.getLong("from_id")) {
-                                        original_author = new Group();
-                                        original_author.id = repost.getLong("from_id");
-                                        ((Group) original_author).name = group.getString("name");
-                                        ((Group) original_author).avatar_url = group.getString("photo_50");
+                                        original_owner = parseGroupFromEntity(group, group.getLong("id"));
                                     }
                                 }
                         }
                         repostInfo.newsfeed_item = repost_item;
+                        repostInfo.newsfeed_item.author = original_author;
+                        repostInfo.newsfeed_item.owner = original_owner;
                         item.repost = repostInfo;
                     }
 
@@ -239,37 +228,12 @@ public class Wall implements Parcelable {
                             JSONArray profiles = newsfeed.getJSONArray("profiles");
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
                                 JSONObject profile = profiles.getJSONObject(profiles_index);
-                                if (profile.getLong("id") == author_id) {
-                                    author = new User();
-                                    author.id = author_id;
-                                    ((User) author).first_name = profile.getString("first_name");
-                                    ((User) author).last_name = profile.getString("last_name");
-                                    ((User) author).avatar_url = profile.getString("photo_50");
-                                    author_avatar_url = profile.getString("photo_50");
-                                    if(profile.has("verified")) {
-                                        if(profile.get("verified") instanceof Integer) {
-                                            verified_author = profile.getInt("verified") == 1;
-                                        } else {
-                                            verified_author = profile.getBoolean("verified");
-                                        }
-                                    }
-                                    if(profile.has("sex"))
-                                        ((User) author).sex = profile.getInt("sex");
-                                } else if (profile.getLong("id") == owner_id) {
-                                    owner = new User();
-                                    owner.id = owner_id;
-                                    ((User) owner).first_name = profile.getString("first_name");
-                                    ((User) owner).last_name = profile.getString("last_name");
-                                    ((User) owner).avatar_url = profile.getString("photo_50");
-                                    if(profile.has("verified")) {
-                                        if(profile.get("verified") instanceof Integer) {
-                                            verified_author = profile.getInt("verified") == 1;
-                                        } else {
-                                            verified_author = profile.getBoolean("verified");
-                                        }
-                                    }
-                                    if(profile.has("sex"))
-                                        ((User) owner).sex = profile.getInt("sex");
+                                if (profile.getLong("id") == owner_id) {
+                                    owner = parseProfileFromEntity(profile, owner_id);
+                                    author_avatar_url = ((User) owner).avatar_url;
+                                } else if (profile.getLong("id") == author_id) {
+                                    author = parseProfileFromEntity(profile, author_id);
+                                    author_avatar_url = ((User) author).avatar_url;
                                 }
                             }
                         }
@@ -279,15 +243,8 @@ public class Wall implements Parcelable {
                                 for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
                                     JSONObject group = groups.getJSONObject(groups_index);
                                     if (-group.getInt("id") == owner_id) {
-                                        owner = new Group();
-                                        owner.id = owner_id;
-                                        ((Group) owner).name = group.getString("name");
-                                        ((Group) owner).avatar_url = group.getString("photo_50");
-                                        if(group.get("verified") instanceof Integer) {
-                                            verified_author = group.getInt("verified") == 1;
-                                        } else {
-                                            verified_author = group.getBoolean("verified");
-                                        }
+                                        owner = parseGroupFromEntity(group, owner_id);
+                                        author_avatar_url = ((Group) owner).avatar_url;
                                     }
                                 }
                             }
@@ -298,28 +255,19 @@ public class Wall implements Parcelable {
                             JSONArray profiles = newsfeed.getJSONArray("profiles");
                             for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
                                 JSONObject group = groups.getJSONObject(groups_index);
-                                if (-group.getInt("id") == author_id) {
-                                    author = new Group();
-                                    author.id = author_id;
-                                    ((Group) author).name = group.getString("name");
-                                    ((Group) author).avatar_url = group.getString("photo_50");
-                                    author_avatar_url = group.getString("photo_50");
-                                    if(group.get("verified") instanceof Integer) {
-                                        verified_author = group.getInt("verified") == 1;
-                                    } else {
-                                        verified_author = group.getBoolean("verified");
-                                    }
-                                    if(group.has("verified")) {
-                                        if(group.get("verified") instanceof Integer) {
-                                            verified_author = group.getInt("verified") == 1;
-                                        } else {
-                                            verified_author = group.getBoolean("verified");
-                                        }
-                                    }
+                                if (-group.getInt("id") == owner_id) {
+                                    owner = parseGroupFromEntity(group, owner_id);
+                                    author_avatar_url = ((Group) owner).avatar_url;
+                                } else if(-group.getInt("id") == author_id) {
+                                    author = parseGroupFromEntity(group, author_id);
+                                    author_avatar_url = ((Group) author).avatar_url;
                                 }
                             }
                         }
                     }
+
+                    if(author_id == owner_id)
+                        author = owner;
 
                     item.owner = owner;
                     item.author = author;
@@ -380,6 +328,47 @@ public class Wall implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private LazyEntity parseGroupFromEntity(JSONObject group, long owner_id) {
+        LazyEntity groupEntity = new Group();
+        groupEntity.id = owner_id;
+
+        try {
+            ((Group) groupEntity).name = group.getString("name");
+            ((Group) groupEntity).avatar_url = group.getString("photo_50");
+            if (group.get("verified") instanceof Integer) {
+                ((Group) groupEntity).verified = group.getInt("verified") == 1;
+            } else {
+                ((Group) groupEntity).verified = group.getBoolean("verified");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return groupEntity;
+    }
+
+    private LazyEntity parseProfileFromEntity(JSONObject profile, long user_id) {
+        LazyEntity user = new User();
+        user.id = user_id;
+        try {
+            ((User) user).first_name = profile.getString("first_name");
+            ((User) user).last_name = profile.getString("last_name");
+            ((User) user).avatar_url = profile.getString("photo_50");
+            if (profile.has("verified")) {
+                if (profile.get("verified") instanceof Integer) {
+                    ((User) user).verified = profile.getInt("verified") == 1;
+                } else {
+                    ((User) user).verified = profile.getBoolean("verified");
+                }
+            }
+            if (profile.has("sex"))
+                ((User) user).sex = profile.getInt("sex");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return user;
     }
 
     public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality,

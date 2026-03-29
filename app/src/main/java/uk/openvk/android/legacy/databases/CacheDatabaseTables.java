@@ -30,8 +30,12 @@ public class CacheDatabaseTables {
         db.execSQL(
                 "CREATE TABLE `newsfeed` (" +
                         "post_id bigint, " +
+                        "author_id bigint, " +
+                        "owner_id bigint, " +
                         "time bigint, " +
-                        "FOREIGN KEY(post_id) REFERENCES wall(post_id)," +
+                        "FOREIGN KEY(post_id) REFERENCES wall(post_id) ON DELETE cascade," +
+                        "FOREIGN KEY(author_id) REFERENCES wall(author_id) ON DELETE cascade," +
+                        "FOREIGN KEY(owner_id) REFERENCES wall(owner_id) ON DELETE cascade," +
                         "FOREIGN KEY(time) REFERENCES wall(time)" +
                 ")"
                 );
@@ -67,7 +71,11 @@ public class CacheDatabaseTables {
                         "attachments blob, " +
                         "contains_repost bit, " +
                         "repost_id bigint, " +
-                        "FOREIGN KEY(repost_id) REFERENCES wall(post_id)" +
+                        "repost_author_id bigint, " +
+                        "repost_owner_id bigint, " +
+                        "FOREIGN KEY(repost_id) REFERENCES wall(post_id)," +
+                        "FOREIGN KEY(repost_author_id) REFERENCES wall(author_id)," +
+                        "FOREIGN KEY(repost_owner_id) REFERENCES wall(owner_id)" +
                  ")"
                 );
         db.execSQL(

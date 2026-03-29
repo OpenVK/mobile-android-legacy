@@ -44,7 +44,7 @@
                 android:id="@+id/news_listview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/window_bg_transparent"
+                android:background="#e3e4e6"
                 android:persistentDrawingCache="all"
                 android:theme="@style/NewsItemTransparentBackground"
                 android:visibility="visible" />

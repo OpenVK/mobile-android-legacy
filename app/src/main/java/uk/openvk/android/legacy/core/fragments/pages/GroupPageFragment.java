@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -69,31 +70,47 @@ public class GroupPageFragment extends ActiveFragment {
         view = inflater.inflate(R.layout.fragment_group_page, container, false);
         wallLayout = view.findViewById(R.id.wall_layout);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                view.findViewById(R.id.group_ext_header)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-                view.findViewById(R.id.about_group_layout)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-                CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
-                p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-                view.findViewById(R.id.join_to_comm)
-                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
-            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                view.findViewById(R.id.group_ext_header)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-                view.findViewById(R.id.about_group_layout)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-                CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
-                p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-                view.findViewById(R.id.join_to_comm)
-                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
-            }
+        CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
+            p2r_view.setBackgroundColor(Color.parseColor("#313743"));
+        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            view.findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            view.findViewById(R.id.about_profile_layout)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+
+            p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            view.findViewById(R.id.send_direct_msg)
+                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
+            view.findViewById(R.id.add_to_friends)
+                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
+        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            view.findViewById(R.id.profile_ext_header)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            view.findViewById(R.id.about_profile_layout)
+                    .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            view.findViewById(R.id.send_direct_msg)
+                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
+            view.findViewById(R.id.add_to_friends)
+                    .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
         }
+
+        p2r_view.refreshComplete();
+        OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            rhl.enableDarkTheme();
+        }
+        try {
+            p2r_view.setCustomHeadview(rhl);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        p2r_view.setTriggerDistance(80);
         return view;
     }
 
-    public void loadWall(final Context ctx, Group group, final OpenVKAPI ovk_api) {
+    public void loadWall(final Context ctx, final Group group, final OpenVKAPI ovk_api) {
         if(ovk_api.wall.getWallItems().size() > 0) {
             wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
             loading_more_posts = true;
@@ -202,16 +219,6 @@ public class GroupPageFragment extends ActiveFragment {
     public void loadAPIData(final OpenVKAPI ovk_api, final Group group) {
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
-        OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
-        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            rhl.enableDarkTheme();
-        }
-        try {
-            p2r_view.setCustomHeadview(rhl);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        p2r_view.setTriggerDistance(80);
         p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

@@ -39,18 +39,20 @@
             android:layout_height="match_parent"
             android:background="#e3e4e6"
             android:descendantFocusability="blocksDescendants"
+            android:fillViewport="true"
+            android:overScrollMode="never"
             android:isScrollContainer="false"
-            tools:ignore="UselessParent">
+            tools:ignore="UnusedAttribute,UselessParent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:id="@+id/profile_ext_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
                     android:background="#313743"
                     android:orientation="vertical">
 
@@ -129,12 +131,14 @@
                 <uk.openvk.android.legacy.ui.views.ProfileWallSelector
                     android:id="@+id/wall_selector"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/profile_ext_header" />
 
                 <uk.openvk.android.legacy.ui.views.WallErrorLayout
                     android:id="@+id/wall_error_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_below="@+id/wall_selector"
                     android:background="#ffffff"
                     android:visibility="gone" />
 
@@ -142,6 +146,8 @@
                     android:id="@+id/wall_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/wall_selector"
+                    android:descendantFocusability="blocksDescendants"
                     android:background="#e3e4e6"
                     android:tag="wall" />
 
@@ -156,7 +162,7 @@
                     android:textSize="16sp"
                     android:visibility="gone" />
 
-            </LinearLayout>
+            </RelativeLayout>
         </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
 
     </com.reginald.swiperefresh.CustomSwipeRefreshLayout>

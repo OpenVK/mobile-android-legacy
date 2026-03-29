@@ -266,6 +266,26 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             ovk_api.dlman);
                     msg.what = HandlerMessages.MESSAGES_CONVERSATIONS;
                     break;
+                case "Messages.getConversationsById":
+                    ovk_api.messages.parseConversationsList(
+                            data.getString("response"),
+                            ovk_api.dlman);
+                    msg.what = HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID;
+                    break;
+                case "Messages.getHistory":
+                    if(args != null && args.contains("peer_id")) {
+                        if(activity instanceof ConversationActivity)
+                            ((ConversationActivity) activity).loadMsgHistory(
+                                    ovk_api.messages.parseConversationHistory(
+                                            activity, args, data.getString("response")
+                                    )
+                            );
+                    }
+                    msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
+                    break;
+                case "Messages.send":
+                    msg.what = HandlerMessages.MESSAGES_SEND;
+                    break;
                 case "Groups.get":
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.GROUPS_GET_MORE;

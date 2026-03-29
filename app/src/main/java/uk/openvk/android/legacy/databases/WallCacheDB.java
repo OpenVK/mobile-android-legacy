@@ -28,6 +28,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
@@ -96,34 +99,60 @@ public class WallCacheDB extends CacheDatabase {
     public static ArrayList<WallPost> getPostsList(Context ctx, long owner_id) {
         try {
             semaphore.acquire();
-            WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
+            WallCacheDB.CacheOpenHelper posts_helper = new WallCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
                     getCurrentDatabaseName(ctx, prefix)
             );
-            SQLiteDatabase db = helper.getReadableDatabase();
-            ArrayList<WallPost> result = new ArrayList<>();
+            SQLiteDatabase posts_db = posts_helper.getReadableDatabase();
+
+            UsersCacheDB.CacheOpenHelper users_helper = new UsersCacheDB.CacheOpenHelper(
+                    ctx.getApplicationContext(),
+                    getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
+            );
+            SQLiteDatabase users_db = users_helper.getReadableDatabase();
+
+            GroupsCacheDB.CacheOpenHelper groups_helper = new GroupsCacheDB.CacheOpenHelper(
+                    ctx.getApplicationContext(),
+                    getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
+            );
+            SQLiteDatabase groups_db = groups_helper.getReadableDatabase();
+
+            ArrayList<WallPost> posts_result = new ArrayList<>();
             try {
-                String selection = String.format("owner_id = %s", owner_id);
-                Cursor cursor = db.query("wall",
-                        null, selection, null,
-                        null, null, "`time` desc");
-                if (cursor != null && cursor.getCount() > 0) {
+                Cursor posts_cursor = posts_db.rawQuery(
+                        "SELECT * "
+                                + "FROM wall WHERE owner_id = ?"
+                                + "ORDER BY `time` desc",
+                        new String[] {Long.toString(owner_id)}
+                );
+
+                if (posts_cursor != null && posts_cursor.getCount() > 0) {
                     int i = 0;
-                    cursor.moveToFirst();
+                    posts_cursor.moveToFirst();
                     do {
                         WallPost post = new WallPost();
-                        post.convertSQLiteToEntity(cursor, ctx);
-                        result.add(post);
+                        post.convertSQLiteToEntity(posts_cursor, ctx);
+                        post.resolveRepost(posts_db, users_db, groups_db, ctx);
+                        post.resolveAuthorsFromSQLite(users_db, groups_db);
+                        posts_result.add(post);
                         i++;
-                    } while (cursor.moveToNext());
+                    } while (posts_cursor.moveToNext());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            db.close();
-            helper.close();
+
+            posts_db.close();
+            posts_helper.close();
+
+            users_db.close();
+            users_helper.close();
+
+            groups_db.close();
+            groups_helper.close();
+
             semaphore.release();
-            return result;
+            return posts_result;
         } catch (Exception e) {
             semaphore.release();
             return null;
@@ -152,7 +181,9 @@ public class WallCacheDB extends CacheDatabase {
             SQLiteDatabase groups_db = groups_helper.getWritableDatabase();
 
             try {
-                post.convertEntityToSQLite(posts_db, users_db, groups_db, "wall");
+                post.convertEntityToSQLite(posts_db);
+                post.resolveAuthorsFromSQLite(users_db, groups_db);
+                post.resolveRepost(posts_db, users_db, groups_db, ctx);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -262,7 +293,7 @@ public class WallCacheDB extends CacheDatabase {
     public static void putPosts(Context ctx, ArrayList<WallPost> wallPosts,
                                 long owner_id, boolean clear) {
         try {
-            NewsfeedCacheDB.CacheOpenHelper posts_helper = new NewsfeedCacheDB.CacheOpenHelper(
+            WallCacheDB.CacheOpenHelper posts_helper = new WallCacheDB.CacheOpenHelper(
                     ctx.getApplicationContext(),
                     getCurrentDatabaseName(ctx, prefix)
             );
@@ -281,14 +312,21 @@ public class WallCacheDB extends CacheDatabase {
 
             SQLiteDatabase groups_db = groups_helper.getWritableDatabase();
 
-            String selection = String.format("owner_id = %s", owner_id);
-            if(clear)
-                posts_db.delete("wall", selection, null);
+            if(clear) {
+                posts_db.delete("wall", "owner_id = ?", new String[]{
+                        Long.toString(owner_id)
+                });
+            }
+
             try {
                 for (int i = 0; i < wallPosts.size(); i++) {
                     WallPost post = wallPosts.get(i);
-                    post.convertEntityToSQLite(posts_db, users_db, groups_db, "wall");
-
+                    post.convertEntityToSQLite(posts_db);
+                    if(post.contains_repost) {
+                        post.repost.newsfeed_item.convertEntityToSQLite(posts_db);
+                        writePostAuthorsInfo(ctx, post.repost.newsfeed_item, users_db, groups_db);
+                    }
+                    writePostAuthorsInfo(ctx, post, users_db, groups_db);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -300,8 +338,84 @@ public class WallCacheDB extends CacheDatabase {
             users_helper.close();
             groups_db.close();
             groups_helper.close();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private static void writePostAuthorsInfo(Context ctx, WallPost post, SQLiteDatabase users_db, SQLiteDatabase groups_db) {
+        if (post.author != null) {
+            if (post.author instanceof User) {
+                if(!UsersCacheDB.isExist(ctx, users_db, post.author.id)) {
+                    ContentValues user_values = new ContentValues();
+                    user_values.put("user_id", post.author.id);
+                    user_values.put("first_name", ((User) post.author).first_name);
+                    user_values.put("last_name", ((User) post.author).last_name);
+                    user_values.put("sex", ((User) post.author).sex);
+                    users_db.insert("users", null, user_values);
+                }
+            } else if (post.author instanceof Group) {
+                if(!GroupsCacheDB.isExist(ctx, groups_db, post.author.id)) {
+                    ContentValues group_values = new ContentValues();
+                    group_values.put("group_id", post.author.id);
+                    group_values.put("name", ((Group) post.author).name);
+                    groups_db.insert("groups", null, group_values);
+                }
+            }
+        }
+
+        if (post.owner != null) {
+            if (post.owner instanceof User) {
+                if (!UsersCacheDB.isExist(ctx, users_db, post.owner.id)) {
+                    ContentValues user_values = new ContentValues();
+                    user_values.put("user_id", post.owner.id);
+                    user_values.put("first_name", ((User) post.owner).first_name);
+                    user_values.put("last_name", ((User) post.owner).last_name);
+                    user_values.put("sex", ((User) post.owner).sex);
+                    users_db.insert("users", null, user_values);
+                }
+            } else if (post.owner instanceof Group) {
+                if (!GroupsCacheDB.isExist(ctx, groups_db, post.owner.id)) {
+                    ContentValues group_values = new ContentValues();
+                    group_values.put("group_id", post.owner.id);
+                    group_values.put("name", ((Group) post.owner).name);
+                    groups_db.insert("groups", null, group_values);
+                }
+            }
+        }
+    }
+
+    public static void clear(long owner_id, Context ctx) {
+        try {
+            WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
+                    ctx.getApplicationContext(),
+                    getCurrentDatabaseName(ctx, prefix)
+            );
+            SQLiteDatabase db = helper.getWritableDatabase();
+            db.delete("wall", "owner_id = ?", new String[]{
+                    Long.toString(owner_id)
+            });
+            db.close();
+            helper.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static boolean isExist(SQLiteDatabase db, long owner_id, long post_id) {
+        boolean result = false;
+        try {
+            String table_name = "wall";
+            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
+                    "`owner_id` = ? AND `post_id` = ?",
+                    new String[] {Long.toString(owner_id), Long.toString(post_id)},
+                    null, null, null);
+            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

@@ -56,7 +56,10 @@ import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -103,6 +106,19 @@ public class Global {
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
                         && (ctx.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
                             >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isWidescreen() {
+        if(ctx != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                return ctx.getResources().getConfiguration().smallestScreenWidthDp >= 400;
+            } else
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                        && (ctx.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
+                        >= Configuration.SCREENLAYOUT_SIZE_NORMAL;
         } else {
             return false;
         }
@@ -694,20 +710,21 @@ public class Global {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static String formatTimestamp(Context ctx, long seconds) {
+    public static String formatTimestamp(Context ctx, long time) {
         String strftime;
-        Date dt = new Date(TimeUnit.SECONDS.toMillis(seconds));
-        Date dt_midnight = new Date(System.currentTimeMillis() + 86400000);
+        Date dt = new Date(time);
+       long currentTime = Calendar.getInstance().getTime().getTime();
+        Date dt_midnight = new Date(currentTime + 86400);
         dt_midnight.setHours(0);
         dt_midnight.setMinutes(0);
         dt_midnight.setSeconds(0);
-        if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(seconds))) < 86400000) {
+        if((dt_midnight.getTime() - time) < 86400) {
             strftime = String.format("%s %s", ctx.getResources().getString(R.string.today_at),
                     new SimpleDateFormat("HH:mm").format(dt));
-        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(seconds))) < (86400000 * 2)) {
+        } else if((dt_midnight.getTime() - time) < (86400000L)) { // one day = 86400 seconds
             strftime = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at),
                     new SimpleDateFormat("HH:mm").format(dt));
-        } else if((dt_midnight.getTime() - (TimeUnit.SECONDS.toMillis(seconds))) < 31536000000L) {
+        } else if((dt_midnight.getTime() - time) < 315360000L) { // one year = 365 days = 315,360,000 seconds
             strftime = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt),
                     ctx.getResources().getString(R.string.date_at),
                     new SimpleDateFormat("HH:mm").format(dt));

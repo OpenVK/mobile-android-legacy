@@ -67,6 +67,10 @@ public class RepostInfo implements Parcelable {
 
     }
 
+    public RepostInfo(Long time, Context ctx) {
+
+    }
+
     @Override
     public int describeContents() {
         return 0;

@@ -45,7 +45,7 @@
                 android:layout_weight="1"
                 android:text="Title"
                 android:textAllCaps="true"
-                android:textColor="#85000000"
+                android:textColor="#858585"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

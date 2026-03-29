@@ -28,6 +28,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -73,9 +74,7 @@ public class ProfileCounterLayout extends LinearLayout {
         float dp = context.getResources().getDisplayMetrics().scaledDensity;
 
         if(view != null) {
-            LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-            layoutParams.width =  (int) (92 * dp);
-            view.setLayoutParams(layoutParams);
+            adjustSize(view, context, context.getResources().getConfiguration().orientation);
         }
     }
 
@@ -113,6 +112,16 @@ public class ProfileCounterLayout extends LinearLayout {
 
         if(view != null) {
             adjustSize(view, context, context.getResources().getConfiguration().orientation);
+        }
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        for(int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if(view != null)
+                adjustSize(view, getContext(), newConfig.orientation);
         }
     }
 

@@ -28,6 +28,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -55,6 +56,8 @@ import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.attach.AudioAttachView;
+import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
+import uk.openvk.android.legacy.ui.views.base.SmoothRecyclerView;
 
 public class WallLayout extends LinearLayout {
     private final String instance;
@@ -71,18 +74,54 @@ public class WallLayout extends LinearLayout {
     private ArrayList<WallPost> wallItems;
     public boolean isActivatedAP;
 
-    public WallLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.layout_wall, null);
-
+    public WallLayout(Context context) {
+        super(context);
+        View view =  new InfinityRecyclerView(getContext());
         this.addView(view);
 
-        llm = new WrappedLinearLayoutManager(context);
+        view.setLayoutParams(
+                new LayoutParams(
+                        getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ?
+                                480 : LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
+        setGravity(Gravity.CENTER);
 
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
-        layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-        view.setLayoutParams(layoutParams);
+        llm = new WrappedLinearLayoutManager(context) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+
+        int orientation = ((OvkApplication) getContext().getApplicationContext()).config.orientation;
+
+        adjustLayoutSize(orientation);
+        instance = PreferenceManager.getDefaultSharedPreferences(
+                getContext()).getString("current_instance", "");
+    }
+
+    public WallLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        View view =  new SmoothRecyclerView(getContext());
+        this.addView(view);
+        setGravity(Gravity.CENTER);
+
+        ViewCompat.setNestedScrollingEnabled(view, false);
+        ((RecyclerView) view).setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+        setFocusableInTouchMode(true);
+
+        llm = new WrappedLinearLayoutManager(context) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+
+        int orientation = ((OvkApplication) getContext().getApplicationContext()).config.orientation;
+
+        adjustLayoutSize(orientation);
         instance = PreferenceManager.getDefaultSharedPreferences(
                 getContext()).getString("current_instance", "");
     }
@@ -97,16 +136,8 @@ public class WallLayout extends LinearLayout {
                     @Override
                     public void run() {
                         requestLayout();
-                        if (getWidth() >= (int)
-                                (600 * getContext().getResources().getDisplayMetrics().density)) {
-                            adjustLayoutSize(getContext().getResources().getConfiguration()
-                                    .orientation);
-                        } else {
-                            LinearLayout.LayoutParams layoutParams = new LayoutParams(getWidth(),
-                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                            wallView.setLayoutParams(layoutParams);
-                        }
+                        adjustLayoutSize(getContext().getResources().getConfiguration()
+                                .orientation);
                     }
                 });
             }
@@ -115,26 +146,15 @@ public class WallLayout extends LinearLayout {
         }
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        try {
-            Log.d(OvkApplication.APP_TAG, "Measuring specification for WallLayout...");
-            int heightMeasureSpec_custom = MeasureSpec.makeMeasureSpec(
-                    Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec_custom);
-            Log.d(OvkApplication.APP_TAG, "Preparing WallLayout...");
-            ViewGroup.LayoutParams params = getLayoutParams();
-            params.height = getMeasuredHeight();
-            setMeasuredDimension(params.width, params.height);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void createAdapter(Context ctx, ArrayList<WallPost> wallItems) {
         this.wallItems = wallItems;
         wallAdapter = new NewsfeedAdapter(ctx, wallItems, true);
-        wallView = findViewById(R.id.wall_listview);
+        if(getChildCount() > 0)
+            wallView = (RecyclerView) getChildAt(0);
+
+        if(wallView == null)
+            return;
+
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         wallView.setLayoutManager(llm);
         wallView.setAdapter(wallAdapter);
@@ -142,14 +162,22 @@ public class WallLayout extends LinearLayout {
 
     public void updateItem(WallPost item, int position) {
         if(wallAdapter != null) {
-            wallView = (RecyclerView) findViewById(R.id.news_listview);
+            if(getChildCount() > 0)
+                wallView = (RecyclerView) getChildAt(0);
+
+            if(wallView == null)
+                return;
             wallItems.set(position, item);
             wallAdapter.notifyItemChanged(position);
         }
     }
 
     public void loadPhotos() {
-        wallView = (RecyclerView) findViewById(R.id.wall_listview);
+        if(getChildCount() > 0)
+            wallView = (RecyclerView) getChildAt(0);
+
+        if(wallView == null)
+            return;
         try {
             if(wallAdapter != null) {
                 int visibleItemCount = llm.getChildCount();
@@ -242,21 +270,13 @@ public class WallLayout extends LinearLayout {
     }
 
     public void setScrollingPositions() {
+        if(getChildCount() > 0)
+            wallView = (RecyclerView) getChildAt(0);
+
+        if(wallView == null)
+            return;
+
         loadPhotos();
-        wallView = (RecyclerView) findViewById(R.id.wall_listview);
-        wallView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                loadPhotos();
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-            }
-        });
     }
 
     public void select(int position, String item, int value) {
@@ -293,7 +313,11 @@ public class WallLayout extends LinearLayout {
 
     public void loadAvatars() {
         if(wallAdapter != null) {
-            wallView = (RecyclerView) findViewById(R.id.wall_listview);
+            if(getChildCount() > 0)
+                wallView = (RecyclerView) getChildAt(0);
+
+            if(wallView == null)
+                return;
             for (int i = 0; i < getCount(); i++) {
                 try {
                     WallPost item = wallItems.get(i);
@@ -322,22 +346,37 @@ public class WallLayout extends LinearLayout {
         }
     }
 
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        adjustLayoutSize(newConfig.orientation);
+    }
+
     public void adjustLayoutSize(int orientation) {
+        if(getChildCount() > 0)
+            wallView = (RecyclerView) getChildAt(0);
+
+        if(wallView == null)
+            return;
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+
         if (!((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            wallView = (RecyclerView) findViewById(R.id.wall_listview);
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams((int)
-                        (480 * (getResources().getDisplayMetrics().density)),
+                layoutParams = new LayoutParams((int)
+                        (480 * (getResources().getDisplayMetrics().scaledDensity)),
                         ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                wallView.setLayoutParams(layoutParams);
+                limitWidth((int)(480 * (getResources().getDisplayMetrics().scaledDensity)));
             } else {
-                LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                wallView.setLayoutParams(layoutParams);
+                layoutParams = new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         }
+
+        layoutParams.gravity = Gravity.CENTER;
+        wallView.setLayoutParams(layoutParams);
     }
 
     public void refreshAdapter() {

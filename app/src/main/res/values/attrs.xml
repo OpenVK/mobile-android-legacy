@@ -113,4 +113,8 @@
     <declare-styleable name="FragmentMaster">
         <attr name="masterFragmentTheme" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="ButtonGridPreference">
+        <attr name="target" format="string" />
+    </declare-styleable>
 </resources>

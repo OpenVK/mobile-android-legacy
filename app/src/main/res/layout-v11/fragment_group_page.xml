@@ -52,7 +52,9 @@
             android:layout_height="match_parent"
             android:background="#e3e4e6"
             android:descendantFocusability="blocksDescendants"
-            android:fitsSystemWindows="true">
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:isScrollContainer="false">
 
             <LinearLayout
                 android:layout_width="match_parent"

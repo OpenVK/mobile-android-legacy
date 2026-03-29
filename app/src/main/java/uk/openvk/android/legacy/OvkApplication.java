@@ -58,6 +58,7 @@ public class OvkApplication extends Application {
 
     public String version;
     public boolean isTablet;
+    public boolean isWidescreen;
     public LongPollService longPollService;
     public AudioPlayerService audioPlayerService;
     public NotificationManager notifMan;
@@ -105,6 +106,7 @@ public class OvkApplication extends Application {
             }
         }
         isTablet = global.isTablet();
+        isWidescreen = global.isWidescreen();
     }
 
     private void initializeACRA() {
