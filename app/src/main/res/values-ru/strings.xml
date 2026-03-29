@@ -692,6 +692,9 @@
     <string name="posting_access_denied">Вы не имеете права публиковать запись на этой стене.</string>
     <string name="posted_successfully">Запись опубликована.</string>
 
+    <string name="experimental_functions">Экспериментальные функции</string>
+    <string name="experimental_functions_description">Используйте только на свой страх и риск, так как они могут быть нестабильными или неработоспособными</string>
+
     <string name="debug_menu">Меню отладки</string>
     <string name="sett_debug">Отладка</string>
     <string name="sett_behavior">Поведение</string>

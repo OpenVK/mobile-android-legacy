@@ -220,6 +220,17 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                     getResources().getString(R.string.use_legacy_http_client_okhttp_err));
         }
 
+        Preference experimentalFuncs = findPreference("experimentalFuncs");
+
+        experimentalFuncs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(DebugMenuActivity.this, ExperimentalFeaturesActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
         PreferenceCategory dangerZoneCategory = (PreferenceCategory) findPreference("danger_zone");
         Preference showAccessToken = findPreference("copyAccessToken");
         if(global_prefs.getBoolean("debugDangerZone", false)) {

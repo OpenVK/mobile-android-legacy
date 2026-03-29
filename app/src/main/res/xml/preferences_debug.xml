@@ -76,6 +76,11 @@
             android:layout="@layout/pref_widget_checkbox"
             android:title="@string/uil_debugging"/>
 
+        <Preference
+            android:key="experimentalFuncs"
+            android:title="@string/experimental_functions"
+            android:layout="@layout/pref_widget"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory
