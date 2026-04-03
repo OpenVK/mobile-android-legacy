@@ -35,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -267,12 +268,21 @@ public class PhotoAlbumActivity extends NetworkActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        LinearLayout.LayoutParams lp =
+                (LinearLayout.LayoutParams) (findViewById(R.id.album_header).getLayoutParams());
+
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+
+        LinearLayout view = findViewById(R.id.photo_album_layout);
+
         if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            findViewById(R.id.album_header).getLayoutParams().height =
-                    (int)(180 * getResources().getDisplayMetrics().scaledDensity);
+            view.setOrientation(LinearLayout.HORIZONTAL);
+            lp.width = (int)(200 * dp);
+            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
         } else {
-            findViewById(R.id.album_header).getLayoutParams().height =
-                    (int)(240 * getResources().getDisplayMetrics().scaledDensity);
+            view.setOrientation(LinearLayout.VERTICAL);
+            lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            lp.height = (int)(240 * dp);
         }
     }
 }
