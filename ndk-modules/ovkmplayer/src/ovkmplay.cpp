@@ -39,28 +39,13 @@
 // Android implementations headers
 #include <android/log.h>
 
-
-#include <utils/ffwrap.h>
-#include <interfaces/ffwrap.h>
-
 /*for Android logs*/
-#define LOG_TAG "OVK-MPLAY-LIB"
-#define LOG_LEVEL 10
-#define LOGD(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);}
-#define LOGI(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__);}
-#define LOGW(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__);}
-#define LOGE(level, ...) if (level <= LOG_LEVEL) {__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__);}
 
 char                version[7]                  = "0.0.1";
 char                *gFileName;	                // file name of the video
 int                 gErrorCode;
 
 bool                gDebugMode                  = true;
-
-int                 gFramesCount,
-                    gAttachResult               = -54;
-
-FFmpegWrapper       *gWrapper;
 
 JavaVM*             gVM;
 JavaVMAttachArgs    gVMArgs;
@@ -69,64 +54,33 @@ JNIEnv*             gEnv;
 
 jbyteArray jBuffer;
 
-class IPlayerWrapper : public IFFmpegWrapper {
-    public:
-        void onError(int cmdId, int errorCode);
-        void onResult(int cmdId, int resultCode);
-        void onStreamDecoding(uint8_t *buffer,
-                                      int bufferLen,
-                                      int streamIndex);
-        void onChangePlaybackState(int playbackState) {};
-        void onChangeWrapperState(int wrapperState);
-        JNIEnv *env;
-        jobject instance;
-};
-
-IPlayerWrapper* gInterface;
-
 int attachEnv(JNIEnv **pEnv) {
-    int getEnvStat = gVM->GetEnv((void **) pEnv, JNI_VERSION_1_6);
-    if (getEnvStat == JNI_EDETACHED) {
-        if (gVM->AttachCurrentThread(pEnv, NULL) != 0) {
-            LOGE(10, "Failed to attach thread with JNIEnv*");
-            return 2; //Failed to attach
-        }
-        return 1; //Attached. Need detach
-    } else if (JNI_OK == getEnvStat) {
-        return 0;//Already attached
-    } else {
-        return 3;
-    }
+    return 3;
 }
 
 JNIEXPORT void JNICALL naInit(JNIEnv *env, jobject instance) {
-    gInterface = new IPlayerWrapper();
-    gInterface->instance = env->NewGlobalRef(instance);
-    gWrapper = new FFmpegWrapper(gDebugMode, gInterface);
 }
 
 JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance, int streamType) {
     gVMArgs.version = JNI_VERSION_1_6;
     gVMArgs.name = NULL;
     gVMArgs.group = NULL;
-    gWrapper->setPlaybackState(FFMPEG_PLAYBACK_PLAYING);
-    //gWrapper->startDecoding();
 }
 
 JNIEXPORT void JNICALL naStartAudioDecoding(JNIEnv *env, jobject instance) {
-    gWrapper->startDecoding(gWrapper->gAudioStreamIndex);
+
 }
 
 JNIEXPORT void JNICALL naStartVideoDecoding(JNIEnv *env, jobject instance) {
-    gWrapper->startDecoding(gWrapper->gVideoStreamIndex);
+
 }
 
 JNIEXPORT void JNICALL naPause(JNIEnv *env, jobject instance) {
-    gWrapper->setPlaybackState(FFMPEG_PLAYBACK_PAUSED);
+
 }
 
 JNIEXPORT void JNICALL naStop(JNIEnv *env, jobject instance) {
-    gWrapper->setPlaybackState(FFMPEG_PLAYBACK_STOPPED);
+
 }
 
 JNIEXPORT jstring JNICALL naShowLogo(JNIEnv *env, jobject instance) {
@@ -145,12 +99,10 @@ JNIEXPORT void JNICALL naSetDebugMode(JNIEnv *env, jobject instance, jboolean va
 }
 
 JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
-    return (jint)gWrapper->getPlaybackState();
+    return 0;
 }
 
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
-    gFileName = (char *)env->GetStringUTFChars(filename, NULL);
-    gWrapper->openInputFile(gFileName, true);
     return 0;
 }
 
@@ -159,43 +111,9 @@ void IPlayerWrapper::onError(int cmdId, int errorCode) {
 }
 
 void IPlayerWrapper::onResult(int cmdId, int resultCode) {
-    JNIEnv* env;
-    int attachResult = attachEnv(&env);
-    if(attachResult < 2) {
-        jclass jmPlay = env->GetObjectClass(instance);
-        if(cmdId == FFMPEG_COMMAND_FIND_STREAMS) {
-            gWrapper->openCodecs();
-        } else if(cmdId == FFMPEG_COMMAND_OPEN_CODECS) {
-            jmethodID onResultMid = env->GetMethodID(jmPlay, "onResult", "(II)V");
-            env->CallVoidMethod(instance, onResultMid, (jint)cmdId, (jint)resultCode);
-        }
-        if(attachResult == 1) {
-            gVM->DetachCurrentThread();
-        }
-    }
 }
 
 void IPlayerWrapper::onStreamDecoding(uint8_t* buffer, int bufferLen, int streamIndex) {
-    JNIEnv* env;
-    int attachResult = attachEnv(&env);
-    if(attachResult < 2) {
-        jclass jmPlay = env->GetObjectClass(instance);
-        jBuffer = env->NewByteArray((jsize) bufferLen);
-        env->SetByteArrayRegion(jBuffer, 0, (jsize) bufferLen, (jbyte *) buffer);
-        if(streamIndex == gWrapper->gAudioStreamIndex) {
-            jmethodID renderAudioMid = env->GetMethodID(jmPlay, "renderAudio", "([BI)V");
-            env->CallVoidMethod(instance, renderAudioMid, jBuffer, bufferLen);
-        } else if(streamIndex == gWrapper->gVideoStreamIndex) {
-            jmethodID renderVideoMid = env->GetMethodID(jmPlay, "renderVideo", "([BI)V");
-            env->CallVoidMethod(instance, renderVideoMid, jBuffer, bufferLen);
-        }
-        env->ReleaseByteArrayElements(jBuffer, (jbyte *)env->GetByteArrayElements(jBuffer, NULL), JNI_ABORT);
-        env->DeleteLocalRef(jBuffer);
-        env->DeleteLocalRef(jmPlay);
-        if(attachResult == 1) {
-            gVM->DetachCurrentThread();
-        }
-    }
 }
 
 void IPlayerWrapper::onChangeWrapperState(int wrapperState) {
@@ -204,91 +122,6 @@ void IPlayerWrapper::onChangeWrapperState(int wrapperState) {
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(
         JNIEnv* env, jobject instance, jint type
 ) {
-    jclass track_class;
-    try {
-        AVStream *pStream;
-        if (type == 0 && gWrapper->gVideoStreamIndex != -1) {
-            if(gDebugMode) {
-                LOGD(1, "[DEBUG] Searching video stream...");
-            }
-            pStream = gWrapper->getStream(gWrapper->gVideoStreamIndex);
-
-            if(gDebugMode) {
-                LOGD(1, "[DEBUG] Searching video stream... OK");
-            }
-            // Load OvkVideoTrack class
-            track_class = env->FindClass(
-                "uk/openvk/android/legacy/utils/media/OvkVideoTrack"
-            );
-            // Load OvkVideoTrack class method
-            jmethodID video_track_init = env->GetMethodID(
-                track_class, "<init>", "()V"
-            );
-            jfieldID codec_name_field = env->GetFieldID(
-                track_class, "codec_name", "Ljava/lang/String;"
-            );
-            jfieldID frame_size_field = env->GetFieldID(track_class, "frame_size", "[I");
-            jfieldID bitrate_field = env->GetFieldID(
-                track_class, "bitrate", "J"
-            );
-            jfieldID frame_rate_field = env->GetFieldID(
-                track_class, "frame_rate", "F"
-            );
-            jobject track = env->NewObject(track_class, video_track_init);
-
-            // Load OvkVideoTrack values form fields (class variables)
-            env->SetObjectField(track, codec_name_field, env->NewStringUTF(gWrapper->gVideoCodec->name));
-            jintArray array = (jintArray) env->GetObjectField(track, frame_size_field);
-            jint *frame_size = env->GetIntArrayElements(array, 0);
-            frame_size[0] = gWrapper->gVideoCodecCtx->width;
-            frame_size[1] = gWrapper->gVideoCodecCtx->height;
-            env->ReleaseIntArrayElements(array, frame_size, 0);
-            env->SetLongField(track, bitrate_field, gWrapper->gVideoCodecCtx->bit_rate);
-            env->SetFloatField(track, frame_rate_field, pStream->avg_frame_rate.num);
-            return track;
-        } else if(type == 1 && gWrapper->gAudioStreamIndex != -1) {
-            pStream = gWrapper->getStream(gWrapper->gAudioStreamIndex);
-            // Load OvkAudioTrack class
-            track_class = env->FindClass(
-                "uk/openvk/android/legacy/utils/media/OvkAudioTrack"
-            );
-            // Load OvkVideoTrack class methods
-            jmethodID audio_track_init = env->GetMethodID(
-                track_class, "<init>", "()V"
-            );
-
-            jobject track = env->NewObject(track_class, audio_track_init);
-
-            jfieldID codec_name_field = env->GetFieldID(
-                track_class, "codec_name", "Ljava/lang/String;"
-            );
-            jfieldID sample_rate_field = env->GetFieldID(
-                track_class, "sample_rate", "J"
-            );
-            jfieldID bitrate_field = env->GetFieldID(
-                track_class, "bitrate", "J"
-            );
-            jfieldID channels_field = env->GetFieldID(
-                track_class, "channels", "I"
-            );
-
-            // Load OvkAudioTrack values form fields (class variables)
-            env->SetObjectField(track, codec_name_field, env->NewStringUTF(gWrapper->gAudioCodec->name));
-            env->SetLongField(track, sample_rate_field, gWrapper->gAudioCodecCtx->sample_rate);
-            env->SetLongField(track, bitrate_field, gWrapper->gAudioCodecCtx->bit_rate);
-            env->SetIntField(track, channels_field, gWrapper->gAudioCodecCtx->channels);
-            return track;
-        } else {
-            if(gDebugMode) {
-                LOGE(1, "[ERROR] Track not found");
-            }
-        }
-    } catch (...) {
-        if(gDebugMode) {
-            LOGE(1, "[ERROR] Track not found");
-        }
-        return NULL;
-    }
     return NULL;
 }
 
