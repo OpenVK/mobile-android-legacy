@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_black_v2"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:id="@+id/photo_album_layout">
 
     <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:id="@+id/progress_layout"

@@ -46,7 +46,6 @@ public class ProgressLayout extends LinearLayout {
     }
 
     public void enableDarkTheme(boolean value) {
-        ProgressBar progressBar = findViewById(R.id.progressBar);
         enableDarkTheme(value, 1);
     }
 
