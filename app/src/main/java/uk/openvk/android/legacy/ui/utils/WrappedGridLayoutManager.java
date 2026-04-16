@@ -51,4 +51,9 @@ public class WrappedGridLayoutManager extends GridLayoutManager {
                     "be overestimated.");
         }
     }
+
+    @Override
+    public boolean supportsPredictiveItemAnimations() {
+        return false;
+    }
 }

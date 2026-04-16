@@ -52,20 +52,17 @@ public class ProgressLayout extends LinearLayout {
     public void enableDarkTheme(boolean value, int variant) {
         ProgressBar progressBar = findViewById(R.id.progressBar);
         if (value) {
-            setBackgroundColor(
-                    variant == 0 ? getResources().getColor(R.color.color_black_v2) :
-                                   getResources().getColor(R.color.window_bg_black)
-            );
-            progressBar.setIndeterminateDrawable(
-                    getResources().getDrawable(R.drawable.progress_light)
-            );
-        } else {
-            setBackgroundColor(Color.parseColor("#e3e4e6"));
-            progressBar.setIndeterminateDrawable(
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-                            getResources().getDrawable(R.drawable.progress_dark, getContext().getTheme()) :
-                            getResources().getDrawable(R.drawable.progress_dark)
-            );
+            if (variant == 0) {
+                setBackgroundColor(getResources().getColor(R.color.color_black_v2));
+                progressBar.setIndeterminateDrawable(
+                        getResources().getDrawable(R.drawable.progress_light)
+                );
+            } else {
+                setBackgroundColor(getResources().getColor(R.color.window_bg_black));
+                progressBar.setIndeterminateDrawable(
+                        getResources().getDrawable(R.drawable.progress_light)
+                );
+            }
         }
     }
 }

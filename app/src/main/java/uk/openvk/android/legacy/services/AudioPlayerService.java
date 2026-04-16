@@ -19,10 +19,11 @@
 
 package uk.openvk.android.legacy.services;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -31,6 +32,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -39,9 +41,10 @@ import java.util.List;
 
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.entities.Audio;
-import uk.openvk.android.legacy.core.listeners.AudioPlayerListener;
+import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.utils.NotificationManager;
+import uk.openvk.android.legacy.utils.media.ProxifiedMediaPlayer;
 
 public class AudioPlayerService extends Service implements
         MediaPlayer.OnBufferingUpdateListener,
@@ -52,7 +55,7 @@ public class AudioPlayerService extends Service implements
     private int currentTrackPos;
     private AudioPlayerBinder binder = new AudioPlayerBinder();
     private boolean isRunning = false;
-    private MediaPlayer mp;
+    private ProxifiedMediaPlayer mp;
     private boolean isPlaying;
     private boolean isPrepared;
     private boolean isStarted;
@@ -71,18 +74,22 @@ public class AudioPlayerService extends Service implements
     public static final int STATUS_REPEATING = 1007;
     public static final int STATUS_SHUFFLE = 1008;
     public static final int STATUS_SEEKING = 1009;
+    public static final int STATUS_FAILED = 1010;
     List<AudioPlayerListener> listeners = new ArrayList<>();
 
     private Audio[] playlist;
     private int playerStatus;
     private double bufferLength;
-    private int error_count;
+    private int errorCount;
+    private Notification notification;
+    private NotificationManager notifManager;
+    int currentTrackDuration;
 
     public AudioPlayerService() {
 
     }
 
-    public MediaPlayer getMediaPlayer() {
+    public ProxifiedMediaPlayer getMediaPlayer() {
         return mp;
     }
 
@@ -97,6 +104,14 @@ public class AudioPlayerService extends Service implements
 
     public boolean isPrepared() {
         return isPrepared;
+    }
+
+    public int getPlaybackFailedAttempts() {
+        return errorCount;
+    }
+
+    public int getAudioPlayerState() {
+        return playerStatus;
     }
 
     public class AudioPlayerBinder extends Binder {
@@ -137,6 +152,24 @@ public class AudioPlayerService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (intent == null) {
+                    stopForeground(true);
+                    stopSelf();
+                    return START_NOT_STICKY;
+                } else {
+                    if(notification == null) {
+                        notifManager = new NotificationManager(
+                                this, false, false, false, ""
+                        );
+                        notification = notifManager.createAudioPlayerNotification(
+                                this, R.drawable.ic_audio_play, "audio_player", null
+                        );
+                        startForeground(0x64FF, notification);
+                    }
+                }
+            }
+
             Bundle data = intent.getExtras();
             if (data != null) {
                 String action = data.getString("action");
@@ -155,6 +188,8 @@ public class AudioPlayerService extends Service implements
                             break;
                         case "PLAYER_START":
                             isPlaying = false;
+                            isPrepared = false;
+                            errorCount = 0;
                             String from = data.getString("from");
                             int position = data.getInt("position");
                             currentTrackPos = position;
@@ -182,6 +217,8 @@ public class AudioPlayerService extends Service implements
                             break;
                         case "PLAYER_START_FROM_WALL":
                             isPlaying = false;
+                            isPrepared = false;
+                            errorCount = 0;
                             position = data.getInt("position");
                             currentTrackPos = position;
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
@@ -202,19 +239,25 @@ public class AudioPlayerService extends Service implements
                             isPlaying = true;
                             break;
                         case "PLAYER_PAUSE":
-                            mp.pause();
-                            notifyPlayerStatus(AudioPlayerService.STATUS_PAUSED);
-                            isPlaying = false;
+                            if(mp != null) {
+                                mp.pause();
+                                notifyPlayerStatus(AudioPlayerService.STATUS_PAUSED);
+                                isPlaying = false;
+                            }
                             break;
                         case "PLAYER_STOP":
-                            mp.stop();
-                            notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
-                            isPlaying = false;
-                            isPrepared = false;
+                            if(mp != null) {
+                                mp.stop();
+                                notifyPlayerStatus(AudioPlayerService.STATUS_STOPPED);
+                                isPlaying = false;
+                                isPrepared = false;
+                            }
                             stopSelf();
                             break;
                         case "PLAYER_PREVIOUS":
                             isPlaying = false;
+                            isPrepared = false;
+                            errorCount = 0;
                             if(currentTrackPos > 0) {
                                 currentTrackPos--;
                                 startPlaylistFromPosition(currentTrackPos);
@@ -226,6 +269,8 @@ public class AudioPlayerService extends Service implements
                             break;
                         case "PLAYER_NEXT":
                             isPlaying = false;
+                            isPrepared = false;
+                            errorCount = 0;
                             if(currentTrackPos < playlist.length - 1) {
                                 currentTrackPos++;
                                 startPlaylistFromPosition(currentTrackPos);
@@ -236,8 +281,10 @@ public class AudioPlayerService extends Service implements
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             break;
                         case "PLAYER_SEEK":
-                            int seek_position = data.getInt("seek_position");
-                            mp.seekTo(seek_position);
+                            if(mp != null) {
+                                int seek_position = data.getInt("seek_position");
+                                mp.seekTo(seek_position);
+                            }
                             break;
                         case "PLAYER_CONNECT":
                             break;
@@ -247,7 +294,7 @@ public class AudioPlayerService extends Service implements
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     private void createMediaPlayer() {
@@ -255,7 +302,8 @@ public class AudioPlayerService extends Service implements
         if(mp != null) {
             mp.reset();
         } else {
-            mp = new MediaPlayer();
+            mp = new ProxifiedMediaPlayer(this);
+
             if (Build.VERSION.SDK_INT >= 26)
                 mp.setAudioAttributes(
                         new AudioAttributes
@@ -270,14 +318,24 @@ public class AudioPlayerService extends Service implements
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-        bufferLength = percent * (mediaPlayer.getDuration() / 100);
+        if(mediaPlayer.isPlaying())
+            currentTrackDuration = mediaPlayer.getDuration();
+        bufferLength = percent * (currentTrackDuration / 100);
         notifySeekbarStatus();
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         try {
-            if (mediaPlayer.getDuration() > 0) {
+            if(errorCount > 5) {
+                notifyPlayerStatus(AudioPlayerService.STATUS_FAILED);
+                stopSelf();
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    stopForeground(true);
+                return;
+            }
+
+            if (currentTrackDuration > 0) {
                 if (currentTrackPos < playlist.length - 1) {
                     int position = currentTrackPos + 1;
                     createMediaPlayer();
@@ -310,7 +368,17 @@ public class AudioPlayerService extends Service implements
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-        Log.e(OvkApplication.APS_TAG, String.format("Invalid track stream (w: %s, x: %s)", what, extra));
+        if(playlist != null)
+            Log.e(OvkApplication.APS_TAG, String.format(
+                    "Invalid track stream (w: %s, x: %s, u: %s)", what, extra,
+                    playlist[currentTrackPos].url
+            ));
+        else
+            Log.e(OvkApplication.APS_TAG, String.format(
+                    "Invalid track stream (w: %s, x: %s)", what, extra
+            ));
+
+        errorCount++;
         if((what == MediaPlayer.MEDIA_ERROR_UNKNOWN && extra == MediaPlayer.MEDIA_ERROR_IO)
                 || what == -38) {
             for(int i = 0; i < listeners.size(); i++) {
@@ -328,6 +396,12 @@ public class AudioPlayerService extends Service implements
     }
 
     private void startPlaylistFromPosition(int track_position) {
+        SharedPreferences global_prefs =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        boolean useProxy = global_prefs.getBoolean("useProxy", false);
+        String proxy_type = global_prefs.getString("proxyType",  "");
+
         try {
             if(playlist[track_position].id == 0) {
                 track_position++;
@@ -342,8 +416,10 @@ public class AudioPlayerService extends Service implements
                     public void onPrepared(MediaPlayer mediaPlayer) {
                         mp.start();
                         notifyPlayerStatus(STATUS_PLAYING);
+                        currentTrackDuration = mp.getDuration();
                         isPlaying = true;
                         isPrepared = true;
+                        errorCount = 0;
                     }
                 });
                 mp.setOnCompletionListener(this);
@@ -383,12 +459,16 @@ public class AudioPlayerService extends Service implements
         String action = AudioPlayerService.ACTION_PLAYER_CONTROL;
         intent.setAction(action);
         intent.putExtra("status", status);
-        intent.putExtra("track_position", currentTrackPos);
+        intent.putExtra("track_pos", currentTrackPos);
         sendBroadcast(intent);
         for(int i = 0; i < listeners.size(); i++) {
             listeners.get(i).onChangeAudioPlayerStatus(
                     action, playerStatus, currentTrackPos, intent.getExtras()
             );
+        }
+
+        if(notifManager != null && playlist != null) {
+            notifManager.updateAudioPlayerNotification(0x64FF, notification, playlist[currentTrackPos]);
         }
     }
 
@@ -397,7 +477,7 @@ public class AudioPlayerService extends Service implements
         String action = AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
         intent.setAction(action);
         intent.putExtra("status", this.playerStatus);
-        intent.putExtra("track_position", currentTrackPos);
+        intent.putExtra("track_pos", currentTrackPos);
         sendBroadcast(intent);
         for(int i = 0; i < listeners.size(); i++) {
             listeners.get(i).onReceiveCurrentTrackPosition(currentTrackPos, playerStatus);
@@ -405,18 +485,22 @@ public class AudioPlayerService extends Service implements
     }
 
     public void notifySeekbarStatus() {
-        if(isPlaying) {
-            Intent intent = new Intent();
-            String action = AudioPlayerService.ACTION_UPDATE_SEEKPOS;
-            intent.setAction(action);
-            intent.putExtra("progress", mp.getCurrentPosition());
-            intent.putExtra("duration", mp.getDuration());
-            intent.putExtra("buffer_length", bufferLength);
-            sendBroadcast(intent);
-            for (int i = 0; i < listeners.size(); i++) {
-                listeners.get(i).onUpdateSeekbarPosition(
-                        mp.getCurrentPosition(), mp.getDuration(), bufferLength
-                );
+        if(isPrepared) {
+            if(isPlaying && mp.isPlaying()) {
+                currentTrackDuration = mp.getDuration();
+                Intent intent = new Intent();
+                String action = AudioPlayerService.ACTION_UPDATE_SEEKPOS;
+                intent.setAction(action);
+                intent.putExtra("progress", mp.getCurrentPosition());
+                intent.putExtra("duration", currentTrackDuration);
+                intent.putExtra("buffer_length", bufferLength);
+                intent.putExtra("track_pos", currentTrackPos);
+                sendBroadcast(intent);
+                for (int i = 0; i < listeners.size(); i++) {
+                    listeners.get(i).onUpdateSeekbarPosition(
+                            mp.getCurrentPosition(), currentTrackDuration, bufferLength
+                    );
+                }
             }
         }
     }

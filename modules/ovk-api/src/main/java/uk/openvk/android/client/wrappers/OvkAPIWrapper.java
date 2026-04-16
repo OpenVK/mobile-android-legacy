@@ -74,48 +74,43 @@ public class OvkAPIWrapper {
 
     private final HashMap<String, Object> client_info;
     public String server;
-    private boolean use_https;
-    private boolean legacy_mode;
-    public boolean proxy_connection;
-    public String proxy_type;
-    private String status;
+    private boolean useHttps;
+    private boolean legacyMode;
+    public boolean proxyEnabled;
+    public String proxyType;
     public Error error;
     private Context ctx;
     private String access_token;
 
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
-    private boolean logging_enabled = true; // default for beta releases
+    private boolean loggingEnabled = true; // default for beta releases
     private String client_name = "openvk_legacy_android";
     public Handler handler;
     OvkAPIListeners apiListeners;
     private String relayAddress;
 
-
     public OvkAPIWrapper(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
-        //logging_enabled = uk.openvk.android.client.BuildConfig.VERSION_NAME.endsWith("-d");
+        //loggingEnabled = uk.openvk.android.client.BuildConfig.VERSION_NAME.endsWith("-d");
         setAPIListeners();
         this.handler = handler;
-        if(handler == null) {
-            searchHandler();
-        }
+        
         this.ctx = ctx;
-        this.use_https = use_https;
-        this.legacy_mode = legacy_mode;
-        this.proxy_type = "";
+        this.proxyType = "";
         error = new Error();
+        
         try {
-            if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+            if (legacyMode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 Log.v(OpenVKAPI.TAG, "Starting OvkAPIWrapper in Legacy mode...");
                 httpClientLegacy = new HttpClient(ctx);
                 httpClientLegacy.setConnectTimeout(30000);
                 httpClientLegacy.setReadTimeout(30000);
                 httpClientLegacy.setUserAgent(generateUserAgent());
-                this.legacy_mode = true;
+                this.legacyMode = true;
             } else {
                 Log.v(OpenVKAPI.TAG, "Starting OvkAPIWrapper...");
-                if (use_https) {
+                if (useHttps) {
                     httpClient = new OkHttpClient.Builder()
                             .connectTimeout(30, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS)
                             .readTimeout(30, TimeUnit.SECONDS)
@@ -158,14 +153,6 @@ public class OvkAPIWrapper {
         };
     }
 
-    private void searchHandler() {
-
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
     public Error getError() {
         return error;
     }
@@ -177,10 +164,10 @@ public class OvkAPIWrapper {
     public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
             if(useProxy) {
-                proxy_type = type;
+                proxyType = type;
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
-                    if (legacy_mode) {
+                    if (legacyMode) {
                         if(type.startsWith("http")) {
                             httpClientLegacy.setProxy(address_array[0], Integer.valueOf(address_array[1]));
                         }
@@ -233,9 +220,9 @@ public class OvkAPIWrapper {
                 } else {
                     relayAddress = String.format("http://%s", address);
                 }
-                this.proxy_connection = true;
+                this.proxyEnabled = true;
             } else {
-                proxy_type = "";
+                proxyType = "";
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -266,28 +253,30 @@ public class OvkAPIWrapper {
     }
 
     public void requireHTTPS(boolean value) {
-        this.use_https = value;
+        this.useHttps = value;
     }
 
     public void log(boolean value) {
-        this.logging_enabled = value;
+        this.loggingEnabled = value;
     }
 
     public void authorize(String username, String password) {
         error.description = "";
         String url;
-        if(use_https) {
+        if(useHttps) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password" +
                     "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
                     URLEncoder.encode(password), client_name);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG, String.format("Authorizing with %s... (Secured)", server));
+            if(loggingEnabled) Log.d(OpenVKAPI.TAG, String.format("Authorizing with %s... (Secured)", server));
         } else {
             url = String.format("http://%s/token?username=%s&password=%s&grant_type=password" +
                     "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
                     URLEncoder.encode(password), client_name);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG, String.format("Authorizing with %s...", server));
+            if(loggingEnabled) Log.d(OpenVKAPI.TAG, String.format("Authorizing with %s...", server));
         }
+        
         final String fUrl = url;
+        
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -297,14 +286,14 @@ public class OvkAPIWrapper {
             @Override
             public void run() throws OutOfMemoryError {
                 try {
-                    if(legacy_mode) {
-                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                    if(legacyMode) {
+                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxyType.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -312,13 +301,13 @@ public class OvkAPIWrapper {
                         }
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
@@ -328,20 +317,23 @@ public class OvkAPIWrapper {
                         request = builder.build();
                     }
                     try {
-                        if (legacy_mode) {
-                            HttpResponse response = null;
+                        Object response;
+
+                        if (legacyMode) {
                             response = request_legacy.execute();
                             assert response != null;
-                            response_body = response.readString();
-                            response_code = response.getStatusCode();
+                            response_body = ((HttpResponse) response).readString();
+                            response_code = ((HttpResponse) response).getStatusCode();
                         } else {
-                            Response response = httpClient.newCall(request).execute();
-                            response_body = response.body().string();
-                            response_code = response.code();
+                            response = httpClient.newCall(request).execute();
+                            response_body = ((Response) response).body().string();
+                            response_code = ((Response) response).code();
                         }
+
                         if (response_body.length() > 0) {
-                            if (logging_enabled)
+                            if (loggingEnabled)
                                 Log.d(OpenVKAPI.TAG, String.format("Connected (%d)", response_code));
+
                             switch(response_code) {
                                 case 400:
                                     sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
@@ -380,7 +372,7 @@ public class OvkAPIWrapper {
                                     break;
                                 case 301:
                                 case 302:
-                                    if(!use_https)
+                                    if(!useHttps)
                                         sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                                     break;
                                 default:
@@ -389,7 +381,7 @@ public class OvkAPIWrapper {
                             }
                         }
                     } catch (ProtocolException | UnknownHostException | ConnectException e) {
-                        if (logging_enabled) {
+                        if (loggingEnabled) {
                             if (e.getMessage() != null) {
                                 Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
                                 error.description = e.getMessage();
@@ -400,8 +392,9 @@ public class OvkAPIWrapper {
                         }
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                     } catch (SocketTimeoutException e) {
-                        if (logging_enabled)
+                        if (loggingEnabled)
                             Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
+                        
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
                     } catch (ParseException e) {
@@ -438,20 +431,24 @@ public class OvkAPIWrapper {
     public void authorize(String username, String password, String code) {
         error.description = "";
         String url;
-        if(use_https) {
+        if(useHttps) {
             url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s" +
                     "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
                     URLEncoder.encode(password), code, client_name);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG,
+            
+            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
                     String.format("Connecting to %s (Secured)...", server));
         } else {
             url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s" +
                     "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
                     URLEncoder.encode(password), code, client_name);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG,
+            
+            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
                     String.format("Connecting to %s...", server));
         }
+        
         final String fUrl = url;
+        
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -461,14 +458,14 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if(legacy_mode) {
-                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                    if(legacyMode) {
+                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -476,13 +473,13 @@ public class OvkAPIWrapper {
                         }
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxyType.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
@@ -491,21 +488,24 @@ public class OvkAPIWrapper {
                         }
                         request = builder.build();
                     }
+
                     try {
-                        if (legacy_mode) {
-                            HttpResponse response = null;
+                        Object response;
+                        if (legacyMode) {
                             response = request_legacy.execute();
                             assert response != null;
-                            response_body = response.readString();
-                            response_code = response.getStatusCode();
+                            response_body = ((HttpResponse) response).readString();
+                            response_code = ((HttpResponse) response).getStatusCode();
                         } else {
-                            Response response = httpClient.newCall(request).execute();
-                            response_body = response.body().string();
-                            response_code = response.code();
+                            response = httpClient.newCall(request).execute();
+                            response_body = ((Response) response).body().string();
+                            response_code = ((Response) response).code();
                         }
+
                         if (response_body.length() > 0) {
-                            if (logging_enabled)
+                            if (loggingEnabled)
                                 Log.d(OpenVKAPI.TAG, String.format("Connected (%d)", response_code));
+                            
                             switch(response_code) {
                                 case 400:
                                     sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
@@ -539,7 +539,7 @@ public class OvkAPIWrapper {
                                     break;
                                 case 301:
                                 case 302:
-                                    if(!use_https)
+                                    if(!useHttps)
                                         sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
                                     break;
                                 default:
@@ -549,7 +549,7 @@ public class OvkAPIWrapper {
                         }
                     } catch (ProtocolException | ConnectException |
                             javax.net.ssl.SSLProtocolException | UnknownHostException e) {
-                        if (logging_enabled) {
+                        if (loggingEnabled) {
                             if (e.getMessage() != null) {
                                 Log.e(OpenVKAPI.TAG,
                                         String.format("Connection error: %s", e.getMessage()));
@@ -562,15 +562,17 @@ public class OvkAPIWrapper {
                         }
                         sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                     } catch (SocketTimeoutException e) {
-                        if (logging_enabled)
+                        if (loggingEnabled)
                             Log.e(OpenVKAPI.TAG,
                                     String.format("Connection error: %s", e.getMessage()));
+                        
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
                     } catch (javax.net.ssl.SSLException | OutOfMemoryError e) {
-                        if (logging_enabled)
+                        if (loggingEnabled)
                             Log.e(OpenVKAPI.TAG,
                                     String.format("Connection error: %s", e.getMessage()));
+                        
                         error.description = e.getMessage();
                         sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, error.description);
                     } catch (ParseException e) {
@@ -609,22 +611,24 @@ public class OvkAPIWrapper {
             sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
             return;
         }
-        if(use_https) {
-            url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG, String.format("Connecting to %s (Secured)..." +
-                    "\r\nMethod: %s\r\n" +
-                    "Arguments: %s\r\n" +
-                    "Where: %s",
-                    server, method, args, where));
-        } else {
-            url = String.format("http://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG,
-                    String.format("Connecting to %s..." +
-                            "\r\nMethod: %s\r\n" +
-                            "Arguments: %s\r\n" +
-                            "Where: %s",
-                            server, method, args, where));
-        }
+        
+        url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
+        if(!useHttps)
+            url = url.replace("https://", "http://");
+        
+        if(loggingEnabled) 
+            Log.d(OpenVKAPI.TAG, 
+                  String.format(
+                        "Connecting to %s%s..." +
+                        "\r\nMethod: %s\r\n" +
+                        "Arguments: %s\r\n" +
+                        "Where: %s",
+                        server, 
+                        useHttps ? " (Secured)" : "",
+                        method, args, where
+                  )
+            );
+        
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
             Object request_obj;
@@ -636,14 +640,14 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if(legacy_mode) {
-                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                    if(legacyMode) {
+                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -652,13 +656,13 @@ public class OvkAPIWrapper {
                         request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxyType.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                         MediaType.parse("text/plain"), fUrl
@@ -686,7 +690,7 @@ public class OvkAPIWrapper {
         }
         error.description = "";
         String url = "";
-        if(use_https) {
+        if(useHttps) {
             url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
             Log.d(OpenVKAPI.TAG, String.format("Connecting to %s (Secured)..." +
                     "\r\nMethod: %s\r\nArguments: %s", server, method, args));
@@ -706,14 +710,14 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if(legacy_mode) {
-                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                    if(legacyMode) {
+                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -722,13 +726,13 @@ public class OvkAPIWrapper {
                         request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
@@ -756,16 +760,16 @@ public class OvkAPIWrapper {
         }
         error.description = "";
         String url = "";
-        if(use_https) {
+        if(useHttps) {
             url = String.format("https://%s/method/%s?access_token=%s", server, method, access_token);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG,
+            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
                     String.format("Connecting to %s (Secured)..." +
                             "\r\nMethod: %s\r\n" +
                             "Arguments: [without arguments]",
                             server, method));
         } else {
             url = String.format("http://%s/method/%s?access_token=%s", server, method, access_token);
-            if(logging_enabled) Log.d(OpenVKAPI.TAG,
+            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
                     String.format("Connecting to %s..." +
                             "\r\nMethod: %s\r\n" +
                             "Arguments: [without arguments]",
@@ -782,14 +786,14 @@ public class OvkAPIWrapper {
             @Override
             public void run() {
                 try {
-                    if(legacy_mode) {
-                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                    if(legacyMode) {
+                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", fUrl).getBytes(),
                                     null
@@ -798,13 +802,13 @@ public class OvkAPIWrapper {
                         request_obj = request_legacy;
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : fUrl)
+                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), fUrl
@@ -850,7 +854,7 @@ public class OvkAPIWrapper {
                                 "Instance returns HTTP 200 code, but API execution could be completed - 400"
                             );
                         }
-                        if(logging_enabled) Log.d(OpenVKAPI.TAG,
+                        if(loggingEnabled) Log.d(OpenVKAPI.TAG,
                                 String.format("Getting response from %s (%s, %s):\r\n[%s]",
                                         server, method, response_code, response_body));
                         sendMessage(HandlerMessages.PARSE_JSON, method, args, where, response_body);
@@ -858,7 +862,7 @@ public class OvkAPIWrapper {
                     case 400:
                         error = new Error();
                         error.parse(response_body);
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                        if(loggingEnabled) Log.e(OpenVKAPI.TAG,
                                 String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
                                         server, method, response_code, error.description, error.code));
                         switch(error.code) {
@@ -885,7 +889,7 @@ public class OvkAPIWrapper {
                         break;
                     case 301:
                     case 302:
-                        if(!use_https)
+                        if(!useHttps)
                             sendMessage(HandlerMessages.INTERNAL_ERROR, method, response_body);
                             break;
                     case 503:
@@ -899,7 +903,7 @@ public class OvkAPIWrapper {
                 }
             }
         } catch (ConnectException | ProtocolException e) {
-            if (logging_enabled) {
+            if (loggingEnabled) {
                 if (e.getMessage() != null) {
                     Log.e(OpenVKAPI.TAG,
                             String.format("Connection error: %s", e.getMessage()));
@@ -914,13 +918,13 @@ public class OvkAPIWrapper {
             sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, where, error.description);
         } catch (SocketException e) {
             if(e.getMessage().contains("ETIMEDOUT")) {
-                if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                if(loggingEnabled) Log.e(OpenVKAPI.TAG,
                         String.format("Connection error: %s", e.getMessage()));
                 error.description = e.getMessage();
                 sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, where, error.description);
             }
         } catch (SocketTimeoutException e) {
-            if (logging_enabled) {
+            if (loggingEnabled) {
                 if (e.getMessage() != null) {
                     Log.e(OpenVKAPI.TAG,
                             String.format("Connection error: %s", e.getMessage()));
@@ -933,12 +937,12 @@ public class OvkAPIWrapper {
             }
             sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, where, error.description);
         } catch (UnknownHostException e) {
-            if(logging_enabled) Log.e(OpenVKAPI.TAG,
+            if(loggingEnabled) Log.e(OpenVKAPI.TAG,
                     String.format("Connection error: %s", e.getMessage()));
             error.description = e.getMessage();
             sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, where, error.description);
         } catch(javax.net.ssl.SSLException e) {
-            if(logging_enabled) Log.e(OpenVKAPI.TAG,
+            if(loggingEnabled) Log.e(OpenVKAPI.TAG,
                     String.format("Connection error: %s", e.getMessage()));
             error.description = e.getMessage();
             sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, where, error.description);
@@ -954,7 +958,7 @@ public class OvkAPIWrapper {
                     case 400:
                         error = new Error();
                         error.parse(response_body);
-                        if(logging_enabled) Log.e(OpenVKAPI.TAG,
+                        if(loggingEnabled) Log.e(OpenVKAPI.TAG,
                                 String.format("Getting response from %s (%s, %s): [%s / Error code: %d]",
                                         server, method, response_code, error.description, error.code));
                         switch(error.code) {
@@ -1058,7 +1062,7 @@ public class OvkAPIWrapper {
             httpClientLegacy.setConnectTimeout(30);
             httpClientLegacy.setReadTimeout(30);
         } else {
-            if (use_https)
+            if (useHttps)
                 httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
                         .readTimeout(30, TimeUnit.SECONDS).followRedirects(false)
                         .followSslRedirects(true).build();
@@ -1069,7 +1073,7 @@ public class OvkAPIWrapper {
         }
         String url = "";
         url = String.format("http://%s", server);
-        if(logging_enabled) Log.e(OpenVKAPI.TAG, String.format("Checking %s...", server));
+        if(loggingEnabled) Log.e(OpenVKAPI.TAG, String.format("Checking %s...", server));
         final String fUrl = url;
         final HttpClient finalHttpClientLegacy = new HttpClient(ctx);
         final OkHttpClient finalHttpClient = httpClient;
@@ -1081,7 +1085,7 @@ public class OvkAPIWrapper {
 
             @Override
             public void run() {
-                if(legacy_mode) {
+                if(legacyMode) {
                     request_legacy = finalHttpClientLegacy.get(fUrl);
                 } else {
                     request = new Request.Builder()
@@ -1089,7 +1093,7 @@ public class OvkAPIWrapper {
                             .build();
                 }
                 try {
-                    if(legacy_mode) {
+                    if(legacyMode) {
                         HttpResponse response = request_legacy.execute();
                         assert response != null;
                         response.read(response_body);
@@ -1108,11 +1112,11 @@ public class OvkAPIWrapper {
                             break;
                     }
                 } catch (SocketTimeoutException e) {
-                    if(logging_enabled) Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
+                    if(loggingEnabled) Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
                 } catch (UnknownHostException e) {
-                    if(logging_enabled) Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
+                    if(loggingEnabled) Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();
                     sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
                 } catch (IOException | HttpClientException ex) {

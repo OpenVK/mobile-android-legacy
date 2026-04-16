@@ -31,6 +31,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -58,17 +59,20 @@ public class ProfileHeader extends RelativeLayout {
         layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-            view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            }
         }
     }
 
     public void setProfileName(String name) {
         this.name = name;
         ((TextView) findViewById(R.id.profile_name)).setText(name);
-        ((TextView) findViewById(R.id.profile_name)).setSelected(true);
+        findViewById(R.id.profile_name).setSelected(true);
     }
 
     public void setStatus(String status) {
@@ -89,69 +93,95 @@ public class ProfileHeader extends RelativeLayout {
             if((dt_midnight.getTime() - dt_sec) < 60000) {
                 if(sex == 1) {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_f, getResources().getString(R.string.date_ago_now)));
+                            getResources().getString(R.string.last_seen_profile_f,
+                                    getResources().getString(R.string.date_ago_now)));
                 } else {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_m, getResources().getString(R.string.date_ago_now)));
+                            getResources().getString(R.string.last_seen_profile_m,
+                                    getResources().getString(R.string.date_ago_now)));
                 }
             } else if((dt_midnight.getTime() - dt_sec) < 86400000) {
                 if(sex == 1) {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_f, new SimpleDateFormat("HH:mm").format(dt)));
+                            getResources().getString(R.string.last_seen_profile_f,
+                                    new SimpleDateFormat("HH:mm").format(dt)));
                 } else {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_m, new SimpleDateFormat("HH:mm").format(dt)));
+                            getResources().getString(R.string.last_seen_profile_m,
+                                    new SimpleDateFormat("HH:mm").format(dt)));
                 }
             } else if((dt_midnight.getTime() - dt_sec) < (86400000 * 2)) {
                 if(sex == 1) {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_f, String.format("%s %s",
-                            getResources().getString(R.string.yesterday_at), new SimpleDateFormat("HH:mm").format(dt))));
+                            getResources().getString(R.string.last_seen_profile_f,
+                                    String.format("%s %s",
+                            getResources().getString(R.string.yesterday_at),
+                                            new SimpleDateFormat("HH:mm").format(dt))));
                 } else {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_m, String.format("%s %s",
-                            getResources().getString(R.string.yesterday_at), new SimpleDateFormat("HH:mm").format(dt))));
+                            getResources().getString(R.string.last_seen_profile_m,
+                                    String.format("%s %s",
+                            getResources().getString(R.string.yesterday_at),
+                                            new SimpleDateFormat("HH:mm").format(dt))));
                 }
             } else if((dt_midnight.getTime() - dt_sec) < 31536000000L) {
                 if(sex == 1) {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_f, String.format("%s %s %s",
-                            new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                            getResources().getString(R.string.last_seen_profile_f,
+                                    String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM").format(dt),
+                                            getResources().getString(R.string.date_at),
+                                            new SimpleDateFormat("HH:mm").format(dt))));
                 } else {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
-                            new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                            getResources().getString(R.string.last_seen_profile_m,
+                                    String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM").format(dt),
+                                            getResources().getString(R.string.date_at),
+                                            new SimpleDateFormat("HH:mm").format(dt))));
                 }
             } else {
                 if(sex == 1) {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_f, String.format("%s %s %s",
-                            new SimpleDateFormat("d MMMM yyyy").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                            getResources().getString(R.string.last_seen_profile_f,
+                                    String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM yyyy").format(dt),
+                                            getResources().getString(R.string.date_at),
+                                            new SimpleDateFormat("HH:mm").format(dt))));
                 } else {
                     ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_m, String.format("%s %s %s",
-                            new SimpleDateFormat("d MMMM").format(dt), getResources().getString(R.string.date_at), new SimpleDateFormat("HH:mm").format(dt))));
+                            getResources().getString(R.string.last_seen_profile_m,
+                                    String.format("%s %s %s",
+                            new SimpleDateFormat("d MMMM").format(dt),
+                                            getResources().getString(R.string.date_at),
+                                            new SimpleDateFormat("HH:mm").format(dt))));
                 }
             }
         } else {
             ((TextView) findViewById(R.id.profile_last_seen)).setText("");
         }
+
         try {
-            ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(VISIBLE);
-            if (ls_platform == 4) {
-                ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
-                        getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
-            } else if (ls_platform == 2) {
-                ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
-                        getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
-            } else if (ls_platform == 1) {
-                ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
-                        getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
-            } else {
-                ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(GONE);
+            findViewById(R.id.profile_api_indicator).setVisibility(VISIBLE);
+            switch (ls_platform) {
+                case 4:
+                    ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_api_android_app_indicator));
+                    break;
+                case 2:
+                    ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_api_ios_app_indicator));
+                    break;
+                case 1:
+                    ((ImageView) findViewById(R.id.profile_api_indicator)).setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_api_mobile_indicator));
+                    break;
+                default:
+                    findViewById(R.id.profile_api_indicator).setVisibility(GONE);
+                    break;
             }
         } catch (OutOfMemoryError ignored) {
-            ((ImageView) findViewById(R.id.profile_api_indicator)).setVisibility(GONE);
+            findViewById(R.id.profile_api_indicator).setVisibility(GONE);
         }
     }
 
@@ -163,10 +193,10 @@ public class ProfileHeader extends RelativeLayout {
        if(verified) {
            SpannableStringBuilder sb = new SpannableStringBuilder(name);
            ImageSpan imageSpan;
-           if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
-               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon);
-           else
-               imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
+           imageSpan =
+                   !((OvkApplication) getContext().getApplicationContext()).isTablet ?
+                           new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon) :
+                           new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
            imageSpan.getDrawable().setBounds(
                    0, 0, 0, (int)(6 * ctx.getResources().getDisplayMetrics().density)
            );
@@ -184,13 +214,14 @@ public class ProfileHeader extends RelativeLayout {
     }
 
     public void hideExpandArrow() {
+        findViewById(R.id.rating_layout).setVisibility(GONE);
         findViewById(R.id.profile_expand).setVisibility(INVISIBLE);
     }
 
     public void createProfilePhotoViewer(
             final long user_id, final String original_url) {
         if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
-        ((ImageView) findViewById(R.id.profile_photo)).setOnClickListener(
+        findViewById(R.id.profile_photo).setOnClickListener(
                 new OnClickListener() {
                     @Override
                     public void onClick(View view) {

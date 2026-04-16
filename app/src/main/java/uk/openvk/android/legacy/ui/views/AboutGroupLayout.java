@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 
 public class AboutGroupLayout extends LinearLayout {
@@ -49,12 +50,14 @@ public class AboutGroupLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         try {
-            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                view.findViewById(R.id.profile_ext_header)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                view.findViewById(R.id.profile_ext_header)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+            if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+                if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                    view.findViewById(R.id.profile_ext_header)
+                            .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                    view.findViewById(R.id.profile_ext_header)
+                            .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

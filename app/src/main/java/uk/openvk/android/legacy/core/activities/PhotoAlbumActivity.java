@@ -34,6 +34,7 @@ import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -268,21 +269,23 @@ public class PhotoAlbumActivity extends NetworkActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        LinearLayout.LayoutParams lp =
-                (LinearLayout.LayoutParams) (findViewById(R.id.album_header).getLayoutParams());
 
-        float dp = getResources().getDisplayMetrics().scaledDensity;
+        boolean isTablet = ((OvkApplication) getApplication()).isTablet;
 
-        LinearLayout view = findViewById(R.id.photo_album_layout);
+        FrameLayout header = findViewById(R.id.album_header);
+        LinearLayout content = findViewById(R.id.album_content);
 
         if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            view.setOrientation(LinearLayout.HORIZONTAL);
-            lp.width = (int)(200 * dp);
-            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+            content.setOrientation(LinearLayout.HORIZONTAL);
+            header.getLayoutParams().width =
+                    isTablet ? (int)(384 * getResources().getDisplayMetrics().scaledDensity)
+                            : (int)(240 * getResources().getDisplayMetrics().scaledDensity);
+            header.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
         } else {
-            view.setOrientation(LinearLayout.VERTICAL);
-            lp.width = LinearLayout.LayoutParams.MATCH_PARENT;
-            lp.height = (int)(240 * dp);
+            content.setOrientation(LinearLayout.VERTICAL);
+            header.getLayoutParams().height =
+                    (int)(240 * getResources().getDisplayMetrics().scaledDensity);
+            header.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
         }
     }
 }

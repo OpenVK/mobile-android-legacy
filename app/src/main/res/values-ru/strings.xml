@@ -45,8 +45,10 @@
 
     <string name="load_more">Загрузить ещё</string>
 
-    <string name="today">сегодня</string>
-    <string name="yesterday">вчера</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="today_lower">сегодня</string>
+    <string name="yesterday_lower">вчера</string>
     <string name="today_at">сегодня в</string>
     <string name="yesterday_at">вчера в</string>
     <string name="date_at">в</string>
@@ -527,6 +529,7 @@
 	<string name="profile_books">Любимые книги</string>
 	<string name="profile_quotations">Любимые цитаты</string>
 	<string name="profile_about">О себе</string>
+    <string name="profile_regdate">Дата регистрации</string>
 	<string name="profile_info_relatives">Родственники</string>
 	<string name="profile_relative_sibling_m">Брат</string>
 	<string name="profile_relative_sibling_f">Сестра</string>
@@ -574,6 +577,7 @@
 	<string name="videos_of_me">Видео со мной</string>
 	<string name="videos_by_user">Видеозаписи %s</string>
 	<string name="now_playing">Воспроизводится</string>
+    <string name="player_done">Пока ничего не играет</string>
 	<string name="group_inv_accept">Вступить</string>
 	<string name="group_inv_decline">Отклонить</string>
 	<string name="group_inv_event_accept">Пойду</string>

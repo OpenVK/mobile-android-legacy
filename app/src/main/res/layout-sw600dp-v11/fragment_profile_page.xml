@@ -94,6 +94,39 @@
                         android:textColor="@color/timestamp_color"
                         android:textStyle="italic" />
 
+                    <RelativeLayout
+                        android:id="@+id/rating_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="4dp"
+                        tools:ignore="InefficientWeight">
+
+                        <ProgressBar
+                            android:id="@+id/rating_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="24dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:max="100"
+                            android:progress="56"
+                            android:progressDrawable="@drawable/horizontal_progress_3" />
+
+                        <TextView
+                            android:id="@+id/rating_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="false"
+                            android:layout_centerInParent="true"
+                            android:text="56 %"
+                            android:textColor="@color/ovk_color"
+                            tools:ignore="HardcodedText" />
+
+                    </RelativeLayout>
+
                     <LinearLayout
                         android:id="@+id/actions_layout"
                         android:layout_width="match_parent"

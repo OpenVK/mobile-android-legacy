@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:numColumns="2"
+    android:scrollbars="none"
+    android:background="@drawable/transparent"
     android:verticalSpacing="4dp"
     android:horizontalSpacing="4dp"
     android:stretchMode="columnWidth">

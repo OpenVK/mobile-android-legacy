@@ -147,6 +147,7 @@ public class HandlerMessages {
     public static int PARSE_JSON                        = 2018;
     public static int UPLOAD_PROGRESS                   = 2019;
     public static int UPLOADED_SUCCESSFULLY             = 2020;
+    public static int AUDIOS_CACHE                      = 2021;
 
     // Errors
     public static int NO_INTERNET_CONNECTION            =   -1;

@@ -84,7 +84,7 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
             TextView item_name = view.findViewById(R.id.item_title);
             item_name.setText(item.name);
         }
-        if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+        if(ctx instanceof AppActivity) {
             Global global = new Global(ctx);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 if(global.isTablet()) {

@@ -45,4 +45,9 @@ public class WrappedLinearLayoutManager extends LinearLayoutManager {
                     "be overestimated.");
         }
     }
+
+    @Override
+    public boolean supportsPredictiveItemAnimations() {
+        return false;
+    }
 }

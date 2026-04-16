@@ -103,9 +103,9 @@ public class InstancesListAdapter extends BaseAdapter {
         ((ImageView) view.findViewById(R.id.official_state)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                if(ctx instanceof AppActivity) {
                     //((AppActivity) ctx).onSimpleListItemClicked(position);
-                } else if(ctx.getClass().getSimpleName().equals("AuthActivity")) {
+                } else if(ctx instanceof AuthActivity) {
                     ((AuthActivity) ctx).clickInstancesItem(position);
                 }
             }

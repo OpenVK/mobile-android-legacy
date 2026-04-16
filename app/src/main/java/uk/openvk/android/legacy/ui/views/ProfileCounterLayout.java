@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ import android.widget.TextView;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.FragmentNavigator;
 
 public class ProfileCounterLayout extends LinearLayout {
     public String action;
@@ -147,6 +150,19 @@ public class ProfileCounterLayout extends LinearLayout {
                 }
             });
         }
+        ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
+        ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
+    }
+
+    public void setCounter(final Context ctx, long count, String label, final int sectionNum) {
+        findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ctx instanceof AppActivity) {
+                    ((AppActivity) ctx).onSlidingMenuItemClicked(sectionNum, false);
+                }
+            }
+        });
         ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
         ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
     }

@@ -43,6 +43,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 
 import static uk.openvk.android.legacy.BuildConfig.DEBUG;
@@ -157,12 +158,18 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
     }
 
     public void enableDarkTheme() {
-        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-            header.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
-            header.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-        } else {
-            header.setBackgroundColor(Color.parseColor("#313743"));
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
+            switch (global_prefs.getString("uiTheme", "blue")) {
+                case "Gray":
+                    header.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                    break;
+                case "Black":
+                    header.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                    break;
+                default:
+                    header.setBackgroundColor(Color.parseColor("#313743"));
+                    break;
+            }
         }
         p2r_tv = findViewById(R.id.p2r_text);
         p2r_arrow = findViewById(R.id.p2r_arrow);

@@ -20,7 +20,6 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,7 +30,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -43,21 +41,16 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
-import uk.openvk.android.legacy.core.listeners.OnEndlessScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.GroupsListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class GroupsFragment extends ActiveFragment {
-    public TextView titlebar_title;
     public String state;
-    public String send_request;
-    public SharedPreferences global_sharedPreferences;
     private InfinityRecyclerView groupsListView;
     private ArrayList<Group> groups;
     private GroupsListAdapter groupsAdapter;
-    private boolean loading_more_groups = false;
     private View view;
     private String instance;
 

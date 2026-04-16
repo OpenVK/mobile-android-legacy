@@ -17,27 +17,32 @@
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#e5000000" android:layout_width="match_parent" android:layout_height="58dp">
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:background="#d8000000">
+
     <ViewFlipper
         android:id="@+id/audio_panel_switcher"
-        android:background="@drawable/highlight"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@drawable/highlight">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
                 android:id="@+id/audio_panel_cover"
                 android:layout_width="58dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:src="#80ffffff"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginEnd="10dp"
-                android:layout_alignParentStart="true" />
+                android:layout_marginRight="10dp"
+                android:background="#222222" />
 
             <TextView
                 android:id="@+id/audio_panel_title"
@@ -54,39 +59,46 @@
                 android:text="TextView"
                 android:textColor="#e5ffffff"
                 android:textSize="18sp" />
+
             <TextView
-                android:textSize="15sp"
-                android:textColor="#99ffffff"
-                android:ellipsize="marquee"
                 android:id="@+id/audio_panel_artist"
-                android:fadingEdge="horizontal"
-                android:fadingEdgeLength="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-                android:singleLine="true"
-                android:layout_toRightOf="@+id/audio_panel_cover"
                 android:layout_below="@+id/audio_panel_title"
-                tools:ignore="HardcodedText"
-                android:layout_toEndOf="@+id/audio_panel_cover" />
+                android:layout_toEndOf="@+id/audio_panel_cover"
+                android:layout_toRightOf="@+id/audio_panel_cover"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:fadingEdgeLength="10dp"
+                android:singleLine="true"
+                android:text="TextView"
+                android:textColor="#99ffffff"
+                android:textSize="15sp"
+                tools:ignore="HardcodedText" />
         </RelativeLayout>
     </ViewFlipper>
+
     <ImageView
         android:id="@+id/audio_panel_prev"
-        android:background="@drawable/highlight"
         android:layout_width="58dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_audio_panel_prev" android:scaleType="center"/>
+        android:background="@drawable/highlight"
+        android:scaleType="center"
+        android:src="@drawable/ic_audio_panel_prev" />
+
     <ImageView
         android:id="@+id/audio_panel_play"
-        android:background="@drawable/highlight"
         android:layout_width="58dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_audio_panel_play" android:scaleType="center"/>
+        android:background="@drawable/highlight"
+        android:scaleType="center"
+        android:src="@drawable/ic_audio_panel_play" />
+
     <ImageView
         android:id="@+id/audio_panel_next"
-        android:background="@drawable/highlight"
         android:layout_width="58dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_audio_panel_next" android:scaleType="center"/>
+        android:background="@drawable/highlight"
+        android:scaleType="center"
+        android:src="@drawable/ic_audio_panel_next" />
 </LinearLayout>

@@ -126,16 +126,18 @@ public class Users implements Parcelable {
     public void getUser(OvkAPIWrapper wrapper, long user_id) {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_200_orig,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city,counters",
+                                "photo_200_orig,photo_400,photo_max_orig,status,screen_name," +
+                                "friend_status,last_seen,interests,music,movies,tv,books,city," +
+                                "counters,reg_date,is_dead,rating,nickname,about",
                 user_id));
     }
 
     public void getAccountUser(OvkAPIWrapper wrapper, long user_id) {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_200_orig,photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city,counters",
+                                "photo_200_orig,photo_400,photo_max_orig,status,screen_name," +
+                                "friend_status,last_seen,interests,music,movies,tv,books,city," +
+                                "counters,reg_date,is_dead,rating,nickname,about",
                 user_id), "account_user");
     }
 
@@ -154,8 +156,9 @@ public class Users implements Parcelable {
         }
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city,counters",
+                                "photo_200_orig,photo_400,photo_max_orig,status,screen_name," +
+                                "friend_status,last_seen,interests,music,movies,tv,books,city," +
+                                "counters,reg_date,is_dead,rating,nickname,about",
                 ids_list), "peers");
     }
 

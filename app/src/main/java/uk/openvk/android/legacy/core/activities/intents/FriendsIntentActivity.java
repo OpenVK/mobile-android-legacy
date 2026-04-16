@@ -59,7 +59,7 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
     private ErrorLayout errorLayout;
     private FriendsFragment friendsFragment;
     private String access_token;
-    private int user_id = 0;
+    private long user_id = 0;
     private FragmentTransaction ft;
 
     @SuppressLint("CommitPrefEdits")
@@ -99,9 +99,8 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                     ovk_api.friends = new Friends();
                     if(args.startsWith("friends")) {
                         try {
-                            user_id = Integer.parseInt(args.substring(7));
-                            ovk_api.friends.get(ovk_api.wrapper,
-                                    Integer.parseInt(args.substring(7)), 25, "friends_list");
+                            user_id = Long.parseLong(args.substring(7));
+                            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, "friends_list");
                         } catch (Exception ex) {
                             ovk_api.users.search(ovk_api.wrapper, args);
                         }
@@ -213,25 +212,16 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.createAdapter(this, friendsList, "friends");
+                friendsFragment.loadAPIData(this, user_id, ovk_api);
                 try {
                     friendsFragment.updateTabsCounters(0, ovk_api.friends.count);
                 } catch (Exception ignored) {
 
                 }
-                friendsFragment.setScrollingPositions(this, true);
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsFragment.loadAvatars();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                int old_friends_size = ovk_api.friends.getFriends().size();
-                ovk_api.friends.parse(data.getString("response"), ovk_api.dlman, true, false);
-                ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
-                friendsFragment.createAdapter(this, friendsList, "friends");
-                if(old_friends_size == ovk_api.friends.getFriends().size()) {
-                    friendsFragment.setScrollingPositions(this, false);
-                } else {
-                    friendsFragment.setScrollingPositions(this, true);
-                }
+                friendsFragment.loadAPIData(this, user_id, ovk_api);
             } else if (message < 0) {
                 setErrorPage(data, message);
             }

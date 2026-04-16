@@ -63,13 +63,16 @@ public class Audios {
                     Audio audio = new Audio();
                     audio.unique_id = audio_track.getString("unique_id");
                     audio.id = audio_track.getLong("aid");
-                    if(audio_track.has("owner_id")) {
+                    if(audio_track.has("owner_id"))
                         audio.owner_id = audio_track.getLong("owner_id");
-                    }
-                    audio.title = audio_track.getString("title");
-                    audio.artist = audio_track.getString("artist");
-                    audio.album = audio_track.getString("album");
-                    audio.genre = audio_track.getString("genre_str");
+                    if(!audio_track.isNull("title"))
+                        audio.title = audio_track.getString("title");
+                    if(!audio_track.isNull("artist"))
+                        audio.artist = audio_track.getString("artist");
+                    if(!audio_track.isNull("album"))
+                        audio.album = audio_track.getString("album");
+                    if(!audio_track.isNull("genre_str"))
+                        audio.genre = audio_track.getString("genre_str");
                     audio.setDuration(audio_track.getInt("duration"));
                     audio.lyrics =
                             audio_track.isNull("lyrics") ?

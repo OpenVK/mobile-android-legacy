@@ -52,7 +52,7 @@
                 <FrameLayout
                     android:id="@android:id/tabcontent"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1">
 
                     <LinearLayout
@@ -61,17 +61,17 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView
+                        <android.support.v7.widget.RecyclerView
                             android:id="@+id/friends_listview"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:divider="@null"
                             android:dividerHeight="1dp"
                             android:footerDividersEnabled="false"
                             android:headerDividersEnabled="false"
                             android:visibility="visible">
 
-                        </uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView>
+                        </android.support.v7.widget.RecyclerView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -83,8 +83,9 @@
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/requests_view"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:fitsSystemWindows="true"/>
+                            android:layout_height="wrap_content"
+                            android:background="#e3e4e6"
+                            android:fitsSystemWindows="true" />
                     </LinearLayout>
 
                 </FrameLayout>

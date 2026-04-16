@@ -25,6 +25,7 @@
         android:id="@+id/cover"
         android:layout_width="@android:dimen/notification_large_icon_width"
         android:layout_height="@android:dimen/notification_large_icon_height"
+        android:background="#222222"
         android:src="@drawable/aplayer_cover_placeholder" />
 
     <LinearLayout

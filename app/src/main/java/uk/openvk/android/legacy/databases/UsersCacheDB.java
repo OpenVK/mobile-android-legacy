@@ -129,9 +129,6 @@ public class UsersCacheDB extends CacheDatabase {
                 helper.close();
                 return result;
             }
-            if (cursor != null) {
-                cursor.close();
-            }
             db.close();
             helper.close();
             return result;

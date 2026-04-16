@@ -28,7 +28,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:gravity="center"
+        android:paddingTop="50dp"
         android:orientation="vertical">
 
         <uk.openvk.android.legacy.ui.views.AlbumScrollView

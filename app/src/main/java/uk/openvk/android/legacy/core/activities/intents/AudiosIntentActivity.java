@@ -128,7 +128,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 try {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.audio));
+                    getActionBar().setTitle(getResources().getString(R.string.profile_music));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -160,7 +160,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                     onBackPressed();
                 }
             });
-            actionBar.setTitle(getResources().getString(R.string.audio));
+            actionBar.setTitle(getResources().getString(R.string.profile_music));
             switch (global_prefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));

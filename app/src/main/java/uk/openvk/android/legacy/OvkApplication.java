@@ -55,6 +55,7 @@ import uk.openvk.android.legacy.utils.ACRACustomSender;
 public class OvkApplication extends Application {
 
     private static final String DEFAULT_RELAY_SERVER = "minvk.ru/apirelay.php";
+    public static boolean isDebug = BuildConfig.VERSION_NAME.endsWith("-d");
 
     public String version;
     public boolean isTablet;

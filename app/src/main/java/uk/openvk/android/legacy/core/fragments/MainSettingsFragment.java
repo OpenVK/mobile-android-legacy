@@ -43,36 +43,30 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Account;
+import uk.openvk.android.client.entities.InstanceLink;
+import uk.openvk.android.client.entities.Ovk;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.entities.Account;
-import uk.openvk.android.client.entities.Ovk;
-import uk.openvk.android.client.enumerations.HandlerMessages;
-import uk.openvk.android.client.entities.InstanceLink;
-import uk.openvk.android.client.wrappers.OvkAPIWrapper;
-import uk.openvk.android.legacy.core.activities.settings.AboutApplicationActivity;
-import uk.openvk.android.legacy.core.fragments.base.ActivePreferenceFragment;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.core.activities.settings.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.settings.AboutApplicationActivity;
+import uk.openvk.android.legacy.core.activities.settings.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.core.activities.settings.DebugMenuActivity;
 import uk.openvk.android.legacy.core.activities.settings.NetworkSettingsActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActivePreferenceFragment;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.list.adapters.InstanceCountersAdapter;
-import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
 import uk.openvk.android.legacy.utils.AccountAuthenticator;
 
 public class MainSettingsFragment extends ActivePreferenceFragment {
-    private boolean isQuiting;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
-    private OvkApplication app;
-    private OvkAPIWrapper ovk_api;
     private int danger_zone_multiple_tap;
     private View about_instance_view;
     private OvkAlertDialog about_instance_dlg;
     public  int selectedPosition;
-    private ArrayList<InstanceAccount> accountArray;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -87,7 +81,6 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
             addPreferencesFromResource(R.xml.preferences);
         }
         setListeners();
-        accountArray = new ArrayList<>();
     }
 
     @Override
@@ -255,7 +248,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         }
 
         Preference debug_menu = findPreference("debug_menu");
-        if (BuildConfig.BUILD_TYPE.equals("release")) {
+        if (!OvkApplication.isDebug) {
             others.removePreference(debug_menu);
         } else {
             danger_zone_multiple_tap = 0;
@@ -263,7 +256,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
             debug_menu.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    if (instance_prefs.getString("access_token", "").length() > 0) {
+                    if (instance_prefs != null && instance_prefs.getString("access_token", "").length() > 0) {
                         danger_zone_multiple_tap += 1;
                         if (danger_zone_multiple_tap < 15) {
                             Intent intent = new Intent(getContext(), DebugMenuActivity.class);
@@ -414,12 +407,10 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
             }
         });
         builder.setTitle(getResources().getString(R.string.about_instance));
-        isQuiting = true;
         builder.setView(about_instance_view);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                isQuiting = false;
             }
         });
         about_instance_dlg = new OvkAlertDialog(getContext());

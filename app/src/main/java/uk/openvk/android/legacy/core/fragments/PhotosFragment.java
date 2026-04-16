@@ -46,9 +46,7 @@ public class PhotosFragment extends ActiveFragment {
 
     private View view;
     private InfinityRecyclerView albumsListView;
-    private String instance;
     private PhotoAlbumsListAdapter albumsAdapter;
-    public boolean infinity_scroll;
     private ArrayList<PhotoAlbum> albums;
 
     @Nullable
@@ -60,7 +58,6 @@ public class PhotosFragment extends ActiveFragment {
         VerticalSpace dividerItemDecoration = new VerticalSpace(
                 (int)(8 * getResources().getDisplayMetrics().scaledDensity));
         albumsListView.addItemDecoration(dividerItemDecoration);
-        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 

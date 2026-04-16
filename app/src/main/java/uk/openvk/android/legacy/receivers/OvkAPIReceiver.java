@@ -30,36 +30,24 @@ import android.os.Message;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
 
-import uk.openvk.android.client.entities.Authorization;
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.PhotoAlbum;
 import uk.openvk.android.client.enumerations.HandlerMessages;
-import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.NoteActivity;
-import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
-import uk.openvk.android.legacy.core.activities.WallPostActivity;
+import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
-import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
-import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
-import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
-import uk.openvk.android.legacy.core.activities.intents.VideosIntentActivity;
 
 public class OvkAPIReceiver extends BroadcastReceiver {
     private Activity activity;
@@ -204,7 +192,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.FRIENDS_GET_MORE;
                         ovk_api.friends.parse(data.getString("response"),
-                                ovk_api.dlman, true, false);
+                                ovk_api.dlman, true, true);
                     } else {
                         assert where != null;
                         if(where.equals("profile_counter")) {

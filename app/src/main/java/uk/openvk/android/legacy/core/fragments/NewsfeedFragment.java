@@ -26,23 +26,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
@@ -50,15 +45,15 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.OpenVKAPI;
-import uk.openvk.android.client.entities.Account;
-import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
@@ -66,25 +61,17 @@ import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListene
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 
 public class NewsfeedFragment extends ActiveFragment {
-    private View headerView;
-    private int param = 0;
-    public TextView titlebar_title;
     public String state;
     public JSONArray newsfeed;
-    public String send_request;
     public SharedPreferences global_prefs;
     private NewsfeedAdapter newsfeedAdapter;
     private RecyclerView newsfeedView;
-    private ListView newsfeedListView;
     private LinearLayoutManager llm;
     private ArrayList<WallPost> wallPosts;
     public boolean loading_more_posts = false;
-    private int pastComplVisiblesItems;
-    private Parcelable recyclerViewState;
     private View view;
     private String instance;
     private Menu fragment_menu;

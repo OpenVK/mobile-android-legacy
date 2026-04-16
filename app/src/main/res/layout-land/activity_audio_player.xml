@@ -153,7 +153,7 @@
                 android:id="@+id/audio_player_cover"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/aplayer_cover_border"
+                android:background="#222222"
                 android:scaleType="centerCrop"
                 android:src="@drawable/aplayer_cover_placeholder" />
 

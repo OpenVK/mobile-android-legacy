@@ -46,9 +46,7 @@ public class VideosFragment extends ActiveFragment {
 
     private View view;
     private InfinityRecyclerView videosListView;
-    private String instance;
     private VideosListAdapter videosAdapter;
-    public boolean infinity_scroll;
     private ArrayList<Video> videos;
 
     @Nullable
@@ -60,7 +58,6 @@ public class VideosFragment extends ActiveFragment {
         VerticalSpace dividerItemDecoration = new VerticalSpace(
                 (int)(8 * getResources().getDisplayMetrics().scaledDensity));
         videosListView.addItemDecoration(dividerItemDecoration);
-        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 

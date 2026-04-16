@@ -49,10 +49,7 @@ public class NotesFragment extends ActiveFragment {
     private RecyclerView notesListView;
     private ArrayList<Note> notes;
     private NotesListAdapter notesAdapter;
-    private boolean loading_more_notes = false;
     private View view;
-    private Context activity_ctx;
-    private String instance;
 
     @Nullable
     @Override
@@ -60,7 +57,6 @@ public class NotesFragment extends ActiveFragment {
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_notes, container, false);
         notesListView = view.findViewById(R.id.notes_listview);
-        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 
@@ -103,7 +99,6 @@ public class NotesFragment extends ActiveFragment {
     }
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
-        loading_more_notes = false;
         // TODO: Add infinity scroll for RecyclerView (must be inside InfinityNestedScrollView / InfinityScrollView)
         /* if(infinity_scroll) {
                     if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
@@ -116,10 +111,6 @@ public class NotesFragment extends ActiveFragment {
                     }
                 }
         */
-    }
-
-    public void setActivityContext(Context ctx) {
-        activity_ctx = ctx;
     }
 
     @Override

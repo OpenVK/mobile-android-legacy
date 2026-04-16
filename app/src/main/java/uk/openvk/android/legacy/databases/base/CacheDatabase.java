@@ -25,7 +25,7 @@ public class CacheDatabase {
         @Override
         public void onCreate(SQLiteDatabase database) {
             switch (prefix) {
-                case "audio":
+                case "audios":
                     CacheDatabaseTables.createAudioTracksTable(database, false);
                     break;
                 case "users":

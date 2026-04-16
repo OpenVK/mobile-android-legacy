@@ -162,8 +162,6 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
         errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
         notesFragment = new NotesFragment();
 
-        notesFragment.setActivityContext(this);
-
         progressLayout.setVisibility(View.VISIBLE);
         ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.app_fragment, notesFragment, "notes");

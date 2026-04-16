@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -55,12 +54,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.entities.Account;
-import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
@@ -75,37 +74,18 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_PLAYLIST;
+import static uk.openvk.android.legacy.services.AudioPlayerService.STATUS_PAUSED;
+import static uk.openvk.android.legacy.services.AudioPlayerService.STATUS_PLAYING;
 
-public class AudiosFragment extends ActiveFragment implements AudioPlayerService.AudioPlayerListener {
+public class AudiosFragment extends ActiveFragment {
     private RecyclerView audiosView;
-    private Account account;
     private View view;
-    private String instance;
     private ArrayList<Audio> audios;
     private AudiosListAdapter audiosAdapter;
     private Context parent;
-    private MediaPlayer mediaPlayer;
-    public boolean isBoundAP;
-    private AudioPlayerReceiver audioPlayerReceiver;
-    private AudioPlayerService audioPlayerService;
     private int currentTrackPos;
-    private Intent serviceIntent;
-    private ServiceConnection audioPlayerConnection = new ServiceConnection() {
+    private int currentPlayerState;
 
-        public void onServiceDisconnected(ComponentName name) {
-            audioPlayerService.removeListener(AudiosFragment.this);
-            isBoundAP = false;
-            audioPlayerService = null;
-        }
-
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            isBoundAP = true;
-            AudioPlayerService.AudioPlayerBinder mLocalBinder =
-                    (AudioPlayerService.AudioPlayerBinder) service;
-            audioPlayerService = mLocalBinder.getService();
-            audioPlayerService.addListener(AudiosFragment.this);
-        }
-    };
     private Menu fragment_menu;
     private ArrayList<Audio> search_results;
     public SearchView searchView;
@@ -151,7 +131,6 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_audios, container, false);
         audiosView = view.findViewById(R.id.audios_listview);
-        instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         return view;
     }
 
@@ -305,16 +284,37 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
     public void createAdapter(Context ctx, ArrayList<Audio> audios) {
         this.parent = ctx;
         this.audios = audios;
+
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
-        audioPlayerReceiver = new AudioPlayerReceiver(getContext());
-        IntentFilter intentFilter = new IntentFilter(ACTION_PLAYER_CONTROL);
-        intentFilter.addAction(ACTION_UPDATE_PLAYLIST);
-        intentFilter.addAction(ACTION_UPDATE_CURRENT_TRACKPOS);
-        parent.registerReceiver(audioPlayerReceiver, intentFilter);
-        if(app.audioPlayerService == null) {
-            app.audioPlayerService = new AudioPlayerService();
+
+        if(getActivity() instanceof NetworkFragmentActivity) {
+            if(!((NetworkFragmentActivity) getActivity()).checkIsBoundAudioPlayer())
+                ((NetworkFragmentActivity) getActivity()).bindAudioPlayer();
+            else {
+                AudioPlayerService service = ((NetworkFragmentActivity) getActivity()).getAudioPlayerService();
+                if(service != null) {
+                    currentPlayerState = service.getAudioPlayerState();
+                    currentTrackPos = service.getCurrentTrackPosision();
+                    if (currentPlayerState == AudioPlayerService.STATUS_PLAYING
+                            || currentPlayerState == AudioPlayerService.STATUS_PAUSED) {
+                        Audio audio = audios.get(currentTrackPos);
+                        int status = 0;
+                        switch (currentPlayerState) {
+                            case STATUS_PLAYING:
+                                status = 2;
+                                break;
+                            case STATUS_PAUSED:
+                                status = 3;
+                                break;
+                        }
+                        audio.status = status;
+                        this.audios.set(currentTrackPos, audio);
+                        showBottomPlayer(audio);
+                    }
+                }
+            }
         }
-        startAudioPlayerService();
+
         if (audiosAdapter == null) {
             LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
             audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios, false);
@@ -335,7 +335,7 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
         } else {
             audiosAdapter.notifyDataSetChanged();
         }
-        AudioCacheDB.clear(parent, false);
+        //AudioCacheDB.clear(parent, false);
         AudioCacheDB.fillDatabase(parent, audios, false, false);
     }
 
@@ -357,50 +357,8 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
             audiosView.setLayoutManager(llm);
         }
         audiosView.setAdapter(audiosAdapter);
-        AudioCacheDB.clear(parent, true);
-        AudioCacheDB.fillDatabase(parent, audios, false, true);
-    }
-
-    public void startAudioPlayerService() {
-        serviceIntent = new Intent(getContext().getApplicationContext(), AudioPlayerService.class);
-        if(!isBoundAP) {
-            OvkApplication app = ((OvkApplication) getContext().getApplicationContext());
-            Log.d(OvkApplication.APP_TAG, "Creating AudioPlayerService intent");
-            serviceIntent.putExtra("action", "PLAYER_CREATE");
-        } else {
-            serviceIntent.putExtra("action", "PLAYER_GET_CURRENT_POSITION");
-        }
-        parent.getApplicationContext().startService(serviceIntent);
-        parent.getApplicationContext().bindService(serviceIntent, audioPlayerConnection, BIND_AUTO_CREATE);
-    }
-
-    public void setAudioPlayerState(int position, int status, boolean fromList) {
-        String action = "";
-        switch (status) {
-            case AudioPlayerService.STATUS_STARTING:
-                action = "PLAYER_START";
-                break;
-            case AudioPlayerService.STATUS_PLAYING:
-                action = "PLAYER_PLAY";
-                break;
-            case AudioPlayerService.STATUS_PAUSED:
-                action = "PLAYER_PAUSE";
-                break;
-            default:
-                action = "PLAYER_STOP";
-                break;
-        }
-        serviceIntent = new Intent(parent.getApplicationContext(), AudioPlayerService.class);
-        serviceIntent.putExtra("action", action);
-        if(status == AudioPlayerService.STATUS_STARTING) {
-            serviceIntent.putExtra("position", position);
-            if(audiosAdapter.isSearchResults() && fromList) {
-                serviceIntent.putExtra("from", "search");
-            }
-        }
-        Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
-        parent.getApplicationContext().startService(serviceIntent);
-        parent.getApplicationContext().bindService(serviceIntent, audioPlayerConnection, BIND_AUTO_CREATE);
+        //AudioCacheDB.clear(parent, true);
+        //AudioCacheDB.fillDatabase(parent, audios, false, true);
     }
 
     public void setScrollingPositions(Context ctx, boolean b) {
@@ -414,12 +372,20 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
                 AppActivity activity = ((AppActivity) parent);
                 if (status == AudioPlayerService.STATUS_STARTING) {
                     activity.notifMan.createAudioPlayerChannel();
+                } else if(status == AudioPlayerService.STATUS_FAILED) {
+                    Toast.makeText(
+                            getContext(),
+                            getResources().getString(R.string.audio_play_error),
+                            Toast.LENGTH_LONG).show();
                 }
-                if (status != AudioPlayerService.STATUS_STOPPED) {
-                    if(!audios.get(track_position).equals(ap_title.getText())) {
-                        activity.notifMan.buildAudioPlayerNotification(
-                                getContext(), audios, track_position
-                        );
+
+                if (status != AudioPlayerService.STATUS_STOPPED && status != AudioPlayerService.STATUS_FAILED) {
+                    if (!audios.get(track_position).equals(ap_title.getText())) {
+                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                            activity.notifMan.buildAudioPlayerNotification(
+                                    getContext(), audios, track_position
+                            );
+                        }
                         showBottomPlayer(audios.get(track_position));
                     }
                 } else {
@@ -487,7 +453,12 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
     }
 
     public void updateCurrentTrackPosition(int track_pos, int status) {
-        audiosAdapter.setTrackState(audiosAdapter.getCurrentTrackPosition(), status);
+        if(audiosAdapter != null && track_pos < audiosAdapter.getItemCount())
+            audiosAdapter.setTrackState(track_pos, status);
+        else {
+            currentTrackPos = track_pos;
+            currentPlayerState = status;
+        }
     }
 
     public void refreshOptionsMenu() {
@@ -535,52 +506,7 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
 
     @Override
     public void onDestroy() {
-        if(audioPlayerReceiver != null) {
-            parent.unregisterReceiver(audioPlayerReceiver);
-        }
-        if(audioPlayerService != null) {
-            parent.getApplicationContext().unbindService(audioPlayerConnection);
-            parent.getApplicationContext().stopService(serviceIntent);
-            isBoundAP = false;
-            if (parent instanceof AppActivity) {
-                AppActivity activity = ((AppActivity) parent);
-                activity.notifMan.clearAudioPlayerNotification();
-            }
-        }
         super.onDestroy();
-    }
-
-    @Override
-    public void onChangeAudioPlayerStatus(String action, int status, int track_pos, Bundle data) {
-
-    }
-
-    @Override
-    public void onReceiveCurrentTrackPosition(int track_pos, int status) {
-
-    }
-
-    @Override
-    public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
-
-    }
-
-    @Override
-    public void onAudioPlayerError(int what, int extra, int current_track_pos) {
-        try {
-            // The main thing is that this workaround should force the AudioPlayerService service
-            // to switch/play audio tracks without fail.
-            if(what == -38 && extra == 0) {
-                setAudioPlayerState(current_track_pos, AudioPlayerService.STATUS_STARTING, false);
-            } else {
-                Toast.makeText(
-                        getContext(),
-                        getResources().getString(R.string.audio_play_error),
-                        Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     @Override
@@ -593,10 +519,6 @@ public class AudiosFragment extends ActiveFragment implements AudioPlayerService
     public void onDeactivated() {
         super.onDeactivated();
         closeSearchItem();
-    }
-
-    public int getCurrentPosition() {
-        return currentTrackPos;
     }
 
     @Override

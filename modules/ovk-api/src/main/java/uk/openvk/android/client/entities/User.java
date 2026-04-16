@@ -29,6 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.counters.UserCounters;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -62,6 +65,8 @@ public class User extends LazyEntity implements Parcelable {
     public String avatar_url;
     public String ban_reason;
     public UserCounters counters;
+    public Date regdate;
+    public long rating;
 
     public User(JSONObject user) {
         parse(user);
@@ -94,6 +99,7 @@ public class User extends LazyEntity implements Parcelable {
         music = in.readString();
         tv = in.readString();
         books = in.readString();
+        rating = in.readLong();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -117,15 +123,13 @@ public class User extends LazyEntity implements Parcelable {
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
+
                 if(user.has("last_seen") && !user.isNull("last_seen")) {
                     ls_date = user.getJSONObject("last_seen").getLong("time");
                     ls_platform = user.getJSONObject("last_seen").getInt("platform");
                 }
-                if(!user.isNull("status")) {
-                    status = user.getString("status");
-                } else {
-                    status = "";
-                }
+
+                status = !user.isNull("status") ? user.getString("status") : "";
                 //screen_name = user.getString("screen_name");
                 if (user.has("photo_50")) {
                     avatar_msize_url = user.getString("photo_50");
@@ -176,14 +180,16 @@ public class User extends LazyEntity implements Parcelable {
                     //birthdate = user.getString("bdate");
                     city = !user.isNull("city") ? user.getString("city") : "";
                     //birthdate = user.getString("bdate");
-                    if (!user.isNull("city")) {
+                    if (!user.isNull("city"))
                         city = user.getString("city");
-                    }
+
                     verified = user.getInt("verified") == 1;
                     online = user.getInt("online") == 1;
-                    if(user.has("sex")) {
+                    if(user.has("sex"))
                         sex = user.getInt("sex");
-                    }
+
+                    regdate = new Date(TimeUnit.SECONDS.toMillis(user.getLong("reg_date")));
+                    rating = user.getLong("rating");
                 }
             }
         } catch (JSONException e) {
@@ -249,6 +255,8 @@ public class User extends LazyEntity implements Parcelable {
                         city = !user.isNull("city") ? user.getString("city") : "";
                         verified = user.getInt("verified") == 1;
                         online = user.getInt("online") == 1;
+                        regdate = new Date(TimeUnit.SECONDS.toMillis(user.getLong("reg_date")));
+                        rating = user.getLong("rating");
                     }
                 }
             }

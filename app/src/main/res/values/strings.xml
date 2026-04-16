@@ -49,8 +49,10 @@
 
 	<string name="today">Today</string>
 	<string name="yesterday">Yesterday</string>
-	<string name="today_at">Today at</string>
-	<string name="yesterday_at">Yesterday at</string>
+	<string name="today_lower">today</string>
+	<string name="yesterday_lower">yesterday</string>
+	<string name="today_at">today at</string>
+	<string name="yesterday_at">yesterday at</string>
 	<string name="date_at">at</string>
 
 	<string name="attach_photo">Photo</string>
@@ -518,6 +520,7 @@
 	<string name="profile_books">Favorite books</string>
 	<string name="profile_quotations">Favorite quotes</string>
 	<string name="profile_about">About</string>
+	<string name="profile_regdate">Registration date</string>
 	<string name="profile_info_relatives">Relatives</string>
 	<string name="profile_relative_sibling_m">Brother</string>
 	<string name="profile_relative_sibling_f">Sister</string>
@@ -565,6 +568,7 @@
 	<string name="videos_of_me">Videos of me</string>
 	<string name="videos_by_user">%s\'s videos</string>
 	<string name="now_playing">Now playing</string>
+	<string name="player_done">Nothing is playing yet</string>
 	<string name="group_inv_accept">Join group</string>
 	<string name="group_inv_decline">Decline</string>
 	<string name="group_inv_event_accept">I\'ll be there</string>

@@ -55,6 +55,7 @@ public class ButtonGridPreference extends Preference {
     protected void onBindView(View view) {
         super.onBindView(view);
         this.view = view;
+        view.setBackgroundColor(getContext().getResources().getColor(R.color.transparent));
         linkTarget();
     }
 

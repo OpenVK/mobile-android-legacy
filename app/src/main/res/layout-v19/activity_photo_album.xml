@@ -15,6 +15,12 @@
 
     </uk.openvk.android.legacy.ui.views.ProgressLayout>
 
+    <LinearLayout
+        android:id="@+id/album_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
     <FrameLayout
         android:id="@+id/album_header"
         android:layout_width="match_parent"
@@ -69,5 +75,7 @@
         android:clipToPadding="false">
 
     </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -81,7 +81,7 @@ public class SlidingMenuLayout extends LinearLayout {
         findViewById(R.id.profile_menu_ll).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(context.getClass().getSimpleName().equals("AppActivity")) {
+                if(context instanceof AppActivity) {
                     ((AppActivity) context).openAccountProfile();
                 }
             }
@@ -123,7 +123,7 @@ public class SlidingMenuLayout extends LinearLayout {
         findViewById(R.id.profile_menu_ll).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(context.getClass().getSimpleName().equals("AppActivity")) {
+                if(context instanceof AppActivity) {
                     ((AppActivity) context).openAccountProfile();
                 }
             }

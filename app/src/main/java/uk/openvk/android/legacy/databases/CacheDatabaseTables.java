@@ -45,8 +45,8 @@ public class CacheDatabaseTables {
                         "user_id bigint, " +
                         "text text, " +
                         "time bigint, " +
-                        "likes int, " +
-                        "comments int, " +
+                        "likes integer, " +
+                        "comments integer, " +
                         "username varchar(150) not null, " +
                         "avatar_url varchar(360), " +
                         "attachments blob, " +
@@ -65,9 +65,9 @@ public class CacheDatabaseTables {
                         "owner_id bigint, " +
                         "text text, " +
                         "time bigint, " +
-                        "likes int, " +
-                        "comments int, " +
-                        "reposts int, " +
+                        "likes integer, " +
+                        "comments integer, " +
+                        "reposts integer, " +
                         "attachments blob, " +
                         "contains_repost bit, " +
                         "repost_id bigint, " +
@@ -98,16 +98,16 @@ public class CacheDatabaseTables {
                         "screenname varchar(150), " +
                         "photo varchar(360), " +
                         "photo_small varchar(360), " +
-                        "sex int NOT NULL, " +
+                        "sex integer NOT NULL, " +
                         "name_r varchar(200)" +
                 ")"
         );
         db.execSQL(
                 "CREATE TABLE `birthdays` (" +
                         "user_id bigint unique," +
-                        "bday int," +
-                        "bmonth int," +
-                        "byear int," +
+                        "bday integer," +
+                        "bmonth integer," +
+                        "byear integer," +
                         "FOREIGN KEY(user_id) REFERENCES users(user_id)" +
                 ")"
         );
@@ -134,7 +134,7 @@ public class CacheDatabaseTables {
                         "description varchar(600)," +
                         "photo varchar(360), " +
                         "admin bit, " +
-                        "type int, " +
+                        "type integer, " +
                         "members bigint" +
                         ")"
         );
@@ -149,9 +149,9 @@ public class CacheDatabaseTables {
                         "photo varchar(500), " +
                         "title varchar(500), " +
                         "lastmsg varchar(500), " +
-                        "time int, " +
+                        "time bigint, " +
                         "readstate bool, " +
-                        "attach_type int, " +
+                        "attach_type integer, " +
                         "photo2 varchar(500)" +
                     ")"
         );
@@ -175,12 +175,12 @@ public class CacheDatabaseTables {
                         "audio_id bigint, " +
                         "title varchar(500), " +
                         "artist varchar(500), " +
-                        "duration int, " +
-                        "lastplay int, " +
+                        "duration integer, " +
+                        "lastplay integer, " +
                         "user bit, " +
                         "lyrics bigint, " +
                         "url varchar(700), " +
-                        "status int" +
+                        "status integer" +
                 ")"
         );
 

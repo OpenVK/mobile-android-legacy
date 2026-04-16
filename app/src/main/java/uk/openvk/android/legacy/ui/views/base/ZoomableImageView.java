@@ -21,18 +21,26 @@ package uk.openvk.android.legacy.ui.views.base;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.openvk.android.legacy.OvkApplication;
 
 @SuppressLint("AppCompatCustomView")
 public class ZoomableImageView extends ImageView {
     private float userScale;
     private PhotoViewAttacher photoAttacher;
+    private Matrix suppMatrix;
 
     public ZoomableImageView(Context context) {
         super(context);
@@ -42,14 +50,29 @@ public class ZoomableImageView extends ImageView {
         super(context, attr);
     }
 
-    public void enablePinchToZoom(){
+    public void enablePinchToZoom(Window window){
         if(photoAttacher != null) {
             photoAttacher.update();
         } else {
             photoAttacher = new PhotoViewAttacher(this);
         }
-        userScale = photoAttacher.getScale();
         photoAttacher.setMaximumScale(8);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int i) {
+                    //adjustZoom();
+                }
+            });
+        }
+
+        photoAttacher.setOnScaleChangeListener(new PhotoViewAttacher.OnScaleChangeListener() {
+            @Override
+            public void onScaleChange(float v, float v1, float v2) {
+                userScale = v;
+            }
+        });
     }
 
     @Override
@@ -57,9 +80,9 @@ public class ZoomableImageView extends ImageView {
         photoAttacher.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                userScale = photoAttacher.getScale();
                 assert l != null;
                 l.onClick(getRootView());
+                userScale = photoAttacher.getScale();
                 return true;
             }
 
@@ -83,7 +106,28 @@ public class ZoomableImageView extends ImageView {
         });
     }
 
+    @Override
+    public void setImageBitmap(Bitmap bm) {
+        super.setImageBitmap(bm);
+        if(photoAttacher != null) {
+            if (((OvkApplication) getContext().getApplicationContext()).isTablet ||
+                    (bm.getWidth() < 1536 && bm.getHeight() < 1024)) {
+                photoAttacher.setMaximumScale(6);
+            } else {
+                photoAttacher.setMaximumScale(8);
+            }
+        }
+    }
+
     public void rescale() {
         photoAttacher.setScale(userScale, false);
+    }
+
+    public PhotoViewAttacher getAttacher() {
+        return photoAttacher;
+    }
+
+    public float getUserScale() {
+        return userScale;
     }
 }
