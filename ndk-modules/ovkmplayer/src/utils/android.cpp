@@ -23,10 +23,10 @@
 #include <stdio.h>
 
 int android::getApiLevel() {
-    char value[32];
+    char value[PROP_VALUE_MAX];
     FILE *file = popen("getprop ro.build.version.sdk", "r");
 
-    fread(value, 1, 32, file);
+    fread(value, 1, PROP_VALUE_MAX, file);
     pclose(file);
 
     return strlen(value) > 0 ? atoi(value) : -1;
