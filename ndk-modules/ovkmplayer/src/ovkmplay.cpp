@@ -20,17 +20,9 @@
 // Java/C++ standard implementations headers
 #include <jni.h>
 #include <string.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
-#include <limits.h>
 #include <wchar.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
-#include <unistd.h>
-#include <assert.h>
-#include <pthread.h>
 
 #include <utils/android.h>
 
@@ -93,9 +85,6 @@ JNIEXPORT jstring JNICALL naShowLogo(JNIEnv *env, jobject instance) {
 }
 
 JNIEXPORT void JNICALL naSetDebugMode(JNIEnv *env, jobject instance, jboolean value) {
-    if(gWrapper != NULL) {
-        gWrapper->setDebugMode(value == JNI_TRUE);
-    }
 }
 
 JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
@@ -104,19 +93,6 @@ JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
 
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
     return 0;
-}
-
-void IPlayerWrapper::onError(int cmdId, int errorCode) {
-    LOGE(10, "Error Callback Test: %d | %d", cmdId, errorCode);
-}
-
-void IPlayerWrapper::onResult(int cmdId, int resultCode) {
-}
-
-void IPlayerWrapper::onStreamDecoding(uint8_t* buffer, int bufferLen, int streamIndex) {
-}
-
-void IPlayerWrapper::onChangeWrapperState(int wrapperState) {
 }
 
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(

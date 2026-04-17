@@ -17,24 +17,17 @@
  *  Source code: https://github.com/openvk/mobile-android-legacy
  */
 
-#include <stdint.h>
-#include "android.h"
+#include <utils/android.h>
+#include <sys/system_properties.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-int android::getApiLevel(JNIEnv *env) {
-    bool result = false;
-    jclass versionClass = env->FindClass("android/os/Build$VERSION");
-    if (NULL != versionClass)
-        result = true;
+int android::getApiLevel() {
+    char value[32];
+    FILE *file = popen("getprop ro.build.version.sdk", "r");
 
-    jfieldID sdkIntFieldID = NULL;
-    if (result)
-        result = (NULL != (sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I")));
+    fread(value, 1, 32, file);
+    pclose(file);
 
-    int version = env->GetStaticIntField(versionClass, sdkIntFieldID);
-    env->DeleteLocalRef(versionClass);
-    if (result) {
-        return version;
-    } else {
-        return -1;
-    }
+    return strlen(value) > 0 ? atoi(value) : -1;
 }
