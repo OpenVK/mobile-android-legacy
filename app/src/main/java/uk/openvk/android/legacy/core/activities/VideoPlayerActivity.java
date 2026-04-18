@@ -299,10 +299,15 @@ public class VideoPlayerActivity extends Activity {
             builder.setPositiveButton(R.string.retry_short, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent tp_player = new Intent(Intent.ACTION_VIEW);
-                    tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
-                    startActivity(tp_player);
-                    finish();
+                    try {
+                        Intent tp_player = new Intent(Intent.ACTION_VIEW);
+                        tp_player.setDataAndType(Uri.parse(VideoPlayerActivity.this.url), "video/*");
+                        startActivity(tp_player);
+                    } catch (Exception ignore) {
+
+                    } finally {
+                        finish();
+                    }
                 }
             });
             err_dlg.build(builder, getResources().getString(R.string.error), getResources().getString(R.string.video_err_decode),

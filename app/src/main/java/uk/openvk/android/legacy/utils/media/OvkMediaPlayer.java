@@ -224,13 +224,9 @@ public class OvkMediaPlayer extends MediaPlayer {
 
     @Override
     public void prepareAsync() throws IllegalStateException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int result;
-                naOpenFile(dataSourceUrl);
-            }
-        }).start();
+        int result = naOpenFile(dataSourceUrl);
+        if(result < 0 && onErrorListener != null)
+            onErrorListener.onError(this, result);
     }
 
     @Override

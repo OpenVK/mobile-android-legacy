@@ -46,19 +46,14 @@ char* FFmpegWrapper::getAVFormatBuildConfiguration() {
 	token = strtok(originalConf, " ");
 	
 	while(token != NULL) {
-		if(lines % 8 > 0) {
-			result += sprintf(formattedConf + result,  "\t%s\r\n",  token);
-		} else {
-			if(hDebugMode) {
-				if(lines <= 8) {
-					LOGD("[DEBUG] libavformat build configuration:\r\n%s",  formattedConf)
-				} else {
-					LOGD("%s", formattedConf);
-				}
-			}
-			
-			result = sprintf(formattedConf, "\t%s\r\n", token);
-		}
+		if(hDebugMode && lines > 0) {
+        	if(lines == 1)
+        		LOGD("[DEBUG] libavformat build configuration:\r\n%s",  formattedConf)
+        	else
+        		LOGD("%s", formattedConf);
+        }
+
+        result = sprintf(formattedConf, "\t%s\r\n", token);
 		
 		lines++;
 		token = strtok(NULL, " ");
