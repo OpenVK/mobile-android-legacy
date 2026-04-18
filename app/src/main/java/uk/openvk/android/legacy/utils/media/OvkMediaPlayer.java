@@ -92,8 +92,7 @@ public class OvkMediaPlayer extends MediaPlayer {
     private native int naOpenFile(String filename);
     private native Object naGenerateTrackInfo(int type);
     // private native void naSetMinAudioBufferSize(int audioBufferSize);
-    private native void naStartAudioDecoding();
-    private native void naStartVideoDecoding();
+    private native void naStartDecoding();
     private native void naPlay();
     private native void naPause();
     private native void naStop();
@@ -163,14 +162,14 @@ public class OvkMediaPlayer extends MediaPlayer {
         this.tracks = new ArrayList<>();
         OvkVideoTrack video_track;
         OvkAudioTrack audio_track;
-        if(filename != null) {
+        if(filename != null)
             naOpenFile(filename);
-        }
+
         video_track = (OvkVideoTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_VIDEO);
         audio_track = (OvkAudioTrack) naGenerateTrackInfo(OvkMediaTrack.TYPE_AUDIO);
-        if(video_track == null && audio_track == null) {
+
+        if(video_track == null && audio_track == null)
             return null;
-        }
 
         if(audio_track != null) {
             Log.d(MPLAY_TAG,
@@ -194,9 +193,8 @@ public class OvkMediaPlayer extends MediaPlayer {
     }
 
     public ArrayList<OvkMediaTrack> getMediaInfo() {
-        if(tracks == null) {
+        if(tracks == null)
             tracks = getMediaInfo(null);
-        }
         return tracks;
     }
 
@@ -240,20 +238,7 @@ public class OvkMediaPlayer extends MediaPlayer {
         if(tracks != null) {
             naPlay();
             Log.d(MPLAY_TAG, "Playing...");
-            OvkAudioTrack audio_track = null;
-            OvkVideoTrack video_track = null;
-            for(int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-                if(tracks.get(tracks_index) instanceof OvkAudioTrack) {
-                    audio_track = (OvkAudioTrack) tracks.get(tracks_index);
-                } else if(tracks.get(tracks_index) instanceof OvkVideoTrack) {
-                    video_track = (OvkVideoTrack) tracks.get(tracks_index);
-                }
-            }
-            final OvkAudioTrack finalAudioTrack = audio_track;
-            final OvkVideoTrack finalVideoTrack = video_track;
-            naStartAudioDecoding();
-
-            naStartVideoDecoding();
+            naStartDecoding();
         }
     }
 
@@ -305,39 +290,50 @@ public class OvkMediaPlayer extends MediaPlayer {
         Canvas c;
         videoBuffer = buffer;
         OvkVideoTrack track = null;
+
         for (int tracks_index = 0; tracks_index < tracks.size(); tracks_index++) {
-            if (tracks.get(tracks_index) instanceof OvkVideoTrack) {
+            if (tracks.get(tracks_index) instanceof OvkVideoTrack)
                 track = (OvkVideoTrack) tracks.get(tracks_index);
-            }
         }
+
         if (track != null) {
             int frame_width = track.frame_size[0];
             int frame_height = track.frame_size[1];
+            float aspect_ratio = (float) frame_width / (float) frame_height;
+
             if (frame_width > 0 && frame_height > 0) {
                 minVideoBufferSize = frame_width * frame_height * 4;
+
                 try {
                     // RGB_565  == 65K colours (16 bit)
                     // RGB_8888 == 16.7M colours (24 bit w/ alpha ch.)
-                    int bpp = Build.VERSION.SDK_INT > 9 ? 16 : 24;
+                    int bpp = Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD ? 16 : 24;
+
                     Bitmap.Config bmp_config =
                             bpp == 24 ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
+
                     if(videoBuffer != null && holder != null) {
                         holder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+
                         if((c = holder.lockCanvas()) == null) {
                             Log.d(MPLAY_TAG, "Lock canvas failed");
                             return;
                         }
+
                         ByteBuffer bbuf =
                                 ByteBuffer.allocateDirect(minVideoBufferSize);
                         bbuf.rewind();
+
                         for(int i = 0; i < videoBuffer.length; i++) {
                             bbuf.put(i, videoBuffer[i]);
                         }
                         bbuf.rewind();
+
                         Bitmap bmp = Bitmap.createBitmap(frame_width, frame_height, bmp_config);
                         bmp.copyPixelsFromBuffer(bbuf);
-                        float aspect_ratio = (float) frame_width / (float) frame_height;
+
                         int scaled_width = (int)(aspect_ratio * (c.getHeight()));
+
                         videoBuffer = null;
                         c.drawBitmap(bmp,
                                 null,
@@ -345,7 +341,9 @@ public class OvkMediaPlayer extends MediaPlayer {
                                         ((c.getWidth() - scaled_width) / 2), 0,
                                         ((c.getWidth() - scaled_width) / 2) + scaled_width,
                                         c.getHeight()),
-                                null);
+                                null
+                        );
+
                         holder.unlockCanvasAndPost(c);
                         bmp.recycle();
                         bbuf.clear();

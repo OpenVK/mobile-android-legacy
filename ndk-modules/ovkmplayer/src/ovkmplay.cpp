@@ -25,6 +25,7 @@
 #include <stdlib.h>
 
 #include <utils/android.h>
+#include <wrappers/ffmwrap.h>
 
 // Non-standard 'stdint' implementation
 
@@ -43,14 +44,17 @@ JavaVM*             gVM;
 JavaVMAttachArgs    gVMArgs;
 jobject             gInstance;
 JNIEnv*             gEnv;
+FFmpegWrapper*      gWrapper;
 
-jbyteArray jBuffer;
+jbyteArray          jBuffer;
 
 int attachEnv(JNIEnv **pEnv) {
     return 3;
 }
 
 JNIEXPORT void JNICALL naInit(JNIEnv *env, jobject instance) {
+    gWrapper = new FFmpegWrapper(gDebugMode);
+    gWrapper->init();
 }
 
 JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance, int streamType) {
@@ -59,11 +63,7 @@ JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance, int streamType) {
     gVMArgs.group = NULL;
 }
 
-JNIEXPORT void JNICALL naStartAudioDecoding(JNIEnv *env, jobject instance) {
-
-}
-
-JNIEXPORT void JNICALL naStartVideoDecoding(JNIEnv *env, jobject instance) {
+JNIEXPORT void JNICALL naStartDecoding(JNIEnv *env, jobject instance) {
 
 }
 
@@ -92,12 +92,14 @@ JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
 }
 
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
-    return 0;
+    gFileName = (char*)env->GetStringUTFChars(filename, NULL);
+    return (jint)gWrapper->openInput(gFileName, false);
 }
 
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(
         JNIEnv* env, jobject instance, jint type
 ) {
+
     return NULL;
 }
 
@@ -106,7 +108,7 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
 	if (pVm->GetEnv((void **)&env, JNI_VERSION_1_6) != JNI_OK) {
 		 return -1;
 	}
-	JNINativeMethod nm[11];
+	JNINativeMethod nm[10];
 
 	nm[0].name = "naInit";
 	nm[0].signature = "()V";
@@ -144,17 +146,13 @@ jint JNI_OnLoad(JavaVM* pVm, void* reserved) {
     nm[8].signature = "()V";
     nm[8].fnPtr = (void*)naStop;
 
-    nm[9].name = "naStartAudioDecoding";
+    nm[9].name = "naStartDecoding";
     nm[9].signature = "()V";
-    nm[9].fnPtr = (void*)naStartAudioDecoding;
-
-    nm[10].name = "naStartVideoDecoding";
-    nm[10].signature = "()V";
-    nm[10].fnPtr = (void*)naStartVideoDecoding;
+    nm[9].fnPtr = (void*)naStartDecoding;
 
 	jclass cls = env->FindClass("uk/openvk/android/legacy/utils/media/OvkMediaPlayer");
 	//Register methods with env->RegisterNatives.
-	env->RegisterNatives(cls, nm, 11);
+	env->RegisterNatives(cls, nm, 10);
 
 	gVM = pVm;
 
