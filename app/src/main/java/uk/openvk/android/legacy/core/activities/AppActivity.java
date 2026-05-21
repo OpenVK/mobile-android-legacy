@@ -1135,7 +1135,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void loadMoreNews() {
         if(ovk_api.newsfeed != null) {
-            if(ovk_api.newsfeed.next_from > 0) {
+            if(ovk_api.newsfeed.next_from != null && !ovk_api.newsfeed.next_from.isEmpty()) {
                 ovk_api.newsfeed.get(ovk_api.wrapper, 25, ovk_api.newsfeed.next_from);
             } else if (selectedFragment instanceof NewsfeedFragment) {
                 NewsfeedFragment fragment = ((NewsfeedFragment) selectedFragment);
@@ -1143,7 +1143,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     int lastPostIndex = fragment.getCount() - 2;
                     WallPost post = fragment.getPost(lastPostIndex);
                     if(post != null)
-                        ovk_api.newsfeed.get(ovk_api.wrapper, 25, post.post_id);
+                        ovk_api.newsfeed.get(ovk_api.wrapper, 25, String.valueOf(post.post_id));
                 }
             }
         }
