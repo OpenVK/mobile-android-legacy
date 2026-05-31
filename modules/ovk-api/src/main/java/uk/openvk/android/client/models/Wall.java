@@ -62,7 +62,7 @@ public class Wall implements Parcelable {
     private ArrayList<Photo> photos_osize;
     private ArrayList<Photo> video_thumbnails;
     private DownloadManager dlm;
-    public long next_from;
+    public String next_from;
 
     public Wall(String response, DownloadManager downloadManager, String quality, Context ctx) {
         jsonParser = new JSONParser();
@@ -96,7 +96,6 @@ public class Wall implements Parcelable {
         if(items == null) {
             items = new ArrayList<>();
         } else {
-            next_from = items.size();
             if(clear) {
                 items.clear();
             }
@@ -112,15 +111,9 @@ public class Wall implements Parcelable {
             if(json != null) {
                 JSONObject newsfeed = json.getJSONObject("response");
                 JSONArray items = newsfeed.getJSONArray("items");
-                if(newsfeed.has("next_from")) {
-                    next_from = newsfeed.getLong("next_from");
-                } else {
-                    if(next_from > 0) {
-                        next_from += items.length() + 1;
-                    } else {
-                        next_from = items.length() + 1;
-                    }
-                }
+
+                next_from = newsfeed.has("next_from") ? "" : newsfeed.getString("next_from");
+
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject post = items.getJSONObject(i);
                     JSONObject comments = post.getJSONObject("comments");
@@ -785,7 +778,7 @@ public class Wall implements Parcelable {
         parcel.writeTypedList(items);
     }
 
-    public void get(OvkAPIWrapper wrapper, long owner_id, int count, long offset) {
+    public void get(OvkAPIWrapper wrapper, long owner_id, int count, String offset) {
         wrapper.sendAPIMethod("Wall.get",
                 String.format("owner_id=%s&count=%s&extended=1&offset=%s",
                         owner_id, count, offset), "more_wall_posts");

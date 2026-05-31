@@ -132,8 +132,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
                 if(audioPlayerService.isPrepared()) {
                     if(currentTrackPos > 0) {
                         setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_PREVIOUS);
-                        currentTrackPos--;
-                        updateCurrentTrackPosition(currentTrackPos, AudioPlayerService.STATUS_PLAYING);
+                        updateCurrentTrackPosition(currentTrackPos - 1, AudioPlayerService.STATUS_PLAYING);
                         updateSeekbarPosition(0, 0, 0);
                     }
                 }
@@ -144,8 +143,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
             public void onClick(View view) {
                 if(audioPlayerService.isPrepared()) {
                     setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_NEXT);
-                    currentTrackPos++;
-                    updateCurrentTrackPosition(currentTrackPos, AudioPlayerService.STATUS_PLAYING);
+                    updateCurrentTrackPosition(currentTrackPos + 1, AudioPlayerService.STATUS_PLAYING);
                     updateSeekbarPosition(0, 0, 0);
                 }
             }
@@ -249,8 +247,13 @@ public class AudioPlayerActivity extends NetworkActivity implements
     public void updateCurrentTrackPosition(int track_pos, int status) {
         ImageView play_button = findViewById(R.id.aplayer_play);
         SeekBar seekBar = findViewById(R.id.aplayer_progress);
-        if(audio_tracks != null && audio_tracks.size() < track_pos)
+
+        if(audio_tracks == null)
             return;
+
+        if(track_pos == currentTrackPos || audio_tracks.size() < track_pos)
+            return;
+
         Audio currentTrack = audio_tracks.get(track_pos);
         ovk_api.audios.fillList(audio_tracks);
         TextView title_tv = findViewById(R.id.aplayer_title);
@@ -264,10 +267,15 @@ public class AudioPlayerActivity extends NetworkActivity implements
         this.currentTrackPos = track_pos;
         this.playerStatus = status;
 
-        if(currentTrack.lyrics > 0 && currentTrack.lyrics_text == null)
+        if(currentTrack.lyrics > 0 && currentTrack.lyrics_text == null) {
             ovk_api.audios.getLyrics(ovk_api.wrapper, currentTrack.lyrics);
-        else
             lyrics_tv.setVisibility(View.GONE);
+        } else if(currentTrack.lyrics == 0)
+            lyrics_tv.setVisibility(View.GONE);
+        else {
+            lyrics_tv.setText(currentTrack.lyrics_text);
+            lyrics_tv.setVisibility(View.VISIBLE);
+        }
 
         switch (status) {
             case AudioPlayerService.STATUS_PLAYING:
@@ -400,6 +408,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
             if(message == HandlerMessages.AUDIOS_GET_LYRICS) {
                 TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
                 lyrics_tv.setText(audio_tracks.get(currentTrackPos).lyrics_text);
+                lyrics_tv.setVisibility(View.VISIBLE);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
