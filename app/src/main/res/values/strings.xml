@@ -748,4 +748,5 @@
     	<i><a href="openvk://notes/xhtml">Something</a> from (X)HTML supported.</i>
     ]]></string>
     <string name="sett_behavior">Behavior</string>
+    <string name="no_app_to_open_link">No app found to open this link</string>
 </resources>

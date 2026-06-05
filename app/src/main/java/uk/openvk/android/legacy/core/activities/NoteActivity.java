@@ -20,6 +20,7 @@
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -112,7 +113,11 @@ public class NoteActivity extends NetworkActivity {
                     if(request.getUrl() != null) {
                         url = request.getUrl().toString();
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        view.getContext().startActivity(intent);
+                        try {
+                            view.getContext().startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(view.getContext(), R.string.no_app_to_open_link, Toast.LENGTH_LONG).show();
+                        }
                     }
                     return true;
                 }
@@ -123,7 +128,11 @@ public class NoteActivity extends NetworkActivity {
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if(url != null) {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        view.getContext().startActivity(intent);
+                        try {
+                            view.getContext().startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(view.getContext(), R.string.no_app_to_open_link, Toast.LENGTH_LONG).show();
+                        }
                     }
                     return true;
                 }
