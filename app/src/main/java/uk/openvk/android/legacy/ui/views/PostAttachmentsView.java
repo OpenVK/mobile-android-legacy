@@ -282,11 +282,14 @@ public class PostAttachmentsView extends LinearLayout {
                 int max_height;
                 max_height = getMaxPhotoHeight(photoAttachments);
                 int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
-                for(int i = 0; i < photoAttachments.size(); i++) {
+                int maxPreviewCount = photoAttachments.size() < 6 ? photoAttachments.size() : 6;
+                for(int i = 0; i < maxPreviewCount; i++) {
                     Photo photo = photoAttachments.get(i);
                     ImageView photoView = new ImageView(getContext());
                     photoView.setLayoutParams(
-                            new FlowLayout.LayoutParams(photo.size[0], max_height)
+                            maxPreviewCount > 3 ?
+                                new FlowLayout.LayoutParams(max_height / 2, max_height / 2) :
+                                new FlowLayout.LayoutParams(photo.size[0], max_height)
                     );
                     ((FlowLayout.LayoutParams) photoView.getLayoutParams())
                             .setMargins(
@@ -304,7 +307,7 @@ public class PostAttachmentsView extends LinearLayout {
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     flowLayout.addView(photoView);
                     loadPhotoPlaceholder(post, photo, imageLoader, photoView);
-                    loadPhotoAttachment(photo, photoView, imageLoader, false);
+                    loadPhotoAttachment(photo, photoView, imageLoader, true);
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
@@ -358,12 +361,23 @@ public class PostAttachmentsView extends LinearLayout {
         List<Integer> heights = new ArrayList<>();
         for(int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
-            heights.add(photo.size[1]);
+            if(photos.size() <= 3) {
+                if (photo.size[0] / photo.size[1] > 1.2) {
+                    heights.add(photo.size[1]);
+                } else {
+                    heights.add(300);
+                }
+            } else {
+                heights.add(300);
+            }
         }
-        return Collections.max(heights);
+
+        int minHeight = Collections.min(heights);
+        int maxHeight = Collections.max(heights);
+        return (int)(minHeight + ((double)(minHeight + maxHeight) / 2));
     }
 
-    private void loadPhotoPlaceholder(final WallPost post, Photo photo, ImageLoader imageLoader, ImageView view) {
+    private void loadPhotoPlaceholder(final WallPost post, final Photo photo, ImageLoader imageLoader, ImageView view) {
         Drawable drawable;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -392,7 +406,7 @@ public class PostAttachmentsView extends LinearLayout {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPhotoAttachment(post);
+                viewPhotoAttachment(post, photo.id);
             }
         });
     }
@@ -400,13 +414,8 @@ public class PostAttachmentsView extends LinearLayout {
     private void loadPhotoAttachment(Photo photo, ImageView view,
                                      ImageLoader imageLoader, boolean isWall) {
         String full_filename = "file://" + parent.getCacheDir()
-                + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
+                + "/" + instance + "/photos_cache/wall_photo_attachments/" +
                 photo.filename;
-        if (isWall) {
-            full_filename = "file://" + parent.getCacheDir()
-                    + "/" + instance + "/photos_cache/wall_photo_attachments/" +
-                    photo.filename;
-        }
         try {
             Bitmap bitmap = imageLoader.loadImageSync(full_filename);
             if(bitmap != null) {
@@ -459,7 +468,7 @@ public class PostAttachmentsView extends LinearLayout {
         parent.startActivity(intent);
     }
 
-    public void viewPhotoAttachment(WallPost post) {
+    public void viewPhotoAttachment(WallPost post, long photo_id) {
         WallPost item;
         Intent intent = new Intent(parent.getApplicationContext(), PhotoViewerActivity.class);
         if (isWall) {
@@ -479,17 +488,18 @@ public class PostAttachmentsView extends LinearLayout {
                                 parent.getCacheDir(),
                                 post.owner != null ? post.owner.id : post.author.id, post.post_id));
             }
+
             if(post.attachments != null) {
                 for(int i = 0; i < post.attachments.size(); i++) {
-                    if(post.attachments.get(i).type.equals("photo")) {
+                    if(post.attachments.get(i).id == photo_id) {
                         Photo photo = ((Photo) post.attachments.get(i));
                         intent.putExtra("original_link", photo.original_url);
                         intent.putExtra("author_id", post.author.id);
-                        intent.putExtra("photo_id", photo.id);
+                        intent.putExtra("photo_id", photo_id);
+                        parent.startActivity(intent);
                     }
                 }
             }
-            parent.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -231,11 +231,12 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
 
         public void playAudioTrack(final int position) {
             Audio track = getItem(position);
-            final Audio track2 = track;
             ((ImageView) view.findViewById(R.id.audio_play_icon))
                     .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_play));
+
             view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
             view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
+
             if(ctx instanceof AppActivity || ctx instanceof AudiosIntentActivity) {
                 NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
                 switch (track.status) {

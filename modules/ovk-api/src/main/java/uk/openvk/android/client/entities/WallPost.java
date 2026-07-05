@@ -370,6 +370,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                 authorOrOwner.id = author_id;
                 ((Group) authorOrOwner).name = group_values.getAsString("name");
                 ((Group) authorOrOwner).avatar_url = group_values.getAsString("avatar_url");
+                ((Group) authorOrOwner).verified = group_values.getAsBoolean("verified");
 
                 groups_cursor.close();
             }
@@ -391,6 +392,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                 ((User) authorOrOwner).first_name = user_values.getAsString("first_name");
                 ((User) authorOrOwner).last_name = user_values.getAsString("last_name");
                 ((User) authorOrOwner).avatar_url = user_values.getAsString("avatar_url");
+                ((User) authorOrOwner).verified = user_values.getAsBoolean("verified");
 
                 users_cursor.close();
             }
@@ -425,8 +427,9 @@ public class WallPost extends LazyEntity implements Parcelable {
                     repost.newsfeed_item.owner = values.getAsInteger("owner_id") > 0 ? new User() : new Group();
 
                 repost.newsfeed_item.owner.id = values.getAsInteger("owner_id");
+
                 repost.newsfeed_item.attachments = new ArrayList<>();
-                if(values.getAsString("repost_attachments") != null)
+                if(values.getAsString("attachments") != null)
                     deserializeAttachments(values.getAsString("attachments"), repost.newsfeed_item);
 
                 repost.newsfeed_item.text = values.getAsString("text");
@@ -440,7 +443,6 @@ public class WallPost extends LazyEntity implements Parcelable {
 
     public void convertEntityToSQLite(SQLiteDatabase posts_db) {
         ContentValues wall_values = new ContentValues();
-
 
         wall_values.put("post_id", post_id);
         if(author != null) {

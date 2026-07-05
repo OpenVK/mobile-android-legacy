@@ -152,9 +152,10 @@ public class AudioCacheDB extends CacheDatabase {
         SQLiteDatabase db = helper.getWritableDatabase();
         try {
             String table_name = "audios";
-            if(inSearchResults) {
+
+            if(inSearchResults)
                 table_name = "search_results";
-            }
+
             Cursor cursor = db.query(table_name, new String[]{"count(*)"},
                     "`audio_id`=" + track_id,
                     null, null, null, null);
@@ -169,7 +170,7 @@ public class AudioCacheDB extends CacheDatabase {
     }
 
     public static void fillDatabase(final Context ctx2, final ArrayList<Audio> audios,
-                                    final boolean clear, final boolean intoSearchResults) {
+                                    final boolean clear) {
 
         new Thread(new Runnable() {
                 @Override
@@ -226,7 +227,7 @@ public class AudioCacheDB extends CacheDatabase {
                 cachedIDs.clear();
             }
             CacheDatabaseTables.createAudioTracksTable(db, clear);
-            cursor = db.query("wall_audios", new String[]{"owner_id", "audio_id", "post_id"},
+            cursor = db.query("audios", new String[]{"owner_id", "audio_id"},
                     null, null, null, null, null);
             cursor.moveToFirst();
 
@@ -234,7 +235,6 @@ public class AudioCacheDB extends CacheDatabase {
                 Audio track = audios.get(i);
                 ContentValues values = new ContentValues();
                 values.put("audio_id", track.id);
-                values.put("post_id", post_id);
                 values.put("owner_id", track.owner_id);
                 values.put("title", track.title);
                 values.put("artist", track.artist);
@@ -244,7 +244,7 @@ public class AudioCacheDB extends CacheDatabase {
                 values.put("lyrics", track.lyrics);
                 values.put("url", track.url);
                 values.put("status", track.status);
-                db.insert("wall_tracks", null, values);
+                db.insert("audios", null, values);
                 String track_name = String.format("%s_%s", track.id, track.owner_id);
                 cachedIDs.add(track_name);
             }
@@ -275,41 +275,6 @@ public class AudioCacheDB extends CacheDatabase {
                 track.sender = new User();
                 track.sender.id = cursor.getInt(0);
                 track.owner_id = cursor.getInt(0);
-                track.id = cursor.getInt(1);
-                track.title = cursor.getString(2);
-                track.artist = cursor.getString(3);
-                track.setDuration(cursor.getInt(4));
-                track.lyrics = cursor.getLong(7);
-                track.url = cursor.getString(8);
-                list.add(track);
-                i++;
-            } while (cursor.moveToNext());
-            cursor.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        db.close();
-        helper.close();
-        ctx = ctx2;
-        deleteOldTrack(ctx);
-        return list;
-    }
-
-    public static ArrayList<Audio> getPersonalAudiosList(Context ctx2, long owner_id) {
-        CacheOpenHelper helper = new CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
-        SQLiteDatabase db = helper.getWritableDatabase();
-        ArrayList<Audio> list = new ArrayList<>();
-        try {
-            Cursor cursor = db.query("tracks", null,
-                    String.format("owner_id = %s", owner_id),
-                    null, null, null, "user desc");
-            cursor.moveToFirst();
-            int i = 0;
-            do {
-                Audio track = new Audio();
-                track.sender = new User();
-                track.sender.id = cursor.getInt(1);
-                track.owner_id = cursor.getInt(1);
                 track.id = cursor.getInt(1);
                 track.title = cursor.getString(2);
                 track.artist = cursor.getString(3);
@@ -402,15 +367,17 @@ public class AudioCacheDB extends CacheDatabase {
         SQLiteDatabase db = helper.getWritableDatabase();
         ArrayList<Audio> list = new ArrayList<>();
         try {
-            Cursor cursor = db.query("wall_tracks", null,
-                    String.format("post_id = %s", post_id),
-                    null, null, null, "user desc");
+            Cursor cursor = db.rawQuery(
+                    "SELECT * "
+                            + "FROM audios "
+                            + "JOIN wall_audios ON wall_audios.post_id = audios.post_id "
+                            + "WHERE post_id = ? ORDER BY `time` desc ",
+                    new String[]{Long.toString(post_id)}
+            );
             cursor.moveToFirst();
             int i = 0;
             do {
                 Audio track = new Audio();
-                track.sender = new User();
-                track.sender.id = cursor.getInt(0);
                 track.owner_id = cursor.getInt(0);
                 track.id = cursor.getInt(1);
                 track.title = cursor.getString(2);

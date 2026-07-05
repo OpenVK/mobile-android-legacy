@@ -59,7 +59,7 @@ public class Notes {
     public void parse(String response) {
         try {
             JSONObject json = jsonParser.parseJSON(response);
-            JSONArray notes = json.getJSONObject("response").getJSONArray("notes");
+            JSONArray notes = json.getJSONObject("response").getJSONArray("items");
             list = new ArrayList<>();
             for(int i = 0; i < notes.length(); i++) {
                 JSONObject item = notes.getJSONObject(i);

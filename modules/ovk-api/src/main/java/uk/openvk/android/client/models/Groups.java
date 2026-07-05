@@ -170,12 +170,16 @@ public class Groups implements Parcelable {
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
                 Photo photoAttachment = new Photo();
-                if(quality.equals("medium")) {
-                    photoAttachment.url = group.avatar_msize_url;
-                } else if(quality.equals("high")) {
-                    photoAttachment.url = group.avatar_hsize_url;
-                } else {
-                    photoAttachment.url = group.avatar_osize_url;
+                switch (quality) {
+                    case "medium":
+                        photoAttachment.url = group.avatar_msize_url;
+                        break;
+                    case "high":
+                        photoAttachment.url = group.avatar_hsize_url;
+                        break;
+                    default:
+                        photoAttachment.url = group.avatar_osize_url;
+                        break;
                 }
 
                 if(photoAttachment.url.length() == 0) {

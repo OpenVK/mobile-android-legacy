@@ -157,6 +157,7 @@ public class UsersCacheDB extends CacheDatabase {
                     user_values.put("last_name", user.last_name);
                     user_values.put("photo_small", user.avatar_url);
                     user_values.put("sex", user.sex);
+                    user_values.put("verified", user.verified);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
                         db.insertWithOnConflict("users", null,
@@ -172,7 +173,9 @@ public class UsersCacheDB extends CacheDatabase {
                         if (bd.length > 1) {
                             birthday_values.put("bday", Integer.parseInt(bd[0]));
                             birthday_values.put("bmonth", Integer.parseInt(bd[1]));
-                            birthday_values.put("byear", bd.length > 2 ? Integer.valueOf(Integer.parseInt(bd[2])) : (Integer) 0);
+                            birthday_values.put("byear",
+                                    bd.length > 2 ? Integer.valueOf(Integer.parseInt(bd[2])) : (Integer) 0
+                            );
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
                             db.insertWithOnConflict("birthdays", null,
@@ -223,6 +226,7 @@ public class UsersCacheDB extends CacheDatabase {
                     user.avatar_url = values.getAsString("photo_small");
                     user.sex = values.getAsInteger("sex");
                     user.friends_status = values.getAsInteger("is_friend");
+                    user.verified = values.getAsBoolean("verified");
                     result.add(user);
                     i++;
                 } while (cursor.moveToNext());

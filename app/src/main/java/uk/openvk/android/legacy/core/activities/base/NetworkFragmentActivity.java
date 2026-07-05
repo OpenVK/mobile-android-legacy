@@ -288,11 +288,13 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
                 action = "PLAYER_STOP";
                 break;
         }
+
         audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
         audioPlayerIntent.putExtra("action", action);
         if(status == AudioPlayerService.STATUS_STARTING) {
             audioPlayerIntent.putExtra("position", position);
         }
+
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
 
         startService(audioPlayerIntent);

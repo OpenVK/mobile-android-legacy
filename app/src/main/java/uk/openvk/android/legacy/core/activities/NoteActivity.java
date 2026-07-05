@@ -57,7 +57,6 @@ public class NoteActivity extends NetworkActivity {
     private boolean editor_mode;
     private long owner_id;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,17 +80,16 @@ public class NoteActivity extends NetworkActivity {
         webView = findViewById(R.id.webview);
         Bundle data = getIntent().getExtras();
         if(data != null) {
-            if (data.containsKey("id")) {
+            if (data.containsKey("id"))
                 note_id = data.getLong("id");
-            } else {
+            else
                 finish();
-            }
 
-            if (data.containsKey("owner_id")) {
+            if (data.containsKey("owner_id"))
                 owner_id = data.getLong("owner_id");
-            } else {
+            else
                 finish();
-            }
+
             ovk_api.notes.getById(ovk_api.wrapper, owner_id, note_id);
             findViewById(R.id.note_viewer).setVisibility(View.GONE);
             findViewById(R.id.note_editor).setVisibility(View.GONE);
@@ -149,6 +147,7 @@ public class NoteActivity extends NetworkActivity {
             String new_title = ((EditText) findViewById(R.id.note_title_editor)).getText().toString();
             String new_content = ((EditText) findViewById(R.id.note_content_editor)).getText().toString();
             ovk_api.notes.edit(ovk_api.wrapper, note_id, new_title, new_content);
+            loadNote(new_content);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -180,14 +179,19 @@ public class NoteActivity extends NetworkActivity {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
                     settings.setPluginState(WebSettings.PluginState.ON);
                 }
+
                 settings.setSupportZoom(true);
+
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    webView.loadDataWithBaseURL(null, page, "text/html; charset=UTF-8", "UTF-8", null);
+                    webView.loadDataWithBaseURL(
+                            null,
+                            page, "text/html; charset=UTF-8", "UTF-8", null
+                    );
                 } else {
                     webView.loadData(page, "text/html; charset=UTF-8", "UTF-8");
                 }
 
-                ((EditText) findViewById(R.id.note_content_editor)).setText(data.getString("content"));
+                ((EditText) findViewById(R.id.note_content_editor)).setText(text);
             }
             if(data.containsKey("title")) {
                 ((TextView) findViewById(R.id.note_title)).setText(data.getString("title"));

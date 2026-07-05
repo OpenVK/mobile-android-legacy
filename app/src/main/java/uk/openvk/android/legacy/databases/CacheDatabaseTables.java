@@ -99,7 +99,8 @@ public class CacheDatabaseTables {
                         "photo varchar(360), " +
                         "photo_small varchar(360), " +
                         "sex integer NOT NULL, " +
-                        "name_r varchar(200)" +
+                        "name_r varchar(200)," +
+                        "verified bit NOT NULL" +
                 ")"
         );
         db.execSQL(
@@ -135,7 +136,8 @@ public class CacheDatabaseTables {
                         "photo varchar(360), " +
                         "admin bit, " +
                         "type integer, " +
-                        "members bigint" +
+                        "members bigint," +
+                        "verified bit NOT NULL" +
                         ")"
         );
     }
@@ -162,6 +164,11 @@ public class CacheDatabaseTables {
             db.execSQL(
                     "DROP TABLE IF EXISTS `audios`"
             );
+
+            db.execSQL(
+                    "DROP TABLE IF EXISTS `current_audios`"
+            );
+
             db.execSQL(
                     "DROP TABLE IF EXISTS `playlists`"
             );
@@ -169,6 +176,8 @@ public class CacheDatabaseTables {
                     "DROP TABLE IF EXISTS `relations`"
             );
         }
+
+
         db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `audios` (" +
                         "owner_id bigint, " +
@@ -185,11 +194,35 @@ public class CacheDatabaseTables {
         );
 
         db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `wall_audios` (" +
+                        "id NOT NULL PRIMARY KEY, " +
+                        "audio_id bigint, " +
+                        "owner_id bigint, " +
+                        "post_id bigint," +
+                        "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
+                        "FOREIGN KEY(owner_id) REFERENCES audios(owner_id)" +
+                ")"
+        );
+
+        db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `current_audios` (" +
+                        "id NOT NULL PRIMARY KEY, " +
+                        "audio_id bigint, " +
+                        "owner_id bigint, " +
+                        "playlist_id bigint," +
+                        "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
+                        "FOREIGN KEY(owner_id) REFERENCES audios(owner_id)," +
+                        "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)" +
+                ")"
+        );
+
+        db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `playlists` (" +
                         "playlist_id NOT NULL PRIMARY KEY, " +
                         "owner_id NOT NULL, " +
                         "title varchar(150) NOT NULL, " +
-                        "description varchar(150) NOT NULL " +
+                        "description varchar(150) NOT NULL, " +
+                        "status integer" +
                         ")"
         );
 
@@ -197,8 +230,10 @@ public class CacheDatabaseTables {
                 "CREATE TABLE IF NOT EXISTS `relations` (" +
                         "id NOT NULL PRIMARY KEY, " +
                         "audio_id bigint, " +
+                        "owner_id bigint, " +
                         "playlist_id bigint," +
                         "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
+                        "FOREIGN KEY(owner_id) REFERENCES audios(owner_id)," +
                         "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)" +
                         ")"
         );

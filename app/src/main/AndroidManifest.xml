@@ -374,6 +374,7 @@
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:windowSoftInputMode="adjustResize"
             />
 
         <activity android:name=".core.activities.GroupMembersActivity"

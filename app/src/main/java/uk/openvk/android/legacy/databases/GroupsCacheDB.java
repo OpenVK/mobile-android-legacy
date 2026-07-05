@@ -112,6 +112,7 @@ public class GroupsCacheDB extends CacheDatabase {
                     group.id = values.getAsLong("id");
                     group.name = values.getAsString("name");
                     group.avatar_url = values.getAsString("photo");
+                    group.verified = values.getAsBoolean("verified");
                     result.add(group);
                 } while (cursor.moveToNext());
             }
@@ -143,7 +144,7 @@ public class GroupsCacheDB extends CacheDatabase {
                     group.id = values.getAsInteger("id");
                     group.name = values.getAsString("name");
                     group.avatar_url = values.getAsString("photo");
-
+                    group.verified = values.getAsBoolean("verified");
                     result.add(group);
                     i++;
                 } while (cursor.moveToNext());
@@ -172,6 +173,7 @@ public class GroupsCacheDB extends CacheDatabase {
                     values.put("id", group.id);
                     values.put("name", group.name);
                     values.put("photo", group.avatar_url);
+                    values.put("verified", group.verified);
                     db.insert("groups", null, values);
                 }
                 db.setTransactionSuccessful();
@@ -202,6 +204,7 @@ public class GroupsCacheDB extends CacheDatabase {
             values.put("id", group.id);
             values.put("name", group.name);
             values.put("photo", group.avatar_url);
+            values.put("verified", group.verified);
             db.insert("groups", null, values);
         } catch (Exception ex) {
             ex.printStackTrace();

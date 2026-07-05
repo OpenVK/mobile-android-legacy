@@ -206,7 +206,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.AUDIOS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                audiosFragment.createAdapter(this, ovk_api.audios.getList());
+                audiosFragment.createAdapter(this, ovk_api, ovk_api.audios.getList());
                 audiosFragment.setScrollingPositions(this, true);
             } else if (message < 0) {
                 try {

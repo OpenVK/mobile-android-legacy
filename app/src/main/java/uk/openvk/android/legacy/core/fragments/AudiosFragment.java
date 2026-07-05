@@ -54,7 +54,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Audio;
+import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
@@ -81,6 +85,8 @@ public class AudiosFragment extends ActiveFragment {
     private RecyclerView audiosView;
     private View view;
     private ArrayList<Audio> audios;
+    private ArrayList<Audio> currentAudios;
+    private OpenVKAPI ovk_api;
     private AudiosListAdapter audiosAdapter;
     private Context parent;
     private int currentTrackPos;
@@ -281,7 +287,7 @@ public class AudiosFragment extends ActiveFragment {
         return false;
     }
 
-    public void createAdapter(Context ctx, ArrayList<Audio> audios) {
+    public void createAdapter(Context ctx, OpenVKAPI ovk_api, ArrayList<Audio> audios) {
         this.parent = ctx;
         this.audios = audios;
 
@@ -298,18 +304,20 @@ public class AudiosFragment extends ActiveFragment {
                     if (currentPlayerState == AudioPlayerService.STATUS_PLAYING
                             || currentPlayerState == AudioPlayerService.STATUS_PAUSED) {
                         Audio audio = audios.get(currentTrackPos);
-                        int status = 0;
-                        switch (currentPlayerState) {
-                            case STATUS_PLAYING:
-                                status = 2;
-                                break;
-                            case STATUS_PAUSED:
-                                status = 3;
-                                break;
+                        if(audio.owner_id == ovk_api.user.id) {
+                            int status = 0;
+                            switch (currentPlayerState) {
+                                case STATUS_PLAYING:
+                                    status = 2;
+                                    break;
+                                case STATUS_PAUSED:
+                                    status = 3;
+                                    break;
+                            }
+                            audio.status = status;
+                            this.audios.set(currentTrackPos, audio);
+                            showBottomPlayer(audio);
                         }
-                        audio.status = status;
-                        this.audios.set(currentTrackPos, audio);
-                        showBottomPlayer(audio);
                     }
                 }
             }
@@ -335,8 +343,14 @@ public class AudiosFragment extends ActiveFragment {
         } else {
             audiosAdapter.notifyDataSetChanged();
         }
-        //AudioCacheDB.clear(parent, false);
-        AudioCacheDB.fillDatabase(parent, audios, false, false);
+
+        if(ovk_api.user != null) {
+            if(ovk_api.user.id == ovk_api.account.id) {
+                AudioCacheDB.clear(parent, false);
+                AudioCacheDB.fillDatabase(parent, audios, false);
+            }
+        }
+
     }
 
     public void createSearchResultsAdapter(ArrayList<Audio> audios) {

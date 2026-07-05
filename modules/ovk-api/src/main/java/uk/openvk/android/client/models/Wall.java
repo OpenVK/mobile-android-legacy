@@ -112,7 +112,8 @@ public class Wall implements Parcelable {
                 JSONObject newsfeed = json.getJSONObject("response");
                 JSONArray items = newsfeed.getJSONArray("items");
 
-                next_from = newsfeed.has("next_from") ? "" : newsfeed.getString("next_from");
+                next_from = newsfeed.has("next_from") && !newsfeed.isNull("next_from") ?
+                        newsfeed.getString("next_from") : "";
 
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject post = items.getJSONObject(i);
@@ -120,18 +121,22 @@ public class Wall implements Parcelable {
                     JSONObject likes = post.getJSONObject("likes");
                     JSONObject reposts = post.getJSONObject("reposts");
                     JSONArray attachments = post.getJSONArray("attachments");
+
                     long owner_id = post.getLong("owner_id");
                     long post_id = post.getLong("id");
                     long author_id = post.getLong("from_id");
                     long dt_sec = post.getLong("date");
+
                     LazyEntity author = null;
                     LazyEntity owner = null;
                     LazyEntity original_author = null;
                     LazyEntity original_owner = null;
+
                     String author_avatar_url = "";
                     String content = post.getString("text");
                     boolean isLiked = false;
                     boolean verified_author = false;
+
                     isLiked = likes.getInt("user_likes") > 0;
                     PostCounters counters = new PostCounters(likes.getInt("count"),
                             comments.getInt("count"),
@@ -163,6 +168,7 @@ public class Wall implements Parcelable {
                                             .getString("type"), null);
                         }
                     }
+
                     if(post.getJSONArray("copy_history").length() > 0) {
                         JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
                         WallPost repost_item = new WallPost(
@@ -182,13 +188,8 @@ public class Wall implements Parcelable {
                         }
 
                         JSONArray repost_attachments = repost.getJSONArray("attachments");
-                        if(isWall) {
-                            attachments_list = createAttachmentsList(owner_id, post_id, quality,
-                                    repost_attachments, "wall_attachment");
-                        } else {
-                            attachments_list = createAttachmentsList(owner_id, post_id, quality,
-                                    repost_attachments, "newsfeed_attachment");
-                        }
+                        attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                                repost_attachments, "wall_attachment");
                         repost_item.attachments = attachments_list;
 
                         if(repost.getLong("from_id") > 0) {
@@ -206,7 +207,7 @@ public class Wall implements Parcelable {
                                 for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
                                     JSONObject group = groups.getJSONObject(groups_index);
                                     if (-group.getLong("id") == repost.getLong("from_id")) {
-                                        original_owner = parseGroupFromEntity(group, group.getLong("id"));
+                                        original_owner = parseGroupFromEntity(group, -group.getLong("id"));
                                     }
                                 }
                         }
@@ -270,9 +271,11 @@ public class Wall implements Parcelable {
                     avatar.filename = String.format("avatar_%s", author_id);
                     try { // handle floating crash
                         avatars.add(avatar);
-                        item.verified_author = verified_author;
                         if(post.has("is_explicit")) {
-                            item.is_explicit = post.getBoolean("is_explicit");
+                            if(post.optInt("is_explicit", -1) < 0)
+                                item.is_explicit = post.getBoolean("is_explicit");
+                            else
+                                item.is_explicit = post.getInt("is_explicit") > 0;
                         }
                         item.contains_repost = item.repost != null && item.repost.newsfeed_item != null;
                         this.items.add(item);
@@ -282,40 +285,21 @@ public class Wall implements Parcelable {
                     }
                 }
 
-
-                if(isWall) {
-                    switch (quality) {
-                        case "low":
-                            downloadManager.downloadPhotosToCache(photos_lsize, "wall_photo_attachments");
-                            break;
-                        case "medium":
-                            downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
-                            break;
-                        case "high":
-                            downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
-                            break;
-                        case "original":
-                            downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
-                            break;
-                    }
-                    downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
-                } else {
-                    switch (quality) {
-                        case "low":
-                            downloadManager.downloadPhotosToCache(photos_lsize, "newsfeed_photo_attachments");
-                            break;
-                        case "medium":
-                            downloadManager.downloadPhotosToCache(photos_msize, "newsfeed_photo_attachments");
-                            break;
-                        case "high":
-                            downloadManager.downloadPhotosToCache(photos_hsize, "newsfeed_photo_attachments");
-                            break;
-                        case "original":
-                            downloadManager.downloadPhotosToCache(photos_osize, "newsfeed_photo_attachments");
-                            break;
-                    }
-                downloadManager.downloadPhotosToCache(avatars, "newsfeed_avatars");
+                switch (quality) {
+                    case "low":
+                        downloadManager.downloadPhotosToCache(photos_lsize, "wall_photo_attachments");
+                        break;
+                    case "medium":
+                        downloadManager.downloadPhotosToCache(photos_msize, "wall_photo_attachments");
+                        break;
+                    case "high":
+                        downloadManager.downloadPhotosToCache(photos_hsize, "wall_photo_attachments");
+                        break;
+                    case "original":
+                        downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
+                        break;
                 }
+                downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
                 downloadManager.downloadPhotosToCache(video_thumbnails, "video_thumbnails");
             }
         } catch (JSONException e) {
@@ -630,20 +614,26 @@ public class Wall implements Parcelable {
                     case "poll": {
                         JSONObject poll_attachment = attachment.getJSONObject("poll");
                         Poll poll = new Poll(poll_attachment.getString("question"),
-                                poll_attachment.getInt("id"), poll_attachment.getLong("end_date"),
+                                poll_attachment.getInt("id"),
+                                poll_attachment.getLong("end_date"),
                                 poll_attachment.getBoolean("multiple"),
                                 poll_attachment.getBoolean("can_vote"),
                                 poll_attachment.getBoolean("anonymous"));
+
                         JSONArray answers = poll_attachment.getJSONArray("answers");
                         JSONArray votes = poll_attachment.getJSONArray("answer_ids");
+
                         if (votes.length() > 0) {
                             poll.user_votes = votes.length();
                         }
                         poll.votes = poll_attachment.getInt("votes");
                         for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
                             JSONObject answer = answers.getJSONObject(answers_index);
-                            Poll.PollAnswer pollAnswer = new Poll.PollAnswer(answer.getInt("id"), answer.getInt("rate"),
+
+                            Poll.PollAnswer pollAnswer = new Poll.PollAnswer(
+                                    answer.getInt("id"), answer.getInt("rate"),
                                     answer.getInt("votes"), answer.getString("text"));
+
                             for (int votes_index = 0; votes_index < votes.length(); votes_index++) {
                                 if (answer.getInt("id") == votes.getInt(votes_index)) {
                                     pollAnswer.is_voted = true;

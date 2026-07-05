@@ -823,8 +823,10 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (selectedFragment instanceof AudiosFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    ((AudiosFragment) selectedFragment).createAdapter(this, ovk_api.audios.getList());
-                    ((AudiosFragment) selectedFragment).setScrollingPositions(this, true);
+                    ((AudiosFragment) selectedFragment)
+                            .createAdapter(this, ovk_api, ovk_api.audios.getList());
+                    ((AudiosFragment) selectedFragment)
+                            .setScrollingPositions(this, true);
                 }
             } else if (message == HandlerMessages.GROUPS_GET) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();

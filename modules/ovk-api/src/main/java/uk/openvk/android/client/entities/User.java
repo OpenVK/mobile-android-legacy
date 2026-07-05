@@ -155,11 +155,11 @@ public class User extends LazyEntity implements Parcelable {
                 if(user.has("counters")) {
                     JSONObject counters_obj = user.getJSONObject("counters");
                     counters = new UserCounters(
-                            counters_obj.getLong("friends_count"),
-                            counters_obj.getLong("photos_count"),
-                            counters_obj.getLong("videos_count"),
-                            counters_obj.getLong("audios_count"),
-                            counters_obj.getLong("notes_count")
+                            counters_obj.getLong("friends"),
+                            counters_obj.getLong("photos"),
+                            counters_obj.getLong("videos"),
+                            counters_obj.getLong("audios"),
+                            counters_obj.getLong("notes")
                     );
                 }
 

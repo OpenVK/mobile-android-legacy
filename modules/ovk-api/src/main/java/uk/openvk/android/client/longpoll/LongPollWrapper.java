@@ -126,6 +126,10 @@ public class LongPollWrapper {
         this.server = lp_server;
         String url = "";
         url = String.format("%s?act=a_check&key=%s&ts=%s&wait=15", lp_server, key, ts);
+
+        if(!url.startsWith("https://") && !url.startsWith("http://"))
+            url = use_https ? "https://" + url : "http://" + url;
+
         Log.v(OpenVKAPI.LP_TAG, String.format("Activating LongPoll via %s...", lp_server));
         final String fUrl = url;
         isActivated = true;
@@ -146,9 +150,9 @@ public class LongPollWrapper {
                                 .build();
                 }
                 try {
-                    if(isActivated) {
-                        Log.v(OpenVKAPI.LP_TAG, "LongPoll activated.");
-                    }
+                    if(isActivated)
+                        Log.v(OpenVKAPI.LP_TAG, "LongPollService activated.");
+
                     while(isActivated) {
                         if (legacy_mode) {
                             HttpResponse response = request_legacy.execute();

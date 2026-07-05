@@ -68,17 +68,12 @@ import uk.openvk.android.legacy.ui.views.WallLayout;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
 
+    private final boolean isWall;
     private String instance;
-    private boolean isWall;
     private boolean uilDebugging;
     private boolean safeViewing;
-    private String where;
-    private ArrayList<WallPost> items = new ArrayList<>();
+    private ArrayList<WallPost> items;
     private Context ctx;
-    public LruCache memCache;
-    private int resize_videoattachviews;
-    private int resize_photoattachments;
-    private int photo_fail_count;
     private ImageLoaderConfiguration imageLoaderConfig;
     private DisplayImageOptions displayimageOptions;
     private ImageLoader imageLoader;
@@ -202,6 +197,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         void bind(final int position) {
             final WallPost item = getItem(position);
 
+            Bitmap author_avatar = null;
+            boolean verified_author = false;
+
             if(item.getEntityType() == LazyEntity.SLEEPING_ENTITY)
                 return;
 
@@ -241,20 +239,28 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             poster_name_str = retrivePosterName(item);
             poster_name.setText(poster_name_str);
 
-            if(item.verified_author) {
-                verified_icon.setVisibility(View.VISIBLE);
-            } else {
-                verified_icon.setVisibility(View.GONE);
+            if(item.author instanceof User) {
+                author_avatar = ((User) item.author).avatar;
+                verified_author = ((User) item.author).verified;
+            } else if(item.author instanceof Group) {
+                author_avatar = ((Group) item.author).avatar;
+                verified_author = ((Group) item.author).verified;
             }
-            post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
-            expand_text_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openWallComments(ctx, position, null);
-                }
-            });
+
+            if(verified_author)
+                verified_icon.setVisibility(View.VISIBLE);
+            else
+                verified_icon.setVisibility(View.GONE);
 
             if(!item.is_explicit || !safeViewing) {
+                post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
+                expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openWallComments(ctx, position, null);
+                    }
+                });
+
                 if (item.text.length() > 0) {
                     post_text.setVisibility(View.VISIBLE);
                     String text = item.text.replaceAll("&lt;", "<")
@@ -289,9 +295,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             Global.formatTimestamp(ctx, item.repost.newsfeed_item.dt.getTime())
                     );
 
-                    String repost_text = item.repost.newsfeed_item.text.replaceAll("&lt;", "<")
+                    String repost_text = item.repost.newsfeed_item.text
+                            .replaceAll("&lt;", "<")
                             .replaceAll("&gt;", ">")
-                            .replaceAll("&amp;", "&").replaceAll("&quot;", "\"");
+                            .replaceAll("&amp;", "&")
+                            .replaceAll("&quot;", "\"");
 
                     if(repost_text.length() > 0) {
                         String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
@@ -338,11 +346,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             reposts_counter.setText(String.format("%s", item.counters.reposts));
             comments_counter.setText(String.format("%s", item.counters.comments));
 
-            if(item.counters.isLiked) {
-                likes_counter.setSelected(true);
-            } else {
-                likes_counter.setSelected(false);
-            }
+            likes_counter.setSelected(item.counters.isLiked);
 
             if(item.counters.enabled) {
                 likes_counter.setEnabled(true);
@@ -357,13 +361,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 likes_counter.setEnabled(false);
             }
 
-            Bitmap author_avatar = null;
-
-            if(item.author instanceof User)
-                author_avatar = ((User) item.author).avatar;
-            else if(item.author instanceof Group)
-                author_avatar = ((Group) item.author).avatar;
-
             if(author_avatar != null) {
                 avatar.setImageBitmap(author_avatar);
             } else {
@@ -372,7 +369,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 try {
                     if(item.author != null) {
                         Bitmap bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
+                                String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
                                         ctx.getCacheDir(), instance, item.author.id), options);
                         if (bitmap != null) {
                             avatar.setImageBitmap(bitmap);
@@ -636,7 +633,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
             } else if(ctx instanceof GroupIntentActivity) {
                 ovk_api = ((GroupIntentActivity) ctx).ovk_api;
-                wallLayout = ((GroupIntentActivity) ctx).findViewById(R.id.wall_layout);
             } else {
                 return;
             }
@@ -666,20 +662,25 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 return;
             }
+
+            item = items.get(position);
+
             if (global_prefs.getString("current_screen", "").equals("profile")) {
-                item = ovk_api.wall.getWallItems().get(position);
-                if(item != null && wallLayout != null) {
-                    wallLayout.select(0, "likes", "delete");
-                } else {
+                if(ovk_api.newsfeed != null && items != null) {
+                    if (item != null && newsfeedFragment != null)
+                        wallLayout.select(0, "likes", "delete");
+                    else
+                        return;
+                } else
                     return;
-                }
             } else {
-                item = ovk_api.newsfeed.getWallPosts().get(position);
-                if(item != null && newsfeedFragment != null) {
-                    newsfeedFragment.select(0, "likes", "delete");
-                } else {
+                if(ovk_api.newsfeed != null && items != null) {
+                    if (item != null && newsfeedFragment != null)
+                        newsfeedFragment.select(0, "likes", "delete");
+                    else
+                        return;
+                } else
                     return;
-                }
             }
             ovk_api.likes.delete(ovk_api.wrapper, item.owner.id, item.post_id, position);
         }
