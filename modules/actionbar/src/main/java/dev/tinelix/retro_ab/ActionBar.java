@@ -144,6 +144,9 @@ public class ActionBar extends RelativeLayout implements OnClickListener {
 
     public void setSubtitle(CharSequence subtitle) {
         mSubtitleView.setText(subtitle);
+        if(subtitle.length() > 0)
+            mSubtitleView.setVisibility(VISIBLE);
+        else mSubtitleView.setVisibility(GONE);
     }
 
     public void setSubtitle(int resid) {

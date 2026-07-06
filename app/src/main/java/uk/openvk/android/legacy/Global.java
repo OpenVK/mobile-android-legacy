@@ -724,7 +724,7 @@ public class Global {
         } else if((dt_midnight.getTime() - time) < (86400000L)) { // one day = 86400 seconds
             strftime = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at),
                     new SimpleDateFormat("HH:mm").format(dt));
-        } else if((dt_midnight.getTime() - time) < 315360000L) { // one year = 365 days = 315,360,000 seconds
+        } else if((dt_midnight.getTime() - time) < 3153600000L) { // one year = 365 days = 3,153,600 seconds
             strftime = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt),
                     ctx.getResources().getString(R.string.date_at),
                     new SimpleDateFormat("HH:mm").format(dt));

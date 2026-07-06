@@ -44,6 +44,7 @@ import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.NoteActivity;
 import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
@@ -244,6 +245,23 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     }
                     break;
                 case "Wall.getById":
+                    if(activity instanceof WallPostActivity) {
+                        ((WallPostActivity) activity).post =
+                                ovk_api.wall.parseSingle(
+                                        activity,
+                                        global_prefs.getString("photos_quality", ""),
+                                        data.getString("response"),  true);
+                    }
+                    msg.what = HandlerMessages.WALL_GET_BY_ID;
+                    break;
+                case "Wall.getComments":
+                    if(activity instanceof WallPostActivity)
+                        ((WallPostActivity) activity).comments = ovk_api.wall.parseComments(
+                            activity, ovk_api.dlman,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response")
+                    );
+                    msg.what = HandlerMessages.WALL_ALL_COMMENTS;
                     break;
                 case "Wall.post":
                     msg.what = HandlerMessages.WALL_POST;

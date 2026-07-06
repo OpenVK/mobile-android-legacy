@@ -49,6 +49,7 @@ import java.util.List;
 import uk.co.senab.photoview.PhotoView;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.User;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.attachments.Attachment;
@@ -152,49 +153,12 @@ public class PostAttachmentsView extends LinearLayout {
                                 flowLayout.addView(videoView);
                                 videoView.setVisibility(View.VISIBLE);
                                 videoView.setThumbnail(post.owner.id);
-                                if (resize_videoattachviews < 1) {
-                                    videoView.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            float widescreen_aspect_ratio =
-                                                    videoView.getMeasuredWidth() / 16;
-                                            float attachment_height =
-                                                    widescreen_aspect_ratio * 9;
-                                            FlowLayout.LayoutParams lp =
-                                                    (FlowLayout.LayoutParams) videoView.getLayoutParams();
-                                            lp.height = (int) attachment_height;
-                                            videoView.setLayoutParams(lp);
-                                        }
-                                    });
-                                    resize_videoattachviews++;
-                                }
-                                videoView.getViewTreeObserver().addOnGlobalLayoutListener(
-                                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                                            @Override
-                                            public void onGlobalLayout() {
-                                                float widescreen_aspect_ratio =
-                                                        videoView.getMeasuredWidth() / 16;
-                                                float attachment_height = widescreen_aspect_ratio * 9;
-                                                videoView.getLayoutParams().height =
-                                                        (int) attachment_height;
-                                            }
-                                        });
-                                videoView.findViewById(R.id.video_att_view).setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                playVideo(post, videoAttachment);
-                                            }
-                                        }
-                                );
-                                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
-                                ((FlowLayout.LayoutParams) videoView.getLayoutParams())
-                                        .setMargins(
-                                                0,
-                                                0,
-                                                0,
-                                                i < post.attachments.size() -1 ? 8*dp : 0
-                                        );
+                                float dp = getResources().getDisplayMetrics().scaledDensity;
+                                int scrHeight = getResources().getDisplayMetrics().heightPixels;
+                                if(((OvkApplication) ctx.getApplicationContext()).isWidescreen)
+                                    videoView.getLayoutParams().height = (int)(240 * dp);
+                                else
+                                    videoView.getLayoutParams().height = (int)(160 * dp);
                             }
                             break;
                         case "poll":
@@ -406,7 +370,7 @@ public class PostAttachmentsView extends LinearLayout {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPhotoAttachment(post, photo.id);
+                viewPhotoAttachment(post, photo);
             }
         });
     }
@@ -468,7 +432,7 @@ public class PostAttachmentsView extends LinearLayout {
         parent.startActivity(intent);
     }
 
-    public void viewPhotoAttachment(WallPost post, long photo_id) {
+    public void viewPhotoAttachment(WallPost post, Photo photo) {
         WallPost item;
         Intent intent = new Intent(parent.getApplicationContext(), PhotoViewerActivity.class);
         if (isWall) {
@@ -490,15 +454,10 @@ public class PostAttachmentsView extends LinearLayout {
             }
 
             if(post.attachments != null) {
-                for(int i = 0; i < post.attachments.size(); i++) {
-                    if(post.attachments.get(i).id == photo_id) {
-                        Photo photo = ((Photo) post.attachments.get(i));
-                        intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", post.author.id);
-                        intent.putExtra("photo_id", photo_id);
-                        parent.startActivity(intent);
-                    }
-                }
+                intent.putExtra("original_link", photo.original_url);
+                intent.putExtra("author_id", post.author.id);
+                intent.putExtra("photo_id", photo.id);
+                parent.startActivity(intent);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

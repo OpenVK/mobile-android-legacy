@@ -283,15 +283,9 @@ public class PostViewLayout extends LinearLayout {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = null;
-            if(where.equals("newsfeed")) {
-                bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
-                        getContext().getCacheDir(), instance, author_id), options);
-            } else {
-                bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
-                        getContext().getCacheDir(), instance, author_id), options);
-            }
+            bitmap = BitmapFactory.decodeFile(
+                    String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                            getContext().getCacheDir(), instance, author_id), options);
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(bitmap);
                 Log.e(OvkApplication.APP_TAG,

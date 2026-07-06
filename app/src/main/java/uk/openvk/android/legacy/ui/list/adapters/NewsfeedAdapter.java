@@ -252,8 +252,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             else
                 verified_icon.setVisibility(View.GONE);
 
+            post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
+
             if(!item.is_explicit || !safeViewing) {
-                post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
                 expand_text_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -100,10 +100,10 @@ public class Wall implements Parcelable {
                 items.clear();
             }
         }
-        photos_lsize = new ArrayList<Photo>();
-        photos_msize = new ArrayList<Photo>();
-        photos_hsize = new ArrayList<Photo>();
-        photos_osize = new ArrayList<Photo>();
+        photos_lsize = new ArrayList<>();
+        photos_msize = new ArrayList<>();
+        photos_hsize = new ArrayList<>();
+        photos_osize = new ArrayList<>();
         video_thumbnails = new ArrayList<>();
         ArrayList<Photo> avatars = new ArrayList<Photo>();
         try {
@@ -116,173 +116,29 @@ public class Wall implements Parcelable {
                         newsfeed.getString("next_from") : "";
 
                 for(int i = 0; i < items.length(); i++) {
-                    JSONObject post = items.getJSONObject(i);
-                    JSONObject comments = post.getJSONObject("comments");
-                    JSONObject likes = post.getJSONObject("likes");
-                    JSONObject reposts = post.getJSONObject("reposts");
-                    JSONArray attachments = post.getJSONArray("attachments");
-
-                    long owner_id = post.getLong("owner_id");
-                    long post_id = post.getLong("id");
-                    long author_id = post.getLong("from_id");
-                    long dt_sec = post.getLong("date");
-
-                    LazyEntity author = null;
-                    LazyEntity owner = null;
-                    LazyEntity original_author = null;
-                    LazyEntity original_owner = null;
-
-                    String author_avatar_url = "";
-                    String content = post.getString("text");
-                    boolean isLiked = false;
-                    boolean verified_author = false;
-
-                    isLiked = likes.getInt("user_likes") > 0;
-                    PostCounters counters = new PostCounters(likes.getInt("count"),
-                            comments.getInt("count"),
-                            reposts.getInt("count"), isLiked, false);
-                    ArrayList<Attachment> attachments_list = null;
-                    if(isWall) {
-                        attachments_list =
-                                createAttachmentsList(owner_id, post_id, quality,
-                                        attachments, "wall_attachment");
-                    } else {
-                        attachments_list =
-                                createAttachmentsList(owner_id, post_id, quality,
-                                        attachments, "newsfeed_attachment");
-                    }
-                    WallPost item = new WallPost(
-                            dt_sec, null, content, counters,
-                            author_avatar_url, attachments_list, owner_id, post_id
-                    );
-                    item.setJSONString(post.toString());
-                    if(post.has("post_source") && !post.isNull("post_source")) {
-                        if(post.getJSONObject("post_source").getString("type").equals("api")) {
-                            item.post_source = new WallPost.WallPostSource(
-                                    post.getJSONObject("post_source").getString("type"),
-                                    post.getJSONObject("post_source").getString("platform")
-                            );
-                        } else {
-                            item.post_source =
-                                    new WallPost.WallPostSource(post.getJSONObject("post_source")
-                                            .getString("type"), null);
-                        }
-                    }
-
-                    if(post.getJSONArray("copy_history").length() > 0) {
-                        JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
-                        WallPost repost_item = new WallPost(
-                                repost.getInt("date"), null, repost.getString("text"),
-                                null, "",
-                                null, repost.getLong("owner_id"), repost.getInt("id"));
-                        repost_item.setJSONString(repost.toString());
-
-                        RepostInfo repostInfo = new RepostInfo(ctx, repost.getInt("date"));
-                        repostInfo.author = repost.getLong("owner_id") < 0 ? new Group() : new User();
-                        repostInfo.author.id = repost.getLong("owner_id");
-
-                        if(repostInfo.author instanceof User) {
-                            ((User) repostInfo.author).first_name = String.format("(User %s)", repostInfo.author.id);
-                        } else {
-                            ((Group) repostInfo.author).name = String.format("(Group %s)", -repostInfo.author.id);
-                        }
-
-                        JSONArray repost_attachments = repost.getJSONArray("attachments");
-                        attachments_list = createAttachmentsList(owner_id, post_id, quality,
-                                repost_attachments, "wall_attachment");
-                        repost_item.attachments = attachments_list;
-
-                        if(repost.getLong("from_id") > 0) {
-                            if(newsfeed.has("profiles")) {
-                                JSONArray profiles = newsfeed.getJSONArray("profiles");
-                                for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
-                                    JSONObject profile = profiles.getJSONObject(profiles_index);
-                                    if (profile.getLong("id") == repost.getLong("from_id")) {
-                                        original_author = parseProfileFromEntity(profile, profile.getLong("id"));
-                                    }
-                                }
-                            }
-                        } else if(newsfeed.has("groups")) {
-                                JSONArray groups = newsfeed.getJSONArray("groups");
-                                for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                                    JSONObject group = groups.getJSONObject(groups_index);
-                                    if (-group.getLong("id") == repost.getLong("from_id")) {
-                                        original_owner = parseGroupFromEntity(group, -group.getLong("id"));
-                                    }
-                                }
-                        }
-                        repostInfo.newsfeed_item = repost_item;
-                        repostInfo.newsfeed_item.author = original_author;
-                        repostInfo.newsfeed_item.owner = original_owner;
-                        item.repost = repostInfo;
-                    }
-
-                    if(author_id > 0) {
-                        if(newsfeed.has("profiles")) {
-                            JSONArray profiles = newsfeed.getJSONArray("profiles");
-                            for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
-                                JSONObject profile = profiles.getJSONObject(profiles_index);
-                                if (profile.getLong("id") == owner_id) {
-                                    owner = parseProfileFromEntity(profile, owner_id);
-                                    author_avatar_url = ((User) owner).avatar_url;
-                                } else if (profile.getLong("id") == author_id) {
-                                    author = parseProfileFromEntity(profile, author_id);
-                                    author_avatar_url = ((User) author).avatar_url;
-                                }
-                            }
-                        }
-                        if(owner_id < 0) {
-                            if(newsfeed.has("groups")) {
-                                JSONArray groups = newsfeed.getJSONArray("groups");
-                                for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                                    JSONObject group = groups.getJSONObject(groups_index);
-                                    if (-group.getInt("id") == owner_id) {
-                                        owner = parseGroupFromEntity(group, owner_id);
-                                        author_avatar_url = ((Group) owner).avatar_url;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        if(newsfeed.has("groups") && newsfeed.has("profiles")) {
-                            JSONArray groups = newsfeed.getJSONArray("groups");
-                            JSONArray profiles = newsfeed.getJSONArray("profiles");
-                            for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                                JSONObject group = groups.getJSONObject(groups_index);
-                                if (-group.getInt("id") == owner_id) {
-                                    owner = parseGroupFromEntity(group, owner_id);
-                                    author_avatar_url = ((Group) owner).avatar_url;
-                                } else if(-group.getInt("id") == author_id) {
-                                    author = parseGroupFromEntity(group, author_id);
-                                    author_avatar_url = ((Group) author).avatar_url;
-                                }
-                            }
-                        }
-                    }
-
-                    if(author_id == owner_id)
-                        author = owner;
-
-                    item.owner = owner;
-                    item.author = author;
-
-                    Photo avatar = new Photo();
-                    avatar.url = author_avatar_url;
-                    avatar.filename = String.format("avatar_%s", author_id);
+                    WallPost post = parseOnce(ctx, newsfeed, i, quality, isWall);
                     try { // handle floating crash
-                        avatars.add(avatar);
-                        if(post.has("is_explicit")) {
-                            if(post.optInt("is_explicit", -1) < 0)
-                                item.is_explicit = post.getBoolean("is_explicit");
-                            else
-                                item.is_explicit = post.getInt("is_explicit") > 0;
+                        Photo avatar = new Photo();
+                        if(post.author != null && post.author == post.owner) {
+                            if(post.author instanceof User)
+                                avatar.url = ((User) post.author).avatar_url;
+                            else if(post.author instanceof Group)
+                                avatar.url = ((Group) post.author).avatar_url;
+                            avatar.filename = String.format("avatar_%s", post.author.id);
+                        } else if(post.owner != null) {
+                            if(post.owner instanceof User)
+                                avatar.url = ((User) post.owner).avatar_url;
+                            else if(post.owner instanceof Group)
+                                avatar.url = ((Group) post.owner).avatar_url;
+                            avatar.filename = String.format("avatar_%s", post.owner.id);
                         }
-                        item.contains_repost = item.repost != null && item.repost.newsfeed_item != null;
-                        this.items.add(item);
+
+                        avatars.add(avatar);
                     } catch (ArrayIndexOutOfBoundsException ignored) {
                         Log.e(OpenVKAPI.TAG, "WTF? The length itself in an array must not " +
                                 "be overestimated.");
                     }
+                    this.items.add(post);
                 }
 
                 switch (quality) {
@@ -305,6 +161,194 @@ public class Wall implements Parcelable {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public WallPost parseSingle(Context ctx,
+                                String quality, String response, boolean isWall) {
+        try {
+            photos_lsize = new ArrayList<>();
+            photos_msize = new ArrayList<>();
+            photos_hsize = new ArrayList<>();
+            photos_osize = new ArrayList<>();
+            JSONObject json = jsonParser.parseJSON(response);
+            if (json != null) {
+                JSONObject newsfeed = json.getJSONObject("response");
+                JSONArray items = newsfeed.getJSONArray("items");
+
+                if(items.length() > 0)
+                     return parseOnce(ctx, newsfeed, 0, quality, isWall);
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    private WallPost parseOnce(
+            Context ctx,
+            JSONObject newsfeed, int postIndex,
+            String quality, boolean isWall
+    ) {
+        WallPost item = null;
+
+        try {
+            JSONObject post = newsfeed.getJSONArray("items").getJSONObject(postIndex);
+            JSONObject comments = post.getJSONObject("comments");
+            JSONObject likes = post.getJSONObject("likes");
+            JSONObject reposts = post.getJSONObject("reposts");
+            JSONArray attachments = post.getJSONArray("attachments");
+
+            long owner_id = post.getLong("owner_id");
+            long post_id = post.getLong("id");
+            long author_id = post.getLong("from_id");
+            long dt_sec = post.getLong("date");
+
+            LazyEntity author = null;
+            LazyEntity owner = null;
+            LazyEntity original_author = null;
+            LazyEntity original_owner = null;
+
+            String author_avatar_url = "";
+            String content = post.getString("text");
+            boolean isLiked = false;
+            boolean verified_author = false;
+
+            isLiked = likes.getInt("user_likes") > 0;
+            PostCounters counters = new PostCounters(likes.getInt("count"),
+                    comments.getInt("count"),
+                    reposts.getInt("count"), isLiked, false);
+            ArrayList<Attachment> attachments_list = null;
+            attachments_list =
+                    createAttachmentsList(owner_id, post_id, quality,
+                            attachments, "wall_attachment");
+
+            item = new WallPost(
+                    dt_sec, null, content, counters,
+                    author_avatar_url, attachments_list, owner_id, post_id
+            );
+            item.setJSONString(post.toString());
+            if (post.has("post_source") && !post.isNull("post_source")) {
+                if (post.getJSONObject("post_source").getString("type").equals("api")) {
+                    item.post_source = new WallPost.WallPostSource(
+                            post.getJSONObject("post_source").getString("type"),
+                            post.getJSONObject("post_source").getString("platform")
+                    );
+                } else {
+                    item.post_source =
+                            new WallPost.WallPostSource(post.getJSONObject("post_source")
+                                    .getString("type"), null);
+                }
+            }
+
+            if (post.getJSONArray("copy_history").length() > 0) {
+                JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
+                WallPost repost_item = new WallPost(
+                        repost.getInt("date"), null, repost.getString("text"),
+                        null, "",
+                        null, repost.getLong("owner_id"), repost.getInt("id"));
+                repost_item.setJSONString(repost.toString());
+
+                RepostInfo repostInfo = new RepostInfo(ctx, repost.getInt("date"));
+                repostInfo.author = repost.getLong("owner_id") < 0 ? new Group() : new User();
+                repostInfo.author.id = repost.getLong("owner_id");
+
+                if (repostInfo.author instanceof User) {
+                    ((User) repostInfo.author).first_name = String.format("(User %s)", repostInfo.author.id);
+                } else {
+                    ((Group) repostInfo.author).name = String.format("(Group %s)", -repostInfo.author.id);
+                }
+
+                JSONArray repost_attachments = repost.getJSONArray("attachments");
+                attachments_list = createAttachmentsList(owner_id, post_id, quality,
+                        repost_attachments, "wall_attachment");
+                repost_item.attachments = attachments_list;
+
+                if (repost.getLong("from_id") > 0) {
+                    if (newsfeed.has("profiles")) {
+                        JSONArray profiles = newsfeed.getJSONArray("profiles");
+                        for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
+                            JSONObject profile = profiles.getJSONObject(profiles_index);
+                            if (profile.getLong("id") == repost.getLong("from_id")) {
+                                original_author = parseProfileFromEntity(profile, profile.getLong("id"));
+                            }
+                        }
+                    }
+                } else if (newsfeed.has("groups")) {
+                    JSONArray groups = newsfeed.getJSONArray("groups");
+                    for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
+                        JSONObject group = groups.getJSONObject(groups_index);
+                        if (-group.getLong("id") == repost.getLong("from_id")) {
+                            original_owner = parseGroupFromEntity(group, -group.getLong("id"));
+                        }
+                    }
+                }
+                repostInfo.newsfeed_item = repost_item;
+                repostInfo.newsfeed_item.author = original_author;
+                repostInfo.newsfeed_item.owner = original_owner;
+                item.repost = repostInfo;
+            }
+
+            if (author_id > 0) {
+                if (newsfeed.has("profiles")) {
+                    JSONArray profiles = newsfeed.getJSONArray("profiles");
+                    for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
+                        JSONObject profile = profiles.getJSONObject(profiles_index);
+                        if (profile.getLong("id") == owner_id) {
+                            owner = parseProfileFromEntity(profile, owner_id);
+                            author_avatar_url = ((User) owner).avatar_url;
+                        } else if (profile.getLong("id") == author_id) {
+                            author = parseProfileFromEntity(profile, author_id);
+                            author_avatar_url = ((User) author).avatar_url;
+                        }
+                    }
+                }
+                if (owner_id < 0) {
+                    if (newsfeed.has("groups")) {
+                        JSONArray groups = newsfeed.getJSONArray("groups");
+                        for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
+                            JSONObject group = groups.getJSONObject(groups_index);
+                            if (-group.getInt("id") == owner_id) {
+                                owner = parseGroupFromEntity(group, owner_id);
+                                author_avatar_url = ((Group) owner).avatar_url;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (newsfeed.has("groups") && newsfeed.has("profiles")) {
+                    JSONArray groups = newsfeed.getJSONArray("groups");
+                    JSONArray profiles = newsfeed.getJSONArray("profiles");
+                    for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
+                        JSONObject group = groups.getJSONObject(groups_index);
+                        if (-group.getInt("id") == owner_id) {
+                            owner = parseGroupFromEntity(group, owner_id);
+                            author_avatar_url = ((Group) owner).avatar_url;
+                        } else if (-group.getInt("id") == author_id) {
+                            author = parseGroupFromEntity(group, author_id);
+                            author_avatar_url = ((Group) author).avatar_url;
+                        }
+                    }
+                }
+            }
+
+            if (author_id == owner_id)
+                author = owner;
+
+            item.owner = owner;
+            item.author = author;
+
+            if (post.has("is_explicit")) {
+                if (post.optInt("is_explicit", -1) < 0)
+                    item.is_explicit = post.getBoolean("is_explicit");
+                else
+                    item.is_explicit = post.getInt("is_explicit") > 0;
+            }
+            item.contains_repost = item.repost != null && item.repost.newsfeed_item != null;
+
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return item;
     }
 
     private LazyEntity parseGroupFromEntity(JSONObject group, long owner_id) {
@@ -350,11 +394,11 @@ public class Wall implements Parcelable {
 
     public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality,
                                             String response) {
-        comments = new ArrayList<Comment>();
+        comments = new ArrayList<>();
         photos_lsize = new ArrayList<>();
-        photos_msize = new ArrayList<Photo>();
-        photos_hsize = new ArrayList<Photo>();
-        photos_osize = new ArrayList<Photo>();
+        photos_msize = new ArrayList<>();
+        photos_hsize = new ArrayList<>();
+        photos_osize = new ArrayList<>();
         try {
             JSONObject json = jsonParser.parseJSON(response);
             if (json != null) {
@@ -532,11 +576,11 @@ public class Wall implements Parcelable {
                         if(photo_index > 0) {
                             photoAttachment.filename =
                                     String.format(
-                                            "%s_o%sp%si%s", prefix, owner_id,
+                                            "%s_a%sp%si%s", prefix, owner_id,
                                             post_id, photo_index);
                         } else {
                             photoAttachment.filename =
-                                    String.format("%s_o%sp%s", prefix, owner_id, post_id);
+                                    String.format("%s_a%sp%s", prefix, owner_id, post_id);
                         }
                         photoAttachment.original_url = photo_original_size;
                         try { // handle floating crash
@@ -669,7 +713,8 @@ public class Wall implements Parcelable {
                         audio.owner_id = audio_attachment.getLong("owner_id");
                         audio.artist = audio_attachment.getString("artist");
                         audio.title = audio_attachment.getString("title");
-                        audio.album = audio_attachment.getString("album");
+                        if(audio_attachment.has("album"))
+                            audio.album = audio_attachment.getString("album");
                         if(!audio_attachment.isNull("lyrics"))
                             audio.lyrics = audio_attachment.getLong("lyrics");
                         audio.url = audio_attachment.getString("url");

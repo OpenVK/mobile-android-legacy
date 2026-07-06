@@ -41,6 +41,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -73,6 +74,23 @@ public class NoteActivity extends NetworkActivity {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
+        } else {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
+            actionBar.setTitle(getResources().getString(R.string.attach_note));
+            actionBar.setHomeAction(new ActionBar.Action() {
+                @Override
+                public int getDrawable() {
+                    return 0;
+                }
+
+                @Override
+                public void performAction(View view) {
+                    onBackPressed();
+                }
+            });
         }
         ((TextView) findViewById(R.id.note_some_xhtml_features)).setText(
                 Html.fromHtml(getResources().getString(R.string.some_xhtml_features_text))
@@ -192,6 +210,7 @@ public class NoteActivity extends NetworkActivity {
                 }
 
                 ((EditText) findViewById(R.id.note_content_editor)).setText(text);
+
             }
             if(data.containsKey("title")) {
                 ((TextView) findViewById(R.id.note_title)).setText(data.getString("title"));
@@ -239,6 +258,7 @@ public class NoteActivity extends NetworkActivity {
             }
             if (message == HandlerMessages.NOTES_GET_BY_ID) {
                 findViewById(R.id.progress_layout).setVisibility(View.GONE);
+                findViewById(R.id.note_viewer).setVisibility(View.VISIBLE);
                 loadNote(ovk_api.notes.list.get(0).content);
                 switchToEditorMode(false);
                 ((TextView) findViewById(R.id.note_title)).setText(ovk_api.notes.list.get(0).title);

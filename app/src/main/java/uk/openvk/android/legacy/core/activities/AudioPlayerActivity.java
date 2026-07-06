@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Audio;
@@ -161,6 +162,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
             }
         });
         audio_tracks = AudioCacheDB.getCachedAudiosList(this, fromSearch);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -171,7 +173,24 @@ public class AudioPlayerActivity extends NetworkActivity implements
             getActionBar().setBackgroundDrawable(
                     getResources().getDrawable(R.drawable.bg_actionbar_black_transparent)
             );
+        } else {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setTitle(R.string.now_playing);
+            actionBar.setSubtitle(
+                    getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
+            );
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setBackgroundDrawable(getResources().
+                    getDrawable(R.drawable.bg_actionbar_black_transparent_v2));
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
+                @Override
+                public void performAction(View view) {
+                    onBackPressed();
+                }
+            });
         }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setTranslucentStatusBar(0, android.R.color.black);
         }
